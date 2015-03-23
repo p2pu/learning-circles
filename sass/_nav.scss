@@ -1,0 +1,13 @@
+
+
+nav{
+	.navbar-toggle{
+		color: $white
+	}
+
+	.p2pu-tab{
+		&:hover, &:focus {
+			background: transparent !important;
+		}
+	}
+}

@@ -1,0 +1,34 @@
+{% load static %}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+	window.jQuery || document.write('<script src="{% static 'js/vendor/jquery-1.11.1.min.js'%}"><\/script>')
+</script>
+<script src="{% static 'js/vendor/bootstrap/collapse.js' %}"></script>
+<script src="{% static 'js/vendor/bootstrap/dropdown.js' %}"></script>
+<script src="{% static 'js/vendor/bootstrap/modal.js' %}"></script>
+<script src="{% static 'js/vendor/bootstrap/affix.js' %}"></script>
+
+<script type="text/javascript"
+        src="//rawgithub.com/p2pu/p2pu_navigation_widget/master/p2pu_menu_slider.js"></script>
+<script src="{% static 'js/main.js' %}"></script>
+
+<script>
+	P2PU.Splash.init();
+</script>
+
+<script>
+	!function (d, s, id) {
+		var js, fjs = d.getElementsByTagName(s)[0], p = /^http:/.test(d.location) ? 'http' : 'https';
+		if (!d.getElementById(id)) {
+			js = d.createElement(s);
+			js.id = id;
+			js.src = p + "://platform.twitter.com/widgets.js";
+			fjs.parentNode.insertBefore(js, fjs);
+		}
+	}(document, "script", "twitter-wjs");
+</script>
+
+{% if site.env == 'dev' %}
+	<script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
+{% endif %}
+

@@ -1,0 +1,5 @@
+venv
+.sass-cache/
+*.pyc
+db.sqlite3
+static_serve/

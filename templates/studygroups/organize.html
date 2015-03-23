@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+  <!-- Example row of columns -->
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Study groups</h1>
+      <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Course</th>
+            <th>Time</th>
+            <th>Location</th>
+            <th>Signups</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for group in study_groups %}
+            <tr>
+                <td>
+                    <a href="{% url 'studygroups_course' course_id=group.course.id %}">{{ group.course }}</a>
+                </td>
+                <td>
+                    {{ group.time }}
+                </td>
+                <td>
+                    <a href="{{group.location_link}}" target="_blank">{{ group.location }}</a>
+                </td>
+                <td>
+                    {{ group.studygroupsignup_set.count }} / 
+                    {{ group.max_size }}
+                </td>
+                <td>
+                    <div class="btn-group">
+                        <a class="btn btn-mini btn-primary" href="{% url 'studygroups_email' group.id %}">
+                            <i class="glyphicon glyphicon-envelope"></i> send email
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <p><a href="/admin/studygroups/studygroup/add/" class="btn btn-primary">Add study group</a></p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Courses</h1>
+      <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Start date</th>
+            <th>Duration</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for course in courses %}
+            <tr>
+                <td>
+                    <a href="{% url 'studygroups_course' course_id=course.id %}">{{ course.title }}</a>
+                </td>
+                <td>
+                    {{ course.start_date }}
+                </td>
+                <td>
+                    {{ course.duration }}
+                </td>
+                <td>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <p><a href="/admin/studygroups/course/add/" class="btn btn-primary">Add course</a></p>
+
+    </div>
+  </div>
+</div> <!-- /container -->
+
+{% endblock %}

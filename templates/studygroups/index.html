@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Main jumbotron for a primary marketing message or call to action -->
+<div class="jumbotron">
+  <div class="container">
+    <h1>Join a P2PU study group at the Chicago Public Library </h1>
+    <p>P2PU and the Chicago public library are working together so that you can join a study group with actual people at the library to do an online course together.</p>
+    <p>You can learn things like ...</p>
+    <p><a class="btn btn-primary btn-lg" href="{{site.baseurl}}/about.html" role="button">Learn more &raquo;</a></p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Sign up for a study group</h1>
+    </div>
+  </div>
+  <div class="row">
+    {% for course in courses %}
+    <div class="course-wrapper">
+      <h2>{{course.title}}</h2>
+      <p>{{course.description}}</p>
+      <p>{{course.start_date}}</p>
+      <p><a class="btn btn-primary" href="{% url 'studygroups_course' course_id=course.id %}" role="button">View details &raquo;</a></p>
+    </div>
+    {% endfor %}
+  </div>
+
+  <hr>
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Attend an info session</h1>
+      <p>Not 100% sure what this is about? Come to one of the scheduled info sessions to find out more about how this will work?</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2>Monday 13 April @ 6 PM at the CPL central branch</h2>
+      <p>Not 100% sure what this is about? Come to one of the scheduled info sessions to find out more about how this will work?</p>
+      <p><a class="btn btn-primary" href="{{site.baseurl}}/info-session.html" role="button">View details &raquo;</a></p>
+    </div>
+    <div class="col-md-6">
+      <h2>Thursday 16 April @ 5:30 PM at the CPL central branch</h2>
+      <p>Not 100% sure what this is about? Come to one of the scheduled info sessions to find out more about how this will work?</p>
+      <p><a class="btn btn-primary" href="{{site.baseurl}}/info-session.html" role="button">View details &raquo;</a></p>
+    </div>
+  </div>
+
+  <hr>
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Interested in the course in general</h1>
+      <p>Interested in starting a study group at your local library? <a href="" class="btn btn-primary">Go here</a></p>
+    </div>
+  </div>
+
+
+</div> <!-- /container -->
+{% endblock %}

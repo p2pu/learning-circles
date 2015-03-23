@@ -1,0 +1,174 @@
+.thumbnail {
+	background-color: $gray-snow;
+	position: relative;
+	@include transition(background-color 0.3s linear);
+
+	&:hover {
+		text-decoration: none;
+		background-color: $gray-lighter;
+	}
+
+	.thumbnail-side {
+		position: relative;
+		text-align: center;
+		background: $brand-primary;
+		color: $white;
+		padding: 15px 0;
+		margin-bottom: 0.5em;
+		font-family: $headings-font-family;
+		font-size: 1em;
+	}
+
+	.cotent-wrap {
+		text-align: center;
+		color: grey;
+		font-style: italic;
+		font-size: 0.9em;
+		line-height: 1.5;
+		margin-top: 1em;
+	}
+}
+
+.csstransforms .thumbnail {
+	border: 0;
+	border-left: 60px solid $brand-primary;
+
+	/* Make a little room */
+	padding-left: 10px;
+
+	.thumbnail-side {
+
+		/* Abs positioning makes it not take up vert space */
+		position: absolute;
+		top: 95%;
+		left: -19%;
+
+		/* Border is the new background */
+		background: none;
+
+		/* Rotate from top left corner (not default) */
+		-webkit-transform-origin: 0 0;
+		-moz-transform-origin: 0 0;
+		-ms-transform-origin: 0 0;
+		-o-transform-origin: 0 0;
+
+		@include rotate(-90deg);
+	}
+}
+
+.strech-banner {
+	height: 350px;
+	width: 100%;
+	background-repeat: no-repeat;
+	margin-top: 50px;
+	background-size: cover;
+
+	&.about {
+		background-image: url(../images/about/about-banner.jpg);
+		background-position: 0 100%;
+	}
+
+	&.philosophy {
+		background-image: url(../images/about/philosophy-banner.jpg);
+		background-position: 0 22%;
+	}
+
+	&.people {
+		background-image: url(../images/about/people-banner.jpg);
+		background-position: 0 38%;
+	}
+
+	&.credits {
+		background-image: url(../images/about/p2pu_lego.jpg);
+		background-position: 0 51%;
+	}
+}
+
+.bottom-link {
+	margin: 2em 0;
+}
+
+.social-footer {
+	a {
+		padding: 3px 10px;
+		border-radius: 2px;
+		margin-top: -18px;
+		font-size: 0.8em;
+
+		&.tw {
+			background-color: #00BBF5;
+			border-color: #00BBF5;
+			&:hover {
+				background-color: darken(#00BBF5, 5%);
+			}
+		}
+
+		&.fb {
+			background-color: #415E9B;
+			border-color: #415E9B;
+			&:hover {
+				background-color: darken(#415E9B, 5%);
+			}
+		}
+	}
+}
+
+.connect-icons-wrapper {
+	margin: 50px 0;
+
+	$icon-size-background: 8em;
+	.icon-circle {
+		display: block;
+		margin: 0 auto;
+		background-color: $gray;
+		color: $white;
+		border-radius: 50%;
+		height: $icon-size-background;
+		width: $icon-size-background;
+		text-align: center;
+		line-height: $icon-size-background + 1.5;
+		@include transition(all 0.3s linear);
+	}
+
+	.item-title {
+		text-align: center;
+		text-transform: uppercase;
+		font-size: 0.8em;
+		margin: 1em 0;
+		line-height: 2;
+		color: $p2pu-blue;
+		@include transition(all 0.3s linear);
+	}
+
+	&:hover{
+		.icon-circle {
+			background-color: $gray-snow;
+			color: $brand-primary;
+		}
+
+		.item-title {
+			color: $p2pu-orange;
+		}
+	}
+}
+
+section.featured-work{
+	padding: 3em 1.5em;
+	background-color: #F3F4F8;
+
+	.inner{
+		margin: 2em 0;
+	}
+}
+
+.donate-page{
+	margin-bottom: 60px;
+
+	.donate-button{
+		width: 100%;
+	}
+
+	.staff{
+
+	}
+}
