@@ -20,9 +20,9 @@ path = lambda *a: os.path.join(BASE_DIR, *a)
 SECRET_KEY = '9+pul1ig7$or_f1i+%hogt#7uca%5-ezi7oi!ifwsq!n$5r1pg'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-TEMPLATE_DEBUG = False
+TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
