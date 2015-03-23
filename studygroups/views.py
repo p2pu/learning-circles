@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.contrib import messages
+from django.conf import settings
 from django import http
 
 from studygroups.models import Course, StudyGroup, StudyGroupSignup
@@ -61,7 +62,7 @@ def email(request, study_group_id):
         form = EmailForm(request.POST)
         if form.is_valid():
             to = [su.email for su in study_group.studygroupsignup_set.all()]
-            send_mail(form.cleaned_data['subject'], form.cleaned_data['body'], 'admin@p2pu.org', to, fail_silently=False)
+            send_mail(form.cleaned_data['subject'], form.cleaned_data['body'], settings.DEFAULT_FROM_EMAIL, to, fail_silently=False)
             messages.success(request, 'Email successfully sent')
             url = reverse('studygroups_organize')
             return http.HttpResponseRedirect(url)
