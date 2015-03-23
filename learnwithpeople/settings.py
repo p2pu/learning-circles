@@ -110,6 +110,8 @@ COMPRESS_PRECOMPILERS = (
     ('text/x-scss', 'sass --scss -I ' + path('sass') + ' {infile} {outfile}'),
 )
 
+COMPRESS_OFFLINE = True
+
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
