@@ -4,6 +4,7 @@ from studygroups.models import StudyGroupSignup
 class SignupForm(forms.ModelForm):
     class Meta:
         model = StudyGroupSignup
+        exclude = []
         widgets = {
                 'study_group': forms.HiddenInput
         }

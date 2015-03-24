@@ -7,8 +7,10 @@
   <div class="row">
     <div class="col-md-4">
       <h1>{{course.title}}</h1>
-      <p>{{course.caption}}</p>
+      <p>by <a href="{{ course.link }}">{{ course.provider }}</a></p>
+      <p>{{ course.caption }}</p>
       <p>{% blocktrans with course.start_date as start_date %}Course starts on {{start_date}}{% endblocktrans %}</p>
+      <p>{{ course.description }}</p>
       <p><a class="btn btn-primary"><i class="glyphicon glyphicon-calendar"></i> Download calendar</a></p>
     </div>
     <div class="col-md-8">
@@ -16,7 +18,8 @@
       <ul class="list-group">
         {% for study_group in study_groups %}
         <li class="list-group-item">
-        {{ study_group.time }} at <a href="{{study_group.location_link}}" target="_blank">{{ study_group.location}}</a>
+          <h2>{{ study_group.name }}</h2>
+          <p>{{ study_group.time }} at <a href="{{study_group.location_link}}" target="_blank">{{ study_group.location}}</a></p>
           {% with size=study_group.studygroupsignup_set.count %}
           {% widthratio size study_group.max_size 100 as width %}
           <div class="progress">

@@ -7,7 +7,7 @@
     <h1>Join a P2PU study group at the Chicago Public Library </h1>
     <p>P2PU and the Chicago public library are working together so that you can join a study group with actual people at the library to do an online course together.</p>
     <p>You can learn things like ...</p>
-    <p><a class="btn btn-primary btn-lg" href="{{site.baseurl}}/about.html" role="button">Learn more &raquo;</a></p>
+    <p><a class="btn btn-primary btn-lg" href="{% url 'about' %}" role="button">Learn more &raquo;</a></p>
   </div>
 </div>
 
@@ -19,7 +19,7 @@
   </div>
   <div class="row">
     {% for course in courses %}
-    <div class="course-wrapper">
+    <div class="col-md-12">
       <h2>{{course.title}}</h2>
       <p>{{course.description}}</p>
       <p>{{course.start_date}}</p>
@@ -36,12 +36,12 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-12">
       <h2>Monday 13 April @ 6 PM at the CPL central branch</h2>
       <p>Not 100% sure what this is about? Come to one of the scheduled info sessions to find out more about how this will work?</p>
       <p><a class="btn btn-primary" href="{{site.baseurl}}/info-session.html" role="button">View details &raquo;</a></p>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-12">
       <h2>Thursday 16 April @ 5:30 PM at the CPL central branch</h2>
       <p>Not 100% sure what this is about? Come to one of the scheduled info sessions to find out more about how this will work?</p>
       <p><a class="btn btn-primary" href="{{site.baseurl}}/info-session.html" role="button">View details &raquo;</a></p>

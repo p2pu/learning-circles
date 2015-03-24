@@ -1,4 +1,27 @@
 from django.db import models
+from django.db.models.signals import post_init
+from django.dispatch import receiver
+
+STUDY_GROUP_NAMES = [
+    "The Riders",
+    "The Master Minds of Mars",
+    "The Efficiency Experts",
+    "The Red Hawks",
+    "The Bandits of Hell's Bend",
+    "Apache Devils",
+    "The Wizards of Venus",
+    "Swords of Mars",
+    "The Beasts of Tarzan",
+    "Tarzan and the Castaways",
+    "Pirates of Venus",
+    "The People that Time Forgot",
+    "The Eternal Lovers"
+]
+
+def _study_group_name():
+    idx = 1 + StudyGroup.objects.count()
+    num_names = len(STUDY_GROUP_NAMES)
+    return ' '.join([STUDY_GROUP_NAMES[idx%num_names], "I"*(idx/num_names)])
 
 
 class Course(models.Model):
@@ -18,6 +41,7 @@ class Course(models.Model):
 
 
 class StudyGroup(models.Model):
+    name = models.CharField(max_length=128, default=_study_group_name)
     course = models.ForeignKey('studygroups.Course')
     location = models.CharField(max_length=128)
     location_link = models.URLField()
@@ -27,7 +51,7 @@ class StudyGroup(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return "Study group for " + self.course.title
+        return self.name + " - " + self.course.title + " - " + self.time
 
 
 class StudyGroupSignup(models.Model):
