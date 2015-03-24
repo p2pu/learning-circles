@@ -51,7 +51,7 @@ class StudyGroup(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return self.name + " - " + self.course.title + " - " + self.time
+        return u'{0} - {1} - {2} ({3})'.format(self.name, self.course.title, self.time, self.studygroupsignup_set.count())
 
 
 class StudyGroupSignup(models.Model):
@@ -61,7 +61,7 @@ class StudyGroupSignup(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return self.username
+        return u"{0} - {1}".format(self.username, self.study_group.name)
 
     class Meta:
         unique_together = ("email", "study_group")

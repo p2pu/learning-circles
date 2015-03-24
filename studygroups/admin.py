@@ -6,8 +6,11 @@ from studygroups.models import Course, StudyGroup, StudyGroupSignup
 class CourseAdmin(admin.ModelAdmin):
     pass
 
+class StudyGroupSignupInline(admin.TabularInline):
+    model = StudyGroupSignup
+
 class StudyGroupAdmin(admin.ModelAdmin):
-    pass
+    inlines = [StudyGroupSignupInline]
 
 class StudyGroupSignupAdmin(admin.ModelAdmin):
     pass
