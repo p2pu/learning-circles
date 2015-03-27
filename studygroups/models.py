@@ -58,6 +58,7 @@ class StudyGroupSignup(models.Model):
     study_group = models.ForeignKey('studygroups.StudyGroup')
     username = models.CharField(max_length=128)
     email = models.EmailField()
+    mobile = models.CharField(max_length=20, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):

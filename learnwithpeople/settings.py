@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     # 3rd party apps
     'compressor',
     'crispy_forms',
+    'localflavor',
     # own 
     'studygroups',
 )
