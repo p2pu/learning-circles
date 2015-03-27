@@ -24,7 +24,7 @@
           {% widthratio size study_group.max_size 100 as width %}
           <div class="progress">
               <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{width}}%;">
-                  {{size}}/{{study_group.max_size}}
+                  {{size}}/{{study_group.max_size}} people in study group
               </div>
           </div>
           {% if size < study_group.max_size %}
