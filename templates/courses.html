@@ -1,0 +1,96 @@
+{% load static %}
+{% load extras %}
+
+<div class="container">
+	{% for course in courses %}
+		<div class="row">
+			<div class="course-tile clearfix">
+
+				<div class="col-md-10">
+					{% if course.img %}
+						<img src="{{ course.image }}" alt="Cover image of the course" />
+					{% endif %}
+					<div class="desc">
+						<h4>{{ course.title }}</h4>
+
+						<p>{{ course.description }}</p>
+
+						<div class="footnote">
+							{{ course.caption }}
+						</div>
+						<div class="links">
+							<ul class="list">
+								{% if course.studygroups %}
+									<li role="presentation">
+										<button class="btn btn-link" data-toggle="collapse"
+										        data-target="#sg-{{ course.title|slugify }}"
+										        aria-expanded="false" aria-controls="sg-{{ course.title|slugify }}">
+											Study groups
+										</button>
+										&#8226
+									</li>
+								{% endif %}
+								<li role="presentation">
+									<a href="{{ course.link }}" target="_blank">More about the course</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="info col-md-2">
+					<div class="calendar-wrap">
+						<div class="calendar">
+							<div class="day">{{ course.start_date|date:"l" }}</div>
+							<div class="date">{{ course.start_date|date:"d" }}</div>
+							<div class="month">{{ course.start_date|date:"M" }}</div>
+							<div class="year">{{ course.start_date|date:"Y" }}</div>
+						</div>
+					</div>
+					<hr />
+					<div class="duration-wrap col-md-12">
+						<div class="label label-info">{{ course.duration|capfirst }} Long</div>
+					</div>
+					<div class="col-md-12">
+						<small>Estimated workload:</small>
+						<br />
+
+						<div class="label label-default">{{ course.time_required }}</div>
+					</div>
+				</div>
+				<div class="col-md-12 collapse" id="sg-{{ course.title|slugify }}">
+					<div class="well clearfix">
+						{% for study_group in course.studygroups %}
+							<div class="col-md-4">
+								<h4>{{ study_group.name }}</h4>
+
+								<div>{{ study_group.day }} @ {{ study_group.time }}</div>
+								Location: <a href="{{ study_group.location_link }}">{{ study_group.location }}</a>
+							</div>
+							<div class="col-md-4">
+								<p>
+									{{ study_group.description }}
+								</p>
+							</div>
+							<div class="col-md-4">
+								{% with size=study_group.studygroupsignup_set.count %}
+									{% if size < study_group.max_size %}
+										{% for capacity in study_group.max_size|get_range %}
+											{% if capacity >= size %}
+												<a href="{% url 'studygroups_apply' %}" class="seat free">
+													apply
+												</a>
+											{% else %}
+												<div class="seat">
+													Taken
+												</div>
+											{% endif %}
+										{% endfor %}
+									{% endif %}
+								{% endwith %}
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endfor %}
+</div>

@@ -1,0 +1,220 @@
+//All
+.page-content {
+	padding-top: 60px;
+}
+
+//Navigation styles
+.navbar-logo {
+	position: absolute;
+	height: 140px;
+	background-color: $brand-primary;
+	border-left: 1.5em solid $gray-dark;
+	border-right: 1.5em solid $gray-dark;
+	padding: 1em 2em;
+	border-radius: 50%;
+	line-height: 6;
+}
+
+.logos {
+	position: absolute;
+	right: 0;
+	list-style-type: none;
+
+	a {
+		display: block;
+	}
+
+	img {
+		width: 75px;
+	}
+
+	.cpl-logo img {
+		width: 50px;
+	}
+
+	.icon {
+		color: white;
+		line-height: 4;
+		padding: 0 1em;
+		display: block;
+		font-size: 1.1em;
+
+	}
+
+}
+
+//Jumbotron
+.jumbotron {
+	padding: 0;
+	margin-top: -60px;
+
+	.primary {
+		padding: 3em 0;
+	}
+
+	.dark {
+		background-color: $brand-primary;
+		color: $white;
+		padding: 1.5em 0;
+		text-align: center;
+	}
+}
+
+// Courses styles
+.course-tile {
+	position: relative;
+	display: block;
+	border: 1px $gray-light solid;
+	margin: 1.5em 0;
+	padding: 0.5em 1em;
+
+	hr {
+		margin-top: 5px;
+		margin-bottom: 5px;
+	}
+
+	img {
+		float: left;
+		padding: 1em 2em 1em 0;
+		max-width: 20%;
+	}
+
+	.desc {
+		overflow: auto;
+		min-height: 18em;
+	}
+
+	.footnote {
+		margin-top: 1em;
+		font-size: 0.8em;
+		font-style: italic;
+
+		&:before {
+			content: "*"
+		}
+	}
+
+	.links {
+		position: absolute;
+		bottom: 0;
+
+		.list {
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+			font-size: 0.8em;
+			font-weight: bold;
+
+			li {
+				float: left;
+				margin: 0 0.3em;
+
+				&:first-child {
+					margin: 0;
+				}
+			}
+
+			button{
+				padding: 0;
+			  font-size: 1em;
+			  font-weight: bold;
+			  border: 0;
+			  margin: -1px 0 0 0;
+			}
+
+			a, button {
+				text-decoration: underline;
+
+				&:hover {
+					text-decoration: none;
+				}
+			}
+
+		}
+	}
+
+	.info {
+		padding: 1.5em 0.5em;
+		text-align: center;
+	}
+
+	.calendar-wrap {
+		text-align: center;
+		background-color: aliceblue;
+		border-radius: 15%;
+		padding: 0 0.9em 0.5em 0.9em;
+		margin: 0 0 1em 0;
+		display: inline-block;
+	}
+
+	.day {
+		font-size: 0.75em;
+	}
+
+	.calendar {
+		width: 60px;
+		position: relative;
+		margin: 0 auto;
+	}
+
+	.date {
+		text-align: left;
+		font-size: 2em;
+		font-family: $headings-font-family;
+		line-height: 1;
+	}
+
+	.month {
+		font-size: 2em;
+		font-family: $headings-font-family;
+		line-height: 1;
+		text-align: left;
+	}
+
+	.year {
+		font-weight: bold;
+		font-size: 0.8em;
+		position: absolute;
+		top: 25px;
+		right: 0;
+		@include rotate(-90deg);
+	}
+
+	.duration-wrap {
+		text-align: center;
+
+		.duration {
+			font-weight: bold;
+		}
+	}
+	.label {
+		font-size: 1em;
+		font-weight: bold;
+	}
+
+	.seat{
+		text-transform: uppercase;
+		width: 50px;
+	  height: 50px;
+	  float: left;
+	  background: $brand-primary;
+	  text-align: center;
+	  border-radius: 50%;
+	  line-height: 50px;
+	  font-size: 0.9em;
+	  color: white;
+	  margin: 10px;
+
+		&.free{
+			background-color: $gray-light;
+			color: $brand-primary;
+
+			&:hover{
+				background-color: $gray;
+				color: $white;
+				text-decoration: none;
+			}
+		}
+	}
+
+}

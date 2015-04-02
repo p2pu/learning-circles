@@ -1,52 +1,49 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<!-- Main jumbotron for a primary marketing message or call to action -->
-<div class="jumbotron">
-  <div class="container">
-    <h1>Join a P2PU study group at the Chicago Public Library </h1>
-    <p>P2PU and the Chicago public library are working together so that you can join a study group with actual people at the library to do an online course together.</p>
-    <p>You can learn things like ...</p>
-    <p><a class="btn btn-primary btn-lg" href="{% url 'about' %}" role="button">Learn more &raquo;</a></p>
-  </div>
-</div>
+	<!-- Main jumbotron for a primary marketing message or call to action -->
+	<div class="jumbotron">
+		<div class="primary container">
+			<div class="col-md-8">
+				<h1>Master new skills, together, in the library, for free.</h1>
+			</div>
+			<div class="col-md-4">
+				Attend an info session to learn more and sign up
 
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <h1>Sign up for a study group</h1>
-    </div>
-  </div>
-  <div class="row">
-    {% for course in courses %}
-    <div class="col-md-12">
-      <h2>{{course.title}}</h2>
-      <p>{{course.description}}</p>
-      <p>{{course.start_date}}</p>
-      <p><a class="btn btn-primary" href="{% url 'studygroups_course' course_id=course.id %}" role="button">View details &raquo;</a></p>
-    </div>
-    {% endfor %}
-  </div>
+				Edgewater: 6:30PM Tuesday, April 21 in the Community Meeting Room (2nd Floor)
 
-  <hr>
-  <div class="row">
-    <div class="col-md-12">
-      <h1>Attend an info session</h1>
-      <p>Not 100% sure what this is about? Come to one of the scheduled info sessions to find out more about how this will work?</p>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <h2>Monday 13 April @ 6 PM at the CPL central branch</h2>
-      <p>Not 100% sure what this is about? Come to one of the scheduled info sessions to find out more about how this will work?</p>
-      <p><a class="btn btn-primary" href="{{site.baseurl}}/info-session.html" role="button">View details &raquo;</a></p>
-    </div>
-    <div class="col-md-12">
-      <h2>Thursday 16 April @ 5:30 PM at the CPL central branch</h2>
-      <p>Not 100% sure what this is about? Come to one of the scheduled info sessions to find out more about how this will work?</p>
-      <p><a class="btn btn-primary" href="{{site.baseurl}}/info-session.html" role="button">View details &raquo;</a></p>
-    </div>
-  </div>
+				Harold Washington: 6:30PM Wednesday, April 22 and Thursday, April 23 in the over the rainbow
+			</div>
 
-</div> <!-- /container -->
+
+		</div>
+		<div class="dark">
+			<div class="container">
+				<p>
+					Chicago Public Library is hosting study groups for learners who want to complete online courses
+					together, in-person at the libraries. <br /> These are free, peer-supported courses which are
+					designed to be taken by anybody.
+				</p>
+			</div>
+		</div>
+	</div>
+
+	<section id="faq">
+
+		<div class="container">
+			here be stuffs
+		</div>
+	</section>
+
+	<section id="courses">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<h1>These are the courses to choose from</h1>
+				</div>
+			</div>
+		</div>
+		{% include 'courses.html' %}
+	</section>
+
 {% endblock %}
