@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from studygroups.models import Course, StudyGroup, StudyGroupSignup
+from studygroups.models import Course, StudyGroup, StudyGroupSignup, Application
 
 class CourseAdmin(admin.ModelAdmin):
     pass
@@ -15,6 +15,10 @@ class StudyGroupAdmin(admin.ModelAdmin):
 class StudyGroupSignupAdmin(admin.ModelAdmin):
     pass
 
+class ApplicationAdmin(admin.ModelAdmin):
+    pass
+
 admin.site.register(Course, CourseAdmin)
+admin.site.register(Application, ApplicationAdmin)
 admin.site.register(StudyGroup, StudyGroupAdmin)
 admin.site.register(StudyGroupSignup, StudyGroupSignupAdmin)

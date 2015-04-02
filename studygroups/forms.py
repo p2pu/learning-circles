@@ -1,6 +1,16 @@
 from django import forms
-from studygroups.models import StudyGroupSignup
+from studygroups.models import StudyGroupSignup, Application
 from localflavor.us.forms import USPhoneNumberField
+
+
+class ApplicationForm(forms.ModelForm):
+    mobile = USPhoneNumberField(required=False)
+    class Meta:
+        model = Application
+        widgets = {
+            'study_groups': forms.CheckboxSelectMultiple,
+        }
+
 
 class SignupForm(forms.ModelForm):
     mobile = USPhoneNumberField(required=False)
@@ -8,7 +18,7 @@ class SignupForm(forms.ModelForm):
         model = StudyGroupSignup
         exclude = []
         widgets = {
-                'study_group': forms.HiddenInput
+            'study_group': forms.HiddenInput
         }
 
 

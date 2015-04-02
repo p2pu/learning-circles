@@ -1,7 +1,10 @@
 from django.db import models
 from django.db.models.signals import post_init
 from django.dispatch import receiver
+
 from s3direct.fields import S3DirectField
+
+import calendar
 
 STUDY_GROUP_NAMES = [
     "The Riders",
@@ -47,6 +50,7 @@ class StudyGroup(models.Model):
     course = models.ForeignKey('studygroups.Course')
     location = models.CharField(max_length=128)
     location_link = models.URLField()
+    day = models.CharField(max_length=128, choices=zip(calendar.day_name, calendar.day_name))
     time = models.CharField(max_length=128)
     max_size = models.IntegerField()
     description = models.TextField()
@@ -54,6 +58,30 @@ class StudyGroup(models.Model):
 
     def __unicode__(self):
         return u'{0} - {1} - {2} ({3})'.format(self.name, self.course.title, self.time, self.studygroupsignup_set.count())
+
+PREFERRED_CONTACT_METHOD = [
+    ('Email', 'Email'),
+    ('Text', 'Text'),
+    ('Phone', 'Phone'),
+]
+
+COMPUTER_ACCESS = [
+    ('Yes', 'Yes'),
+    ('No', 'No'),
+    ('Sometimes', 'Sometimes')
+]
+
+class Application(models.Model):
+    name = models.CharField(max_length=128)
+    email = models.EmailField()
+    mobile = models.CharField(max_length=20, null=True, blank=True)
+    contact_method = models.CharField(max_length=128, choices=PREFERRED_CONTACT_METHOD)
+    computer_access = models.CharField(max_length=128, choices=COMPUTER_ACCESS)
+    study_groups = models.ManyToManyField('studygroups.StudyGroup')
+    goals = models.TextField()
+    support = models.TextField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class StudyGroupSignup(models.Model):

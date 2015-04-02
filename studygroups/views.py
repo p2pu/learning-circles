@@ -11,7 +11,7 @@ import twilio
 import twilio.rest
 
 from studygroups.models import Course, StudyGroup, StudyGroupSignup
-from studygroups.forms import SignupForm, EmailForm
+from studygroups.forms import ApplicationForm, SignupForm, EmailForm
 
 def landing(request):
     context = {
@@ -28,6 +28,7 @@ def course(request, course_id):
         'study_groups': course.studygroup_set.all(),
     }
     return render_to_response('studygroups/course.html', context, context_instance=RequestContext(request))
+
 
 def signup(request, study_group_id):
     study_group = StudyGroup.objects.get(id=study_group_id)
@@ -47,6 +48,25 @@ def signup(request, study_group_id):
         'form': form
     }
     return render_to_response('studygroups/signup.html', context, context_instance=RequestContext(request))
+
+
+def apply(request):
+    if request.method == 'POST':
+        form = ApplicationForm(request.POST)
+        if form.is_valid():
+            application = form.save()
+            messages.success(request, 'You successfully applied to join a study group!')
+            url = reverse('studygroups_landing')
+            return http.HttpResponseRedirect(url)
+    else:
+        form = ApplicationForm()
+
+    context = {
+        'form': form
+    }
+    return render_to_response('studygroups/apply.html', context, context_instance=RequestContext(request))
+
+
 
 
 @login_required
