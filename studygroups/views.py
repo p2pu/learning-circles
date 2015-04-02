@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
@@ -13,10 +15,15 @@ import twilio.rest
 from studygroups.models import Course, StudyGroup, StudyGroupSignup
 from studygroups.forms import ApplicationForm, SignupForm, EmailForm
 
+
 def landing(request):
+    courses = Course.objects.filter(start_date__gte=datetime.now())
+
+    for crs in courses:
+        crs.studygroups = crs.studygroup_set.all()
+
     context = {
-        'courses': Course.objects.all(),
-        'study_groups': Course.objects.all(),
+        'courses': courses,
     }
     return render_to_response('studygroups/index.html', context, context_instance=RequestContext(request))
 
