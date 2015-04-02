@@ -108,7 +108,7 @@ TEMPLATE_DIRS = (
 )
 
 COMPRESS_PRECOMPILERS = (
-    ('text/x-scss', 'sass --scss -I ' + path('sass') + ' {infile} {outfile}'),
+    ('text/x-scss', 'sass --scss -I ' + path('static/sass') + ' {infile} {outfile}'),
 )
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
