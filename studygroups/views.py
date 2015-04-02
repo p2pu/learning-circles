@@ -7,6 +7,9 @@ from django.contrib import messages
 from django.conf import settings
 from django import http
 
+import twilio
+import twilio.rest
+
 from studygroups.models import Course, StudyGroup, StudyGroupSignup
 from studygroups.forms import SignupForm, EmailForm
 
@@ -64,6 +67,26 @@ def email(request, study_group_id):
             to = [su.email for su in study_group.studygroupsignup_set.all()]
             send_mail(form.cleaned_data['subject'], form.cleaned_data['body'], settings.DEFAULT_FROM_EMAIL, to, fail_silently=False)
             messages.success(request, 'Email successfully sent')
+
+            # TODO send SMS
+            try:
+                client = twilio.rest.TwilioRestClient(
+                    settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN 
+                )
+                tos = [su.mobile for su in study_group.studygroupsignup_set.all() if len(su.mobile) > 0]
+                for to in tos: 
+                    try:
+                        message = client.messages.create(
+                            body=form.cleaned_data['sms_body'],
+                            to=to,
+                            from_=settings.TWILIO_NUMBER
+                        )
+                    except twilio.TwilioRestException as e:
+                        messages.warning(request, 'Could not send SMS to ' + to)
+
+            except twilio.TwilioRestException as e:
+                messages.error(request, 'Something went wrong while sending an SMS')
+
             url = reverse('studygroups_organize')
             return http.HttpResponseRedirect(url)
     else:

@@ -16,3 +16,4 @@ class EmailForm(forms.Form):
     study_group_id = forms.IntegerField(widget=forms.HiddenInput)
     subject = forms.CharField()
     body = forms.CharField(widget=forms.Textarea)
+    sms_body = forms.CharField(max_length=160, widget=forms.Textarea)

@@ -142,6 +142,12 @@ S3DIRECT_DESTINATIONS = {
     'imgs': ('uploads/imgs', lambda u: True, ['image/jpeg', 'image/png'],),
 }
 
+##### Twilio config
+
+TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
+TWILIO_NUMBER = os.environ.get('TWILIO_NUMBER')
+
 ##### Support for settings_local.py
 try:
     from settings_local import *
