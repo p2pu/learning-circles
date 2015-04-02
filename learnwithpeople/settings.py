@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'compressor',
     'crispy_forms',
     'localflavor',
+    's3direct',
     # own 
     'studygroups',
 )
@@ -128,8 +129,20 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Allow all host headers
 ALLOWED_HOSTS = ['*']
- 
-## Support for settings_local.py
+
+##### AWS upload config
+
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
+
+S3DIRECT_REGION = 'us-east-1'
+S3DIRECT_DESTINATIONS = {
+    # Allow anybody to upload jpeg's and png's.
+    'imgs': ('uploads/imgs', lambda u: True, ['image/jpeg', 'image/png'],),
+}
+
+##### Support for settings_local.py
 try:
     from settings_local import *
 except ImportError:

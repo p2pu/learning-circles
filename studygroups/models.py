@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.signals import post_init
 from django.dispatch import receiver
+from s3direct.fields import S3DirectField
 
 STUDY_GROUP_NAMES = [
     "The Riders",
@@ -28,6 +29,7 @@ class Course(models.Model):
     title = models.CharField(max_length=128)
     provider = models.CharField(max_length=256)
     link = models.URLField()
+    image = S3DirectField(dest='imgs')
     start_date = models.DateField()
     duration = models.CharField(max_length=128)
     prerequisite = models.TextField()
