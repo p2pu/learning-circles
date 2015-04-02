@@ -5,12 +5,6 @@ from django.views.generic import TemplateView
 
 
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'learnwithpeople.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
-
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
     url(r'^s3direct/', include('s3direct.urls')),
 )
 
@@ -18,4 +12,6 @@ urlpatterns = patterns('',
 urlpatterns += i18n_patterns('',
     url(r'^', include('studygroups.urls')),
     url(r'^about/$', TemplateView.as_view(template_name="about.html"), name="about"),
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
 )

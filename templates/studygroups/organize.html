@@ -44,7 +44,7 @@
         {% endfor %}
         </tbody>
       </table>
-      <p><a href="/admin/studygroups/studygroup/add/" class="btn btn-primary">Add study group</a></p>
+      <p><a href="{% url 'admin:studygroups_studygroup_add' %}" class="btn btn-primary">Add study group</a></p>
     </div>
   </div>
 
@@ -78,7 +78,7 @@
         {% endfor %}
         </tbody>
       </table>
-      <p><a href="/admin/studygroups/course/add/" class="btn btn-primary">Add course</a></p>
+      <p><a href="{% url 'admin:studygroups_course_add' %}" class="btn btn-primary">Add course</a></p>
 
     </div>
   </div>
