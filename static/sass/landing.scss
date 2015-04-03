@@ -47,6 +47,7 @@
 .jumbotron {
 	padding: 0;
 	margin-top: -60px;
+	margin-bottom: 0;
 
 	.primary {
 		padding: 3em 0;
@@ -119,7 +120,7 @@
 			  font-size: 1em;
 			  font-weight: bold;
 			  border: 0;
-			  margin: -1px 0 0 0;
+			  margin: -4px 0 0 0;
 			}
 
 			a, button {
@@ -200,10 +201,11 @@
 	  background: $brand-primary;
 	  text-align: center;
 	  border-radius: 50%;
-	  line-height: 50px;
-	  font-size: 0.9em;
+	  line-height: 1.5;
+	  font-size: 0.7em;
 	  color: white;
 	  margin: 10px;
+		padding-top: 10px;
 
 		&.free{
 			background-color: $gray-light;
@@ -217,4 +219,36 @@
 		}
 	}
 
+}
+
+#faq{
+	background-color: $gray-lighter;
+
+	.faq-item{
+		background-color: $white;
+		border-radius: 20px;
+		padding: 1em;
+		min-height: 330px;
+	}
+
+
+	.icon{
+		display: block;
+		float: right;
+	  margin-top: -73px;
+		margin-right: -30px;
+	  padding: 0.2em 0.3em;
+	  color: $white;
+	  border-radius: 100%;
+	  font-size: 2.75em;
+	  width: 2.1em;
+	  height: 2.1em;
+	  line-height: 1.7em;
+	  text-align: center;
+	  cursor: default;
+		box-shadow: #dee0e3 -1px 1px 1px, #dee0e3 -2px 2px 0, #dee0e3 -3px 3px 0, #dee0e3 -4px 4px 5px;
+	  transition: all 0.2s ease-in-out;
+		background-color: $p2pu-yellow;
+
+	}
 }

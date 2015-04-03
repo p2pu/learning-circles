@@ -57,8 +57,9 @@
 					</div>
 				</div>
 				<div class="col-md-12 collapse" id="sg-{{ course.title|slugify }}">
-					<div class="well clearfix">
-						{% for study_group in course.studygroups %}
+
+					{% for study_group in course.studygroups %}
+						<div class="well clearfix">
 							<div class="col-md-4">
 								<h4>{{ study_group.name }}</h4>
 
@@ -73,13 +74,19 @@
 							<div class="col-md-4">
 								{% with size=study_group.studygroupsignup_set.count %}
 									{% if size < study_group.max_size %}
+										<h6 class="text-center">
+											We still have {{ study_group.max_size|subtract:size  }} places left in our study
+											group, join us by applying.
+										</h6>
 										{% for capacity in study_group.max_size|get_range %}
 											{% if capacity >= size %}
 												<a href="{% url 'studygroups_apply' %}" class="seat free">
+													<i class="fa fa-plus"></i><br />
 													apply
 												</a>
 											{% else %}
 												<div class="seat">
+													<i class="fa fa-times"></i><br />
 													Taken
 												</div>
 											{% endif %}
@@ -87,10 +94,11 @@
 									{% endif %}
 								{% endwith %}
 							</div>
-						{% endfor %}
-					</div>
+						</div>
+					{% endfor %}
 				</div>
 			</div>
 		</div>
 	{% endfor %}
+	<hr />
 </div>
