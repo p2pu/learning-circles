@@ -5,20 +5,46 @@
 
 //Navigation styles
 .navbar-logo {
-	position: absolute;
-	height: 140px;
-	background-color: $brand-primary;
-	border-left: 1.5em solid $gray-dark;
-	border-right: 1.5em solid $gray-dark;
-	padding: 1em 2em;
-	border-radius: 50%;
-	line-height: 6;
+
+	@media (min-width: $screen-xs-max) {
+		position: absolute;
+		height: 140px;
+		background-color: $brand-primary;
+		border-left: 1.5em solid $gray-dark;
+		border-right: 1.5em solid $gray-dark;
+		padding: 1em 2em;
+		border-radius: 50%;
+		line-height: 6;
+	}
+
+	img {
+		width: 140px;
+		padding: 1em;
+
+		@media (min-width: $screen-xs-max) {
+			width: 200px;
+		}
+	}
 }
 
 .logos {
-	position: absolute;
-	right: 0;
+	float: right;
+	padding: 0;
 	list-style-type: none;
+
+	@media (min-width: $screen-xs-max) {
+
+	}
+
+	li{
+
+		float: left;
+
+		@media (min-width: $screen-xs-max) {
+
+		}
+	}
+
 
 	a {
 		display: block;
@@ -97,7 +123,11 @@
 
 	.links {
 		position: absolute;
-		bottom: 0;
+		bottom: -263px;
+
+		@media (min-width: $screen-xs-max) {
+			bottom: 0;
+		}
 
 		.list {
 			list-style-type: none;
@@ -115,12 +145,12 @@
 				}
 			}
 
-			button{
+			button {
 				padding: 0;
-			  font-size: 1em;
-			  font-weight: bold;
-			  border: 0;
-			  margin: -4px 0 0 0;
+				font-size: 1em;
+				font-weight: bold;
+				border: 0;
+				margin: -4px 0 0 0;
 			}
 
 			a, button {
@@ -193,25 +223,25 @@
 		font-weight: bold;
 	}
 
-	.seat{
+	.seat {
 		text-transform: uppercase;
 		width: 50px;
-	  height: 50px;
-	  float: left;
-	  background: $brand-primary;
-	  text-align: center;
-	  border-radius: 50%;
-	  line-height: 1.5;
-	  font-size: 0.7em;
-	  color: white;
-	  margin: 10px;
+		height: 50px;
+		float: left;
+		background: $brand-primary;
+		text-align: center;
+		border-radius: 50%;
+		line-height: 1.5;
+		font-size: 0.7em;
+		color: white;
+		margin: 10px;
 		padding-top: 10px;
 
-		&.free{
+		&.free {
 			background-color: $gray-light;
 			color: $brand-primary;
 
-			&:hover{
+			&:hover {
 				background-color: $gray;
 				color: $white;
 				text-decoration: none;
@@ -221,34 +251,48 @@
 
 }
 
-#faq{
+#faq {
 	background-color: $gray-lighter;
 
-	.faq-item{
+	.faq-item {
 		background-color: $white;
 		border-radius: 20px;
 		padding: 1em;
 		min-height: 330px;
+		margin-top: 1em;
+		margin-bottom: 1em;
 	}
 
-
-	.icon{
+	.icon {
 		display: block;
 		float: right;
-	  margin-top: -73px;
-		margin-right: -30px;
-	  padding: 0.2em 0.3em;
-	  color: $white;
-	  border-radius: 100%;
-	  font-size: 2.75em;
-	  width: 2.1em;
-	  height: 2.1em;
-	  line-height: 1.7em;
-	  text-align: center;
-	  cursor: default;
+		margin-top: -45px;
+		margin-right: -20px;
+		padding: 0.2em 0.3em;
+		color: $white;
+		border-radius: 100%;
+		font-size: 2.75em;
+		width: 2.1em;
+		height: 2.1em;
+		line-height: 1.7em;
+		text-align: center;
+		cursor: default;
 		box-shadow: #dee0e3 -1px 1px 1px, #dee0e3 -2px 2px 0, #dee0e3 -3px 3px 0, #dee0e3 -4px 4px 5px;
-	  transition: all 0.2s ease-in-out;
+		transition: all 0.2s ease-in-out;
 		background-color: $p2pu-yellow;
 
+	}
+}
+
+footer{
+	.logos{
+		float: none;
+	}
+	.footer-logo{
+		line-height: 3 !important;
+		border-bottom: 0;
+		&:hover, &:focus{
+			border-bottom: 0;
+		}
 	}
 }

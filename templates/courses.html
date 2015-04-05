@@ -6,7 +6,7 @@
 		<div class="row">
 			<div class="course-tile clearfix">
 
-				<div class="col-md-10">
+				<div class="col-md-10 col-sm-10">
 					{% if course.img %}
 						<img src="{{ course.image }}" alt="Cover image of the course" />
 					{% endif %}
@@ -36,7 +36,7 @@
 						</div>
 					</div>
 				</div>
-				<div class="info col-md-2">
+				<div class="info col-md-2 col-sm-2">
 					<div class="calendar-wrap">
 						<div class="calendar">
 							<div class="day">{{ course.start_date|date:"l" }}</div>
@@ -56,7 +56,7 @@
 						<div class="label label-default">{{ course.time_required }}</div>
 					</div>
 				</div>
-				<div class="col-md-12 collapse" id="sg-{{ course.title|slugify }}">
+				<div class="col-md-12 clearfix collapse" id="sg-{{ course.title|slugify }}">
 
 					{% for study_group in course.studygroups %}
 						<div class="well clearfix">
