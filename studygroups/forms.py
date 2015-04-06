@@ -7,6 +7,14 @@ class ApplicationForm(forms.ModelForm):
     mobile = USPhoneNumberField(required=False)
     class Meta:
         model = Application
+        labels = {
+            'name': 'Please tell us what to call you',
+            'mobile': 'What is your mobile number?',
+            'contact_method': 'Please tell us how would you perfer us to contact us',
+            'computer_access': 'Do you have normal everyday access to the computer?',
+            'goals': 'Please tell what your learning goals are',
+            'support': '',
+        }
         widgets = {
             'study_groups': forms.CheckboxSelectMultiple,
         }

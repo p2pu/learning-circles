@@ -8,41 +8,39 @@
 				<i class="fa fa-bars"></i>
 			</a>
 			<a class="navbar-logo" href="/">
-				<img src="{% static 'images/p2pu-logo.png' %}" alt="P2PU Logo" />
-			</a>
-			<a class="p2pu-tab" href="#">
-				<i class="fa fa-chevron-down p2pu-tab-icon"></i>
+				<img src="{% static 'images/course-logo.png' %}" alt="Course Logo" />
 			</a>
 		</div>
 
 		<!-- Collect the nav links, forms, and other content for toggling -->
-		<div class="collapse navbar-collapse" id="nav-links-collapse">
+		<div class="collapse navbar-collapse navbar-right" id="nav-links-collapse">
 			<ul class="nav navbar-nav navbar-left">
+				<li class="">
+          <a href="/">Home</a>
+        </li>
+				<li class="">
+          <a href="#faq">FAQ</a>
+        </li>
+				<li class="">
+          <a href="#courses">What to learn?</a>
+        </li>
 				<li class="">
           <a href="{% url 'about' %}">About</a>
         </li>
       </ul>
-			<ul class="nav navbar-nav navbar-right">
-				{% for link in navigation %}
-					<li class="{{ active }}{% if link.submenu %} dropdown has-subnav{% endif %}">
-						<a href="{{ site.baseurl }}{{ link.url }}">{{ link.text }}</a>
-						{% if link.submenu %}
-							<span class="fa fa-caret-down dropdown-toggle visible-xs-block visible-sm-block"
-							      data-toggle="dropdown"></span>
-							<ul class="dropdown-menu nav navbar-nav subnav" role="menu">
-								{% for sublink in link.submenu %}
-									<li>
-												<a href="{{ site.baseurl }}{{ sublink.url }}">
-													{{ sublink.text }}
-												</a>
-									</li>
-								{% endfor %}
-							</ul>
-						{% endif %}
-					</li>
-				{% endfor %}
+			<ul class="navbar-nav logos hidden-xs hidden-sm">
 				<li>
-        <a href="{% url 'studygroups_organize' %}">Admin login</a>
+					<a href="http://p2pu.org">
+						<img src="{% static 'images/logo.png' %}" alt="P2PU Logo">
+					</a>
+				</li>
+				<li>
+					<span class="icon"><i class="fa fa-plus"></i></span>
+				</li>
+				<li>
+					<a href="http://p2pu.org" class="cpl-logo">
+						<img src="{% static 'images/cpl-logo.png' %}" alt="CPL Logo">
+					</a>
 				</li>
 			</ul>
 		</div>

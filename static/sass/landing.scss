@@ -1,0 +1,309 @@
+//All
+.page-content {
+	padding-top: 60px;
+}
+
+//Navigation styles
+.navbar-logo {
+
+	img {
+		width: 140px;
+		padding: 1em;
+
+		@media (min-width: $screen-xs-max) {
+			width: 200px;
+		}
+	}
+}
+
+.logos {
+	float: right;
+	padding: 0;
+	list-style-type: none;
+
+	@media (min-width: $screen-xs-max) {
+
+	}
+
+	li{
+
+		float: left;
+
+		@media (min-width: $screen-xs-max) {
+
+		}
+	}
+
+
+	a {
+		display: block;
+	}
+
+	img {
+		width: 75px;
+	}
+
+	.cpl-logo img {
+		width: 50px;
+	}
+
+	.icon {
+		color: white;
+		line-height: 4;
+		padding: 0 1em;
+		display: block;
+		font-size: 1.1em;
+
+	}
+
+}
+
+//Jumbotron
+.jumbotron {
+	padding: 0;
+	margin-top: -60px;
+	margin-bottom: 0;
+	background: url('/static/images/swirls.png') no-repeat bottom left;
+	background-size: cover;
+
+	h1{
+		font-size: 3.5em;
+	}
+
+	.primary {
+		padding: 3em 0;
+	}
+
+	.dark {
+		background-color: $brand-primary;
+		color: $white;
+		padding: 1.5em 0;
+		text-align: center;
+	}
+	.session{
+		background-color: #fff;
+		background-image:
+		linear-gradient(90deg, transparent 50px, #abced4 52px, #abced4 53px, transparent 2px), linear-gradient(#eee 0.1em, transparent 0.1em);
+		background-size: 100% 1.2em;
+		padding: 3em 1em 3em 3.8em;
+		line-height: 3em;
+		-webkit-box-shadow: 0px -6px 29px -4px rgba(82,86,101,1);
+		-moz-box-shadow: 0px -6px 29px -4px rgba(82,86,101,1);
+		box-shadow: 0px -6px 29px -4px rgba(82,86,101,1);
+		font-weight: bold;
+	}
+}
+
+// Courses styles
+.course-tile {
+	position: relative;
+	display: block;
+	border: 1px $gray-light solid;
+	margin: 1.5em 0;
+	padding: 0.5em 1em;
+
+	hr {
+		margin-top: 5px;
+		margin-bottom: 5px;
+	}
+
+	img {
+		float: left;
+		padding: 1em 2em 1em 0;
+		max-width: 20%;
+	}
+
+	.desc {
+		overflow: auto;
+		min-height: 18em;
+	}
+
+	.footnote {
+		margin-top: 1em;
+		font-size: 0.8em;
+		font-style: italic;
+
+		&:before {
+			content: "*"
+		}
+	}
+
+	.links {
+		position: absolute;
+		bottom: -360px;
+
+		@media (min-width: $screen-xs-max) {
+			bottom: 0;
+		}
+
+		.list {
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+			font-size: 0.8em;
+			font-weight: bold;
+
+			li {
+				float: left;
+				margin: 0 0.3em;
+
+				&:first-child {
+					margin: 0;
+				}
+			}
+
+			button {
+				padding: 0;
+				font-size: 1em;
+				font-weight: bold;
+				border: 0;
+				margin: -4px 0 0 0;
+			}
+
+			a, button {
+				text-decoration: underline;
+
+				&:hover {
+					text-decoration: none;
+				}
+			}
+
+		}
+	}
+
+	.info {
+		padding: 1.5em 0.5em;
+		text-align: center;
+	}
+
+	.calendar-wrap {
+		text-align: center;
+		background-color: aliceblue;
+		border-radius: 15%;
+		padding: 0 0.9em 0.5em 0.9em;
+		margin: 0 0 1em 0;
+		display: inline-block;
+	}
+
+	.day {
+		font-size: 0.75em;
+	}
+
+	.calendar {
+		width: 60px;
+		position: relative;
+		margin: 0 auto;
+	}
+
+	.date {
+		text-align: left;
+		font-size: 2em;
+		font-family: $headings-font-family;
+		line-height: 1;
+	}
+
+	.month {
+		font-size: 2em;
+		font-family: $headings-font-family;
+		line-height: 1;
+		text-align: left;
+	}
+
+	.year {
+		font-weight: bold;
+		font-size: 0.8em;
+		position: absolute;
+		top: 25px;
+		right: 0;
+		@include rotate(-90deg);
+	}
+
+	.duration-wrap {
+		text-align: center;
+
+		.duration {
+			font-weight: bold;
+		}
+	}
+	.label {
+		font-size: 1em;
+		font-weight: bold;
+	}
+
+	.seat {
+		text-transform: uppercase;
+		width: 50px;
+		height: 50px;
+		float: left;
+		background: $brand-primary;
+		text-align: center;
+		border-radius: 50%;
+		line-height: 1.5;
+		font-size: 0.7em;
+		color: white;
+		margin: 10px;
+		padding-top: 10px;
+
+		&.free {
+			background-color: $gray-light;
+			color: $brand-primary;
+
+			&:hover {
+				background-color: $gray;
+				color: $white;
+				text-decoration: none;
+			}
+		}
+	}
+
+}
+
+#faq {
+	background-color: $gray-lighter;
+
+	.faq-item {
+		background-color: $white;
+		border-radius: 20px;
+		padding: 1em;
+		min-height: 330px;
+		margin-top: 1em;
+		margin-bottom: 1em;
+	}
+
+	.icon {
+		display: block;
+		float: right;
+		margin-top: -45px;
+		margin-right: -20px;
+		padding: 0.2em 0.3em;
+		color: $white;
+		border-radius: 100%;
+		font-size: 2.75em;
+		width: 2.1em;
+		height: 2.1em;
+		line-height: 1.7em;
+		text-align: center;
+		cursor: default;
+		box-shadow: #dee0e3 -1px 1px 1px, #dee0e3 -2px 2px 0, #dee0e3 -3px 3px 0, #dee0e3 -4px 4px 5px;
+		transition: all 0.2s ease-in-out;
+		background-color: $p2pu-yellow;
+
+	}
+}
+
+footer{
+	.logos{
+		float: none;
+	}
+	.footer-logo{
+		line-height: 3 !important;
+		border-bottom: 0;
+		&:hover, &:focus{
+			border-bottom: 0;
+		}
+	}
+}
+
+.alert{
+	margin-bottom: 0;
+}

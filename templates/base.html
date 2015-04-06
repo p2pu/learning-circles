@@ -30,7 +30,7 @@
 
     {% for message in messages %}
       <div class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %}" role="alert">
-        {{ message }}
+        <div class="container">{{ message }}</div>
       </div>
     {% endfor %}
 
@@ -38,6 +38,7 @@
       <div class="wrap">
       {% block content %}
       {% endblock %}
+	      <br />
       </div>
     </div>
 

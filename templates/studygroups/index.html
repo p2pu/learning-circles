@@ -1,52 +1,123 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<!-- Main jumbotron for a primary marketing message or call to action -->
-<div class="jumbotron">
-  <div class="container">
-    <h1>Join a P2PU study group at the Chicago Public Library </h1>
-    <p>P2PU and the Chicago public library are working together so that you can join a study group with actual people at the library to do an online course together.</p>
-    <p>You can learn things like ...</p>
-    <p><a class="btn btn-primary btn-lg" href="{% url 'about' %}" role="button">Learn more &raquo;</a></p>
-  </div>
-</div>
+	<!-- Main jumbotron for a primary marketing message or call to action -->
+	<div class="jumbotron">
+		<div class="primary container">
+			<div class="col-md-6">
+				<h1>Master new skills, <br />together, <br />in the library, <br />for free.</h1>
+			</div>
+			<div class="col-md-6 session">
+				<h4>Attend an info session to learn more and sign up</h4>
+				<ul>
+					<li>Tues 4/21 @ Edgewater Library, 6:30PM, 2nd floor</li>
+					<li>Wed 4/22 @ Harold Washington Library, 6:30PM, 5th floor</li>
+					<li>Thurs 4/23 @ Harold Washington Library, 6:30PM, 5th floor</li>
+				</ul>
+			</div>
+		</div>
+		<div class="dark">
+			<div class="container">
+				<p>
+					Chicago Public Library is hosting study groups for learners who want to complete online courses
+					together, in-person at the libraries. <br /> These are free, peer-supported courses which are
+					designed to be taken by anybody.
+				</p>
+			</div>
+		</div>
+	</div>
 
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <h1>Sign up for a study group</h1>
-    </div>
-  </div>
-  <div class="row">
-    {% for course in courses %}
-    <div class="col-md-12">
-      <h2>{{course.title}}</h2>
-      <p>{{course.description}}</p>
-      <p>{{course.start_date}}</p>
-      <p><a class="btn btn-primary" href="{% url 'studygroups_course' course_id=course.id %}" role="button">View details &raquo;</a></p>
-    </div>
-    {% endfor %}
-  </div>
+	<section id="faq">
+		<div class="container">
+			<hr />
+			<h2>FAQ</h2>
 
-  <hr>
-  <div class="row">
-    <div class="col-md-12">
-      <h1>Attend an info session</h1>
-      <p>Not 100% sure what this is about? Come to one of the scheduled info sessions to find out more about how this will work?</p>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <h2>Monday 13 April @ 6 PM at the CPL central branch</h2>
-      <p>Not 100% sure what this is about? Come to one of the scheduled info sessions to find out more about how this will work?</p>
-      <p><a class="btn btn-primary" href="{{site.baseurl}}/info-session.html" role="button">View details &raquo;</a></p>
-    </div>
-    <div class="col-md-12">
-      <h2>Thursday 16 April @ 5:30 PM at the CPL central branch</h2>
-      <p>Not 100% sure what this is about? Come to one of the scheduled info sessions to find out more about how this will work?</p>
-      <p><a class="btn btn-primary" href="{{site.baseurl}}/info-session.html" role="button">View details &raquo;</a></p>
-    </div>
-  </div>
+			<div class="row">
+				<div class="col-md-4 col-sm-6">
+					<div class="faq-item">
+						<span class="icon"><i class="fa fa-clock-o"></i></span>
+						<h4>When does it start?</h4>
 
-</div> <!-- /container -->
+						<p>
+							Courses begin during the week of April 27. There will be two hours of group study time each week
+							in the library.
+						</p>
+					</div>
+				</div>
+				<div class="col-md-4 col-sm-6">
+					<div class="faq-item">
+						<span class="icon"><i class="fa fa-calendar"></i></span>
+						<h4>How long will it take?</h4>
+
+						<p>
+							The courses will run for between five-seven weeks. However, the pace is largely up to you. You
+							can always slow down or speed up - the materials are there to be used and you can use them
+							however you want.
+						</p>
+					</div>
+				</div>
+				<div class="col-md-4 col-sm-6">
+					<div class="faq-item">
+						<span class="icon"><i class="fa fa-smile-o"></i></span>
+						<h4>How will this all go down?</h4>
+
+						<p>
+							Every week you’ll join your study group for a meeting of minds (and regular high fives) in your
+							local library branch. You’ll be guided through the online materials by a community organiser,
+							who will help facilitate collaboration with your fellow learners.
+						</p>
+					</div>
+				</div>
+
+
+				<div class="col-md-4 col-sm-6">
+					<div class="faq-item">
+						<span class="icon"><i class="fa fa-graduation-cap"></i></span>
+						<h4>What will I learn?</h4>
+
+						<p>
+							Every week you’ll join your study group for a meeting of minds (and regular high fives) in your
+							local library branch. You’ll be guided through the online materials by a community organiser,
+							who will help facilitate collaboration with your fellow learners.
+						</p>
+					</div>
+				</div>
+				<div class="col-md-4 col-sm-6">
+					<div class="faq-item">
+						<span class="icon"><i class="fa fa-cubes"></i></span>
+						<h4>What do I need to bring?</h4>
+
+						<p>
+							All you need is a few hours per week in your library branch and a thirst for knowledge. The
+							library will provide computers, and all necessary course materials.
+						</p>
+					</div>
+				</div>
+				<div class="col-md-4 col-sm-6">
+					<div class="faq-item">
+						<span class="icon"><i class="fa fa-question"></i></span>
+						<h4>Why should I take a course?</h4>
+
+						<p>
+							Why not? Sure, each course will teach you a new skill, but even more exciting is the chance to
+							join with other people from your community and learn something new together in the library. We
+							believe that learning can, and should, be fun, and we hope that you will join us. You’ll receive
+							a certificate from P2PU and CPL at the end of the course.
+
+						</p>
+					</div>
+				</div>
+
+			</div>
+			<hr />
+		</div>
+	</section>
+
+	<section id="courses">
+		<div class="container">
+			<h1>These are the courses to choose from</h1>
+		</div>
+		{% include 'courses.html' %}
+	</section>
+
 {% endblock %}
