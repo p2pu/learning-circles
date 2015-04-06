@@ -6,17 +6,6 @@
 //Navigation styles
 .navbar-logo {
 
-	@media (min-width: $screen-xs-max) {
-		position: absolute;
-		height: 140px;
-		background-color: $brand-primary;
-		border-left: 1.5em solid $gray-dark;
-		border-right: 1.5em solid $gray-dark;
-		padding: 1em 2em;
-		border-radius: 50%;
-		line-height: 6;
-	}
-
 	img {
 		width: 140px;
 		padding: 1em;
@@ -313,4 +302,8 @@ footer{
 			border-bottom: 0;
 		}
 	}
+}
+
+.alert{
+	margin-bottom: 0;
 }

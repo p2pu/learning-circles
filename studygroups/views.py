@@ -58,6 +58,8 @@ def signup(request, study_group_id):
 
 
 def apply(request):
+    group = request.GET.get('group', None)
+
     if request.method == 'POST':
         form = ApplicationForm(request.POST)
         if form.is_valid():
@@ -66,7 +68,7 @@ def apply(request):
             url = reverse('studygroups_landing')
             return http.HttpResponseRedirect(url)
     else:
-        form = ApplicationForm()
+        form = ApplicationForm(initial={'study_groups': [group]})
 
     context = {
         'form': form

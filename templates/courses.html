@@ -79,7 +79,7 @@
 										</h6>
 										{% for capacity in study_group.max_size|get_range %}
 											{% if capacity >= size %}
-												<a href="{% url 'studygroups_apply' %}" class="seat free">
+												<a href="{% url 'studygroups_apply' %}?group={{ study_group.pk }}" class="seat free">
 													<i class="fa fa-plus"></i><br />
 													apply
 												</a>
