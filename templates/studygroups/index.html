@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 	<!-- Main jumbotron for a primary marketing message or call to action -->
-	<div class="jumbotron">
+	<div class="jumbotron" id="top">
 		<div class="primary container">
 			<div class="col-md-6">
 				<h1>Master new skills, <br />together, <br />in the library, <br />for free.</h1>
@@ -27,7 +28,7 @@
 		</div>
 	</div>
 
-	<section id="faq">
+	<section id="faq" class="shaded">
 		<div class="container">
 			<hr />
 			<h2>FAQ</h2>
@@ -118,6 +119,41 @@
 			<h1>These are the courses to choose from</h1>
 		</div>
 		{% include 'courses.html' %}
+	</section>
+
+	<section id="about" class="shaded">
+		<div class="container">
+
+			<div class="row">
+				<div class="col-md-12">
+					<h1>About</h1>
+				</div>
+				<div class="col-md-4 hidden-xs hidden-sm">
+					<img src="{% static 'images/cpl-harold.jpg' %}" alt="CPL Harold Building Dome" />
+				</div>
+				<div class="col-md-8">
+					<p>
+						Chicago Public Library is hosting study groups for learners who want to complete online courses
+						together, in-person at the library.These are free, peer-supported courses which are designed to be
+						taken by anyone, with no prerequisites necessary.
+					</p>
+
+					<p>
+						P2PU and Chicago Public Library believe that people learn better when they’re learning together,
+						and we’ve designed the study groups to provide the maximum support from the library and project
+						staff as you work your way through some of the best free online educational content on the Web. As
+						you move through the course, you’ll be able to share your progress, questions and successes with
+						your study group, and provide support for others.
+					</p>
+
+					<p>
+						The courses on offer have been carefully selected to be interesting and relevant to library users,
+						and will lead to developing useful skills that can be applied in the online and offline worlds.
+						Learners can choose to join any of the study groups.
+					</p>
+				</div>
+			</div>
+		</div>
 	</section>
 
 {% endblock %}
