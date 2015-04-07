@@ -1,4 +1,8 @@
 //All
+body {
+	padding-top: 98px;
+}
+
 .page-content {
 	padding-top: 60px;
 }
@@ -11,7 +15,7 @@
 		padding: 1em;
 
 		@media (min-width: $screen-xs-max) {
-			width: 200px;
+			width: 138px;
 		}
 	}
 }
@@ -25,7 +29,7 @@
 
 	}
 
-	li{
+	li {
 
 		float: left;
 
@@ -33,7 +37,6 @@
 
 		}
 	}
-
 
 	a {
 		display: block;
@@ -66,7 +69,7 @@
 	background: url('/static/images/swirls.png') no-repeat bottom left;
 	background-size: cover;
 
-	h1{
+	h1 {
 		font-size: 3.5em;
 	}
 
@@ -80,16 +83,15 @@
 		padding: 1.5em 0;
 		text-align: center;
 	}
-	.session{
+	.session {
 		background-color: #fff;
-		background-image:
-		linear-gradient(90deg, transparent 50px, #abced4 52px, #abced4 53px, transparent 2px), linear-gradient(#eee 0.1em, transparent 0.1em);
+		background-image: linear-gradient(90deg, transparent 50px, #abced4 52px, #abced4 53px, transparent 2px), linear-gradient(#eee 0.1em, transparent 0.1em);
 		background-size: 100% 1.2em;
 		padding: 3em 1em 3em 3.8em;
 		line-height: 3em;
-		-webkit-box-shadow: 0px -6px 29px -4px rgba(82,86,101,1);
-		-moz-box-shadow: 0px -6px 29px -4px rgba(82,86,101,1);
-		box-shadow: 0px -6px 29px -4px rgba(82,86,101,1);
+		-webkit-box-shadow: 0px -6px 29px -4px rgba(82, 86, 101, 1);
+		-moz-box-shadow: 0px -6px 29px -4px rgba(82, 86, 101, 1);
+		box-shadow: 0px -6px 29px -4px rgba(82, 86, 101, 1);
 		font-weight: bold;
 	}
 }
@@ -258,8 +260,12 @@
 
 }
 
-#faq {
+.shaded {
 	background-color: $gray-lighter;
+	padding: 2em 0;
+}
+
+#faq {
 
 	.faq-item {
 		background-color: $white;
@@ -291,19 +297,26 @@
 	}
 }
 
-footer{
-	.logos{
+#about {
+	img {
+		width: 100%;
+		margin-top: 12px;
+	}
+}
+
+footer {
+	.logos {
 		float: none;
 	}
-	.footer-logo{
+	.footer-logo {
 		line-height: 3 !important;
 		border-bottom: 0;
-		&:hover, &:focus{
+		&:hover, &:focus {
 			border-bottom: 0;
 		}
 	}
 }
 
-.alert{
+.alert {
 	margin-bottom: 0;
 }
