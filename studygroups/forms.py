@@ -18,6 +18,7 @@ class ApplicationForm(forms.ModelForm):
         widgets = {
             'study_groups': forms.CheckboxSelectMultiple,
         }
+        fields = '__all__'
 
 
 class SignupForm(forms.ModelForm):
