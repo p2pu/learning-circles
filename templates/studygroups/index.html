@@ -9,12 +9,18 @@
 				<h1>Master new skills.<br />Together.<br />In the library.<br />For free.</h1>
 			</div>
 			<div class="col-md-6 session">
-				<h4>Attend an info session to learn more and sign up</h4>
+                <h4>You can learn</h4>
+                <ul>
+                    {% for course in courses %}
+                        <li>{{course.title}}</li>
+                    {% endfor %}
+                </ul>
+				<!--h4>Attend an info session to learn more and sign up</h4>
 				<ul>
 					<li>Tues 4/21 @ Edgewater Library, 6:30PM, 2nd floor</li>
 					<li>Wed 4/22 @ Harold Washington Library, 6:30PM, 5th floor</li>
 					<li>Thurs 4/23 @ Harold Washington Library, 6:30PM, 5th floor</li>
-				</ul>
+				</ul-->
 			</div>
 		</div>
 		<div class="dark">
