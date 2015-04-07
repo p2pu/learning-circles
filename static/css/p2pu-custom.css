@@ -7729,6 +7729,9 @@ body {
     .feature.right .content {
       float: right; }
 
+body {
+  padding-top: 98px; }
+
 .page-content {
   padding-top: 60px; }
 
@@ -7737,7 +7740,7 @@ body {
   padding: 1em; }
   @media (min-width: 767px) {
     .navbar-logo img {
-      width: 200px; } }
+      width: 138px; } }
 
 .logos {
   float: right;
@@ -7897,32 +7900,38 @@ body {
         color: #FFFFFF;
         text-decoration: none; }
 
-#faq {
-  background-color: #F3F4F8; }
-  #faq .faq-item {
-    background-color: #FFFFFF;
-    border-radius: 20px;
-    padding: 1em;
-    min-height: 330px;
-    margin-top: 1em;
-    margin-bottom: 1em; }
-  #faq .icon {
-    display: block;
-    float: right;
-    margin-top: -45px;
-    margin-right: -20px;
-    padding: 0.2em 0.3em;
-    color: #FFFFFF;
-    border-radius: 100%;
-    font-size: 2.75em;
-    width: 2.1em;
-    height: 2.1em;
-    line-height: 1.7em;
-    text-align: center;
-    cursor: default;
-    box-shadow: #dee0e3 -1px 1px 1px, #dee0e3 -2px 2px 0, #dee0e3 -3px 3px 0, #dee0e3 -4px 4px 5px;
-    transition: all 0.2s ease-in-out;
-    background-color: #FFBC1A; }
+.shaded {
+  background-color: #F3F4F8;
+  padding: 2em 0; }
+
+#faq .faq-item {
+  background-color: #FFFFFF;
+  border-radius: 20px;
+  padding: 1em;
+  min-height: 330px;
+  margin-top: 1em;
+  margin-bottom: 1em; }
+#faq .icon {
+  display: block;
+  float: right;
+  margin-top: -45px;
+  margin-right: -20px;
+  padding: 0.2em 0.3em;
+  color: #FFFFFF;
+  border-radius: 100%;
+  font-size: 2.75em;
+  width: 2.1em;
+  height: 2.1em;
+  line-height: 1.7em;
+  text-align: center;
+  cursor: default;
+  box-shadow: #dee0e3 -1px 1px 1px, #dee0e3 -2px 2px 0, #dee0e3 -3px 3px 0, #dee0e3 -4px 4px 5px;
+  transition: all 0.2s ease-in-out;
+  background-color: #FFBC1A; }
+
+#about img {
+  width: 100%;
+  margin-top: 12px; }
 
 footer .logos {
   float: none; }
@@ -7935,4 +7944,4 @@ footer .footer-logo {
 .alert {
   margin-bottom: 0; }
 
-/*# sourceMappingURL=p2p-custom.css.map */
+/*# sourceMappingURL=p2pu-custom.css.map */
