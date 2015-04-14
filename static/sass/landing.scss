@@ -80,8 +80,13 @@ body {
 	.dark {
 		background-color: $brand-primary;
 		color: $white;
-		padding: 1.5em 0;
-		text-align: center;
+		padding: 0.5em 0;
+		text-align: left;
+		p{
+			font-size: 1.2em;
+      line-height: 1.8;
+		}
+
 	}
 	.session {
 		background-color: #fff;
