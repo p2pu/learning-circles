@@ -9,10 +9,10 @@
 				<h1>Master new skills.<br />Together.<br />In the library.<br />For free.</h1>
 			</div>
 			<div class="col-md-6 session">
-                <h4>You can learn</h4>
+                <h4>You can learn:</h4>
                 <ul>
                     {% for course in courses %}
-                        <li>{{course.title}}</li>
+                        <li><a href="#{{ course.title|slugify }}">{{course.title}}</a></li>
                     {% endfor %}
                 </ul>
 				<!--h4>Attend an info session to learn more and sign up</h4>

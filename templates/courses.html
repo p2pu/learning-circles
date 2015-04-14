@@ -4,7 +4,7 @@
 <div class="container">
 	{% for course in courses %}
 		<div class="row">
-			<div class="course-tile clearfix">
+			<div class="course-tile clearfix" id="{{ course.title|slugify }}">
 
 				<div class="col-md-10 col-sm-10">
 					{% if course.img %}
