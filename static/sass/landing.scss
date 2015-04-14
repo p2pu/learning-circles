@@ -12,10 +12,10 @@ body {
 
 	img {
 		width: 140px;
-		padding: 1em;
+		padding: 1em 1em 1em 0;
 
 		@media (min-width: $screen-xs-max) {
-			width: 138px;
+			width: 123px;
 		}
 	}
 }
