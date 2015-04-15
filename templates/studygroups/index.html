@@ -9,34 +9,49 @@
 				<h1>Master new skills.<br />Together.<br />In the library.<br />For free.</h1>
 			</div>
 			<div class="col-md-6 session">
-                <h4>You can learn</h4>
-                <ul>
-                    {% for course in courses %}
-                        <li>{{course.title}}</li>
-                    {% endfor %}
-                </ul>
-				<!--h4>Attend an info session to learn more and sign up</h4>
-				<ul>
-					<li>Tues 4/21 @ Edgewater Library, 6:30PM, 2nd floor</li>
-					<li>Wed 4/22 @ Harold Washington Library, 6:30PM, 5th floor</li>
-					<li>Thurs 4/23 @ Harold Washington Library, 6:30PM, 5th floor</li>
-				</ul-->
+        <h4>You can learn:</h4>
+        <ul>
+            {% for course in courses %}
+                <li><a href="#{{ course.title|slugify }}">{{course.title}}</a></li>
+            {% endfor %}
+        </ul>
 			</div>
 		</div>
 		<div class="dark">
 			<div class="container">
-				<p>
-					Chicago Public Library is hosting study groups for learners who want to complete online courses
-					together, in-person at the libraries. <br /> These are free, peer-supported courses which are
-					designed to be taken by anybody.
-				</p>
+				<div class="row">
+					<div class="col-md-6">
+						<p>
+							Chicago Public Library is hosting study groups for learners who want to complete online courses
+							together, in-person at the libraries. <br /> These are free, peer-supported courses which are
+							designed to be taken by anybody.
+						</p>
+					</div>
+					<div class="col-md-6">
+							<p><strong>INTERESTED?</strong> &nbsp; Attend an info session:</p>
+						<div class="row">
+							<div class="col-md-4">
+								<strong>Tues 4/21 @ 6:30PM</strong><br />
+								<address>
+									Edgewater Branch <br /> 6000 N. Broadway <br /> 2nd floor
+								</address>
+							</div>
+							<div class="col-md-8">
+								<strong>Wed 4/22 @ 6:30PM or Thurs 4/23 @ 6:30PM</strong>
+								<address>
+									Harold Washington Library Center <br /> 400 S. State Street <br /> 5th floor north <br />
+								</address>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 
 	<section id="courses">
 		<div class="container">
-			<h1>These are the courses to choose from</h1>
+			<h1>You can learn</h1>
 		</div>
 		{% include 'courses.html' %}
 	</section>
@@ -125,7 +140,7 @@
 		</div>
 	</section>
 
-	<section id="about" class="shaded">
+	<section id="about">
 		<div class="container">
 
 			<div class="row">
@@ -135,7 +150,7 @@
 				<div class="col-md-4 hidden-xs hidden-sm">
 					<img src="{% static 'images/cpl-harold.jpg' %}" alt="CPL Harold Building Dome" />
 				</div>
-				<div class="col-md-8">
+				<div class="col-md-8 description">
 					<p>
 						Chicago Public Library is hosting study groups for learners who want to complete online courses
 						together, in-person at the library.These are free, peer-supported courses which are designed to be
@@ -156,8 +171,8 @@
 						Learners can choose to join any of the study groups.
 					</p>
 
-                    <p>Want to get P2PU involved in your community? <a href="http://community.p2pu.org/t/beyond-chicago/1568">Let us know here</a>.
-                    </p>
+          <p>Want to get P2PU involved in your community? <a href="http://community.p2pu.org/t/beyond-chicago/1568">Let us know here</a>.
+          </p>
 				</div>
 			</div>
 		</div>
