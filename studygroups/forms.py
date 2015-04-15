@@ -5,6 +5,18 @@ from localflavor.us.forms import USPhoneNumberField
 
 class ApplicationForm(forms.ModelForm):
     mobile = USPhoneNumberField(required=False)
+
+    def clean(self):
+        cleaned_data = super(ApplicationForm, self).clean()
+        contact_method = cleaned_data.get("contact_method")
+
+        if contact_method == 'Email' and not cleaned_data.get('email'):
+            self.add_error('email', "Please enter your email address or change your preferred contact method.")
+        elif contact_method == 'Text' and not cleaned_data.get('mobile'):
+            self.add_error('mobile', "Please enter your mobile number or change your preferred contact method.")
+        elif contact_method == 'Phone' and not cleaned_data.get('mobile'):
+            self.add_error('mobile', "Please enter your mobile number or change your preferred contact method.")
+
     class Meta:
         model = Application
         labels = {

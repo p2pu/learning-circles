@@ -76,7 +76,7 @@ COMPUTER_ACCESS = [
 class Application(models.Model):
     name = models.CharField(max_length=128)
     contact_method = models.CharField(max_length=128, choices=PREFERRED_CONTACT_METHOD)
-    email = models.EmailField()
+    email = models.EmailField(null=True, blank=True)
     mobile = models.CharField(max_length=20, null=True, blank=True)
     computer_access = models.CharField(max_length=128, choices=COMPUTER_ACCESS)
     study_groups = models.ManyToManyField('studygroups.StudyGroup')
