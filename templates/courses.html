@@ -32,12 +32,7 @@
 					</div>
 					<hr />
 					<div class="duration-wrap col-md-12">
-						<div class="label label-default">{{ course.duration|capfirst }} Long</div>
-					</div>
-					<div class="col-md-12">
-						<small>Estimated workload:</small>
-						<br />
-						<div class="label label-default">{{ course.time_required }}</div>
+						<div class="label label-default">{{ course.duration|capfirst }}</div>
 					</div>
 					{% if course.studygroups %}
 					<div class="col-md-12">
@@ -45,7 +40,7 @@
 						<button class="btn btn-info " data-toggle="collapse"
 						        data-target="#sg-{{ course.title|slugify }}"
 						        aria-expanded="false" aria-controls="sg-{{ course.title|slugify }}">
-								<strong>Apply for <br />a study group</strong>
+								<strong>Apply</strong>
 						</button>
 					</div>
 					{% endif %}
