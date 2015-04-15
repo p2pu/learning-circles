@@ -19,8 +19,9 @@
 							<div class="links">
 								<ul class="list">
 									<li role="presentation">
-										This group will be working with {{ course.provider }}'s
-										<a href="{{ course.link }}" target="_blank">{{ course.title }}</a></li>
+                    This group will be working with the course content from 
+										<a href="{{ course.link }}" target="_blank">{{ course.provider }}</a>.
+                  </li>
 								</ul>
 							</div>
 						</div>
@@ -30,7 +31,7 @@
 							{% with study_group=course.studygroups.0  %}
               <p><strong>{{ study_group.day }}s</p>
               <p>{{ study_group.time }}</strong></p>
-							<p>{{ course.duration|capfirst }} <br /> beginning {{ course.start_date|date:"n/j" }}</p>
+							<p>{{ course.duration|capfirst }} <br /> beginning {{ course.start_date|date:"j N" }}</p>
 							<address class="text-left">
 								<p><a href="{{study_group.location_link}}" target="_blank">{{ study_group.location }}</a></p>
 							</address>
