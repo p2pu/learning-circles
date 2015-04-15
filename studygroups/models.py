@@ -32,7 +32,7 @@ class Course(models.Model):
     title = models.CharField(max_length=128)
     provider = models.CharField(max_length=256)
     link = models.URLField()
-    image = S3DirectField(dest='imgs')
+    image = S3DirectField(dest='imgs', blank=True)
     start_date = models.DateField()
     duration = models.CharField(max_length=128)
     prerequisite = models.TextField()
