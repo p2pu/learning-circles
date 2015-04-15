@@ -8,7 +8,6 @@ class ApplicationForm(forms.ModelForm):
     class Meta:
         model = Application
         labels = {
-            'name': 'Please tell us what to call you',
             'mobile': 'What is your mobile number?',
             'contact_method': 'Preferred Method of Contact.',
             'computer_access': 'Do you have access to a computer outside of the library?',

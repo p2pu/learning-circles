@@ -68,9 +68,9 @@ PREFERRED_CONTACT_METHOD = [
 ]
 
 COMPUTER_ACCESS = [
-    ('Yes', 'Yes'),
     ('No', 'No'),
-    ('Sometimes', 'Sometimes')
+    ('Sometimes', 'Sometimes'),
+    ('Yes', 'Yes'),
 ]
 
 class Application(models.Model):
