@@ -140,7 +140,9 @@ body {
 
 	.desc {
 		overflow: auto;
-		min-height: 18em;
+		min-height: 21em;
+		line-height: 1.8;
+		font-size: 0.9em;
 	}
 
 	.footnote {
@@ -198,10 +200,10 @@ body {
 
 	.info {
 		padding: 1.5em 0.5em;
-		text-align: center;
+		text-align: left;
 	}
 
-	.calendar-wrap {
+	/*.calendar-wrap {
 		text-align: center;
 		background-color: aliceblue;
 		border-radius: 15%;
@@ -241,7 +243,7 @@ body {
 		top: 25px;
 		right: 0;
 		@include rotate(-90deg);
-	}
+	}*/
 
 	.duration-wrap {
 		text-align: center;
@@ -348,3 +350,4 @@ footer {
 .alert {
 	margin-bottom: 0;
 }
+
