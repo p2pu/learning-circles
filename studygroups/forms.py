@@ -10,10 +10,11 @@ class ApplicationForm(forms.ModelForm):
         labels = {
             'name': 'Please tell us what to call you',
             'mobile': 'What is your mobile number?',
-            'contact_method': 'Please tell us how would you perfer us to contact us',
-            'computer_access': 'Do you have normal everyday access to the computer?',
-            'goals': 'Please tell what your learning goals are',
-            'support': '',
+            'contact_method': 'Preferred Method of Contact.',
+            'computer_access': 'Do you have access to a computer outside of the library?',
+            'goals': 'In one sentence, please explain your goals for taking this course.',
+            'support': 'A successful study group requires the support of all of its members. How will you help your peers achieve their goals?',
+            'study_groups': 'Which course are you applying for? (by applying for a specific course, you agree to attend sessions at the specified time and location).',
         }
         widgets = {
             'study_groups': forms.CheckboxSelectMultiple,
