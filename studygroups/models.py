@@ -58,7 +58,7 @@ class StudyGroup(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return u'{0} - {1}s at {2}'.format(self.course.title, self.day, self.time)
+        return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day, self.time, self.location)
 
 
 PREFERRED_CONTACT_METHOD = [
