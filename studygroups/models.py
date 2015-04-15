@@ -75,15 +75,17 @@ COMPUTER_ACCESS = [
 
 class Application(models.Model):
     name = models.CharField(max_length=128)
+    contact_method = models.CharField(max_length=128, choices=PREFERRED_CONTACT_METHOD)
     email = models.EmailField()
     mobile = models.CharField(max_length=20, null=True, blank=True)
-    contact_method = models.CharField(max_length=128, choices=PREFERRED_CONTACT_METHOD)
     computer_access = models.CharField(max_length=128, choices=COMPUTER_ACCESS)
     study_groups = models.ManyToManyField('studygroups.StudyGroup')
     goals = models.TextField()
     support = models.TextField()
-
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return u"{0}".format(self.name)
 
 
 class StudyGroupSignup(models.Model):
