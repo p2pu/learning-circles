@@ -1,4 +1,5 @@
 @charset "UTF-8";
+@import url(http://fonts.googleapis.com/css?family=Indie+Flower);
 /*! normalize.css v3.0.1 | MIT License | git.io/normalize */
 html {
   font-family: sans-serif;
@@ -7334,13 +7335,13 @@ button.close {
 
 @font-face {
   font-family: 'Open sans';
-  src: url("../../fonts/OpenSans-Regular-webfont.eot");
-  src: url("../../fonts/OpenSans-Regular-webfont.eot?#iefix") format("embedded-opentype"), url("../../fonts/OpenSans-Regular-webfont.woff") format("woff"), url("../../fonts/OpenSans-Regular-webfont.ttf") format("truetype"), url("../../fonts/OpenSans-Regular-webfont.svg#open_sansbold") format("svg");
+  src: url("/static/fonts/OpenSans-Regular-webfont.eot");
+  src: url("/static/fonts/OpenSans-Regular-webfont.eot?#iefix") format("embedded-opentype"), url("/static/fonts/OpenSans-Regular-webfont.woff") format("woff"), url("/static/fonts/OpenSans-Regular-webfont.ttf") format("truetype"), url("/static//fonts/OpenSans-Regular-webfont.svg#open_sansbold") format("svg");
   font-weight: normal;
   font-style: normal; }
 @font-face {
   font-family: 'Arvo';
-  src: url("../../fonts/Arvo.woff") format("woff"), url("../../fonts/Arvo.ttf") format("truetype");
+  src: url("/static/fonts/Arvo.woff") format("woff"), url("/static/fonts/Arvo.ttf") format("truetype");
   font-weight: normal;
   font-style: normal; }
 .thumbnail {
@@ -7737,10 +7738,10 @@ body {
 
 .navbar-logo img {
   width: 140px;
-  padding: 1em; }
+  padding: 1em 1em 1em 0; }
   @media (min-width: 767px) {
     .navbar-logo img {
-      width: 138px; } }
+      width: 123px; } }
 
 .logos {
   float: right;
@@ -7774,8 +7775,11 @@ body {
   .jumbotron .dark {
     background-color: #515665;
     color: #FFFFFF;
-    padding: 1.5em 0;
-    text-align: center; }
+    padding: 0.5em 0;
+    text-align: left; }
+    .jumbotron .dark p {
+      font-size: 1.2em;
+      line-height: 1.8; }
   .jumbotron .session {
     background-color: #fff;
     background-image: linear-gradient(90deg, transparent 50px, #abced4 52px, #abced4 53px, transparent 2px), linear-gradient(#eee 0.1em, transparent 0.1em);
@@ -7786,13 +7790,89 @@ body {
     -moz-box-shadow: 0px -6px 29px -4px #525665;
     box-shadow: 0px -6px 29px -4px #525665;
     font-weight: bold; }
+    .jumbotron .session h4 {
+      font-family: 'Indie Flower', cursive;
+      font-size: 2em;
+      font-weight: bold; }
+    .jumbotron .session ul {
+      font-family: 'Indie Flower', cursive;
+      font-size: 2em;
+      list-style: upper-hexadecimal inside none; }
+      .jumbotron .session ul a {
+        color: #515665; }
 
 .course-tile {
   position: relative;
   display: block;
   border: 1px #D3D8E6 solid;
   margin: 1.5em 0;
-  padding: 0.5em 1em; }
+  padding: 0.5em 1em;
+  	/*.calendar-wrap {
+  		text-align: center;
+  		background-color: aliceblue;
+  		border-radius: 15%;
+  		padding: 0 0.9em 0.5em 0.9em;
+  		margin: 0 0 1em 0;
+  		display: inline-block;
+  	}
+  
+  	.day {
+  		font-size: 0.75em;
+  	}
+  
+  	.calendar {
+  		width: 60px;
+  		position: relative;
+  		margin: 0 auto;
+  	}
+  
+  	.date {
+  		text-align: left;
+  		font-size: 2em;
+  		font-family: $headings-font-family;
+  		line-height: 1;
+  	}
+  
+  	.month {
+  		font-size: 2em;
+  		font-family: $headings-font-family;
+  		line-height: 1;
+  		text-align: left;
+  	}
+  
+  	.year {
+  		font-weight: bold;
+  		font-size: 0.8em;
+  		position: absolute;
+  		top: 25px;
+  		right: 0;
+  		@include rotate(-90deg);
+  	}*/
+  	/*.seat {
+  		text-transform: uppercase;
+  		width: 50px;
+  		height: 50px;
+  		float: left;
+  		background: $brand-primary;
+  		text-align: center;
+  		border-radius: 50%;
+  		line-height: 1.5;
+  		font-size: 0.7em;
+  		color: white;
+  		margin: 10px;
+  		padding-top: 10px;
+  
+  		&.free {
+  			background-color: $gray-light;
+  			color: $brand-primary;
+  
+  			&:hover {
+  				background-color: $gray;
+  				color: $white;
+  				text-decoration: none;
+  			}
+  		}
+  	}*/ }
   .course-tile hr {
     margin-top: 5px;
     margin-bottom: 5px; }
@@ -7802,7 +7882,7 @@ body {
     max-width: 20%; }
   .course-tile .desc {
     overflow: auto;
-    min-height: 18em; }
+    min-height: 25em; }
   .course-tile .footnote {
     margin-top: 1em;
     font-size: 0.8em;
@@ -7838,40 +7918,7 @@ body {
           text-decoration: none; }
   .course-tile .info {
     padding: 1.5em 0.5em;
-    text-align: center; }
-  .course-tile .calendar-wrap {
-    text-align: center;
-    background-color: aliceblue;
-    border-radius: 15%;
-    padding: 0 0.9em 0.5em 0.9em;
-    margin: 0 0 1em 0;
-    display: inline-block; }
-  .course-tile .day {
-    font-size: 0.75em; }
-  .course-tile .calendar {
-    width: 60px;
-    position: relative;
-    margin: 0 auto; }
-  .course-tile .date {
-    text-align: left;
-    font-size: 2em;
-    font-family: "Arvo", Helvetica, Arial, sans-serif;
-    line-height: 1; }
-  .course-tile .month {
-    font-size: 2em;
-    font-family: "Arvo", Helvetica, Arial, sans-serif;
-    line-height: 1;
     text-align: left; }
-  .course-tile .year {
-    font-weight: bold;
-    font-size: 0.8em;
-    position: absolute;
-    top: 25px;
-    right: 0;
-    -webkit-transform: rotate(-90deg);
-    -ms-transform: rotate(-90deg);
-    -o-transform: rotate(-90deg);
-    transform: rotate(-90deg); }
   .course-tile .duration-wrap {
     text-align: center; }
     .course-tile .duration-wrap .duration {
@@ -7879,26 +7926,6 @@ body {
   .course-tile .label {
     font-size: 1em;
     font-weight: bold; }
-  .course-tile .seat {
-    text-transform: uppercase;
-    width: 50px;
-    height: 50px;
-    float: left;
-    background: #515665;
-    text-align: center;
-    border-radius: 50%;
-    line-height: 1.5;
-    font-size: 0.7em;
-    color: white;
-    margin: 10px;
-    padding-top: 10px; }
-    .course-tile .seat.free {
-      background-color: #D3D8E6;
-      color: #515665; }
-      .course-tile .seat.free:hover {
-        background-color: #AAB0BF;
-        color: #FFFFFF;
-        text-decoration: none; }
 
 .shaded {
   background-color: #F3F4F8;
@@ -7929,9 +7956,13 @@ body {
   transition: all 0.2s ease-in-out;
   background-color: #FFBC1A; }
 
-#about img {
-  width: 100%;
-  margin-top: 12px; }
+#about {
+  margin-bottom: 2em; }
+  #about .description {
+    line-height: 1.9; }
+  #about img {
+    width: 100%;
+    margin-top: 12px; }
 
 footer .logos {
   float: none; }
