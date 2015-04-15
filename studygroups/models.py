@@ -58,7 +58,8 @@ class StudyGroup(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return u'{0} - {1} - {2} ({3})'.format(self.name, self.course.title, self.time, self.studygroupsignup_set.count())
+        return u'{0} - {1}s at {2}'.format(self.course.title, self.day, self.time)
+
 
 PREFERRED_CONTACT_METHOD = [
     ('Email', 'Email'),
