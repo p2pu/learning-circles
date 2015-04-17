@@ -10,10 +10,10 @@ from django.conf import settings
 from django import http
 
 import twilio
-import twilio.rest
 
 from studygroups.models import Course, StudyGroup, StudyGroupSignup
 from studygroups.forms import ApplicationForm, SignupForm, EmailForm
+from studygroups.sms import send_message
 
 
 def landing(request):
@@ -76,8 +76,6 @@ def apply(request):
     return render_to_response('studygroups/apply.html', context, context_instance=RequestContext(request))
 
 
-
-
 @login_required
 def organize(request):
     context = {
@@ -93,28 +91,17 @@ def email(request, study_group_id):
     if request.method == 'POST':
         form = EmailForm(request.POST)
         if form.is_valid():
-            to = [su.email for su in study_group.studygroupsignup_set.all()]
+            to = [su.email for su in study_group.studygroupsignup_set.all() if su.contact_method == 'Email']
             send_mail(form.cleaned_data['subject'], form.cleaned_data['body'], settings.DEFAULT_FROM_EMAIL, to, fail_silently=False)
             messages.success(request, 'Email successfully sent')
 
             # TODO send SMS
-            try:
-                client = twilio.rest.TwilioRestClient(
-                    settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN 
-                )
-                tos = [su.mobile for su in study_group.studygroupsignup_set.all() if len(su.mobile) > 0]
-                for to in tos: 
-                    try:
-                        message = client.messages.create(
-                            body=form.cleaned_data['sms_body'],
-                            to=to,
-                            from_=settings.TWILIO_NUMBER
-                        )
-                    except twilio.TwilioRestException as e:
-                        messages.warning(request, 'Could not send SMS to ' + to)
-
-            except twilio.TwilioRestException as e:
-                messages.error(request, 'Something went wrong while sending an SMS')
+            tos = [su.mobile for su in study_group.studygroupsignup_set.all() if su.contact_method == 'Text']
+            for to in tos:
+                try:
+                    send_message(to, cleaned_data['sms_body'])
+                except twilio.TwilioRestException as e:
+                    messages.error(request, 'Could not send SMS to ' + to)
 
             url = reverse('studygroups_organize')
             return http.HttpResponseRedirect(url)

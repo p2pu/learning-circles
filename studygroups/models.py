@@ -22,6 +22,7 @@ STUDY_GROUP_NAMES = [
     "The Eternal Lovers"
 ]
 
+
 def _study_group_name():
     idx = 1 + StudyGroup.objects.count()
     num_names = len(STUDY_GROUP_NAMES)
@@ -73,6 +74,7 @@ COMPUTER_ACCESS = [
     ('Yes', 'Yes'),
 ]
 
+
 class Application(models.Model):
     name = models.CharField(max_length=128)
     contact_method = models.CharField(max_length=128, choices=PREFERRED_CONTACT_METHOD)
@@ -91,6 +93,7 @@ class Application(models.Model):
 class StudyGroupSignup(models.Model):
     study_group = models.ForeignKey('studygroups.StudyGroup')
     username = models.CharField(max_length=128)
+    contact_method = models.CharField(max_length=128, choices=PREFERRED_CONTACT_METHOD)
     email = models.EmailField()
     mobile = models.CharField(max_length=20, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
