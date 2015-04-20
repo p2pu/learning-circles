@@ -11,7 +11,7 @@ from django import http
 
 import twilio
 
-from studygroups.models import Course, StudyGroup, StudyGroupSignup
+from studygroups.models import Course, StudyGroup, StudyGroupSignup, Application
 from studygroups.forms import ApplicationForm, SignupForm, EmailForm
 from studygroups.sms import send_message
 
@@ -81,6 +81,7 @@ def organize(request):
     context = {
         'courses': Course.objects.all(),
         'study_groups': StudyGroup.objects.all(),
+        'applications': Application.objects.all(),
     }
     return render_to_response('studygroups/organize.html', context, context_instance=RequestContext(request))
 
@@ -95,11 +96,11 @@ def email(request, study_group_id):
             send_mail(form.cleaned_data['subject'], form.cleaned_data['body'], settings.DEFAULT_FROM_EMAIL, to, fail_silently=False)
             messages.success(request, 'Email successfully sent')
 
-            # TODO send SMS
+            # send SMS
             tos = [su.mobile for su in study_group.studygroupsignup_set.all() if su.contact_method == 'Text']
             for to in tos:
                 try:
-                    send_message(to, cleaned_data['sms_body'])
+                    send_message(to, form.cleaned_data['sms_body'])
                 except twilio.TwilioRestException as e:
                     messages.error(request, 'Could not send SMS to ' + to)
 
