@@ -1,6 +1,10 @@
 //All
 body {
-	padding-top: 98px;
+	padding-top: 74px;
+
+	@media (min-width: $screen-md-max) {
+		padding-top: 93px;
+	}
 }
 
 .page-content {
@@ -63,11 +67,31 @@ body {
 
 //Jumbotron
 .jumbotron {
+	position: relative;
 	padding: 0;
 	margin-top: -60px;
 	margin-bottom: 0;
-	background: url('/static/images/swirls.png') no-repeat bottom left;
-	background-size: cover;
+	background-color: #ffffff;
+
+	&:before{
+		content: "";
+	  position: absolute;
+	  width: 100%;
+	  height: 100%;
+	  background-color: #ffffff;
+		background: url("/static/images/swirls.png") no-repeat 0 -93px;
+    background-size: inherit;
+
+		@media (min-width: $screen-sm) {
+			background-size: contain;
+			background-position: 0 -67px;
+		}
+		@media (min-width: $screen-md-max) {
+			background-size: cover;
+      background-position: 0 -128px;;
+		}
+	}
+
 
 	h1 {
 		font-size: 3.5em;
@@ -78,6 +102,7 @@ body {
 	}
 
 	.dark {
+		position: relative;
 		background-color: $brand-primary;
 		color: $white;
 		padding: 0.5em 0;
@@ -140,7 +165,16 @@ body {
 
 	.desc {
 		overflow: auto;
-		min-height: 25em;
+		min-height: 23em;
+
+		@media (min-width: $screen-md) {
+			min-height: 31em;
+		}
+
+		@media (min-width: $screen-lg) {
+			min-height: 26em;
+		}
+
 	}
 
 	.footnote {
