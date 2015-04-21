@@ -11,6 +11,7 @@ django-s3direct==0.3.9
 django-toolbelt==0.0.1
 gunicorn==19.3.0
 httplib2==0.9
+mock==1.0.1
 psycopg2==2.6
 pytz==2015.2
 six==1.9.0

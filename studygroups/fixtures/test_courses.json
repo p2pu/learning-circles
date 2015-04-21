@@ -1,0 +1,74 @@
+[
+{
+   "fields": {
+      "description": "A Gentle Introduction to Python is a friendly, low-risk introduction to the Python language and computer programming in general. Pulling materials from around the web, the course delivers readings and exercises for you and your peers to incorporate into your first coding projects.",
+      "key": "3",
+      "provider": "MIT OCW via P2PU",
+      "duration": "6 weeks",
+      "image": " ",
+      "start_date": "2015-05-02",
+      "caption": "Slither into computer programming with Python.",
+      "link": "http://python.p2pu.org/",
+      "title": "Programming with Python",
+      "time_required": "4 hours/week",
+      "created_at": "2015-03-23T15:17:01.880Z",
+      "prerequisite": "None"
+   },
+   "model": "studygroups.course",
+   "pk": 1
+},
+{
+   "fields": {
+      "description": "Worried that your English writing isn\u2019t good enough for university? This course is designed to help you learn the basics of university-level academic writing. Through video, discussions, peer and self evaluation, you\u2019ll build a solid foundation for your future writing and finish the course with completed essay on a topic of your choosing.",
+      "key": "4",
+      "provider": "University of Reading via FutureLearn",
+      "duration": "5 weeks",
+      "image": " ",
+      "start_date": "2015-05-12",
+      "caption": "Get on the write track for university-level writing.",
+      "link": "https://www.futurelearn.com/courses/english-for-study",
+      "title": "Academic Writing",
+      "time_required": "3 hours/week",
+      "created_at": "2015-03-23T15:18:02.190Z",
+      "prerequisite": "High school level English (TOEFL 32 or higher)"
+   },
+   "model": "studygroups.course",
+   "pk": 2
+},
+{
+   "fields": {
+      "description": "Employers and universities alike value candidates with strong communication and critical listening skills. This course offers an opportunity to learn about public speaking and begin practicing right away. During the course you will design and deliver two presentations on topics of your choosing. You'll also learn how to insightfully assess yours and your peers work.",
+      "key": "1",
+      "provider": "University of Washington via Coursera",
+      "duration": "7 weeks",
+      "image": "https://s3.amazonaws.com/p2pu-heroku-uploads/uploads/imgs/101-Magic_eggs_VAN.jpg",
+      "start_date": "2015-04-30",
+      "caption": "dd",
+      "link": "https://www.coursera.org/learn/public-speaking",
+      "title": "Public Speaking",
+      "time_required": "4 hours/week",
+      "created_at": "2015-04-07T20:49:10.718Z",
+      "prerequisite": "  "
+   },
+   "model": "studygroups.course",
+   "pk": 3
+},
+{
+   "fields": {
+      "description": "Looking to study for your GED Certification or a high school equivalency credential? Then you\u2019ll need to prepare for the math sections of these tests. Good news is, you don\u2019t have to do it alone!  This course will  help you build your own learning path through the content you need to master. You'll also have access to a study group of your peers, who will be there to support you through the process.",
+      "key": "2",
+      "provider": "Khan Academy",
+      "duration": "6 weeks",
+      "image": "https://s3.amazonaws.com/p2pu-heroku-uploads/uploads/imgs/101-Magic_eggs_VAN.jpg",
+      "start_date": "2015-04-29",
+      "caption": "Looking to study for your GED Certification or a high school equivalency credential? Then you\u2019ll need to prepare for the math sections of these tests. Good news is, you don\u2019t have to do it alone!  This course will  help you build your own learning path through the content you need to master. You'll also have access to a study group of your peers, who will be there to support you through the process.",
+      "link": "https://www.khanacademy.org/math",
+      "title": "GED\u00ae Prep Math",
+      "time_required": "4 hours/week",
+      "created_at": "2015-04-07T20:50:04.287Z",
+      "prerequisite": " "
+   },
+   "model": "studygroups.course",
+   "pk": 4
+}
+]
