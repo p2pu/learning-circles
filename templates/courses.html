@@ -6,7 +6,7 @@
 		{% for course in courses %}
 
 			<div class="col-md-6" id="{{ course.title|slugify }}">
-				<div class="course-tile col-md-12">
+				<div class="course-tile clearfix">
 					<div class="col-md-8 col-sm-8">
 						{% if course.img %}
 							<img src="{{ course.image }}" alt="Cover image of the course" />
@@ -29,8 +29,8 @@
 					<div class="info col-md-4 col-sm-4">
 						{% if course.studygroups %}
 							{% with study_group=course.studygroups.0  %}
-              <p><strong>{{ study_group.day }}s</p>
-              <p>{{ study_group.time }}</strong></p>
+              <p><strong>{{ study_group.day }}s</strong></p>
+              <p><strong>{{ study_group.time }}</strong></p>
 							<p>{{ course.duration|capfirst }} <br /> beginning {{ course.start_date|date:"j N" }}</p>
 							<address class="text-left">
 								<p><a href="{{study_group.location_link}}" target="_blank">{{ study_group.location }}</a></p>
