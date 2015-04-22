@@ -7731,7 +7731,10 @@ body {
       float: right; }
 
 body {
-  padding-top: 98px; }
+  padding-top: 74px; }
+  @media (min-width: 1199px) {
+    body {
+      padding-top: 93px; } }
 
 .page-content {
   padding-top: 60px; }
@@ -7763,16 +7766,33 @@ body {
     font-size: 1.1em; }
 
 .jumbotron {
+  position: relative;
   padding: 0;
   margin-top: -60px;
   margin-bottom: 0;
-  background: url("/static/images/swirls.png") no-repeat bottom left;
-  background-size: cover; }
+  background-color: #ffffff; }
+  .jumbotron:before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff;
+    background: url("/static/images/swirls.png") no-repeat 0 -93px;
+    background-size: inherit; }
+    @media (min-width: 768px) {
+      .jumbotron:before {
+        background-size: contain;
+        background-position: 0 -67px; } }
+    @media (min-width: 1199px) {
+      .jumbotron:before {
+        background-size: cover;
+        background-position: 0 -128px; } }
   .jumbotron h1 {
     font-size: 3.5em; }
   .jumbotron .primary {
     padding: 3em 0; }
   .jumbotron .dark {
+    position: relative;
     background-color: #515665;
     color: #FFFFFF;
     padding: 0.5em 0;
@@ -7882,7 +7902,13 @@ body {
     max-width: 20%; }
   .course-tile .desc {
     overflow: auto;
-    min-height: 25em; }
+    min-height: 23em; }
+    @media (min-width: 992px) {
+      .course-tile .desc {
+        min-height: 31em; } }
+    @media (min-width: 1200px) {
+      .course-tile .desc {
+        min-height: 26em; } }
   .course-tile .footnote {
     margin-top: 1em;
     font-size: 0.8em;
