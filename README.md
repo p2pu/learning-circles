@@ -1,5 +1,7 @@
 Organize study groups meeting in a physical location taking online courses.
 
+![](https://travis-ci.org/p2pu/knight-app.svg)
+
 Users can
 
 - see a list of courses and study groups
