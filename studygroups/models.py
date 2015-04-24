@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models.signals import post_init
-from django.dispatch import receiver
+from django.utils import timezone
 
 from s3direct.fields import S3DirectField
 
@@ -85,6 +85,7 @@ class Application(models.Model):
     goals = models.TextField()
     support = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    accepted_at = models.DateTimeField(blank=True, null=True)
 
     def __unicode__(self):
         return u"{0}".format(self.name)
@@ -103,3 +104,19 @@ class StudyGroupSignup(models.Model):
 
     class Meta:
         unique_together = ("email", "study_group")
+
+
+def accept_application(application):
+    # add a study group application to a study group
+    for study_group in application.study_groups.all():
+        study_group_signup = StudyGroupSignup()
+        study_group_signup.study_group = study_group
+        study_group_signup.username = application.name
+        study_group_signup.contact_method = application.contact_method
+        study_group_signup.email = application.email
+        study_group_signup.mobile = application.mobile
+        application.accepted_at = timezone.now()
+        study_group_signup.save()
+        application.save()
+
+
