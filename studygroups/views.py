@@ -17,7 +17,7 @@ from studygroups.sms import send_message
 
 
 def landing(request):
-    courses = Course.objects.filter(start_date__gte=datetime.now()).order_by('key')
+    courses = Course.objects.all().order_by('key')
 
     for crs in courses:
         crs.studygroups = crs.studygroup_set.all()
