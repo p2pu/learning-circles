@@ -30,7 +30,7 @@ class ApplicationForm(forms.ModelForm):
         widgets = {
             'study_groups': forms.CheckboxSelectMultiple,
         }
-        fields = '__all__'
+        exclude = ['accepted_at']
 
 
 class SignupForm(forms.ModelForm):
