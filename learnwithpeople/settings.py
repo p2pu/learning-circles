@@ -16,6 +16,10 @@ path = lambda *a: os.path.join(BASE_DIR, *a)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
+ADMINS = (
+    ('Admin', os.environ.get('ADMIN_EMAIL') ),
+)
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '9+pul1ig7$or_f1i+%hogt#7uca%5-ezi7oi!ifwsq!n$5r1pg'
 
