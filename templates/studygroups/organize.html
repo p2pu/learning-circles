@@ -44,7 +44,14 @@
         {% endfor %}
         </tbody>
       </table>
-      <p><a href="{% url 'admin:studygroups_studygroup_add' %}" class="btn btn-primary">Add study group</a></p>
+      <!--p><a href="{% url 'admin:studygroups_studygroup_add' %}" class="btn btn-primary">Add study group</a></p-->
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Application count</h1>
+      <p>{{applications.count}}</p>
     </div>
   </div>
 
@@ -78,7 +85,7 @@
         {% endfor %}
         </tbody>
       </table>
-      <p><a href="{% url 'admin:studygroups_course_add' %}" class="btn btn-primary">Add course</a></p>
+      <!--p><a href="{% url 'admin:studygroups_course_add' %}" class="btn btn-primary">Add course</a></p-->
 
     </div>
   </div>
