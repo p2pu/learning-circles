@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
+from django.template.loader import render_to_string
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
@@ -65,6 +66,13 @@ def apply(request):
         if form.is_valid():
             application = form.save()
             messages.success(request, 'You successfully applied to join a study group!')
+            notification_body = render_to_string(
+                'studygroups/notifications/application.txt', 
+                {'application': application}
+            )
+            #TODO - get group to send to from django user group
+            to = [ a[1] for a in settings.ADMINS ]
+            send_mail('New study group application', notification_body, settings.DEFAULT_FROM_EMAIL, to, fail_silently=False)
             url = reverse('studygroups_landing')
             return http.HttpResponseRedirect(url)
     else:
@@ -103,7 +111,7 @@ def email(request, study_group_id):
                     send_message(to, form.cleaned_data['sms_body'])
                 except twilio.TwilioRestException as e:
                     messages.error(request, 'Could not send SMS to ' + to)
-
+            
             url = reverse('studygroups_organize')
             return http.HttpResponseRedirect(url)
     else:

@@ -1,5 +1,5 @@
 # coding: utf-8
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.test import Client
 from django.core import mail
 from django.contrib.auth.models import User
@@ -36,13 +36,13 @@ class TestSignupViews(TestCase):
     def setUp(self):
         user = User.objects.create_user('admin', 'admin@test.com', 'password')
 
-
+    @override_settings(ADMINS=('Admin', 'admin@test.com'))
     def test_submit_application(self):
         c = Client()
         resp = c.post('/en/apply/', self.APPLICATION_DATA)
-        print(resp)
         self.assertRedirects(resp, '/en/')
         self.assertEquals(Application.objects.all().count(), 1)
+        self.assertEqual(len(mail.outbox), 1)
 
 
     
