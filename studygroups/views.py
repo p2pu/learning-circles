@@ -72,7 +72,7 @@ def apply(request):
             )
             #TODO - get group to send to from django user group
             to = [ a[1] for a in settings.ADMINS ]
-            send_mail('New study group application', notification_body, settings.DEFAULT_FROM_EMAIL, to, fail_silently=False)
+            send_mail('New study group application', notification_body, settings.SERVER_EMAIL, to, fail_silently=False)
             url = reverse('studygroups_landing')
             return http.HttpResponseRedirect(url)
     else:

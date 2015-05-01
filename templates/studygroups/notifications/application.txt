@@ -1,7 +1,7 @@
 Hi there
 
 {{application.name}} just applied for
-{% for studygroup in application.studygroup_set.all %}
+{% for studygroup in application.study_groups.all %}
  - {{studygroup.course.title}}
 {% endfor %}
 
