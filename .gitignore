@@ -4,3 +4,4 @@ venv
 db.sqlite3
 static_serve/
 learnwithpeople/settings_local.py
+mailbox/
