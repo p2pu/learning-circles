@@ -27,9 +27,6 @@ SECRET_KEY = '9+pul1ig7$or_f1i+%hogt#7uca%5-ezi7oi!ifwsq!n$5r1pg'
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
-ALLOWED_HOSTS = []
-
-
 # Application definition
 
 INSTALLED_APPS = (
@@ -121,6 +118,7 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
+SERVER_EMAIL = "sysadmin@p2up.org"
 
 ##### Heroku config
 
