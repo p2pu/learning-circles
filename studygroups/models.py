@@ -102,9 +102,6 @@ class StudyGroupSignup(models.Model):
     def __unicode__(self):
         return u"{0} - {1}".format(self.username, self.study_group.name)
 
-    class Meta:
-        unique_together = ("email", "study_group")
-
 
 def accept_application(application):
     # add a study group application to a study group
