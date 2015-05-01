@@ -9,12 +9,14 @@ from django.core.mail import send_mail
 from django.contrib import messages
 from django.conf import settings
 from django import http
+from django.views.decorators.http import require_http_methods
 
 import twilio
 
 from studygroups.models import Course, StudyGroup, StudyGroupSignup, Application
 from studygroups.forms import ApplicationForm, SignupForm, EmailForm
 from studygroups.sms import send_message
+
 
 
 def landing(request):
@@ -125,6 +127,7 @@ def email(request, study_group_id):
     return render_to_response('studygroups/email.html', context, context_instance=RequestContext(request))
 
 
+@require_http_methods(['POST'])
 def receive_sms(request):
     # TODO - secure this callback
     sender = request.POST.get('From')
