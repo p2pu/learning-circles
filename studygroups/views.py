@@ -124,3 +124,12 @@ def email(request, study_group_id):
     }
     return render_to_response('studygroups/email.html', context, context_instance=RequestContext(request))
 
+
+def receive_sms(request):
+    # TODO - secure this callback
+    sender = request.POST.get('From')
+    message = request.POST.get('Body')
+    to = [ a[1] for a in settings.ADMINS ]
+    to += [settings.DEFAULT_FROM_EMAIL]
+    send_mail('New SMS reply from {0}'.format(sender), message, settings.SERVER_EMAIL, to, fail_silently=False)
+    return http.HttpResponse(status=200)

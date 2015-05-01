@@ -87,3 +87,18 @@ class TestSignupViews(TestCase):
         self.assertEqual(len(mail.outbox), 0)
         self.assertTrue(send_message.called)
 
+
+    @override_settings(ADMINS=('Admin', 'admin@test.com'))
+    def test_receive_sms(self):
+        # Test sending a message
+        c = Client()
+        url = '/en/receive_sms/'
+        sms_data = {
+            u'Body': 'The first study group for GED® Prep Math will meet next Thursday, May 7th, from 6:00 pm-7:45 pm at Edgewater on the 2nd floor. Feel free to bring a study buddy!',
+            u'From': '123-456-7890'
+        }
+        resp = c.post(url, sms_data)
+        self.assertEqual(len(mail.outbox), 1)
+        #self.assertEqual(mail.outbox[0].subject, mail_data['subject'])
+
+
