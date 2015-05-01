@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.conf import settings
 from django import http
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
 
 import twilio
 
@@ -127,6 +128,7 @@ def email(request, study_group_id):
     return render_to_response('studygroups/email.html', context, context_instance=RequestContext(request))
 
 
+@csrf_exempt
 @require_http_methods(['POST'])
 def receive_sms(request):
     # TODO - secure this callback
