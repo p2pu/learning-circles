@@ -14,8 +14,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 import twilio
 
-from studygroups.models import Course, StudyGroup, StudyGroupSignup, Application
-from studygroups.forms import ApplicationForm, SignupForm, EmailForm
+from studygroups.models import Course, StudyGroup, Application
+from studygroups.forms import ApplicationForm, EmailForm
 from studygroups.sms import send_message
 
 
@@ -42,23 +42,25 @@ def course(request, course_id):
 
 
 def signup(request, study_group_id):
-    study_group = StudyGroup.objects.get(id=study_group_id)
-    if request.method == 'POST':
-        form = SignupForm(request.POST)
-        if form.is_valid():
-            signup = form.save()
-            messages.success(request, 'You successfully signed up for a study group!')
-            url = reverse('studygroups_course', kwargs={'course_id': study_group.course.id})
-            return http.HttpResponseRedirect(url)
-    else:
-        form = SignupForm(initial={'study_group': study_group.id})
-
-    context = {
-        'study_group': study_group,
-        'course': study_group.course,
-        'form': form
-    }
-    return render_to_response('studygroups/signup.html', context, context_instance=RequestContext(request))
+    raise Exception
+    # TODO
+    #study_group = StudyGroup.objects.get(id=study_group_id)
+    #if request.method == 'POST':
+    #    form = Form(request.POST)
+    #    if form.is_valid():
+    #        signup = form.save()
+    #        messages.success(request, 'You successfully signed up for a study group!')
+    #        url = reverse('studygroups_course', kwargs={'course_id': study_group.course.id})
+    #        return http.HttpResponseRedirect(url)
+    #else:
+    #    form = SignupForm(initial={'study_group': study_group.id})
+    #
+    #context = {
+    #    'study_group': study_group,
+    #    'course': study_group.course,
+    #    'form': form
+    #}
+    #return render_to_response('studygroups/signup.html', context, context_instance=RequestContext(request))
 
 
 def apply(request):
@@ -103,12 +105,12 @@ def email(request, study_group_id):
     if request.method == 'POST':
         form = EmailForm(request.POST)
         if form.is_valid():
-            to = [su.email for su in study_group.studygroupsignup_set.all() if su.contact_method == 'Email']
+            to = [su.email for su in study_group.application_set.filter(accepted_at__isnull=False) if su.contact_method == 'Email']
             send_mail(form.cleaned_data['subject'], form.cleaned_data['body'], settings.DEFAULT_FROM_EMAIL, to, fail_silently=False)
             messages.success(request, 'Email successfully sent')
 
             # send SMS
-            tos = [su.mobile for su in study_group.studygroupsignup_set.all() if su.contact_method == 'Text']
+            tos = [su.mobile for su in study_group.application_set.filter(accepted_at__isnull=False) if su.contact_method == 'Text']
             for to in tos:
                 try:
                     send_message(to, form.cleaned_data['sms_body'])

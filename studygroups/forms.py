@@ -1,5 +1,5 @@
 from django import forms
-from studygroups.models import StudyGroupSignup, Application
+from studygroups.models import Application
 from localflavor.us.forms import USPhoneNumberField
 
 
@@ -28,16 +28,6 @@ class ApplicationForm(forms.ModelForm):
             'study_group': 'Which course are you applying for? (by applying for a specific course, you agree to attend sessions at the specified time and location).',
         }
         exclude = ['accepted_at']
-
-
-class SignupForm(forms.ModelForm):
-    mobile = USPhoneNumberField(required=False)
-    class Meta:
-        model = StudyGroupSignup
-        exclude = []
-        widgets = {
-            'study_group': forms.HiddenInput
-        }
 
 
 class EmailForm(forms.Form):

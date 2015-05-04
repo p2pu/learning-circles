@@ -91,28 +91,8 @@ class Application(models.Model):
         return u"{0}".format(self.name)
 
 
-class StudyGroupSignup(models.Model):
-    study_group = models.ForeignKey('studygroups.StudyGroup')
-    username = models.CharField(max_length=128)
-    contact_method = models.CharField(max_length=128, choices=PREFERRED_CONTACT_METHOD)
-    email = models.EmailField(null=True, blank=True)
-    mobile = models.CharField(max_length=20, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __unicode__(self):
-        return u"{0} - {1}".format(self.username, self.study_group.name)
-
-
 def accept_application(application):
     # add a study group application to a study group
-    study_group_signup = StudyGroupSignup()
-    study_group_signup.study_group = application.study_group
-    study_group_signup.username = application.name
-    study_group_signup.contact_method = application.contact_method
-    study_group_signup.email = application.email
-    study_group_signup.mobile = application.mobile
     application.accepted_at = timezone.now()
-    study_group_signup.save()
     application.save()
-
 
