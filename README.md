@@ -1,6 +1,6 @@
 Organize study groups meeting in a physical location taking online courses.
 
-![](https://travis-ci.org/p2pu/knight-app.svg)
+[![](https://travis-ci.org/p2pu/knight-app.svg)](https://travis-ci.org/p2pu/knight-app)
 
 Users can
 
