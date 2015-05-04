@@ -21,7 +21,7 @@ ADMINS = (
 )
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '9+pul1ig7$or_f1i+%hogt#7uca%5-ezi7oi!ifwsq!n$5r1pg'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'youshouldchangethis')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -117,7 +117,7 @@ EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
 SERVER_EMAIL = "sysadmin@p2up.org"
 
 ##### Heroku config
