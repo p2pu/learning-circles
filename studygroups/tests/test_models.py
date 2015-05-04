@@ -22,7 +22,7 @@ class TestSignupModels(TestCase):
         'computer_access': 'Yes', 
         'goals': 'try hard',
         'support': 'thinking how to?',
-        'study_groups': '1',
+        'study_group': '1',
     }
 
 
@@ -34,10 +34,9 @@ class TestSignupModels(TestCase):
     def test_accept_application(self, send_message):
         self.assertEqual(StudyGroupSignup.objects.all().count(),0)
         data = self.APPLICATION_DATA
-        del data['study_groups']
+        data['study_group'] = StudyGroup.objects.all()[0]
         application = Application(**data)
         application.save()
-        application.study_groups.add(StudyGroup.objects.all()[0])
         accept_application(application)
         self.assertEqual(StudyGroupSignup.objects.all().count(),1)
 

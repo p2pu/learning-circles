@@ -7,15 +7,10 @@ class StudyGroupSignupInline(admin.TabularInline):
     model = StudyGroupSignup
 
 class ApplicationInline(admin.TabularInline):
-    model = Application.study_groups.through
-    readonly_fields = ['user_name']
-    def user_name(self, instance):
-        return instance.application.name
-    user_name.short_description = 'user name'
+    model = Application
 
 class StudyGroupAdmin(admin.ModelAdmin):
     inlines = [
-        #StudyGroupSignupInline,
         ApplicationInline,
     ]
 

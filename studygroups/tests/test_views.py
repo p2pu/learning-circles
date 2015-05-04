@@ -22,7 +22,7 @@ class TestSignupViews(TestCase):
         'computer_access': 'Yes', 
         'goals': 'try hard',
         'support': 'thinking how to?',
-        'study_groups': '1',
+        'study_group': '1',
     }
 
     SIGNUP_DATA = {

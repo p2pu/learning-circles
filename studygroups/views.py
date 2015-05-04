@@ -79,7 +79,7 @@ def apply(request):
             url = reverse('studygroups_landing')
             return http.HttpResponseRedirect(url)
     else:
-        form = ApplicationForm(initial={'study_groups': [group]})
+        form = ApplicationForm(initial={'study_group': group})
 
     context = {
         'form': form

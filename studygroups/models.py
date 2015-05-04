@@ -76,12 +76,12 @@ COMPUTER_ACCESS = [
 
 
 class Application(models.Model):
+    study_group = models.ForeignKey('studygroups.StudyGroup')
     name = models.CharField(max_length=128)
     contact_method = models.CharField(max_length=128, choices=PREFERRED_CONTACT_METHOD)
     email = models.EmailField(null=True, blank=True)
     mobile = models.CharField(max_length=20, null=True, blank=True)
     computer_access = models.CharField(max_length=128, choices=COMPUTER_ACCESS)
-    study_groups = models.ManyToManyField('studygroups.StudyGroup')
     goals = models.TextField()
     support = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -105,15 +105,14 @@ class StudyGroupSignup(models.Model):
 
 def accept_application(application):
     # add a study group application to a study group
-    for study_group in application.study_groups.all():
-        study_group_signup = StudyGroupSignup()
-        study_group_signup.study_group = study_group
-        study_group_signup.username = application.name
-        study_group_signup.contact_method = application.contact_method
-        study_group_signup.email = application.email
-        study_group_signup.mobile = application.mobile
-        application.accepted_at = timezone.now()
-        study_group_signup.save()
-        application.save()
+    study_group_signup = StudyGroupSignup()
+    study_group_signup.study_group = application.study_group
+    study_group_signup.username = application.name
+    study_group_signup.contact_method = application.contact_method
+    study_group_signup.email = application.email
+    study_group_signup.mobile = application.mobile
+    application.accepted_at = timezone.now()
+    study_group_signup.save()
+    application.save()
 
 

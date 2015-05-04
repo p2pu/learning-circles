@@ -25,10 +25,7 @@ class ApplicationForm(forms.ModelForm):
             'computer_access': 'Do you have access to a computer outside of the library?',
             'goals': 'In one sentence, please explain your goals for taking this course.',
             'support': 'A successful study group requires the support of all of its members. How will you help your peers achieve their goals?',
-            'study_groups': 'Which course are you applying for? (by applying for a specific course, you agree to attend sessions at the specified time and location).',
-        }
-        widgets = {
-            'study_groups': forms.CheckboxSelectMultiple,
+            'study_group': 'Which course are you applying for? (by applying for a specific course, you agree to attend sessions at the specified time and location).',
         }
         exclude = ['accepted_at']
 
