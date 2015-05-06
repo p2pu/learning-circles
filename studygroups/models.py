@@ -61,11 +61,10 @@ class StudyGroup(models.Model):
     def __unicode__(self):
         return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day, self.time, self.location)
 
-
+#TODO - remove Text or Phone
 PREFERRED_CONTACT_METHOD = [
     ('Email', 'Email'),
     ('Text', 'Text'),
-    ('Phone', 'Phone'),
 ]
 
 COMPUTER_ACCESS = [
