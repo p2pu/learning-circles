@@ -15,9 +15,9 @@ from django.views.decorators.csrf import csrf_exempt
 import twilio
 
 from studygroups.models import Course, StudyGroup, Application
+from studygroups.models import send_group_message
 from studygroups.forms import ApplicationForm, EmailForm
 from studygroups.sms import send_message
-
 
 
 def landing(request):
@@ -105,18 +105,17 @@ def email(request, study_group_id):
     if request.method == 'POST':
         form = EmailForm(request.POST)
         if form.is_valid():
-            to = [su.email for su in study_group.application_set.filter(accepted_at__isnull=False) if su.contact_method == 'Email']
-            send_mail(form.cleaned_data['subject'], form.cleaned_data['body'], settings.DEFAULT_FROM_EMAIL, to, fail_silently=False)
-            messages.success(request, 'Email successfully sent')
+            try:
+                send_group_message(
+                    study_group,
+                    form.cleaned_data['subject'],
+                    form.cleaned_data['body'],
+                    form.cleaned_data['sms_body']
+                )
+                messages.success(request, 'Email successfully sent')
+            except Exception as e:
+                messages.error(request, 'An error occured while sending group message.')
 
-            # send SMS
-            tos = [su.mobile for su in study_group.application_set.filter(accepted_at__isnull=False) if su.contact_method == 'Text']
-            for to in tos:
-                try:
-                    send_message(to, form.cleaned_data['sms_body'])
-                except twilio.TwilioRestException as e:
-                    messages.error(request, 'Could not send SMS to ' + to)
-            
             url = reverse('studygroups_organize')
             return http.HttpResponseRedirect(url)
     else:

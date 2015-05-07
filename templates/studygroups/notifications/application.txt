@@ -1,9 +1,6 @@
 Hi there
 
-{{application.name}} just applied for
-{% for studygroup in application.study_groups.all %}
- - {{studygroup.course.title}}
-{% endfor %}
+{{application.name}} applied for {{application.study_group.course.title}}
 
 Cheers
 P2PU

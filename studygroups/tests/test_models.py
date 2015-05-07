@@ -8,8 +8,10 @@ from mock import patch
 
 from studygroups.models import StudyGroup
 from studygroups.models import Application
+from studygroups.models import Reminder
 from studygroups.models import accept_application
 from studygroups.models import next_meeting_date
+from studygroups.models import generate_reminder
 
 import calendar
 import datetime
@@ -55,3 +57,26 @@ class TestSignupModels(TestCase):
         diff = next_date - now
         self.assertTrue(diff < datetime.timedelta(weeks=1))
         self.assertTrue(diff > datetime.timedelta())
+
+
+    def test_generate_reminder(self):
+        # Make sure we don't generate a reminder more than 3 days before
+        sg = StudyGroup.objects.all()[0]
+        meeting = timezone.now() + datetime.timedelta(days=4)
+        sg.day = calendar.day_name[meeting.weekday()]
+        generate_reminder(sg)
+        self.assertEqual(Reminder.objects.all().count(), 0)
+
+        # Make sure we generate a reminder less than three days before
+        sg = StudyGroup.objects.all()[0]
+        meeting = timezone.now() + datetime.timedelta(days=2)
+        sg.day = calendar.day_name[meeting.weekday()]
+        generate_reminder(sg)
+        self.assertEqual(Reminder.objects.all().count(), 1)
+
+        # Make sure we do it only once
+        sg = StudyGroup.objects.all()[0]
+        meeting = timezone.now() + datetime.timedelta(days=2)
+        sg.day = calendar.day_name[meeting.weekday()]
+        generate_reminder(sg)
+        self.assertEqual(Reminder.objects.all().count(), 1)

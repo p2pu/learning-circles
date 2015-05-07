@@ -1,8 +1,13 @@
 from django.db import models
 from django.db.models.signals import post_init
 from django.utils import timezone
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
+from django.conf import settings
 
 from s3direct.fields import S3DirectField
+
+from studygroups.sms import send_message
 
 import calendar
 import datetime
@@ -93,10 +98,15 @@ class Application(models.Model):
         return u"{0}".format(self.name)
 
 
-#class Reminder(models.Model):
-#    study_group = models.ForeignKey('studygroups.StudyGroup')
-#    meeting_time = models.DateTimeField()
+class Reminder(models.Model):
+    study_group = models.ForeignKey('studygroups.StudyGroup')
+    meeting_time = models.DateTimeField()
+    email_subject = models.CharField(max_length=256)
+    email_body = models.TextField()
+    sms_body = models.CharField(max_length=160)
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    sent_at = models.DateTimeField(blank=True, null=True)
 
 
 def accept_application(application):
@@ -120,9 +130,46 @@ def next_meeting_date(study_group):
     return meeting_datetime
 
 
-def generate_reminders(study_group):
+def generate_reminder(study_group):
     now = timezone.now()
-    if next_meeting_date - now < datetime.timedelta(days=3):
+    next_meeting = next_meeting_date(study_group)
+    if next_meeting - now < datetime.timedelta(days=3):
         # check if a notifcation already exists for this meeting
-        study_group.reminders.filter(meeting_time=next_meeting_date)
+        if not Reminder.objects.filter(study_group=study_group, meeting_time=next_meeting).exists():
+            reminder = Reminder()
+            reminder.study_group = study_group
+            reminder.meeting_time = next_meeting
+            context = { 
+                'study_group': study_group,
+                'next_meeting': next_meeting
+            }
+            reminder.email_subject = render_to_string(
+                'studygroups/notifications/reminder-subject.txt',
+                context
+            )
+            reminder.email_body = render_to_string(
+                'studygroups/notifications/reminder.html',
+                context
+            )
+            reminder.sms_body = render_to_string(
+                'studygroups/notifications/sms.txt',
+                context
+            )
+            reminder.save()
+            # TODO send email to study group organizer saying the reminder has been generated and will be sent in a day
 
+
+def send_group_message(study_group, email_subject, email_body, sms_body):
+    to = [su.email for su in study_group.application_set.filter(accepted_at__isnull=False, contact_method='Email')]
+    send_mail(email_subject, email_body, settings.DEFAULT_FROM_EMAIL, to, fail_silently=False)
+
+    # send SMS
+    tos = [su.mobile for su in study_group.application_set.filter(accepted_at__isnull=False, contact_method='Text')]
+    errors = []
+    for to in tos:
+        try:
+            send_message(to, sms_body)
+        except twilio.TwilioRestException as e:
+            errors.push[e]
+    if len(errors):
+        raise Exception(errors)

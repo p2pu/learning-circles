@@ -38,7 +38,7 @@ class TestSignupViews(TestCase):
         self.assertEqual(len(mail.outbox), 1)
 
     
-    @patch('studygroups.views.send_message')
+    @patch('studygroups.models.send_message')
     def test_send_email(self, send_message):
         # Test sending a message
         c = Client()
@@ -62,7 +62,7 @@ class TestSignupViews(TestCase):
         self.assertFalse(send_message.called)
 
 
-    @patch('studygroups.views.send_message')
+    @patch('studygroups.models.send_message')
     def test_send_sms(self, send_message):
         c = Client()
         c.login(username='admin', password='password')
@@ -85,7 +85,7 @@ class TestSignupViews(TestCase):
         self.assertTrue(send_message.called)
 
 
-    @patch('studygroups.views.send_message')
+    @patch('studygroups.models.send_message')
     def test_dont_send_email(self, send_message):
         # Test sending a message
         c = Client()
@@ -105,8 +105,6 @@ class TestSignupViews(TestCase):
         resp = c.post(url, mail_data)
         self.assertEqual(len(mail.outbox), 0)
         self.assertFalse(send_message.called)
-
-
 
 
     @override_settings(ADMINS=('Admin', 'admin@test.com'))
