@@ -1,60 +1,64 @@
 [
 {
    "fields": {
-      "day": "Thursday",
+      "created_at": "2015-03-23T15:18:39.462Z",
       "name": "The Riders",
-      "max_size": 15,
-      "time": "6:30PM-8:30PM",
-      "location": "Harold Washington Library Center",
-      "course": 3,
       "description": " ",
+      "course": 3,
       "location_link": "http://www.chipublib.org/locations/15/",
-      "created_at": "2015-03-23T15:18:39.462Z"
+      "time": "18:30:00",
+      "timezone": "US/Central",
+      "day": "Thursday",
+      "max_size": 15,
+      "location": "Harold Washington Library Center"
    },
    "model": "studygroups.studygroup",
    "pk": 1
 },
 {
    "fields": {
-      "day": "Tuesday",
+      "created_at": "2015-03-23T15:19:04.318Z",
       "name": "The Riders",
-      "max_size": 10,
-      "time": "6:00PM-7:30PM",
-      "location": "Edgewater Branch",
-      "course": 2,
       "description": " ",
+      "course": 2,
       "location_link": "http://www.chipublib.org/locations/28/",
-      "created_at": "2015-03-23T15:19:04.318Z"
+      "time": "18:00:00",
+      "timezone": "US/Central",
+      "day": "Tuesday",
+      "max_size": 10,
+      "location": "Edgewater Branch"
    },
    "model": "studygroups.studygroup",
    "pk": 2
 },
 {
    "fields": {
-      "day": "Wednesday",
+      "created_at": "2015-03-25T14:35:02.227Z",
       "name": "The Red Hawks ",
-      "max_size": 10,
-      "time": "6:30PM-8:30PM",
-      "location": "Harold Washington Library Center",
-      "course": 4,
       "description": "ddd",
+      "course": 4,
       "location_link": "http://www.chipublib.org/locations/15/",
-      "created_at": "2015-03-25T14:35:02.227Z"
+      "time": "18:30:00",
+      "timezone": "US/Central",
+      "day": "Wednesday",
+      "max_size": 10,
+      "location": "Harold Washington Library Center"
    },
    "model": "studygroups.studygroup",
    "pk": 3
 },
 {
    "fields": {
-      "day": "Saturday",
+      "created_at": "2015-03-25T15:55:44.525Z",
       "name": "The Bandits of Hell's Bend ",
-      "max_size": 20,
-      "time": "10:00AM-12:00PM",
-      "location": "Harold Washington Library Center",
-      "course": 1,
       "description": "jjj",
+      "course": 1,
       "location_link": "http://www.chipublib.org/locations/15/",
-      "created_at": "2015-03-25T15:55:44.525Z"
+      "time": "10:00:00",
+      "timezone": "US/Central",
+      "day": "Saturday",
+      "max_size": 20,
+      "location": "Harold Washington Library Center"
    },
    "model": "studygroups.studygroup",
    "pk": 4

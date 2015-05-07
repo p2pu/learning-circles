@@ -5,6 +5,8 @@ from django.utils import timezone
 from s3direct.fields import S3DirectField
 
 import calendar
+import datetime
+import pytz
 
 STUDY_GROUP_NAMES = [
     "The Riders",
@@ -53,7 +55,8 @@ class StudyGroup(models.Model):
     location = models.CharField(max_length=128)
     location_link = models.URLField()
     day = models.CharField(max_length=128, choices=zip(calendar.day_name, calendar.day_name))
-    time = models.CharField(max_length=128)
+    time = models.TimeField()
+    timezone = models.CharField(max_length=128)
     max_size = models.IntegerField()
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -90,8 +93,36 @@ class Application(models.Model):
         return u"{0}".format(self.name)
 
 
+#class Reminder(models.Model):
+#    study_group = models.ForeignKey('studygroups.StudyGroup')
+#    meeting_time = models.DateTimeField()
+
+
+
 def accept_application(application):
     # add a study group application to a study group
     application.accepted_at = timezone.now()
     application.save()
+
+
+def next_meeting_date(study_group):
+    now = timezone.now()
+    day_delta = list(calendar.day_name).index(study_group.day) - now.weekday()
+    time = study_group.time
+    date = now + datetime.timedelta(days=day_delta)
+    meeting_datetime = datetime.datetime(
+        date.year, date.month, date.day,
+        time.hour, time.minute, time.second, 0,
+        pytz.timezone(study_group.timezone)
+    )
+    if meeting_datetime < now:
+        meeting_datetime = meeting_datetime + datetime.timedelta(weeks=1)
+    return meeting_datetime
+
+
+def generate_reminders(study_group):
+    now = timezone.now()
+    if next_meeting_date - now < datetime.timedelta(days=3):
+        # check if a notifcation already exists for this meeting
+        study_group.reminders.filter(meeting_time=next_meeting_date)
 
