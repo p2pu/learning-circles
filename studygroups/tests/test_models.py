@@ -15,6 +15,7 @@ from studygroups.models import generate_reminder
 
 import calendar
 import datetime
+import pytz
 
 # Create your tests here.
 class TestSignupModels(TestCase):
@@ -64,14 +65,14 @@ class TestSignupModels(TestCase):
         # Make sure we don't generate a reminder more than 3 days before
         sg = StudyGroup.objects.all()[0]
         meeting = timezone.now() + datetime.timedelta(days=3, minutes=10)
-        sg.day = calendar.day_name[meeting.weekday()]
+        sg.day = calendar.day_name[meeting.astimezone(pytz.timezone(sg.timezone)).weekday()]
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 0)
 
         # Make sure we generate a reminder less than three days before
         sg = StudyGroup.objects.all()[0]
         meeting = timezone.now() + datetime.timedelta(days=2, minutes=50)
-        sg.day = calendar.day_name[meeting.weekday()]
+        sg.day = calendar.day_name[meeting.astimezone(pytz.timezone(sg.timezone)).weekday()]
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
         reminder = Reminder.objects.all()[0]
@@ -81,6 +82,6 @@ class TestSignupModels(TestCase):
         # Make sure we do it only once
         sg = StudyGroup.objects.all()[0]
         meeting = timezone.now() + datetime.timedelta(days=2)
-        sg.day = calendar.day_name[meeting.weekday()]
+        sg.day = calendar.day_name[meeting.astimezone(pytz.timezone(sg.timezone)).weekday()]
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
