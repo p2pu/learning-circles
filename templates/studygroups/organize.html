@@ -21,7 +21,7 @@
         {% for group in study_groups %}
             <tr>
                 <td>
-                    <a href="{% url 'studygroups_course' course_id=group.course.id %}">{{ group.course }}</a>
+                    <a href="{{ group.course.link }}" target="_blank">{{ group.course }}</a>
                 </td>
                 <td>
                     {{ group.time }}
@@ -64,22 +64,19 @@
             <th>Title</th>
             <th>Start date</th>
             <th>Duration</th>
-            <th></th>
         </tr>
         </thead>
         <tbody>
         {% for course in courses %}
             <tr>
                 <td>
-                    <a href="{% url 'studygroups_course' course_id=course.id %}">{{ course.title }}</a>
+                    <a href="{{course.link }}" target="_blank">{{ course.title }}</a>
                 </td>
                 <td>
                     {{ course.start_date }}
                 </td>
                 <td>
                     {{ course.duration }}
-                </td>
-                <td>
                 </td>
             </tr>
         {% endfor %}

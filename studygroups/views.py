@@ -12,8 +12,6 @@ from django import http
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 
-import twilio
-
 from studygroups.models import Course, StudyGroup, Application
 from studygroups.models import send_group_message
 from studygroups.forms import ApplicationForm, EmailForm
@@ -23,44 +21,13 @@ from studygroups.sms import send_message
 def landing(request):
     courses = Course.objects.all().order_by('key')
 
-    for crs in courses:
-        crs.studygroups = crs.studygroup_set.all()
+    for course in courses:
+        course.studygroups = course.studygroup_set.all()
 
     context = {
         'courses': courses,
     }
     return render_to_response('studygroups/index.html', context, context_instance=RequestContext(request))
-
-
-def course(request, course_id):
-    course = Course.objects.get(id=course_id)
-    context = {
-        'course': course,
-        'study_groups': course.studygroup_set.all(),
-    }
-    return render_to_response('studygroups/course.html', context, context_instance=RequestContext(request))
-
-
-def signup(request, study_group_id):
-    raise Exception
-    # TODO
-    #study_group = StudyGroup.objects.get(id=study_group_id)
-    #if request.method == 'POST':
-    #    form = Form(request.POST)
-    #    if form.is_valid():
-    #        signup = form.save()
-    #        messages.success(request, 'You successfully signed up for a study group!')
-    #        url = reverse('studygroups_course', kwargs={'course_id': study_group.course.id})
-    #        return http.HttpResponseRedirect(url)
-    #else:
-    #    form = SignupForm(initial={'study_group': study_group.id})
-    #
-    #context = {
-    #    'study_group': study_group,
-    #    'course': study_group.course,
-    #    'form': form
-    #}
-    #return render_to_response('studygroups/signup.html', context, context_instance=RequestContext(request))
 
 
 def apply(request):
