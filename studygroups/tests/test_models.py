@@ -57,22 +57,26 @@ class TestSignupModels(TestCase):
         diff = next_date - now
         self.assertTrue(diff < datetime.timedelta(weeks=1))
         self.assertTrue(diff > datetime.timedelta())
+        self.assertEquals(sg.time, next_date.time())
 
 
     def test_generate_reminder(self):
         # Make sure we don't generate a reminder more than 3 days before
         sg = StudyGroup.objects.all()[0]
-        meeting = timezone.now() + datetime.timedelta(days=4)
+        meeting = timezone.now() + datetime.timedelta(days=3, minutes=10)
         sg.day = calendar.day_name[meeting.weekday()]
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 0)
 
         # Make sure we generate a reminder less than three days before
         sg = StudyGroup.objects.all()[0]
-        meeting = timezone.now() + datetime.timedelta(days=2)
+        meeting = timezone.now() + datetime.timedelta(days=2, minutes=50)
         sg.day = calendar.day_name[meeting.weekday()]
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
+        reminder = Reminder.objects.all()[0]
+        print(reminder.meeting_time)
+        self.assertEqual(reminder.meeting_time, next_meeting_date(sg))
 
         # Make sure we do it only once
         sg = StudyGroup.objects.all()[0]

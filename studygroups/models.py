@@ -120,11 +120,11 @@ def next_meeting_date(study_group):
     day_delta = list(calendar.day_name).index(study_group.day) - now.weekday()
     time = study_group.time
     date = now + datetime.timedelta(days=day_delta)
-    meeting_datetime = datetime.datetime(
+    tz = pytz.timezone(study_group.timezone)
+    meeting_datetime = tz.localize(datetime.datetime(
         date.year, date.month, date.day,
-        time.hour, time.minute, time.second, 0,
-        pytz.timezone(study_group.timezone)
-    )
+        time.hour, time.minute
+    ))
     if meeting_datetime < now:
         meeting_datetime = meeting_datetime + datetime.timedelta(weeks=1)
     return meeting_datetime
