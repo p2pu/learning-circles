@@ -1,1 +1,5 @@
-{% load i18n %}The next study group for {{study_group.course.title}} is meeting {{next_meeting}}
+{% load i18n %}Hi there!
+
+The {{ study_group.course.title }} study group will meet this {{ next_meeting|date:"l, j N, fA" }} at the {{ study_group.location }}.
+
+See you soon

@@ -143,6 +143,7 @@ def generate_reminder(study_group):
                 'study_group': study_group,
                 'next_meeting': next_meeting
             }
+            timezone.activate(pytz.timezone(study_group.timezone))
             reminder.email_subject = render_to_string(
                 'studygroups/notifications/reminder-subject.txt',
                 context
@@ -156,6 +157,7 @@ def generate_reminder(study_group):
                 context
             )
             reminder.save()
+            timezone.deactivate()
             # TODO send email to study group organizer saying the reminder has been generated and will be sent in a day
 
 
