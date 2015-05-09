@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.test import Client
 from django.core import mail
 from django.contrib.auth.models import User
@@ -61,11 +61,14 @@ class TestSignupModels(TestCase):
         self.assertEquals(sg.time, next_date.time())
 
 
+    @override_settings(ADMINS=('Admin', 'admin@test.com'))
     def test_generate_reminder(self):
         # Make sure we don't generate a reminder more than 3 days before
+        self.assertEqual(Reminder.objects.all().count(), 0)
         sg = StudyGroup.objects.all()[0]
         meeting = timezone.now() + datetime.timedelta(days=3, minutes=10)
         sg.day = calendar.day_name[meeting.astimezone(pytz.timezone(sg.timezone)).weekday()]
+        sg.time = meeting.astimezone(pytz.timezone(sg.timezone)).time()
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 0)
 
@@ -73,6 +76,7 @@ class TestSignupModels(TestCase):
         sg = StudyGroup.objects.all()[0]
         meeting = timezone.now() + datetime.timedelta(days=2, minutes=50)
         sg.day = calendar.day_name[meeting.astimezone(pytz.timezone(sg.timezone)).weekday()]
+        sg.time = meeting.astimezone(pytz.timezone(sg.timezone)).time()
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
         reminder = Reminder.objects.all()[0]
@@ -80,8 +84,5 @@ class TestSignupModels(TestCase):
         self.assertEqual(reminder.meeting_time, next_meeting_date(sg))
 
         # Make sure we do it only once
-        sg = StudyGroup.objects.all()[0]
-        meeting = timezone.now() + datetime.timedelta(days=2)
-        sg.day = calendar.day_name[meeting.astimezone(pytz.timezone(sg.timezone)).weekday()]
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
