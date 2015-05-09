@@ -158,7 +158,21 @@ def generate_reminder(study_group):
             )
             reminder.save()
             timezone.deactivate()
+            
+            organizer_notification_subject = 'A reminder for {0} was generated'.format(study_group.course.title),
+            organizer_notification = render_to_string(
+                'studygroups/notifications/reminder-notification.html',
+                context
+            )
             # TODO send email to study group organizer saying the reminder has been generated and will be sent in a day
+            to = [ a[1] for a in settings.ADMINS ]
+            send_mail(
+                organizer_notification_subject,
+                organizer_notification,
+                settings.SERVER_EMAIL,
+                to,
+                fail_silently=False
+            )
 
 
 def send_group_message(study_group, email_subject, email_body, sms_body):

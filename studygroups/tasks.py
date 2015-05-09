@@ -1,6 +1,8 @@
 from django.utils import timezone
 
+from studygroups.models import StudyGroup
 from studygroups.models import Reminder
+from studygroups.generate_reminder
 from studygroups.models import send_group_message
 
 import datetime
@@ -17,3 +19,8 @@ def send_reminders():
             )
             reminder.sent_at = now
             reminder.save()
+
+
+def gen_reminders():
+    for study_group in StudyGroup.objects.all():
+        generate_reminder(study_group)
