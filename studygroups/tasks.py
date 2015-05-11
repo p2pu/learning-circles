@@ -2,7 +2,7 @@ from django.utils import timezone
 
 from studygroups.models import StudyGroup
 from studygroups.models import Reminder
-from studygroups.generate_reminder
+from studygroups.models import generate_reminder
 from studygroups.models import send_group_message
 
 import datetime
