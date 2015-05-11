@@ -159,7 +159,7 @@ def generate_reminder(study_group):
             reminder.save()
             timezone.deactivate()
             
-            organizer_notification_subject = 'A reminder for {0} was generated'.format(study_group.course.title),
+            organizer_notification_subject = 'A reminder for {0} was generated'.format(study_group.course.title)
             organizer_notification = render_to_string(
                 'studygroups/notifications/reminder-notification.html',
                 context
