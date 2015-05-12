@@ -159,7 +159,7 @@ def generate_reminder(study_group):
             reminder.save()
             timezone.deactivate()
             
-            organizer_notification_subject = 'A reminder for {0} was generated'.format(study_group.course.title)
+            organizer_notification_subject = u'A reminder for {0} was generated'.format(study_group.course.title)
             organizer_notification = render_to_string(
                 'studygroups/notifications/reminder-notification.html',
                 context
@@ -189,3 +189,14 @@ def send_group_message(study_group, email_subject, email_body, sms_body):
             errors.push[e]
     if len(errors):
         raise Exception(errors)
+
+
+def send_reminder(reminder):
+    send_group_message(
+        reminder.study_group,
+        reminder.email_subject,
+        reminder.email_body,
+        reminder.sms_body
+    )
+    reminder.sent_at = timezone.now()
+    reminder.save()
