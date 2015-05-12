@@ -124,8 +124,6 @@ def accept_application(application):
 
 def next_meeting_date(study_group):
     now = timezone.now()
-    if now < study_group.start_date or now > study_group.end_date:
-        return None
     day_delta = list(calendar.day_name).index(study_group.day) - now.weekday()
     time = study_group.time
     date = now + datetime.timedelta(days=day_delta)
@@ -136,6 +134,9 @@ def next_meeting_date(study_group):
     ))
     if meeting_datetime < now:
         meeting_datetime = meeting_datetime + datetime.timedelta(weeks=1)
+
+    if meeting_datetime < study_group.start_date or meeting_datetime > study_group.end_date:
+        return None
     return meeting_datetime
 
 
