@@ -52,6 +52,8 @@ class TestSignupModels(TestCase):
     def test_next_meeting_date(self):
         sg = StudyGroup.objects.all()[0]
         now = timezone.now()
+        sg.start_date = now - datetime.timedelta(weeks=2)
+        sg.end_date = now + datetime.timedelta(weeks=2)
         next_date = next_meeting_date(sg)
         self.assertEquals(calendar.day_name[next_date.weekday()], sg.day)
         self.assertTrue(next_date > now)
@@ -64,8 +66,11 @@ class TestSignupModels(TestCase):
     @override_settings(ADMINS=('Admin', 'admin@test.com'))
     def test_generate_reminder(self):
         # Make sure we don't generate a reminder more than 3 days before
+        now = timezone.now()
         self.assertEqual(Reminder.objects.all().count(), 0)
         sg = StudyGroup.objects.all()[0]
+        sg.start_date = now - datetime.timedelta(weeks=2)
+        sg.end_date = now + datetime.timedelta(weeks=2)
         meeting = timezone.now() + datetime.timedelta(days=3, minutes=10)
         sg.day = calendar.day_name[meeting.astimezone(pytz.timezone(sg.timezone)).weekday()]
         sg.time = meeting.astimezone(pytz.timezone(sg.timezone)).time()
@@ -74,6 +79,8 @@ class TestSignupModels(TestCase):
 
         # Make sure we generate a reminder less than three days before
         sg = StudyGroup.objects.all()[0]
+        sg.start_date = now - datetime.timedelta(weeks=2)
+        sg.end_date = now + datetime.timedelta(weeks=2)
         meeting = timezone.now() + datetime.timedelta(days=2, minutes=50)
         sg.day = calendar.day_name[meeting.astimezone(pytz.timezone(sg.timezone)).weekday()]
         sg.time = meeting.astimezone(pytz.timezone(sg.timezone)).time()
@@ -82,7 +89,43 @@ class TestSignupModels(TestCase):
         reminder = Reminder.objects.all()[0]
         print(reminder.meeting_time)
         self.assertEqual(reminder.meeting_time, next_meeting_date(sg))
+        #TODO check that email was sent to site admin
+        #TODO test with unicode in generated email subject
 
         # Make sure we do it only once
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
+
+    @override_settings(ADMINS=('Admin', 'admin@test.com'))
+    def test_no_reminders_for_old_studygroups(self):
+        # Make sure we don't generate a reminder more than 3 days before
+        now = timezone.now()
+        self.assertEqual(Reminder.objects.all().count(), 0)
+
+        # Make sure we don't generate a reminder for old study groups
+        sg = StudyGroup.objects.all()[0]
+        sg.start_date = now - datetime.timedelta(weeks=10)
+        sg.end_date = now - datetime.timedelta(weeks=2)
+        meeting = timezone.now() + datetime.timedelta(days=2, minutes=50)
+        sg.day = calendar.day_name[meeting.astimezone(pytz.timezone(sg.timezone)).weekday()]
+        sg.time = meeting.astimezone(pytz.timezone(sg.timezone)).time()
+        generate_reminder(sg)
+        self.assertEqual(Reminder.objects.all().count(), 0)
+
+
+    @override_settings(ADMINS=('Admin', 'admin@test.com'))
+    def test_no_reminders_for_future_studygroups(self):
+        # Make sure we don't generate a reminder more than 3 days before
+        now = timezone.now()
+        self.assertEqual(Reminder.objects.all().count(), 0)
+
+        # Make sure we don't generate a reminder for old study groups
+        sg = StudyGroup.objects.all()[0]
+        sg.start_date = now + datetime.timedelta(weeks=2)
+        sg.end_date = now + datetime.timedelta(weeks=8)
+        meeting = timezone.now() + datetime.timedelta(days=2, minutes=50)
+        sg.day = calendar.day_name[meeting.astimezone(pytz.timezone(sg.timezone)).weekday()]
+        sg.time = meeting.astimezone(pytz.timezone(sg.timezone)).time()
+        generate_reminder(sg)
+        self.assertEqual(Reminder.objects.all().count(), 0)
+

@@ -59,12 +59,19 @@ class StudyGroup(models.Model):
     course = models.ForeignKey('studygroups.Course')
     location = models.CharField(max_length=128)
     location_link = models.URLField()
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
     day = models.CharField(max_length=128, choices=zip(calendar.day_name, calendar.day_name))
     time = models.TimeField()
+    duration = models.IntegerField()
     timezone = models.CharField(max_length=128)
     max_size = models.IntegerField()
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def end_time(self):
+        q = datetime.datetime.combine(timezone.now().date(), self.time) + datetime.timedelta(minutes=self.duration)
+        return q.time()
 
     def __unicode__(self):
         return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day, self.time, self.location)
@@ -117,6 +124,8 @@ def accept_application(application):
 
 def next_meeting_date(study_group):
     now = timezone.now()
+    if now < study_group.start_date or now > study_group.end_date:
+        return None
     day_delta = list(calendar.day_name).index(study_group.day) - now.weekday()
     time = study_group.time
     date = now + datetime.timedelta(days=day_delta)
@@ -133,7 +142,7 @@ def next_meeting_date(study_group):
 def generate_reminder(study_group):
     now = timezone.now()
     next_meeting = next_meeting_date(study_group)
-    if next_meeting - now < datetime.timedelta(days=3):
+    if next_meeting and next_meeting - now < datetime.timedelta(days=3):
         # check if a notifcation already exists for this meeting
         if not Reminder.objects.filter(study_group=study_group, meeting_time=next_meeting).exists():
             reminder = Reminder()

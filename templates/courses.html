@@ -30,7 +30,7 @@
 						{% if course.studygroups %}
 							{% with study_group=course.studygroups.0  %}
               <p><strong>{{ study_group.day }}s</strong></p>
-              <p><strong>{{ study_group.time }}</strong></p>
+              <p><strong>{{ study_group.time|time:"fA" }} - {{ study_group.end_time|time:"fA" }}</strong></p>
 							<p>{{ course.duration|capfirst }} <br /> beginning {{ course.start_date|date:"j N" }}</p>
 							<address class="text-left">
 								<p><a href="{{study_group.location_link}}" target="_blank">{{ study_group.location }}</a></p>
