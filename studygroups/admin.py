@@ -20,8 +20,11 @@ class CourseAdmin(admin.ModelAdmin):
 class ApplicationAdmin(admin.ModelAdmin):
     list_display = ('name', 'study_group', 'contact_method', 'created_at')
 
+def reminder_course_title(obj):
+    return obj.study_group.course.title
+
 class ReminderAdmin(admin.ModelAdmin):
-    pass
+    list_display = (reminder_course_title, 'email_subject', 'sent_at')
 
 
 admin.site.register(Course, CourseAdmin)
