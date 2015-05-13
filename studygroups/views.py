@@ -102,6 +102,10 @@ def email(request, study_group_id):
 def messages_edit(request, study_group_id, message_id):
     study_group = StudyGroup.objects.get(id=study_group_id)
     reminder = Reminder.objects.get(id=message_id)
+    if not reminder.sent_at == None:
+        url = reverse('studygroups_organize_messages', args=(study_group_id,))
+        messages.info(request, 'Message has already been sent and cannot be edited.')
+        return http.HttpResponseRedirect(url)
     if request.method == 'POST':
         form = MessageForm(request.POST, instance=reminder)
         if form.is_valid():
