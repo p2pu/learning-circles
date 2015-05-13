@@ -175,8 +175,9 @@ def generate_reminder(study_group):
                 context
             )
             timezone.deactivate()
-            # TODO send email to study group organizer saying the reminder has been generated and will be sent in a day
+            # TODO send email to study group organizer!
             to = [ a[1] for a in settings.ADMINS ]
+            to += [settings.DEFAULT_FROM_EMAIL]
             send_mail(
                 organizer_notification_subject,
                 organizer_notification,
