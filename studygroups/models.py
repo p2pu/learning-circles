@@ -151,7 +151,8 @@ def generate_reminder(study_group):
             reminder.meeting_time = next_meeting
             context = { 
                 'study_group': study_group,
-                'next_meeting': next_meeting
+                'next_meeting': next_meeting,
+                'reminder': reminder
             }
             timezone.activate(pytz.timezone(study_group.timezone))
             reminder.email_subject = render_to_string(

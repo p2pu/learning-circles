@@ -1,4 +1,16 @@
-{% load i18n %}Hi there!
+{% load i18n %}
+Hi there organizer. We've automaticaly generated a reminder for the study group meeting happening this {{ next_meeting|date:"l, j N, fA" }}. You can see the text for the reminder below.
+
+This reminder will be sent automatically in a day from now.
+
+If you wish to edit the reminder, you can follow this link: http://chicago.p2pu.org{% url 'studygroups_messages_edit' reminder.study_group.id reminder.id %}.
+
+Regards
+Automaton
+
+Message to study group participants follows:
+
+Hi there!
 
 The {{ study_group.course.title }} study group will meet this {{ next_meeting|date:"l, j N, fA" }} at the {{ study_group.location }}.
 
