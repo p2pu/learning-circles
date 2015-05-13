@@ -48,17 +48,17 @@ class TestSignupViews(TestCase):
         signup = Application(**signup_data)
         signup.accepted_at = timezone.now()
         signup.save()
-        url = '/en/organize/studygroup/{0}/email/'.format(signup.study_group_id)
+        url = '/en/organize/studygroup/{0}/message/compose/'.format(signup.study_group_id)
         email_body = u'Hi there!\n\nThe first study group for GED® Prep Math will meet this Thursday, May 7th, from 6:00 pm - 7:45 pm at Edgewater on the 2nd floor. Feel free to bring a study buddy!\nFor any questions you can contact Emily at emily@p2pu.org.\n\nSee you soon'
         mail_data = {
-            u'study_group_id': signup.study_group_id,
-            u'subject': u'GED® Prep Math study group meeting Thursday 7 May 6:00 PM at Edgewater', 
-            u'body': email_body, 
+            u'study_group': signup.study_group_id,
+            u'email_subject': u'GED® Prep Math study group meeting Thursday 7 May 6:00 PM at Edgewater', 
+            u'email_body': email_body, 
             u'sms_body': 'The first study group for GED® Prep Math will meet next Thursday, May 7th, from 6:00 pm-7:45 pm at Edgewater on the 2nd floor. Feel free to bring a study buddy!'
         }
         resp = c.post(url, mail_data)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject, mail_data['subject'])
+        self.assertEqual(mail.outbox[0].subject, mail_data['email_subject'])
         self.assertFalse(send_message.called)
 
 
@@ -73,11 +73,11 @@ class TestSignupViews(TestCase):
         signup = Application(**signup_data)
         signup.accepted_at = timezone.now()
         signup.save()
-        url = '/en/organize/studygroup/{0}/email/'.format(signup.study_group_id)
+        url = '/en/organize/studygroup/{0}/message/compose/'.format(signup.study_group_id)
         mail_data = {
-            'study_group_id': signup.study_group_id,
-            'subject': 'test', 
-            'body': 'Email body', 
+            'study_group': signup.study_group_id,
+            'email_subject': 'test', 
+            'email_body': 'Email body', 
             'sms_body': 'Sms body'
         }
         resp = c.post(url, mail_data)
@@ -86,7 +86,7 @@ class TestSignupViews(TestCase):
 
 
     @patch('studygroups.models.send_message')
-    def test_dont_send_email(self, send_message):
+    def test_dont_send_email_to_unaccepted_signup(self, send_message):
         # Test sending a message
         c = Client()
         c.login(username='admin', password='password')

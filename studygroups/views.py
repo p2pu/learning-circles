@@ -14,7 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from studygroups.models import Course, StudyGroup, Application, Reminder
 from studygroups.models import send_reminder
-from studygroups.forms import ApplicationForm, EmailForm
+from studygroups.forms import ApplicationForm, MessageForm
 from studygroups.sms import send_message
 
 
@@ -71,21 +71,15 @@ def organize_messages(request, study_group_id):
         'study_group': study_group,
     }
     return render_to_response('studygroups/organize_messages.html', context, context_instance=RequestContext(request))
-   
 
 
 @login_required
 def email(request, study_group_id):
     study_group = StudyGroup.objects.get(id=study_group_id)
     if request.method == 'POST':
-        form = EmailForm(request.POST)
+        form = MessageForm(request.POST)
         if form.is_valid():
-            reminder = Reminder()
-            reminder.study_group = study_group
-            reminder.email_subject = form.cleaned_data['subject']
-            reminder.email_body = form.cleaned_data['body']
-            reminder.sms_body = form.cleaned_data['sms_body']
-            reminder.save()
+            reminder = form.save()
             try:
                 send_reminder(reminder)
                 messages.success(request, 'Email successfully sent')
@@ -95,7 +89,7 @@ def email(request, study_group_id):
             url = reverse('studygroups_organize')
             return http.HttpResponseRedirect(url)
     else:
-        form = EmailForm(initial={'study_group_id': study_group.id})
+        form = MessageForm(initial={'study_group': study_group})
 
     context = {
         'study_group': study_group,
@@ -104,6 +98,8 @@ def email(request, study_group_id):
     }
     return render_to_response('studygroups/email.html', context, context_instance=RequestContext(request))
 
+def messages_edit(study_group_id, message_id):
+    pass
 
 @csrf_exempt
 @require_http_methods(['POST'])

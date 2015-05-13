@@ -1,5 +1,6 @@
 from django import forms
 from studygroups.models import Application
+from studygroups.models import Reminder
 from localflavor.us.forms import USPhoneNumberField
 
 
@@ -30,8 +31,8 @@ class ApplicationForm(forms.ModelForm):
         exclude = ['accepted_at']
 
 
-class EmailForm(forms.Form):
-    study_group_id = forms.IntegerField(widget=forms.HiddenInput)
-    subject = forms.CharField()
-    body = forms.CharField(widget=forms.Textarea)
-    sms_body = forms.CharField(max_length=160, widget=forms.Textarea)
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Reminder
+        exclude = ['meeting_time', 'created_at', 'sent_at']
+        widgets = {'study_group': forms.HiddenInput} 
