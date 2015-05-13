@@ -6,6 +6,7 @@ urlpatterns = patterns('',
     url(r'^apply/$', 'studygroups.views.apply', name='studygroups_apply'),
     url(r'^organize/$', 'studygroups.views.organize', name='studygroups_organize'),
     url(r'^organize/studygroup/(?P<study_group_id>[\d]+)/email/$', 'studygroups.views.email', name='studygroups_email'),
+    url(r'^organize/studygroup/(?P<study_group_id>[\d]+)/messages/$', 'studygroups.views.organize_messages', name='studygroups_organize_messages'),
     url(r'^receive_sms/$', 'studygroups.views.receive_sms', name='studygroups_receive_sms'),
 )
 

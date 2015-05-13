@@ -12,8 +12,8 @@ from django import http
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 
-from studygroups.models import Course, StudyGroup, Application
-from studygroups.models import send_group_message
+from studygroups.models import Course, StudyGroup, Application, Reminder
+from studygroups.models import send_reminder
 from studygroups.forms import ApplicationForm, EmailForm
 from studygroups.sms import send_message
 
@@ -61,9 +61,17 @@ def organize(request):
     context = {
         'courses': Course.objects.all(),
         'study_groups': StudyGroup.objects.all(),
-        'applications': Application.objects.all(),
     }
     return render_to_response('studygroups/organize.html', context, context_instance=RequestContext(request))
+
+
+def organize_messages(request, study_group_id):
+    study_group = StudyGroup.objects.get(id=study_group_id)
+    context = {
+        'study_group': study_group,
+    }
+    return render_to_response('studygroups/organize_messages.html', context, context_instance=RequestContext(request))
+   
 
 
 @login_required
@@ -72,13 +80,14 @@ def email(request, study_group_id):
     if request.method == 'POST':
         form = EmailForm(request.POST)
         if form.is_valid():
+            reminder = Reminder()
+            reminder.study_group = study_group
+            reminder.email_subject = form.cleaned_data['subject']
+            reminder.email_body = form.cleaned_data['body']
+            reminder.sms_body = form.cleaned_data['sms_body']
+            reminder.save()
             try:
-                send_group_message(
-                    study_group,
-                    form.cleaned_data['subject'],
-                    form.cleaned_data['body'],
-                    form.cleaned_data['sms_body']
-                )
+                send_reminder(reminder)
                 messages.success(request, 'Email successfully sent')
             except Exception as e:
                 messages.error(request, 'An error occured while sending group message.')
