@@ -28,7 +28,6 @@ class TestSignupViews(TestCase):
     def setUp(self):
         user = User.objects.create_user('admin', 'admin@test.com', 'password')
 
-    @override_settings(ADMINS=('Admin', 'admin@test.com'))
     def test_submit_application(self):
         c = Client()
         resp = c.post('/en/apply/', self.APPLICATION_DATA)
@@ -107,7 +106,6 @@ class TestSignupViews(TestCase):
         self.assertFalse(send_message.called)
 
 
-    @override_settings(ADMINS=('Admin', 'admin@test.com'))
     def test_receive_sms(self):
         # Test sending a message
         c = Client()

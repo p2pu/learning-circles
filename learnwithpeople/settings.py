@@ -17,7 +17,7 @@ path = lambda *a: os.path.join(BASE_DIR, *a)
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
 ADMINS = (
-    ('Admin', os.environ.get('ADMIN_EMAIL') ),
+    ('Admin', os.environ.get('ADMIN_EMAIL', 'admin@localhost') ),
 )
 
 # SECURITY WARNING: keep the secret key used in production secret!

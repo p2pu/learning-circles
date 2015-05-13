@@ -63,7 +63,6 @@ class TestSignupModels(TestCase):
         self.assertEquals(sg.time, next_date.time())
 
 
-    @override_settings(ADMINS=('Admin', 'admin@test.com'))
     def test_generate_reminder(self):
         # Make sure we don't generate a reminder more than 3 days before
         now = timezone.now()
@@ -96,7 +95,6 @@ class TestSignupModels(TestCase):
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
 
-    @override_settings(ADMINS=('Admin', 'admin@test.com'))
     def test_no_reminders_for_old_studygroups(self):
         # Make sure we don't generate a reminder more than 3 days before
         now = timezone.now()
@@ -113,7 +111,6 @@ class TestSignupModels(TestCase):
         self.assertEqual(Reminder.objects.all().count(), 0)
 
 
-    @override_settings(ADMINS=('Admin', 'admin@test.com'))
     def test_no_reminders_for_future_studygroups(self):
         # Make sure we don't generate a reminder more than 3 days before
         now = timezone.now()
