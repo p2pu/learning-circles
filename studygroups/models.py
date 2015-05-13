@@ -107,7 +107,7 @@ class Application(models.Model):
 
 class Reminder(models.Model):
     study_group = models.ForeignKey('studygroups.StudyGroup')
-    meeting_time = models.DateTimeField()
+    meeting_time = models.DateTimeField(blank=True, null=True)
     email_subject = models.CharField(max_length=256)
     email_body = models.TextField()
     sms_body = models.CharField(max_length=160)
@@ -167,13 +167,13 @@ def generate_reminder(study_group):
                 context
             )
             reminder.save()
-            timezone.deactivate()
             
             organizer_notification_subject = u'A reminder for {0} was generated'.format(study_group.course.title)
             organizer_notification = render_to_string(
                 'studygroups/notifications/reminder-notification.html',
                 context
             )
+            timezone.deactivate()
             # TODO send email to study group organizer saying the reminder has been generated and will be sent in a day
             to = [ a[1] for a in settings.ADMINS ]
             send_mail(
