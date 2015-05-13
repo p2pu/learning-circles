@@ -188,7 +188,7 @@ def generate_reminder(study_group):
 
 def send_group_message(study_group, email_subject, email_body, sms_body):
     to = [su.email for su in study_group.application_set.filter(accepted_at__isnull=False, contact_method='Email')]
-    send_mail(email_subject, email_body, settings.DEFAULT_FROM_EMAIL, to, fail_silently=False)
+    send_mail(email_subject.strip('\n'), email_body, settings.DEFAULT_FROM_EMAIL, to, fail_silently=False)
 
     # send SMS
     tos = [su.mobile for su in study_group.application_set.filter(accepted_at__isnull=False, contact_method='Text')]
