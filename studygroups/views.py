@@ -98,8 +98,27 @@ def email(request, study_group_id):
     }
     return render_to_response('studygroups/email.html', context, context_instance=RequestContext(request))
 
-def messages_edit(study_group_id, message_id):
-    pass
+
+def messages_edit(request, study_group_id, message_id):
+    study_group = StudyGroup.objects.get(id=study_group_id)
+    reminder = Reminder.objects.get(id=message_id)
+    if request.method == 'POST':
+        form = MessageForm(request.POST, instance=reminder)
+        if form.is_valid():
+            reminder = form.save()
+            messages.success(request, 'Message successfully edited')
+            url = reverse('studygroups_organize_messages', args=(study_group_id,))
+            return http.HttpResponseRedirect(url)
+    else:
+        form = MessageForm(instance=reminder)
+
+    context = {
+        'study_group': study_group,
+        'course': study_group.course,
+        'form': form
+    }
+    return render_to_response('studygroups/message_edit.html', context, context_instance=RequestContext(request))
+
 
 @csrf_exempt
 @require_http_methods(['POST'])

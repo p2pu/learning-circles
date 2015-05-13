@@ -24,11 +24,15 @@
                 <td>{{ message.email_body }}</td>
                 <td>{{ message.sms_body }}</td>
                 <td>{{ message.sent_at }}</td>
+                <td>
+                    {% if not message.sent_at %}
+                        <a href="{% url 'studygroups_messages_edit' study_group.id message.id %}" class="btn btn-info">Edit</a>
+                    {% endif %}
+                </td>
             </tr>
         {% endfor %}
         </tbody>
       </table>
-      <!--p><a href="{% url 'admin:studygroups_studygroup_add' %}" class="btn btn-primary">Add study group</a></p-->
     </div>
   </div>
 
