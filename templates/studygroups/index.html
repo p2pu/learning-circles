@@ -1,33 +1,39 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block css %}
+    <!--link type="text/css" rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css">
+    <link type="text/css" rel="stylesheet" href="{% static 'css/MarkerCluster.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'css/MarkerCluster.Default.css' %}"-->
+{% endblock %}
+
 {% block content %}
-	<!-- Main jumbotron for a primary marketing message or call to action -->
-	<div class="jumbotron" id="top">
-		<div class="primary container">
-			<div class="col-md-6">
-				<h1>Master new skills.<br />Together.<br />In the library.<br />For free.</h1>
-			</div>
-			<div class="col-md-6 session">
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron" id="top">
+        <div class="primary container">
+            <div class="col-md-6">
+                <h1>Master new skills.<br />Together.<br />In the library.<br />For free.</h1>
+            </div>
+            <div class="col-md-6 session">
         <h4>You can learn:</h4>
         <ul>
             {% for course in courses %}
                 <li><a href="#{{ course.title|slugify }}">{{course.title}}</a></li>
             {% endfor %}
         </ul>
-			</div>
-		</div>
-		<div class="dark">
-			<div class="container">
-				<div class="row">
-					<div class="col-md-6">
-						<p>
-							In 2015 Chicago Public Library is hosting study groups for learners who want to complete online courses
-							together, in-person at the libraries. <br /> These are free, peer-supported courses which are
-							designed to be taken by anybody.
-						</p>
-					</div>
-					<div class="col-md-6">
+            </div>
+        </div>
+        <div class="dark">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p>
+                            In 2015 Chicago Public Library is hosting study groups for learners who want to complete online courses
+                            together, in-person at the libraries. <br /> These are free, peer-supported courses which are
+                            designed to be taken by anybody.
+                        </p>
+                    </div>
+                    <div class="col-md-6">
                         <p>The next round of study groups will start August 2015</p>
                         <!-- Begin MailChimp Signup Form -->
                         <div id="mc_embed_signup">
@@ -43,139 +49,163 @@
                          </div>
                          <!--End mc_embed_signup-->
                         <!--p><a class="btn btn-info" href="#courses">Apply</a> for a study group below</p-->
-				    </div>
-				</div>
-			</div>
-		</div>
-	</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-	<section id="faq" class="shaded">
-		<div class="container">
-			<hr />
-			<h2>FAQ</h2>
+    <section id="faq" class="shaded">
+        <div class="container">
 
-			<div class="row">
-				<div class="col-md-4 col-sm-6">
-					<div class="faq-item">
-						<span class="icon"><i class="fa fa-clock-o"></i></span>
-						<h4>When does it start?</h4>
+            <div class="row">
+                <div class="col-md-6 col-sm-6">
+                    <div class="faq-item">
+                        <span class="icon"><i class="fa fa-calendar"></i></span>
+                        <h4>When does it start?</h4>
 
-						<p>
-							Courses are currently running. The next batch of study groups will start August 2015. There will be two hours of group study time each week
-							in the library.
-						</p>
-					</div>
-				</div>
-				<div class="col-md-4 col-sm-6">
-					<div class="faq-item">
-						<span class="icon"><i class="fa fa-calendar"></i></span>
-						<h4>How long will it take?</h4>
+                        <p>
+                            Courses are currently running. The next batch of study groups will start August 2015. There will be two hours of group study time each week
+                            in the library.
+                        </p>
+                        <div id="su-contact" class="signup-question">
+                            <p>Sign up and we'll notify you once the courses are confirmed</p>
+                            <form id= "su-contact-form" action="{% url 'interest:sync' %}" method="POST">
+                                {% csrf_token %}
+                                <input type="email" class="form-control" placeholder="email address" name="email"></input>
+                                or
+                                <p><input type="tel" class="form-control" placeholder="mobile number" name="mobile"></input></p>
+                                <button type="submit" class="btn btn-info">Notify me</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
-						<p>
-							The courses will run for between 5-7 weeks. However, the pace is largely up to you. You
-							can always slow down or speed up - the materials are there to be used and you can use them
-							however you want.
-						</p>
-					</div>
-				</div>
-				<div class="col-md-4 col-sm-6">
-					<div class="faq-item">
-						<span class="icon"><i class="fa fa-smile-o"></i></span>
-						<h4>How will this all go down?</h4>
+                <div class="col-md-6 col-sm-6">
+                    <div class="faq-item">
+                        <span class="icon"><i class="fa fa-graduation-cap"></i></span>
+                        <h4>What will I learn?</h4>
 
-						<p>
-							Every week you’ll join your study group for a meeting of minds (and regular high fives) in your
-							local library branch. You’ll be guided through the online materials by a community organiser,
-							who will help facilitate collaboration with your fellow learners.
-						</p>
-					</div>
-				</div>
+                        <p>Each course has been selected in the hope that it is interesting and relevant to you and the people in your study group. As well as the informational content, we’ve designed the course time so that participants gain experience giving and receiving feedback feedback, working in groups, and feeling comfortable working online.</p>
+                        <div id="su-course" class="signup-question hidden">
+                            <form id="su-course-form" action="{% url 'interest:sync' %}" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="id"></input>
+                                <div id="div_id_course" class="form-group">
+                                    <label><input id="id_course_1" type="checkbox" value="Computer Programming" name="course"></input> Computer programming</label>
+                                    <label><input id="id_course_1" type="checkbox" value="Public Speaking" name="course"></input> Public Speaking</label>
+                                    <label><input id="id_course_1" type="checkbox" value="Academic writing" name="course"></input> Academic writing</label>
+                                </div>
+                                <p>Other courses you would like to learn?</p>
+                                <input type="text" class="form-control" name="course" placeholder="Course name or link"></input>
+                                <input type="text" class="form-control" name="course" placeholder="Course name or link"></input>
+                                <input type="text" class="form-control" name="course" placeholder="Course name or link"></input>
+                                <button type="submit" class="btn btn-info">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
 
-				<div class="col-md-4 col-sm-6">
-					<div class="faq-item">
-						<span class="icon"><i class="fa fa-graduation-cap"></i></span>
-						<h4>What will I learn?</h4>
+                <div class="col-md-6 col-sm-6">
+                    <div class="faq-item">
+                        <span class="icon"><i class="fa fa-smile-o"></i></span>
+                        <h4>How will this all go down?</h4>
 
-						<p>
-                            Each course has been selected in the hope that it is interesting and relevant to you and the people in your study group. As well as the informational content, we’ve designed the course time so that participants gain experience giving and receiving feedback feedback, working in groups, and feeling comfortable working online.
-						</p>
-					</div>
-				</div>
-				<div class="col-md-4 col-sm-6">
-					<div class="faq-item">
-						<span class="icon"><i class="fa fa-cubes"></i></span>
-						<h4>What do I need to bring?</h4>
+                        <p>
+                            Every week you’ll join your study group for a meeting of minds (and regular high fives) in your
+                            local library branch. You’ll be guided through the online materials by a community organiser,
+                            who will help facilitate collaboration with your fellow learners.
+                        </p>
+                        <div id="su-location" class="signup-question hidden">
+                            <p>Where can you meet</p>
+                            <form id="su-location-form" action="{% url 'interest:sync' %}" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="id"></input>
+                                <div class="controls "><select multiple="multiple" class="selectmultiple form-control" id="id_location" name="location"><optgroup label=""><option value="Harold Washington Library Center">Harold Washington Library Center</option><option value="Edgewater">Edgewater</option></optgroup><optgroup label="Other"><option value="Albany Park">Albany Park</option><option value="Altgeld">Altgeld</option><option value="Archer Heights">Archer Heights</option><option value="Austin">Austin</option><option value="Austin-Irving">Austin-Irving</option><option value="Avalon">Avalon</option><option value="Back of the Yards">Back of the Yards</option><option value="Beverly">Beverly</option><option value="Bezazian">Bezazian</option><option value="Blackstone">Blackstone</option><option value="Brainerd">Brainerd</option><option value="Brighton Park">Brighton Park</option><option value="Bucktown-Wicker Park">Bucktown-Wicker Park</option><option value="Budlong Woods">Budlong Woods</option><option value="Canaryville">Canaryville</option><option value="Chicago Bee">Chicago Bee</option><option value="Chicago Lawn">Chicago Lawn</option><option value="Chinatown">Chinatown</option><option value="Clearing">Clearing</option><option value="Coleman">Coleman</option><option value="Daley, Richard J.-Bridgeport">Daley, Richard J.-Bridgeport</option><option value="Daley, Richard M.-W Humboldt">Daley, Richard M.-W Humboldt</option><option value="Douglass">Douglass</option><option value="Dunning">Dunning</option><option value="Edgebrook">Edgebrook</option><option value="Gage Park">Gage Park</option><option value="Galewood-Mont Clare">Galewood-Mont Clare</option><option value="Garfield Ridge">Garfield Ridge</option><option value="Greater Grand Crossing">Greater Grand Crossing</option><option value="Hall">Hall</option><option value="Hegewisch">Hegewisch</option><option value="Humboldt Park">Humboldt Park</option><option value="Independence">Independence</option><option value="Jefferson Park">Jefferson Park</option><option value="Jeffery Manor">Jeffery Manor</option><option value="Kelly">Kelly</option><option value="King">King</option><option value="Legler">Legler</option><option value="Lincoln Belmont">Lincoln Belmont</option><option value="Lincoln Park">Lincoln Park</option><option value="Little Village">Little Village</option><option value="Logan Square">Logan Square</option><option value="Lozano">Lozano</option><option value="Manning">Manning</option><option value="Mayfair">Mayfair</option><option value="McKinley Park">McKinley Park</option><option value="Merlo">Merlo</option><option value="Mount Greenwood">Mount Greenwood</option><option value="Near North">Near North</option><option value="North Austin">North Austin</option><option value="North Pulaski">North Pulaski</option><option value="Northtown">Northtown</option><option value="Oriole Park">Oriole Park</option><option value="Portage-Cragin">Portage-Cragin</option><option value="Pullman">Pullman</option><option value="Roden">Roden</option><option value="Rogers Park">Rogers Park</option><option value="Roosevelt">Roosevelt</option><option value="Scottsdale">Scottsdale</option><option value="Sherman Park">Sherman Park</option><option value="South Chicago">South Chicago</option><option value="South Shore">South Shore</option><option value="Sulzer Regional">Sulzer Regional</option><option value="Thurgood Marshall">Thurgood Marshall</option><option value="Toman">Toman</option><option value="Uptown">Uptown</option><option value="Vodak-East Side">Vodak-East Side</option><option value="Walker">Walker</option><option value="Water Works">Water Works</option><option value="West Belmont">West Belmont</option><option value="West Chicago Avenue">West Chicago Avenue</option><option value="West Englewood">West Englewood</option><option value="West Lawn">West Lawn</option><option value="West Pullman">West Pullman</option><option value="West Town">West Town</option><option value="Whitney M. Young, Jr.">Whitney M. Young, Jr.</option><option value="Woodson Regional">Woodson Regional</option><option value="Wrightwood-Ashburn">Wrightwood-Ashburn</option></optgroup></select></div>                            
+                                <button type="submit" class="btn btn-info">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
-						<p>
-							All you need is a few hours per week in your library branch and a thirst for knowledge. The
-							library will provide computers, and all necessary course materials.
-						</p>
-					</div>
-				</div>
-				<div class="col-md-4 col-sm-6">
-					<div class="faq-item">
-						<span class="icon"><i class="fa fa-question"></i></span>
-						<h4>Why should I take a course?</h4>
+                <div class="col-md-6 col-sm-6">
+                    <div class="faq-item">
+                        <span class="icon"><i class="fa fa-clock-o"></i></span>
+                        <h4>How long will it take?</h4>
 
-						<p>
-							Why not? Sure, each course will teach you a new skill, but even more exciting is the chance to
-							join with other people from your community and learn something new together in the library. We
-							believe that learning can, and should, be fun, and we hope that you will join us. You’ll receive
-							a certificate from P2PU and CPL at the end of the course.
+                        <p>
+                            The courses will run for between 5-7 weeks. However, the pace is largely up to you. You
+                            can always slow down or speed up - the materials are there to be used and you can use them
+                            however you want.
+                        </p>
 
-						</p>
-					</div>
-				</div>
+                        <div id="su-time" class="signup-question hidden">
 
-			</div>
-			<hr />
-		</div>
-	</section>
+                            <p>What times would you prefer?</p>
+                            <form id="su-time-form" action="{% url 'interest:sync' %}" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="id"></input>
+                                <div id="div_id_time" class="form-group"><div class="controls "><label class="checkbox"><input type="checkbox" name="time" id="id_time_1" value="Week morning" >Week morning
+                                                                    </label><label class="checkbox"><input type="checkbox" name="time" id="id_time_2" value="Week afternoon" >Week afternoon
+                                                                                </label><label class="checkbox"><input type="checkbox" name="time" id="id_time_3" value="Week evening" >Week evening
+                                                                                            </label><label class="checkbox"><input type="checkbox" name="time" id="id_time_4" value="Weekend morning" >Weekend morning
+                                                                                                        </label><label class="checkbox"><input type="checkbox" name="time" id="id_time_5" value="Weekend afternoon" >Weekend afternoon
+                                                                                                                    </label><label class="checkbox"><input type="checkbox" name="time" id="id_time_6" value="Weekend evening" >Weekend evening
+                                                                                                                                </label></div></div>
+                                <button type="submit" class="btn btn-info">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="su-thanks" class="hidden">
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>Thank you for signing up! We'll be in contact.</p>
+                    </div>
+                </div>
+            </div>
+            <hr />
+        </div>
+    </section>
 
-	<!--section id="courses">
-		<div class="container">
-			<h1>You can learn</h1>
-		</div>
-		{% include 'courses.html' %}
-	</section-->
+    <!--section>
+        <div id="map"></div>
+    </section-->
 
-	<section id="about">
-		<div class="container">
+    <!--section id="courses">
+        <div class="container">
+            <h1>You can learn</h1>
+        </div>
+        {% include 'courses.html' %}
+    </section-->
 
-			<div class="row">
-				<div class="col-md-12">
-					<h1>About</h1>
-				</div>
-				<div class="col-md-4 hidden-xs hidden-sm">
-					<img src="{% static 'images/cpl-harold.jpg' %}" alt="CPL Harold Building Dome" />
-				</div>
-				<div class="col-md-8 description">
-					<p>
-						Chicago Public Library is hosting study groups for learners who want to complete online courses
-						together, in-person at the library.These are free, peer-supported courses which are designed to be
-						taken by anyone, with no prerequisites necessary.
-					</p>
+    <section id="about">
+        <div class="container">
 
-					<p>
-						P2PU and Chicago Public Library believe that people learn better when they’re learning together,
-						and we’ve designed the study groups to provide the maximum support from the library and project
-						staff as you work your way through some of the best free online educational content on the Web. As
-						you move through the course, you’ll be able to share your progress, questions and successes with
-						your study group, and provide support for others.
-					</p>
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>About</h1>
+                </div>
+                <div class="col-md-4 hidden-xs hidden-sm">
+                    <img src="{% static 'images/cpl-harold.jpg' %}" alt="CPL Harold Building Dome" />
+                </div>
+                <div class="col-md-8 description">
+                    <p>We believe that people learn better when they’re learning together, and we’ve designed the study groups to provide the maximum support from the library and project  staff as you work your way through some of the best free online educational content on the Web. As you move through the course, you’ll be able to share your progress, questions and successes with your study group, and provide support for others.</p>
+                    <p>The courses on offer have been carefully selected to be interesting and relevant to library users, and will lead to developing useful skills that can be applied in the online and offline worlds. Learners can choose to join any of the study groups.</p>
+                    <p>Want to get P2PU involved in your community? <a href="http://community.p2pu.org/t/beyond-chicago/1568">Let us know here</a>.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-					<p>
-						The courses on offer have been carefully selected to be interesting and relevant to library users,
-						and will lead to developing useful skills that can be applied in the online and offline worlds.
-						Learners can choose to join any of the study groups.
-					</p>
+{% endblock %}
 
-          <p>Want to get P2PU involved in your community? <a href="http://community.p2pu.org/t/beyond-chicago/1568">Let us know here</a>.
-          </p>
-				</div>
-			</div>
-		</div>
-	</section>
-
+{% block scripts %}
+    <!--script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <script src="{% static 'js/leaflet.markercluster.js' %}"></script>
+    <script src="{% static 'js/locations.js' %}"></script>
+    <script src="{% static 'js/map.js' %}"></script-->
+    <script src="{% static 'js/interest.js' %}"></script>
 {% endblock %}

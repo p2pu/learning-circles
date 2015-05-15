@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     's3direct',
     # own 
     'studygroups',
+    'interest',
 )
 
 MIDDLEWARE_CLASSES = (
