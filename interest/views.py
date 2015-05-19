@@ -16,7 +16,7 @@ def sync(request):
             lead = leads[0]
         elif 'email' in post_data or 'mobile' in post_data:
             # Create new lead
-            lead_data = {key:value for key,value in post_data.items() if key in ['email', 'mobile']}
+            lead_data = {key:value for key,value in post_data.items() if key in ['email', 'mobile', 'name']}
             lead = Lead.objects.create(**lead_data)
         else:
             return http.HttpResponse(status=400)
