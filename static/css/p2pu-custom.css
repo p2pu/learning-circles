@@ -7957,9 +7957,17 @@ body {
   background-color: #F3F4F8;
   padding: 2em 0; }
 
+.signup-question {
+  padding: 1em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  min-height: 330px;
+  background-color: #515665;
+  color: white;
+  padding: 0.5em; }
+
 #faq .faq-item {
   background-color: #FFFFFF;
-  border-radius: 20px;
   padding: 1em;
   min-height: 330px;
   margin-top: 1em;
@@ -8000,14 +8008,5 @@ footer .footer-logo {
 
 .alert {
   margin-bottom: 0; }
-
-.signup-question {
-  background-color: #515665;
-  color: white;
-  padding: 0.5em; }
-
-input:invalid {
-  background-color: #FFECEC;
-  border: 1px solid red; }
 
 /*# sourceMappingURL=p2pu-custom.css.map */
