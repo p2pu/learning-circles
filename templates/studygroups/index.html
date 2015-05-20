@@ -34,8 +34,8 @@
                         </p>
                     </div>
                     <div class="col-md-6">
-                        <p>The next round of study groups will start August 2015</p>
-                        <!--p><a class="btn btn-info" href="#courses">Apply</a> for a study group below</p-->
+                        <p>The next round of study groups will start August 2015. If you are in Chicago, please <a class="btn btn-info" href="#faq">apply</a> below.</p>
+                        {% include 'mailchimp.html' %}
                     </div>
                 </div>
             </div>
@@ -46,7 +46,7 @@
         <div class="container">
 
             <div class="row">
-                <div class="col-md-6 col-sm-6">
+                <div class="col-md-6 col-sm-12">
                     <div class="faq-item">
                         <span class="icon"><i class="fa fa-calendar"></i></span>
                         <h4>When does it start?</h4>
@@ -55,47 +55,65 @@
                             Courses are currently running. The next batch of study groups will start August 2015. There will be two hours of group study time each week
                             in the library.
                         </p>
-                        <div id="su-contact" class="signup-question">
-                            <p>Sign up and we'll notify you once the courses are confirmed</p>
-                            <form id= "su-contact-form" action="{% url 'interest:sync' %}" method="POST">
-                                {% csrf_token %}
-                                <input type="text" class="form-control" placeholder="Your name" name="name"></input>
-                                <input type="email" class="form-control" placeholder="email address" name="email"></input>
-                                or
-                                <p><input type="tel" class="form-control" placeholder="mobile number" name="mobile"></input></p>
-                                <button type="submit" class="btn btn-info">Notify me</button>
-                            </form>
-                        </div>
                     </div>
                 </div>
+                <div class="col-md-6 col-sm-12">
+                    <div id="su-contact" class="signup-question">
+                        <p>Sign up and we'll notify you once courses, date and locations are confirmed.</p>
+                        <form id= "su-contact-form" action="{% url 'interest:sync' %}" method="POST">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label class="sr-only" for="su-name-input">Name</label>
+                                <input id="su-name-input" type="text" class="form-control" placeholder="Your name" name="name" required></input>
+                            </div>
+                            <!--input type="text" class="form-control" placeholder="email address or mobile number" name="contact"></input-->
+                            <div class="form-group">
+                                <label class="sr-only" for="su-email-input">Email</label>
+                                <input id="su-email-input" type="email" class="form-control" placeholder="Email address" name="email"></input>
+                            </div>
+                            <p>or</p>
+                            <div class="form-group">
+                               <label class="sr-only" for="su-mobile-input">Mobile number</label>
+                               <input id="su-mobile-input" type="tel" class="form-control" placeholder="Mobile number" name="mobile"></input>
+                            </div>
+                            <div class="alert alert-warning error hidden">Please enter either an email address or a mobile number.</div>
+                            <button type="submit" class="btn btn-info">Notify me</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
-                <div class="col-md-6 col-sm-6">
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
                     <div class="faq-item">
                         <span class="icon"><i class="fa fa-graduation-cap"></i></span>
                         <h4>What will I learn?</h4>
 
                         <p>Each course has been selected in the hope that it is interesting and relevant to you and the people in your study group. As well as the informational content, we’ve designed the course time so that participants gain experience giving and receiving feedback feedback, working in groups, and feeling comfortable working online.</p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12">
                         <div id="su-course" class="signup-question hidden">
                             <form id="su-course-form" action="{% url 'interest:sync' %}" method="POST">
                                 {% csrf_token %}
                                 <input type="hidden" name="id"></input>
-                                <div id="div_id_course" class="form-group">
-                                    <label><input id="id_course_1" type="checkbox" value="Computer Programming" name="course"></input> Computer programming</label>
-                                    <label><input id="id_course_1" type="checkbox" value="Public Speaking" name="course"></input> Public Speaking</label>
-                                    <label><input id="id_course_1" type="checkbox" value="Academic writing" name="course"></input> Academic writing</label>
-                                </div>
+                                    {% for course in interest.courses %}
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" value="{{course}}" name="course"></input> {{ course }}</label>
+                                    </div>
+                                    {% endfor %}
                                 <p>Other courses you would like to learn?</p>
-                                <input type="text" class="form-control" name="course" placeholder="Course name or link"></input>
                                 <input type="text" class="form-control" name="course" placeholder="Course name or link"></input>
                                 <input type="text" class="form-control" name="course" placeholder="Course name or link"></input>
                                 <button type="submit" class="btn btn-info">Submit</button>
                             </form>
                         </div>
-                    </div>
+
                 </div>
+            </div>
+            <div class="row">
 
-
-                <div class="col-md-6 col-sm-6">
+                <div class="col-md-6 col-sm-12">
                     <div class="faq-item">
                         <span class="icon"><i class="fa fa-smile-o"></i></span>
                         <h4>How will this all go down?</h4>
@@ -105,19 +123,36 @@
                             local library branch. You’ll be guided through the online materials by a community organiser,
                             who will help facilitate collaboration with your fellow learners.
                         </p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12">
                         <div id="su-location" class="signup-question hidden">
                             <p>Where can you meet</p>
                             <form id="su-location-form" action="{% url 'interest:sync' %}" method="POST">
                                 {% csrf_token %}
                                 <input type="hidden" name="id"></input>
-                                <div class="controls "><select multiple="multiple" class="selectmultiple form-control" id="id_location" name="location"><optgroup label=""><option value="Harold Washington Library Center">Harold Washington Library Center</option><option value="Edgewater">Edgewater</option></optgroup><optgroup label="Other"><option value="Albany Park">Albany Park</option><option value="Altgeld">Altgeld</option><option value="Archer Heights">Archer Heights</option><option value="Austin">Austin</option><option value="Austin-Irving">Austin-Irving</option><option value="Avalon">Avalon</option><option value="Back of the Yards">Back of the Yards</option><option value="Beverly">Beverly</option><option value="Bezazian">Bezazian</option><option value="Blackstone">Blackstone</option><option value="Brainerd">Brainerd</option><option value="Brighton Park">Brighton Park</option><option value="Bucktown-Wicker Park">Bucktown-Wicker Park</option><option value="Budlong Woods">Budlong Woods</option><option value="Canaryville">Canaryville</option><option value="Chicago Bee">Chicago Bee</option><option value="Chicago Lawn">Chicago Lawn</option><option value="Chinatown">Chinatown</option><option value="Clearing">Clearing</option><option value="Coleman">Coleman</option><option value="Daley, Richard J.-Bridgeport">Daley, Richard J.-Bridgeport</option><option value="Daley, Richard M.-W Humboldt">Daley, Richard M.-W Humboldt</option><option value="Douglass">Douglass</option><option value="Dunning">Dunning</option><option value="Edgebrook">Edgebrook</option><option value="Gage Park">Gage Park</option><option value="Galewood-Mont Clare">Galewood-Mont Clare</option><option value="Garfield Ridge">Garfield Ridge</option><option value="Greater Grand Crossing">Greater Grand Crossing</option><option value="Hall">Hall</option><option value="Hegewisch">Hegewisch</option><option value="Humboldt Park">Humboldt Park</option><option value="Independence">Independence</option><option value="Jefferson Park">Jefferson Park</option><option value="Jeffery Manor">Jeffery Manor</option><option value="Kelly">Kelly</option><option value="King">King</option><option value="Legler">Legler</option><option value="Lincoln Belmont">Lincoln Belmont</option><option value="Lincoln Park">Lincoln Park</option><option value="Little Village">Little Village</option><option value="Logan Square">Logan Square</option><option value="Lozano">Lozano</option><option value="Manning">Manning</option><option value="Mayfair">Mayfair</option><option value="McKinley Park">McKinley Park</option><option value="Merlo">Merlo</option><option value="Mount Greenwood">Mount Greenwood</option><option value="Near North">Near North</option><option value="North Austin">North Austin</option><option value="North Pulaski">North Pulaski</option><option value="Northtown">Northtown</option><option value="Oriole Park">Oriole Park</option><option value="Portage-Cragin">Portage-Cragin</option><option value="Pullman">Pullman</option><option value="Roden">Roden</option><option value="Rogers Park">Rogers Park</option><option value="Roosevelt">Roosevelt</option><option value="Scottsdale">Scottsdale</option><option value="Sherman Park">Sherman Park</option><option value="South Chicago">South Chicago</option><option value="South Shore">South Shore</option><option value="Sulzer Regional">Sulzer Regional</option><option value="Thurgood Marshall">Thurgood Marshall</option><option value="Toman">Toman</option><option value="Uptown">Uptown</option><option value="Vodak-East Side">Vodak-East Side</option><option value="Walker">Walker</option><option value="Water Works">Water Works</option><option value="West Belmont">West Belmont</option><option value="West Chicago Avenue">West Chicago Avenue</option><option value="West Englewood">West Englewood</option><option value="West Lawn">West Lawn</option><option value="West Pullman">West Pullman</option><option value="West Town">West Town</option><option value="Whitney M. Young, Jr.">Whitney M. Young, Jr.</option><option value="Woodson Regional">Woodson Regional</option><option value="Wrightwood-Ashburn">Wrightwood-Ashburn</option></optgroup></select></div>                            
+                                <div class="controls">
+                                    <select multiple="multiple" class="selectmultiple form-control" id="id_location" name="location">
+                                        <optgroup label="">
+                                            {% for location in interest.primary_locations %}
+                                            <option value="{{ location }}">{{ location }}</option>
+                                            {% endfor %}
+                                        </optgroup>
+                                        <optgroup label="Other">
+                                            {% for location in interest.secondary_locations %}
+                                            <option value="{{ location }}">{{ location }}</option>
+                                            {% endfor %}
+                                        </optgroup>
+                                    </select></div>
                                 <button type="submit" class="btn btn-info">Submit</button>
                             </form>
                         </div>
-                    </div>
-                </div>
 
-                <div class="col-md-6 col-sm-6">
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-md-6 col-sm-12">
                     <div class="faq-item">
                         <span class="icon"><i class="fa fa-clock-o"></i></span>
                         <h4>How long will it take?</h4>
@@ -128,39 +163,55 @@
                             however you want.
                         </p>
 
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12">
                         <div id="su-time" class="signup-question hidden">
 
                             <p>What times would you prefer?</p>
                             <form id="su-time-form" action="{% url 'interest:sync' %}" method="POST">
                                 {% csrf_token %}
                                 <input type="hidden" name="id"></input>
-                                <div id="div_id_time" class="form-group"><div class="controls "><label class="checkbox"><input type="checkbox" name="time" id="id_time_1" value="Week morning" >Week morning
-                                                                    </label><label class="checkbox"><input type="checkbox" name="time" id="id_time_2" value="Week afternoon" >Week afternoon
-                                                                                </label><label class="checkbox"><input type="checkbox" name="time" id="id_time_3" value="Week evening" >Week evening
-                                                                                            </label><label class="checkbox"><input type="checkbox" name="time" id="id_time_4" value="Weekend morning" >Weekend morning
-                                                                                                        </label><label class="checkbox"><input type="checkbox" name="time" id="id_time_5" value="Weekend afternoon" >Weekend afternoon
-                                                                                                                    </label><label class="checkbox"><input type="checkbox" name="time" id="id_time_6" value="Weekend evening" >Weekend evening
-                                                                                                                                </label></div></div>
+                                <div id="div_id_time" class="form-group">
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" name="time" value="Week morning" > Week morning</label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" name="time" value="Week afternoon" > Week afternoon</label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" name="time" value="Week evening" > Week evening</label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" name="time" value="Weekend morning" > Weekend morning</label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" name="time" value="Weekend afternoon" > Weekend afternoon</label>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" name="time" value="Weekend evening" > Weekend evening</label>
+                                    </div>
+                                </div>
                                 <button type="submit" class="btn btn-info">Submit</button>
                             </form>
                         </div>
-                    </div>
+
                 </div>
             </div>
             <div id="su-thanks" class="hidden">
                 <div class="row">
                     <div class="col-md-12">
-                        <p>Thank you for signing up! We'll be in contact.</p>
+                        <div class="alert alert-success">
+                            <p>Great! We'll let you know once we've sorted out the logistics. Do you know anyone that would be interested in this? How about spreading the world via social media or in the real world?</p>
+                            <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://chicago.p2pu.org" data-via="p2pu">Tweet</a>
+                            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+                        </div>
                     </div>
                 </div>
             </div>
             <hr />
         </div>
     </section>
-
-    <!--section>
-        <div id="map"></div>
-    </section-->
 
     <!--section id="courses">
         <div class="container">

@@ -322,11 +322,20 @@ body {
 	padding: 2em 0;
 }
 
+.signup-question {
+    padding: 1em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    min-height: 330px;
+    background-color: #515665;
+    color: white;
+    padding: 0.5em;
+}
+
 #faq {
 
 	.faq-item {
 		background-color: $white;
-		border-radius: 20px;
 		padding: 1em;
 		min-height: 330px;
 		margin-top: 1em;

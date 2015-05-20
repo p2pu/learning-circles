@@ -14,8 +14,9 @@ def sync(request):
             leads = Lead.objects.filter(id=request.POST.get('id'))
             leads.update(**lead_data)
             lead = leads[0]
-        elif 'email' in post_data or 'mobile' in post_data:
-            # Create new lead
+        elif 'email' in post_data or 'mobile' in post_data or 'contact' in post_data:
+            # TODO return error if data is missing - need at least name AND email or mobile
+            # Create a new lead
             lead_data = {key:value for key,value in post_data.items() if key in ['email', 'mobile', 'name']}
             lead = Lead.objects.create(**lead_data)
         else:

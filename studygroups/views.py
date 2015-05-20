@@ -26,6 +26,11 @@ def landing(request):
 
     context = {
         'courses': courses,
+        'interest': {
+            'courses': ['Computer programming', 'Start writing fiction', 'Managing your finances'],
+            'primary_locations': ['Harold Washington Library Center', 'Bezazian', 'Edgewater'],
+            'secondary_locations': ['Lincoln Park', 'Lincoln Belmont', 'Merlo', 'Uptown', 'West Town', 'Near North', 'Roden'],
+        },
     }
     return render_to_response('studygroups/index.html', context, context_instance=RequestContext(request))
 

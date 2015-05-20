@@ -8006,4 +8006,8 @@ footer .footer-logo {
   color: white;
   padding: 0.5em; }
 
+input:invalid {
+  background-color: #FFECEC;
+  border: 1px solid red; }
+
 /*# sourceMappingURL=p2pu-custom.css.map */
