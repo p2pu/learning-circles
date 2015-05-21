@@ -137,5 +137,11 @@ def receive_sms(request):
     message = request.POST.get('Body')
     to = [ a[1] for a in settings.ADMINS ]
     to += [settings.DEFAULT_FROM_EMAIL]
-    send_mail('New SMS reply from {0}'.format(sender), message, settings.SERVER_EMAIL, to, fail_silently=False)
+    # Try to find a signup with the mobile number
+    sender = '-'.join([sender[2:5], sender[5:8], sender[8:12]])
+    signups = Application.objects.filter(mobile=sender)
+    subject = 'New SMS reply from {0}'.format(sender)
+    if signups.count() > 0:
+        subject = 'New SMS reply from {0} <{1}>'.format(signups[0].name, sender)
+    send_mail(subject, message, settings.SERVER_EMAIL, to, fail_silently=False)
     return http.HttpResponse(status=200)
