@@ -9,6 +9,4 @@ class Lead(models.Model):
     location = models.CharField(max_length=1024, blank=True, null=True)
     time = models.CharField(max_length=1024, blank=True, null=True)
 
-def update_lead(lead_data):
-    # Take a dictionary of keys/values and update lead data accordingly 
-    pass
+    created_at = models.DateTimeField(auto_now_add=True)
