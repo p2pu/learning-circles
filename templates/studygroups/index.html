@@ -15,28 +15,33 @@
                 <h1>Master new skills.<br />Together.<br />In the library.<br />For free.</h1>
             </div>
             <div class="col-md-6 session">
-        <h4>You can learn:</h4>
-        <ul>
-            {% for course in courses %}
-                <li><a href="#{{ course.title|slugify }}">{{course.title}}</a></li>
-            {% endfor %}
-        </ul>
+                <p>A new round of courses are starting late August 2015.</p>
+                <p><a href="#faq">Sign up</a> below to stay up to date.</p>
+                {% comment %}
+                <ul>
+                    {% for course in courses %}
+                        <li><a href="#{{ course.title|slugify }}">{{course.title}}</a></li>
+                    {% endfor %}
+                </ul>
+                {% endcomment %}
             </div>
         </div>
         <div class="dark">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <p>
                             In 2015 Chicago Public Library is hosting study groups for learners who want to complete online courses
-                            together, in-person at the libraries. <br /> These are free, peer-supported courses which are
+                            together, in-person at the libraries. These are free, peer-supported courses which are
                             designed to be taken by anybody.
                         </p>
+                        <p>If you are interested in following the project but you are not in Chicago or you don't want to take a course right now, see <a href="https://p2pu.org">our homepage</a>.</p>
                     </div>
+                    {% comment %}
                     <div class="col-md-6">
-                        <p>The next round of study groups will start August 2015. If you are in Chicago, please <a class="btn btn-info" href="#faq">apply</a> below.</p>
                         {% include 'mailchimp.html' %}
                     </div>
+                    {% endcomment %}
                 </div>
             </div>
         </div>
@@ -59,7 +64,7 @@
                 </div>
                 <div class="col-md-6 col-sm-12">
                     <div id="su-contact" class="signup-question">
-                        <p>Sign up and we'll notify you once courses, date and locations are confirmed.</p>
+                        <p>Sign up and we'll notify you once courses, dates and locations are confirmed.</p>
                         <form id= "su-contact-form" action="{% url 'interest:sync' %}" method="POST">
                             {% csrf_token %}
                             <div class="form-group">
