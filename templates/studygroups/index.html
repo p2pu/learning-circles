@@ -82,7 +82,7 @@
                                <input id="su-mobile-input" type="tel" class="form-control" placeholder="Mobile number" name="mobile"></input>
                             </div>
                             <div class="alert alert-warning error hidden">Please enter either an email address or a mobile number.</div>
-                            <button type="submit" class="btn btn-info">Notify me</button>
+                            <button type="submit" class="btn btn-info">Submit</button>
                         </form>
                     </div>
                 </div>
@@ -102,11 +102,13 @@
                             <form id="su-course-form" action="{% url 'interest:sync' %}" method="POST">
                                 {% csrf_token %}
                                 <input type="hidden" name="id"></input>
+                                <div id="course-selection">
                                     {% for course in interest.courses %}
                                     <div class="checkbox">
                                         <label><input type="checkbox" value="{{course}}" name="course"></input> {{ course }}</label>
                                     </div>
                                     {% endfor %}
+                                </div>
                                 <p>Other courses you would like to learn?</p>
                                 <input type="text" class="form-control" name="course" placeholder="Course name or link"></input>
                                 <input type="text" class="form-control" name="course" placeholder="Course name or link"></input>

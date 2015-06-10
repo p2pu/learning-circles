@@ -8009,4 +8009,8 @@ footer .footer-logo {
 .alert {
   margin-bottom: 0; }
 
+#course-selection {
+  max-height: 9em;
+  overflow-y: scroll; }
+
 /*# sourceMappingURL=p2pu-custom.css.map */
