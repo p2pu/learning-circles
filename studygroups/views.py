@@ -27,7 +27,26 @@ def landing(request):
     context = {
         'courses': courses,
         'interest': {
-            'courses': ['Computer programming', 'Start writing fiction', 'Managing your finances'],
+            'courses': [
+                'Start Writing Fiction',
+                'Community Journalism: Digital and Social Media',
+                'Childhood in the Digital Age',
+                "A Beginner's Guide to Writing in English for University Study",
+                'How to Succeed at: Writing Applications',
+                'How to Succeed at: Interviews',
+                'Managing Your Money',
+                'High-Impact Business Writing',
+                'Finance for Non-Financial Professionals',
+                'Introduction to Public Speaking',
+                'Intro to HTML and CSS',
+                'JavaScript Basics',
+                'Intro to Java Programming',
+                'Introduction to Psychology',
+                'Principles of Microeconomics',
+                'Introduction to Computer Science and Prorgramming',
+                'Single Variable Calculus',
+                'Introduction to Computer Science',
+            ],
             'primary_locations': ['Harold Washington Library Center', 'Bezazian', 'Edgewater', 'Daley, Richard J.-Bridgeport', ],
             'secondary_locations': [
                 'Lincoln Park', 'Lincoln Belmont', 'Merlo', 'Uptown', 'West Town', 'Near North', 'Roden',
