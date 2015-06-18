@@ -1,0 +1,25 @@
+<form id= "su-contact-form" class="form-inline" action="{% url 'interest:sync' %}" method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+        <label class="sr-only" for="su-name-input">Name</label>
+        <input id="su-name-input" type="text" class="form-control" placeholder="Your name" name="name" required></input>
+    </div>
+    <!--input type="text" class="form-control" placeholder="email address or mobile number" name="contact"></input-->
+    <div class="form-group">
+        <label class="sr-only" for="su-email-input">Email</label>
+        <input id="su-email-input" type="email" class="form-control" placeholder="Email address" name="email"></input>
+    </div>
+    or
+    <div class="form-group">
+       <label class="sr-only" for="su-mobile-input">Mobile number</label>
+       <input id="su-mobile-input" type="tel" class="form-control" placeholder="Mobile number" name="mobile"></input>
+    </div>
+    <button type="submit" class="btn btn-info">Submit</button>
+    <div class="alert alert-warning error hidden">Please enter either an email address or a mobile number.</div>
+</form>
+<div id="su-contact-success" class="alert alert-success success hidden">
+  <p>
+    Thank you for signup up! We would love to ask you a few more questions. <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#interest-extra">Sure, why not?</button>
+  </p>
+</div>
+

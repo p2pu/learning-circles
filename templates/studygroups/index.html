@@ -15,27 +15,17 @@
                 <h1>Master new skills.<br />Together.<br />In the library.<br />For free.</h1>
             </div>
             <div class="col-md-6 session">
-                <p>A new round of courses are starting late August 2015.</p>
-                <p><a href="#faq">Sign up</a> below to stay up to date.</p>
-                {% comment %}
-                <ul>
-                    {% for course in courses %}
-                        <li><a href="#{{ course.title|slugify }}">{{course.title}}</a></li>
-                    {% endfor %}
-                </ul>
-                {% endcomment %}
+                <p>Learning Circles launching in September across Chicago. <a href="#signup" class="btn btn-primary">Apply below</a></p>
+                <p>If you are not in Chicago or you don't want to take a course right now, see <a href="https://p2pu.org">our homepage</a>.</p>
             </div>
         </div>
         <div class="dark">
             <div class="container">
-                <div class="row">
+                <div id="signup" class="row">
                     <div class="col-md-12">
-                        <p>
-                            In 2015 Chicago Public Library is hosting study groups for learners who want to complete online courses
-                            together, in-person at the libraries. These are free, peer-supported courses which are
-                            designed to be taken by anybody.
-                        </p>
-                        <p>If you are interested in following the project but you are not in Chicago or you don't want to take a course right now, see <a href="https://p2pu.org">our homepage</a>.</p>
+                        <p>Sign up and we’ll notify you once courses, dates, and locations are confirmed.</p>
+                        {% include 'lead.html' %}
+
                     </div>
                     {% comment %}
                     <div class="col-md-6">
@@ -49,160 +39,49 @@
 
     <section id="faq" class="shaded">
         <div class="container">
-
             <div class="row">
+                <div class="col-md-12">
+                    <h1>FAQ</h1>
+                </div>
                 <div class="col-md-6 col-sm-12">
                     <div class="faq-item">
                         <span class="icon"><i class="fa fa-calendar"></i></span>
                         <h4>When does it start?</h4>
 
                         <p>
-                            Courses are currently running. The next batch of study groups will start August 2015. There will be two hours of group study time each week
-                            in the library.
+                            Learning Circles will begin in early September and last for about six weeks.
                         </p>
                     </div>
                 </div>
-                <div class="col-md-6 col-sm-12">
-                    <div id="su-contact" class="signup-question">
-                        <p>Sign up and we'll notify you once courses, dates and locations are confirmed.</p>
-                        <form id= "su-contact-form" action="{% url 'interest:sync' %}" method="POST">
-                            {% csrf_token %}
-                            <div class="form-group">
-                                <label class="sr-only" for="su-name-input">Name</label>
-                                <input id="su-name-input" type="text" class="form-control" placeholder="Your name" name="name" required></input>
-                            </div>
-                            <!--input type="text" class="form-control" placeholder="email address or mobile number" name="contact"></input-->
-                            <div class="form-group">
-                                <label class="sr-only" for="su-email-input">Email</label>
-                                <input id="su-email-input" type="email" class="form-control" placeholder="Email address" name="email"></input>
-                            </div>
-                            <p>or</p>
-                            <div class="form-group">
-                               <label class="sr-only" for="su-mobile-input">Mobile number</label>
-                               <input id="su-mobile-input" type="tel" class="form-control" placeholder="Mobile number" name="mobile"></input>
-                            </div>
-                            <div class="alert alert-warning error hidden">Please enter either an email address or a mobile number.</div>
-                            <button type="submit" class="btn btn-info">Submit</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
                 <div class="col-md-6 col-sm-12">
                     <div class="faq-item">
                         <span class="icon"><i class="fa fa-graduation-cap"></i></span>
-                        <h4>What will I learn?</h4>
-
-                        <p>Each course has been selected in the hope that it is interesting and relevant to you and the people in your study group. As well as the informational content, we’ve designed the course time so that participants gain experience giving and receiving feedback feedback, working in groups, and feeling comfortable working online.</p>
+                        <h4>Where do we meet</h4>
+                        <p>
+                            Each Learning Circle meets at a branch of Chicago Public Library and is facilitated by a trained facilitator (often a cybernavigator).
+                        </p>
                     </div>
                 </div>
-                <div class="col-md-6 col-sm-12">
-                        <div id="su-course" class="signup-question hidden">
-                            <form id="su-course-form" action="{% url 'interest:sync' %}" method="POST">
-                                {% csrf_token %}
-                                <input type="hidden" name="id"></input>
-                                <div id="course-selection">
-                                    {% for course in interest.courses %}
-                                    <div class="checkbox">
-                                        <label><input type="checkbox" value="{{course}}" name="course"></input> {{ course }}</label>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                                <p>Other courses you would like to learn?</p>
-                                <input type="text" class="form-control" name="course" placeholder="Course name or link"></input>
-                                <input type="text" class="form-control" name="course" placeholder="Course name or link"></input>
-                                <button type="submit" class="btn btn-info">Submit</button>
-                            </form>
-                        </div>
-
-                </div>
-            </div>
-            <div class="row">
-
                 <div class="col-md-6 col-sm-12">
                     <div class="faq-item">
                         <span class="icon"><i class="fa fa-smile-o"></i></span>
-                        <h4>How will this all go down?</h4>
+                        <h4>What is my commitment?</h4>
 
                         <p>
-                            Every week you’ll join your study group for a meeting of minds (and regular high fives) in your
-                            local library branch. You’ll be guided through the online materials by a community organiser,
-                            who will help facilitate collaboration with your fellow learners.
+                            Learning Circles meet once a week for between 90 minutes and 2 hours to work through learning materials. It is up to the learners to determine if they want to commit to completing additional work outside of the Circle.
                         </p>
                     </div>
                 </div>
-                <div class="col-md-6 col-sm-12">
-                        <div id="su-location" class="signup-question hidden">
-                            <p>Where can you meet</p>
-                            <form id="su-location-form" action="{% url 'interest:sync' %}" method="POST">
-                                {% csrf_token %}
-                                <input type="hidden" name="id"></input>
-                                <div class="controls">
-                                    <select multiple="multiple" class="selectmultiple form-control" id="id_location" name="location">
-                                        <optgroup label="">
-                                            {% for location in interest.primary_locations %}
-                                            <option value="{{ location }}">{{ location }}</option>
-                                            {% endfor %}
-                                        </optgroup>
-                                        <optgroup label="Other">
-                                            {% for location in interest.secondary_locations %}
-                                            <option value="{{ location }}">{{ location }}</option>
-                                            {% endfor %}
-                                        </optgroup>
-                                    </select></div>
-                                <button type="submit" class="btn btn-info">Submit</button>
-                            </form>
-                        </div>
-
-                </div>
-            </div>
-            <div class="row">
-
                 <div class="col-md-6 col-sm-12">
                     <div class="faq-item">
                         <span class="icon"><i class="fa fa-clock-o"></i></span>
-                        <h4>How long will it take?</h4>
+                        <h4>What will I learn?</h4>
 
                         <p>
-                            The courses will run for between 5-7 weeks. However, the pace is largely up to you. You
-                            can always slow down or speed up - the materials are there to be used and you can use them
-                            however you want.
+                            Learning Circles work through free online learning material that comes from a number of providers, including Khan Academy, edX, Coursera, FutureLearn, and MIT OpenCourseware. In the spring, we offered courses in Academic Writing, GED Prep Math, Python, and Public Speaking (include links). We plan on expanding this offering to include courses in new topics such as finance, HTML/CSS, and applying for jobs.
                         </p>
 
                     </div>
-                </div>
-                <div class="col-md-6 col-sm-12">
-                        <div id="su-time" class="signup-question hidden">
-
-                            <p>What times would you prefer?</p>
-                            <form id="su-time-form" action="{% url 'interest:sync' %}" method="POST">
-                                {% csrf_token %}
-                                <input type="hidden" name="id"></input>
-                                <div id="div_id_time" class="form-group">
-                                    <div class="checkbox">
-                                        <label><input type="checkbox" name="time" value="Week morning" > Week morning</label>
-                                    </div>
-                                    <div class="checkbox">
-                                        <label><input type="checkbox" name="time" value="Week afternoon" > Week afternoon</label>
-                                    </div>
-                                    <div class="checkbox">
-                                        <label><input type="checkbox" name="time" value="Week evening" > Week evening</label>
-                                    </div>
-                                    <div class="checkbox">
-                                        <label><input type="checkbox" name="time" value="Weekend morning" > Weekend morning</label>
-                                    </div>
-                                    <div class="checkbox">
-                                        <label><input type="checkbox" name="time" value="Weekend afternoon" > Weekend afternoon</label>
-                                    </div>
-                                    <div class="checkbox">
-                                        <label><input type="checkbox" name="time" value="Weekend evening" > Weekend evening</label>
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn btn-info">Submit</button>
-                            </form>
-                        </div>
-
                 </div>
             </div>
             <div id="su-thanks" class="hidden">
@@ -216,7 +95,11 @@
                     </div>
                 </div>
             </div>
-            <hr />
+            <div class="row">
+                <div class="col-md-12">
+                   <a href="#signup" class="btn btn-lg btn-block btn-primary">Apply</a>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -226,6 +109,21 @@
         </div>
         {% include 'courses.html' %}
     </section-->
+
+    <!-- Modal -->
+    <div class="modal fade" id="interest-extra" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+           <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title" id="myModalLabel">Extra info</h4>
+              </div>
+              <div class="modal-body">
+                  {% include 'lead-extra.html' %}
+              </div>
+          </div>
+        </div>
+    </div>
 
     <section id="about">
         <div class="container">
@@ -238,9 +136,12 @@
                     <img src="{% static 'images/cpl-harold.jpg' %}" alt="CPL Harold Building Dome" />
                 </div>
                 <div class="col-md-8 description">
-                    <p>We believe that people learn better when they’re learning together, and we’ve designed the study groups to provide the maximum support from the library and project  staff as you work your way through some of the best free online educational content on the Web. As you move through the course, you’ll be able to share your progress, questions and successes with your study group, and provide support for others.</p>
+
+                    <p>With support from the Knight Foundation, Peer 2 Peer University and Chicago Public Library are hosting Learning Circles for individuals who want to complete online courses together, in-person at the libraries. We believe that people learn better when they’re learning together, and we’ve designed these study groups to provide maximum support for learners as they work their way through some of the best free online educational content on the Web.</p>
+
                     <p>The courses on offer have been carefully selected to be interesting and relevant to library users, and will lead to developing useful skills that can be applied in the online and offline worlds. Learners can choose to join any of the study groups.</p>
-                    <p>Want to get P2PU involved in your community? <a href="http://community.p2pu.org/t/beyond-chicago/1568">Let us know here</a>.</p>
+
+                    <p>For more information you can read all about Learning Circles at the <a href="https://p2pu.org">Learning Circles Hub</a> or contact <script>(function(m,d){var e=m+'@'+d;document.write('<a href="mailto:'+e+'">');document.write(e+'</a>');})('grif','p2pu');</script> .</p>
                 </div>
             </div>
         </div>
@@ -249,9 +150,5 @@
 {% endblock %}
 
 {% block scripts %}
-    <!--script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
-    <script src="{% static 'js/leaflet.markercluster.js' %}"></script>
-    <script src="{% static 'js/locations.js' %}"></script>
-    <script src="{% static 'js/map.js' %}"></script-->
     <script src="{% static 'js/interest.js' %}"></script>
 {% endblock %}

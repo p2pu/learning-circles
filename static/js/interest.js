@@ -47,17 +47,20 @@ var interest = (function($){
         }
         return true;
     }, function(data){
-        // update hidden input with interest id in other forms
         if (data.error !== undefined) {
-            $('#su-contact');
+            $('#su-contact-form>.error').removeClass('hidden');
         } else {
+            // update hidden input with interest id in other forms
             $(":input[name='id']").val(data.id)
-            $('#su-contact').addClass("hidden");
-            $('#su-course').removeClass("hidden");
-            scrollTo($('#su-course'));
+            $('#su-contact-form>.error').addClass('hidden');
+            $('#su-contact-form').addClass("hidden");
+            $('#su-contact-success').removeClass("hidden");
         }
     });
-    stepSubmit($('#su-course-form'), undefined, function(){
+    stepSubmit($('#su-extra-form'), undefined, function(){
+        $('#interest-extra').modal('hide');
+    });
+/*    stepSubmit($('#su-course-form'), undefined, function(){
         $('#su-course').addClass("hidden");
         $('#su-location').removeClass("hidden");
         scrollTo($('#su-location'));
@@ -72,7 +75,7 @@ var interest = (function($){
         $('#su-thanks').removeClass("hidden");
         scrollTo($('#su-thanks'));
     });
-
+*/
 
     //$(":input[name='contact']").on('blur', checkInputType);
     

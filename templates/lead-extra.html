@@ -1,0 +1,60 @@
+    <form id="su-extra-form" action="{% url 'interest:sync' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="id"></input>
+        <h3>What courses would you like to take?</h3>
+        <div id="course-selection">
+            {% for course in interest.courses %}
+            <div class="checkbox">
+                <label><input type="checkbox" value="{{course}}" name="course"></input> {{ course }}</label>
+            </div>
+            {% endfor %}
+        </div>
+        <p>Other courses you would like to learn?</p>
+        <input type="text" class="form-control" name="course" placeholder="Course name or link"></input>
+        <input type="text" class="form-control" name="course" placeholder="Course name or link"></input>
+        <hr>
+        
+        <h3>Where would you be able to attend a Learning Circle?</h3>
+        <div class="controls">
+          <select multiple="multiple" class="selectmultiple form-control" id="id_location" name="location">
+              <optgroup label="">
+                  {% for location in interest.primary_locations %}
+                  <option value="{{ location }}">{{ location }}</option>
+                  {% endfor %}
+              </optgroup>
+              <optgroup label="Other">
+                  {% for location in interest.secondary_locations %}
+                  <option value="{{ location }}">{{ location }}</option>
+                  {% endfor %}
+              </optgroup>
+          </select>
+        </div>
+        <hr>
+  
+        <h3>What times would work for you?</h3>
+        <div id="div_id_time" class="form-group">
+            <div class="checkbox">
+                <label><input type="checkbox" name="time" value="Week morning" > Week morning</label>
+            </div>
+            <div class="checkbox">
+                <label><input type="checkbox" name="time" value="Week afternoon" > Week afternoon</label>
+            </div>
+            <div class="checkbox">
+                <label><input type="checkbox" name="time" value="Week evening" > Week evening</label>
+            </div>
+            <div class="checkbox">
+                <label><input type="checkbox" name="time" value="Weekend morning" > Weekend morning</label>
+            </div>
+            <div class="checkbox">
+                <label><input type="checkbox" name="time" value="Weekend afternoon" > Weekend afternoon</label>
+            </div>
+            <div class="checkbox">
+                <label><input type="checkbox" name="time" value="Weekend evening" > Weekend evening</label>
+            </div>
+        </div>
+
+
+        <button type="submit" class="btn btn-info">Submit</button>
+
+    </form>
+
