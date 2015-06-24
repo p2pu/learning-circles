@@ -2135,7 +2135,7 @@ table th[class*="col-"] {
 
 .table-hover > tbody > tr > td.warning:hover,
 .table-hover > tbody > tr > th.warning:hover, .table-hover > tbody > tr.warning:hover > td, .table-hover > tbody > tr:hover > .warning, .table-hover > tbody > tr.warning:hover > th {
-  background-color: #ffb500; }
+  background-color: #ffb501; }
 
 .table > thead > tr > td.danger,
 .table > thead > tr > th.danger, .table > thead > tr.danger > td, .table > thead > tr.danger > th,
@@ -4383,7 +4383,7 @@ a.thumbnail.active {
   border-color: #FFBC1A;
   color: #fff; }
   .alert-warning hr {
-    border-top-color: #ffb500; }
+    border-top-color: #ffb501; }
   .alert-warning .alert-link {
     color: #e6e6e6; }
 
@@ -4591,7 +4591,7 @@ a.list-group-item-warning {
     color: inherit; }
   a.list-group-item-warning:hover, a.list-group-item-warning:focus {
     color: #fff;
-    background-color: #ffb500; }
+    background-color: #ffb501; }
   a.list-group-item-warning.active, a.list-group-item-warning.active:hover, a.list-group-item-warning.active:focus {
     color: #fff;
     background-color: #fff;
@@ -7768,16 +7768,18 @@ body {
 .jumbotron {
   position: relative;
   padding: 0;
-  margin-top: -60px;
+  margin-top: -80px;
   margin-bottom: 0;
   background-color: #ffffff; }
+  .jumbotron .heading {
+    margin-bottom: 2em; }
   .jumbotron:before {
     content: "";
     position: absolute;
     width: 100%;
     height: 100%;
     background-color: #ffffff;
-    background: url("/static/images/swirls.png") no-repeat 0 -93px;
+    background: url("/static/images/bck.png") no-repeat 0 -93px;
     background-size: inherit; }
     @media (min-width: 768px) {
       .jumbotron:before {
@@ -7801,25 +7803,42 @@ body {
       font-size: 1.2em;
       line-height: 1.8; }
   .jumbotron .session {
-    background-color: #fff;
-    background-image: linear-gradient(90deg, transparent 50px, #abced4 52px, #abced4 53px, transparent 2px), linear-gradient(#eee 0.1em, transparent 0.1em);
-    background-size: 100% 1.2em;
-    padding: 3em 1em 3em 3.8em;
-    line-height: 3em;
-    -webkit-box-shadow: 0px -6px 29px -4px #525665;
-    -moz-box-shadow: 0px -6px 29px -4px #525665;
-    box-shadow: 0px -6px 29px -4px #525665;
-    font-weight: bold; }
-    .jumbotron .session h4 {
-      font-family: 'Indie Flower', cursive;
-      font-size: 2em;
-      font-weight: bold; }
-    .jumbotron .session ul {
-      font-family: 'Indie Flower', cursive;
-      font-size: 2em;
-      list-style: upper-hexadecimal inside none; }
-      .jumbotron .session ul a {
-        color: #515665; }
+    background-color: #707782;
+    padding: 2em;
+    background: linear-gradient(0deg, #D3D8E6, #515665); }
+    .jumbotron .session p {
+      line-height: 1.3;
+      font-size: 1.3em;
+      color: #fff;
+      font-family: "Arvo", Helvetica, Arial, sans-serif; }
+    .jumbotron .session #su-contact-form .form-group {
+      width: 100%;
+      position: relative; }
+      .jumbotron .session #su-contact-form .form-group:before {
+        font-family: FontAwesome;
+        content: "";
+        position: absolute;
+        top: 12px;
+        font-size: 1.6em;
+        left: 13px;
+        color: #AAB0BF; }
+      .jumbotron .session #su-contact-form .form-group.name:before {
+        content: "\f007"; }
+      .jumbotron .session #su-contact-form .form-group.email:before {
+        content: "\f0e0"; }
+      .jumbotron .session #su-contact-form .form-group.phone:before {
+        content: "\f10b"; }
+    .jumbotron .session #su-contact-form .form-control {
+      width: 100%;
+      margin: 1em 0;
+      padding-left: 3em; }
+    .jumbotron .session #su-contact-form .btn {
+      width: 100%; }
+    .jumbotron .session #su-contact-form .or {
+      color: #FFFFFF; }
+
+.video {
+  margin-top: 25px; }
 
 .course-tile {
   position: relative;
@@ -7969,7 +7988,7 @@ body {
 #faq .faq-item {
   background-color: #FFFFFF;
   padding: 1em;
-  min-height: 330px;
+  min-height: 260px;
   margin-top: 1em;
   margin-bottom: 1em; }
 #faq .icon {
