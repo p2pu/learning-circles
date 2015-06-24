@@ -11,31 +11,41 @@
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron" id="top">
         <div class="primary container">
-            <div class="col-md-6">
-                <h1>Master new skills.<br />Together.<br />In the library.<br />For free.</h1>
+            <div class="col-md-12 text-center heading">
+                <h2>Master new skills. Together. In the library. For free.</h2>
             </div>
-            <div class="col-md-6 session">
-                <p>Learning Circles launching in September across Chicago. <a href="#signup" class="btn btn-primary">Apply below</a></p>
-                <p>If you are not in Chicago or you don't want to take a course right now, see <a href="https://p2pu.org">our homepage</a>.</p>
-            </div>
-        </div>
-        <div class="dark">
-            <div class="container">
-                <div id="signup" class="row">
-                    <div class="col-md-12">
-                        <p>Sign up and we’ll notify you once courses, dates, and locations are confirmed.</p>
-                        {% include 'lead.html' %}
+            <div class="col-md-4 col-md-offset-8 session" id="signup">
 
-                    </div>
-                    {% comment %}
-                    <div class="col-md-6">
-                        {% include 'mailchimp.html' %}
-                    </div>
-                    {% endcomment %}
-                </div>
+	            <p>Sign up and we’ll notify you once courses, dates, and locations are confirmed.</p>
+	            {% include 'lead.html' %}
+
             </div>
         </div>
     </div>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-6 video">
+					<video width="100%" controls>
+						<source src="{% static 'images/video.mp4' %}" type="video/mp4">
+						Your browser does not support the video tag.
+					</video>
+				</div>
+				<div class="col-md-6">
+					<p>
+						<h3>How can I learn? What is a Learning Circle?</h3>
+The Learning Circles model brings together learners in open community spaces to take online courses together. As a support group for learning, Learning Circles offer individuals a comfortable and consistent environment to motivate and to be motivated. Generally, Learning Circles meet once a week for approximately two hours.
+					</p>
+					<p>
+						Learning Circles launching in September across Chicago. <a href="#signup" class="btn-link">Apply for a Leraning Circle</a>
+					</p>
+
+					<p>
+						If you are not in Chicago or you don't want to take a course right now, see <a
+							href="https://p2pu.org">our homepage</a>.
+					</p>
+				</div>
+			</div>
+		</div>
 
     <section id="faq" class="shaded">
         <div class="container">
