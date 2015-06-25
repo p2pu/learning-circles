@@ -123,11 +123,18 @@ body {
 		padding: 2em;
 		background: linear-gradient(0deg, $gray-light, $gray-darker);
 
+        h3 {
+            margin-top: 0px;
+			line-height: 1.3;
+			font-size: 1.4em;
+			color: #fff;
+			font-family: $headings-font-family;
+		}
 
 
 		p {
 			line-height: 1.3;
-			font-size: 1.3em;
+			font-size: 1.1em;
 			color: #fff;
 			font-family: $headings-font-family;
 		}

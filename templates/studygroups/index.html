@@ -1,12 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block css %}
-    <!--link type="text/css" rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css">
-    <link type="text/css" rel="stylesheet" href="{% static 'css/MarkerCluster.css' %}">
-    <link type="text/css" rel="stylesheet" href="{% static 'css/MarkerCluster.Default.css' %}"-->
-{% endblock %}
-
 {% block content %}
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron" id="top">
@@ -15,7 +9,7 @@
                 <h2>Master new skills. Together. In the library. For free.</h2>
             </div>
             <div class="col-md-4 col-md-offset-8 session" id="signup">
-
+                <h3>Learning Circles are launching in September across Chicago.</h3>
 	            <p>Sign up and we’ll notify you once courses, dates, and locations are confirmed.</p>
 	            {% include 'lead.html' %}
 
@@ -35,10 +29,6 @@
 						<h3>What is a Learning Circle?</h3>
 The Learning Circles model brings together learners in open community spaces to take online courses together. As a support group for learning, Learning Circles offer individuals a comfortable and consistent environment to motivate and to be motivated.
 					</p>
-					<p>
-						Learning Circles are launching in September across Chicago.
-					</p>
-
 					<p>
 						If you are not in Chicago or want to learn more, check out <a
 							href="https://p2pu.org">our homepage</a>.
@@ -112,13 +102,6 @@ The Learning Circles model brings together learners in open community spaces to 
             </div>
         </div>
     </section>
-
-    <!--section id="courses">
-        <div class="container">
-            <h1>You can learn</h1>
-        </div>
-        {% include 'courses.html' %}
-    </section-->
 
     <!-- Modal -->
     <div class="modal fade" id="interest-extra" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">

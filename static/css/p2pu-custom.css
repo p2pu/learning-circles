@@ -2135,7 +2135,7 @@ table th[class*="col-"] {
 
 .table-hover > tbody > tr > td.warning:hover,
 .table-hover > tbody > tr > th.warning:hover, .table-hover > tbody > tr.warning:hover > td, .table-hover > tbody > tr:hover > .warning, .table-hover > tbody > tr.warning:hover > th {
-  background-color: #ffb501; }
+  background-color: #ffb500; }
 
 .table > thead > tr > td.danger,
 .table > thead > tr > th.danger, .table > thead > tr.danger > td, .table > thead > tr.danger > th,
@@ -4383,7 +4383,7 @@ a.thumbnail.active {
   border-color: #FFBC1A;
   color: #fff; }
   .alert-warning hr {
-    border-top-color: #ffb501; }
+    border-top-color: #ffb500; }
   .alert-warning .alert-link {
     color: #e6e6e6; }
 
@@ -4591,7 +4591,7 @@ a.list-group-item-warning {
     color: inherit; }
   a.list-group-item-warning:hover, a.list-group-item-warning:focus {
     color: #fff;
-    background-color: #ffb501; }
+    background-color: #ffb500; }
   a.list-group-item-warning.active, a.list-group-item-warning.active:hover, a.list-group-item-warning.active:focus {
     color: #fff;
     background-color: #fff;
@@ -7806,9 +7806,15 @@ body {
     background-color: #707782;
     padding: 2em;
     background: linear-gradient(0deg, #D3D8E6, #515665); }
+    .jumbotron .session h3 {
+      margin-top: 0px;
+      line-height: 1.3;
+      font-size: 1.4em;
+      color: #fff;
+      font-family: "Arvo", Helvetica, Arial, sans-serif; }
     .jumbotron .session p {
       line-height: 1.3;
-      font-size: 1.3em;
+      font-size: 1.1em;
       color: #fff;
       font-family: "Arvo", Helvetica, Arial, sans-serif; }
     .jumbotron .session #su-contact-form .form-group {
