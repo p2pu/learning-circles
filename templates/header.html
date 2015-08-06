@@ -27,6 +27,11 @@
 			  <li class="">
           <a href="http://info.p2pu.org/category/Chicago-Public-Library/" target="_blank">News</a>
         </li>
+        {% if user.is_authenticated %}
+        <li>
+        <a href="{% url 'studygroups_organize' %}">Organize</a>
+        </li>
+        {% endif %}
       </ul>
 			<ul class="navbar-nav logos hidden-xs hidden-sm">
 				<li>

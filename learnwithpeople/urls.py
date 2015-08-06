@@ -14,5 +14,5 @@ urlpatterns += i18n_patterns('',
     url(r'^interest/', include('interest.urls', namespace='interest')),
     url(r'^about/$', TemplateView.as_view(template_name="about.html"), name="about"),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
+    url(r'^accounts/', include('django.contrib.auth.urls'))
 )
