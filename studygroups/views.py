@@ -12,7 +12,7 @@ from django import http
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 
-from studygroups.models import Course, StudyGroup, Application, Reminder
+from studygroups.models import Course, Location, StudyGroup, Application, Reminder
 from studygroups.models import send_reminder
 from studygroups.forms import ApplicationForm, MessageForm
 from studygroups.sms import send_message
@@ -28,24 +28,15 @@ def landing(request):
         'courses': courses,
         'interest': {
             'courses': [
-                'Start Writing Fiction',
-                'Community Journalism: Digital and Social Media',
-                'Childhood in the Digital Age',
-                "A Beginner's Guide to Writing in English for University Study",
-                'How to Succeed at: Writing Applications',
-                'How to Succeed at: Interviews',
+                'Computer programming',
+                'Writing skills',
+                'How to Succeed at Interviews',
                 'Managing Your Money',
                 'High-Impact Business Writing',
-                'Finance for Non-Financial Professionals',
-                'Introduction to Public Speaking',
-                'Intro to HTML and CSS',
-                'JavaScript Basics',
-                'Intro to Java Programming',
+                'Public Speaking',
                 'Introduction to Psychology',
                 'Principles of Microeconomics',
-                'Introduction to Computer Science and Prorgramming',
                 'Single Variable Calculus',
-                'Introduction to Computer Science',
             ],
             'primary_locations': ['Harold Washington Library Center', 'Bezazian', 'Edgewater', 'Daley, Richard J.-Bridgeport', ],
             'secondary_locations': [
@@ -140,6 +131,7 @@ def organize(request):
     context = {
         'courses': Course.objects.all(),
         'study_groups': StudyGroup.objects.all(),
+        'locations': Location.objects.all()
     }
     return render_to_response('studygroups/organize.html', context, context_instance=RequestContext(request))
 

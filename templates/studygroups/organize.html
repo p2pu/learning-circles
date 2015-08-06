@@ -6,15 +6,14 @@
   <!-- Example row of columns -->
   <div class="row">
     <div class="col-md-12">
-      <h1>Study groups</h1>
+      <h1>Learning Circles</h1>
       <table class="table table-bordered">
         <thead>
         <tr>
             <th>Course</th>
-            <th>Time</th>
-            <th>Location</th>
+            <th>Details</th>
             <th>Signups</th>
-            <th>Messages</th>
+            <th>Facilitator</th>
             <th></th>
         </tr>
         </thead>
@@ -22,33 +21,28 @@
         {% for group in study_groups %}
             <tr>
                 <td>
-                    <a href="{{ group.course.link }}" target="_blank">{{ group.course }}</a>
+                    <a href="#{{ group.course.id }}" target="_blank">{{ group.course }}</a>
                 </td>
                 <td>
-                    {{ group.time }}
+                    {{group.start_date|date:"l" }}s, {{ group.start_date|date:"f A" }} at <a href="{{group.location.link}}" target="_blank">{{ group.location }}</a>
                 </td>
                 <td>
-                    <a href="{{group.location_link}}" target="_blank">{{ group.location }}</a>
+                    {{ group.application_set.count }} 
                 </td>
                 <td>
-                    {{ group.application_set.count }} / 
-                    {{ group.max_size }}
                 </td>
                 <td>
-                    <a href="{% url 'studygroups_organize_messages' group.id %}">{{ group.reminder_set.count }}</a>
-                </td>
-                <td>
-                    <div class="btn-group">
+                    <!--div class="btn-group">
                         <a class="btn btn-mini btn-primary" href="{% url 'studygroups_email' group.id %}">
                             <i class="glyphicon glyphicon-envelope"></i> send email
                         </a>
-                    </div>
+                    </div-->
                 </td>
             </tr>
         {% endfor %}
         </tbody>
       </table>
-      <!--p><a href="{% url 'admin:studygroups_studygroup_add' %}" class="btn btn-primary">Add study group</a></p-->
+      <p><a href="{% url 'admin:studygroups_studygroup_add' %}" class="btn btn-primary">Add study group</a></p>
     </div>
   </div>
 
@@ -59,6 +53,7 @@
         <thead>
         <tr>
             <th>Title</th>
+            <th>Caption</th>
             <th>Start date</th>
             <th>Duration</th>
         </tr>
@@ -67,13 +62,49 @@
         {% for course in courses %}
             <tr>
                 <td>
+                    <a id="{{course.id}}"></a>
                     <a href="{{course.link }}" target="_blank">{{ course.title }}</a>
+                </td>
+                <td>
+                    {{ course.caption }}
                 </td>
                 <td>
                     {{ course.start_date }}
                 </td>
                 <td>
                     {{ course.duration }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <!--p><a href="{% url 'admin:studygroups_course_add' %}" class="btn btn-primary">Add course</a></p-->
+
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Locations</h1>
+      <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Address</th>
+            <th>Contact</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for location in locations %}
+            <tr>
+                <td>
+                    <a href="{{course.link }}" target="_blank">{{ location.name }}</a>
+                </td>
+                <td>
+                    {{ location.address }}
+                </td>
+                <td>
+                    {{ location.contact_name }} &lt;{{ location.contact }}&gt;
                 </td>
             </tr>
         {% endfor %}

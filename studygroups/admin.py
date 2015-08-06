@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from studygroups.models import Course, StudyGroup, Application, Reminder
+from studygroups.models import Course, Location, StudyGroup, Application, Reminder
 
 class ApplicationInline(admin.TabularInline):
     model = Application
@@ -17,6 +17,9 @@ class StudyGroupSignupAdmin(admin.ModelAdmin):
 class CourseAdmin(admin.ModelAdmin):
     pass
 
+class LocationAdmin(admin.ModelAdmin):
+    pass
+
 class ApplicationAdmin(admin.ModelAdmin):
     list_display = ('name', 'study_group', 'contact_method', 'created_at')
 
@@ -28,6 +31,7 @@ class ReminderAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Course, CourseAdmin)
+admin.site.register(Location, LocationAdmin)
 admin.site.register(StudyGroup, StudyGroupAdmin)
 admin.site.register(Application, ApplicationAdmin)
 admin.site.register(Reminder, ReminderAdmin)

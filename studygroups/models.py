@@ -54,16 +54,27 @@ class Course(models.Model):
         return self.title
 
 
+class Location(models.Model):
+    name = models.CharField(max_length=256)
+    address = models.CharField(max_length=256)
+    contact_name = models.CharField(max_length=256)
+    contact = models.CharField(max_length=256)
+    link = models.URLField()
+
+    def __unicode__(self):
+        return self.name
+
+
 class StudyGroup(models.Model):
     name = models.CharField(max_length=128, default=_study_group_name)
     course = models.ForeignKey('studygroups.Course')
-    location = models.CharField(max_length=128)
-    location_link = models.URLField()
-    start_date = models.DateTimeField()
+    location = models.ForeignKey('studygroups.Location')
+    location_details = models.CharField(max_length=128)
+    start_date = models.DateTimeField() # Both day and time could be captured by start_date - eg: start Wednesday 1 July at 19:00 implies regular meetings on Wednesdays at 19:00
     end_date = models.DateTimeField()
-    day = models.CharField(max_length=128, choices=zip(calendar.day_name, calendar.day_name))
-    time = models.TimeField()
-    duration = models.IntegerField()
+    day = models.CharField(max_length=128, choices=zip(calendar.day_name, calendar.day_name)) #TODO remove this field
+    time = models.TimeField() #TODO remove this field
+    duration = models.IntegerField() # meeting duration in minutes
     timezone = models.CharField(max_length=128)
     max_size = models.IntegerField()
     description = models.TextField()
@@ -75,6 +86,7 @@ class StudyGroup(models.Model):
 
     def __unicode__(self):
         return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day, self.time, self.location)
+
 
 PREFERRED_CONTACT_METHOD = [
     ('Email', 'Email'),
@@ -199,6 +211,7 @@ def send_group_message(study_group, email_subject, email_body, sms_body):
         except twilio.TwilioRestException as e:
             errors.push[e]
     if len(errors):
+        #TODO: log errors
         raise Exception(errors)
 
 
