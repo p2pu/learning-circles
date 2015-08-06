@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.35"
-     inkscape:cx="4424.1734"
-     inkscape:cy="-216.03343"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="5070.2366"
+     inkscape:cy="-273.04061"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -2586,5 +2586,17 @@
        height="9.5033817"
        x="3011.9927"
        y="1816.938" />
+    <text
+       xml:space="preserve"
+       style="font-size:28px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="5531.4287"
+       y="1612.3622"
+       id="text6041"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan6043"
+         x="5531.4287"
+         y="1612.3622"
+         style="font-size:56px">TODO accepting applicatins</tspan></text>
   </g>
 </svg>
