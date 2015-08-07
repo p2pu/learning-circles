@@ -4,6 +4,7 @@ from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import Permission, Group
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.contrib import messages
@@ -131,7 +132,8 @@ def organize(request):
     context = {
         'courses': Course.objects.all(),
         'study_groups': StudyGroup.objects.all(),
-        'locations': Location.objects.all()
+        'locations': Location.objects.all(),
+        'facilitators': Group.objects.get(name='facilitators').user_set.all()
     }
     return render_to_response('studygroups/organize.html', context, context_instance=RequestContext(request))
 

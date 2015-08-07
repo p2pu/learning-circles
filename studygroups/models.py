@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.conf import settings
+from django.contrib.auth.models import User
 
 from s3direct.fields import S3DirectField
 
@@ -70,6 +71,7 @@ class StudyGroup(models.Model):
     course = models.ForeignKey('studygroups.Course')
     location = models.ForeignKey('studygroups.Location')
     location_details = models.CharField(max_length=128)
+    facilitator = models.ForeignKey(User)
     start_date = models.DateTimeField() # Both day and time could be captured by start_date - eg: start Wednesday 1 July at 19:00 implies regular meetings on Wednesdays at 19:00
     end_date = models.DateTimeField()
     day = models.CharField(max_length=128, choices=zip(calendar.day_name, calendar.day_name)) #TODO remove this field
