@@ -86,7 +86,7 @@ class TestSignupModels(TestCase):
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
         reminder = Reminder.objects.all()[0]
-        print(reminder.meeting_time)
+        #print(reminder.meeting_time)
         self.assertEqual(reminder.meeting_time, next_meeting_date(sg))
         #TODO check that email was sent to site admin
         #TODO test with unicode in generated email subject
