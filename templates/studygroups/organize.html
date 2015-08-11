@@ -30,6 +30,7 @@
                     {{ group.application_set.count }} 
                 </td>
                 <td>
+                    {{ group.facilitator.first_name }} {{ group.facilitator.last_name }}
                 </td>
                 <td>
                     <!--div class="btn-group">
@@ -45,6 +46,34 @@
       <p><a href="{% url 'admin:studygroups_studygroup_add' %}" class="btn btn-primary">Add study group</a></p>
     </div>
   </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Facilitators</h1>
+      <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for facilitator in facilitators %}
+            <tr>
+                <td>
+                    
+                    <a href="mailto:{{facilitator.email}}">{{ facilitator.first_name }} {{ facilitator.last_name }} &lt;{{ facilitator.email }}&gt;</a>
+                </td>
+                <td>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <p><a href="{% url 'admin:auth_user_add' %}" class="btn btn-primary">Add user</a></p>
+    </div>
+  </div>
+
 
   <div class="row">
     <div class="col-md-12">
@@ -78,8 +107,7 @@
         {% endfor %}
         </tbody>
       </table>
-      <!--p><a href="{% url 'admin:studygroups_course_add' %}" class="btn btn-primary">Add course</a></p-->
-
+      <p><a href="{% url 'admin:studygroups_course_add' %}" class="btn btn-primary">Add course</a></p>
     </div>
   </div>
 
@@ -98,19 +126,19 @@
         {% for location in locations %}
             <tr>
                 <td>
-                    <a href="{{course.link }}" target="_blank">{{ location.name }}</a>
+                    <a href="{{location.link }}" target="_blank">{{ location.name }}</a>
                 </td>
                 <td>
                     {{ location.address }}
                 </td>
                 <td>
-                    {{ location.contact_name }} &lt;{{ location.contact }}&gt;
+                    <a href="mailto:{{location.contact}}">{{ location.contact_name }} &lt;{{ location.contact }}&gt;</a>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
       </table>
-      <!--p><a href="{% url 'admin:studygroups_course_add' %}" class="btn btn-primary">Add course</a></p-->
+      <p><a href="{% url 'admin:studygroups_location_add' %}" class="btn btn-primary">Add location</a></p>
 
     </div>
   </div>
