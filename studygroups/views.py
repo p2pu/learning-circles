@@ -12,6 +12,7 @@ from django.conf import settings
 from django import http
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
 
 from studygroups.models import Course, Location, StudyGroup, Application, Reminder
 from studygroups.models import send_reminder
@@ -28,74 +29,9 @@ def landing(request):
     context = {
         'courses': courses,
         'interest': {
-            'courses': [
-                'Computer programming',
-                'Writing skills',
-                'How to Succeed at Interviews',
-                'Managing Your Money',
-                'High-Impact Business Writing',
-                'Public Speaking',
-                'Introduction to Psychology',
-                'Principles of Microeconomics',
-                'Single Variable Calculus',
-            ],
-            'primary_locations': ['Harold Washington Library Center', 'Bezazian', 'Edgewater', 'Daley, Richard J.-Bridgeport', ],
-            'secondary_locations': [
-                'Lincoln Park', 'Lincoln Belmont', 'Merlo', 'Uptown', 'West Town', 'Near North', 'Roden',
-                'Mount Greenwood', 'Oriole Park', 'Rogers Park', 'Humboldt Park', 'Logan Square',
-                'Bucktown-Wicker Park', 'Independence', 'Edgebrook', 'Northtown', 'Roosevelt', 
-                'Budlong Woods',
-                'Wrightwood-Ashburn',
-                'Scottsdale',
-                'Clearing',
-                'Garfield Ridge',
-                'Dunning',
-                'West Belmont',
-                'Austin-Irving',
-                'Mayfair', 
-                'Jefferson Park',
-                'King',
-                'Chinatown', 
-                'Portage-Cragin',
-                'Daley, Richard M.-W Humboldt',
-                'Manning',
-                'West Lawn',
-                'Chicago Lawn',
-                'Hall', 
-                'Blackstone',
-                'Hegewisch',
-                'North Pulaski',
-                'North Austin',
-                'Walker',
-                'West Pullman',
-                'Beverly',
-                'Brighton Park',
-                'Archer Heights', 
-                'Little Village',
-                'Toman',
-                'Douglass',
-                'Lozano',
-                'Vodak-East Side',
-                'South Chicago',
-                'Jeffery Manor', 
-                'Avalon',
-                'South Shore',
-                'Pullman',
-                'West Chicago Avenue',
-                'Sherman Park',
-                'Back of the Yards',
-                'Chicago Bee',
-                'McKinley Park',
-                'Whitney M. Young, Jr.',
-                'Greater Grand Crossing',
-                'Coleman',
-                'Altgeld', 
-                'Legler',
-                'Kelly', 
-                'Thurgood Marshall',
-                'Brainerd',
-                'West Englewood',
-            ],
+            'courses': [],
+            'primary_locations': [],
+            'secondary_locations': [],
         },
     }
     return render_to_response('studygroups/index.html', context, context_instance=RequestContext(request))
@@ -125,6 +61,16 @@ def apply(request):
         'form': form
     }
     return render_to_response('studygroups/apply.html', context, context_instance=RequestContext(request))
+
+
+@login_required
+def facilitator(request):
+    study_groups = StudyGroup.objects.filter(facilitator=request.user)
+    study_groups = study_groups.filter(end_date__gt=timezone.now())
+    context = {
+        'study_groups': study_groups,
+    }
+    return render_to_response('studygroups/facilitator.html', context, context_instance=RequestContext(request))
 
 
 @login_required

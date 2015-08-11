@@ -4,6 +4,7 @@ from django.views.generic import TemplateView
 urlpatterns = patterns('',
     url(r'^$', 'studygroups.views.landing', name='studygroups_landing'),
     url(r'^apply/$', 'studygroups.views.apply', name='studygroups_apply'),
+    url(r'^facilitator/$', 'studygroups.views.facilitator', name='studygroups_facilitator'),
     url(r'^organize/$', 'studygroups.views.organize', name='studygroups_organize'),
     url(r'^organize/studygroup/(?P<study_group_id>[\d]+)/message/compose/$', 'studygroups.views.email', name='studygroups_email'),
     url(r'^organize/studygroup/(?P<study_group_id>[\d]+)/message/edit/(?P<message_id>[\d]+)/$', 'studygroups.views.messages_edit', name='studygroups_messages_edit'),
