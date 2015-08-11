@@ -15,8 +15,6 @@ class ApplicationForm(forms.ModelForm):
             self.add_error('email', "Please enter your email address or change your preferred contact method.")
         elif contact_method == 'Text' and not cleaned_data.get('mobile'):
             self.add_error('mobile', "Please enter your mobile number or change your preferred contact method.")
-        elif contact_method == 'Phone' and not cleaned_data.get('mobile'):
-            self.add_error('mobile', "Please enter your mobile number or change your preferred contact method.")
 
     class Meta:
         model = Application
