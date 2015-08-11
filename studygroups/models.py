@@ -86,6 +86,9 @@ class StudyGroup(models.Model):
         q = datetime.datetime.combine(timezone.now().date(), self.time) + datetime.timedelta(minutes=self.duration)
         return q.time()
 
+    def next_meeting(self):
+        return next_meeting_date(self)
+
     def __unicode__(self):
         return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day, self.time, self.location)
 
@@ -145,10 +148,13 @@ def next_meeting_date(study_group):
         date.year, date.month, date.day,
         time.hour, time.minute
     ))
+    while meeting_datetime < study_group.start_date:
+        meeting_datetime = meeting_datetime + datetime.timedelta(weeks=1)
+
     if meeting_datetime < now:
         meeting_datetime = meeting_datetime + datetime.timedelta(weeks=1)
 
-    if meeting_datetime < study_group.start_date or meeting_datetime > study_group.end_date:
+    if meeting_datetime > study_group.end_date:
         return None
     return meeting_datetime
 
