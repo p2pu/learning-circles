@@ -93,19 +93,23 @@ class StudyGroup(models.Model):
         return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day, self.time, self.location)
 
 
-PREFERRED_CONTACT_METHOD = [
-    ('Email', 'Email'),
-    ('Text', 'Text'),
-]
-
-COMPUTER_ACCESS = [
-    ('No', 'No'),
-    ('Sometimes', 'Sometimes'),
-    ('Yes', 'Yes'),
-]
-
-
 class Application(models.Model):
+    EMAIL = 'Email'
+    TEXT = 'Text'
+    PREFERRED_CONTACT_METHOD = [
+        (EMAIL, 'Email'),
+        (TEXT, 'Text'),
+    ]
+
+    NO = 'No'
+    SOMETIMES = 'Sometimes'
+    YES = 'Yes'
+    COMPUTER_ACCESS = [
+        (NO, 'No'),
+        (SOMETIMES, 'Sometimes'),
+        (YES, 'Yes'),
+    ]
+
     study_group = models.ForeignKey('studygroups.StudyGroup')
     name = models.CharField(max_length=128)
     contact_method = models.CharField(max_length=128, choices=PREFERRED_CONTACT_METHOD)
@@ -207,11 +211,11 @@ def generate_reminder(study_group):
 
 
 def send_group_message(study_group, email_subject, email_body, sms_body):
-    to = [su.email for su in study_group.application_set.filter(accepted_at__isnull=False, contact_method='Email')]
+    to = [su.email for su in study_group.application_set.filter(accepted_at__isnull=False, contact_method=Application.EMAIL)]
     send_mail(email_subject.strip('\n'), email_body, settings.DEFAULT_FROM_EMAIL, to, fail_silently=False)
 
     # send SMS
-    tos = [su.mobile for su in study_group.application_set.filter(accepted_at__isnull=False, contact_method='Text')]
+    tos = [su.mobile for su in study_group.application_set.filter(accepted_at__isnull=False, contact_method=Application.TEXT)]
     errors = []
     for to in tos:
         try:
