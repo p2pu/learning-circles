@@ -29,8 +29,8 @@ def landing(request):
     context = {
         'courses': courses,
         'interest': {
-            'courses': [],
-            'primary_locations': [],
+            'courses': courses,
+            'primary_locations': Location.objects.all(),
             'secondary_locations': [],
         },
     }
