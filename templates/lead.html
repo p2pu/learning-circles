@@ -1,5 +1,6 @@
 <form id= "su-contact-form" class="form-inline" action="{% url 'interest:sync' %}" method="POST">
     {% csrf_token %}
+    <input type="hidden" name="utm"></input>
     <div class="form-group name">
         <label class="sr-only" for="su-name-input">Name</label>
         <input id="su-name-input" type="text" class="form-control" placeholder="Your name" name="name" required></input>

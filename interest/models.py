@@ -8,5 +8,6 @@ class Lead(models.Model):
     course = models.CharField(max_length=1024, blank=True, null=True)
     location = models.CharField(max_length=1024, blank=True, null=True)
     time = models.CharField(max_length=1024, blank=True, null=True)
+    utm = models.CharField(max_length=1024, blank=True, null=True, verbose_name="Acquisition source")
 
     created_at = models.DateTimeField(auto_now_add=True)

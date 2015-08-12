@@ -1,4 +1,12 @@
 var interest = (function($){
+
+    function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+
     function stepSubmit(form, validate, success){
         form.submit(function(e){
             e.preventDefault();
@@ -7,6 +15,12 @@ var interest = (function($){
                 if (validate() === false){
                     return;
                 }
+            }
+            if (location.search.contains('utm_')){
+                var utm = 'utm_source=' + getParameterByName('utm_source')
+                utm += '&utm_medium=' + getParameterByName('utm_medium')
+                utm += '&utm_campaign=' + getParameterByName('utm_campaign')
+                $(":input[name='utm']").val(utm);
             }
             $.ajax({
                 type: "POST",
