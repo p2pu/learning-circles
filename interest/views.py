@@ -10,7 +10,7 @@ def sync(request):
         post_data = request.POST.copy()
         lead = None
         if 'id' in request.POST:
-            lead_data = { key:json.dumps(value) for key,value in request.POST.iterlists() if key in ['course', 'location', 'time'] }
+            lead_data = { key:json.dumps(value) for key,value in request.POST.iterlists() if key in ['course', 'location', 'time', 'source'] }
             leads = Lead.objects.filter(id=request.POST.get('id'))
             leads.update(**lead_data)
             lead = leads[0]

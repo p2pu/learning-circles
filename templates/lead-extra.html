@@ -9,52 +9,23 @@
             </div>
             {% endfor %}
         </div>
-        <p>Other courses you would like to learn?</p>
-        <input type="text" class="form-control" name="course" placeholder="Course name or link"></input>
-        <input type="text" class="form-control" name="course" placeholder="Course name or link"></input>
         <hr>
         
         <h3>Where would you be able to attend a Learning Circle?</h3>
         <div class="controls">
-          <select multiple="multiple" class="selectmultiple form-control" id="id_location" name="location">
-              <optgroup label="">
-                  {% for location in interest.primary_locations %}
-                  <option value="{{ location }}">{{ location }}</option>
-                  {% endfor %}
-              </optgroup>
-              <optgroup label="Other">
-                  {% for location in interest.secondary_locations %}
-                  <option value="{{ location }}">{{ location }}</option>
-                  {% endfor %}
-              </optgroup>
-          </select>
+            {% for location in interest.locations %}
+            <div class="checkbox">
+              <label><input type="checkbox" value="{{location}}" name="location"></input>{{ location }}, {{location.address}}</label>
+            </div>
+            {% endfor %}
         </div>
         <hr>
-  
-        <h3>What times would work for you?</h3>
-        <div id="div_id_time" class="form-group">
-            <div class="checkbox">
-                <label><input type="checkbox" name="time" value="Week morning" > Week morning</label>
-            </div>
-            <div class="checkbox">
-                <label><input type="checkbox" name="time" value="Week afternoon" > Week afternoon</label>
-            </div>
-            <div class="checkbox">
-                <label><input type="checkbox" name="time" value="Week evening" > Week evening</label>
-            </div>
-            <div class="checkbox">
-                <label><input type="checkbox" name="time" value="Weekend morning" > Weekend morning</label>
-            </div>
-            <div class="checkbox">
-                <label><input type="checkbox" name="time" value="Weekend afternoon" > Weekend afternoon</label>
-            </div>
-            <div class="checkbox">
-                <label><input type="checkbox" name="time" value="Weekend evening" > Weekend evening</label>
-            </div>
+
+        <h3>Where did you hear about Learning Circles?</h3>
+        <div class="form-group name">
+            <label class="sr-only" for="su-name-input"></label>
+            <input id="" type="text" class="form-control" placeholder="Where did you hear about Learning Circles?" name="source"></input>
         </div>
 
-
         <button type="submit" class="btn btn-info">Submit</button>
-
     </form>
-

@@ -30,8 +30,7 @@ def landing(request):
         'courses': courses,
         'interest': {
             'courses': courses,
-            'primary_locations': Location.objects.all(),
-            'secondary_locations': [],
+            'locations': Location.objects.all(),
         },
     }
     return render_to_response('studygroups/index.html', context, context_instance=RequestContext(request))
