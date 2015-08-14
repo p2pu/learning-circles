@@ -16,7 +16,7 @@ var interest = (function($){
                     return;
                 }
             }
-            if (location.search.contains('utm_')){
+            if (location.search.indexOf('utm_') !== -1){
                 var utm = 'utm_source=' + getParameterByName('utm_source')
                 utm += '&utm_medium=' + getParameterByName('utm_medium')
                 utm += '&utm_campaign=' + getParameterByName('utm_campaign')
