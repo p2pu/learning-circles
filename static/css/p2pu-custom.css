@@ -7472,6 +7472,11 @@ section.featured-work {
   .donate-page .donate-button {
     width: 100%; }
 
+.close {
+  color: #FF0000;
+  opacity: 1;
+  font-size: 30px; }
+
 body {
   line-height: 2; }
 
@@ -7783,12 +7788,10 @@ body {
     background-size: inherit; }
     @media (min-width: 768px) {
       .jumbotron:before {
-        background-size: contain;
-        background-position: 0 -67px; } }
+        background-position: -50px 50px; } }
     @media (min-width: 1199px) {
       .jumbotron:before {
-        background-size: cover;
-        background-position: 0 -128px; } }
+        background-position: 50px 0; } }
   .jumbotron h1 {
     font-size: 3.5em; }
   .jumbotron .primary {
@@ -7842,6 +7845,10 @@ body {
       width: 100%; }
     .jumbotron .session #su-contact-form .or {
       color: #FFFFFF; }
+  .jumbotron #interest-extra {
+    background-color: #F3F4F8;
+    padding: 3em;
+    border: 1px #515665 solid; }
 
 .video {
   margin-top: 25px; }
@@ -7851,73 +7858,7 @@ body {
   display: block;
   border: 1px #D3D8E6 solid;
   margin: 1.5em 0;
-  padding: 0.5em 1em;
-  	/*.calendar-wrap {
-  		text-align: center;
-  		background-color: aliceblue;
-  		border-radius: 15%;
-  		padding: 0 0.9em 0.5em 0.9em;
-  		margin: 0 0 1em 0;
-  		display: inline-block;
-  	}
-  
-  	.day {
-  		font-size: 0.75em;
-  	}
-  
-  	.calendar {
-  		width: 60px;
-  		position: relative;
-  		margin: 0 auto;
-  	}
-  
-  	.date {
-  		text-align: left;
-  		font-size: 2em;
-  		font-family: $headings-font-family;
-  		line-height: 1;
-  	}
-  
-  	.month {
-  		font-size: 2em;
-  		font-family: $headings-font-family;
-  		line-height: 1;
-  		text-align: left;
-  	}
-  
-  	.year {
-  		font-weight: bold;
-  		font-size: 0.8em;
-  		position: absolute;
-  		top: 25px;
-  		right: 0;
-  		@include rotate(-90deg);
-  	}*/
-  	/*.seat {
-  		text-transform: uppercase;
-  		width: 50px;
-  		height: 50px;
-  		float: left;
-  		background: $brand-primary;
-  		text-align: center;
-  		border-radius: 50%;
-  		line-height: 1.5;
-  		font-size: 0.7em;
-  		color: white;
-  		margin: 10px;
-  		padding-top: 10px;
-  
-  		&.free {
-  			background-color: $gray-light;
-  			color: $brand-primary;
-  
-  			&:hover {
-  				background-color: $gray;
-  				color: $white;
-  				text-decoration: none;
-  			}
-  		}
-  	}*/ }
+  padding: 0.5em 1em; }
   .course-tile hr {
     margin-top: 5px;
     margin-bottom: 5px; }
@@ -7983,7 +7924,6 @@ body {
   padding: 2em 0; }
 
 .signup-question {
-  padding: 1em;
   margin-top: 1em;
   margin-bottom: 1em;
   min-height: 330px;
@@ -8034,8 +7974,13 @@ footer .footer-logo {
 .alert {
   margin-bottom: 0; }
 
-#course-selection {
-  max-height: 9em;
-  overflow-y: scroll; }
+#course-selection, #location-selection {
+  -webkit-column-count: 2;
+  /* Chrome, Safari, Opera */
+  -moz-column-count: 2;
+  /* Firefox */
+  column-count: 2; }
+  #course-selection input[type="checkbox"], #location-selection input[type="checkbox"] {
+    margin-top: 10px; }
 
 /*# sourceMappingURL=p2pu-custom.css.map */
