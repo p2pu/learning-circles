@@ -1,26 +1,36 @@
 <form id= "su-contact-form" class="form-inline" action="{% url 'interest:sync' %}" method="POST">
     {% csrf_token %}
-    <input type="hidden" name="utm"></input>
+	<p>Sign up and we’ll notify you once courses, dates, and locations are confirmed.</p>
+    <input type="hidden" name="utm" />
     <div class="form-group name">
         <label class="sr-only" for="su-name-input">Name</label>
-        <input id="su-name-input" type="text" class="form-control" placeholder="Your name" name="name" required></input>
+        <input id="su-name-input" type="text"
+			   class="form-control" placeholder="Your name" name="name" required />
     </div>
     <!--input type="text" class="form-control" placeholder="email address or mobile number" name="contact"></input-->
     <div class="form-group email">
         <label class="sr-only" for="su-email-input">Email</label>
-        <input id="su-email-input" type="email" class="form-control" placeholder="Email address" name="email"></input>
+        <input id="su-email-input" type="email" class="form-control" placeholder="Email address" name="email" />
     </div>
 		<h4 class="or">or</h4>
     <div class="form-group phone">
        <label class="sr-only" for="su-mobile-input">Mobile number</label>
-       <input id="su-mobile-input" type="tel" class="form-control" placeholder="Mobile number" name="mobile"></input>
+       <input id="su-mobile-input" type="tel" class="form-control" placeholder="Mobile number" name="mobile" />
     </div>
     <button type="submit" class="btn btn-info">Submit</button>
     <div class="alert alert-warning error hidden">Please enter either an email address or a mobile number.</div>
 </form>
-<div id="su-contact-success" class="alert alert-success success hidden">
+
+<div id="su-contact-success" class="text-center alert alert-success success hidden">
+	<h2>
+		Thank you for signing up!
+	</h2>
   <p>
-    Thank you for signing up! We would love to ask you a few more questions. <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#interest-extra">Sure, why not?</button>
+     In order to make this the best experience for you, we would like to ask you a few more questions?
   </p>
+	<br />
+  <a class="btn btn-primary" role="button" data-toggle="collapse" href="#interest-extra" aria-expanded="false" aria-controls="interest-extra">
+	  Sure, ask away
+  </a>
 </div>
 
