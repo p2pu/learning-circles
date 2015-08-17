@@ -87,11 +87,9 @@ body {
     background-size: inherit;
 
 		@media (min-width: $screen-sm) {
-			//background-size: contain;
 			background-position: -50px 50px;
 		}
 		@media (min-width: $screen-md-max) {
-			//background-size: cover;
       background-position: 50px 0;
 		}
 	}
@@ -286,47 +284,6 @@ body {
 		text-align: left;
 	}
 
-	/*.calendar-wrap {
-		text-align: center;
-		background-color: aliceblue;
-		border-radius: 15%;
-		padding: 0 0.9em 0.5em 0.9em;
-		margin: 0 0 1em 0;
-		display: inline-block;
-	}
-
-	.day {
-		font-size: 0.75em;
-	}
-
-	.calendar {
-		width: 60px;
-		position: relative;
-		margin: 0 auto;
-	}
-
-	.date {
-		text-align: left;
-		font-size: 2em;
-		font-family: $headings-font-family;
-		line-height: 1;
-	}
-
-	.month {
-		font-size: 2em;
-		font-family: $headings-font-family;
-		line-height: 1;
-		text-align: left;
-	}
-
-	.year {
-		font-weight: bold;
-		font-size: 0.8em;
-		position: absolute;
-		top: 25px;
-		right: 0;
-		@include rotate(-90deg);
-	}*/
 
 	.duration-wrap {
 		text-align: center;
@@ -340,32 +297,6 @@ body {
 		font-weight: bold;
 	}
 
-	/*.seat {
-		text-transform: uppercase;
-		width: 50px;
-		height: 50px;
-		float: left;
-		background: $brand-primary;
-		text-align: center;
-		border-radius: 50%;
-		line-height: 1.5;
-		font-size: 0.7em;
-		color: white;
-		margin: 10px;
-		padding-top: 10px;
-
-		&.free {
-			background-color: $gray-light;
-			color: $brand-primary;
-
-			&:hover {
-				background-color: $gray;
-				color: $white;
-				text-decoration: none;
-			}
-		}
-	}*/
-
 }
 
 .shaded {
@@ -374,7 +305,6 @@ body {
 }
 
 .signup-question {
-    padding: 1em;
     margin-top: 1em;
     margin-bottom: 1em;
     min-height: 330px;
