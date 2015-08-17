@@ -1,31 +1,50 @@
-    <form id="su-extra-form" action="{% url 'interest:sync' %}" method="POST">
-        {% csrf_token %}
-        <input type="hidden" name="id"></input>
-        <h3>What courses would you like to take?</h3>
-        <div id="course-selection">
-            {% for course in interest.courses %}
-            <div class="checkbox">
-                <label><input type="checkbox" value="{{course}}" name="course"></input> {{ course }}</label>
-            </div>
-            {% endfor %}
-        </div>
-        <hr>
-        
-        <h3>Where would you be able to attend a Learning Circle?</h3>
-        <div class="controls">
-            {% for location in interest.locations %}
-            <div class="checkbox">
-              <label><input type="checkbox" value="{{location}}" name="location"></input>{{ location }}, {{location.address}}</label>
-            </div>
-            {% endfor %}
-        </div>
-        <hr>
+<button type="button" class="close hidden" data-dismiss="alert" aria-label="Close">
+	<span aria-hidden="true">&times;</span>
+</button>
+<form id="su-extra-form" action="{% url 'interest:sync' %}" method="POST">
+	{% csrf_token %}
+	<input type="hidden" name="id" />
 
-        <h3>Where did you hear about Learning Circles?</h3>
-        <div class="form-group name">
-            <label class="sr-only" for="su-name-input"></label>
-            <input id="" type="text" class="form-control" placeholder="Where did you hear about Learning Circles?" name="source"></input>
-        </div>
+	<h3>Which courses are you interested in taking?</h3>
 
-        <button type="submit" class="btn btn-info">Submit</button>
-    </form>
+	<div id="course-selection">
+		{% for course in interest.courses %}
+			<div class="checkbox">
+			  	<label>
+					<input type="checkbox" value="{{ course }}" name="course" />
+				  {{ course }}
+				</label>
+			</div>
+		{% endfor %}
+	</div>
+
+	<hr>
+	<h3>At which location you are able to participate in a Learning Circle?</h3>
+	<div id="location-selection" class="controls">
+		{% for location in interest.locations %}
+			<div class="checkbox">
+				<label>
+				  <input type="checkbox" value="{{ location }}" name="location" />
+				{{ location }}, {{ location.address }}
+				</label>
+			</div>
+		{% endfor %}
+	</div>
+
+	<hr>
+	<h3>Where did you hear about Learning Circles?</h3>
+
+	<div class="form-group name">
+		<label class="sr-only" for="su-name-input"></label>
+		<textarea id="source" class="form-control" placeholder="Where did you hear about Learning Circles?" name="source"></textarea>
+	</div>
+
+	<button type="submit" class="btn btn-info">Submit</button>
+</form>
+<div id="su-extra-success" class="success hidden">
+	<h2>Thank you!</h2>
+	<p>We will be sending all the information about courses dates and locations your way very shortly. <br />See you at the next Learning Circle.
+		<br /><br />
+		Your Chicago Public Library and Peer 2 Peer University Team.
+	</p>
+</div>

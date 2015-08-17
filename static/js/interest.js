@@ -72,7 +72,12 @@ var interest = (function($){
         }
     });
     stepSubmit($('#su-extra-form'), undefined, function(){
-        $('#interest-extra').modal('hide');
+        $('#su-extra-form').hide();
+        $('#su-extra-success, .close').removeClass('hidden');
+        $('.close').bind('click', function () {
+            $('#su-contact-success p').text('See you soon.');
+            $('#su-contact-success a.btn').hide();
+        });
     });
 /*    stepSubmit($('#su-course-form'), undefined, function(){
         $('#su-course').addClass("hidden");

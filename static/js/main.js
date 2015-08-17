@@ -11,7 +11,7 @@ var P2PU = window.P2PU || {};
     var init = function () {
         $(function () {
             // Smoth scrolling
-            $('a[href*=#]:not([href=#])').click(function () {
+            $('.navbar-nav a[href*=#]:not([href=#])').click(function () {
                 if (location.pathname.replace(/^\//, '') === this.pathname.replace(/^\//, '') && location.hostname === this.hostname) {
                     var target = $(this.hash);
                     target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
