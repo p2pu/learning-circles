@@ -28,6 +28,7 @@ def landing(request):
 
     context = {
         'courses': courses,
+        'learning_circles': StudyGroup.objects.all(),
         'interest': {
             'courses': courses,
             'locations': Location.objects.all(),
@@ -36,8 +37,8 @@ def landing(request):
     return render_to_response('studygroups/index.html', context, context_instance=RequestContext(request))
 
 
-def apply(request):
-    group = request.GET.get('group', None)
+def signup(request, study_group_id):
+    study_group = StudyGroup.objects.get(id=study_group_id)
 
     if request.method == 'POST':
         form = ApplicationForm(request.POST)
@@ -54,12 +55,13 @@ def apply(request):
             url = reverse('studygroups_landing')
             return http.HttpResponseRedirect(url)
     else:
-        form = ApplicationForm(initial={'study_group': group})
+        form = ApplicationForm(initial={'study_group': study_group})
 
     context = {
-        'form': form
+        'form': form,
+        'study_group': study_group,
     }
-    return render_to_response('studygroups/apply.html', context, context_instance=RequestContext(request))
+    return render_to_response('studygroups/signup.html', context, context_instance=RequestContext(request))
 
 
 @login_required
