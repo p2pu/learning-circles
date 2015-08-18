@@ -79,23 +79,5 @@ var interest = (function($){
             $('#su-contact-success a.btn').hide();
         });
     });
-/*    stepSubmit($('#su-course-form'), undefined, function(){
-        $('#su-course').addClass("hidden");
-        $('#su-location').removeClass("hidden");
-        scrollTo($('#su-location'));
-    });
-    stepSubmit($('#su-location-form'), undefined, function(){
-        $('#su-location').addClass("hidden");
-        $('#su-time').removeClass("hidden");
-        scrollTo($('#su-time'));
-    });
-    stepSubmit($('#su-time-form'), undefined, function(){
-        $('#su-time').addClass("hidden");
-        $('#su-thanks').removeClass("hidden");
-        scrollTo($('#su-thanks'));
-    });
-*/
-
-    //$(":input[name='contact']").on('blur', checkInputType);
     
 })(window.jQuery);
