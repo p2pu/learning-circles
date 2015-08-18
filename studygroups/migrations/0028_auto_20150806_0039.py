@@ -32,7 +32,11 @@ class Migration(migrations.Migration):
             field=models.CharField(default='none', max_length=128),
             preserve_default=False,
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
+            model_name='studygroup',
+            name='location',
+        ),
+        migrations.AddField(
             model_name='studygroup',
             name='location',
             field=models.ForeignKey(to='studygroups.Location'),
