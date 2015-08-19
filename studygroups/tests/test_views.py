@@ -30,7 +30,7 @@ class TestSignupViews(TestCase):
 
     def test_submit_application(self):
         c = Client()
-        resp = c.post('/en/signup/1/', self.APPLICATION_DATA)
+        resp = c.post('/en/signup/foo-bob-1/', self.APPLICATION_DATA)
         self.assertRedirects(resp, '/en/')
         self.assertEquals(Application.objects.all().count(), 1)
         # Make sure notification was sent 

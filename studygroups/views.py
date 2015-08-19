@@ -37,7 +37,7 @@ def landing(request):
     return render_to_response('studygroups/index.html', context, context_instance=RequestContext(request))
 
 
-def signup(request, study_group_id):
+def signup(request, location, study_group_id):
     study_group = StudyGroup.objects.get(id=study_group_id)
 
     if request.method == 'POST':

@@ -34,7 +34,7 @@
 								<p><a href="{{lc.location.link}}" target="_blank">{{ lc.location.name }}</a></p>
 							</address>
 							<hr />
-							<a href="{% url 'studygroups_signup' study_group_id=lc.pk %}" class="btn btn-info">
+							<a href="{% url 'studygroups_signup' location=lc.location.name|slugify study_group_id=lc.pk %}" class="btn btn-info">
 									<strong>Sign up</strong>
 							</a>
 					</div>
