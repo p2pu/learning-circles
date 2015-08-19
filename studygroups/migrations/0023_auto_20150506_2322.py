@@ -11,7 +11,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
+        migrations.RemoveField(
+            model_name='studygroup',
+            name='time',
+        ),
+        migrations.AddField(
             model_name='studygroup',
             name='time',
             field=models.TimeField(),
