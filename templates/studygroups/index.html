@@ -38,6 +38,10 @@ The Learning Circles model brings together learners in open community spaces to 
 	</div>
 
     <section id="faq" class="shaded">
+        {% include 'studygroups/learning-circles.html' %}
+    </section>
+
+    <section id="faq" class="shaded">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
@@ -84,37 +88,8 @@ The Learning Circles model brings together learners in open community spaces to 
                     </div>
                 </div>
             </div>
-            <div id="su-thanks" class="hidden">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="alert alert-success">
-                            <p>Great! We'll let you know once we've sorted out the logistics. Do you know anyone that would be interested in this? How about spreading the world via social media or in the real world?</p>
-                            <a href="https://twitter.com/share" class="twitter-share-button" data-url="http://chicago.p2pu.org" data-via="p2pu">Tweet</a>
-                            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </section>
-	{% comment %}
-		<!-- Modal -->
-    <div class="modal fade" id="interest-extra" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-           <div class="modal-content">
-              <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                  <h4 class="modal-title" id="myModalLabel">Extra info</h4>
-              </div>
-              <div class="modal-body">
-                  {% include 'lead-extra.html' %}
-              </div>
-          </div>
-        </div>
-    </div>
-	{% endcomment %}
-
-
     <section id="about">
         <div class="container">
 
