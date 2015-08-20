@@ -1,37 +1,35 @@
 {% load static %}
 {% load extras %}
 
-<div class="container">
-	<div class="row">
-		{% for lc in learning_circles %}
+{% for lc in learning_circles %}
+	<div class="article-wrapper bloc col-md-12" id="{{ lc.course.title|slugify }}">
+		<article>
 
-			<div class="col-md-4" id="{{ lc.course.title|slugify }}">
-				<div class="thumbnail">
-	        {% if lc.location.image %}
-						<img src="/media/{{ lc.location.image }}" alt="Cover image of the course" />
-					{% endif %}
-            <div class="caption">
-							<h4>{{ lc.course.title }}</h4>
-              <p><strong>{{ lc.day }}s {{ lc.time|time:"fA" }} - {{ lc.end_time|time:"fA" }}</strong></p>
-							<address class="text-left">
-								<p><a href="{{lc.location.link}}" target="_blank">{{ lc.location.name }}</a></p>
-							</address>
-
-							<p>{{ lc.course.caption }}</p>
-							<p>{{ lc.course.duration|capfirst }} beginning {{ lc.start_date|date:"j N" }}</p>
-
-              <p>This group will be working with the course content from <a href="{{ lc.course.link }}" target="_blank">{{ lc.course.provider }}</a></p>
-							<a href="{% url 'studygroups_signup' location=lc.location.name|slugify study_group_id=lc.pk %}" class="btn btn-info">
-									<strong>Sign up</strong>
-							</a>
+        <div class="clearfix">
+					<div class="img-wrapper col-md-4">
+						<img src="http://lorempixel.com/150/150/fashion" alt="">
 					</div>
-				</div>
+		      {% if lc.location.image %}
+						<div class="img-wrapper col-md-4">
+							<img src="/media/{{ lc.location.image }}" alt="Cover image of the course" />
+						</div>
+					{% endif %}
+					<div class="col-md-8">
+						<h4>{{ lc.course.title }}</h4>
+						<p><strong><i class="fa fa-calendar"></i>&nbsp; &nbsp;{{ lc.day }}s {{ lc.time|time:"fA" }} - {{ lc.end_time|time:"fA" }}</strong></p>
+						<address class="text-left">
+							<a href="{{lc.location.link}}" target="_blank"><i class="fa fa-map-marker"></i>&nbsp; &nbsp;{{ lc.location.name }}</a>
+						</address>
+						<hr>
+						<p>{{ lc.course.caption }}</p>
+						<strong><p>{{ lc.course.duration|capfirst }} beginning {{ lc.start_date|date:"j N" }}</p></strong>
+
+	          <div class="course-provider">This group will be working with the course content from <a href="{{ lc.course.link }}" target="_blank">{{ lc.course.provider }}</a></div>
+						<a href="{% url 'studygroups_signup' location=lc.location.name|slugify study_group_id=lc.pk %}" class="btn btn-info">
+								<strong>Sign up</strong>
+						</a>
+					</div>
 			</div>
-      {% if forloop.counter|divisibleby:"3" %}
-	  </div>
-	  <div class="row">
-      {% endif %}
-		{% endfor %}
+		</article>
 	</div>
-	<hr />
-</div>
+{% endfor %}
