@@ -47,6 +47,7 @@ class Course(models.Model):
     duration = models.CharField(max_length=128)
     prerequisite = models.TextField()
     time_required = models.CharField(max_length=128)
+    #TODO clarify difference between caption and description
     caption = models.TextField()
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -61,6 +62,7 @@ class Location(models.Model):
     contact_name = models.CharField(max_length=256)
     contact = models.CharField(max_length=256)
     link = models.URLField()
+    image = models.ImageField(blank=True)
 
     def __unicode__(self):
         return self.name
@@ -125,15 +127,31 @@ class Application(models.Model):
         return u"{0}".format(self.name)
 
 
-class Reminder(models.Model):
+class StudyGroupMeeting(models.Model):
     study_group = models.ForeignKey('studygroups.StudyGroup')
     meeting_time = models.DateTimeField(blank=True, null=True)
+
+
+class Reminder(models.Model):
+    study_group = models.ForeignKey('studygroups.StudyGroup')
+    meeting_time = models.DateTimeField(blank=True, null=True) #TODO remove this field
     email_subject = models.CharField(max_length=256)
     email_body = models.TextField()
     sms_body = models.CharField(max_length=160)
 
     created_at = models.DateTimeField(auto_now_add=True)
     sent_at = models.DateTimeField(blank=True, null=True)
+
+
+class Rsvp(models.Model):
+    study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting')
+    application = models.ForeignKey('studygroups.Application')
+    attending = models.BooleanField()
+
+
+class Feedback(models.Model):
+    study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting')
+    feedback = models.CharField(max_length=255)
 
 
 def accept_application(application):

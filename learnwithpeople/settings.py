@@ -77,7 +77,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'US/Central'
 
 USE_I18N = True
 
@@ -103,6 +103,10 @@ STATICFILES_FINDERS = (
     # other finders..
     'compressor.finders.CompressorFinder',
 )
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = path('upload')
+
 
 TEMPLATE_DIRS = (
     path('templates'),

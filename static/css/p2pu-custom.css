@@ -7349,7 +7349,12 @@ button.close {
   position: relative;
   -webkit-transition: background-color 0.3s linear;
   -o-transition: background-color 0.3s linear;
-  transition: background-color 0.3s linear; }
+  transition: background-color 0.3s linear;
+  padding: 0;
+  min-height: 650px;
+  max-height: 650px; }
+  .thumbnail img {
+    height: 66%; }
   .thumbnail:hover {
     text-decoration: none;
     background-color: #F3F4F8; }
@@ -7358,7 +7363,6 @@ button.close {
     text-align: center;
     background: #515665;
     color: #FFFFFF;
-    padding: 15px 0;
     margin-bottom: 0.5em;
     font-family: "Arvo", Helvetica, Arial, sans-serif;
     font-size: 1em; }
@@ -7371,26 +7375,7 @@ button.close {
     margin-top: 1em; }
 
 .csstransforms .thumbnail {
-  border: 0;
-  border-left: 60px solid #515665;
-  /* Make a little room */
-  padding-left: 10px; }
-  .csstransforms .thumbnail .thumbnail-side {
-    /* Abs positioning makes it not take up vert space */
-    position: absolute;
-    top: 95%;
-    left: -19%;
-    /* Border is the new background */
-    background: none;
-    /* Rotate from top left corner (not default) */
-    -webkit-transform-origin: 0 0;
-    -moz-transform-origin: 0 0;
-    -ms-transform-origin: 0 0;
-    -o-transform-origin: 0 0;
-    -webkit-transform: rotate(-90deg);
-    -ms-transform: rotate(-90deg);
-    -o-transform: rotate(-90deg);
-    transform: rotate(-90deg); }
+  border: 0; }
 
 .strech-banner {
   height: 350px;
@@ -7744,6 +7729,9 @@ body {
 .page-content {
   padding-top: 60px; }
 
+.thumbnail {
+  border-width: 0; }
+
 .navbar-logo img {
   width: 140px;
   padding: 1em 1em 1em 0; }
@@ -7857,8 +7845,7 @@ body {
   position: relative;
   display: block;
   border: 1px #D3D8E6 solid;
-  margin: 1.5em 0;
-  padding: 0.5em 1em; }
+  margin: 1.5em 0; }
   .course-tile hr {
     margin-top: 5px;
     margin-bottom: 5px; }
