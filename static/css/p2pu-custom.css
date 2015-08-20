@@ -7351,11 +7351,11 @@ button.close {
   -o-transition: background-color 0.3s linear;
   transition: background-color 0.3s linear;
   padding: 0; }
-  .thumbnail img {
-    height: 66%; }
   .thumbnail:hover {
     text-decoration: none;
     background-color: #F3F4F8; }
+  .thumbnail img {
+    width: 100%; }
   .thumbnail .thumbnail-side {
     position: relative;
     text-align: center;
@@ -7726,9 +7726,6 @@ body {
 
 .page-content {
   padding-top: 60px; }
-
-.thumbnail {
-  border-width: 0; }
 
 .navbar-logo img {
   width: 140px;

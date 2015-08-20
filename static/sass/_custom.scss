@@ -4,14 +4,14 @@
 	@include transition(background-color 0.3s linear);
     padding: 0;
 
-    img {
-        height: 66%;
-    }
-
-	&:hover {
+    &:hover {
 		text-decoration: none;
 		background-color: $gray-lighter;
 	}
+
+    img {
+        width: 100%;
+    }
 
 	.thumbnail-side {
 		position: relative;
