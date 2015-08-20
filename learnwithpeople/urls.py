@@ -17,7 +17,7 @@ urlpatterns += i18n_patterns('',
     url(r'^accounts/', include('django.contrib.auth.urls'))
 )
 
-if settings.DEBUG:
+if settings.DEBUG or True: #TODO remove this once serving files through nginx is sorted
     media_url = settings.MEDIA_URL.lstrip('/').rstrip('/')
     urlpatterns += patterns('',
         (r'^%s/(?P<path>.*)$' % media_url, 'django.views.static.serve',
