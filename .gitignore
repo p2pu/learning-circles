@@ -6,3 +6,4 @@ static_serve/
 learnwithpeople/settings_local.py
 mailbox/
 *.swp
+fixtures/
