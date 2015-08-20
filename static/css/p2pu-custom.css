@@ -7350,9 +7350,7 @@ button.close {
   -webkit-transition: background-color 0.3s linear;
   -o-transition: background-color 0.3s linear;
   transition: background-color 0.3s linear;
-  padding: 0;
-  min-height: 650px;
-  max-height: 650px; }
+  padding: 0; }
   .thumbnail img {
     height: 66%; }
   .thumbnail:hover {

@@ -8,7 +8,7 @@
 			<div class="col-md-4" id="{{ lc.course.title|slugify }}">
 				<div class="thumbnail">
 	        {% if lc.location.image %}
-						<img src="/media/{{ lc.location.image }}" height="400px" width="600px" alt="Cover image of the course" />
+						<img src="/media/{{ lc.location.image }}" alt="Cover image of the course" />
 					{% endif %}
             <div class="caption">
 							<h4>{{ lc.course.title }}</h4>
