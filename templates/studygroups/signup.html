@@ -2,14 +2,27 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container">
-  <div class="col-md-8 col-md-offset-2">
-      <h1>You are signing up for {{study_group.course.title}} at {{study_group.location.name}}</h1>
+<div class="container learning-circle-signup">
+    <div class="row">
+    <div class="col-md-12">
+      <h1>Sign up for {{study_group.course.title}}</h1>
+  </div>
+    </div>
+    <div class="row">
+  <div class="col-md-4 col-sm-12">
+      <img src="{{study_group.location.image.url}}">
+      <p>at <a href="{{study_group.location.link}}">{{study_group.location.name}}</a></p>
+      <p>{{study_group.course.caption}}</p>
+      <p>Course content from <a href="{{ study_group.course.link }}" target="_blank">{{ study_group.course.provider }}</a></p>
+      <p><strong>This Learning Circle meets every {{study_group.day}} from {{study_group.time|time:"fA"}}-{{study_group.end_time|time:"fA"}} starting {{study_group.start_date}} for {{study_group.course.duration}}.</strong></p>
+  </div>
+  <div class="col-md-8 col-sm-12">
 	  <form action="" method="POST">
 	    {% csrf_token %}
 	    {{ form|crispy }}
-	    <button type="submit" class="btn btn-default">Sign up</button>
+        <p><button type="submit" class="btn btn-default">Sign up</button></p>
 	  </form>
   </div>
+</div>
 </div>
 {% endblock %}
