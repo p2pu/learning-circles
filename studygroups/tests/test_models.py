@@ -12,10 +12,14 @@ from studygroups.models import Reminder
 from studygroups.models import accept_application
 from studygroups.models import next_meeting_date
 from studygroups.models import generate_reminder
+from studygroups.models import gen_rsvp_querystring
+from studygroups.models import check_rsvp_signature
+from studygroups.models import create_rsvp
 
 import calendar
 import datetime
 import pytz
+import re
 
 # Create your tests here.
 class TestSignupModels(TestCase):
@@ -140,4 +144,18 @@ class TestSignupModels(TestCase):
         sg.time = meeting.astimezone(pytz.timezone(sg.timezone)).time()
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 0)
+
+
+    def test_rsvp_signing(self):
+        qs = gen_rsvp_querystring('test@mail.com', '1', '2015-09-17 17:00Z', 'yes')
+        sig = re.search(r'sig=(?P<sig>[a-f,A-F,0-9]+)*', qs).group(1)
+        self.assertTrue(check_rsvp_signature('test@mail.com', '1', '2015-09-17 17:00Z', 'yes', sig))
+        self.assertFalse(check_rsvp_signature('tes@mail.com', '1', '2015-09-17 17:00Z', 'yes', sig))
+        self.assertFalse(check_rsvp_signature('test@mail.com', '2', '2015-09-17 17:00Z', 'yes', sig))
+        self.assertFalse(check_rsvp_signature('test@mail.com', '1', '2015-08-17 17:00Z', 'yes', sig))
+        self.assertFalse(check_rsvp_signature('test@mail.com', '1', '2015-09-17 17:00Z', 'no', sig))
+
+
+    def test_create_rsvp(self):
+        self.assertTrue(False)
 
