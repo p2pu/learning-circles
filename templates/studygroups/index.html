@@ -3,94 +3,187 @@
 
 {% block content %}
     <!-- Main jumbotron for a primary marketing message or call to action -->
+
     <div class="jumbotron" id="top">
         <div class="primary container">
+          <div class="clearfix">
             <div class="col-md-12 text-center heading">
-                <h2>Master new skills. Together. In the library. For free.</h2>
+                <div class="hero-title">Master new skills.
+	                Together. <br />
+	                In the library.
+	                For free. <br />
+                </div>
+
+	            <div class="title-break clearfix">
+		            <div class="col-xs-12 col-md-8 col-md-offset-2">
+			            <span class="side col-xs-4 col-md-3"></span>
+			            <span class="text col-xs-4 col-md-6">Learning Circles</span>
+			            <span class="side col-xs-4 col-md-3"></span>
+		            </div>
+	            </div>
+	            <div class="description clearfix">
+		            <div class="col-md-8 col-md-offset-2">
+			            Chicago Public Library and Peer 2 Peer University are hosting study groups for learners
+			            who want to complete online courses together, in-person at the library.
+			            These are free, peer-supported courses open to all.
+		            </div>
+	            </div>
             </div>
-			<div class="alert col-md-8">
-				<div class="collapse" id="interest-extra" aria-expanded="false">
-					{% include 'lead-extra.html' %}
-				</div>
-			</div>
-            <div class="col-md-4 session" id="signup">
-                <h3>Learning Circles are launching in September across Chicago.</h3>
-	            {% include 'lead.html' %}
+          </div>
+          <div class="bottom-tag">
+            <span class="side left col-md-4"></span>
+            <div class="text col-md-4">
+              <a href="#more">
+                Tell me more
+                <i class="fa fa-caret-down"></i>
+              </a>
             </div>
+            <span class="side right col-md-4"></span>
+          </div>
         </div>
     </div>
-	<div class="container">
-		<div class="row">
-			<div class="col-md-6 video">
-                <iframe width="100%" height="360" src="https://www.youtube.com/embed/9asVuChS04Q" frameborder="0" allowfullscreen></iframe>
-			</div>
-			<div class="col-md-6">
-				<p>
-					<h3>What is a Learning Circle?</h3>
-The Learning Circles model brings together learners in open community spaces to take online courses together. As a support group for learning, Learning Circles offer individuals a comfortable and consistent environment to motivate and to be motivated.
-				</p>
-				<p>
-					If you are not in Chicago or want to learn more, check out <a
-						href="https://p2pu.org">our homepage</a>.
-				</p>
-			</div>
-		</div>
-	</div>
-
-    <section id="learning-circles" class="shaded"> 
-        {% include 'studygroups/learning-circles.html' %}
+    <section id="leads">
+      <div class="container">
+        <div class="text-center col-md-12">
+          <div class="session" id="signup">
+            <div class="collapse" id="interest-extra" aria-expanded="false">
+              {% include 'lead-extra.html' %}
+            </div>
+            <h3>Learning Circles are launching in September across Chicago.</h3>
+            {% include 'lead.html' %}
+          </div>
+        </div>
+      </div>
     </section>
-
+    <section id="courses" class="shaded">
+      <div class="container">
+        <div class="section-title col-md-12">
+          <h2>We offer this courses</h2>
+        </div>
+        {% comment %}
+        <div class="col-md-2">
+          Refine by
+          <h6>Location:</h6>
+          {% for lc in learning_circles %}
+            <a hrref="#">{{ lc.location }}</a>
+          {% endfor %}
+          <hr>
+          <h6>Duration:</h6>
+          {% for lc in learning_circles %}
+            <div>Takes {{ lc.course.duration|capfirst }}</div>
+          {% endfor %}
+        </div>
+        {% endcomment %}
+        <div class="courses-list col-md-12">
+          {% include 'studygroups/learning-circles.html' %}
+        </div>
+    	</div>
+    </section>
     <section id="faq">
         <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <h1>FAQ</h1>
+          <div class="section-title col-md-12">
+              <h2>FAQ</h2>
+          </div>
+          <div class="col-md-9 col-md-offset-2">
+            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+              <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingOne">
+                  <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      When does it start?
+                    </a>
+                  </h4>
                 </div>
-                <div class="col-md-6 col-sm-12">
-                    <div class="faq-item">
-                        <span class="icon"><i class="fa fa-calendar"></i></span>
-                        <h4>When does it start?</h4>
-
-                        <p>
-                            Learning Circles will begin in early September and last for about six weeks.
-                        </p>
+                <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+                  <div class="panel-body">
+                    <div class="col-md-2">
+                      <span class="icon"><i class="fa fa-calendar"></i></span>
                     </div>
-                </div>
-                <div class="col-md-6 col-sm-12">
-                    <div class="faq-item">
-                        <span class="icon"><i class="fa fa-graduation-cap"></i></span>
-                        <h4>Where do we meet</h4>
-                        <p>
-                            Each Learning Circle meets at a branch of Chicago Public Library and is facilitated by a trained facilitator (often a cybernavigator).
-                        </p>
+                    <div class="col-md-10">
+                      Learning Circles will begin in early September and last for about six weeks.
                     </div>
+                  </div>
                 </div>
-                <div class="col-md-6 col-sm-12">
-                    <div class="faq-item">
-                        <span class="icon"><i class="fa fa-smile-o"></i></span>
-                        <h4>What is my commitment?</h4>
-
-                        <p>
-                            Learning Circles meet once a week for between 90 minutes and 2 hours to work through learning materials. It is up to the learners to determine if they want to commit to completing additional work outside of the Circle.
-                        </p>
+              </div>
+              <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingTwo">
+                  <h4 class="panel-title">
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                      Where do we meet?
+                    </a>
+                  </h4>
+                </div>
+                <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                  <div class="panel-body">
+                    <div class="col-md-2">
+                      <span class="icon"><i class="fa fa-graduation-cap"></i></span>
                     </div>
-                </div>
-                <div class="col-md-6 col-sm-12">
-                    <div class="faq-item">
-                        <span class="icon"><i class="fa fa-clock-o"></i></span>
-                        <h4>What will I learn?</h4>
-
-                        <p>
-                            Learning Circles work through free online learning material that comes from a number of providers, including Khan Academy, edX, Coursera, FutureLearn, and MIT OpenCourseware. In the spring, we offered courses in Academic Writing, GED Prep Math, Python, and Public Speaking. We plan on expanding this offering to include courses in new topics such as finance, HTML/CSS, and applying for jobs.
-                        </p>
-
+                    <div class="col-md-10">
+                      Each Learning Circle meets at a branch of Chicago Public Library and is facilitated by a trained facilitator (often a cybernavigator).
                     </div>
+                  </div>
                 </div>
+              </div>
+              <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingThree">
+                  <h4 class="panel-title">
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                      What is my commitment?
+                    </a>
+                  </h4>
+                </div>
+                <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+                  <div class="panel-body">
+                    <div class="col-md-2">
+                      <span class="icon"><i class="fa fa-smile-o"></i></span>
+                    </div>
+                    <div class="col-md-10">
+                      Learning Circles meet once a week for between 90 minutes and 2 hours to work through learning materials. It is up to the learners to determine if they want to commit to completing additional work outside of the Circle.
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingFour">
+                  <h4 class="panel-title">
+                    <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseThree">
+                      What will I learn?
+                    </a>
+                  </h4>
+                </div>
+                <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+                  <div class="panel-body">
+                    <div class="col-md-2">
+                      <span class="icon"><i class="fa fa-clock-o"></i></span>
+                    </div>
+                    <div class="col-md-10">
+                      Learning Circles work through free online learning material that comes from a number of providers, including Khan Academy, edX, Coursera, FutureLearn, and MIT OpenCourseware. In the spring, we offered courses in Academic Writing, GED Prep Math, Python, and Public Speaking. We plan on expanding this offering to include courses in new topics such as finance, HTML/CSS, and applying for jobs.
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
     </section>
-    <section id="about" class="shaded">
+    <section id="more" class="shaded">
+      <div class="container">
+  			<div class="col-md-6 video">
+                  <iframe width="100%" height="360" src="https://www.youtube.com/embed/9asVuChS04Q" frameborder="0" allowfullscreen></iframe>
+  			</div>
+  			<div class="col-md-6">
+  				<p>
+  					<h3>What is a Learning Circle?</h3>
+  The Learning Circles model brings together learners in open community spaces to take online courses together. As a support group for learning, Learning Circles offer individuals a comfortable and consistent environment to motivate and to be motivated.
+  				</p>
+  				<p>
+  					If you are not in Chicago or want to learn more, check out <a
+  						href="https://p2pu.org">our homepage</a>.
+  				</p>
+  			</div>
+      </div>
+		</div>
+    <section id="about">
         <div class="container">
 
             <div class="row">

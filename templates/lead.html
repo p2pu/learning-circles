@@ -7,6 +7,7 @@
         <input id="su-name-input" type="text"
 			   class="form-control" placeholder="Your name" name="name" required />
     </div>
+    <span class="or hidden-xs hidden-sm">and</span>
     <!--input type="text" class="form-control" placeholder="email address or mobile number" name="contact"></input-->
     <div class="form-group email">
         <label class="sr-only" for="su-email-input">Email</label>
@@ -17,7 +18,9 @@
        <label class="sr-only" for="su-mobile-input">Mobile number</label>
        <input id="su-mobile-input" type="tel" class="form-control" placeholder="Mobile number" name="mobile" />
     </div>
-    <button type="submit" class="btn btn-info">Submit</button>
+    <div class="signup">
+      <button type="submit" class="btn btn-success">Sign up</button>
+    </div>
     <div class="alert alert-warning error hidden">Please enter either an email address or a mobile number.</div>
 </form>
 
@@ -33,4 +36,3 @@
 	  Sure, ask away
   </a>
 </div>
-
