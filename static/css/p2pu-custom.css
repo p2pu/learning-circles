@@ -7450,10 +7450,8 @@ section.featured-work {
   section.featured-work .inner {
     margin: 2em 0; }
 
-.donate-page {
-  margin-bottom: 60px; }
-  .donate-page .donate-button {
-    width: 100%; }
+.learning-circle-signup img {
+  width: 100%; }
 
 .close {
   color: #FF0000;
@@ -7840,7 +7838,8 @@ body {
   position: relative;
   display: block;
   border: 1px #D3D8E6 solid;
-  margin: 1.5em 0; }
+  margin: 1.5em 0;
+  padding: 0.5em 1em; }
   .course-tile hr {
     margin-top: 5px;
     margin-bottom: 5px; }
