@@ -1,7 +1,11 @@
 
 //All
 body {
-	padding-top: 74px;
+	padding-top: 69px;
+
+	@media (min-width: $screen-sm) {
+			padding-top: 63px;
+	}
 
 	@media (min-width: $screen-md-max) {
 		padding-top: 93px;
@@ -408,6 +412,17 @@ $next-section-color: $white;
 #courses{
 	padding-top: 3em;
 
+	.courses-list{
+		margin-top: 115px;
+		@media (min-width: $screen-sm) {
+
+		}
+
+		@media (min-width: $screen-md-max) {
+			margin-top: 0;
+		}
+	}
+
 	.article-wrapper{
 		padding: 1.5em 0;
 		border-bottom: 1px solid $gray-light;
@@ -430,7 +445,7 @@ $next-section-color: $white;
 		position: relative;
 		top: -135px;
 		width: 270px;
-		margin: auto;
+		margin: 0 auto -125px auto;
 		border-radius: 50%;
 
 		@media (min-width: $screen-sm) {
@@ -457,8 +472,6 @@ $next-section-color: $white;
 
 	}
 	.course-description {
-		margin-top: -125px;
-
 		@media (min-width: $screen-md-max) {
 			margin-top: 0;
 		}
