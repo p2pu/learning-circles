@@ -24,7 +24,7 @@ var interest = (function($){
             }
             $.ajax({
                 type: "POST",
-                url: form.attr("action"), 
+                url: form.attr("action"),
                 data: form.serialize(),
             }).done(success);
         });
@@ -47,11 +47,11 @@ var interest = (function($){
         }
     }
 
-    function scrollTo(target){
+    /*function scrollTo(target){
         $('html,body').animate({
             scrollTop: target.offset().top - 98
         }, 1000);
-    }
+    }*/
 
     stepSubmit($('#su-contact-form'), function(){
         var form = $('#su-contact-form');
@@ -74,10 +74,12 @@ var interest = (function($){
     stepSubmit($('#su-extra-form'), undefined, function(){
         $('#su-extra-form').hide();
         $('#su-extra-success, .close').removeClass('hidden');
+        window.location.href = '#signup';
         $('.close').bind('click', function () {
-            $('#su-contact-success p').text('See you soon.');
+            $('#su-contact-success h2').text('See you soon.');
+            $('#su-contact-success p').hide();
             $('#su-contact-success a.btn').hide();
         });
     });
-    
+
 })(window.jQuery);
