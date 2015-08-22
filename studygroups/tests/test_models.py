@@ -7,8 +7,10 @@ from django.utils import timezone
 from mock import patch
 
 from studygroups.models import StudyGroup
+from studygroups.models import StudyGroupMeeting
 from studygroups.models import Application
 from studygroups.models import Reminder
+from studygroups.models import Rsvp
 from studygroups.models import accept_application
 from studygroups.models import next_meeting_date
 from studygroups.models import generate_reminder
@@ -79,7 +81,6 @@ class TestSignupModels(TestCase):
         self.assertTrue(next_date >= sg.start_date)
         self.assertTrue(next_date <= sg.end_date)
         self.assertEquals(sg.time, next_date.time())
-
 
 
     def test_generate_reminder(self):
@@ -157,5 +158,20 @@ class TestSignupModels(TestCase):
 
 
     def test_create_rsvp(self):
-        self.assertTrue(False)
+        self.assertEqual(Rsvp.objects.all().count(), 0)
+        data = self.APPLICATION_DATA
+        data['study_group'] = StudyGroup.objects.all()[0]
+        application = Application(**data)
+        application.save()
+        sg = StudyGroup.objects.all()[0]
+        meeting_date = timezone.now()
+        sgm = StudyGroupMeeting(study_group=sg, meeting_time=meeting_date)
+        sgm.save()
+        #create_rsvp('test@mail.com', sg.id, meeting_date.strftime("%Y%m%dT%H:%M%Z"), 'yes')
+        create_rsvp('test@mail.com', sg.id, meeting_date, 'yes')
+        self.assertEqual(Rsvp.objects.all().count(), 1)
 
+    
+    def test_create_study_group_meeting(self):
+        # TODO
+        pass

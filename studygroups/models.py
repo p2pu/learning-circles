@@ -282,10 +282,13 @@ def check_rsvp_signature(contact, study_group, meeting_date, rsvp, sig):
 
 
 def create_rsvp(contact, study_group, meeting_date, rsvp):
-    study_group_meeting = StudyGroupMeeting.objects.get(study_group__id=study_group, meeting_date=meeting_date)
+    #TODO meeting_date = datetime.datetime.strptime(meeting_date, '%Y%m%dT%H:%M%Z')
+    print(meeting_date)
+    study_group_meeting = StudyGroupMeeting.objects.get(study_group__id=study_group, meeting_time=meeting_date)
     application = None
     if '@' in contact:
         application = Application.objects.get(study_group__id=study_group, email=contact)
     else:
         application = Application.objects.get(study_group__id=study_group, mobile=contact)
-    study_group
+    rsvp = Rsvp(study_group_meeting=study_group_meeting, application=application, attending=rsvp=='yes')
+    rsvp.save()
