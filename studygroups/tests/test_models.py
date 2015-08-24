@@ -14,14 +14,15 @@ from studygroups.models import Rsvp
 from studygroups.models import accept_application
 from studygroups.models import next_meeting_date
 from studygroups.models import generate_reminder
-from studygroups.models import gen_rsvp_querystring
-from studygroups.models import check_rsvp_signature
+from studygroups.rsvp import gen_rsvp_querystring
+from studygroups.rsvp import check_rsvp_signature
 from studygroups.models import create_rsvp
 
 import calendar
 import datetime
 import pytz
 import re
+import urlparse
 
 # Create your tests here.
 class TestSignupModels(TestCase):
@@ -106,7 +107,6 @@ class TestSignupModels(TestCase):
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
         reminder = Reminder.objects.all()[0]
-        #print(reminder.meeting_time)
         self.assertEqual(reminder.meeting_time, next_meeting_date(sg))
         #TODO check that email was sent to site admin
         #TODO test with unicode in generated email subject
@@ -148,13 +148,15 @@ class TestSignupModels(TestCase):
 
 
     def test_rsvp_signing(self):
-        qs = gen_rsvp_querystring('test@mail.com', '1', '2015-09-17 17:00Z', 'yes')
-        sig = re.search(r'sig=(?P<sig>[a-f,A-F,0-9]+)*', qs).group(1)
-        self.assertTrue(check_rsvp_signature('test@mail.com', '1', '2015-09-17 17:00Z', 'yes', sig))
-        self.assertFalse(check_rsvp_signature('tes@mail.com', '1', '2015-09-17 17:00Z', 'yes', sig))
-        self.assertFalse(check_rsvp_signature('test@mail.com', '2', '2015-09-17 17:00Z', 'yes', sig))
-        self.assertFalse(check_rsvp_signature('test@mail.com', '1', '2015-08-17 17:00Z', 'yes', sig))
-        self.assertFalse(check_rsvp_signature('test@mail.com', '1', '2015-09-17 17:00Z', 'no', sig))
+        meeting_date = timezone.datetime(2015,9,17,17,0, tzinfo=timezone.utc)
+        qs = gen_rsvp_querystring('test@mail.com', '1', meeting_date, 'yes')
+        sig = urlparse.parse_qs(qs).get('sig')[0]
+        self.assertTrue(check_rsvp_signature('test@mail.com', '1', meeting_date, 'yes', sig))
+        self.assertFalse(check_rsvp_signature('tes@mail.com', '1', meeting_date, 'yes', sig))
+        self.assertFalse(check_rsvp_signature('test@mail.com', '2', meeting_date, 'yes', sig))
+        self.assertFalse(check_rsvp_signature('test@mail.com', '1', meeting_date, 'no', sig))
+        meeting_date = timezone.datetime(2015,9,18,17,0, tzinfo=timezone.utc)
+        self.assertFalse(check_rsvp_signature('test@mail.com', '1', meeting_date, 'yes', sig))
 
 
     def test_create_rsvp(self):
@@ -168,7 +170,7 @@ class TestSignupModels(TestCase):
         sgm = StudyGroupMeeting(study_group=sg, meeting_time=meeting_date)
         sgm.save()
         #create_rsvp('test@mail.com', sg.id, meeting_date.strftime("%Y%m%dT%H:%M%Z"), 'yes')
-        create_rsvp('test@mail.com', sg.id, meeting_date, 'yes')
+        create_rsvp('test@mail.com', sg.id, meeting_date.isoformat(), 'yes')
         self.assertEqual(Rsvp.objects.all().count(), 1)
 
     
