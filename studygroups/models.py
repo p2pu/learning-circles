@@ -13,6 +13,8 @@ from studygroups.sms import send_message
 import calendar
 import datetime
 import pytz
+import hmac
+import hashlib
 
 STUDY_GROUP_NAMES = [
     "The Riders",
@@ -254,3 +256,39 @@ def send_reminder(reminder):
     )
     reminder.sent_at = timezone.now()
     reminder.save()
+
+
+# contact - email or mobile depending on contact preference
+def gen_rsvp_querystring(contact, study_group, meeting_date, rsvp):
+    qs = [
+        'user={0}'.format(contact),
+        'study_group={0}'.format(study_group),
+        'meeting_date={0}'.format(meeting_date),
+        'rsvp={0}'.format(rsvp)
+    ]
+    sig = hmac.new(settings.SECRET_KEY, '&'.join(qs), hashlib.sha256).hexdigest()
+    qs.append('sig={0}'.format(sig))
+    return '&'.join(qs)
+
+
+def check_rsvp_signature(contact, study_group, meeting_date, rsvp, sig):
+    qs = [
+        'user={0}'.format(contact),
+        'study_group={0}'.format(study_group),
+        'meeting_date={0}'.format(meeting_date),
+        'rsvp={0}'.format(rsvp)
+    ]
+    return sig == hmac.new(settings.SECRET_KEY, '&'.join(qs), hashlib.sha256).hexdigest()
+
+
+def create_rsvp(contact, study_group, meeting_date, rsvp):
+    #TODO meeting_date = datetime.datetime.strptime(meeting_date, '%Y%m%dT%H:%M%Z')
+    print(meeting_date)
+    study_group_meeting = StudyGroupMeeting.objects.get(study_group__id=study_group, meeting_time=meeting_date)
+    application = None
+    if '@' in contact:
+        application = Application.objects.get(study_group__id=study_group, email=contact)
+    else:
+        application = Application.objects.get(study_group__id=study_group, mobile=contact)
+    rsvp = Rsvp(study_group_meeting=study_group_meeting, application=application, attending=rsvp=='yes')
+    rsvp.save()

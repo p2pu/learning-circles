@@ -7,15 +7,21 @@ from django.utils import timezone
 from mock import patch
 
 from studygroups.models import StudyGroup
+from studygroups.models import StudyGroupMeeting
 from studygroups.models import Application
 from studygroups.models import Reminder
+from studygroups.models import Rsvp
 from studygroups.models import accept_application
 from studygroups.models import next_meeting_date
 from studygroups.models import generate_reminder
+from studygroups.models import gen_rsvp_querystring
+from studygroups.models import check_rsvp_signature
+from studygroups.models import create_rsvp
 
 import calendar
 import datetime
 import pytz
+import re
 
 # Create your tests here.
 class TestSignupModels(TestCase):
@@ -75,7 +81,6 @@ class TestSignupModels(TestCase):
         self.assertTrue(next_date >= sg.start_date)
         self.assertTrue(next_date <= sg.end_date)
         self.assertEquals(sg.time, next_date.time())
-
 
 
     def test_generate_reminder(self):
@@ -141,3 +146,32 @@ class TestSignupModels(TestCase):
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 0)
 
+
+    def test_rsvp_signing(self):
+        qs = gen_rsvp_querystring('test@mail.com', '1', '2015-09-17 17:00Z', 'yes')
+        sig = re.search(r'sig=(?P<sig>[a-f,A-F,0-9]+)*', qs).group(1)
+        self.assertTrue(check_rsvp_signature('test@mail.com', '1', '2015-09-17 17:00Z', 'yes', sig))
+        self.assertFalse(check_rsvp_signature('tes@mail.com', '1', '2015-09-17 17:00Z', 'yes', sig))
+        self.assertFalse(check_rsvp_signature('test@mail.com', '2', '2015-09-17 17:00Z', 'yes', sig))
+        self.assertFalse(check_rsvp_signature('test@mail.com', '1', '2015-08-17 17:00Z', 'yes', sig))
+        self.assertFalse(check_rsvp_signature('test@mail.com', '1', '2015-09-17 17:00Z', 'no', sig))
+
+
+    def test_create_rsvp(self):
+        self.assertEqual(Rsvp.objects.all().count(), 0)
+        data = self.APPLICATION_DATA
+        data['study_group'] = StudyGroup.objects.all()[0]
+        application = Application(**data)
+        application.save()
+        sg = StudyGroup.objects.all()[0]
+        meeting_date = timezone.now()
+        sgm = StudyGroupMeeting(study_group=sg, meeting_time=meeting_date)
+        sgm.save()
+        #create_rsvp('test@mail.com', sg.id, meeting_date.strftime("%Y%m%dT%H:%M%Z"), 'yes')
+        create_rsvp('test@mail.com', sg.id, meeting_date, 'yes')
+        self.assertEqual(Rsvp.objects.all().count(), 1)
+
+    
+    def test_create_study_group_meeting(self):
+        # TODO
+        pass

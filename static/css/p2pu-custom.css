@@ -1,5 +1,6 @@
 @charset "UTF-8";
-@import url(https://fonts.googleapis.com/css?family=Indie+Flower);
+@import url(//fonts.googleapis.com/css?family=Indie+Flower);
+@import url(//fonts.googleapis.com/css?family=Lobster);
 /*! normalize.css v3.0.1 | MIT License | git.io/normalize */
 html {
   font-family: sans-serif;
@@ -7717,10 +7718,21 @@ body {
       float: right; }
 
 body {
-  padding-top: 74px; }
+  padding-top: 69px; }
+  @media (min-width: 768px) {
+    body {
+      padding-top: 63px; } }
   @media (min-width: 1199px) {
     body {
       padding-top: 93px; } }
+
+section {
+  padding-top: 2em; }
+
+.section-title {
+  text-align: center;
+  margin: 1em;
+  text-transform: capitalize; }
 
 .page-content {
   padding-top: 60px; }
@@ -7765,18 +7777,134 @@ body {
     width: 100%;
     height: 100%;
     background-color: #ffffff;
-    background: url("/static/images/bck.png") no-repeat 0 -93px;
-    background-size: inherit; }
+    background: url("/static/images/bck-img.png") no-repeat top left;
+    background-size: cover; }
     @media (min-width: 768px) {
       .jumbotron:before {
-        background-position: -50px 50px; } }
+        background-position: 0 -210px; } }
     @media (min-width: 1199px) {
       .jumbotron:before {
-        background-position: 50px 0; } }
-  .jumbotron h1 {
-    font-size: 3.5em; }
+        background-position: 0 -630px; } }
   .jumbotron .primary {
-    padding: 3em 0; }
+    padding: 1em 0 0 0; }
+    @media (min-width: 768px) {
+      .jumbotron .primary {
+        padding: 1em 0; } }
+    @media (min-width: 1199px) {
+      .jumbotron .primary {
+        padding: 2em 0; } }
+  .jumbotron .hero-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    font-family: "Arvo", Helvetica, Arial, sans-serif;
+    line-height: 1.3;
+    margin: 0; }
+    @media (min-width: 768px) {
+      .jumbotron .hero-title {
+        font-size: 3em;
+        margin: 0; } }
+    @media (min-width: 1199px) {
+      .jumbotron .hero-title {
+        font-size: 3.5em;
+        margin: 1em 0; } }
+  .jumbotron .title-break {
+    margin: 0.8em auto;
+    line-height: 1;
+    font-size: 2em; }
+    .jumbotron .title-break .side {
+      border-bottom: 1px solid #515665;
+      padding-top: 0.5em; }
+      @media (min-width: 768px) {
+        .jumbotron .title-break .side {
+          padding-top: 1em; } }
+      @media (min-width: 1199px) {
+        .jumbotron .title-break .side {
+          padding-top: 0.4em; } }
+    .jumbotron .title-break .text {
+      font-family: 'Lobster', cursive;
+      font-size: 0.5em; }
+      @media (min-width: 768px) {
+        .jumbotron .title-break .text {
+          font-size: 1em; } }
+      @media (min-width: 1199px) {
+        .jumbotron .title-break .text {
+          font-size: 0.8em; } }
+    @media (min-width: 768px) {
+      .jumbotron .title-break {
+        font-size: 3em; } }
+    @media (min-width: 1199px) {
+      .jumbotron .title-break {
+        font-size: 3.5em; } }
+  .jumbotron .description {
+    line-height: 1.8;
+    margin: 2em 0 4em 0; }
+    @media (min-width: 768px) {
+      .jumbotron .description {
+        font-size: 1.5em;
+        margin: 2em 0 3em 0; } }
+    @media (min-width: 1199px) {
+      .jumbotron .description {
+        font-size: 1.3em;
+        margin: 2em 0 2em 0; } }
+  .jumbotron .bottom-tag .side {
+    height: 25px;
+    background-color: #FFFFFF;
+    width: 20%;
+    position: absolute;
+    bottom: 0; }
+    @media (min-width: 768px) {
+      .jumbotron .bottom-tag .side {
+        height: 35px; } }
+    @media (min-width: 1199px) {
+      .jumbotron .bottom-tag .side {
+        width: 40%;
+        height: 30px; } }
+    .jumbotron .bottom-tag .side::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      bottom: -3px;
+      border-top: 0;
+      border: 3px solid #FFFFFF;
+      -moz-border-radius: 0 0 8px 0;
+      -webkit-border-radius: 0 0 8px 0;
+      border-radius: 0 0 8px 0;
+      border-top: 0; }
+    .jumbotron .bottom-tag .side.left {
+      left: 0;
+      border-top-right-radius: 5px; }
+      .jumbotron .bottom-tag .side.left::after {
+        border-right: 0;
+        -moz-border-radius: 0 0 0 8px;
+        -webkit-border-radius: 0 0 0 8px;
+        border-radius: 0 0 0 8px;
+        right: -17px; }
+    .jumbotron .bottom-tag .side.right {
+      right: 0;
+      border-top-left-radius: 5px; }
+      .jumbotron .bottom-tag .side.right::after {
+        border-left: 0;
+        left: -17px; }
+  .jumbotron .bottom-tag .text {
+    position: absolute;
+    left: 20%;
+    width: 60%;
+    bottom: 0;
+    text-transform: uppercase;
+    text-align: center;
+    font-weight: bold; }
+    .jumbotron .bottom-tag .text a {
+      color: #515665; }
+    @media (min-width: 768px) {
+      .jumbotron .bottom-tag .text {
+        font-size: 1.1em;
+        bottom: 0.9em; } }
+    @media (min-width: 1199px) {
+      .jumbotron .bottom-tag .text {
+        left: 40%;
+        width: 20%;
+        font-size: 1em; } }
   .jumbotron .dark {
     position: relative;
     background-color: #515665;
@@ -7786,50 +7914,139 @@ body {
     .jumbotron .dark p {
       font-size: 1.2em;
       line-height: 1.8; }
-  .jumbotron .session {
-    background-color: #707782;
-    padding: 2em;
-    background: linear-gradient(0deg, #D3D8E6, #515665); }
-    .jumbotron .session h3 {
-      margin-top: 0px;
-      line-height: 1.3;
-      font-size: 1.4em;
-      color: #fff;
-      font-family: "Arvo", Helvetica, Arial, sans-serif; }
-    .jumbotron .session p {
-      line-height: 1.3;
-      font-size: 1.1em;
-      color: #fff;
-      font-family: "Arvo", Helvetica, Arial, sans-serif; }
-    .jumbotron .session #su-contact-form .form-group {
-      width: 100%;
-      position: relative; }
-      .jumbotron .session #su-contact-form .form-group:before {
-        font-family: FontAwesome;
-        content: "";
-        position: absolute;
-        top: 12px;
-        font-size: 1.6em;
-        left: 13px;
-        color: #AAB0BF; }
-      .jumbotron .session #su-contact-form .form-group.name:before {
-        content: "\f007"; }
-      .jumbotron .session #su-contact-form .form-group.email:before {
-        content: "\f0e0"; }
-      .jumbotron .session #su-contact-form .form-group.phone:before {
-        content: "\f10b"; }
-    .jumbotron .session #su-contact-form .form-control {
-      width: 100%;
-      margin: 1em 0;
-      padding-left: 3em; }
-    .jumbotron .session #su-contact-form .btn {
-      width: 100%; }
-    .jumbotron .session #su-contact-form .or {
-      color: #FFFFFF; }
-  .jumbotron #interest-extra {
-    background-color: #F3F4F8;
-    padding: 3em;
-    border: 1px #515665 solid; }
+
+#signup {
+  padding: 2em 0; }
+  @media (min-width: 768px) {
+    #signup {
+      padding: 2em 0; } }
+  @media (min-width: 1199px) {
+    #signup {
+      padding: 2em; } }
+  #signup h3 {
+    margin-top: 0px;
+    line-height: 1.3;
+    font-size: 1.4em;
+    font-family: "Arvo", Helvetica, Arial, sans-serif; }
+  #signup p {
+    line-height: 1.3;
+    font-size: 1.1em;
+    font-family: "Arvo", Helvetica, Arial, sans-serif; }
+  #signup .collapse.in ~ #su-contact-success, #signup .collapse.in ~ h3 {
+    margin-top: -233px;
+    position: relative;
+    z-index: -1;
+    margin-bottom: 100px; }
+  #signup #su-contact-form .form-group {
+    position: relative;
+    width: 100%;
+    padding: 0 1em; }
+    @media (min-width: 768px) {
+      #signup #su-contact-form .form-group {
+        width: 100%; } }
+    @media (min-width: 1199px) {
+      #signup #su-contact-form .form-group {
+        width: 35%; } }
+    #signup #su-contact-form .form-group:before {
+      font-family: FontAwesome;
+      content: "";
+      position: absolute;
+      top: 0;
+      font-size: 1.6em;
+      left: 1em;
+      color: #AAB0BF; }
+      @media (min-width: 768px) {
+        #signup #su-contact-form .form-group:before {
+          top: 13px; } }
+      @media (min-width: 1199px) {
+        #signup #su-contact-form .form-group:before {
+          top: 15px; } }
+    #signup #su-contact-form .form-group.name:before {
+      content: "\f007"; }
+    #signup #su-contact-form .form-group.email:before {
+      content: "\f0e0"; }
+    #signup #su-contact-form .form-group.phone:before {
+      content: "\f10b"; }
+  #signup #su-contact-form .form-control {
+    margin: 1em 0;
+    padding-left: 3em;
+    width: 100%; }
+  #signup #su-contact-form .btn {
+    padding: 0.7em 1.5em;
+    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    text-transform: uppercase;
+    font-size: 1em;
+    border-width: 2px; }
+  #signup #su-contact-form .signup {
+    margin: 1.5em 0 0 0; }
+  #signup #su-contact-success {
+    border-color: #B7D500;
+    background-color: transparent;
+    color: #515665; }
+    #signup #su-contact-success .btn {
+      text-transform: uppercase; }
+
+#interest-extra {
+  background-color: #F3F4F8;
+  padding: 1em;
+  border: 1px #515665 solid; }
+  @media (min-width: 768px) {
+    #interest-extra {
+      padding: 1em; } }
+  @media (min-width: 1199px) {
+    #interest-extra {
+      padding: 3em; } }
+
+#leads {
+  background-color: #FFFFFF;
+  padding: 0 0 2em 0; }
+
+#courses {
+  padding-top: 3em; }
+  #courses .courses-list {
+    margin-top: 115px; }
+    @media (min-width: 1199px) {
+      #courses .courses-list {
+        margin-top: 0; } }
+  #courses .article-wrapper {
+    padding: 1.5em 0;
+    border-bottom: 1px solid #D3D8E6;
+    margin-bottom: 125px; }
+    @media (min-width: 1199px) {
+      #courses .article-wrapper {
+        margin-bottom: 0; } }
+  #courses article {
+    background-color: #FCFCFC;
+    padding: 1em; }
+  #courses .img-wrapper {
+    background-color: #FFFFFF;
+    padding: 10px;
+    z-index: 1000;
+    position: relative;
+    top: -135px;
+    width: 270px;
+    margin: 0 auto -125px auto;
+    border-radius: 50%; }
+    @media (min-width: 1199px) {
+      #courses .img-wrapper {
+        top: -15px;
+        left: -15px;
+        border-radius: 0; } }
+    #courses .img-wrapper img {
+      width: 250px;
+      border-radius: 50%; }
+      @media (min-width: 1199px) {
+        #courses .img-wrapper img {
+          border-radius: 0; } }
+  @media (min-width: 1199px) {
+    #courses .course-description {
+      margin-top: 0; } }
+  #courses .course-apply {
+    text-transform: uppercase; }
+
+.course-provider {
+  margin: 1em 0;
+  font-style: italic; }
 
 .video {
   margin-top: 25px; }
@@ -7920,9 +8137,6 @@ body {
   margin-bottom: 1em; }
 #faq .icon {
   display: block;
-  float: right;
-  margin-top: -45px;
-  margin-right: -20px;
   padding: 0.2em 0.3em;
   color: #FFFFFF;
   border-radius: 100%;
@@ -7955,13 +8169,14 @@ footer .footer-logo {
 .alert {
   margin-bottom: 0; }
 
-#course-selection, #location-selection {
-  -webkit-column-count: 2;
-  /* Chrome, Safari, Opera */
-  -moz-column-count: 2;
-  /* Firefox */
-  column-count: 2; }
-  #course-selection input[type="checkbox"], #location-selection input[type="checkbox"] {
-    margin-top: 10px; }
+@media (min-width: 1199px) {
+  #course-selection, #location-selection {
+    -webkit-column-count: 2;
+    /* Chrome, Safari, Opera */
+    -moz-column-count: 2;
+    /* Firefox */
+    column-count: 2; } }
+#course-selection input[type="checkbox"], #location-selection input[type="checkbox"] {
+  margin-top: 10px; }
 
 /*# sourceMappingURL=p2pu-custom.css.map */
