@@ -168,11 +168,15 @@ def accept_application(application):
 def get_all_meeting_times(study_group):
     # sorted ascending according to date
     # TODO - check that meeting times have the correct timezone
-    next_meeting = study_group.start_date
+    tz = pytz.timezone(study_group.timezone)
+    next_meeting = tz.normalize(study_group.start_date)
     meetings = []
     while next_meeting <= study_group.end_date:
         meetings += [next_meeting]
         next_meeting += datetime.timedelta(days=7)
+        # Next two steps are to keep meetings at the same time even when daylight savings kick in or end 
+        next_meeting = datetime.datetime.combine(next_meeting, next_meeting.time()) 
+        next_meeting = tz.localize(next_meeting)
     return meetings
 
 

@@ -14,9 +14,10 @@ from studygroups.models import Rsvp
 from studygroups.models import accept_application
 from studygroups.models import next_meeting_date
 from studygroups.models import generate_reminder
+from studygroups.models import create_rsvp
+from studygroups.models import get_all_meeting_times
 from studygroups.rsvp import gen_rsvp_querystring
 from studygroups.rsvp import check_rsvp_signature
-from studygroups.models import create_rsvp
 
 import calendar
 import datetime
@@ -56,9 +57,26 @@ class TestSignupModels(TestCase):
         self.assertEqual(Application.objects.all().count() ,1)
 
 
-    def test_get_all_meeting_dates(self):
-        # TODO - setup test accross known daylight savings time
-        raise Exception('implement test')
+    def test_get_all_meeting_datetimes(self):
+        # setup test accross daylight savings time
+        sg = StudyGroup.objects.all()[0]
+        sg.timezone = 'US/Central'
+        tz = pytz.timezone(sg.timezone)
+
+        for i in range(56):
+            start_date = tz.localize(datetime.datetime(2015, 1, 1, 16, 0) + datetime.timedelta(weeks=i))
+            end_date = start_date + datetime.timedelta(weeks=5)
+            end_date = datetime.datetime.combine(end_date, end_date.time())
+            end_date = tz.localize(end_date)
+            sg.start_date = pytz.utc.normalize(start_date)
+            sg.end_date = pytz.utc.normalize(end_date)
+            meeting_times = get_all_meeting_times(sg)
+            self.assertEqual(len(meeting_times), 6)
+            self.assertEqual(meeting_times[0], sg.start_date)
+            self.assertEqual(meeting_times[-1], sg.end_date)
+            for meeting_time in meeting_times:
+                self.assertEqual(datetime.time(16,0), meeting_time.time())
+
 
     
     def test_next_meeting_date(self):
@@ -72,8 +90,6 @@ class TestSignupModels(TestCase):
         diff = next_date - timezone.now()
         self.assertTrue(diff < datetime.timedelta(weeks=1))
         self.assertTrue(diff > datetime.timedelta())
-        self.assertEquals(sg.start_date.time().hour, next_date.time().hour)
-        self.assertEquals(sg.start_date.time().minute, next_date.time().minute)
 
 
     def test_next_meeting_date_in_range(self):
@@ -87,8 +103,6 @@ class TestSignupModels(TestCase):
         diff = next_date - now
         self.assertTrue(next_date >= sg.start_date)
         self.assertTrue(next_date <= sg.end_date)
-        self.assertEquals(sg.start_date.time().hour, next_date.time().hour)
-        self.assertEquals(sg.start_date.time().minute, next_date.time().minute)
 
 
     def test_generate_reminder(self):
