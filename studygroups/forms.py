@@ -21,7 +21,7 @@ class ApplicationForm(forms.ModelForm):
         labels = {
             'mobile': 'What is your mobile number?',
             'contact_method': 'Preferred Method of Contact.',
-            'computer_access': 'Do you have access to a computer outside of the library?',
+            'computer_access': 'Can you bring your own laptop to the Learning Circle?',
             'goals': 'In one sentence, please explain your goals for taking this course.',
             'support': 'A successful study group requires the support of all of its members. How will you help your peers achieve their goals?',
         }
