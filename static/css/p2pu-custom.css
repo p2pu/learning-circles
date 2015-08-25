@@ -7848,7 +7848,7 @@ section {
         margin: 2em 0 2em 0; } }
   .jumbotron .bottom-tag .side {
     height: 25px;
-    background-color: #FFFFFF;
+    background-color: #F3F4F8;
     width: 20%;
     position: absolute;
     bottom: 0; }
@@ -7866,7 +7866,7 @@ section {
       height: 20px;
       bottom: -3px;
       border-top: 0;
-      border: 3px solid #FFFFFF;
+      border: 3px solid #F3F4F8;
       -moz-border-radius: 0 0 8px 0;
       -webkit-border-radius: 0 0 8px 0;
       border-radius: 0 0 8px 0;
@@ -7998,7 +7998,7 @@ section {
       padding: 3em; } }
 
 #leads {
-  background-color: #FFFFFF;
+  background-color: #F3F4F8;
   padding: 0 0 2em 0; }
 
 #courses {
