@@ -75,25 +75,26 @@ class StudyGroup(models.Model):
     location = models.ForeignKey('studygroups.Location')
     location_details = models.CharField(max_length=128)
     facilitator = models.ForeignKey(User)
-    start_date = models.DateTimeField() # Both day and time could be captured by start_date - eg: start Wednesday 1 July at 19:00 implies regular meetings on Wednesdays at 19:00
+    start_date = models.DateTimeField() # start_date also implies regular meeting day & time. Ex. Wednesday 1 July at 19:00 implies regular meetings on Wednesday at 19:00
     end_date = models.DateTimeField()
-    day = models.CharField(max_length=128, choices=zip(calendar.day_name, calendar.day_name)) #TODO remove this field
-    time = models.TimeField() #TODO remove this field
     duration = models.IntegerField() # meeting duration in minutes
     timezone = models.CharField(max_length=128)
-    max_size = models.IntegerField()
+    max_size = models.IntegerField() #TODO remove this field
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def end_time(self):
-        q = datetime.datetime.combine(timezone.now().date(), self.time) + datetime.timedelta(minutes=self.duration)
+        q = self.start_date + datetime.timedelta(minutes=self.duration)
         return q.time()
 
     def next_meeting(self):
-        return next_meeting_date(self)
+        return self.studygroupmeeting_set.filter(meeting_time__gt=timezone.now()).order_by('meeting_time').first()
+
+    def meeting_times(self):
+        return get_all_meeting_times(self)
 
     def __unicode__(self):
-        return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day, self.time, self.location)
+        return u'{0} - {1}s {2} at the {3}'.format(self.course.title, calendar.day_name[self.start_date.weekday()], self.start_date.time(), self.location)
 
 
 class Application(models.Model):
@@ -125,7 +126,7 @@ class Application(models.Model):
     accepted_at = models.DateTimeField(blank=True, null=True)
 
     def __unicode__(self):
-        return u"{0}".format(self.name)
+        return u"{0} <{1}>".format(self.name, self.email if self.contact_method==self.EMAIL else self.mobile)
 
 
 class StudyGroupMeeting(models.Model):
@@ -135,7 +136,7 @@ class StudyGroupMeeting(models.Model):
 
 class Reminder(models.Model):
     study_group = models.ForeignKey('studygroups.StudyGroup')
-    meeting_time = models.DateTimeField(blank=True, null=True) #TODO remove this field
+    meeting_time = models.DateTimeField(blank=True, null=True) #TODO change this field to models.ForeignKey('studygroups.StudyGroupMeeting')
     email_subject = models.CharField(max_length=256)
     email_body = models.TextField()
     sms_body = models.CharField(max_length=160)
@@ -149,6 +150,9 @@ class Rsvp(models.Model):
     application = models.ForeignKey('studygroups.Application')
     attending = models.BooleanField()
 
+    def __unicode__(self):
+        return u'{0} ({1})'.format(self.application, 'yes' if self.attending else 'no')
+
 
 class Feedback(models.Model):
     study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting')
@@ -161,25 +165,29 @@ def accept_application(application):
     application.save()
 
 
+def get_all_meeting_times(study_group):
+    # sorted ascending according to date
+    # TODO - check that meeting times have the correct timezone
+    next_meeting = study_group.start_date
+    meetings = []
+    while next_meeting <= study_group.end_date:
+        meetings += [next_meeting]
+        next_meeting += datetime.timedelta(days=7)
+    return meetings
+
+
 def next_meeting_date(study_group):
-    now = timezone.now()
-    day_delta = list(calendar.day_name).index(study_group.day) - now.weekday()
-    time = study_group.time
-    date = now + datetime.timedelta(days=day_delta)
-    tz = pytz.timezone(study_group.timezone)
-    meeting_datetime = tz.localize(datetime.datetime(
-        date.year, date.month, date.day,
-        time.hour, time.minute
-    ))
-    while meeting_datetime < study_group.start_date:
-        meeting_datetime = meeting_datetime + datetime.timedelta(weeks=1)
+    meetings = get_all_meeting_times(study_group)
+    return next((meeting for meeting in meetings if meeting > timezone.now()), [None])
 
-    if meeting_datetime < now:
-        meeting_datetime = meeting_datetime + datetime.timedelta(weeks=1)
 
-    if meeting_datetime > study_group.end_date:
-        return None
-    return meeting_datetime
+def generate_all_meetings(study_group):
+    if StudyGroupMeeting.objects.filter(study_group=study_group).exists():
+        raise Exception('Meetings already exist for this study group')
+    meeting_times = get_all_meeting_times(study_group)
+    for meeting_time in meeting_times:
+        meeting = StudyGroupMeeting(study_group=study_group, meeting_time=meeting_time)
+        meeting.save()
 
 
 def generate_reminder(study_group):
@@ -211,18 +219,16 @@ def generate_reminder(study_group):
             )
             reminder.save()
             
-            organizer_notification_subject = u'A reminder for {0} was generated'.format(study_group.course.title)
-            organizer_notification = render_to_string(
+            facilitator_notification_subject = u'A reminder for {0} was generated'.format(study_group.course.title)
+            facilitator_notification = render_to_string(
                 'studygroups/notifications/reminder-notification.html',
                 context
             )
             timezone.deactivate()
-            # TODO send email to study group organizer!
-            to = [ a[1] for a in settings.ADMINS ]
-            to += [settings.DEFAULT_FROM_EMAIL]
+            to = [study_group.facilitator.email]
             send_mail(
-                organizer_notification_subject,
-                organizer_notification,
+                facilitator_notification_subject,
+                facilitator_notification,
                 settings.SERVER_EMAIL,
                 to,
                 fail_silently=False
@@ -259,6 +265,8 @@ def send_reminder(reminder):
 
 def create_rsvp(contact, study_group, meeting_date, rsvp):
     # expect meeting_date in isoformat
+    # contact is an email address of mobile number
+    # study_group is the study group id
     meeting_date = dateutil.parser.parse(meeting_date)
     study_group_meeting = StudyGroupMeeting.objects.get(study_group__id=study_group, meeting_time=meeting_date)
     application = None

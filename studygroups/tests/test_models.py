@@ -55,6 +55,11 @@ class TestSignupModels(TestCase):
         accept_application(application)
         self.assertEqual(Application.objects.all().count() ,1)
 
+
+    def test_get_all_meeting_dates(self):
+        # TODO - setup test accross known daylight savings time
+        raise Exception('implement test')
+
     
     def test_next_meeting_date(self):
         sg = StudyGroup.objects.all()[0]
@@ -62,12 +67,13 @@ class TestSignupModels(TestCase):
         sg.start_date = now - datetime.timedelta(weeks=2)
         sg.end_date = now + datetime.timedelta(weeks=2)
         next_date = next_meeting_date(sg)
-        self.assertEquals(calendar.day_name[next_date.weekday()], sg.day)
+        self.assertEquals(next_date.weekday(), sg.start_date.weekday())
         self.assertTrue(next_date > now)
-        diff = next_date - now
+        diff = next_date - timezone.now()
         self.assertTrue(diff < datetime.timedelta(weeks=1))
         self.assertTrue(diff > datetime.timedelta())
-        self.assertEquals(sg.time, next_date.time())
+        self.assertEquals(sg.start_date.time().hour, next_date.time().hour)
+        self.assertEquals(sg.start_date.time().minute, next_date.time().minute)
 
 
     def test_next_meeting_date_in_range(self):
@@ -76,12 +82,13 @@ class TestSignupModels(TestCase):
         sg.start_date = now + datetime.timedelta(weeks=4)
         sg.end_date = now + datetime.timedelta(weeks=10)
         next_date = next_meeting_date(sg)
-        self.assertEquals(calendar.day_name[next_date.weekday()], sg.day)
+        self.assertEquals(next_date.weekday(), sg.start_date.weekday())
         self.assertTrue(next_date > now)
         diff = next_date - now
         self.assertTrue(next_date >= sg.start_date)
         self.assertTrue(next_date <= sg.end_date)
-        self.assertEquals(sg.time, next_date.time())
+        self.assertEquals(sg.start_date.time().hour, next_date.time().hour)
+        self.assertEquals(sg.start_date.time().minute, next_date.time().minute)
 
 
     def test_generate_reminder(self):
@@ -92,6 +99,8 @@ class TestSignupModels(TestCase):
         sg.start_date = now - datetime.timedelta(weeks=2)
         sg.end_date = now + datetime.timedelta(weeks=2)
         meeting = timezone.now() + datetime.timedelta(days=3, minutes=10)
+        # TODO
+        raise Exception('fix test')
         sg.day = calendar.day_name[meeting.astimezone(pytz.timezone(sg.timezone)).weekday()]
         sg.time = meeting.astimezone(pytz.timezone(sg.timezone)).time()
         generate_reminder(sg)
@@ -125,6 +134,8 @@ class TestSignupModels(TestCase):
         sg.start_date = now - datetime.timedelta(weeks=10)
         sg.end_date = now - datetime.timedelta(weeks=2)
         meeting = timezone.now() + datetime.timedelta(days=2, minutes=50)
+        # TODO
+        raise Exception('fix test')
         sg.day = calendar.day_name[meeting.astimezone(pytz.timezone(sg.timezone)).weekday()]
         sg.time = meeting.astimezone(pytz.timezone(sg.timezone)).time()
         generate_reminder(sg)
@@ -141,6 +152,8 @@ class TestSignupModels(TestCase):
         sg.start_date = now + datetime.timedelta(weeks=2)
         sg.end_date = now + datetime.timedelta(weeks=8)
         meeting = timezone.now() + datetime.timedelta(days=2, minutes=50)
+        # TODO
+        raise Exception('fix test')
         sg.day = calendar.day_name[meeting.astimezone(pytz.timezone(sg.timezone)).weekday()]
         sg.time = meeting.astimezone(pytz.timezone(sg.timezone)).time()
         generate_reminder(sg)
