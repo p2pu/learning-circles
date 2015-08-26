@@ -3,7 +3,7 @@
    "fields": {
       "created_at": "2015-08-18T15:18:02.190Z",
       "description": "Worried that your English writing isn\u2019t good enough for university? This course is designed to help you learn the basics of university-level academic writing. Through video, discussions, peer and self evaluation, you\u2019ll build a solid foundation for your future writing and finish the course with completed essay on a topic of your choosing.",
-      "title": "Beginner's guide to Academic Writing",
+      "title": "Beginner's Guide to Academic Writing",
       "image": " ",
       "caption": "Learn how to use English for study at university or college and develop your writing skills, vocabulary and grammar.",
       "link": "https://www.futurelearn.com/courses/english-for-study",
@@ -62,7 +62,7 @@
       "caption": "Learn how to convert digital design mockups into static web pages by perfecting page layout, breaking down a design mockup into page elements, and implementing that in HTML and CSS.",
       "link": "https://www.udacity.com/course/intro-to-html-and-css--ud304",
       "key": "NOT SET",
-      "provider": "Udacity and Cadeacademy",
+      "provider": "Udacity",
       "duration": "3 weeks",
       "time_required": "6 hours / week",
       "start_date": "2015-09-07",
