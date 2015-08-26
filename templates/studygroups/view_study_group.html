@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+  <!-- Example row of columns -->
+
+  {% with lc=study_group %}
+    {% include 'studygroups/study_group_facilitate.html' %}
+  {% endwith %}
+
+</div> <!-- /container -->
+
+{% endblock %}

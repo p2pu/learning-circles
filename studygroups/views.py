@@ -92,6 +92,15 @@ def facilitator(request):
 
 
 @login_required
+def view_study_group(request, study_group_id):
+    study_group = StudyGroup.objects.get(pk=study_group_id)
+    context = {
+        'study_group': study_group,
+    }
+    return render_to_response('studygroups/view_study_group.html', context, context_instance=RequestContext(request))
+
+
+@login_required
 def organize(request):
     context = {
         'courses': Course.objects.all(),

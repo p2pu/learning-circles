@@ -1,0 +1,109 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+      <h2>{{ lc.course.title }}</h2>
+    </div>
+<div class="panel-body">
+<div class="row">
+  <div class="col-md-12">
+      <p>At <a href="{{lc.location.link}}">{{ lc.location }}</a> {{lc.location_details}} every {{ lc.day }}, {{ lc.time }} to {{ lc.end_time }} starting {{ lc.start_date|date:"D d M Y" }}</p>
+  </div>
+  <div class="col-md-12">
+      <p>
+      <a class="btn btn-primary">edit</a>
+      <a class="btn btn-primary">download flyer</a>
+      </p>
+  </div>
+  <div class="col-md-12 well">
+      <p>Next meeting: {{ lc.next_meeting.meeting_time|date:"D d M Y \a\t P" }}</p>
+      <p>Attending: {{ lc.next_meeting.rsvp_set.all|join:", " }}</p>
+      <p>Recommended activity: {{activity}}</p>
+  </div>
+  <div class="col-md-12">
+      <h3>Messages ({{ lc.reminder_set.count }})</h3>
+
+      <table class="table table-bordered">
+      <thead>
+      <tr>
+          <th>Email subject</th>
+          <th>Email body</th>
+          <th>SMS body</th>
+          <th>Sent at</th>
+          <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for message in lc.reminder_set.all %}
+          <tr>
+              <td>{{ message.email_subject }}</td>
+              <td>{{ message.email_body }}</td>
+              <td>{{ message.sms_body }}</td>
+              <td>{{ message.sent_at|date:"D d M Y \a\t P" }}</td>
+              <td>
+                  {% if not message.sent_at %}
+                      <a href="{% url 'studygroups_messages_edit' lc.id message.id %}" class="btn btn-info">Edit</a>
+                  {% endif %}
+              </td>
+          </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <a href="{% url 'studygroups_email' lc.id %}" class="btn btn-primary">New message</a>
+  </div>
+
+  <div class="col-md-12">
+      <h3>Meetings ({{lc.studygroupmeeting_set.count}})</h3>
+      <table class="table table-bordered">
+          <thead>
+              <tr>
+                  <th>Date</th>
+                  <th>Attendance</th>
+                  <th>Feedback</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for meeting in lc.studygroupmeeting_set.all %}
+              <tr>
+                  <td>{{ meeting.meeting_time|date:"D, d M Y, P" }}
+                  </td>
+                  <td>{% for rsvp in meeting.rsvp_set.all %}{{rsvp.application.name}}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                  <td>{{ member.support }}</td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+  </div>
+
+
+  <div class="col-md-12">
+      <h3>Members ({{lc.application_set.count}})</h3>
+      <table class="table table-bordered">
+          <thead>
+              <tr>
+                  <th>Name</th>
+                  <th>Goal</th>
+                  <th>Support</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for member in lc.application_set.all %}
+              <tr>
+                  <td>{{ member.name }}
+                  <br/>
+                      {% if member.contact_method == "Email" %}
+                          &lt;{{member.email}}&gt;
+                      {% else %}
+                          &lt;{{member.mobile}}&gt;
+                      {% endif %}
+                  </td>
+                  <td>{{ member.goals }}</td>
+                  <td>{{ member.support }}</td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+      <p><a class="btn btn-primary">add learner</a></p>
+  </div>
+</div>
+</div>
+</div>
+
