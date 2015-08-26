@@ -12,7 +12,7 @@
 					{% endif %}
 					<div class="course-description {% if lc.location.image %} col-md-8{% else %} col-md-12{% endif %}">
 						<h4>{{ lc.course.title }}</h4>
-						<p><strong><i class="fa fa-calendar"></i>&nbsp; &nbsp;{{ lc.day }}s {{ lc.time|time:"fA" }} - {{ lc.end_time|time:"fA" }}</strong></p>
+						<p><strong><i class="fa fa-calendar"></i>&nbsp; &nbsp;{{ lc.day }}s {{ lc.start_date.time|time:"fA" }} - {{ lc.end_time|time:"fA" }}</strong></p>
 						<address class="text-left">
 							<a href="{{lc.location.link}}" target="_blank"><i class="fa fa-map-marker"></i>&nbsp; &nbsp;{{ lc.location.name }}</a>
 						</address>

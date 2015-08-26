@@ -84,6 +84,9 @@ class StudyGroup(models.Model):
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def day(self):
+        return calendar.day_name[self.start_date.weekday()]
+
     def end_time(self):
         q = self.start_date + datetime.timedelta(minutes=self.duration)
         return q.time()
@@ -95,7 +98,7 @@ class StudyGroup(models.Model):
         return get_all_meeting_times(self)
 
     def __unicode__(self):
-        return u'{0} - {1}s {2} at the {3}'.format(self.course.title, calendar.day_name[self.start_date.weekday()], self.start_date.time(), self.location)
+        return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day(), self.start_date.time(), self.location)
 
 
 class Application(models.Model):
