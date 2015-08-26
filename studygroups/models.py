@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from s3direct.fields import S3DirectField
 
 from studygroups.sms import send_message
+from studygroups import rsvp
 
 import calendar
 import datetime
@@ -136,7 +137,7 @@ class StudyGroupMeeting(models.Model):
 
 class Reminder(models.Model):
     study_group = models.ForeignKey('studygroups.StudyGroup')
-    meeting_time = models.DateTimeField(blank=True, null=True) #TODO change this field to models.ForeignKey('studygroups.StudyGroupMeeting')
+    study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting', blank=True, null=True)
     email_subject = models.CharField(max_length=256)
     email_body = models.TextField()
     sms_body = models.CharField(max_length=160)
@@ -167,7 +168,8 @@ def accept_application(application):
 
 def get_all_meeting_times(study_group):
     # sorted ascending according to date
-    # TODO - check that meeting times have the correct timezone
+    # times are in the study group timezone
+    # meeting time stays constant, eg 18:00 stays 18:00 even when daylight savings changes
     tz = pytz.timezone(study_group.timezone)
     next_meeting = tz.normalize(study_group.start_date)
     meetings = []
@@ -196,13 +198,13 @@ def generate_all_meetings(study_group):
 
 def generate_reminder(study_group):
     now = timezone.now()
-    next_meeting = next_meeting_date(study_group)
-    if next_meeting and next_meeting - now < datetime.timedelta(days=3):
+    next_meeting = study_group.next_meeting()
+    if next_meeting and next_meeting.meeting_time - now < datetime.timedelta(days=3):
         # check if a notifcation already exists for this meeting
-        if not Reminder.objects.filter(study_group=study_group, meeting_time=next_meeting).exists():
+        if not Reminder.objects.filter(study_group=study_group, study_group_meeting=next_meeting).exists():
             reminder = Reminder()
             reminder.study_group = study_group
-            reminder.meeting_time = next_meeting
+            reminder.study_group_meeting = next_meeting
             context = { 
                 'study_group': study_group,
                 'next_meeting': next_meeting,
@@ -257,17 +259,55 @@ def send_group_message(study_group, email_subject, email_body, sms_body):
 
 
 def send_reminder(reminder):
-    send_group_message(
-        reminder.study_group,
-        reminder.email_subject,
-        reminder.email_body,
-        reminder.sms_body
-    )
+    to = [su.email for su in reminder.study_group.application_set.filter(accepted_at__isnull=False, contact_method=Application.EMAIL)]
+    if reminder.study_group_meeting:
+        # this is a reminder and we need RSVP links
+        for email in to:
+            # TODO add URL part to links
+            yes_link = rsvp.gen_rsvp_querystring(
+                email,
+                reminder.study_group,
+                reminder.study_group_meeting.meeting_time,
+                'yes'
+            )
+            no_link = rsvp.gen_rsvp_querystring(
+                email,
+                reminder.study_group,
+                reminder.study_group_meeting.meeting_time,
+                'no'
+            )
+            email_body = reminder.email_body
+            # TODO - insert RSVP link in email body
+            send_mail(
+                    reminder.email_subject.strip('\n'),
+                    email_body,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [email],
+                    fail_silently=False
+            )
+    else:
+        send_mail(reminder.email_subject.strip('\n'), reminder.email_body, settings.DEFAULT_FROM_EMAIL, to, fail_silently=False)
+
+    # send SMS
+    tos = [su.mobile for su in reminder.study_group.application_set.filter(accepted_at__isnull=False, contact_method=Application.TEXT)]
+    errors = []
+    for to in tos:
+        if reminder.study_group_meeting:
+            #TODO - insert RSVP link
+            send_message(to, reminder.sms_body)
+        try:
+            send_message(to, reminder.sms_body)
+        except twilio.TwilioRestException as e:
+            errors.push[e]
+    if len(errors):
+        #TODO: log errors
+        raise Exception(errors)
+
     reminder.sent_at = timezone.now()
     reminder.save()
 
 
-def create_rsvp(contact, study_group, meeting_date, rsvp):
+def create_rsvp(contact, study_group, meeting_date, attending):
     # expect meeting_date in isoformat
     # contact is an email address of mobile number
     # study_group is the study group id
@@ -278,5 +318,10 @@ def create_rsvp(contact, study_group, meeting_date, rsvp):
         application = Application.objects.get(study_group__id=study_group, email=contact)
     else:
         application = Application.objects.get(study_group__id=study_group, mobile=contact)
-    rsvp = Rsvp(study_group_meeting=study_group_meeting, application=application, attending=rsvp=='yes')
+    rsvp = Rsvp.objects.all().filter(study_group_meeting=study_group_meeting, application=application).first()
+    if not rsvp:
+        rsvp = Rsvp(study_group_meeting=study_group_meeting, application=application, attending=attending=='yes')
+    else:
+        rsvp.attending=attending=='yes'
     rsvp.save()
+    return rsvp

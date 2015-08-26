@@ -17,7 +17,7 @@ class TestSignupViews(TestCase):
 
     APPLICATION_DATA = {
         'name': 'Test User',
-        'contact_method': 'Email',
+        'contact_method': Application.EMAIL,
         'email': 'test@mail.com',
         'computer_access': 'Yes', 
         'goals': 'try hard',
@@ -56,6 +56,8 @@ class TestSignupViews(TestCase):
             u'sms_body': 'The first study group for GED® Prep Math will meet next Thursday, May 7th, from 6:00 pm-7:45 pm at Edgewater on the 2nd floor. Feel free to bring a study buddy!'
         }
         resp = c.post(url, mail_data)
+        self.assertRedirects(resp, '/en/organize/')
+
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, mail_data['email_subject'])
         self.assertFalse(send_message.called)
@@ -66,7 +68,7 @@ class TestSignupViews(TestCase):
         c = Client()
         c.login(username='admin', password='password')
         signup_data = self.APPLICATION_DATA.copy()
-        signup_data['contact_method'] = 'Text'
+        signup_data['contact_method'] = Application.TEXT
         signup_data['mobile'] = '123-456-7890'
         signup_data['study_group'] = StudyGroup.objects.all()[0]
         signup = Application(**signup_data)
