@@ -32,5 +32,5 @@ class ApplicationForm(forms.ModelForm):
 class MessageForm(forms.ModelForm):
     class Meta:
         model = Reminder
-        exclude = ['meeting_time', 'created_at', 'sent_at']
+        exclude = ['study_group_meeting', 'created_at', 'sent_at']
         widgets = {'study_group': forms.HiddenInput} 
