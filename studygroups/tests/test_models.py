@@ -26,6 +26,7 @@ import datetime
 import pytz
 import re
 import urlparse
+import urllib
 
 # Create your tests here.
 class TestSignupModels(TestCase):
@@ -199,7 +200,8 @@ class TestSignupModels(TestCase):
         self.assertEqual(len(mail.outbox), 2)
         self.assertEqual(mail.outbox[1].to[0], data['email'])
         self.assertFalse(send_message.called)
-        # TODO test that reminder contains RSVP links
+        self.assertIn('https://chicago.p2pu.org/en/rsvp/?user=test%40mail.com&study_group=1&meeting_date={0}&rsvp=yes&sig='.format(urllib.quote(sg.next_meeting().meeting_time.isoformat())), mail.outbox[1].body)
+        self.assertIn('https://chicago.p2pu.org/en/rsvp/?user=test%40mail.com&study_group=1&meeting_date={0}&rsvp=no&sig='.format(urllib.quote(sg.next_meeting().meeting_time.isoformat())), mail.outbox[1].body)
 
 
     @patch('studygroups.models.send_message')
