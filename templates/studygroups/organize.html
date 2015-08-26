@@ -14,6 +14,7 @@
             <th>Details</th>
             <th>Signups</th>
             <th>Facilitator</th>
+            <th>Meetings</th>
             <th></th>
         </tr>
         </thead>
@@ -33,11 +34,15 @@
                     {{ group.facilitator.first_name }} {{ group.facilitator.last_name }}
                 </td>
                 <td>
+                    {{ group.meeting_times|length }}
                     <!--div class="btn-group">
                         <a class="btn btn-mini btn-primary" href="{% url 'studygroups_email' group.id %}">
                             <i class="glyphicon glyphicon-envelope"></i> send email
                         </a>
                     </div-->
+                </td>
+                <td>
+                    <a class="btn btn-primary" href="{% url 'studygroups_view_study_group' group.pk %}">View</a>
                 </td>
             </tr>
         {% endfor %}
