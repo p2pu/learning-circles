@@ -5,6 +5,7 @@ from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse #TODO ideally this shouldn't be in the model
 
 from s3direct.fields import S3DirectField
 
@@ -15,6 +16,7 @@ import calendar
 import datetime
 import pytz
 import dateutil.parser
+import re
 
 STUDY_GROUP_NAMES = [
     "The Riders",
@@ -244,43 +246,31 @@ def generate_reminder(study_group):
             )
 
 
-def send_group_message(study_group, email_subject, email_body, sms_body):
-    to = [su.email for su in study_group.application_set.filter(accepted_at__isnull=False, contact_method=Application.EMAIL)]
-    send_mail(email_subject.strip('\n'), email_body, settings.DEFAULT_FROM_EMAIL, to, fail_silently=False)
-
-    # send SMS
-    tos = [su.mobile for su in study_group.application_set.filter(accepted_at__isnull=False, contact_method=Application.TEXT)]
-    errors = []
-    for to in tos:
-        try:
-            send_message(to, sms_body)
-        except twilio.TwilioRestException as e:
-            errors.push[e]
-    if len(errors):
-        #TODO: log errors
-        raise Exception(errors)
-
-
 def send_reminder(reminder):
     to = [su.email for su in reminder.study_group.application_set.filter(accepted_at__isnull=False, contact_method=Application.EMAIL)]
     if reminder.study_group_meeting:
         # this is a reminder and we need RSVP links
         for email in to:
-            # TODO add URL part to links
-            yes_link = rsvp.gen_rsvp_querystring(
+            # TODO hardcoded domain
+            domain = 'https://chicago.p2pu.org'
+            url = reverse('studygroups_rsvp')
+            yes_qs = rsvp.gen_rsvp_querystring(
                 email,
-                reminder.study_group,
+                reminder.study_group.pk,
                 reminder.study_group_meeting.meeting_time,
                 'yes'
             )
-            no_link = rsvp.gen_rsvp_querystring(
+            yes_link = '{0}{1}?{2}'.format(domain,url,yes_qs)
+            no_qs = rsvp.gen_rsvp_querystring(
                 email,
-                reminder.study_group,
+                reminder.study_group.pk,
                 reminder.study_group_meeting.meeting_time,
                 'no'
             )
+            no_link = '{0}{1}?{2}'.format(domain,url,no_qs)
             email_body = reminder.email_body
-            # TODO - insert RSVP link in email body
+            email_body = re.sub(r'<!--RSVP:YES.*-->', yes_link, email_body)
+            email_body = re.sub(r'<!--RSVP:NO.*-->', no_link, email_body)
             send_mail(
                     reminder.email_subject.strip('\n'),
                     email_body,
