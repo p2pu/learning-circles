@@ -80,7 +80,6 @@ class TestSignupModels(TestCase):
             for meeting_time in meeting_times:
                 self.assertEqual(datetime.time(16,0), meeting_time.time())
 
-
     
     def test_next_meeting_date(self):
         sg = StudyGroup.objects.all()[0]
