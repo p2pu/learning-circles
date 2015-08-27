@@ -7768,7 +7768,7 @@ section {
   padding: 0;
   margin-top: -80px;
   margin-bottom: 0;
-  background-color: #ffffff; }
+  background-color: #FFFFFF; }
   .jumbotron .heading {
     margin-bottom: 2em; }
   .jumbotron:before {
@@ -8003,46 +8003,68 @@ section {
 
 #courses {
   padding-top: 3em; }
-  #courses .courses-list {
-    margin-top: 115px; }
-    @media (min-width: 1199px) {
-      #courses .courses-list {
-        margin-top: 0; } }
   #courses .article-wrapper {
     padding: 1.5em 0;
-    border-bottom: 1px solid #D3D8E6;
-    margin-bottom: 125px; }
-    @media (min-width: 1199px) {
-      #courses .article-wrapper {
-        margin-bottom: 0; } }
+    border-bottom: 1px solid #D3D8E6; }
   #courses article {
     background-color: #FCFCFC;
     padding: 1em; }
   #courses .img-wrapper {
-    background-color: #FFFFFF;
-    padding: 10px;
+    position: absolute;
     z-index: 1000;
-    position: relative;
-    top: -135px;
-    width: 270px;
-    margin: 0 auto -125px auto;
-    border-radius: 50%; }
-    @media (min-width: 1199px) {
-      #courses .img-wrapper {
-        top: -15px;
-        left: -15px;
-        border-radius: 0; } }
-    #courses .img-wrapper img {
-      width: 250px;
-      border-radius: 50%; }
+    top: 0;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: 16% 10%;
+    opacity: 0.5;
+    right: 0;
+    border-radius: 0;
+    height: 100%;
+    padding: 0; }
+    #courses .img-wrapper .image-overlay {
+      background: url("/static/images/overlay.png") top left repeat;
+      width: 100%;
+      height: 100%; }
       @media (min-width: 1199px) {
-        #courses .img-wrapper img {
+        #courses .img-wrapper .image-overlay {
           border-radius: 0; } }
   @media (min-width: 1199px) {
     #courses .course-description {
       margin-top: 0; } }
   #courses .course-apply {
     text-transform: uppercase; }
+  #courses .course {
+    position: relative; }
+  #courses .study-group {
+    border: 1px solid #F3F4F8;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    color: #515665;
+    text-align: center;
+    text-underline: none;
+    display: block;
+    margin-bottom: 5px;
+    transition: all 0.5s linear; }
+    #courses .study-group:hover {
+      text-decoration: none;
+      background-color: #FFFFFF; }
+      #courses .study-group:hover img {
+        opacity: 1; }
+    #courses .study-group img {
+      max-width: 100%;
+      opacity: 0.5;
+      transition: opacity 0.5s linear; }
+    #courses .study-group .location {
+      color: #5F9EA0;
+      font-family: "Arvo", Helvetica, Arial, sans-serif;
+      text-align: center;
+      font-weight: bold;
+      font-size: 0.8em; }
+    #courses .study-group .location-details {
+      text-align: center;
+      font-size: 0.8em; }
+    #courses .study-group .study-group-details {
+      font-size: 0.8em; }
 
 .course-provider {
   margin: 1em 0;
