@@ -16,8 +16,9 @@ from django.utils import timezone
 
 from studygroups.models import Course, Location, StudyGroup, Application, Reminder
 from studygroups.models import send_reminder
+from studygroups.models import create_rsvp
 from studygroups.forms import ApplicationForm, MessageForm
-from studygroups.sms import send_message
+from studygroups.rsvp import check_rsvp_signature
 
 
 def landing(request):
@@ -64,6 +65,22 @@ def signup(request, location, study_group_id):
     return render_to_response('studygroups/signup.html', context, context_instance=RequestContext(request))
 
 
+def rsvp(request):
+    user = request.GET['user']
+    study_group = request.GET['study_group']
+    meeting_date = request.GET['meeting_date']
+    attending = request.GET['attending']
+    sig = request.GET['sig']
+    # TODO - rename attening elseware
+
+    if (check_rsvp_signature(user, study_group, meeting_date, attending, sig)):
+        rsvp = create_rsvp(user, int(study_group), meeting_date, attending)
+        # Show success message
+    else:
+        # invalid RSVP link
+        pass
+
+
 @login_required
 def facilitator(request):
     study_groups = StudyGroup.objects.filter(facilitator=request.user)
@@ -72,6 +89,15 @@ def facilitator(request):
         'study_groups': study_groups,
     }
     return render_to_response('studygroups/facilitator.html', context, context_instance=RequestContext(request))
+
+
+@login_required
+def view_study_group(request, study_group_id):
+    study_group = StudyGroup.objects.get(pk=study_group_id)
+    context = {
+        'study_group': study_group,
+    }
+    return render_to_response('studygroups/view_study_group.html', context, context_instance=RequestContext(request))
 
 
 @login_required
@@ -85,6 +111,7 @@ def organize(request):
     return render_to_response('studygroups/organize.html', context, context_instance=RequestContext(request))
 
 
+@login_required
 def organize_messages(request, study_group_id):
     study_group = StudyGroup.objects.get(id=study_group_id)
     context = {
@@ -95,6 +122,7 @@ def organize_messages(request, study_group_id):
 
 @login_required
 def email(request, study_group_id):
+    # TODO - this piggy backs of Reminder, won't work of Reminder is coupled to StudyGroupMeeting
     study_group = StudyGroup.objects.get(id=study_group_id)
     if request.method == 'POST':
         form = MessageForm(request.POST)
@@ -104,6 +132,7 @@ def email(request, study_group_id):
                 send_reminder(reminder)
                 messages.success(request, 'Email successfully sent')
             except Exception as e:
+                #TODO - catch specific error so that normal errors aren't masked by this
                 messages.error(request, 'An error occured while sending group message.')
 
             url = reverse('studygroups_organize')
@@ -119,6 +148,7 @@ def email(request, study_group_id):
     return render_to_response('studygroups/email.html', context, context_instance=RequestContext(request))
 
 
+@login_required
 def messages_edit(request, study_group_id, message_id):
     study_group = StudyGroup.objects.get(id=study_group_id)
     reminder = Reminder.objects.get(id=message_id)
@@ -158,5 +188,7 @@ def receive_sms(request):
     subject = 'New SMS reply from {0}'.format(sender)
     if signups.count() > 0:
         subject = 'New SMS reply from {0} <{1}>'.format(signups[0].name, sender)
+
+    #TODO send to right facilitator
     send_mail(subject, message, settings.SERVER_EMAIL, to, fail_silently=False)
     return http.HttpResponse(status=200)

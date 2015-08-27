@@ -37,7 +37,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 3rd party apps
-    'compressor',
     'crispy_forms',
     'localflavor',
     's3direct',

@@ -14,7 +14,7 @@
       <p>at <a href="{{study_group.location.link}}">{{study_group.location.name}}</a></p>
       <p>{{study_group.course.caption}}</p>
       <p>Course content from <a href="{{ study_group.course.link }}" target="_blank">{{ study_group.course.provider }}</a></p>
-      <p><strong>This Learning Circle meets every {{study_group.day}} from {{study_group.time|time:"fA"}}-{{study_group.end_time|time:"fA"}} starting {{study_group.start_date}} for {{study_group.course.duration}}.</strong></p>
+      <p><strong>This Learning Circle meets every {{study_group.day}} from {{study_group.start_date.time|time:"fA"}}-{{study_group.end_time|time:"fA"}} starting {{study_group.start_date}} for {{study_group.course.duration}}.</strong></p>
   </div>
   <div class="col-md-8 col-sm-12">
 	  <form action="" method="POST">
