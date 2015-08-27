@@ -16,14 +16,8 @@
       <meta name="description" content="{{ site.description }}">
       <link rel="canonical" href="">
       <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+	    <link type="text/css" rel="stylesheet" href="{% static 'css/p2pu-custom.css' %}" charset="utf-8">
 
-      {% if debug %}
-      {% compress css %}
-        <link type="text/x-scss" rel="stylesheet" href="{% static 'css/p2pu-custom.scss' %}" charset="utf-8">
-      {% endcompress %}
-      {% else %}
-        <link type="text/css" rel="stylesheet" href="{% static 'css/p2pu-custom.css' %}" charset="utf-8">
-      {% endif %}
       {% block css %}{% endblock %}
       <script src="{% static 'js/vendor/modernizr-2.6.2.min.js' %}"></script>
   </head>
