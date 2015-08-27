@@ -411,25 +411,9 @@ $next-section-color: $gray-lighter;
 #courses{
 	padding-top: 3em;
 
-	.courses-list{
-		margin-top: 115px;
-		@media (min-width: $screen-sm) {
-
-		}
-
-		@media (min-width: $screen-md-max) {
-			margin-top: 0;
-		}
-	}
-
 	.article-wrapper{
 		padding: 1.5em 0;
 		border-bottom: 1px solid $gray-light;
-		margin-bottom: 125px;
-
-		@media (min-width: $screen-md-max) {
-			margin-bottom: 0;
-		}
 	}
 
 	article{
@@ -438,28 +422,31 @@ $next-section-color: $gray-lighter;
 	}
 
 	.img-wrapper{
-		background-color: $white;
-		padding: 10px;
+		position: absolute;
 		z-index: 1000;
-		position: relative;
-		top: -135px;
-		width: 270px;
-		margin: 0 auto -125px auto;
-		border-radius: 50%;
+		top: 0;
+		background-repeat: no-repeat;
+		background-size: cover;
+		background-position: 16% 10%;
+		opacity: 0.5;
+		right: 0;
+		border-radius: 0;
+		height: 100%;
+		padding: 0;
 
 		@media (min-width: $screen-sm) {
 
 		}
 
 		@media (min-width: $screen-md-max) {
-			top: -15px;
-			left: -15px;
-			border-radius: 0;
+
 		}
 
-		img{
-			width: 250px;
-			border-radius: 50%;
+		.image-overlay{
+			background: url("/static/images/overlay.png") top left repeat;
+			width: 100%;
+			height: 100%;
+
 			@media (min-width: $screen-sm) {
 
 			}
@@ -478,6 +465,52 @@ $next-section-color: $gray-lighter;
 
 	.course-apply {
 		text-transform: uppercase;
+	}
+
+	.course{
+		position: relative;
+	}
+
+	.study-group{
+		border: 1px solid $gray-lighter;
+		padding-top: 5px;
+		padding-bottom: 5px;
+		color: $brand-primary;
+		text-align: center;
+		text-underline: none;
+		display: block;
+		margin-bottom: 5px;
+		transition: all 0.5s linear;
+
+		&:hover{
+			text-decoration: none;
+			background-color: $white;
+
+			img{
+				opacity: 1;
+			}
+		}
+
+		img{
+			max-width: 100%;
+			opacity: 0.5;
+			transition: opacity 0.5s linear;
+		}
+
+		.location{
+			color: $link-color;
+			font-family: $headings-font-family;
+			text-align: center;
+			font-weight: bold;
+			font-size: 0.8em;
+		}
+		.location-details{
+			text-align: center;
+			font-size: 0.8em;
+		}
+		.study-group-details{
+			font-size: 0.8em;
+		}
 	}
 }
 .course-provider{

@@ -1,0 +1,58 @@
+{% load static %}
+
+<div class="course-list col-md-12">
+	{% for course in courses %}
+		<div class="article-wrapper">
+			<article>
+				<div class="clearfix">
+					<div class="course clearfix">
+						<div class="col-md-12">
+							<div class="course-description">
+								<h4>{{ course.title }}</h4>
+								<hr>
+								<p>{{ course.caption }}</p>
+
+								<p>
+									<strong><i class="fa fa-calendar"></i></strong> Duration:
+									<strong>{{ course.duration|capfirst }}</strong><br />
+									<strong><i class="fa fa-book"></i></strong> Prerequisite:
+									<strong>{{ course.prerequisite|capfirst }}</strong><br />
+									<strong><i class="fa fa-clock-o"></i></strong> Time Required:
+									<strong>{{ course.time_required|capfirst }}</strong>
+								</p>
+
+								<div class="course-provider">
+									Course Provider: <a href="{{ course.link }}" target="_blank">{{ course.provider }}</a>
+								</div>
+							</div>
+						</div>
+					</div>
+						<hr />
+						<h5>This course is going to be offered at these locations:</h5>
+						{% for sg in course.studygroups %}
+							<div class="study-group col-md-4 col-sm-4">
+
+									<img class="img-thumbnail" src="https://chicago.p2pu.org/media/harold-washington-library-center.jpg" alt="{{ sg.location.name }}" />
+									{% comment %}
+									<img class="img-thumbnail" src="/media/{{ sg.location.image }}" alt="{{ sg.location.name }}" />
+									{% endcomment %}
+									<div class="location">
+										{{ sg.location }}
+									</div>
+									<div class="location-details">
+										{{ sg.location_details }}
+									</div>
+									<div class="study-group-details">
+										<p><strong><i class="fa fa-calendar"></i>&nbsp; &nbsp;{{ sg.day }}s {{ sg.time|time:"fA" }} - {{ sg.end_time|time:"fA" }}</strong></p>
+										<p><strong>{{ sg.course.duration|capfirst }}</strong> beginning <strong>{{ sg.start_date|date:"j N" }}</strong></p>
+									</div>
+
+								<a href="{% url 'studygroups_signup' location=sg.location.name|slugify study_group_id=sg.pk %}"
+								   class="course-apply btn btn-info"> Sign up </a>
+							</div>
+						{% endfor %}
+					</div>
+			</article>
+		</div>
+	{% endfor %}
+</div>
