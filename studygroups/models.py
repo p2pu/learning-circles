@@ -91,7 +91,8 @@ class StudyGroup(models.Model):
 
     def end_time(self):
         q = self.start_date + datetime.timedelta(minutes=self.duration)
-        return q.time()
+        # without date we loose timezone info used to display date correctly
+        return q
 
     def next_meeting(self):
         return self.studygroupmeeting_set.filter(meeting_time__gt=timezone.now()).order_by('meeting_time').first()

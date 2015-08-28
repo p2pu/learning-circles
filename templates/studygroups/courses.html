@@ -20,7 +20,7 @@
 					</div>
 						<hr />
 						<h5>Offered at:</h5>
-						{% for sg in course.studygroups %}
+						{% for sg in course.studygroup_set.all %}
 							<div class="study-group col-md-4 col-sm-4">
 
                   <img class="img-thumbnail" src="{{ sg.location.image.url }}" alt="{{ sg.location.name }}" />
@@ -31,7 +31,7 @@
 										{{ sg.location_details }}
 									</div>
 									<div class="study-group-details">
-										<p><strong><i class="fa fa-calendar"></i>&nbsp; &nbsp;{{ sg.day }}s {{ sg.start_date.time|time:"fA" }} - {{ sg.end_time|time:"fA" }}</strong></p>
+										<p><strong><i class="fa fa-calendar"></i>&nbsp; &nbsp;{{ sg.day }}s {{ sg.start_date|date:"f A" }} - {{ sg.end_time|time:"fA" }}</strong></p>
 										<p><strong>{{ sg.course.duration|capfirst }}</strong> beginning <strong>{{ sg.start_date|date:"j N" }}</strong></p>
 									</div>
 
