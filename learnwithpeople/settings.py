@@ -100,7 +100,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     # other finders..
-    'compressor.finders.CompressorFinder',
 )
 
 MEDIA_URL = '/media/'
@@ -109,10 +108,6 @@ MEDIA_ROOT = path('upload')
 
 TEMPLATE_DIRS = (
     path('templates'),
-)
-
-COMPRESS_PRECOMPILERS = (
-    ('text/x-scss', 'sass --scss -I ' + path('static/sass') + ' {infile} {outfile}'),
 )
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
