@@ -46,8 +46,16 @@ def signup(request, location, study_group_id):
     if request.method == 'POST':
         form = ApplicationForm(request.POST)
         if form.is_valid():
-            application = form.save()
-            messages.success(request, 'You successfully applied to join a study group!')
+            application = form.save(commit=False)
+            if application.contact_method == Application.EMAIL and Application.objects.filter(email=application.email, study_group=study_group):
+                application = Application.objects.filter(email=application.email, study_group=study_group).first()
+                messages.success(request, 'Your signup details have been updated!')
+            elif application.contact_method == Application.TEXT and Application.objects.filter(mobile=application.mobile, study_group=study_group):
+                application = Application.objects.filter(email=application.email, study_group=study_group).first()
+                messages.success(request, 'Your signup details have been updated!')
+            else:
+                messages.success(request, 'You successfully applied to join a study group!')
+            application.save()
             notification_body = render_to_string(
                 'studygroups/notifications/application.txt', 
                 {'application': application}
