@@ -1,6 +1,8 @@
 from django import forms
 from studygroups.models import Application
 from studygroups.models import Reminder
+from studygroups.models import StudyGroup
+from studygroups.models import StudyGroupMeeting
 from localflavor.us.forms import USPhoneNumberField
 
 
@@ -34,3 +36,15 @@ class MessageForm(forms.ModelForm):
         model = Reminder
         exclude = ['study_group_meeting', 'created_at', 'sent_at']
         widgets = {'study_group': forms.HiddenInput} 
+
+
+class StudyGroupForm(forms.ModelForm):
+    class Meta:
+        model = StudyGroup
+        fields = ['location_details', 'start_date', 'end_date', 'duration']
+
+
+class StudyGroupMeetingForm(forms.ModelForm):
+    class Meta:
+        model = StudyGroupMeeting
+        fields = ['meeting_time']

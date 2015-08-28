@@ -85,6 +85,7 @@ class StudyGroup(models.Model):
     max_size = models.IntegerField() #TODO remove this field
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    # consider storing number of weeks/meetings instead of end time
 
     def day(self):
         return calendar.day_name[self.start_date.weekday()]
@@ -101,6 +102,7 @@ class StudyGroup(models.Model):
         return get_all_meeting_times(self)
 
     def __unicode__(self):
+        # TODO time is given in wrong timezone
         return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day(), self.start_date.time(), self.location)
 
 
