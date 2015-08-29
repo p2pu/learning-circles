@@ -202,8 +202,8 @@ class TestSignupModels(TestCase):
         self.assertEqual(len(mail.outbox), 2)
         self.assertEqual(mail.outbox[1].to[0], data['email'])
         self.assertFalse(send_message.called)
-        self.assertIn('https://chicago.p2pu.org/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&rsvp=yes&sig='.format(get_language(), urllib.quote(sg.next_meeting().meeting_time.isoformat())), mail.outbox[1].body)
-        self.assertIn('https://chicago.p2pu.org/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&rsvp=no&sig='.format(get_language(), urllib.quote(sg.next_meeting().meeting_time.isoformat())), mail.outbox[1].body)
+        self.assertIn('https://chicago.p2pu.org/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=yes&sig='.format(get_language(), urllib.quote(sg.next_meeting().meeting_time.isoformat())), mail.outbox[1].body)
+        self.assertIn('https://chicago.p2pu.org/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=no&sig='.format(get_language(), urllib.quote(sg.next_meeting().meeting_time.isoformat())), mail.outbox[1].body)
 
 
     @patch('studygroups.models.send_message')

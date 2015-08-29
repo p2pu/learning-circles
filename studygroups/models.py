@@ -318,6 +318,6 @@ def create_rsvp(contact, study_group, meeting_date, attending):
     if not rsvp:
         rsvp = Rsvp(study_group_meeting=study_group_meeting, application=application, attending=attending=='yes')
     else:
-        rsvp.attending=attending=='yes'
+        rsvp.attending = attending=='yes'
     rsvp.save()
     return rsvp

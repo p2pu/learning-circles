@@ -11,7 +11,7 @@ def gen_rsvp_querystring(contact, study_group, meeting_date, rsvp):
         ('user', contact),
         ('study_group', study_group),
         ('meeting_date', meeting_date.isoformat()),
-        ('rsvp', rsvp)
+        ('attending', rsvp)
     ]
     sig = hmac.new(settings.SECRET_KEY, urllib.urlencode(qs), hashlib.sha256).hexdigest()
     qs.append( ('sig', sig) )
@@ -23,7 +23,7 @@ def check_rsvp_signature(contact, study_group, meeting_date, rsvp, sig):
         ('user', contact),
         ('study_group', study_group),
         ('meeting_date', meeting_date.isoformat()),
-        ('rsvp', rsvp)
+        ('attending', rsvp)
     ]
     return sig == hmac.new(settings.SECRET_KEY, urllib.urlencode(qs), hashlib.sha256).hexdigest()
 
