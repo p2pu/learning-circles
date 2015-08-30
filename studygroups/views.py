@@ -13,9 +13,9 @@ from django import http
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
-from django.views.generic.edit import CreateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from studygroups.models import Course, Location, StudyGroup, Application, Reminder
+from studygroups.models import Course, Location, StudyGroup, Application, Reminder, Feedback
 from studygroups.models import StudyGroupMeeting
 from studygroups.models import send_reminder
 from studygroups.models import create_rsvp
@@ -111,44 +111,11 @@ def view_study_group(request, study_group_id):
     return render_to_response('studygroups/view_study_group.html', context, context_instance=RequestContext(request))
 
 
-@login_required
-def edit_study_group(request, study_group_id):
-    study_group = StudyGroup.objects.get(pk=study_group_id)
-    if request.method == 'POST':
-        form = StudyGroupForm(request.POST, instance=study_group)
-        if form.is_valid():
-            reminder = form.save()
-            messages.success(request, 'Study group updated')
-            url = reverse('studygroups_facilitator')
-            return http.HttpResponseRedirect(url)
-    else:
-        form = StudyGroupForm(instance=study_group)
-
-    context = {
-        'study_group': study_group,
-        'form': form
-    }
-    return render_to_response('studygroups/edit_study_group.html', context, context_instance=RequestContext(request))
-
-
-@login_required
-def edit_study_group_meeting(request, study_group_id, study_group_meeting_id):
-    study_group_meeting = StudyGroupMeeting.objects.get(pk=study_group_meeting_id)
-    if request.method == 'POST':
-        form = StudyGroupMeetingForm(request.POST, instance=study_group_meeting)
-        if form.is_valid():
-            reminder = form.save()
-            messages.success(request, 'Study group meeting updated')
-            url = reverse('studygroups_facilitator')
-            return http.HttpResponseRedirect(url)
-    else:
-        form = StudyGroupMeetingForm(instance=study_group_meeting)
-
-    context = {
-        'study_group_meeting': study_group_meeting,
-        'form': form
-    }
-    return render_to_response('studygroups/edit_study_group_meeting.html', context, context_instance=RequestContext(request))
+# TODO - add login_required to all class based views
+class StudyGroupUpdate(UpdateView):
+    model = StudyGroup
+    fields = ['location_details', 'start_date', 'end_date', 'duration']
+    success_url = reverse_lazy('studygroups_facilitator')
 
 
 class MeetingCreate(CreateView):
@@ -163,29 +130,27 @@ class MeetingCreate(CreateView):
         }
 
 
+class MeetingUpdate(UpdateView):
+    model = StudyGroupMeeting
+    form_class = StudyGroupMeetingForm
+    success_url = reverse_lazy('studygroups_facilitator')
+
+
 class MeetingDelete(DeleteView):
     model = StudyGroupMeeting
     success_url = reverse_lazy('studygroups_facilitator')
 
 
-@login_required
-def feedback(request, study_group_id, study_group_meeting_id):
-    study_group_meeting = StudyGroupMeeting.objects.get(pk=study_group_meeting_id)
-    if request.method == 'POST':
-        form = FeedbackForm(request.POST)
-        if form.is_valid():
-            feedback = form.save()
-            messages.success(request, 'Feedback saved')
-            url = reverse('studygroups_facilitator')
-            return http.HttpResponseRedirect(url)
-    else:
-        form = FeedbackForm(initial={'study_group_meeting': study_group_meeting})
+class FeedbackCreate(CreateView):
+    model = Feedback
+    form_class = FeedbackForm
+    success_url = reverse_lazy('studygroups_facilitator')
 
-    context = {
-        'study_group_meeting': study_group_meeting,
-        'form': form
-    }
-    return render_to_response('studygroups/feedback.html', context, context_instance=RequestContext(request))
+    def get_initial(self):
+        meeting = get_object_or_404(StudyGroupMeeting, pk=self.kwargs.get('study_group_meeting_id'))
+        return {
+            'study_group_meeting': meeting,
+        }
 
 
 @login_required

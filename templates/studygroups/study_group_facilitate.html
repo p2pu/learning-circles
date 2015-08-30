@@ -32,7 +32,7 @@
           <tbody>
               {% for meeting in lc.studygroupmeeting_set.all %}
               <tr>
-                <td>{{ meeting.meeting_time|date:"D, d M Y, P" }} <a href="{% url 'studygroups_edit_study_group_meeting' lc.id meeting.id %}"><i class="fa fa-edit"></i></a>
+                <td>{{ meeting.meeting_time|date:"D, d M Y, P" }} <a href="{% url 'studygroups_edit_study_group_meeting' meeting.id %}"><i class="fa fa-edit"></i></a>
                   </td>
                   <td>{% for rsvp in meeting.rsvp_set.all %}{{rsvp.application.name}}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
                   <td>
@@ -41,7 +41,7 @@
                       {{feedback.feedback}}
                       {% endwith %}
                     {% else %}
-                      <a class="btn btn-primary" href="{% url 'studygroups_feedback' lc.id meeting.id %}">Capture feedback</a>
+                      <a class="btn btn-primary" href="{% url 'studygroups_feedback' meeting.id %}">Capture feedback</a>
                     {% endif %}
                   </td>
                   <td><a class="btn btn-primary" href="{% url 'studygroups_meeting_delete' meeting.id %}">Delete meeting</a></td>
