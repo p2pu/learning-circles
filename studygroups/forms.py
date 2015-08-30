@@ -3,6 +3,7 @@ from studygroups.models import Application
 from studygroups.models import Reminder
 from studygroups.models import StudyGroup
 from studygroups.models import StudyGroupMeeting
+from studygroups.models import Feedback
 from localflavor.us.forms import USPhoneNumberField
 
 
@@ -47,4 +48,12 @@ class StudyGroupForm(forms.ModelForm):
 class StudyGroupMeetingForm(forms.ModelForm):
     class Meta:
         model = StudyGroupMeeting
-        fields = ['meeting_time']
+        fields = ['meeting_time', 'study_group']
+        widgets = {'study_group': forms.HiddenInput} 
+
+
+class FeedbackForm(forms.ModelForm):
+    class Meta:
+        model = Feedback
+        exclude = ['']
+        widgets = {'study_group_meeting': forms.HiddenInput} 

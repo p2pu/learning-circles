@@ -140,7 +140,7 @@ class Application(models.Model):
 
 class StudyGroupMeeting(models.Model):
     study_group = models.ForeignKey('studygroups.StudyGroup')
-    meeting_time = models.DateTimeField(blank=True, null=True)
+    meeting_time = models.DateTimeField()
 
 
 class Reminder(models.Model):
@@ -164,8 +164,20 @@ class Rsvp(models.Model):
 
 
 class Feedback(models.Model):
+
+    RED = 'Red'
+    YELLOW = 'Yellow'
+    GREEN = 'Green'
+    RED_YELLOW_GREEN = [
+        (RED, 'Red'),
+        (YELLOW, 'Yellow'),
+        (GREEN, 'Green'),
+    ]
+
     study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting')
     feedback = models.CharField(max_length=255)
+    attendance = models.IntegerField()
+    redyellowgreen = models.CharField(choices=RED_YELLOW_GREEN, max_length=16)
 
 
 def accept_application(application):
