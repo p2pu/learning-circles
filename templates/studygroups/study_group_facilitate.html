@@ -8,10 +8,10 @@
       <p>At <a href="{{lc.location.link}}">{{ lc.location }}</a> {{lc.location_details}} every {{ lc.day }}, {{ lc.start_date|time:"f A" }} to {{ lc.end_time|time:"f A" }} starting {{ lc.start_date|date:"D d M Y" }}</p>
   </div>
   <div class="col-md-12">
-      <p>
+      <!--p>
       <a class="btn btn-primary" href="{% url 'studygroups_edit_study_group' lc.id %}">edit</a>
       <a class="btn btn-primary">download flyer</a>
-      </p>
+      </p-->
   </div>
   <div class="col-md-12 well">
       <p>Next meeting: {{ lc.next_meeting.meeting_time|date:"D d M Y \a\t P" }}</p>
@@ -32,8 +32,7 @@
           <tbody>
               {% for meeting in lc.studygroupmeeting_set.all %}
               <tr>
-                <td>{{ meeting.meeting_time|date:"D, d M Y, P" }} <a href="{% url 'studygroups_edit_study_group_meeting' meeting.id %}"><i class="fa fa-edit"></i></a>
-                  </td>
+                <td>{{ meeting.meeting_time|date:"D, d M Y, P" }} </td>
                   <td>{% for rsvp in meeting.rsvp_set.all %}{{rsvp.application.name}}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
                   <td>
                     {% if meeting.feedback_set.all.first %}
@@ -44,7 +43,10 @@
                       <a class="btn btn-primary" href="{% url 'studygroups_feedback' meeting.id %}">Capture feedback</a>
                     {% endif %}
                   </td>
-                  <td><a class="btn btn-primary" href="{% url 'studygroups_meeting_delete' meeting.id %}">Delete meeting</a></td>
+                  <td>
+                    <a class="btn btn-primary" href="{% url 'studygroups_edit_study_group_meeting' meeting.id %}"><i class="fa fa-edit"></i> Edit</a>
+                    <a class="btn btn-primary" href="{% url 'studygroups_meeting_delete' meeting.id %}"><i class="fa fa-times"></i> Delete</a>
+                  </td>
               </tr>
               {% endfor %}
           </tbody>
@@ -93,6 +95,7 @@
                   <th>Name</th>
                   <th>Goal</th>
                   <th>Support</th>
+                  <th></th>
               </tr>
           </thead>
           <tbody>
@@ -108,11 +111,13 @@
                   </td>
                   <td>{{ member.goals }}</td>
                   <td>{{ member.support }}</td>
+                  <td><a class="btn btn-primary" href="">Remove</a></td>
+                  </td>
               </tr>
               {% endfor %}
           </tbody>
       </table>
-      <p><a class="btn btn-primary" href="{% url 'studygroups_add_member' lc.id %}">add learner</a></p>
+      <p><a class="btn btn-primary" href="{% url 'studygroups_add_member' lc.id %}">Add learner</a></p>
   </div>
 </div>
 </div>

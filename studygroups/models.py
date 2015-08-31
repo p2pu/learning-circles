@@ -103,7 +103,8 @@ class StudyGroup(models.Model):
 
     def __unicode__(self):
         # TODO time is given in wrong timezone
-        return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day(), self.start_date.time(), self.location)
+        tz = pytz.timezone(self.timezone)
+        return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day(), tz.normalize(self.start_date).time(), self.location)
 
 
 class Application(models.Model):
@@ -141,6 +142,8 @@ class Application(models.Model):
 class StudyGroupMeeting(models.Model):
     study_group = models.ForeignKey('studygroups.StudyGroup')
     meeting_time = models.DateTimeField()
+
+    #TODO def __unicode__(self):
 
 
 class Reminder(models.Model):
