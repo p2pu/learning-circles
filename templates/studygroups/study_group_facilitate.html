@@ -5,11 +5,11 @@
 <div class="panel-body">
 <div class="row">
   <div class="col-md-12">
-      <p>At <a href="{{lc.location.link}}">{{ lc.location }}</a> {{lc.location_details}} every {{ lc.day }}, {{ lc.time }} to {{ lc.end_time }} starting {{ lc.start_date|date:"D d M Y" }}</p>
+      <p>At <a href="{{lc.location.link}}">{{ lc.location }}</a> {{lc.location_details}} every {{ lc.day }}, {{ lc.start_date|time:"f A" }} to {{ lc.end_time|time:"f A" }} starting {{ lc.start_date|date:"D d M Y" }}</p>
   </div>
   <div class="col-md-12">
       <p>
-      <a class="btn btn-primary">edit</a>
+      <a class="btn btn-primary" href="{% url 'studygroups_edit_study_group' lc.id %}">edit</a>
       <a class="btn btn-primary">download flyer</a>
       </p>
   </div>
@@ -17,6 +17,39 @@
       <p>Next meeting: {{ lc.next_meeting.meeting_time|date:"D d M Y \a\t P" }}</p>
       <p>Attending: {{ lc.next_meeting.rsvp_set.all|join:", " }}</p>
       <p>Recommended activity: {{activity}}</p>
+  </div>
+  <div class="col-md-12">
+      <h3>Meetings ({{lc.studygroupmeeting_set.count}})</h3>
+      <table class="table table-bordered">
+          <thead>
+              <tr>
+                  <th>Date</th>
+                  <th>RSVPs</th>
+                  <th>Feedback</th>
+                  <th></th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for meeting in lc.studygroupmeeting_set.all %}
+              <tr>
+                <td>{{ meeting.meeting_time|date:"D, d M Y, P" }} <a href="{% url 'studygroups_edit_study_group_meeting' meeting.id %}"><i class="fa fa-edit"></i></a>
+                  </td>
+                  <td>{% for rsvp in meeting.rsvp_set.all %}{{rsvp.application.name}}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                  <td>
+                    {% if meeting.feedback_set.all.first %}
+                      {% with feedback=meeting.feedback_set.all.first %}
+                      {{feedback.feedback}}
+                      {% endwith %}
+                    {% else %}
+                      <a class="btn btn-primary" href="{% url 'studygroups_feedback' meeting.id %}">Capture feedback</a>
+                    {% endif %}
+                  </td>
+                  <td><a class="btn btn-primary" href="{% url 'studygroups_meeting_delete' meeting.id %}">Delete meeting</a></td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+      <p><a class="btn btn-primary" href="{% url 'studygroups_create_study_group_meeting' lc.id %}">Add meeting</a></p>
   </div>
   <div class="col-md-12">
       <h3>Messages ({{ lc.reminder_set.count }})</h3>
@@ -50,28 +83,6 @@
     <a href="{% url 'studygroups_email' lc.id %}" class="btn btn-primary">New message</a>
   </div>
 
-  <div class="col-md-12">
-      <h3>Meetings ({{lc.studygroupmeeting_set.count}})</h3>
-      <table class="table table-bordered">
-          <thead>
-              <tr>
-                  <th>Date</th>
-                  <th>Attendance</th>
-                  <th>Feedback</th>
-              </tr>
-          </thead>
-          <tbody>
-              {% for meeting in lc.studygroupmeeting_set.all %}
-              <tr>
-                  <td>{{ meeting.meeting_time|date:"D, d M Y, P" }}
-                  </td>
-                  <td>{% for rsvp in meeting.rsvp_set.all %}{{rsvp.application.name}}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
-                  <td>{{ member.support }}</td>
-              </tr>
-              {% endfor %}
-          </tbody>
-      </table>
-  </div>
 
 
   <div class="col-md-12">
@@ -101,7 +112,7 @@
               {% endfor %}
           </tbody>
       </table>
-      <p><a class="btn btn-primary">add learner</a></p>
+      <p><a class="btn btn-primary" href="{% url 'studygroups_add_member' lc.id %}">add learner</a></p>
   </div>
 </div>
 </div>

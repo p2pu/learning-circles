@@ -85,6 +85,7 @@ class StudyGroup(models.Model):
     max_size = models.IntegerField() #TODO remove this field
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    # consider storing number of weeks/meetings instead of end time
 
     def day(self):
         return calendar.day_name[self.start_date.weekday()]
@@ -101,6 +102,7 @@ class StudyGroup(models.Model):
         return get_all_meeting_times(self)
 
     def __unicode__(self):
+        # TODO time is given in wrong timezone
         return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day(), self.start_date.time(), self.location)
 
 
@@ -138,7 +140,7 @@ class Application(models.Model):
 
 class StudyGroupMeeting(models.Model):
     study_group = models.ForeignKey('studygroups.StudyGroup')
-    meeting_time = models.DateTimeField(blank=True, null=True)
+    meeting_time = models.DateTimeField()
 
 
 class Reminder(models.Model):
@@ -162,8 +164,20 @@ class Rsvp(models.Model):
 
 
 class Feedback(models.Model):
+
+    RED = 'Red'
+    YELLOW = 'Yellow'
+    GREEN = 'Green'
+    RED_YELLOW_GREEN = [
+        (RED, 'Red'),
+        (YELLOW, 'Yellow'),
+        (GREEN, 'Green'),
+    ]
+
     study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting')
     feedback = models.CharField(max_length=255)
+    attendance = models.IntegerField()
+    redyellowgreen = models.CharField(choices=RED_YELLOW_GREEN, max_length=16)
 
 
 def accept_application(application):
@@ -316,6 +330,6 @@ def create_rsvp(contact, study_group, meeting_date, attending):
     if not rsvp:
         rsvp = Rsvp(study_group_meeting=study_group_meeting, application=application, attending=attending=='yes')
     else:
-        rsvp.attending=attending=='yes'
+        rsvp.attending = attending=='yes'
     rsvp.save()
     return rsvp

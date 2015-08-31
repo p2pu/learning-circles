@@ -22,8 +22,9 @@
 						<h5>Offered at:</h5>
 						{% for sg in course.studygroup_set.all %}
 							<div class="study-group col-md-4 col-sm-4">
-
+                  {% if sg.location.image %}
                   <img class="img-thumbnail" src="{{ sg.location.image.url }}" alt="{{ sg.location.name }}" />
+                  {% endif %}
 									<div class="location">
 										{{ sg.location }}
 									</div>

@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render, render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.models import Permission, Group
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
@@ -13,11 +13,15 @@ from django import http
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from studygroups.models import Course, Location, StudyGroup, Application, Reminder
+from studygroups.models import Course, Location, StudyGroup, Application, Reminder, Feedback
+from studygroups.models import StudyGroupMeeting
 from studygroups.models import send_reminder
 from studygroups.models import create_rsvp
-from studygroups.forms import ApplicationForm, MessageForm
+from studygroups.forms import ApplicationForm, MessageForm, StudyGroupForm
+from studygroups.forms import StudyGroupMeetingForm
+from studygroups.forms import FeedbackForm
 from studygroups.rsvp import check_rsvp_signature
 
 
@@ -44,8 +48,16 @@ def signup(request, location, study_group_id):
     if request.method == 'POST':
         form = ApplicationForm(request.POST)
         if form.is_valid():
-            application = form.save()
-            messages.success(request, 'You successfully applied to join a study group!')
+            application = form.save(commit=False)
+            if application.contact_method == Application.EMAIL and Application.objects.filter(email=application.email, study_group=study_group):
+                application = Application.objects.filter(email=application.email, study_group=study_group).first()
+                messages.success(request, 'Your signup details have been updated!')
+            elif application.contact_method == Application.TEXT and Application.objects.filter(mobile=application.mobile, study_group=study_group):
+                application = Application.objects.filter(email=application.email, study_group=study_group).first()
+                messages.success(request, 'Your signup details have been updated!')
+            else:
+                messages.success(request, 'You successfully signed up for a Learning Circle!')
+            application.save()
             notification_body = render_to_string(
                 'studygroups/notifications/application.txt', 
                 {'application': application}
@@ -71,13 +83,12 @@ def rsvp(request):
     meeting_date = request.GET['meeting_date']
     attending = request.GET['attending']
     sig = request.GET['sig']
-    # TODO - rename attening elseware
 
     if (check_rsvp_signature(user, study_group, meeting_date, attending, sig)):
         rsvp = create_rsvp(user, int(study_group), meeting_date, attending)
-        # Show success message
+        #TODO Show success message
     else:
-        # invalid RSVP link
+        #TODO invalid RSVP link
         pass
 
 
@@ -98,6 +109,48 @@ def view_study_group(request, study_group_id):
         'study_group': study_group,
     }
     return render_to_response('studygroups/view_study_group.html', context, context_instance=RequestContext(request))
+
+
+# TODO - add login_required to all class based views
+class StudyGroupUpdate(UpdateView):
+    model = StudyGroup
+    fields = ['location_details', 'start_date', 'end_date', 'duration']
+    success_url = reverse_lazy('studygroups_facilitator')
+
+
+class MeetingCreate(CreateView):
+    model = StudyGroupMeeting
+    form_class = StudyGroupMeetingForm
+    success_url = reverse_lazy('studygroups_facilitator')
+
+    def get_initial(self):
+        study_group = get_object_or_404(StudyGroup, pk=self.kwargs.get('study_group_id'))
+        return {
+            'study_group': study_group,
+        }
+
+
+class MeetingUpdate(UpdateView):
+    model = StudyGroupMeeting
+    form_class = StudyGroupMeetingForm
+    success_url = reverse_lazy('studygroups_facilitator')
+
+
+class MeetingDelete(DeleteView):
+    model = StudyGroupMeeting
+    success_url = reverse_lazy('studygroups_facilitator')
+
+
+class FeedbackCreate(CreateView):
+    model = Feedback
+    form_class = FeedbackForm
+    success_url = reverse_lazy('studygroups_facilitator')
+
+    def get_initial(self):
+        meeting = get_object_or_404(StudyGroupMeeting, pk=self.kwargs.get('study_group_meeting_id'))
+        return {
+            'study_group_meeting': meeting,
+        }
 
 
 @login_required
@@ -135,7 +188,7 @@ def email(request, study_group_id):
                 #TODO - catch specific error so that normal errors aren't masked by this
                 messages.error(request, 'An error occured while sending group message.')
 
-            url = reverse('studygroups_organize')
+            url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
     else:
         form = MessageForm(initial={'study_group': study_group})
@@ -172,6 +225,37 @@ def messages_edit(request, study_group_id, message_id):
         'form': form
     }
     return render_to_response('studygroups/message_edit.html', context, context_instance=RequestContext(request))
+
+
+@login_required
+def add_member(request, study_group_id):
+    study_group = StudyGroup.objects.get(id=study_group_id)
+
+    if request.method == 'POST':
+        form = ApplicationForm(request.POST)
+        if form.is_valid():
+            application = form.save(commit=False)
+            if application.contact_method == Application.EMAIL and Application.objects.filter(email=application.email, study_group=study_group):
+                application = Application.objects.filter(email=application.email, study_group=study_group).first()
+                messages.success(request, 'Your signup details have been updated!')
+            elif application.contact_method == Application.TEXT and Application.objects.filter(mobile=application.mobile, study_group=study_group):
+                application = Application.objects.filter(email=application.email, study_group=study_group).first()
+                messages.success(request, 'Your signup details have been updated!')
+            else:
+                messages.success(request, 'Successfully added member!')
+            application.save()
+            url = reverse('studygroups_facilitator')
+            return http.HttpResponseRedirect(url)
+    else:
+        form = ApplicationForm(initial={'study_group': study_group})
+
+    context = {
+        'form': form,
+        'study_group': study_group,
+    }
+    return render_to_response('studygroups/add_member.html', context, context_instance=RequestContext(request))
+
+
 
 
 @csrf_exempt
