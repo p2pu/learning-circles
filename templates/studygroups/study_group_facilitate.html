@@ -111,7 +111,7 @@
                   </td>
                   <td>{{ member.goals }}</td>
                   <td>{{ member.support }}</td>
-                  <td><a class="btn btn-primary" href="">Remove</a></td>
+                  <td><a class="btn btn-primary" href="{% url 'studygroups_application_delete' member.id %}">Remove</a></td>
                   </td>
               </tr>
               {% endfor %}

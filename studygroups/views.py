@@ -153,6 +153,11 @@ class FeedbackCreate(CreateView):
         }
 
 
+class ApplicationDelete(DeleteView):
+    model = Application
+    success_url = reverse_lazy('studygroups_facilitator')
+
+
 @login_required
 def organize(request):
     context = {

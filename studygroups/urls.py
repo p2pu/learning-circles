@@ -5,6 +5,7 @@ from studygroups.views import MeetingCreate
 from studygroups.views import MeetingUpdate
 from studygroups.views import MeetingDelete
 from studygroups.views import FeedbackCreate
+from studygroups.views import ApplicationDelete
 
 urlpatterns = patterns('',
     url(r'^$', 'studygroups.views.landing', name='studygroups_landing'),
@@ -19,6 +20,7 @@ urlpatterns = patterns('',
     url(r'^studygroup/(?P<study_group_id>[\d]+)/message/edit/(?P<message_id>[\d]+)/$', 'studygroups.views.messages_edit', name='studygroups_messages_edit'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/message/list/$', 'studygroups.views.organize_messages', name='studygroups_organize_messages'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/member/add/$', 'studygroups.views.add_member', name='studygroups_add_member'),
+    url(r'^studygroup/application/(?P<pk>[0-9]+)/delete/$', ApplicationDelete.as_view(), name='studygroups_application_delete'),
 
     # views regarding study group meetings
     url(r'^studygroup/meeting/(?P<pk>[\d]+)/edit/$', MeetingUpdate.as_view(), name='studygroups_edit_study_group_meeting'),
