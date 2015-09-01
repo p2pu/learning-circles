@@ -40,12 +40,12 @@
                       {{feedback.feedback}}
                       {% endwith %}
                     {% else %}
-                      <a class="btn btn-primary" href="{% url 'studygroups_feedback' meeting.id %}">Capture feedback</a>
+                      <a class="btn btn-primary" href="{% url 'studygroups_feedback' lc.id meeting.id %}">Capture feedback</a>
                     {% endif %}
                   </td>
                   <td>
-                    <a class="btn btn-primary" href="{% url 'studygroups_edit_study_group_meeting' meeting.id %}"><i class="fa fa-edit"></i> Edit</a>
-                    <a class="btn btn-primary" href="{% url 'studygroups_meeting_delete' meeting.id %}"><i class="fa fa-times"></i> Delete</a>
+                    <a class="btn btn-primary" href="{% url 'studygroups_edit_study_group_meeting' lc.id meeting.id %}"><i class="fa fa-edit"></i> Edit</a>
+                    <a class="btn btn-primary" href="{% url 'studygroups_meeting_delete' lc.id meeting.id %}"><i class="fa fa-times"></i> Delete</a>
                   </td>
               </tr>
               {% endfor %}
@@ -111,7 +111,7 @@
                   </td>
                   <td>{{ member.goals }}</td>
                   <td>{{ member.support }}</td>
-                  <td><a class="btn btn-primary" href="{% url 'studygroups_application_delete' member.id %}">Remove</a></td>
+                  <td><a class="btn btn-primary" href="{% url 'studygroups_application_delete' lc.id member.id %}">Remove</a></td>
                   </td>
               </tr>
               {% endfor %}

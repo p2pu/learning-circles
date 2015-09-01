@@ -9,6 +9,8 @@ from studygroups.views import MeetingDelete
 from studygroups.views import FeedbackCreate
 from studygroups.views import ApplicationDelete
 
+from studygroups.decorators import user_is_group_facilitator
+
 urlpatterns = patterns('',
     url(r'^$', 'studygroups.views.landing', name='studygroups_landing'),
     url(r'^signup/(?P<location>[\w-]+)-(?P<study_group_id>[\d]+)/$', 'studygroups.views.signup', name='studygroups_signup'),
@@ -16,20 +18,20 @@ urlpatterns = patterns('',
 
     url(r'^facilitator/$', 'studygroups.views.facilitator', name='studygroups_facilitator'),
 
-    url(r'^studygroup/(?P<pk>[\d]+)/edit/$', login_required(StudyGroupUpdate.as_view()), name='studygroups_edit_study_group'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/$', 'studygroups.views.view_study_group', name='studygroups_view_study_group'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/edit/$', user_is_group_facilitator(StudyGroupUpdate.as_view()), name='studygroups_edit_study_group'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/message/compose/$', 'studygroups.views.email', name='studygroups_email'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/message/edit/(?P<message_id>[\d]+)/$', 'studygroups.views.messages_edit', name='studygroups_messages_edit'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/message/list/$', 'studygroups.views.organize_messages', name='studygroups_organize_messages'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/member/add/$', 'studygroups.views.add_member', name='studygroups_add_member'),
-    url(r'^studygroup/application/(?P<pk>[0-9]+)/delete/$', login_required(ApplicationDelete.as_view()), name='studygroups_application_delete'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/member/(?P<pk>[0-9]+)/delete/$', login_required(ApplicationDelete.as_view()), name='studygroups_application_delete'),
 
     # views regarding study group meetings
-    url(r'^studygroup/meeting/(?P<pk>[\d]+)/edit/$', login_required(MeetingUpdate.as_view()), name='studygroups_edit_study_group_meeting'),
-    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/create/$', login_required(MeetingCreate.as_view()), name='studygroups_create_study_group_meeting'),
-    url(r'studygroup/meeting/(?P<pk>[0-9]+)/delete/$', login_required(MeetingDelete.as_view()), name='studygroups_meeting_delete'),           
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[\d]+)/edit/$', user_is_group_facilitator(MeetingUpdate.as_view()), name='studygroups_edit_study_group_meeting'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/create/$', user_is_group_facilitator(MeetingCreate.as_view()), name='studygroups_create_study_group_meeting'),
+    url(r'studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[0-9]+)/delete/$', user_is_group_facilitator(MeetingDelete.as_view()), name='studygroups_meeting_delete'),           
    
-    url(r'^studygroup/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/$', login_required(FeedbackCreate.as_view()), name='studygroups_feedback'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/create/$', user_is_group_facilitator(FeedbackCreate.as_view()), name='studygroups_feedback'),
 
     url(r'^organize/$', 'studygroups.views.organize', name='studygroups_organize'),
     url(r'^receive_sms/$', 'studygroups.views.receive_sms', name='studygroups_receive_sms'),

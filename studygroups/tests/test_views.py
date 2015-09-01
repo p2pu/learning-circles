@@ -27,6 +27,11 @@ class TestSignupViews(TestCase):
 
     def setUp(self):
         user = User.objects.create_user('admin', 'admin@test.com', 'password')
+        user.is_superuser = True
+        user.is_staff = True
+        user.save()
+        StudyGroup.objects.all()[0]
+
 
     def test_submit_application(self):
         c = Client()
@@ -54,8 +59,6 @@ class TestSignupViews(TestCase):
         resp = c.post('/en/signup/foo-bob-1/', data)
         self.assertRedirects(resp, '/en/')
         self.assertEquals(Application.objects.all().count(), 2)
-
-
 
     
     @patch('studygroups.models.send_message')
@@ -151,4 +154,48 @@ class TestSignupViews(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertTrue(mail.outbox[0].subject.find('123-456-7890') > 0)
         self.assertTrue(mail.outbox[0].subject.find('Test User') > 0)
+
+
+    def test_user_forbidden(self):
+        user = User.objects.create_user('bob', 'bob@example.net', 'password')
+        c = Client()
+        c.login(username='bob', password='password')
+        def assertAllowed(url):
+            resp = c.get(url)
+            self.assertTrue(resp.status_code, 403)
+        assertAllowed('/en/studygroup/1/')
+        assertAllowed('/en/studygroup/1/edit/')
+        assertAllowed('/en/studygroup/1/message/compose/')
+        assertAllowed('/en/studygroup/1/message/edit/1/')
+        assertAllowed('/en/studygroup/1/message/list/')
+        assertAllowed('/en/studygroup/1/member/add/')
+        assertAllowed('/en/studygroup/1/member/2/delete/')
+        assertAllowed('/en/studygroup/1/meeting/create/')
+        assertAllowed('/en/studygroup/1/meeting/2/edit/')
+        assertAllowed('/en/studygroup/1/meeting/2/delete/')
+        assertAllowed('/en/studygroup/1/meeting/2/feedback/create/')
+
+
+    def test_facilitator_access(self):
+        User.objects.create_user('bob123', 'bob@example.net', 'password')
+        user = User.objects.get(username='bob123')
+        sg = StudyGroup.objects.get(pk=1)
+        sg.facilitator = user
+        sg.save()
+        c = Client()
+        c.login(username='bob123', password='password')
+        def assertAllowed(url):
+            resp = c.get(url)
+            self.assertNotEqual(resp.status_code, 403)
+        assertAllowed('/en/studygroup/1/')
+        assertAllowed('/en/studygroup/1/edit/')
+        assertAllowed('/en/studygroup/1/message/compose/')
+        assertAllowed('/en/studygroup/1/message/edit/1/')
+        assertAllowed('/en/studygroup/1/message/list/')
+        assertAllowed('/en/studygroup/1/member/add/')
+        assertAllowed('/en/studygroup/1/member/2/delete/')
+        assertAllowed('/en/studygroup/1/meeting/create/')
+        assertAllowed('/en/studygroup/1/meeting/2/edit/')
+        assertAllowed('/en/studygroup/1/meeting/2/delete/')
+        assertAllowed('/en/studygroup/1/meeting/2/feedback/create/')
 

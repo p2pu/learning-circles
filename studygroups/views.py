@@ -23,6 +23,7 @@ from studygroups.forms import ApplicationForm, MessageForm, StudyGroupForm
 from studygroups.forms import StudyGroupMeetingForm
 from studygroups.forms import FeedbackForm
 from studygroups.rsvp import check_rsvp_signature
+from studygroups.decorators import user_is_group_facilitator
 
 
 def landing(request):
@@ -43,7 +44,7 @@ def landing(request):
 
 
 def signup(request, location, study_group_id):
-    study_group = StudyGroup.objects.get(id=study_group_id)
+    study_group = get_object_or_404(StudyGroup, pk=study_group_id)
 
     if request.method == 'POST':
         form = ApplicationForm(request.POST)
@@ -102,20 +103,20 @@ def facilitator(request):
     return render_to_response('studygroups/facilitator.html', context, context_instance=RequestContext(request))
 
 
-@login_required
+@user_is_group_facilitator
 def view_study_group(request, study_group_id):
-    study_group = StudyGroup.objects.get(pk=study_group_id)
+    study_group = get_object_or_404(StudyGroup, pk=study_group_id)
     context = {
         'study_group': study_group,
     }
     return render_to_response('studygroups/view_study_group.html', context, context_instance=RequestContext(request))
 
 
-# TODO - add login_required to all class based views
 class StudyGroupUpdate(UpdateView):
     model = StudyGroup
     fields = ['location_details', 'start_date', 'end_date', 'duration']
     success_url = reverse_lazy('studygroups_facilitator')
+    pk_url_kwarg = 'study_group_id'
 
 
 class MeetingCreate(CreateView):
@@ -164,24 +165,24 @@ def organize(request):
         'courses': Course.objects.all(),
         'study_groups': StudyGroup.objects.all(),
         'locations': Location.objects.all(),
-        'facilitators': Group.objects.get(name='facilitators').user_set.all()
+        'facilitators': get_object_or_404(Group, name='facilitators').user_set.all()
     }
     return render_to_response('studygroups/organize.html', context, context_instance=RequestContext(request))
 
 
-@login_required
+@user_is_group_facilitator
 def organize_messages(request, study_group_id):
-    study_group = StudyGroup.objects.get(id=study_group_id)
+    study_group = get_object_or_404(StudyGroup, pk=study_group_id)
     context = {
         'study_group': study_group,
     }
     return render_to_response('studygroups/organize_messages.html', context, context_instance=RequestContext(request))
 
 
-@login_required
+@user_is_group_facilitator
 def email(request, study_group_id):
     # TODO - this piggy backs of Reminder, won't work of Reminder is coupled to StudyGroupMeeting
-    study_group = StudyGroup.objects.get(id=study_group_id)
+    study_group = get_object_or_404(StudyGroup, pk=study_group_id)
     if request.method == 'POST':
         form = MessageForm(request.POST)
         if form.is_valid():
@@ -206,10 +207,10 @@ def email(request, study_group_id):
     return render_to_response('studygroups/email.html', context, context_instance=RequestContext(request))
 
 
-@login_required
+@user_is_group_facilitator
 def messages_edit(request, study_group_id, message_id):
-    study_group = StudyGroup.objects.get(id=study_group_id)
-    reminder = Reminder.objects.get(id=message_id)
+    study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+    reminder = get_object_or_404(Reminder, pk=message_id)
     if not reminder.sent_at == None:
         url = reverse('studygroups_organize_messages', args=(study_group_id,))
         messages.info(request, 'Message has already been sent and cannot be edited.')
@@ -232,9 +233,9 @@ def messages_edit(request, study_group_id, message_id):
     return render_to_response('studygroups/message_edit.html', context, context_instance=RequestContext(request))
 
 
-@login_required
+@user_is_group_facilitator
 def add_member(request, study_group_id):
-    study_group = StudyGroup.objects.get(id=study_group_id)
+    study_group = get_object_or_404(StudyGroup, pk=study_group_id)
 
     if request.method == 'POST':
         form = ApplicationForm(request.POST)
@@ -259,8 +260,6 @@ def add_member(request, study_group_id):
         'study_group': study_group,
     }
     return render_to_response('studygroups/add_member.html', context, context_instance=RequestContext(request))
-
-
 
 
 @csrf_exempt
