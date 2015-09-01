@@ -14,6 +14,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic import TemplateView
 
 from studygroups.models import Course, Location, StudyGroup, Application, Reminder, Feedback
 from studygroups.models import StudyGroupMeeting
@@ -52,12 +53,13 @@ def signup(request, location, study_group_id):
             application = form.save(commit=False)
             if application.contact_method == Application.EMAIL and Application.objects.filter(email=application.email, study_group=study_group):
                 application = Application.objects.filter(email=application.email, study_group=study_group).first()
-                messages.success(request, 'Your signup details have been updated!')
+                #TODO messages.success(request, 'Your signup details have been updated!')
             elif application.contact_method == Application.TEXT and Application.objects.filter(mobile=application.mobile, study_group=study_group):
                 application = Application.objects.filter(email=application.email, study_group=study_group).first()
-                messages.success(request, 'Your signup details have been updated!')
+                #TODO messages.success(request, 'Your signup details have been updated!')
             else:
-                messages.success(request, 'You successfully signed up for a Learning Circle!')
+                #TODO messages.success(request, 'You successfully signed up for a Learning Circle!')
+                pass
             application.save()
             notification_body = render_to_string(
                 'studygroups/notifications/application.txt', 
@@ -66,7 +68,7 @@ def signup(request, location, study_group_id):
             #TODO - get group to send to from django user group
             to = [ a[1] for a in settings.ADMINS ]
             send_mail('New study group application', notification_body, settings.SERVER_EMAIL, to, fail_silently=False)
-            url = reverse('studygroups_landing')
+            url = reverse('studygroups_signup_success', args=(study_group_id,) )
             return http.HttpResponseRedirect(url)
     else:
         form = ApplicationForm(initial={'study_group': study_group})
@@ -76,6 +78,15 @@ def signup(request, location, study_group_id):
         'study_group': study_group,
     }
     return render_to_response('studygroups/signup.html', context, context_instance=RequestContext(request))
+
+
+class SignupSuccess(TemplateView):
+    template_name = 'studygroups/signup_success.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(SignupSuccess, self).get_context_data(**kwargs)
+        context['study_group'] = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
+        return context
 
 
 def rsvp(request):

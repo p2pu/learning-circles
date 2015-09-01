@@ -36,7 +36,7 @@ class TestSignupViews(TestCase):
     def test_submit_application(self):
         c = Client()
         resp = c.post('/en/signup/foo-bob-1/', self.APPLICATION_DATA)
-        self.assertRedirects(resp, '/en/')
+        self.assertRedirects(resp, '/en/signup/1/success/')
         self.assertEquals(Application.objects.all().count(), 1)
         # Make sure notification was sent 
         self.assertEqual(len(mail.outbox), 1)
@@ -45,19 +45,19 @@ class TestSignupViews(TestCase):
     def test_update_application(self):
         c = Client()
         resp = c.post('/en/signup/foo-bob-1/', self.APPLICATION_DATA)
-        self.assertRedirects(resp, '/en/')
+        self.assertRedirects(resp, '/en/signup/1/success/')
         self.assertEquals(Application.objects.all().count(), 1)
         # Make sure notification was sent 
         self.assertEqual(len(mail.outbox), 1)
 
         resp = c.post('/en/signup/foo-bob-1/', self.APPLICATION_DATA)
-        self.assertRedirects(resp, '/en/')
+        self.assertRedirects(resp, '/en/signup/1/success/')
         self.assertEquals(Application.objects.all().count(), 1)
         
         data = self.APPLICATION_DATA.copy()
         data['email'] = 'test2@mail.com'
         resp = c.post('/en/signup/foo-bob-1/', data)
-        self.assertRedirects(resp, '/en/')
+        self.assertRedirects(resp, '/en/signup/1/success/')
         self.assertEquals(Application.objects.all().count(), 2)
 
     
