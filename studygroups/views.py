@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.models import Permission, Group
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives, send_mail
 from django.contrib import messages
 from django.conf import settings
 from django import http
@@ -61,13 +61,31 @@ def signup(request, location, study_group_id):
                 #TODO messages.success(request, 'You successfully signed up for a Learning Circle!')
                 pass
             application.save()
+            notification_subject = render_to_string(
+                    'studygroups/notifications/application-subject.txt',
+                    {'application': application}
+            ).strip('\n')
             notification_body = render_to_string(
                 'studygroups/notifications/application.txt', 
                 {'application': application}
             )
-            #TODO - get group to send to from django user group
-            to = [ a[1] for a in settings.ADMINS ]
-            send_mail('New study group application', notification_body, settings.SERVER_EMAIL, to, fail_silently=False)
+            notification_html = render_to_string(
+                'studygroups/notifications/application.html', 
+                {'application': application}
+            )
+            to = [study_group.facilitator.email]
+            #TODO - get group to bcc from django user group
+            bcc = [ a[1] for a in settings.ADMINS ]
+            notification = EmailMultiAlternatives(
+                notification_subject,
+                notification_body,
+                settings.SERVER_EMAIL,
+                to,
+                bcc
+            )
+            notification.attach_alternative(notification_html, 'text/html')
+            notification.send()
+
             url = reverse('studygroups_signup_success', args=(study_group_id,) )
             return http.HttpResponseRedirect(url)
     else:

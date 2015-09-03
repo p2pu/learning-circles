@@ -1,0 +1,1 @@
+New signup for {{application.study_group.course.title|safe}} at {{application.study_group.location.name}}.

@@ -1,6 +1,17 @@
 Hi there
 
-{{application.name}} applied for {{application.study_group.course.title}}
+{{ application.name }} applied for "{{application.study_group.course.title}}" at {{application.study_group.location.name}}.
+
+Their response to the signup questions: 
+
+Q: Can you bring your own laptop to the Learning Circle?
+A: {{application.computer_access}}
+
+Q: In one sentence, please explain your goals for taking this course.
+A: {{application.goals}}
+
+Q: A successful study group requires the support of all of its members. How will you help your peers achieve their goals?
+A: {{application.support}}
 
 Cheers
 P2PU

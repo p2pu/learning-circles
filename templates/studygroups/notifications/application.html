@@ -1,0 +1,20 @@
+{% extends 'email_base.html' %}
+{% block body %}
+<p>Hi there</p>
+
+<p>{{ application.name }} applied for "{{application.study_group.course.title}}" at {{application.study_group.location.name}}.</p>
+
+<p>Their response to the signup questions:</p>
+
+<p><strong>Q: Can you bring your own laptop to the Learning Circle?</strong><br>
+A: {{application.computer_access}}</p>
+
+<p><strong>Q: In one sentence, please explain your goals for taking this course.</strong><br>
+A: {{application.goals}}</p>
+
+<p><strong>Q: A successful study group requires the support of all of its members. How will you help your peers achieve their goals?</strong><br>
+A: {{application.support}}</p>
+
+<p>Cheers</p>
+<p>P2PU</p>
+{% endblock %}
