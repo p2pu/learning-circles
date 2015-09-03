@@ -46,6 +46,7 @@ class StudyGroupForm(forms.ModelForm):
 
 
 class StudyGroupMeetingForm(forms.ModelForm):
+    meeting_time = forms.SplitDateTimeField(input_time_formats=['%I:%M %p'])
     class Meta:
         model = StudyGroupMeeting
         fields = ['meeting_time', 'study_group']
