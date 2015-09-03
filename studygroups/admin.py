@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from studygroups.models import Course, Location, StudyGroup, Application, Reminder
+from studygroups.models import Course, Location, StudyGroup, StudyGroupMeeting, Application, Reminder
 
 class ApplicationInline(admin.TabularInline):
     model = Application
@@ -10,6 +10,9 @@ class StudyGroupAdmin(admin.ModelAdmin):
     inlines = [
         ApplicationInline,
     ]
+
+class StudyGroupMeetingAdmin(admin.ModelAdmin):
+    pass
 
 class StudyGroupSignupAdmin(admin.ModelAdmin):
     pass
@@ -33,5 +36,6 @@ class ReminderAdmin(admin.ModelAdmin):
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Location, LocationAdmin)
 admin.site.register(StudyGroup, StudyGroupAdmin)
+admin.site.register(StudyGroupMeeting, StudyGroupMeetingAdmin)
 admin.site.register(Application, ApplicationAdmin)
 admin.site.register(Reminder, ReminderAdmin)
