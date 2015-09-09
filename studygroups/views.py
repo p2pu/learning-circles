@@ -199,6 +199,20 @@ def organize(request):
     return render_to_response('studygroups/organize.html', context, context_instance=RequestContext(request))
 
 
+@login_required
+def report(request):
+    study_groups = StudyGroup.objects.all()
+    for study_group in study_groups:
+        study_group.laptop_stats = {}
+        study_group.laptop_stats['yes'] = study_group.application_set.all().filter(computer_access=Application.YES).count()
+        study_group.laptop_stats['sometimes'] = study_group.application_set.all().filter(computer_access=Application.SOMETIMES).count()
+        study_group.laptop_stats['no'] = study_group.application_set.all().filter(computer_access=Application.NO).count()
+    context = {
+        'study_groups': study_groups,
+    }
+    return render_to_response('studygroups/report.html', context, context_instance=RequestContext(request))
+
+
 @user_is_group_facilitator
 def organize_messages(request, study_group_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)

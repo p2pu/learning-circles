@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+  <!-- Example row of columns -->
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Learning Circles</h1>
+      <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>Details</th>
+            <th>Signups</th>
+            <th>Facilitator</th>
+            <th>Meetings</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for group in study_groups %}
+            <tr>
+                <td>
+                    <a href="#{{ group.course.id }}" target="_blank">{{ group.course }}</a><br>
+                    {{group.start_date|date:"l" }}s, {{ group.start_date|date:"f A" }} at <a href="{{group.location.link}}" target="_blank">{{ group.location }}</a>
+                </td>
+                <td>
+                    {{ group.application_set.count }}<br>
+                    Can bring a laptop:<br>
+                    {{group.laptop_stats.yes | length}} yes,<br>
+                    {{ group.laptop_stats.sometimes }} sometimes,<br>
+                    {{ group.laptop_stats.no}} no
+                </td>
+                <td>
+                    {{ group.facilitator.first_name }} {{ group.facilitator.last_name }}
+                </td>
+                <td>
+                    {{ group.studygroupmeeting_set.count }}
+                    <!--div class="btn-group">
+                        <a class="btn btn-mini btn-primary" href="{% url 'studygroups_email' group.id %}">
+                            <i class="glyphicon glyphicon-envelope"></i> send email
+                        </a>
+                    </div-->
+                </td>
+                <td>
+                    <a class="btn btn-primary" href="{% url 'studygroups_view_study_group' group.pk %}">View</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      <!--p><a href="{% url 'admin:studygroups_studygroup_add' %}" class="btn btn-primary">Add study group</a></p-->
+    </div>
+  </div>
+
+</div> <!-- /container -->
+
+{% endblock %}

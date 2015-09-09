@@ -36,6 +36,7 @@ urlpatterns = patterns('',
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/create/$', user_is_group_facilitator(FeedbackCreate.as_view()), name='studygroups_feedback'),
 
     url(r'^organize/$', 'studygroups.views.organize', name='studygroups_organize'),
+    url(r'^report/$', 'studygroups.views.report', name='studygroups_report'),
     url(r'^receive_sms/$', 'studygroups.views.receive_sms', name='studygroups_receive_sms'),
 )
 

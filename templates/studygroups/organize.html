@@ -10,7 +10,6 @@
       <table class="table table-bordered">
         <thead>
         <tr>
-            <th>Course</th>
             <th>Details</th>
             <th>Signups</th>
             <th>Facilitator</th>
@@ -22,9 +21,7 @@
         {% for group in study_groups %}
             <tr>
                 <td>
-                    <a href="#{{ group.course.id }}" target="_blank">{{ group.course }}</a>
-                </td>
-                <td>
+                    <a href="#{{ group.course.id }}" target="_blank">{{ group.course }}</a><br>
                     {{group.start_date|date:"l" }}s, {{ group.start_date|date:"f A" }} at <a href="{{group.location.link}}" target="_blank">{{ group.location }}</a>
                 </td>
                 <td>
@@ -34,7 +31,7 @@
                     {{ group.facilitator.first_name }} {{ group.facilitator.last_name }}
                 </td>
                 <td>
-                    {{ group.meeting_times|length }}
+                    {{ group.studygroupmeeting_set.count }}
                     <!--div class="btn-group">
                         <a class="btn btn-mini btn-primary" href="{% url 'studygroups_email' group.id %}">
                             <i class="glyphicon glyphicon-envelope"></i> send email
@@ -48,7 +45,7 @@
         {% endfor %}
         </tbody>
       </table>
-      <p><a href="{% url 'admin:studygroups_studygroup_add' %}" class="btn btn-primary">Add study group</a></p>
+      <!--p><a href="{% url 'admin:studygroups_studygroup_add' %}" class="btn btn-primary">Add study group</a></p-->
     </div>
   </div>
 
@@ -75,7 +72,7 @@
         {% endfor %}
         </tbody>
       </table>
-      <p><a href="{% url 'admin:auth_user_add' %}" class="btn btn-primary">Add user</a></p>
+      <!--p><a href="{% url 'admin:auth_user_add' %}" class="btn btn-primary">Add user</a></p-->
     </div>
   </div>
 
@@ -112,7 +109,7 @@
         {% endfor %}
         </tbody>
       </table>
-      <p><a href="{% url 'admin:studygroups_course_add' %}" class="btn btn-primary">Add course</a></p>
+      <!--p><a href="{% url 'admin:studygroups_course_add' %}" class="btn btn-primary">Add course</a></p-->
     </div>
   </div>
 
@@ -143,7 +140,7 @@
         {% endfor %}
         </tbody>
       </table>
-      <p><a href="{% url 'admin:studygroups_location_add' %}" class="btn btn-primary">Add location</a></p>
+      <!--p><a href="{% url 'admin:studygroups_location_add' %}" class="btn btn-primary">Add location</a></p-->
 
     </div>
   </div>
