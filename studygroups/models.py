@@ -72,6 +72,12 @@ class Location(models.Model):
         return self.name
 
 
+class Activity(models.Model):
+    description = models.CharField(max_length=256)
+    index = models.PositiveIntegerField(help_text='meeting index this activity corresponds to')
+    card = models.FileField()
+
+
 class StudyGroup(models.Model):
     name = models.CharField(max_length=128, default=_study_group_name)
     course = models.ForeignKey('studygroups.Course')
@@ -143,6 +149,12 @@ class Application(models.Model):
 class StudyGroupMeeting(models.Model):
     study_group = models.ForeignKey('studygroups.StudyGroup')
     meeting_time = models.DateTimeField()
+
+    def meeting_number(self):
+        return StudyGroupMeeting.objects.filter(meeting_time__lte=self.meeting_time, study_group=self.study_group).count()
+
+    def meeting_activity(self):
+        return next((a for a in Activity.objects.filter(index=self.meeting_number)), None)
 
     def __unicode__(self):
         tz = pytz.timezone(self.study_group.timezone)

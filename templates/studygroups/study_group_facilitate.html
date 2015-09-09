@@ -16,7 +16,9 @@
   <div class="col-md-12 well">
       <p>Next meeting: {{ lc.next_meeting.meeting_time|date:"D d M Y \a\t P" }}</p>
       <p>Attending: {{ lc.next_meeting.rsvp_set.all|join:", " }}</p>
-      <p>Recommended activity: {{activity}}</p>
+      {% if lc.next_meeting.meeting_activity %}
+      <p>Recommended activity: <a href="{{ lc.next_meeting.meeting_activity.card.url }}" target="_blank">{{ lc.next_meeting.meeting_activity.description }}</a></p>
+      {% endif %}
   </div>
   <div class="col-md-12">
       <h3>Meetings ({{lc.studygroupmeeting_set.count}})</h3>
@@ -32,7 +34,12 @@
           <tbody>
               {% for meeting in lc.studygroupmeeting_set.all|dictsort:"meeting_time" %}
               <tr>
-                <td>{{ meeting.meeting_time|date:"D, d M Y, P" }} </td>
+                <td>{{ meeting.meeting_time|date:"D, d M Y, P" }}
+                  <div class="pull-right">
+                    <a class="btn btn-primary" href="{% url 'studygroups_edit_study_group_meeting' lc.id meeting.id %}"><i class="fa fa-edit"></i> Edit</a>
+                    <a class="btn btn-primary" href="{% url 'studygroups_meeting_delete' lc.id meeting.id %}"><i class="fa fa-times"></i> Delete</a>
+                  </div>
+                  </td>
                   <td>{% for rsvp in meeting.rsvp_set.all %}{{rsvp.application.name}}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
                   <td>
                     {% if meeting.feedback_set.all.first %}
@@ -44,8 +51,6 @@
                     {% endif %}
                   </td>
                   <td>
-                    <a class="btn btn-primary" href="{% url 'studygroups_edit_study_group_meeting' lc.id meeting.id %}"><i class="fa fa-edit"></i> Edit</a>
-                    <a class="btn btn-primary" href="{% url 'studygroups_meeting_delete' lc.id meeting.id %}"><i class="fa fa-times"></i> Delete</a>
                   </td>
               </tr>
               {% endfor %}
