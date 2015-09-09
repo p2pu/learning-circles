@@ -14,7 +14,6 @@
             <th>Signups</th>
             <th>Facilitator</th>
             <th>Meetings</th>
-            <th></th>
         </tr>
         </thead>
         <tbody>
@@ -36,20 +35,11 @@
                 </td>
                 <td>
                     {{ group.studygroupmeeting_set.count }}
-                    <!--div class="btn-group">
-                        <a class="btn btn-mini btn-primary" href="{% url 'studygroups_email' group.id %}">
-                            <i class="glyphicon glyphicon-envelope"></i> send email
-                        </a>
-                    </div-->
-                </td>
-                <td>
-                    <a class="btn btn-primary" href="{% url 'studygroups_view_study_group' group.pk %}">View</a>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
       </table>
-      <!--p><a href="{% url 'admin:studygroups_studygroup_add' %}" class="btn btn-primary">Add study group</a></p-->
     </div>
   </div>
 
