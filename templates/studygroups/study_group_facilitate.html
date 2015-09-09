@@ -95,6 +95,7 @@
                   <th>Name</th>
                   <th>Goal</th>
                   <th>Support</th>
+                  <th>Can bring laptop</th>
                   <th></th>
               </tr>
           </thead>
@@ -111,6 +112,7 @@
                   </td>
                   <td>{{ member.goals }}</td>
                   <td>{{ member.support }}</td>
+                  <td>{{ member.computer_access }}</td>
                   <td><a class="btn btn-primary" href="{% url 'studygroups_application_delete' lc.id member.id %}">Remove</a></td>
                   </td>
               </tr>
