@@ -88,6 +88,7 @@ class StudyGroup(models.Model):
     # consider storing number of weeks/meetings instead of end time
 
     def day(self):
+        #TODO this will be wrong if the timezone and UTC have different days for the meeting time!
         return calendar.day_name[self.start_date.weekday()]
 
     def end_time(self):
@@ -143,7 +144,9 @@ class StudyGroupMeeting(models.Model):
     study_group = models.ForeignKey('studygroups.StudyGroup')
     meeting_time = models.DateTimeField()
 
-    #TODO def __unicode__(self):
+    def __unicode__(self):
+        tz = pytz.timezone(self.study_group.timezone)
+        return u'{0}, {1} at {2}'.format(self.study_group.course.title, tz.normalize(self.meeting_time), self.study_group.location.name)
 
 
 class Reminder(models.Model):
