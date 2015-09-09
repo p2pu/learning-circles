@@ -168,19 +168,25 @@ class Rsvp(models.Model):
 
 class Feedback(models.Model):
 
-    RED = 'Red'
-    YELLOW = 'Yellow'
-    GREEN = 'Green'
-    RED_YELLOW_GREEN = [
-        (RED, 'Red'),
-        (YELLOW, 'Yellow'),
-        (GREEN, 'Green'),
+    BAD = '1'
+    NOT_SO_GOOD = '2'
+    GOOD = '3'
+    WELL = '4'
+    GREAT = '5'
+
+    RATING = [
+        (GREAT, 'Great'),
+        (WELL, 'Pretty well'),
+        (GOOD, 'Good'),
+        (NOT_SO_GOOD, 'Not so great'),
+        (BAD, 'I need some help'),
     ]
 
     study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting')
-    feedback = models.CharField(max_length=255)
-    attendance = models.IntegerField()
-    redyellowgreen = models.CharField(choices=RED_YELLOW_GREEN, max_length=16)
+    feedback = models.TextField() # Shared with learners
+    attendance = models.PositiveIntegerField() #TODO change to Positive Integer Field
+    reflection = models.TextField() # Not shared
+    rating = models.CharField(choices=RATING, max_length=16)
 
 
 def accept_application(application):
