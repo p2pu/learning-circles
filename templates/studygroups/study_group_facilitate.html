@@ -30,7 +30,7 @@
               </tr>
           </thead>
           <tbody>
-              {% for meeting in lc.studygroupmeeting_set.all %}
+              {% for meeting in lc.studygroupmeeting_set.all|dictsort:"meeting_time" %}
               <tr>
                 <td>{{ meeting.meeting_time|date:"D, d M Y, P" }} </td>
                   <td>{% for rsvp in meeting.rsvp_set.all %}{{rsvp.application.name}}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
