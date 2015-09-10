@@ -1,8 +1,9 @@
 [
 {
     "fields": {
-      "username": "Harold Washington Library Center",
-      "password": "blah"
+      "username": "facilitator",
+      "password": "facilitator123",
+      "email": "facilitator@example.net"
    },
    "model": "auth.user",
    "pk": 1

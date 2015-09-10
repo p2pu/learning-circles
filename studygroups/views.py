@@ -312,14 +312,15 @@ def receive_sms(request):
     sender = request.POST.get('From')
     message = request.POST.get('Body')
     to = [ a[1] for a in settings.ADMINS ]
-    to += [settings.DEFAULT_FROM_EMAIL]
     # Try to find a signup with the mobile number
     sender = '-'.join([sender[2:5], sender[5:8], sender[8:12]])
     signups = Application.objects.filter(mobile=sender)
     subject = 'New SMS reply from {0}'.format(sender)
     if signups.count() > 0:
-        subject = 'New SMS reply from {0} <{1}>'.format(signups[0].name, sender)
+        # Send to all facilitators if user is signed up to more than 1 study group
+        signup = next(s for s in signups)
+        subject = 'New SMS reply from {0} <{1}>'.format(signup.name, sender)
+        to += [ signup.study_group.facilitator.email for signup in signups]
 
-    #TODO send to right facilitator
     send_mail(subject, message, settings.SERVER_EMAIL, to, fail_silently=False)
     return http.HttpResponse(status=200)

@@ -30,7 +30,6 @@ class TestSignupViews(TestCase):
         user.is_superuser = True
         user.is_staff = True
         user.save()
-        StudyGroup.objects.all()[0]
 
 
     def test_submit_application(self):
@@ -154,6 +153,7 @@ class TestSignupViews(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertTrue(mail.outbox[0].subject.find('123-456-7890') > 0)
         self.assertTrue(mail.outbox[0].subject.find('Test User') > 0)
+        self.assertIn(StudyGroup.objects.all()[0].facilitator.email, mail.outbox[0].to)
 
 
     def test_user_forbidden(self):
