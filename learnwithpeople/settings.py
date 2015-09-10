@@ -149,6 +149,7 @@ TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
 TWILIO_NUMBER = os.environ.get('TWILIO_NUMBER')
 
 LOGIN_REDIRECT_URL = '/facilitator/'
+DOMAIN = os.environ.get('DOMAIN', 'example.net')
 
 ##### Support for settings_local.py
 try:
