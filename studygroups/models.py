@@ -252,15 +252,18 @@ def generate_reminder(study_group):
             context = { 
                 'study_group': study_group,
                 'next_meeting': next_meeting,
-                'reminder': reminder
+                'reminder': reminder,
+                'protocol': 'https',
+                'domain': settings.DOMAIN,
             }
             timezone.activate(pytz.timezone(study_group.timezone))
+            #TODO do I need to activate a locale?
             reminder.email_subject = render_to_string(
                 'studygroups/notifications/reminder-subject.txt',
                 context
             )
             reminder.email_body = render_to_string(
-                'studygroups/notifications/reminder.html',
+                'studygroups/notifications/reminder.txt',
                 context
             )
             reminder.sms_body = render_to_string(
@@ -268,7 +271,7 @@ def generate_reminder(study_group):
                 context
             )
             reminder.save()
-            
+
             facilitator_notification_subject = u'A reminder for {0} was generated'.format(study_group.course.title)
             facilitator_notification = render_to_string(
                 'studygroups/notifications/reminder-notification.html',
@@ -276,6 +279,7 @@ def generate_reminder(study_group):
             )
             timezone.deactivate()
             to = [study_group.facilitator.email]
+            #TODO change to send HTML at multipart alternative!!
             send_mail(
                 facilitator_notification_subject,
                 facilitator_notification,
@@ -291,7 +295,7 @@ def send_reminder(reminder):
         # this is a reminder and we need RSVP links
         for email in to:
             # TODO hardcoded domain
-            domain = 'https://chicago.p2pu.org'
+            domain = 'https://{0}'.format(settings.DOMAIN)
             url = reverse('studygroups_rsvp')
             yes_qs = rsvp.gen_rsvp_querystring(
                 email,
@@ -308,8 +312,8 @@ def send_reminder(reminder):
             )
             no_link = '{0}{1}?{2}'.format(domain,url,no_qs)
             email_body = reminder.email_body
-            email_body = re.sub(r'<!--RSVP:YES.*-->', yes_link, email_body)
-            email_body = re.sub(r'<!--RSVP:NO.*-->', no_link, email_body)
+            email_body = re.sub(r'\(<!--RSVP:YES-->.*\)', yes_link, email_body)
+            email_body = re.sub(r'\(<!--RSVP:NO-->.*\)', no_link, email_body)
             send_mail(
                     reminder.email_subject.strip('\n'),
                     email_body,
@@ -343,7 +347,7 @@ def create_rsvp(contact, study_group, meeting_date, attending):
     # expect meeting_date in isoformat
     # contact is an email address of mobile number
     # study_group is the study group id
-    meeting_date = dateutil.parser.parse(meeting_date)
+    #TODO remove and fix test meeting_date = dateutil.parser.parse(meeting_date)
     study_group_meeting = StudyGroupMeeting.objects.get(study_group__id=study_group, meeting_time=meeting_date)
     application = None
     if '@' in contact:

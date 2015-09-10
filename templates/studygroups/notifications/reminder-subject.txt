@@ -1,1 +1,1 @@
-{% load i18n %}{{ study_group.course.title }} study group meeting this {{ next_meeting|date:"l, j N, fA" }} at the {{ study_group.location }}.
+{% load i18n %}{{ study_group.course.title | safe}} study group meeting this {{ next_meeting.meeting_time|date:"l, j N, fA" }} at the {{ study_group.location }}.

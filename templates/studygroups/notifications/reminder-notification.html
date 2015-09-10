@@ -1,17 +1,25 @@
-{% load i18n %}
-Hi there organizer. We've automaticaly generated a reminder for the study group meeting happening this {{ next_meeting|date:"l, j N, fA" }}. You can see the text for the reminder below.
+{% extends 'email_base.html' %}
+{% block body %}
+<p>Hi there {{study_group.facilitator.first_name}}</p>
 
-This reminder will be sent automatically in a day from now.
+<p>We've generated a reminder for the Learning Circle meeting this {{ next_meeting.meeting_time|date:"l, j N, fA" }}. The reminder will be sent automatically in 2 days from now.</p>
 
-If you wish to edit the reminder, you can follow this link: http://chicago.p2pu.org{% url 'studygroups_messages_edit' reminder.study_group.id reminder.id %}.
+<p>This is what the reminder will look like.</p>
 
-Regards
-Automaton
+<p><strong>Email to Learning Circle participants</strong></p>
 
-Message to study group participants follows:
+<div style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9;">
+    {{ reminder.email_body | linebreaks }}
+</div>
 
-Hi there!
+<p><strong>Text message to Learning Circle participants</strong></p>
 
-The {{ study_group.course.title }} study group will meet this {{ next_meeting|date:"l, j N, fA" }} at the {{ study_group.location }}.
+<div style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9;">
+    {{ reminder.sms_body | safe | linebreaks}}
+</div>
 
-See you soon
+<p>If you wish to edit the reminder, you can follow <a href="{{ protocol }}://{{ domain }}{% url 'studygroups_messages_edit' reminder.study_group.id reminder.id %}"> this link</a>.</p>
+
+<p>Regards</p>
+<p>Automaton</p>
+{% endblock %}

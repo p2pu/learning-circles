@@ -1,9 +1,4 @@
-{% load i18n %}Hi there!
-
-The {{ study_group.course.title }} Learning Circle will meet this {{ next_meeting|date:"l, j N, fA" }} at {{ study_group.location }}.
-
-Please let us know if you can make it by visiting the appropriate link below.
-Yes, I can make it: <!--RSVP:YES (link will be inserted here) -->
-No, I can't make it: <!--RSVP:NO (link will be inserted here) -->
-
-See you soon
+{% extends 'email_base.html' %}
+{% block body %}
+{% include 'studygroups/notifications/reminder-body.html' %}
+{% endblock %}
