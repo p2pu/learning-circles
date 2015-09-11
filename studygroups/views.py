@@ -1,4 +1,5 @@
 from datetime import datetime
+import dateutil
 
 from django.shortcuts import render, render_to_response, get_object_or_404
 from django.template import RequestContext
@@ -113,13 +114,18 @@ def rsvp(request):
     meeting_date = request.GET['meeting_date']
     attending = request.GET['attending']
     sig = request.GET['sig']
-
+    meeting_date = dateutil.parser.parse(meeting_date)
+    # TODO catch parse exception
+    # TODO check for old RSVP dates
     if (check_rsvp_signature(user, study_group, meeting_date, attending, sig)):
         rsvp = create_rsvp(user, int(study_group), meeting_date, attending)
-        #TODO Show success message
+        url = reverse('studygroups_rsvp_success')
+        return http.HttpResponseRedirect(url)
     else:
-        #TODO invalid RSVP link
-        pass
+        messages.error(request, 'Bad RSVP code')
+        url = reverse('studygroups_landing')
+        # TODO user http error code and display proper error page
+        return http.HttpResponseRedirect(url)
 
 
 @login_required

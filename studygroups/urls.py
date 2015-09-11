@@ -17,6 +17,7 @@ urlpatterns = patterns('',
     url(r'^signup/(?P<location>[\w-]+)-(?P<study_group_id>[\d]+)/$', 'studygroups.views.signup', name='studygroups_signup'),
     url(r'^signup/(?P<study_group_id>[\d]+)/success/$', SignupSuccess.as_view(), name='studygroups_signup_success'),
     url(r'^rsvp/$', 'studygroups.views.rsvp', name='studygroups_rsvp'),
+    url(r'^rsvp/success/$', TemplateView.as_view(template_name='studygroups/rsvp_success.html'), name='studygroups_rsvp_success'),
 
     url(r'^facilitator/$', 'studygroups.views.facilitator', name='studygroups_facilitator'),
 

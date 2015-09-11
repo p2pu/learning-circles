@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <div class="container">
+      <div class="row">
+    <div class="section-title col-md-12">
+        <h2>Thank you for letting us know!</h2>
+    </div>
+    <div class="col-md-12">
+        <p>If you want to change your RSVP status, just visit the appropriate link in your reminder email.</p>
+    </div>
+    {% if study_group.location.image %}
+    <div class="col-md-4 col-md-offset-4">
+        <p><img src="{{study_group.location.image.url}}"></p>
+     </div>
+    {% endif %}
+ </div>
+  </div>
+{% endblock %}
