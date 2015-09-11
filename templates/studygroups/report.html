@@ -13,11 +13,11 @@
             <th>Details</th>
             <th>Signups</th>
             <th>Facilitator</th>
-            <th>Meetings</th>
+            <th>Next meeting</th>
         </tr>
         </thead>
         <tbody>
-        {% for group in study_groups %}
+        {% for group in study_groups|dictsort:"start_date" %}
             <tr>
                 <td>
                     <a href="#{{ group.course.id }}" target="_blank">{{ group.course }}</a><br>
@@ -26,15 +26,17 @@
                 <td>
                     {{ group.application_set.count }}<br>
                     Can bring a laptop:<br>
-                    {{group.laptop_stats.yes | length}} yes,<br>
+                    {{ group.laptop_stats.yes }} yes,<br>
                     {{ group.laptop_stats.sometimes }} sometimes,<br>
-                    {{ group.laptop_stats.no}} no
+                    {{ group.laptop_stats.no }} no
                 </td>
                 <td>
                     {{ group.facilitator.first_name }} {{ group.facilitator.last_name }}
                 </td>
                 <td>
-                    {{ group.studygroupmeeting_set.count }}
+                    {% if group.next_meeting %}
+                        {{group.next_meeting.meeting_time}}
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}
