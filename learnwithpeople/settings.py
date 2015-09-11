@@ -7,6 +7,7 @@ https://docs.djangoproject.com/en/1.7/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
+from __future__ import absolute_import
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
@@ -150,6 +151,24 @@ TWILIO_NUMBER = os.environ.get('TWILIO_NUMBER')
 
 LOGIN_REDIRECT_URL = '/facilitator/'
 DOMAIN = os.environ.get('DOMAIN', 'example.net')
+
+####### Celery config #######
+BROKER_URL = os.environ.get('BROKER_URL', 'amqp://guest:guest@localhost//')
+
+from celery.schedules import crontab
+
+CELERYBEAT_SCHEDULE = {
+    # Executes every Monday morning at 7:30 A.M
+    'gen_reminders': {
+        'task': 'studygroups.tasks.gen_reminders',
+        'schedule': crontab(minute=10),
+    },
+    'send_reminders': {
+        'task': 'studygroups.tasks.send_reminders',
+        'schedule': crontab(minute=20),
+    },
+}
+
 
 ##### Support for settings_local.py
 try:

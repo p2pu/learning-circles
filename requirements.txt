@@ -1,6 +1,10 @@
 Django==1.8.1
 Pillow==2.8.1
+amqp==1.4.6
+anyjson==0.3.3
 argparse==1.2.1
+billiard==3.3.0.20
+celery==3.1.18
 dj-database-url==0.3.0
 dj-static==0.0.6
 django-appconf==1.0.1
@@ -10,6 +14,7 @@ django-s3direct==0.3.10
 django-toolbelt==0.0.1
 gunicorn==19.3.0
 httplib2==0.9.1
+kombu==3.0.26
 mock==1.0.1
 psycopg2==2.6
 python-dateutil==2.4.2
