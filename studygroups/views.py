@@ -220,15 +220,6 @@ def report(request):
 
 
 @user_is_group_facilitator
-def organize_messages(request, study_group_id):
-    study_group = get_object_or_404(StudyGroup, pk=study_group_id)
-    context = {
-        'study_group': study_group,
-    }
-    return render_to_response('studygroups/organize_messages.html', context, context_instance=RequestContext(request))
-
-
-@user_is_group_facilitator
 def email(request, study_group_id):
     # TODO - this piggy backs of Reminder, won't work of Reminder is coupled to StudyGroupMeeting
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
@@ -261,7 +252,7 @@ def messages_edit(request, study_group_id, message_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
     reminder = get_object_or_404(Reminder, pk=message_id)
     if not reminder.sent_at == None:
-        url = reverse('studygroups_organize_messages', args=(study_group_id,))
+        url = reverse('studygroups_facilitator')
         messages.info(request, 'Message has already been sent and cannot be edited.')
         return http.HttpResponseRedirect(url)
     if request.method == 'POST':
@@ -269,7 +260,7 @@ def messages_edit(request, study_group_id, message_id):
         if form.is_valid():
             reminder = form.save()
             messages.success(request, 'Message successfully edited')
-            url = reverse('studygroups_organize_messages', args=(study_group_id,))
+            url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
     else:
         form = MessageForm(instance=reminder)
