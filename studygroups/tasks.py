@@ -11,8 +11,9 @@ import datetime
 
 def send_reminders():
     now = timezone.now()
+    translation.activate(settings.LANGUAGE_CODE)
     for reminder in Reminder.objects.filter(sent_at__isnull=True):
-        if reminder.meeting_time - now < datetime.timedelta(days=2):
+        if reminder.study_group_meeting.meeting_time - now < datetime.timedelta(days=2):
             send_reminder(reminder)
 
 
