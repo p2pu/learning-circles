@@ -1,0 +1,18 @@
+Hi there {{study_group.facilitator.first_name}}
+
+We've generated a reminder for the Learning Circle meeting this {{ next_meeting.meeting_time|date:"l, j N, fA" }}. The reminder will be sent automatically in 2 days from now.
+
+This is what the reminder will look like.
+
+# Email to Learning Circle participants
+
+{{ reminder.email_body | safe }}
+
+# Text message to Learning Circle participants
+
+{{ reminder.sms_body | safe }}
+
+If you wish to edit the reminder, you can follow this link: {{ protocol }}://{{ domain }}{% url 'studygroups_messages_edit' reminder.study_group.id reminder.id %}.
+
+Regards
+Automaton

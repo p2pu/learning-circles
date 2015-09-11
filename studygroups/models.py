@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models.signals import post_init
 from django.utils import timezone
 from django.template.loader import render_to_string
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse #TODO ideally this shouldn't be in the model
@@ -273,20 +273,27 @@ def generate_reminder(study_group):
             reminder.save()
 
             facilitator_notification_subject = u'A reminder for {0} was generated'.format(study_group.course.title)
-            facilitator_notification = render_to_string(
+            facilitator_notification_html = render_to_string(
                 'studygroups/notifications/reminder-notification.html',
+                context
+            )
+            facilitator_notification_txt = render_to_string(
+                'studygroups/notifications/reminder-notification.txt',
                 context
             )
             timezone.deactivate()
             to = [study_group.facilitator.email]
+            bcc = [ admin[1] for admin in settings.ADMINS ]
             #TODO change to send HTML at multipart alternative!!
-            send_mail(
+            notification = EmailMultiAlternatives(
                 facilitator_notification_subject,
-                facilitator_notification,
+                facilitator_notification_txt,
                 settings.SERVER_EMAIL,
                 to,
-                fail_silently=False
+                bcc
             )
+            notification.attach_alternative(facilitator_notification_html, 'text/html')
+            notification.send()
 
 
 def send_reminder(reminder):

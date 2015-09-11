@@ -15,7 +15,7 @@
 <p><strong>Text message to Learning Circle participants</strong></p>
 
 <div style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9;">
-    {{ reminder.sms_body | safe | linebreaks}}
+    <p>{{ reminder.sms_body }}</p>
 </div>
 
 <p>If you wish to edit the reminder, you can follow <a href="{{ protocol }}://{{ domain }}{% url 'studygroups_messages_edit' reminder.study_group.id reminder.id %}"> this link</a>.</p>
