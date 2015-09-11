@@ -202,8 +202,8 @@ class TestSignupModels(TestCase):
         self.assertEqual(len(mail.outbox), 2)
         self.assertEqual(mail.outbox[1].to[0], data['email'])
         self.assertFalse(send_message.called)
-        self.assertIn('https://chicago.p2pu.org/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=yes&sig='.format(get_language(), urllib.quote(sg.next_meeting().meeting_time.isoformat())), mail.outbox[1].body)
-        self.assertIn('https://chicago.p2pu.org/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=no&sig='.format(get_language(), urllib.quote(sg.next_meeting().meeting_time.isoformat())), mail.outbox[1].body)
+        self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=yes&sig='.format(get_language(), urllib.quote(sg.next_meeting().meeting_time.isoformat())), mail.outbox[1].body)
+        self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=no&sig='.format(get_language(), urllib.quote(sg.next_meeting().meeting_time.isoformat())), mail.outbox[1].body)
 
 
     @patch('studygroups.models.send_message')
@@ -253,11 +253,11 @@ class TestSignupModels(TestCase):
 
         # Test creating an RSVP
         self.assertEqual(Rsvp.objects.all().count(), 0)
-        create_rsvp('test@mail.com', sg.id, meeting_date.isoformat(), 'yes')
+        create_rsvp('test@mail.com', sg.id, meeting_date, 'yes')
         self.assertEqual(Rsvp.objects.all().count(), 1)
         self.assertTrue(Rsvp.objects.all().first().attending)
 
         # Test updating an RSVP
-        create_rsvp('test@mail.com', sg.id, meeting_date.isoformat(), 'no')
+        create_rsvp('test@mail.com', sg.id, meeting_date, 'no')
         self.assertEqual(Rsvp.objects.all().count(), 1)
         self.assertFalse(Rsvp.objects.all().first().attending)

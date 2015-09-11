@@ -240,6 +240,7 @@ def generate_all_meetings(study_group):
         meeting.save()
 
 
+# If called directly, be sure to activate the current language
 def generate_reminder(study_group):
     now = timezone.now()
     next_meeting = study_group.next_meeting()
@@ -296,6 +297,7 @@ def generate_reminder(study_group):
             notification.send()
 
 
+# If called directly, be sure to active language to use for constructing URLs
 def send_reminder(reminder):
     to = [su.email for su in reminder.study_group.application_set.filter(accepted_at__isnull=False, contact_method=Application.EMAIL)]
     if reminder.study_group_meeting:
@@ -351,10 +353,9 @@ def send_reminder(reminder):
 
 
 def create_rsvp(contact, study_group, meeting_date, attending):
-    # expect meeting_date in isoformat
+    # expect meeting_date as python datetime
     # contact is an email address of mobile number
     # study_group is the study group id
-    #TODO remove and fix test meeting_date = dateutil.parser.parse(meeting_date)
     study_group_meeting = StudyGroupMeeting.objects.get(study_group__id=study_group, meeting_time=meeting_date)
     application = None
     if '@' in contact:
