@@ -244,7 +244,7 @@ def generate_all_meetings(study_group):
 def generate_reminder(study_group):
     now = timezone.now()
     next_meeting = study_group.next_meeting()
-    if next_meeting and next_meeting.meeting_time - now < datetime.timedelta(days=3):
+    if next_meeting and next_meeting.meeting_time - now < datetime.timedelta(days=4):
         # check if a notifcation already exists for this meeting
         if not Reminder.objects.filter(study_group=study_group, study_group_meeting=next_meeting).exists():
             reminder = Reminder()
