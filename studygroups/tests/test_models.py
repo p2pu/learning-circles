@@ -122,11 +122,11 @@ class TestSignupModels(TestCase):
 
 
     def test_dont_generate_reminder_4days_before(self):
-        # Make sure we don't generate a reminder more than 3 days before
+        # Make sure we don't generate a reminder more than 4 days before
         now = timezone.now()
         self.assertEqual(Reminder.objects.all().count(), 0)
         sg = StudyGroup.objects.all()[0]
-        sg.start_date = now - datetime.timedelta(days=3)
+        sg.start_date = now + datetime.timedelta(days=4, hours=1)
         sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
         sg.save()
         generate_all_meetings(sg)
@@ -134,11 +134,11 @@ class TestSignupModels(TestCase):
         self.assertEqual(Reminder.objects.all().count(), 0)
 
 
-    def test_generate_reminder_3days_before(self):
-        # Make sure we generate a reminder less than three days before
+    def test_generate_reminder_4days_before(self):
+        # Make sure we generate a reminder less than 4 days before
         now = timezone.now()
         sg = StudyGroup.objects.all()[0]
-        sg.start_date = now - datetime.timedelta(days=5)
+        sg.start_date = now + datetime.timedelta(days=3, hours=23)
         sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
         sg.save()
         generate_all_meetings(sg)

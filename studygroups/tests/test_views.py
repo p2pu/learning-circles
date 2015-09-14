@@ -8,7 +8,12 @@ from django.utils import timezone
 from mock import patch
 
 from studygroups.models import StudyGroup
+from studygroups.models import StudyGroupMeeting
 from studygroups.models import Application
+from studygroups.models import Rsvp
+from studygroups.rsvp import gen_rsvp_querystring
+
+import datetime
 
 # Create your tests here.
 class TestSignupViews(TestCase):
@@ -198,4 +203,49 @@ class TestSignupViews(TestCase):
         assertAllowed('/en/studygroup/1/meeting/2/edit/')
         assertAllowed('/en/studygroup/1/meeting/2/delete/')
         assertAllowed('/en/studygroup/1/meeting/2/feedback/create/')
+
+
+    def test_rsvp_view(self):
+        # Setup data for RSVP -> StudyGroup + Signup + Meeting in future
+
+        study_group = StudyGroup.objects.all()[0]
+        meeting_time = timezone.now() + datetime.timedelta(days=2)
+        study_group_meeting = StudyGroupMeeting(
+            study_group=study_group,
+            meeting_time=timezone.now()
+        )
+        study_group_meeting.save()
+
+        signup_data = self.APPLICATION_DATA.copy()
+        signup_data['study_group'] = study_group
+        signup = Application(**signup_data)
+        signup.accepted_at = timezone.now()
+        signup.save()
+
+        qs = gen_rsvp_querystring(
+            signup.email,
+            study_group.pk,
+            study_group_meeting.meeting_time,
+            'yes'
+        )
+        url = '/en/rsvp/?{0}'.format(qs)
+
+        # Generate RSVP link
+        # visit link
+        c = Client()
+        self.assertEqual(0, Rsvp.objects.count())
+        resp = c.get(url)
+        self.assertEqual(1, Rsvp.objects.count())
+        self.assertTrue(Rsvp.objects.first().attending)
+
+        qs = gen_rsvp_querystring(
+            signup.email,
+            study_group.pk,
+            study_group_meeting.meeting_time,
+            'no'
+        )
+        url = '/en/rsvp/?{0}'.format(qs)
+        resp = c.get(url)
+        self.assertEqual(1, Rsvp.objects.count())
+        self.assertFalse(Rsvp.objects.first().attending)
 
