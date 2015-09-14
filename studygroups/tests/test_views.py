@@ -212,7 +212,7 @@ class TestSignupViews(TestCase):
         meeting_time = timezone.now() + datetime.timedelta(days=2)
         study_group_meeting = StudyGroupMeeting(
             study_group=study_group,
-            meeting_time=timezone.now()
+            meeting_time=meeting_time
         )
         study_group_meeting.save()
 
