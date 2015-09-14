@@ -109,15 +109,28 @@ class SignupSuccess(TemplateView):
 
 
 def rsvp(request):
-    user = request.GET['user']
-    study_group = request.GET['study_group']
-    meeting_date = request.GET['meeting_date']
-    attending = request.GET['attending']
-    sig = request.GET['sig']
-    meeting_date = dateutil.parser.parse(meeting_date)
-    # TODO catch parse exception
-    # TODO check for old RSVP dates
-    if (check_rsvp_signature(user, study_group, meeting_date, attending, sig)):
+    user = request.GET.get('user')
+    study_group = request.GET.get('study_group')
+    attending = request.GET.get('attending')
+    sig = request.GET.get('sig')
+    meeting_date = None
+    try:
+        meeting_date = dateutil.parser.parse(request.GET.get('meeting_date'))
+    except:
+        # TODO log error
+        pass
+
+    # Generator for conditions
+    def conditions():
+        yield user
+        yield study_group
+        yield meeting_date
+        yield attending
+        yield sig
+        yield meeting_date > timezone.now()
+        yield check_rsvp_signature(user, study_group, meeting_date, attending, sig)
+
+    if all(conditions()):
         rsvp = create_rsvp(user, int(study_group), meeting_date, attending)
         url = reverse('studygroups_rsvp_success')
         return http.HttpResponseRedirect(url)
