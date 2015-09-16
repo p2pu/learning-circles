@@ -172,6 +172,6 @@ CELERYBEAT_SCHEDULE = {
 
 ##### Support for settings_local.py
 try:
-    from settings_local import *
+    from .settings_local import *
 except ImportError:
     pass
