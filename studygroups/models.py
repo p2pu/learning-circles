@@ -156,6 +156,12 @@ class StudyGroupMeeting(models.Model):
     def meeting_activity(self):
         return next((a for a in Activity.objects.filter(index=self.meeting_number)), None)
 
+    def rsvps(self):
+        return {
+            'yes': self.rsvp_set.all().filter(attending=True),
+            'no': self.rsvp_set.all().filter(attending=False)
+        }
+
     def __unicode__(self):
         tz = pytz.timezone(self.study_group.timezone)
         return u'{0}, {1} at {2}'.format(self.study_group.course.title, tz.normalize(self.meeting_time), self.study_group.location.name)
@@ -199,7 +205,7 @@ class Feedback(models.Model):
 
     study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting')
     feedback = models.TextField() # Shared with learners
-    attendance = models.PositiveIntegerField() #TODO change to Positive Integer Field
+    attendance = models.PositiveIntegerField()
     reflection = models.TextField() # Not shared
     rating = models.CharField(choices=RATING, max_length=16)
 
@@ -285,7 +291,6 @@ def generate_reminder(study_group):
             timezone.deactivate()
             to = [study_group.facilitator.email]
             bcc = [ admin[1] for admin in settings.ADMINS ]
-            #TODO change to send HTML at multipart alternative!!
             notification = EmailMultiAlternatives(
                 facilitator_notification_subject,
                 facilitator_notification_txt,
@@ -303,7 +308,6 @@ def send_reminder(reminder):
     if reminder.study_group_meeting:
         # this is a reminder and we need RSVP links
         for email in to:
-            # TODO hardcoded domain
             domain = 'https://{0}'.format(settings.DOMAIN)
             url = reverse('studygroups_rsvp')
             yes_qs = rsvp.gen_rsvp_querystring(
@@ -326,12 +330,12 @@ def send_reminder(reminder):
             send_mail(
                     reminder.email_subject.strip('\n'),
                     email_body,
-                    settings.DEFAULT_FROM_EMAIL,
+                    reminder.study_group.facilitator,
                     [email],
                     fail_silently=False
             )
     else:
-        send_mail(reminder.email_subject.strip('\n'), reminder.email_body, settings.DEFAULT_FROM_EMAIL, to, fail_silently=False)
+        send_mail(reminder.email_subject.strip('\n'), reminder.email_body, reminder.study_group.facilitator, to, fail_silently=False)
 
     # send SMS
     tos = [su.mobile for su in reminder.study_group.application_set.filter(accepted_at__isnull=False, contact_method=Application.TEXT)]
