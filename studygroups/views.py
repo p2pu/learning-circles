@@ -61,6 +61,8 @@ def signup(request, location, study_group_id):
             else:
                 #TODO messages.success(request, 'You successfully signed up for a Learning Circle!')
                 pass
+            # TODO - remove accepted_at or use accepting applications flow
+            application.accepted_at = timezone.now()
             application.save()
             notification_subject = render_to_string(
                     'studygroups/notifications/application-subject.txt',
@@ -302,6 +304,8 @@ def add_member(request, study_group_id):
                 messages.success(request, 'Your signup details have been updated!')
             else:
                 messages.success(request, 'Successfully added member!')
+            # TODO - remove accepted_at logic or use it. Currently just bypassing it.
+            application.accepted_at = timezone.now()
             application.save()
             url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
