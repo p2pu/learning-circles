@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <!-- Example row of columns -->
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2>Weekly update</h2>
+    {% for study_group in study_groups %}
+      {% if study_group.weekly.signups|length > 0 or study_group.weekly.meetings|length > 0 %}
+        <h3>{{study_group.course.title}} at {{study_group.location.name}}</h3>
+        <p>{{study_group.weekly.signups|length}} new signup this week</p>
+        {% for meeting in study_group.weekly.meetings %}
+          <p>Meeting happened on {{ meeting.meeting_time }}</p>
+          {% if meeting.feedback_set.first %}
+            <p><strong>Feedback recorded</strong></p>
+            <p>How many people went? {{meeting.feedback_set.first.attendance}}</p>
+            <p>Feedback from learning circle: {{meeting.feedback_set.first.feedback}}</p>
+            <p>Private reflection: {{meeting.feedback_set.first.reflection}}</p>
+            <p>Overall rating: {{meeting.feedback_set.first.get_rating_display}}</p>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endfor %}
+
+</div>
+</div>
+</div>
+{% endblock %}

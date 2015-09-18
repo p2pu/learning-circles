@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import dateutil
 
 from django.shortcuts import render, render_to_response, get_object_or_404
@@ -232,6 +232,25 @@ def report(request):
         'study_groups': study_groups,
     }
     return render_to_response('studygroups/report.html', context, context_instance=RequestContext(request))
+
+
+@login_required
+def weekly_report(request):
+    study_groups = StudyGroup.objects.all()
+    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    start_time = today - datetime.timedelta(days=today.weekday())
+    end_time = start_time + datetime.timedelta(days=7)
+    for study_group in study_groups:
+        weekly = {
+            'signups': study_group.application_set.filter(created_at__gte=start_time),
+            'meetings': study_group.studygroupmeeting_set.filter(meeting_time__gte=start_time, meeting_time__lt=end_time),
+
+        }
+        study_group.weekly = weekly
+    context = {
+        'study_groups': study_groups,
+    }
+    return render_to_response('studygroups/weekly-update.html', context, context_instance=RequestContext(request))
 
 
 @user_is_group_facilitator
