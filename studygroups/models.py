@@ -77,6 +77,9 @@ class Activity(models.Model):
     index = models.PositiveIntegerField(help_text='meeting index this activity corresponds to')
     card = models.FileField()
 
+    def __unicode__(self):
+        return self.description
+
 
 class StudyGroup(models.Model):
     name = models.CharField(max_length=128, default=_study_group_name)
