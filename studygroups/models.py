@@ -333,12 +333,12 @@ def send_reminder(reminder):
             send_mail(
                     reminder.email_subject.strip('\n'),
                     email_body,
-                    reminder.study_group.facilitator,
+                    reminder.study_group.facilitator.email,
                     [email],
                     fail_silently=False
             )
     else:
-        send_mail(reminder.email_subject.strip('\n'), reminder.email_body, reminder.study_group.facilitator, to, fail_silently=False)
+        send_mail(reminder.email_subject.strip('\n'), reminder.email_body, reminder.study_group.facilitator.email, to, fail_silently=False)
 
     # send SMS
     tos = [su.mobile for su in reminder.study_group.application_set.filter(accepted_at__isnull=False, contact_method=Application.TEXT)]
