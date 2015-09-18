@@ -20,6 +20,10 @@
 
 <p>If you wish to edit the reminder, you can follow <a href="{{ protocol }}://{{ domain }}{% url 'studygroups_messages_edit' reminder.study_group.id reminder.id %}"> this link</a>.</p>
 
+{% if reminder.study_group_meeting.meeting_activity %}
+<p><strong>Recommended activity for this week:</strong> <a href="{{ protocol }}://{{ domain }}{{ lc.next_meeting.meeting_activity.card.url }}" target="_blank">{{ lc.next_meeting.meeting_activity.description }}</a></p>
+{% endif %}
+
 <p>Regards</p>
 <p>Automaton</p>
 {% endblock %}

@@ -14,5 +14,7 @@ This is what the reminder will look like.
 
 If you wish to edit the reminder, you can follow this link: {{ protocol }}://{{ domain }}{% url 'studygroups_messages_edit' reminder.study_group.id reminder.id %}.
 
+{% if reminder.study_group_meeting.meeting_activity %}Recommended activity for this week: {{ reminder.study_group_meeting.meeting_activity.description }} ({{ protocol }}://{{ domain }}{{ reminder.study_group_meeting.meeting_activity.card.url }}){% endif %}
+
 Regards
 Automaton
