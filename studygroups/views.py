@@ -161,6 +161,7 @@ def view_study_group(request, study_group_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
     context = {
         'study_group': study_group,
+        'today': timezone.now()
     }
     return render_to_response('studygroups/view_study_group.html', context, context_instance=RequestContext(request))
 
