@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.template.loader import render_to_string
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse #TODO ideally this shouldn't be in the model
 
 from s3direct.fields import S3DirectField
@@ -376,3 +376,42 @@ def create_rsvp(contact, study_group, meeting_date, attending):
         rsvp.attending = attending=='yes'
     rsvp.save()
     return rsvp
+
+
+def report_data(start_time, end_time):
+    study_groups = StudyGroup.objects.all().order_by('start_date')
+    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    for study_group in study_groups:
+        report = {
+            'signups': study_group.application_set.filter(created_at__gte=start_time),
+            'meetings': study_group.studygroupmeeting_set.filter(meeting_time__gte=start_time, meeting_time__lt=end_time),
+
+        }
+        study_group.report = report
+    return study_groups
+
+
+def send_weekly_update():
+    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    start_time = today - datetime.timedelta(days=today.weekday()+7)
+    end_time = start_time + datetime.timedelta(days=7)
+    context = {
+        'start_time': start_time,
+        'end_time': end_time,
+        'study_groups': report_data(start_time, end_time),
+    }
+    timezone.activate(pytz.timezone(settings.TIME_ZONE))
+    html_body = render_to_string('studygroups/weekly-update.html', context)
+    text_body = render_to_string('studygroups/weekly-update.txt', context)
+    timezone.deactivate()
+    to = [o.email for o in Group.objects.get(name='organizers').user_set.all()]
+ 
+    update = EmailMultiAlternatives(
+        'Weekly Learning Circles update',
+        text_body,
+        settings.SERVER_EMAIL,
+        to
+    )
+    update.attach_alternative(html_body, 'text/html')
+    update.send()
+

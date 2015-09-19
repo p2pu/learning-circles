@@ -7,6 +7,7 @@ from django.template.loader import render_to_string
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.models import Permission, Group
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMultiAlternatives, send_mail
 from django.contrib import messages
 from django.conf import settings
@@ -21,6 +22,7 @@ from studygroups.models import Course, Location, StudyGroup, Application, Remind
 from studygroups.models import StudyGroupMeeting
 from studygroups.models import send_reminder
 from studygroups.models import create_rsvp
+from studygroups.models import report_data
 from studygroups.forms import ApplicationForm, MessageForm, StudyGroupForm
 from studygroups.forms import StudyGroupMeetingForm
 from studygroups.forms import FeedbackForm
@@ -236,19 +238,16 @@ def report(request):
 
 @login_required
 def weekly_report(request):
-    study_groups = StudyGroup.objects.all()
+    if not request.user.is_staff:
+        raise PermissionDenied
+
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     start_time = today - datetime.timedelta(days=today.weekday())
     end_time = start_time + datetime.timedelta(days=7)
-    for study_group in study_groups:
-        weekly = {
-            'signups': study_group.application_set.filter(created_at__gte=start_time),
-            'meetings': study_group.studygroupmeeting_set.filter(meeting_time__gte=start_time, meeting_time__lt=end_time),
-
-        }
-        study_group.weekly = weekly
     context = {
-        'study_groups': study_groups,
+        'start_time': start_time,
+        'end_time': end_time,
+        'study_groups': report_data(start_time, end_time),
     }
     return render_to_response('studygroups/weekly-update.html', context, context_instance=RequestContext(request))
 

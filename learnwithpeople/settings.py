@@ -167,6 +167,10 @@ CELERYBEAT_SCHEDULE = {
         'task': 'studygroups.tasks.send_reminders',
         'schedule': crontab(minute='*/10'),
     },
+    'weekly_update': {
+        'task': 'studygroups.tasks.weekly_update',
+        'schedule': crontab(hour=10, minute=0, day_of_week='monday'),
+    },
 }
 
 

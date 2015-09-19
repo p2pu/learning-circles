@@ -9,6 +9,7 @@ from studygroups.models import StudyGroup
 from studygroups.models import Reminder
 from studygroups.models import generate_reminder
 from studygroups.models import send_reminder
+from studygroups.models import send_weekly_update
 from django.utils import translation
 
 import datetime
@@ -28,3 +29,9 @@ def gen_reminders():
     for study_group in StudyGroup.objects.all():
         translation.activate(settings.LANGUAGE_CODE)
         generate_reminder(study_group)
+
+
+@shared_task
+def weekly_update():
+    # Create a report for the previous week
+    send_weekly_update()
