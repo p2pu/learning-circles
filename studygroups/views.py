@@ -151,6 +151,7 @@ def facilitator(request):
     study_groups = study_groups.filter(end_date__gt=timezone.now())
     context = {
         'study_groups': study_groups,
+        'today': timezone.now()
     }
     return render_to_response('studygroups/facilitator.html', context, context_instance=RequestContext(request))
 

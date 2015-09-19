@@ -60,7 +60,11 @@
                       {{feedback.feedback}}
                       {% endwith %}
                     {% else %}
-                      <a class="btn btn-primary" href="{% url 'studygroups_feedback' lc.id meeting.id %}">Capture feedback</a>
+                      {% if meeting.meeting_time < today %}
+                        <a class="btn btn-primary" href="{% url 'studygroups_feedback' lc.id meeting.id %}">Capture feedback</a>
+                      {% else %}
+                        <a class="btn btn-primary disabled" href="{% url 'studygroups_feedback' lc.id meeting.id %}">Capture feedback</a>
+                      {% endif %}
                     {% endif %}
                   </td>
                   <td>
