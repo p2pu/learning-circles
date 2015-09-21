@@ -168,6 +168,9 @@ class TestSignupViews(TestCase):
         def assertForbidden(url):
             resp = c.get(url)
             self.assertEqual(resp.status_code, 403)
+        assertForbidden('/en/organize/')
+        assertForbidden('/en/report/')
+        assertForbidden('/en/report/weekly/')
         assertForbidden('/en/studygroup/1/')
         assertForbidden('/en/studygroup/1/edit/')
         assertForbidden('/en/studygroup/1/message/compose/')
@@ -224,6 +227,9 @@ class TestSignupViews(TestCase):
             resp = c.get(url)
             self.assertEquals(resp.status_code, status)
 
+        assertAllowed('/en/organize/')
+        assertAllowed('/en/report/')
+        assertAllowed('/en/report/weekly/')
         assertAllowed('/en/studygroup/1/')
         assertAllowed('/en/studygroup/1/edit/')
         assertAllowed('/en/studygroup/1/message/compose/')
