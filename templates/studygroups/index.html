@@ -42,7 +42,7 @@
           </div>
         </div>
     </div>
-		{% comment %}
+    {% comment %}
     <section id="leads">
       <div class="container">
         <div class="text-center col-md-12">
@@ -63,9 +63,13 @@
           <h2>You can learn...</h2>
         </div>
         <div class="courses-list col-md-12">
-          {% include 'studygroups/courses.html' %}
+          <div class="course-list col-md-12">
+	        {% for course in courses %}
+              {% include 'studygroups/courses.html' %}
+            {% endfor %}
+          </div>
         </div>
-    	</div>
+      </div>
     </section>
     <section id="faq">
         <div class="container">

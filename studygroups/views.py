@@ -39,7 +39,6 @@ def landing(request):
 
     context = {
         'courses': courses,
-        'learning_circles': StudyGroup.objects.all(),
         'interest': {
             'courses': courses,
             'locations': Location.objects.all(),

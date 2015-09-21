@@ -94,6 +94,7 @@ class StudyGroup(models.Model):
     max_size = models.IntegerField() #TODO remove this field
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    signup_open = models.BooleanField(default=True)
     # consider storing number of weeks/meetings instead of end time
 
     def day(self):
