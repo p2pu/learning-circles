@@ -2,7 +2,7 @@
 from django.test import TestCase, override_settings
 from django.test import Client
 from django.core import mail
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.utils import timezone
 
 from mock import patch
@@ -165,20 +165,19 @@ class TestSignupViews(TestCase):
         user = User.objects.create_user('bob', 'bob@example.net', 'password')
         c = Client()
         c.login(username='bob', password='password')
-        def assertAllowed(url):
+        def assertForbidden(url):
             resp = c.get(url)
-            self.assertTrue(resp.status_code, 403)
-        assertAllowed('/en/studygroup/1/')
-        assertAllowed('/en/studygroup/1/edit/')
-        assertAllowed('/en/studygroup/1/message/compose/')
-        assertAllowed('/en/studygroup/1/message/edit/1/')
-        assertAllowed('/en/studygroup/1/message/list/')
-        assertAllowed('/en/studygroup/1/member/add/')
-        assertAllowed('/en/studygroup/1/member/2/delete/')
-        assertAllowed('/en/studygroup/1/meeting/create/')
-        assertAllowed('/en/studygroup/1/meeting/2/edit/')
-        assertAllowed('/en/studygroup/1/meeting/2/delete/')
-        assertAllowed('/en/studygroup/1/meeting/2/feedback/create/')
+            self.assertEqual(resp.status_code, 403)
+        assertForbidden('/en/studygroup/1/')
+        assertForbidden('/en/studygroup/1/edit/')
+        assertForbidden('/en/studygroup/1/message/compose/')
+        assertForbidden('/en/studygroup/1/message/edit/1/')
+        assertForbidden('/en/studygroup/1/member/add/')
+        assertForbidden('/en/studygroup/1/member/1/delete/')
+        assertForbidden('/en/studygroup/1/meeting/create/')
+        assertForbidden('/en/studygroup/1/meeting/2/edit/')
+        assertForbidden('/en/studygroup/1/meeting/2/delete/')
+        assertForbidden('/en/studygroup/1/meeting/2/feedback/create/')
 
 
     def test_facilitator_access(self):
@@ -191,18 +190,50 @@ class TestSignupViews(TestCase):
         c.login(username='bob123', password='password')
         def assertAllowed(url):
             resp = c.get(url)
-            self.assertNotEqual(resp.status_code, 403)
+            #TODO not sure if it's a good idea to include 404 here!
+            self.assertIn(resp.status_code, [200, 301, 302])
+
+        def assertStatus(url, status):
+            resp = c.get(url)
+            self.assertEquals(resp.status_code, status)
         assertAllowed('/en/studygroup/1/')
         assertAllowed('/en/studygroup/1/edit/')
         assertAllowed('/en/studygroup/1/message/compose/')
-        assertAllowed('/en/studygroup/1/message/edit/1/')
-        assertAllowed('/en/studygroup/1/message/list/')
+        assertStatus('/en/studygroup/1/message/edit/1/', 404)
         assertAllowed('/en/studygroup/1/member/add/')
-        assertAllowed('/en/studygroup/1/member/2/delete/')
+        assertStatus('/en/studygroup/1/member/2/delete/', 404)
         assertAllowed('/en/studygroup/1/meeting/create/')
-        assertAllowed('/en/studygroup/1/meeting/2/edit/')
-        assertAllowed('/en/studygroup/1/meeting/2/delete/')
-        assertAllowed('/en/studygroup/1/meeting/2/feedback/create/')
+        assertStatus('/en/studygroup/1/meeting/2/edit/', 404)
+        assertStatus('/en/studygroup/1/meeting/2/delete/', 404)
+        assertStatus('/en/studygroup/1/meeting/2/feedback/create/', 404)
+
+
+    def test_organizer_access(self):
+        User.objects.create_user('bob123', 'bob@example.net', 'password')
+        user = User.objects.get(username='bob123')
+        user.groups.add(Group.objects.get(name='organizers'))
+        user.save()
+        c = Client()
+        c.login(username='bob123', password='password')
+
+        def assertAllowed(url):
+            resp = c.get(url)
+            self.assertIn(resp.status_code, [200, 301, 302])
+
+        def assertStatus(url, status):
+            resp = c.get(url)
+            self.assertEquals(resp.status_code, status)
+
+        assertAllowed('/en/studygroup/1/')
+        assertAllowed('/en/studygroup/1/edit/')
+        assertAllowed('/en/studygroup/1/message/compose/')
+        assertStatus('/en/studygroup/1/message/edit/1/', 404)
+        assertAllowed('/en/studygroup/1/member/add/')
+        assertStatus('/en/studygroup/1/member/2/delete/', 404)
+        assertAllowed('/en/studygroup/1/meeting/create/')
+        assertStatus('/en/studygroup/1/meeting/2/edit/', 404)
+        assertStatus('/en/studygroup/1/meeting/2/delete/', 404)
+        assertStatus('/en/studygroup/1/meeting/2/feedback/create/', 404)
 
 
     def test_rsvp_view(self):

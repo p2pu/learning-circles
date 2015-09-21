@@ -28,6 +28,7 @@ from studygroups.forms import StudyGroupMeetingForm
 from studygroups.forms import FeedbackForm
 from studygroups.rsvp import check_rsvp_signature
 from studygroups.decorators import user_is_group_facilitator
+from studygroups.decorators import user_is_organizer
 
 
 def landing(request):
@@ -214,6 +215,7 @@ class ApplicationDelete(DeleteView):
 
 
 @login_required
+@user_is_organizer
 def organize(request):
     context = {
         'courses': Course.objects.all(),
@@ -225,6 +227,7 @@ def organize(request):
 
 
 @login_required
+@user_is_organizer
 def report(request):
     study_groups = StudyGroup.objects.all()
     for study_group in study_groups:
@@ -239,10 +242,8 @@ def report(request):
 
 
 @login_required
+@user_is_organizer
 def weekly_report(request):
-    if not request.user.is_staff:
-        raise PermissionDenied
-
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     start_time = today - datetime.timedelta(days=today.weekday())
     end_time = start_time + datetime.timedelta(days=7)
