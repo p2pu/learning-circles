@@ -249,8 +249,8 @@ def weekly_report(request):
     context = {
         'start_time': start_time,
         'end_time': end_time,
-        'study_groups': report_data(start_time, end_time),
     }
+    context.update(report_data(start_time, end_time))
     return render_to_response('studygroups/weekly-update.html', context, context_instance=RequestContext(request))
 
 

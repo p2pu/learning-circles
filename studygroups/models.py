@@ -382,14 +382,11 @@ def create_rsvp(contact, study_group, meeting_date, attending):
 def report_data(start_time, end_time):
     study_groups = StudyGroup.objects.all().order_by('start_date')
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    for study_group in study_groups:
-        report = {
-            'signups': study_group.application_set.filter(created_at__gte=start_time),
-            'meetings': study_group.studygroupmeeting_set.filter(meeting_time__gte=start_time, meeting_time__lt=end_time),
-
-        }
-        study_group.report = report
-    return study_groups
+    report = {
+        'meetings': StudyGroupMeeting.objects.filter(meeting_time__gte=start_time, meeting_time__lt=end_time),
+        'signups': Application.objects.filter(created_at__gte=start_time, created_at__lt=end_time),
+    }
+    return report
 
 
 def send_weekly_update():
@@ -399,8 +396,8 @@ def send_weekly_update():
     context = {
         'start_time': start_time,
         'end_time': end_time,
-        'study_groups': report_data(start_time, end_time),
     }
+    context.update(report_data(start_time, end_time))
     timezone.activate(pytz.timezone(settings.TIME_ZONE))
     html_body = render_to_string('studygroups/weekly-update.html', context)
     text_body = render_to_string('studygroups/weekly-update.txt', context)

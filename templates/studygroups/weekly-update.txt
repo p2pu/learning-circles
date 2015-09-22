@@ -1,14 +1,13 @@
 Learning Circles update for meetings that happened between {{start_time|date:"l, j F" }} and {{end_time|date:"l, j F" }}.
 
-{% for study_group in study_groups %}
-  {% if study_group.report.meetings|length > 0 %}
+{% for meeting in meetings %}
+  {% with study_group=meeting.study_group %}
 # {{study_group.course.title}} at {{study_group.location.name}}
 Facilitator: {{study_group.facilitator.first_name}} {{study_group.facilitator.last_name}} <{{study_group.facilitator.email}}>;
 Circle size: {{study_group.application_set.all.count}}
-    {% for meeting in study_group.report.meetings %}
 Met {{ meeting.meeting_time|date:"fA, l, j F" }}
 Feedback from meeting:
-      {% if meeting.feedback_set.first %}
+    {% if meeting.feedback_set.first %}
   Learning circle summary:
   {{meeting.feedback_set.first.feedback}}
 
@@ -18,9 +17,8 @@ Feedback from meeting:
   {{meeting.feedback_set.first.reflection}}
 
   Overall rating: {{meeting.feedback_set.first.get_rating_display}}
-      {% else %}
+    {% else %}
   No feedback recorded yet
-      {% endif %}
-    {% endfor %}
-  {% endif %}
+    {% endif %}
+  {% endwith %}
 {% endfor %}

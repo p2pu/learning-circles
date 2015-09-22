@@ -1,37 +1,29 @@
 {% extends 'email_base.html' %}
 
 {% block body %}
-<div class="container">
-  <!-- Example row of columns -->
-  <div class="row">
-    <div class="col-md-12">
-
-      <h1>Learning Circles update</h1>
-      <p>for meetings that happened between {{start_time|date:"l, j F" }} and {{end_time|date:"l, j F" }}.</p>
-      {% for study_group in study_groups %}
-        {% if study_group.report.meetings|length > 0 %}
-          <h2>{{study_group.course.title}} at {{study_group.location.name}}</h2>
-          <p><strong>Facilitator:</strong> {{study_group.facilitator.first_name}} {{study_group.facilitator.last_name}} &lt;{{study_group.facilitator.email}}&gt;<p>
-          <p><strong>Circle size:</strong> {{study_group.application_set.all.count}}</p>
-          {% for meeting in study_group.report.meetings %}
-            <p>Met {{ meeting.meeting_time|date:"fA, l, j F" }}</p>
-            <h3>Feedback from meeting</h3>
-            <div style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9;">
-              {% if meeting.feedback_set.first %}
-                <p><strong>Learning circle summary:</strong></p>
-                <p> {{meeting.feedback_set.first.feedback}}</p>
-                <p><strong>How many people attended?</strong> {{meeting.feedback_set.first.attendance}}</p>
-                <p><strong>Internall reflection:</strong></p>
-                <p>{{meeting.feedback_set.first.reflection}}</p>
-                <p><strong>Overall rating:</strong> {{meeting.feedback_set.first.get_rating_display}}</p>
-              {% else %}
-                <p>No feedback recorded yet</p>
-              {% endif %}
-            </div>
-          {% endfor %}
+  <h1>Learning Circles update</h1>
+  <p>for meetings that happened between {{start_time|date:"l, j F" }} and {{end_time|date:"l, j F" }}.</p>
+  {% for meeting in meetings|dictsort:"meeting_time" %}
+    {% with study_group=meeting.study_group %}
+      <h2>{{study_group.course.title}} at {{study_group.location.name}}</h2>
+      <p><strong>Facilitator:</strong> {{study_group.facilitator.first_name}} {{study_group.facilitator.last_name}} &lt;{{study_group.facilitator.email}}&gt;<p>
+      <p><strong>Circle size:</strong> {{study_group.application_set.all.count}}</p>
+      <p>Met {{ meeting.meeting_time|date:"fA, l, j F" }}</p>
+      <h3>Feedback from meeting</h3>
+      <div style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9;">
+        {% if meeting.feedback_set.first %}
+          {% with feedback=meeting.feedback_set.first %}
+            <p><strong>Learning circle summary:</strong></p>
+            <p> {{ feedback.feedback }}</p>
+            <p><strong>How many people attended?</strong> {{ feedback.attendance }}</p>
+            <p><strong>Internall reflection:</strong></p>
+            <p>{{ feedback.reflection }}</p>
+            <p><strong>Overall rating:</strong> {{ feedback.get_rating_display }}</p>
+          {% endwith %}
+        {% else %}
+          <p>No feedback recorded yet</p>
         {% endif %}
-      {% endfor %}
-    </div>
-  </div>
-</div>
+      </div>
+    {% endwith %}
+  {% endfor %}
 {% endblock %}
