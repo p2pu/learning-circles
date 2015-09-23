@@ -38,6 +38,7 @@ urlpatterns = patterns('',
     url(r'^organize/$', 'studygroups.views.organize', name='studygroups_organize'),
     url(r'^report/$', 'studygroups.views.report', name='studygroups_report'),
     url(r'^report/weekly/$', 'studygroups.views.weekly_report', name='studygroups_weekly_report'),
+    url(r'^report/weekly/(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})/$', 'studygroups.views.weekly_report', name='studygroups_weekly_report'),
     url(r'^receive_sms/$', 'studygroups.views.receive_sms', name='studygroups_receive_sms'),
 )
 

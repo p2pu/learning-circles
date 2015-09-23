@@ -242,8 +242,10 @@ def report(request):
 
 @login_required
 @user_is_organizer
-def weekly_report(request):
+def weekly_report(request, year=None, month=None, day=None ):
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    if month and day and year:
+        today = today.replace(year=int(year), month=int(month), day=int(day))
     start_time = today - datetime.timedelta(days=today.weekday())
     end_time = start_time + datetime.timedelta(days=7)
     context = {
