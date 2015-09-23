@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.signals import post_init
 from django.utils import timezone
+from django.utils import translation
 from django.template.loader import render_to_string
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.conf import settings
@@ -396,9 +397,12 @@ def send_weekly_update():
     context = {
         'start_time': start_time,
         'end_time': end_time,
+        'protocol': 'https',
+        'domain': settings.DOMAIN,
     }
     context.update(report_data(start_time, end_time))
     timezone.activate(pytz.timezone(settings.TIME_ZONE))
+    translation.activate(settings.LANGUAGE_CODE)
     html_body = render_to_string('studygroups/weekly-update.html', context)
     text_body = render_to_string('studygroups/weekly-update.txt', context)
     timezone.deactivate()

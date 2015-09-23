@@ -1,5 +1,7 @@
 Learning Circles update for meetings that happened between {{start_time|date:"l, j F" }} and {{end_time|date:"l, j F" }}.
 
+You can also view this report online: {{ protocol }}://{{ domain }}{% url 'studygroups_weekly_report_date' start_time.year start_time.month start_time.day %}
+
 {% for meeting in meetings %}
   {% with study_group=meeting.study_group %}
 # {{study_group.course.title}} at {{study_group.location.name}}
