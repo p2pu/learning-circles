@@ -16,7 +16,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.views.generic import TemplateView
+from django.views.generic import DetailView, TemplateView
 
 from studygroups.models import Course, Location, StudyGroup, Application, Reminder, Feedback
 from studygroups.models import StudyGroupMeeting
@@ -194,6 +194,10 @@ class MeetingUpdate(UpdateView):
 class MeetingDelete(DeleteView):
     model = StudyGroupMeeting
     success_url = reverse_lazy('studygroups_facilitator')
+
+
+class FeedbackDetail(DetailView):
+    model = Feedback
 
 
 class FeedbackCreate(CreateView):

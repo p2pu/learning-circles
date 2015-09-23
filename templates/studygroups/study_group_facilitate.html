@@ -57,7 +57,8 @@
                   <td>
                     {% if meeting.feedback_set.all.first %}
                       {% with feedback=meeting.feedback_set.all.first %}
-                      {{feedback.feedback}}
+                      {{feedback.feedback | truncatewords:10 }}
+                      <a href="{% url 'studygroups_feedback_detail' lc.id meeting.id feedback.id %}">View feedback</a>
                       {% endwith %}
                     {% else %}
                       {% if meeting.meeting_time < today %}

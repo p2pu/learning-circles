@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+  <!-- Example row of columns -->
+  <div class="row">
+    <div class="col-md-12">
+      <h2>{{feedback.study_group_meeting.study_group.course.title}} at {{feedback.study_group_meeting.study_group.location.name}}</h2>
+      <h3>Feedback from meeting that happened {{ feedback.study_group_meeting.meeting_time|date:"fA, l, j F" }}</h3>
+
+      <div class="well">
+      {% with feedback=object %}
+        <p><strong>Learning circle summary:</strong></p>
+        <p> {{ feedback.feedback }}</p>
+        <p><strong>How many people attended?</strong> {{ feedback.attendance }}</p>
+        <p><strong>Internall reflection:</strong></p>
+        <p>{{ feedback.reflection }}</p>
+        <p><strong>Overall rating:</strong> {{ feedback.get_rating_display }}</p>
+      {% endwith %}
+      </div>
+      <p><a href="{% url 'studygroups_facilitator' %}">Back to dashboard</a></p>
+    </div>
+  </div>
+</div> <!-- /container -->
+
+{% endblock %}
