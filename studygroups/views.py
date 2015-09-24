@@ -215,7 +215,7 @@ class FeedbackCreate(CreateView):
         to = [o.email for o in Group.objects.get(name='organizers').user_set.all()]
         # Try to find a signup with the mobile number
         context = {
-            'feedback': form.cleaned_data,
+            'feedback': form.save(commit=False),
             'study_group_meeting': self.get_initial()['study_group_meeting']
         }
         subject = render_to_string('studygroups/notifications/feedback-submitted-subject.txt', context).strip('\n')
