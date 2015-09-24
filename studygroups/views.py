@@ -223,8 +223,10 @@ def organize(request):
     context = {
         'courses': Course.objects.all(),
         'study_groups': StudyGroup.objects.all(),
+        'meetings': StudyGroupMeeting.objects.all(),
         'locations': Location.objects.all(),
-        'facilitators': get_object_or_404(Group, name='facilitators').user_set.all()
+        'facilitators': get_object_or_404(Group, name='facilitators').user_set.all(),
+        'today': timezone.now(),
     }
     return render_to_response('studygroups/organize.html', context, context_instance=RequestContext(request))
 
