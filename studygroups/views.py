@@ -211,6 +211,22 @@ class FeedbackCreate(CreateView):
             'study_group_meeting': meeting,
         }
 
+    def form_valid(self, form):
+        to = [o.email for o in Group.objects.get(name='organizers').user_set.all()]
+        # Try to find a signup with the mobile number
+        context = {
+            'feedback': form.cleaned_data,
+            'study_group_meeting': self.get_initial()['study_group_meeting']
+        }
+        subject = render_to_string('studygroups/notifications/feedback-submitted-subject.txt', context).strip('\n')
+        html_body = render_to_string('studygroups/notifications/feedback-submitted.html', context)
+        text_body = render_to_string('studygroups/notifications/feedback-submitted.txt', context)
+        notification = EmailMultiAlternatives(subject, text_body, settings.SERVER_EMAIL, to)
+        notification.attach_alternative(html_body, 'text/html')
+        notification.send()
+        
+        return super(FeedbackCreate, self).form_valid(form)
+
 
 class ApplicationDelete(DeleteView):
     model = Application
