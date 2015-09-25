@@ -5,7 +5,7 @@ Hi there
   # Learning circle summary
   {{ feedback.feedback|safe }}
   # How many people attended? {{ feedback.attendance }}
-  # Internall reflection
+  # Internal reflection
   {{ feedback.reflection|safe }}
   # Overall rating: {{ feedback.get_rating_display }}
 {% endwith %}
