@@ -355,7 +355,8 @@ def send_reminder(reminder):
             errors.push[e]
     if len(errors):
         #TODO: log errors
-        raise Exception(errors)
+        pass
+        #raise Exception(errors)
 
     reminder.sent_at = timezone.now()
     reminder.save()
