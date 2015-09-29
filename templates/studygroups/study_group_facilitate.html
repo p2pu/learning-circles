@@ -90,7 +90,7 @@
       </tr>
       </thead>
       <tbody>
-      {% for message in lc.reminder_set.all|dictsort:"created_at" %}
+      {% for message in lc.reminder_set.all|dictsortreversed:"created_at" %}
           <tr>
               <td>{{ message.email_subject }}</td>
               <td>{{ message.email_body }}</td>
