@@ -18,6 +18,9 @@ import datetime
 import pytz
 import dateutil.parser
 import re
+import logging
+
+logger = logging.getLogger(__name__)
 
 STUDY_GROUP_NAMES = [
     "The Riders",
@@ -308,6 +311,7 @@ def generate_reminder(study_group):
 
 
 # If called directly, be sure to active language to use for constructing URLs
+# Failed text delivery won't case this function to fail, simply log an error
 def send_reminder(reminder):
     to = [su.email for su in reminder.study_group.application_set.filter(accepted_at__isnull=False, contact_method=Application.EMAIL)]
     if reminder.study_group_meeting:
@@ -344,19 +348,13 @@ def send_reminder(reminder):
 
     # send SMS
     tos = [su.mobile for su in reminder.study_group.application_set.filter(accepted_at__isnull=False, contact_method=Application.TEXT)]
-    errors = []
     for to in tos:
-        if reminder.study_group_meeting:
-            #TODO - insert RSVP link
-            send_message(to, reminder.sms_body)
         try:
+            #TODO - insert RSVP link
+            #if reminder.study_group_meeting:
             send_message(to, reminder.sms_body)
         except twilio.TwilioRestException as e:
-            errors.push[e]
-    if len(errors):
-        #TODO: log errors
-        pass
-        #raise Exception(errors)
+            logger.exception(u"Could not send text message to %s", to, exc_info=e)
 
     reminder.sent_at = timezone.now()
     reminder.save()
