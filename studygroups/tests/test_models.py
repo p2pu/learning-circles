@@ -114,7 +114,8 @@ class TestSignupModels(TestCase):
         self.assertEqual(Reminder.objects.all().count(), 0)
         sg = StudyGroup.objects.all()[0]
         sg.start_date = now - datetime.timedelta(days=3)
-        sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
+        # TODO - add 1 hour to compensate for when daylight savings start
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=5, hours=1)
         sg.save()
         self.assertEqual(StudyGroupMeeting.objects.all().count(),0)
         generate_all_meetings(sg)
