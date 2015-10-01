@@ -10,6 +10,8 @@ from django.core.urlresolvers import reverse #TODO ideally this shouldn't be in 
 
 from s3direct.fields import S3DirectField
 
+import twilio
+
 from studygroups.sms import send_message
 from studygroups import rsvp
 

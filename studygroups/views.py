@@ -286,12 +286,8 @@ def email(request, study_group_id):
         form = MessageForm(request.POST)
         if form.is_valid():
             reminder = form.save()
-            try:
-                send_reminder(reminder)
-                messages.success(request, 'Email successfully sent')
-            except Exception as e:
-                #TODO - catch specific error so that normal errors aren't masked by this
-                messages.error(request, 'An error occured while sending group message.')
+            send_reminder(reminder)
+            messages.success(request, 'Email successfully sent')
 
             url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
