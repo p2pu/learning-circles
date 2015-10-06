@@ -171,6 +171,10 @@ CELERYBEAT_SCHEDULE = {
         'task': 'studygroups.tasks.weekly_update',
         'schedule': crontab(hour=10, minute=0, day_of_week='monday'),
     },
+    'daily_backup': {
+        'task': 'backup.tasks.make_backup',
+        'schedule': crontab(hour=1, minute=0),
+    },
 }
 
 LOGGING = {
@@ -194,6 +198,14 @@ LOGGING = {
         }
     },
 }
+
+#### Backup config ####
+
+BACKUP_DIR = os.environ.get('BACKUP_DIR') # Directory where backups will be stored locally
+BACKUP_AWS_ACCESS_KEY_ID = os.environ.get('BACKUP_AWS_ACCESS_KEY_ID') # AWS key with access to backup bucket
+BACKUP_AWS_SECRET_ACCESS_KEY = os.environ.get('BACKUP_AWS_SECRET_ACCESS_KEY') # AWS secret for above key
+BACKUP_AWS_STORAGE_BUCKET_NAME = os.environ.get('BACKUP_AWS_STORAGE_BUCKET_NAME') # Name of the bucket where backups should be stored
+BACKUP_AWS_KEY_PREFIX = os.environ.get('BACKUP_AWS_KEY_PREFIX') # Prefix for generated key on AWS s3
 
 
 ##### Support for settings_local.py
