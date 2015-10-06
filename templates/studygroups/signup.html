@@ -10,7 +10,9 @@
     </div>
     <div class="row">
   <div class="col-md-4 col-sm-12">
+      {% if study_group.location.image %}
       <img src="{{study_group.location.image.url}}">
+      {% endif %}
       <p>at <a href="{{study_group.location.link}}">{{study_group.location.name}}</a></p>
       <p>{{study_group.course.caption}}</p>
       <p>Course content from <a href="{{ study_group.course.link }}" target="_blank">{{ study_group.course.provider }}</a></p>
