@@ -11,7 +11,7 @@ def make_backup():
         backup_media()
         backup_db()
     except BackFailed as e:
-        logger.except('Backup failed')
+        logger.exception('Backup failed')
     else:
         logger.info('Backup created')
     
