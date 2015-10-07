@@ -20,7 +20,7 @@ def send_reminders():
     translation.activate(settings.LANGUAGE_CODE)
     # TODO - should this be set here or closer to where the language matters?
     for reminder in Reminder.objects.filter(sent_at__isnull=True):
-        if reminder.study_group_meeting.meeting_time - now < datetime.timedelta(days=2):
+        if reminder.study_group_meeting and reminder.study_group_meeting.meeting_time - now < datetime.timedelta(days=2):
             send_reminder(reminder)
 
 
