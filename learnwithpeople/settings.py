@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     # own 
     'studygroups',
     'interest',
+    'backup',
 )
 
 MIDDLEWARE_CLASSES = (
