@@ -5,8 +5,10 @@ anyjson==0.3.3
 argparse==1.2.1
 billiard==3.3.0.20
 boto==2.38.0
+boto3==1.1.4
+botocore==1.2.9
 celery==3.1.18
-dcu.active-memory==0.1.12
+dcu.active-memory==0.2.0
 dj-database-url==0.3.0
 dj-static==0.0.6
 django-appconf==1.0.1
@@ -14,9 +16,12 @@ django-crispy-forms==1.5.1
 django-localflavor==1.1
 django-s3direct==0.3.10
 django-toolbelt==0.0.1
+docutils==0.12
 filechunkio==1.6
+futures==2.2.0
 gunicorn==19.3.0
 httplib2==0.9.1
+jmespath==0.9.0
 kombu==3.0.26
 mock==1.0.1
 psycopg2==2.6
