@@ -23,7 +23,9 @@ Organizers can
 - add study groups
 - add facilitators
 
-## Installation
+## Setup for development
+
+The following commands will setup a local django environment that you can use for development. It assumes that you have python 2.7 available and set as the default python version.
 
 ```
 virtualenv venv
