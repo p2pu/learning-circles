@@ -288,6 +288,9 @@ def generate_reminder(study_group):
                 'protocol': 'https',
                 'domain': settings.DOMAIN,
             }
+            previous_meeting = StudyGroupMeeting.objects.filter(meeting_time__lt=next_meeting.meeting_time).order_by('meeting_time').last()
+            if previous_meeting and previous_meeting.feedback_set.first():
+                context['feedback'] = previous_meeting.feedback_set.first()
             timezone.activate(pytz.timezone(study_group.timezone))
             #TODO do I need to activate a locale?
             reminder.email_subject = render_to_string(
