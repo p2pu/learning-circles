@@ -27,10 +27,17 @@
 			  <li class="">
           <a href="http://info.p2pu.org/category/Chicago-Public-Library/" target="_blank">News</a>
         </li>
-        {% if user.is_authenticated %}
+        {% if user.organizer %}
         <li>
-        <a href="{% url 'studygroups_facilitator' %}">Dashboard</a>
+          <a href="{% url 'studygroups_organize' %}">Organize</a>
         </li>
+        {% endif %}
+        {% if user.facilitator %}
+        <li>
+          <a href="{% url 'studygroups_facilitator' %}">Dashboard</a>
+        </li>
+        {% endif %}
+        {% if user.is_authenticated %}
         <li><a href="{% url 'logout' %}">Log out</a></li>
         {% endif %}
       </ul>

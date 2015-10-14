@@ -10,6 +10,8 @@ from mock import patch
 from studygroups.models import StudyGroup
 from studygroups.models import StudyGroupMeeting
 from studygroups.models import Application
+from studygroups.models import Organizer
+from studygroups.models import Facilitator
 from studygroups.models import Rsvp
 from studygroups.rsvp import gen_rsvp_querystring
 
@@ -214,8 +216,7 @@ class TestSignupViews(TestCase):
     def test_organizer_access(self):
         User.objects.create_user('bob123', 'bob@example.net', 'password')
         user = User.objects.get(username='bob123')
-        user.groups.add(Group.objects.get(name='organizers'))
-        user.save()
+        Organizer.objects.create(user=user)
         c = Client()
         c.login(username='bob123', password='password')
 
@@ -286,3 +287,22 @@ class TestSignupViews(TestCase):
         self.assertEqual(1, Rsvp.objects.count())
         self.assertFalse(Rsvp.objects.first().attending)
 
+
+    def test_organizer_login_redirect(self):
+        User.objects.create_user('bob123', 'bob@example.net', 'password')
+        user = User.objects.get(username='bob123')
+        Organizer.objects.create(user=user)
+        c = Client()
+        c.login(username='bob123', password='password')
+        resp = c.get('/en/login_redirect/')
+        self.assertRedirects(resp, '/en/organize/')
+
+
+    def test_facilitator_login_redirect(self):
+        User.objects.create_user('bob123', 'bob@example.net', 'password')
+        user = User.objects.get(username='bob123')
+        Facilitator.objects.create(user=user)
+        c = Client()
+        c.login(username='bob123', password='password')
+        resp = c.get('/en/login_redirect/')
+        self.assertRedirects(resp, '/en/facilitator/')

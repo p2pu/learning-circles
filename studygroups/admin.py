@@ -2,6 +2,8 @@ from django.contrib import admin
 
 # Register your models here.
 from studygroups.models import Course, Location, StudyGroup, StudyGroupMeeting, Application, Reminder, Activity
+from studygroups.models import Organizer
+from studygroups.models import Facilitator
 
 class ApplicationInline(admin.TabularInline):
     model = Application
@@ -35,6 +37,12 @@ def reminder_course_title(obj):
 class ReminderAdmin(admin.ModelAdmin):
     list_display = (reminder_course_title, 'email_subject', 'sent_at')
 
+class OrganizerAdmin(admin.ModelAdmin):
+    pass
+
+class FacilitatorAdmin(admin.ModelAdmin):
+    pass
+
 
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Location, LocationAdmin)
@@ -43,3 +51,5 @@ admin.site.register(StudyGroup, StudyGroupAdmin)
 admin.site.register(StudyGroupMeeting, StudyGroupMeetingAdmin)
 admin.site.register(Application, ApplicationAdmin)
 admin.site.register(Reminder, ReminderAdmin)
+admin.site.register(Organizer, OrganizerAdmin)
+admin.site.register(Facilitator, FacilitatorAdmin)

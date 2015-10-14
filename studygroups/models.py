@@ -87,6 +87,20 @@ class Activity(models.Model):
         return self.description
 
 
+class Facilitator(models.Model):
+    user = models.OneToOneField(User)
+
+    def __unicode__(self):
+        return self.user.__unicode__()
+
+
+class Organizer(models.Model):
+    user = models.OneToOneField(User)
+
+    def __unicode__(self):
+        return self.user.__unicode__()
+
+
 class StudyGroup(models.Model):
     name = models.CharField(max_length=128, default=_study_group_name)
     course = models.ForeignKey('studygroups.Course')
@@ -102,6 +116,7 @@ class StudyGroup(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     signup_open = models.BooleanField(default=True)
     # consider storing number of weeks/meetings instead of end time
+
 
     def day(self):
         #TODO this will be wrong if the timezone and UTC have different days for the meeting time!

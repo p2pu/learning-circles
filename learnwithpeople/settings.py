@@ -151,7 +151,7 @@ TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
 TWILIO_NUMBER = os.environ.get('TWILIO_NUMBER')
 
-LOGIN_REDIRECT_URL = '/facilitator/'
+LOGIN_REDIRECT_URL = '/login_redirect/'
 DOMAIN = os.environ.get('DOMAIN', 'example.net')
 
 ####### Celery config #######
@@ -183,10 +183,6 @@ LOGGING = {
     'version': 1,
     'dissable_existing_loggers': False,
     'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-        },
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
@@ -195,12 +191,12 @@ LOGGING = {
     },
     'loggers': {
         '': {
-            'handlers': ['mail_admins', 'console'],
+            'handlers': ['mail_admins'],
             'level': 'DEBUG',
             'propagate': False,
         },
         'django': {
-            'handlers': ['mail_admins', 'console'],
+            'handlers': ['mail_admins'],
             'level': 'DEBUG',
             'propagate': False,
         },

@@ -19,6 +19,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, TemplateView
 
 from studygroups.models import Course, Location, StudyGroup, Application, Reminder, Feedback
+from studygroups.models import Organizer, Facilitator
 from studygroups.models import StudyGroupMeeting
 from studygroups.models import send_reminder
 from studygroups.models import create_rsvp
@@ -146,6 +147,17 @@ def rsvp(request):
 
 
 @login_required
+def login_redirect(request):
+    if Organizer.objects.filter(user=request.user).exists():
+        url = reverse('studygroups_organize')
+    elif Facilitator.objects.filter(user=request.user).exists():
+        url = reverse('studygroups_facilitator')
+    else:
+        url = reverse('studygroups_landing')
+    return http.HttpResponseRedirect(url)
+
+
+@login_required
 def facilitator(request):
     study_groups = StudyGroup.objects.filter(facilitator=request.user)
     study_groups = study_groups.filter(end_date__gt=timezone.now())
@@ -241,7 +253,7 @@ def organize(request):
         'study_groups': StudyGroup.objects.all(),
         'meetings': StudyGroupMeeting.objects.all(),
         'locations': Location.objects.all(),
-        'facilitators': get_object_or_404(Group, name='facilitators').user_set.all(),
+        'facilitators': Facilitator.objects.all(),
         'today': timezone.now(),
     }
     return render_to_response('studygroups/organize.html', context, context_instance=RequestContext(request))

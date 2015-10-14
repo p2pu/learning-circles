@@ -15,6 +15,7 @@ from studygroups.decorators import user_is_group_facilitator
 
 urlpatterns = patterns('',
     url(r'^$', 'studygroups.views.landing', name='studygroups_landing'),
+    url(r'^login_redirect/$', 'studygroups.views.login_redirect', name='studygroups_login_redirect'),
     url(r'^signup/(?P<location>[\w-]+)-(?P<study_group_id>[\d]+)/$', 'studygroups.views.signup', name='studygroups_signup'),
     url(r'^signup/(?P<study_group_id>[\d]+)/success/$', SignupSuccess.as_view(), name='studygroups_signup_success'),
     url(r'^rsvp/$', 'studygroups.views.rsvp', name='studygroups_rsvp'),
