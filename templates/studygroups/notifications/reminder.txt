@@ -2,7 +2,7 @@ Hi there!
 
 The {{ study_group.course.title | safe }} Learning Circle will meet this {{ next_meeting.meeting_time|date:"l, j N, fA" }} at {{ study_group.location.name }}, {{ study_group.location_details }}.
 
-{% if feedback %}From last week's meeting: {{ feedback }}{% endif %}
+{% if feedback %}From last week's meeting: {{ feedback.feedback }}{% endif %}
 
 Please let us know if you can make it by visiting the appropriate link below.
 Yes, I can make it: (<!--RSVP:YES--> link will be inserted here )
