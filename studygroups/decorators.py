@@ -1,5 +1,6 @@
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
 
 from studygroups.models import StudyGroup, Organizer
 
@@ -11,7 +12,7 @@ def user_is_group_facilitator(func):
         if args[0].user.is_staff or args[0].user == study_group.facilitator or Organizer.objects.filter(user=args[0].user).exists():
             return func(*args, **kwargs)
         raise PermissionDenied
-    return decorated
+    return login_required(decorated)
 
 
 def user_is_organizer(func):
@@ -19,5 +20,4 @@ def user_is_organizer(func):
         if args[0].user.is_staff or Organizer.objects.filter(user=args[0].user).exists():
             return func(*args, **kwargs)
         raise PermissionDenied
-    return decorated
-
+    return login_required(decorated)

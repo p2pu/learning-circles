@@ -1,6 +1,5 @@
 from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
-from django.contrib.auth.decorators import login_required
 
 from studygroups.views import StudyGroupUpdate
 from studygroups.views import MeetingCreate
