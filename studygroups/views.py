@@ -168,6 +168,7 @@ def facilitator(request):
     return render_to_response('studygroups/facilitator.html', context, context_instance=RequestContext(request))
 
 
+@login_required
 @user_is_group_facilitator
 def view_study_group(request, study_group_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
@@ -290,6 +291,7 @@ def weekly_report(request, year=None, month=None, day=None ):
     return render_to_response('studygroups/weekly-update.html', context, context_instance=RequestContext(request))
 
 
+@login_required
 @user_is_group_facilitator
 def email(request, study_group_id):
     # TODO - this piggy backs of Reminder, won't work of Reminder is coupled to StudyGroupMeeting
@@ -314,6 +316,7 @@ def email(request, study_group_id):
     return render_to_response('studygroups/email.html', context, context_instance=RequestContext(request))
 
 
+@login_required
 @user_is_group_facilitator
 def messages_edit(request, study_group_id, message_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
@@ -340,6 +343,7 @@ def messages_edit(request, study_group_id, message_id):
     return render_to_response('studygroups/message_edit.html', context, context_instance=RequestContext(request))
 
 
+@login_required
 @user_is_group_facilitator
 def add_member(request, study_group_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
