@@ -187,6 +187,28 @@ class StudyGroupMeeting(models.Model):
             'no': self.rsvp_set.all().filter(attending=False)
         }
 
+    def rsvp_yes_link(self, email):
+        domain = 'https://{0}'.format(settings.DOMAIN)
+        url = reverse('studygroups_rsvp')
+        yes_qs = rsvp.gen_rsvp_querystring(
+            email,
+            self.study_group.pk,
+            self.meeting_time,
+            'yes'
+        )
+        return '{0}{1}?{2}'.format(domain,url,yes_qs)
+
+    def rsvp_no_link(self, email):
+        domain = 'https://{0}'.format(settings.DOMAIN)
+        url = reverse('studygroups_rsvp')
+        no_qs = rsvp.gen_rsvp_querystring(
+            email,
+            self.study_group.pk,
+            self.meeting_time,
+            'no'
+        )
+        return '{0}{1}?{2}'.format(domain,url,no_qs)
+
     def __unicode__(self):
         tz = pytz.timezone(self.study_group.timezone)
         return u'{0}, {1} at {2}'.format(self.study_group.course.title, tz.normalize(self.meeting_time), self.study_group.location.name)
@@ -337,31 +359,17 @@ def send_reminder(reminder):
     if reminder.study_group_meeting:
         # this is a reminder and we need RSVP links
         for email in to:
-            domain = 'https://{0}'.format(settings.DOMAIN)
-            url = reverse('studygroups_rsvp')
-            yes_qs = rsvp.gen_rsvp_querystring(
-                email,
-                reminder.study_group.pk,
-                reminder.study_group_meeting.meeting_time,
-                'yes'
-            )
-            yes_link = '{0}{1}?{2}'.format(domain,url,yes_qs)
-            no_qs = rsvp.gen_rsvp_querystring(
-                email,
-                reminder.study_group.pk,
-                reminder.study_group_meeting.meeting_time,
-                'no'
-            )
-            no_link = '{0}{1}?{2}'.format(domain,url,no_qs)
+            yes_link = reminder.study_group_meeting.rsvp_yes_link(email)
+            no_link = reminder.study_group_meeting.rsvp_no_link(email)
             email_body = reminder.email_body
             email_body = re.sub(r'\(<!--RSVP:YES-->.*\)', yes_link, email_body)
             email_body = re.sub(r'\(<!--RSVP:NO-->.*\)', no_link, email_body)
             send_mail(
-                    reminder.email_subject.strip('\n'),
-                    email_body,
-                    reminder.study_group.facilitator.email,
-                    [email],
-                    fail_silently=False
+                reminder.email_subject.strip('\n'),
+                email_body,
+                reminder.study_group.facilitator.email,
+                [email],
+                fail_silently=False
             )
     else:
         send_mail(reminder.email_subject.strip('\n'), reminder.email_body, reminder.study_group.facilitator.email, to, fail_silently=False)
