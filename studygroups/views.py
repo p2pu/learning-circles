@@ -374,16 +374,45 @@ def receive_sms(request):
     # TODO - secure this callback
     sender = request.POST.get('From')
     message = request.POST.get('Body')
-    to = [ a[1] for a in settings.ADMINS ]
+    to = []
+    bcc = None
     # Try to find a signup with the mobile number
     sender = '-'.join([sender[2:5], sender[5:8], sender[8:12]])
-    signups = Application.objects.filter(mobile=sender)
     subject = 'New SMS reply from {0}'.format(sender)
+    context = {
+        'message': message,
+        'sender': sender,
+    }
+    signups = Application.objects.filter(mobile=sender)
     if signups.count() > 0:
         # Send to all facilitators if user is signed up to more than 1 study group
         signup = next(s for s in signups)
+        context['signup'] = signup
         subject = 'New SMS reply from {0} <{1}>'.format(signup.name, sender)
         to += [ signup.study_group.facilitator.email for signup in signups]
 
-    send_mail(subject, message, settings.SERVER_EMAIL, to, fail_silently=False)
+    if len(to) == 0:
+        to = [ a[1] for a in settings.ADMINS ]
+    else:
+        bcc = [ a[1] for a in settings.ADMINS ]
+    
+    if signups.count() == 1 and signups.first().study_group.next_meeting():
+        next_meeting = signups.first().study_group.next_meeting()
+        # TODO - replace this check with a check to see if the meeting reminder has been sent
+        if next_meeting.meeting_time - timezone.now() < datetime.timedelta(days=2):
+            context['next_meeting'] = next_meeting
+            context['rsvp_yes'] = next_meeting.rsvp_yes_link(sender)
+            context['rsvp_no'] = next_meeting.rsvp_no_link(sender)
+
+    text_body = render_to_string('studygroups/incoming_sms.txt', context)
+    html_body = render_to_string('studygroups/incoming_sms.html', context)
+    notification = EmailMultiAlternatives(
+        subject,
+        text_body,
+        settings.SERVER_EMAIL,
+        to,
+        bcc
+    )
+    notification.attach_alternative(html_body, 'text/html')
+    notification.send()
     return http.HttpResponse(status=200)

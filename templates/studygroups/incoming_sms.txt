@@ -1,0 +1,12 @@
+Hi there.
+
+We received the following SMS{% if signup %} from {{signup.name}} as a response to a reminder you sent.{% endif %}
+
+{{ message }}
+
+{% if rsvp_yes and rsvp_no %}
+Was this a RSVP for the learning circle meeting on {{ next_meeting.meeting_time|date:"fA, l, j F" }}:
+
+Yes, the learner can go: {{ rsvp_yes | safe}}
+No, they can't make it: {{ rsvp_no | safe}}
+{% endif %}

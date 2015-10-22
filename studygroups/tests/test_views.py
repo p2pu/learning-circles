@@ -4,6 +4,7 @@ from django.test import Client
 from django.core import mail
 from django.contrib.auth.models import User, Group
 from django.utils import timezone
+from django.utils.translation import get_language
 
 from mock import patch
 
@@ -16,6 +17,7 @@ from studygroups.models import Rsvp
 from studygroups.rsvp import gen_rsvp_querystring
 
 import datetime
+import urllib
 
 # Create your tests here.
 class TestSignupViews(TestCase):
@@ -141,7 +143,7 @@ class TestSignupViews(TestCase):
 
 
     def test_receive_sms(self):
-        # Test sending a message
+        # Test receiving a message
         signup_data = self.APPLICATION_DATA.copy()
         signup_data['contact_method'] = 'Text'
         signup_data['mobile'] = '123-456-7890'
@@ -161,6 +163,49 @@ class TestSignupViews(TestCase):
         self.assertTrue(mail.outbox[0].subject.find('123-456-7890') > 0)
         self.assertTrue(mail.outbox[0].subject.find('Test User') > 0)
         self.assertIn(StudyGroup.objects.all()[0].facilitator.email, mail.outbox[0].to)
+        self.assertIn('admin@localhost', mail.outbox[0].bcc)
+
+
+    def test_receive_sms_rsvp(self):
+        signup_data = self.APPLICATION_DATA.copy()
+        signup_data['contact_method'] = 'Text'
+        signup_data['mobile'] = '123-456-7890'
+        signup_data['study_group'] = StudyGroup.objects.first()
+        signup = Application(**signup_data)
+        signup.accepted_at = timezone.now()
+        signup.save()
+        next_meeting = StudyGroupMeeting()
+        next_meeting.study_group = signup_data['study_group']
+        next_meeting.meeting_time = timezone.now() + datetime.timedelta(days=1)
+        next_meeting.save()
+
+        c = Client()
+        url = '/en/receive_sms/'
+        sms_data = {
+            u'Body': 'Sorry, I won\'t make it, have family responsibilities this week :(',
+            u'From': '+11234567890'
+        }
+        resp = c.post(url, sms_data)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertTrue(mail.outbox[0].subject.find('123-456-7890') > 0)
+        self.assertTrue(mail.outbox[0].subject.find('Test User') > 0)
+        self.assertIn(StudyGroup.objects.all()[0].facilitator.email, mail.outbox[0].to)
+        self.assertIn('https://example.net/{0}/rsvp/?user=123-456-7890&study_group=1&meeting_date={1}&attending=yes&sig='.format(get_language(), urllib.quote(next_meeting.meeting_time.isoformat())), mail.outbox[0].body)
+        self.assertIn('https://example.net/{0}/rsvp/?user=123-456-7890&study_group=1&meeting_date={1}&attending=no&sig='.format(get_language(), urllib.quote(next_meeting.meeting_time.isoformat())), mail.outbox[0].body)
+
+
+    def test_receive_random_sms(self):
+        c = Client()
+        url = '/en/receive_sms/'
+        sms_data = {
+            u'Body': 'Sorry, I won\'t make it, have family responsibilities this week :(',
+            u'From': '+10987654321'
+        }
+        resp = c.post(url, sms_data)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertTrue(mail.outbox[0].subject.find('098-765-4321') > 0)
+        self.assertFalse(mail.outbox[0].subject.find('Test User') > 0)
+        self.assertIn('admin@localhost', mail.outbox[0].to)
 
 
     def test_user_forbidden(self):
@@ -283,9 +328,36 @@ class TestSignupViews(TestCase):
             'no'
         )
         url = '/en/rsvp/?{0}'.format(qs)
+        self.assertEqual(1, Rsvp.objects.count())
         resp = c.get(url)
         self.assertEqual(1, Rsvp.objects.count())
         self.assertFalse(Rsvp.objects.first().attending)
+
+        # Test RSVP with mobile number
+        signup_data = self.APPLICATION_DATA.copy()
+        signup_data['study_group'] = study_group
+        signup_data['contact_method'] = Application.TEXT
+        signup_data['mobile'] = '123-456-7890'
+        signup = Application(**signup_data)
+        signup.accepted_at = timezone.now()
+        signup.save()
+
+        qs = gen_rsvp_querystring(
+            signup.mobile,
+            study_group.pk,
+            study_group_meeting.meeting_time,
+            'yes'
+        )
+        url = '/en/rsvp/?{0}'.format(qs)
+
+        # Generate RSVP link
+        # visit link
+        c = Client()
+        Rsvp.objects.all().delete()
+        self.assertEqual(0, Rsvp.objects.count())
+        resp = c.get(url)
+        self.assertEqual(1, Rsvp.objects.count())
+        self.assertTrue(Rsvp.objects.first().attending)
 
 
     def test_organizer_login_redirect(self):

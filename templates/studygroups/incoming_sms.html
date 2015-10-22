@@ -1,0 +1,22 @@
+{% extends 'email_base.html' %}
+{% block body %}
+<p>Hi there</p>
+
+<p>We received the following SMS{% if signup %} from {{signup.name}} as a response to a reminder you&#39;v sent.{% endif %}</p>
+
+<div style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9;">
+  {{ message }}
+</div>
+
+{% if rsvp_yes and rsvp_no %}
+<p>If this is a RSVP for the learning circle meeting {{ next_meeting.meeting_time|date:"fA, l, j F" }} please click the appropriate link below.</p>
+
+<ul>
+  <li><a href="{{ rsvp_yes|safe }}">The learner said they can attend.</a></li>
+  <li><a href="{{ rsvp_no|safe }}">The learner cannot attend.</a></li>
+</ul>
+{% endif %}
+
+<p>Cheers</p>
+<p>P2PU</p>
+{% endblock %}
