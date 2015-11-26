@@ -160,9 +160,11 @@ def login_redirect(request):
 @login_required
 def facilitator(request):
     study_groups = StudyGroup.objects.filter(facilitator=request.user)
-    study_groups = study_groups.filter(end_date__gt=timezone.now())
+    current_study_groups = study_groups.filter(end_date__gt=timezone.now())
+    past_study_groups = study_groups.filter(end_date__lte=timezone.now())
     context = {
-        'study_groups': study_groups,
+        'current_study_groups': current_study_groups,
+        'past_study_groups': past_study_groups,
         'today': timezone.now()
     }
     return render_to_response('studygroups/facilitator.html', context, context_instance=RequestContext(request))

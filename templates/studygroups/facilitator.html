@@ -16,9 +16,18 @@
   </div-->
 
 
-  {% for lc in study_groups %}
+  <h2>Active learning circles</h2>
+  {% for lc in current_study_groups %}
+    {% include 'studygroups/study_group_facilitate.html' %}
+  {% empty %}
+    <p>No active learning circles found.</p>
+  {% endfor %}
+
+  <h2>Past learning circles</h2>
+  {% for lc in past_study_groups %}
     {% include 'studygroups/study_group_facilitate.html' %}
   {% endfor %}
+
 
 </div> <!-- /container -->
 
