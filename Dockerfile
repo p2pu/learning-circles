@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
     supervisor
 
 # Setup application
-COPY * /var/app/
+COPY . /var/app/
 RUN virtualenv /var/django-venv && /var/django-venv/bin/pip install -r /var/app/requirements.txt
 COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY config/docker-entry.sh /docker-entry.sh
@@ -37,7 +37,6 @@ ENV DATABASE_URL="sqlite:///var/app/db.sqlite3" \
     BACKUP_AWS_SECRET_ACCESS_KEY="" \
     BACKUP_AWS_STORAGE_BUCKET_NAME="" \
     BACKUP_AWS_KEY_PREFIX=""
-
 
 EXPOSE 80
 
