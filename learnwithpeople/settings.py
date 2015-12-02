@@ -205,7 +205,7 @@ LOGGING = {
 
 #### Backup config ####
 
-BACKUP_DIR = os.environ.get('BACKUP_DIR') # Directory where backups will be stored locally
+BACKUP_DIR = os.environ.get('BACKUP_DIR', '/tmp') # Directory where backups will be stored locally
 BACKUP_AWS_ACCESS_KEY_ID = os.environ.get('BACKUP_AWS_ACCESS_KEY_ID') # AWS key with access to backup bucket
 BACKUP_AWS_SECRET_ACCESS_KEY = os.environ.get('BACKUP_AWS_SECRET_ACCESS_KEY') # AWS secret for above key
 BACKUP_AWS_STORAGE_BUCKET_NAME = os.environ.get('BACKUP_AWS_STORAGE_BUCKET_NAME') # Name of the bucket where backups should be stored
