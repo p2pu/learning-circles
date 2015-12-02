@@ -21,7 +21,7 @@ COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY config/docker-entry.sh /docker-entry.sh
 RUN mkdir -p /var/lib/celery && useradd celery && chown celery:celery /var/lib/celery/
 
-ENV DATABASE_URL="sqlite:///var/app/db.sqlite3" \
+ENV DATABASE_URL="sqlite:////var/app/db.sqlite3" \
     ADMIN_EMAIL="" \
     SECRET_KEY="" \
     EMAIL_HOST="" \
