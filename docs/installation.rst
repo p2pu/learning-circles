@@ -1,5 +1,5 @@
-Deploying Learning Circles to your own server
-=============================================
+Deploy Learning Circles on your own server
+==========================================
 
 This guide runs you through the steps needed to setup the Learning Cicles web app on you own server. To follow these instructions you should be comfortable using the linux command line and following basic instructions. Most of what you need to do is straight forward, but should you run into any trouble, you can ask for help on our [forum](https://community.p2pu.org/)
 
@@ -47,13 +47,3 @@ Create a A record to point to the IP address of your server
 Go to http://example.net/en/ to view to page.
 
 Go to http://example.net/en/admin/ and log in with the username and password you created above
-
-
-Customizing the landing page
-----------------------------
-
-**TODO** Fork repository and build own docker image!
-
-To update copy on the landing page, edit `templates/studygroups/index.html`
-To update the footer, edit `templates/footer.html`
-To add CSS rules edit `static/sass/p2pu-custom.scss` and then run `sass --scss -I static/sass/ static/sass/p2pu-custom.scss p2pu-custom.css` to compile the CSS.
