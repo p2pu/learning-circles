@@ -1,27 +1,38 @@
-Organize study groups meeting in a physical location taking online courses.
+Learning circles are study groups that meet weekly to work through an online course.
+
+This application is intended to help learners and facilitators to run learning circles. It also offers an overview of all learning circles.
 
 [![](https://travis-ci.org/p2pu/knight-app.svg)](https://travis-ci.org/p2pu/knight-app)
 
-Users can
+Learners can
 
-- see a list of study groups
-- apply for one or more study groups
-- RSVP to show that they will come to a study group
+- learn more about what a learning circle is
+- see a list of learning circles 
+- sign up for a learning circle using either email of or a mobile number
+- RSVP for weekly learning circle meetings
 
 Facilitators can
 
-- See who signed up for a learning circle (and manage the signups)
-- Send messages to signups
-- Add custom messaging to meeting reminders
+- See who signed up for a learning circle.
+- Send messages to learners
+- Customize automatic weekly reminders
 - Update details for a learning circle meeting
 - See who is coming to a learning circle meeting
 - Capture feedback for a learning circle meeting
 
 Organizers can
 
-- add courses
-- add study groups
-- add facilitators
+- see feedback from facilitators
+- see what meetings are happening each week
+- receive weekly updates on what happened in learning circles the previous week
+- manage courses
+- manage study groups
+- manage facilitators
+
+
+## Documentation
+
+For complete documentation on installing and using this software, see our [online documentation here](http://learning-circles.readthedocs.org/en/latest/).
 
 ## Setup for development
 
