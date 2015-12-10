@@ -8,7 +8,7 @@ Log In
 
 After setting your password you will be logged in and redirected to the dashboard. You can also access your dashboard directly at http://example.com/facilitator/. Whenever you log in, this is the page that you’ll see.
 
-.. image:: facilitator-dashboard.png
+.. image:: _static/facilitator-dashboard.png
 
 Collect and Manage Signups
 --------------------------
