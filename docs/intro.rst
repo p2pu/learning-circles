@@ -15,9 +15,9 @@ To help organize and run Learning Circles, we've developed a set of online tools
 
 We assume three different roles:
 
-1. Learners. The people taking the learning circles.
-1. Facilitators. People facilitating individual learnig circles.
-1. Organizers. People organizing several learning circles.
+#. Learners. The people taking the learning circles.
+#. Facilitators. People facilitating individual learnig circles.
+#. Organizers. People organizing several learning circles.
 
 For learners:
 ^^^^^^^^^^^^^
