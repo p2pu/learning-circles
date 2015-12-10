@@ -55,5 +55,5 @@ Each week ends with a short intervention where the facilitator should capture fe
 Support
 -------
 
-If you have any questions, encounter any problems or need to do something that is not addressed above, you can contact Dirk at dirk@p2pu.org. 
+If you have any questions, encounter any problems or need to do something that is not addressed above, you can contact us on our `forum <https://community.p2pu.org>`_. 
 
