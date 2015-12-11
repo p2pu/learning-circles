@@ -52,4 +52,4 @@ Creating learning circles
 
 Click on add next to Study Group, fill in the relevant data and click save once done.
 
-.. image:: _static/admin/studygroup-add.png
+.. image:: _static/admin-studygroup-add.png
