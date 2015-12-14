@@ -9,8 +9,12 @@ from studygroups.views import FeedbackDetail
 from studygroups.views import FeedbackCreate
 from studygroups.views import ApplicationDelete
 from studygroups.views import SignupSuccess
+from studygroups.views import LocationCreate
+from studygroups.views import CourseCreate
+from studygroups.views import StudyGroupCreate
 
 from studygroups.decorators import user_is_group_facilitator
+from studygroups.decorators import user_is_organizer
 
 urlpatterns = patterns('',
     url(r'^$', 'studygroups.views.landing', name='studygroups_landing'),
@@ -38,6 +42,9 @@ urlpatterns = patterns('',
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/create/$', user_is_group_facilitator(FeedbackCreate.as_view()), name='studygroups_feedback'),
 
     url(r'^organize/$', 'studygroups.views.organize', name='studygroups_organize'),
+    url(r'^location/create$', user_is_organizer(LocationCreate.as_view()), name='studygroups_location_create'),
+    url(r'^course/create$', user_is_organizer(CourseCreate.as_view()), name='studygroups_course_create'),
+    url(r'^study_group/create$', user_is_organizer(StudyGroupCreate.as_view()), name='studygroups_studygroup_create'),
     url(r'^report/$', 'studygroups.views.report', name='studygroups_report'),
     url(r'^report/weekly/$', 'studygroups.views.weekly_report', name='studygroups_weekly_report'),
     url(r'^report/weekly/(?P<year>[\d]+)-(?P<month>[\d]+)-(?P<day>[\d]+)/$', 'studygroups.views.weekly_report', name='studygroups_weekly_report_date'),

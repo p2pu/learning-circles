@@ -260,6 +260,34 @@ def organize(request):
     return render_to_response('studygroups/organize.html', context, context_instance=RequestContext(request))
 
 
+class LocationCreate(CreateView):
+    model = Location
+    fields = ['name', 'address', 'contact_name', 'contact', 'link', 'image']
+    success_url = reverse_lazy('studygroups_organize')
+
+
+class CourseCreate(CreateView):
+    model = Course
+    fields = [    
+        'title',
+        'provider',
+        'link',
+        'start_date',
+        'duration',
+        'prerequisite',
+        'time_required',
+        'caption',
+        'description'
+    ]
+    success_url = reverse_lazy('studygroups_organize')
+
+
+class StudyGroupCreate(CreateView):
+    model = StudyGroup
+    form_class = StudyGroupForm
+    success_url = reverse_lazy('studygroups_organize')
+
+
 @user_is_organizer
 def report(request):
     study_groups = StudyGroup.objects.all()

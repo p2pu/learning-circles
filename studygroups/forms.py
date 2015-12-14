@@ -40,9 +40,23 @@ class MessageForm(forms.ModelForm):
 
 
 class StudyGroupForm(forms.ModelForm):
+    start_date = forms.SplitDateTimeField(input_time_formats=['%I:%M %p'])
+    end_date = forms.SplitDateTimeField(input_time_formats=['%I:%M %p'])
     class Meta:
         model = StudyGroup
-        fields = ['location_details', 'start_date', 'end_date', 'duration']
+        fields = [
+            'course',
+            'location',
+            'location_details',
+            'facilitator',
+            'start_date',
+            'end_date',
+            'duration',
+            'timezone',
+            'max_size',
+            'description'
+        ]
+
 
 
 class StudyGroupMeetingForm(forms.ModelForm):
