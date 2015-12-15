@@ -43,6 +43,7 @@
                 </td>
                 <td>
                     <a class="btn btn-primary" href="{% url 'studygroups_view_study_group' group.pk %}">View</a>
+                    <a class="btn btn-primary" href="{% url 'studygroups_studygroup_delete' group.pk %}">Delete</a>
                 </td>
             </tr>
         {% endfor %}
@@ -75,7 +76,7 @@
         {% endfor %}
         </tbody>
       </table>
-      <!--p><a href="{% url 'admin:auth_user_add' %}" class="btn btn-primary">Add user</a></p-->
+      <p><a href="{% url 'studygroups_facilitator_create' %}" class="btn btn-primary">Add facilitator</a></p>
     </div>
   </div>
 
@@ -138,6 +139,10 @@
                 </td>
                 <td>
                     <a href="mailto:{{location.contact}}">{{ location.contact_name }} &lt;{{ location.contact }}&gt;</a>
+                </td>
+                <td>
+                    <a class="btn btn-primary" href="{% url 'studygroups_location_edit' location.id %}">edit</a>
+                    <a class="btn btn-primary" href="{% url 'studygroups_location_delete' location.id %}">delete</a>
                 </td>
             </tr>
         {% endfor %}

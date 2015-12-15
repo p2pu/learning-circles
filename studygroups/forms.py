@@ -42,6 +42,11 @@ class MessageForm(forms.ModelForm):
 class StudyGroupForm(forms.ModelForm):
     start_date = forms.SplitDateTimeField(input_time_formats=['%I:%M %p'])
     end_date = forms.SplitDateTimeField(input_time_formats=['%I:%M %p'])
+
+    # TODO - validation
+    # TODO - make sure end_date is after start_date
+    # TODO - Make sure days are the same
+
     class Meta:
         model = StudyGroup
         fields = [
@@ -56,7 +61,6 @@ class StudyGroupForm(forms.ModelForm):
             'max_size',
             'description'
         ]
-
 
 
 class StudyGroupMeetingForm(forms.ModelForm):

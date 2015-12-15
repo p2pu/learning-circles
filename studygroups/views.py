@@ -17,6 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, TemplateView
+from django.contrib.auth.models import User
 
 from studygroups.models import Course, Location, StudyGroup, Application, Reminder, Feedback
 from studygroups.models import Organizer, Facilitator
@@ -24,6 +25,7 @@ from studygroups.models import StudyGroupMeeting
 from studygroups.models import send_reminder
 from studygroups.models import create_rsvp
 from studygroups.models import report_data
+from studygroups.models import generate_all_meetings
 from studygroups.forms import ApplicationForm, MessageForm, StudyGroupForm
 from studygroups.forms import StudyGroupMeetingForm
 from studygroups.forms import FeedbackForm
@@ -245,6 +247,7 @@ class FeedbackCreate(CreateView):
 class ApplicationDelete(DeleteView):
     model = Application
     success_url = reverse_lazy('studygroups_facilitator')
+    template_name = 'studygroups/confirm_delete.html'
 
 
 @user_is_organizer
@@ -264,6 +267,18 @@ class LocationCreate(CreateView):
     model = Location
     fields = ['name', 'address', 'contact_name', 'contact', 'link', 'image']
     success_url = reverse_lazy('studygroups_organize')
+
+
+class LocationUpdate(UpdateView):
+    model = Location
+    fields = ['name', 'address', 'contact_name', 'contact', 'link', 'image']
+    success_url = reverse_lazy('studygroups_organize')
+
+
+class LocationDelete(DeleteView):
+    model = Location
+    success_url = reverse_lazy('studygroups_organize')
+    template_name = 'studygroups/confirm_delete.html'
 
 
 class CourseCreate(CreateView):
@@ -286,6 +301,31 @@ class StudyGroupCreate(CreateView):
     model = StudyGroup
     form_class = StudyGroupForm
     success_url = reverse_lazy('studygroups_organize')
+
+    def form_valid(self, form):
+        self.object = form.save()
+        generate_all_meetings(self.object)
+        return http.HttpResponseRedirect(self.get_success_url())
+
+
+class StudyGroupDelete(DeleteView):
+    model = StudyGroup
+    success_url = reverse_lazy('studygroups_organize')
+    template_name = 'studygroups/confirm_delete.html'
+
+
+
+class FacilitatorCreate(CreateView):
+    model = User
+    fields = ['username', 'first_name', 'last_name', 'email']
+    success_url = reverse_lazy('studygroups_organize')
+
+    def form_valid(self, form):
+        self.object = form.save()
+        facilitator = Facilitator(user=self.object)
+        facilitator.save()
+        # TODO - send password reset email to facilitator
+        return http.HttpResponseRedirect(self.get_success_url())
 
 
 @user_is_organizer
