@@ -297,6 +297,28 @@ class CourseCreate(CreateView):
     success_url = reverse_lazy('studygroups_organize')
 
 
+class CourseUpdate(UpdateView):
+    model = Course
+    fields = [    
+        'title',
+        'provider',
+        'link',
+        'start_date',
+        'duration',
+        'prerequisite',
+        'time_required',
+        'caption',
+        'description'
+    ]
+    success_url = reverse_lazy('studygroups_organize')
+
+
+class CourseDelete(DeleteView):
+    model = Course
+    success_url = reverse_lazy('studygroups_organize')
+    template_name = 'studygroups/confirm_delete.html'
+
+
 class StudyGroupCreate(CreateView):
     model = StudyGroup
     form_class = StudyGroupForm
@@ -312,7 +334,6 @@ class StudyGroupDelete(DeleteView):
     model = StudyGroup
     success_url = reverse_lazy('studygroups_organize')
     template_name = 'studygroups/confirm_delete.html'
-
 
 
 class FacilitatorCreate(CreateView):

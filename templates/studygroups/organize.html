@@ -109,6 +109,10 @@
                 <td>
                     {{ course.duration }}
                 </td>
+                <td>
+                    <a href="{% url 'studygroups_course_edit' course.id %}" class="btn btn-primary">Edit</a>
+                    <a href="{% url 'studygroups_course_delete' course.id %}" class="btn btn-primary">Delete</a>
+                </td>
             </tr>
         {% endfor %}
         </tbody>
@@ -141,8 +145,8 @@
                     <a href="mailto:{{location.contact}}">{{ location.contact_name }} &lt;{{ location.contact }}&gt;</a>
                 </td>
                 <td>
-                    <a class="btn btn-primary" href="{% url 'studygroups_location_edit' location.id %}">edit</a>
-                    <a class="btn btn-primary" href="{% url 'studygroups_location_delete' location.id %}">delete</a>
+                    <a class="btn btn-primary" href="{% url 'studygroups_location_edit' location.id %}">Edit</a>
+                    <a class="btn btn-primary" href="{% url 'studygroups_location_delete' location.id %}">Delete</a>
                 </td>
             </tr>
         {% endfor %}

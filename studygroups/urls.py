@@ -13,6 +13,8 @@ from studygroups.views import LocationCreate
 from studygroups.views import LocationUpdate
 from studygroups.views import LocationDelete
 from studygroups.views import CourseCreate
+from studygroups.views import CourseUpdate
+from studygroups.views import CourseDelete
 from studygroups.views import StudyGroupCreate
 from studygroups.views import StudyGroupDelete
 from studygroups.views import FacilitatorCreate
@@ -46,10 +48,15 @@ urlpatterns = patterns('',
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/create/$', user_is_group_facilitator(FeedbackCreate.as_view()), name='studygroups_feedback'),
 
     url(r'^organize/$', 'studygroups.views.organize', name='studygroups_organize'),
+
     url(r'^location/create/$', user_is_organizer(LocationCreate.as_view()), name='studygroups_location_create'),
     url(r'^location/(?P<pk>[\d]+)/edit/$', user_is_organizer(LocationUpdate.as_view()), name='studygroups_location_edit'),
     url(r'^location/(?P<pk>[\d]+)/delete/$', user_is_organizer(LocationDelete.as_view()), name='studygroups_location_delete'),
+
     url(r'^course/create/$', user_is_organizer(CourseCreate.as_view()), name='studygroups_course_create'),
+    url(r'^course/(?P<pk>[\d]+)/edit/$', user_is_organizer(CourseUpdate.as_view()), name='studygroups_course_edit'),
+    url(r'^course/(?P<pk>[\d]+)/delete/$', user_is_organizer(CourseDelete.as_view()), name='studygroups_course_delete'),
+
     url(r'^study_group/create/$', user_is_organizer(StudyGroupCreate.as_view()), name='studygroups_studygroup_create'),
     url(r'^studygroup/(?P<pk>[\d]+)/delete/$', user_is_organizer(StudyGroupDelete.as_view()), name='studygroups_studygroup_delete'),
     url(r'^facilitator/create/$', user_is_organizer(FacilitatorCreate.as_view()), name='studygroups_facilitator_create'),
