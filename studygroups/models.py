@@ -100,18 +100,15 @@ class StudyGroup(models.Model):
     name = models.CharField(max_length=128, default=_study_group_name)
     course = models.ForeignKey('studygroups.Course')
     location = models.ForeignKey('studygroups.Location')
-    location_details = models.CharField(max_length=128)
+    location_details = models.CharField(max_length=128, help_text='Meeting room or office number.')
     facilitator = models.ForeignKey(User)
     start_date = models.DateTimeField() # start_date also implies regular meeting day & time. Ex. Wednesday 1 July at 19:00 implies regular meetings on Wednesday at 19:00
     end_date = models.DateTimeField()
-    duration = models.IntegerField() # meeting duration in minutes
+    duration = models.IntegerField(help_text='Meeting duration in minutes.') # meeting duration in minutes
     timezone = models.CharField(max_length=128)
-    max_size = models.IntegerField() #TODO remove this field
-    description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     signup_open = models.BooleanField(default=True)
     # consider storing number of weeks/meetings instead of end time
-
 
     def day(self):
         #TODO this will be wrong if the timezone and UTC have different days for the meeting time!

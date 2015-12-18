@@ -23,13 +23,11 @@
    "fields": {
       "created_at": "2015-03-23T15:18:39.462Z",
       "name": "The Riders",
-      "description": " ",
       "course": 3,
       "start_date": "2015-03-23T18:30:00.000Z",
       "end_date": "2015-04-23T18:30:00.000Z",
       "duration": 120,
       "timezone": "US/Central",
-      "max_size": 15,
       "location": 1,
       "facilitator": 1
    },
@@ -40,13 +38,11 @@
    "fields": {
       "created_at": "2015-03-23T15:19:04.318Z",
       "name": "The Riders",
-      "description": " ",
       "course": 2,
       "start_date": "2015-03-23T18:00:00.000Z",
       "end_date": "2015-03-23T18:00:00.000Z",
       "duration": 120,
       "timezone": "US/Central",
-      "max_size": 10,
       "location": 1,
       "facilitator": 1
    },
@@ -57,13 +53,11 @@
    "fields": {
       "created_at": "2015-03-25T14:35:02.227Z",
       "name": "The Red Hawks ",
-      "description": "ddd",
       "course": 4,
       "start_date": "2015-03-23T18:30:00.000Z",
       "end_date": "2015-03-23T18:30:00.000Z",
       "duration": 120,
       "timezone": "US/Central",
-      "max_size": 10,
       "location": 1,
       "facilitator": 1
    },
@@ -74,13 +68,11 @@
    "fields": {
       "created_at": "2015-03-25T15:55:44.525Z",
       "name": "The Bandits of Hell's Bend ",
-      "description": "jjj",
       "course": 1,
       "start_date": "2015-03-23T10:00:00.000Z",
       "end_date": "2015-03-23T10:00:00.000Z",
       "duration": 120,
       "timezone": "US/Central",
-      "max_size": 20,
       "location": 1,
       "facilitator": 1
    },
