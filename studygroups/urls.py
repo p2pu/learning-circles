@@ -18,6 +18,8 @@ from studygroups.views import CourseDelete
 from studygroups.views import StudyGroupCreate
 from studygroups.views import StudyGroupDelete
 from studygroups.views import FacilitatorCreate
+from studygroups.views import FacilitatorUpdate
+from studygroups.views import FacilitatorDelete
 
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import user_is_organizer
@@ -59,7 +61,11 @@ urlpatterns = patterns('',
 
     url(r'^study_group/create/$', user_is_organizer(StudyGroupCreate.as_view()), name='studygroups_studygroup_create'),
     url(r'^studygroup/(?P<pk>[\d]+)/delete/$', user_is_organizer(StudyGroupDelete.as_view()), name='studygroups_studygroup_delete'),
+
     url(r'^facilitator/create/$', user_is_organizer(FacilitatorCreate.as_view()), name='studygroups_facilitator_create'),
+    url(r'^facilitator/(?P<pk>[\d]+)/edit/$', user_is_organizer(FacilitatorUpdate.as_view()), name='studygroups_facilitator_edit'),
+    url(r'^facilitator/(?P<pk>[\d]+)/delete/$', user_is_organizer(FacilitatorDelete.as_view()), name='studygroups_facilitator_delete'),
+
     url(r'^report/$', 'studygroups.views.report', name='studygroups_report'),
     url(r'^report/weekly/$', 'studygroups.views.weekly_report', name='studygroups_weekly_report'),
     url(r'^report/weekly/(?P<year>[\d]+)-(?P<month>[\d]+)-(?P<day>[\d]+)/$', 'studygroups.views.weekly_report', name='studygroups_weekly_report_date'),

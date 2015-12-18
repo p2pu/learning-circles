@@ -349,6 +349,18 @@ class FacilitatorCreate(CreateView):
         return http.HttpResponseRedirect(self.get_success_url())
 
 
+class FacilitatorUpdate(UpdateView):
+    model = User
+    fields = ['username', 'first_name', 'last_name', 'email']
+    success_url = reverse_lazy('studygroups_organize')
+
+
+class FacilitatorDelete(DeleteView):
+    model = Facilitator
+    success_url = reverse_lazy('studygroups_organize')
+    template_name = 'studygroups/confirm_delete.html'
+
+
 @user_is_organizer
 def report(request):
     study_groups = StudyGroup.objects.all()
