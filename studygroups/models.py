@@ -8,8 +8,6 @@ from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.core.urlresolvers import reverse #TODO ideally this shouldn't be in the model
 
-from s3direct.fields import S3DirectField
-
 import twilio
 
 from studygroups.sms import send_message
@@ -50,16 +48,13 @@ def _study_group_name():
 class Course(models.Model):
     title = models.CharField(max_length=128)
     provider = models.CharField(max_length=256)
-    link = models.URLField()
-    image = S3DirectField(dest='imgs', blank=True)
+    link = models.URLField(help_text='URL where the course can be accessed.')
     key = models.CharField(max_length=255, default='NOT SET')
     start_date = models.DateField()
-    duration = models.CharField(max_length=128)
-    prerequisite = models.TextField()
-    time_required = models.CharField(max_length=128)
-    #TODO clarify difference between caption and description
-    caption = models.TextField()
-    description = models.TextField()
+    duration = models.IntegerField(help_text='Number of weeks.')
+    prerequisite = models.TextField(blank=True)
+    time_required = models.IntegerField(help_text='Number of hours per week.')
+    caption = models.TextField(help_text='Short description of the course.')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):

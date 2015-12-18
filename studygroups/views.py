@@ -292,7 +292,6 @@ class CourseCreate(CreateView):
         'prerequisite',
         'time_required',
         'caption',
-        'description'
     ]
     success_url = reverse_lazy('studygroups_organize')
 
@@ -308,7 +307,6 @@ class CourseUpdate(UpdateView):
         'prerequisite',
         'time_required',
         'caption',
-        'description'
     ]
     success_url = reverse_lazy('studygroups_organize')
 

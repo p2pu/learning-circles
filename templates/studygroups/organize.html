@@ -109,7 +109,7 @@
                     {{ course.start_date }}
                 </td>
                 <td>
-                    {{ course.duration }}
+                    {{ course.duration }} week{{course.duration|pluralize}}
                 </td>
                 <td>
                     <a href="{% url 'studygroups_course_edit' course.id %}" class="btn btn-primary">Edit</a>
