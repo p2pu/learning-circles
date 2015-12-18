@@ -62,11 +62,11 @@ class Course(models.Model):
 
 
 class Location(models.Model):
-    name = models.CharField(max_length=256)
-    address = models.CharField(max_length=256)
-    contact_name = models.CharField(max_length=256)
-    contact = models.CharField(max_length=256)
-    link = models.URLField()
+    name = models.CharField(max_length=256, help_text='Common name used to refer to the location.')
+    address = models.CharField(max_length=256, help_text='Street address of the location.')
+    contact_name = models.CharField(max_length=256, help_text='Person that can be contacted at the location.')
+    contact = models.CharField(max_length=256, help_text='Email of phone for the contact person.')
+    link = models.URLField(blank=True, help_text='URL where more info about the location can be seen.')
     image = models.ImageField(blank=True)
 
     def __unicode__(self):
