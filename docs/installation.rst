@@ -5,24 +5,33 @@ This guide runs you through the steps needed to setup the Learning Cicles web ap
 
 If you find that you need to do anything different or that some steps or info is missing, please let us know on the forum.
 
+To make things easier, we are using docker to distribute the application.
+
 Requirements
 ------------
 
 * A server running Ubuntu 14.04 with at least 1GB of RAM capable of running Docker - we recommend using a Digital Ocean 1GB droplet at 10 USD p/m (If you use `this link <https://www.digitalocean.com/?refcode=d0d9b388d642>`_ you get 10 USD credit and we get 25 USD if you spend 25 USD or more). **The rest of this guide will assume that you are running Ubuntu 14.04 on DigitalOcean**.
 * Domain name to use (You can use `namecheap <https://www.namecheap.com/>`_)
-* `Twilio <https://www.twilio.com/>`_ account for sending text messages.
 * `Mandril <http://mandrill.com/>`_, `Sendgrid <http://sendgrid.com/>`_ or `Mailgun <http://www.mailgun.com/>`_ account for sending email.
+* `Twilio <https://www.twilio.com/>`_ account for sending text messages.
 * `Amazon Web Services <http://aws.amazon.com/>`_ account for backups to S3.
   
 Setup
 -----
 
-Install docker, see `instructions <https://docs.docker.com/engine/installation/ubuntulinux/>`_.
-Create a new 1GB droplet and select the docker image.
+Create a new 1GB droplet on Digital Ocean and select the Ubuntu 14.04 docker image.
 
-Download `this file <https://github.com/p2pu/knight-app/raw/master/docs/env.txt>`_ to /var/p2pu/lc/env.txt on the server and edit the environment variables::
+SSH into your Digital Ocean droplet::
 
-    curl https://github.com/p2pu/knight-app/raw/master/docs/env.txt -o /var/p2pu/lc/env.txt
+    ssh root@ip-of-droplet
+
+Download https://github.com/p2pu/knight-app/raw/master/docs/env.txt to /var/p2pu/lc/env.txt on the server and edit the environment variables::
+
+    curl --create-dirs https://raw.githubusercontent.com/p2pu/knight-app/master/docs/env.txt -o /var/p2pu/lc/env.txt
+
+Edit the variables in /var/p2pu/lc/env.txt using nano. You can use Ctrl+w to exit once you are done editing::
+    
+    nano /var/p2pu/lc/env.txt
 
 Setup postgres::
 
@@ -32,12 +41,12 @@ Create a database & user::
 
     docker exec -i -t postgres psql -U postgres
     
-You will need to enter your password that you specified in `/var/p2pu/lc/env.txt` for `POSTGRES_PASSWORD`. You will then see `psql >`, this is the Postgres psql prompt. Here you need to enter::
+You will need to enter your password that you specified in `/var/p2pu/lc/env.txt` for `POSTGRES_PASSWORD`. You will then see `postgres=#`, this is the Postgres psql prompt. Here you need to enter::
 
-    CREATE USER p2pu password <insertyourpassword>;
+    CREATE USER p2pu password '<insertyourpassword>';
     CREATE DATABASE learningcircles;
     GRANT ALL PRIVILEGES ON DATABASE learningcircles to p2pu;
-    exit
+    \q
 
 Setup rabbitmq image::
 
@@ -55,4 +64,8 @@ Setup your DNS by creating a A record to point to the IP address of your server
 
 Go to http://www.example.net/en/ to view to page.
 
-Go to http://www.example.net/en/admin/ and log in with the username and password you created above
+Go to http://www.example.net/en/admin/ and log in with the username and password you created above.
+
+Go to http://www.example.net/en/admin/studygroups/organizer/add/ and select the username you just logged in with and click 'Save'.
+
+You can now return to the site and view the Organizer dashboard.
