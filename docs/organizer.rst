@@ -42,7 +42,7 @@ Click 'Add learning circle', fill in the relevant data and click save once done.
 
 .. image:: _static/organize-learningcircle-add.png
 
-.. image:: _static/dash-learningcircle.png
+.. image:: _static/organize-dash-learningcircle.png
 
 Adding a new learning circle will also create the weekly meetings for the learning circle. A summary of learning circle meetings on a per week basis will be displayed on the organizer dashboard. For more information on managing weekly meetings, see the facilitator part of this guide.
 
