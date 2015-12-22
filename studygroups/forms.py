@@ -1,11 +1,16 @@
 from django import forms
 from django.utils.translation import ugettext as _
+from django.contrib.auth.models import User
+
+from localflavor.us.forms import USPhoneNumberField
+
+import pytz
+
 from studygroups.models import Application
 from studygroups.models import Reminder
 from studygroups.models import StudyGroup
 from studygroups.models import StudyGroupMeeting
 from studygroups.models import Feedback
-from localflavor.us.forms import USPhoneNumberField
 
 
 class ApplicationForm(forms.ModelForm):
@@ -43,6 +48,7 @@ class MessageForm(forms.ModelForm):
 class StudyGroupForm(forms.ModelForm):
     start_date = forms.SplitDateTimeField(input_time_formats=['%I:%M %p'])
     end_date = forms.SplitDateTimeField(input_time_formats=['%I:%M %p'])
+    timezone = forms.ChoiceField(choices=zip(pytz.common_timezones, pytz.common_timezones))
 
     def clean(self):
         cleaned_data = super(StudyGroupForm, self).clean()
@@ -66,6 +72,14 @@ class StudyGroupForm(forms.ModelForm):
             'duration',
             'timezone',
         ]
+
+
+class FacilitatorForm(forms.ModelForm):
+    username = forms.EmailField(required=True, label=_('Email'))
+
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name']
 
 
 class StudyGroupMeetingForm(forms.ModelForm):

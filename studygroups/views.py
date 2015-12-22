@@ -29,6 +29,7 @@ from studygroups.models import generate_all_meetings
 from studygroups.forms import ApplicationForm, MessageForm, StudyGroupForm
 from studygroups.forms import StudyGroupMeetingForm
 from studygroups.forms import FeedbackForm
+from studygroups.forms import FacilitatorForm
 from studygroups.rsvp import check_rsvp_signature
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import user_is_organizer
@@ -336,11 +337,13 @@ class StudyGroupDelete(DeleteView):
 
 class FacilitatorCreate(CreateView):
     model = User
-    fields = ['username', 'first_name', 'last_name', 'email']
+    form_class = FacilitatorForm
     success_url = reverse_lazy('studygroups_organize')
 
     def form_valid(self, form):
-        self.object = form.save()
+        self.object = form.save(commit=False)
+        self.object.email = self.object.username
+        self.object.save()
         facilitator = Facilitator(user=self.object)
         facilitator.save()
         # TODO - send password reset email to facilitator
@@ -349,12 +352,12 @@ class FacilitatorCreate(CreateView):
 
 class FacilitatorUpdate(UpdateView):
     model = User
-    fields = ['username', 'first_name', 'last_name', 'email']
+    form_class = FacilitatorForm
     success_url = reverse_lazy('studygroups_organize')
 
 
 class FacilitatorDelete(DeleteView):
-    model = Facilitator
+    model = User
     success_url = reverse_lazy('studygroups_organize')
     template_name = 'studygroups/confirm_delete.html'
 

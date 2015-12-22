@@ -72,7 +72,7 @@
                 </td>
                 <td>
                     <a class="btn btn-primary" href="{% url 'studygroups_facilitator_edit' facilitator.user.id %}">Edit</a>
-                    <a class="btn btn-primary" href="{% url 'studygroups_facilitator_delete' facilitator.id %}">Delete</a>
+                    <a class="btn btn-primary" href="{% url 'studygroups_facilitator_delete' facilitator.user.id %}">Delete</a>
                 </td>
             </tr>
         {% endfor %}
