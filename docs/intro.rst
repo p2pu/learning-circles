@@ -44,7 +44,7 @@ For organizers:
 Using the tools
 ---------------
 
-To use the tools, it will should be installed on a server you control. You need to be familiar with using the linux command line and setting up accounts on the web. You can find all the information you need to do so :doc:`here <installation>`.
+To use the tools, it should be installed on a server you control. You need to be familiar with using the linux command line and setting up accounts on the web. You can find all the information you need to do so :doc:`here <installation>`.
 
 If you're uncomfortable doing this on your own, or would simply prefer paying someone else to do this, you can reach out to P2PU and we can talk about setting this up for you.
 
