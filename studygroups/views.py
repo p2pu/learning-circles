@@ -354,12 +354,14 @@ class FacilitatorUpdate(UpdateView):
     model = User
     form_class = FacilitatorForm
     success_url = reverse_lazy('studygroups_organize')
+    context_object_name = 'facilitator' # Need this to prevent the SingleObjectMixin from overriding the user context variable used by the auth system
 
 
 class FacilitatorDelete(DeleteView):
     model = User
     success_url = reverse_lazy('studygroups_organize')
     template_name = 'studygroups/confirm_delete.html'
+    context_object_name = 'facilitator' # Need this to prevent the SingleObjectMixin from overriding the user context variable used by the auth system
 
 
 @user_is_organizer
