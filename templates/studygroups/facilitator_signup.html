@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container learning-circle-signup">
+<div class="row">
+    
+  <div class="col-md-12 col-sm-12">
+      <h2>Sign up as a facilitator</h2>
+      <p>Make sure to look at the facilitator handbook TODO</p>
+  </div>
+  <div class="col-md-12 col-sm-12">
+	  <form action="" method="POST" enctype="multipart/form-data">
+	    {% csrf_token %}
+	    {{ form|crispy }}
+        <p><button type="submit" class="btn btn-default">Save</button></p>
+	  </form>
+  </div>
+</div>
+</div>
+{% endblock %}

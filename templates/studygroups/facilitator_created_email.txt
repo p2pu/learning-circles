@@ -1,0 +1,2 @@
+Someone created a new facilitator account for you on {{ domain }} with username {{ emai }}. To log in and use your account,  follow the link below and reset your password:
+{{ protocol}}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}

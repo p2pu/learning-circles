@@ -1,0 +1,11 @@
+{% extends 'email_base.html' %}
+{% block body %}
+<p>Hi there</p>
+
+<p>Someone created a new facilitator account for you on <a href="{{ protocol}}://{{ domain }}">{{ domain }}</a> with username {{ emai }}.</p>
+
+To use your account, follow <a href="{{ protocol}}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}">this link</a> to reset your password and log in.
+
+<p>Cheers</p>
+<p>P2PU</p>
+{% endblock %}

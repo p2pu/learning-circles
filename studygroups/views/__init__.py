@@ -29,10 +29,12 @@ from studygroups.models import generate_all_meetings
 from studygroups.forms import ApplicationForm, MessageForm, StudyGroupForm
 from studygroups.forms import StudyGroupMeetingForm
 from studygroups.forms import FeedbackForm
-from studygroups.forms import FacilitatorForm
 from studygroups.rsvp import check_rsvp_signature
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import user_is_organizer
+
+from facilitate import FacilitatorCreate, FacilitatorUpdate, FacilitatorDelete
+from facilitate import FacilitatorSignup
 
 
 def landing(request):
@@ -333,35 +335,6 @@ class StudyGroupDelete(DeleteView):
     model = StudyGroup
     success_url = reverse_lazy('studygroups_organize')
     template_name = 'studygroups/confirm_delete.html'
-
-
-class FacilitatorCreate(CreateView):
-    model = User
-    form_class = FacilitatorForm
-    success_url = reverse_lazy('studygroups_organize')
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.email = self.object.username
-        self.object.save()
-        facilitator = Facilitator(user=self.object)
-        facilitator.save()
-        # TODO - send password reset email to facilitator
-        return http.HttpResponseRedirect(self.get_success_url())
-
-
-class FacilitatorUpdate(UpdateView):
-    model = User
-    form_class = FacilitatorForm
-    success_url = reverse_lazy('studygroups_organize')
-    context_object_name = 'facilitator' # Need this to prevent the SingleObjectMixin from overriding the user context variable used by the auth system
-
-
-class FacilitatorDelete(DeleteView):
-    model = User
-    success_url = reverse_lazy('studygroups_organize')
-    template_name = 'studygroups/confirm_delete.html'
-    context_object_name = 'facilitator' # Need this to prevent the SingleObjectMixin from overriding the user context variable used by the auth system
 
 
 @user_is_organizer
