@@ -1,11 +1,14 @@
 from django.core.urlresolvers import reverse, reverse_lazy
 from django import http
+from django.forms import modelform_factory
+from django.views.generic.base import View, TemplateResponseMixin, ContextMixin
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordResetForm
 
-from studygroups.forms import FacilitatorForm
-from studygroups.models import Facilitator
+from studygroups.forms import FacilitatorForm, StudyGroupForm
+from studygroups.models import Facilitator, StudyGroup, Location
+from studygroups.models import generate_all_meetings
 
 import string, random
 
@@ -13,7 +16,7 @@ class FacilitatorSignup(CreateView):
     model = User
     form_class = FacilitatorForm
     success_url = reverse_lazy('studygroups_landing')
-    #success_url = reverse_lazy('studygroups_facilitator_signup_success')
+    #TODO success_url = reverse_lazy('studygroups_facilitator_signup_success')
     template_name = 'studygroups/facilitator_signup.html'
 
     def form_valid(self, form):
@@ -42,6 +45,41 @@ class FacilitatorSignup(CreateView):
         )
 
         return http.HttpResponseRedirect(self.get_success_url())
+
+
+class FacilitatorStudyGroupCreate(View, TemplateResponseMixin, ContextMixin):
+    success_url = reverse_lazy('studygroups_landing')
+    template_name = 'studygroups/facilitator_studygroup_form.html'
+    location_fields = ['name', 'address', 'contact_name', 'contact', 'link', 'image']
+
+    def get_location_form_class(self):
+        return modelform_factory(Location, fields=self.location_fields)
+
+    
+    def get_studygroup_form_class(self):
+        return modelform_factory(StudyGroup, form=StudyGroupForm, exclude=['location', 'facilitator'])
+
+
+    def get(self, request, *args, **kwargs):
+        location_form_cls = self.get_location_form_class()
+        location_form = location_form_cls(prefix='location_')
+        studygroup_form = self.get_studygroup_form_class()()
+        return self.render_to_response(self.get_context_data(location_form=location_form, studygroup_form=studygroup_form))
+
+    def post(self, request, *args, **kwargs):
+        location_form_cls = self.get_location_form_class()
+        location_form = location_form_cls(self.request.POST, self.request.FILES, prefix='location_')
+        studygroup_form = self.get_studygroup_form_class()(self.request.POST)
+        if location_form.is_valid() and studygroup_form.is_valid():
+            study_group = studygroup_form.save(commit=False)
+            location = location_form.save()
+            study_group.facilitator = request.user
+            study_group.location = location
+            study_group.save()
+            generate_all_meetings(study_group)
+            return http.HttpResponseRedirect(self.success_url)
+        else:
+            return self.render_to_response(self.get_context_data(location_form=location_form, studygroup_form=studygroup_form))
 
 
 class FacilitatorCreate(CreateView):

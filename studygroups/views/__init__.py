@@ -35,6 +35,7 @@ from studygroups.decorators import user_is_organizer
 
 from facilitate import FacilitatorCreate, FacilitatorUpdate, FacilitatorDelete
 from facilitate import FacilitatorSignup
+from facilitate import FacilitatorStudyGroupCreate
 
 
 def landing(request):

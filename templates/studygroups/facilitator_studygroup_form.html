@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block content %}
+<div class="container learning-circle-signup">
+<div class="row">
+    
+  <div class="col-md-12 col-sm-12">
+      <h2>Create a Learning Circle</h2>
+  </div>
+  <div class="col-md-12 col-sm-12">
+	  <form action="" method="POST" enctype="multipart/form-data">
+	    {% csrf_token %}
+        <h3>Location details</h3>
+	    {{ location_form|crispy }}
+        <h3>Learning Circle details</h3>
+	    {{ studygroup_form|crispy }}
+        <p><button type="submit" class="btn btn-default">Save</button></p>
+	  </form>
+  </div>
+</div>
+</div>
+{% endblock %}
+
+{% block css %}
+  <link type="text/css" rel="stylesheet" href="{% static 'css/datepicker.css' %}" charset="utf-8">
+  <link type="text/css" rel="stylesheet" href="{% static 'css/jquery.timepicker.css' %}" charset="utf-8">
+{% endblock %}
+
+
+{% block scripts %}
+<script src="{% static 'js/vendor/bootstrap-datepicker.js' %}"></script>
+<script src="{% static 'js/vendor/jquery.timepicker.js' %}"></script>
+<script>
+    $(document).ready(function(){
+            $('.dateinput').datepicker({'format':'yyyy-mm-dd'});
+            $('.timeinput').timepicker({ 'step': 15, 'timeFormat': 'h:i A' });
+    });
+</script>
+{% endblock %}
