@@ -8,3 +8,4 @@ mailbox/
 *.swp
 fixtures/
 upload/
+docs/_build/
