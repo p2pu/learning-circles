@@ -5,6 +5,8 @@ from django.views.generic.base import View, TemplateResponseMixin, ContextMixin
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordResetForm
+from django.contrib import messages
+from django.utils.translation import ugettext as _
 
 from studygroups.forms import FacilitatorForm, StudyGroupForm
 from studygroups.models import Facilitator, StudyGroup, Location
@@ -77,6 +79,7 @@ class FacilitatorStudyGroupCreate(View, TemplateResponseMixin, ContextMixin):
             study_group.location = location
             study_group.save()
             generate_all_meetings(study_group)
+            messages.success(request, _('Learning circle successfully created.'))
             return http.HttpResponseRedirect(self.success_url)
         else:
             return self.render_to_response(self.get_context_data(location_form=location_form, studygroup_form=studygroup_form))
