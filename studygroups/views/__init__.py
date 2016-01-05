@@ -18,6 +18,7 @@ from django.utils import timezone
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, TemplateView
 from django.contrib.auth.models import User
+from django.forms import modelform_factory
 
 from studygroups.models import Course, Location, StudyGroup, Application, Reminder, Feedback
 from studygroups.models import Organizer, Facilitator
@@ -186,13 +187,6 @@ def view_study_group(request, study_group_id):
     return render_to_response('studygroups/view_study_group.html', context, context_instance=RequestContext(request))
 
 
-class StudyGroupUpdate(UpdateView):
-    model = StudyGroup
-    fields = ['location_details', 'start_date', 'end_date', 'duration']
-    success_url = reverse_lazy('studygroups_facilitator')
-    pk_url_kwarg = 'study_group_id'
-
-
 class MeetingCreate(CreateView):
     model = StudyGroupMeeting
     form_class = StudyGroupMeetingForm
@@ -330,6 +324,15 @@ class StudyGroupCreate(CreateView):
         self.object = form.save()
         generate_all_meetings(self.object)
         return http.HttpResponseRedirect(self.get_success_url())
+
+
+## This form is used by facilitators
+class StudyGroupUpdate(UpdateView):
+    model = StudyGroup
+    #fields = ['location_details', 'start_date', 'end_date', 'duration']
+    form_class =  modelform_factory(StudyGroup, StudyGroupForm, exclude=['location', 'facilitator'])
+    success_url = reverse_lazy('studygroups_facilitator')
+    pk_url_kwarg = 'study_group_id'
 
 
 class StudyGroupDelete(DeleteView):

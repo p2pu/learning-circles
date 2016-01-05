@@ -8,10 +8,10 @@
       <p>At <a href="{{lc.location.link}}">{{ lc.location }}</a> {{lc.location_details}} every {{ lc.day }}, {{ lc.start_date|time:"f A" }} to {{ lc.end_time|time:"f A" }} starting {{ lc.start_date|date:"D d M Y" }}</p>
   </div>
   <div class="col-md-12">
-      <!--p>
+      <p>
       <a class="btn btn-primary" href="{% url 'studygroups_edit_study_group' lc.id %}">edit</a>
-      <a class="btn btn-primary">download flyer</a>
-      </p-->
+      <!--a class="btn btn-primary">download flyer</a-->
+      </p>
   </div>
   <div class="col-md-12 well">
     <p><strong>Next meeting:</strong> {{ lc.next_meeting.meeting_time|date:"D d M Y \a\t P" }}</p>
