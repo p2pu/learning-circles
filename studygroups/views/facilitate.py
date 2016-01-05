@@ -48,7 +48,7 @@ class FacilitatorSignup(CreateView):
 
 
 class FacilitatorStudyGroupCreate(View, TemplateResponseMixin, ContextMixin):
-    success_url = reverse_lazy('studygroups_landing')
+    success_url = reverse_lazy('studygroups_facilitator')
     template_name = 'studygroups/facilitator_studygroup_form.html'
     location_fields = ['name', 'address', 'contact_name', 'contact', 'link', 'image']
 
