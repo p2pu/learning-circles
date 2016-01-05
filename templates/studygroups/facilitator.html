@@ -22,6 +22,9 @@
   {% empty %}
     <p>No active learning circles found.</p>
   {% endfor %}
+  <p>
+    <a class="btn btn-primary" href="{% url 'studygroups_facilitator_studygroup_create' %}">Create a new Learning Circle</a>
+  </p>
 
   <h2>Past learning circles</h2>
   {% for lc in past_study_groups %}
