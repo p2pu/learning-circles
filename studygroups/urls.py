@@ -22,6 +22,7 @@ from studygroups.views import FacilitatorCreate
 from studygroups.views import FacilitatorUpdate
 from studygroups.views import FacilitatorDelete
 from studygroups.views import FacilitatorSignup
+from studygroups.views import FacilitatorSignupSuccess
 from studygroups.views import FacilitatorStudyGroupCreate
 
 from studygroups.decorators import user_is_group_facilitator
@@ -67,6 +68,7 @@ urlpatterns = patterns('',
 
     url(r'^facilitator/study_group/create/$', login_required(FacilitatorStudyGroupCreate.as_view()), name='studygroups_facilitator_studygroup_create'),
     url(r'^facilitator/signup/$', FacilitatorSignup.as_view(), name='studygroups_facilitator_signup'),
+    url(r'^facilitator/signup/success/$', FacilitatorSignupSuccess.as_view(), name='studygroups_facilitator_signup_success'),
     url(r'^facilitator/create/$', user_is_organizer(FacilitatorCreate.as_view()), name='studygroups_facilitator_create'),
     url(r'^facilitator/(?P<pk>[\d]+)/edit/$', user_is_organizer(FacilitatorUpdate.as_view()), name='studygroups_facilitator_edit'),
     url(r'^facilitator/(?P<pk>[\d]+)/delete/$', user_is_organizer(FacilitatorDelete.as_view()), name='studygroups_facilitator_delete'),

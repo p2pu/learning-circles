@@ -2,6 +2,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django import http
 from django.forms import modelform_factory
 from django.views.generic.base import View, TemplateResponseMixin, ContextMixin
+from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordResetForm
@@ -17,8 +18,7 @@ import string, random
 class FacilitatorSignup(CreateView):
     model = User
     form_class = FacilitatorForm
-    success_url = reverse_lazy('studygroups_landing')
-    #TODO success_url = reverse_lazy('studygroups_facilitator_signup_success')
+    success_url = reverse_lazy('studygroups_facilitator_signup_success')
     template_name = 'studygroups/facilitator_signup.html'
 
     def form_valid(self, form):
@@ -47,6 +47,10 @@ class FacilitatorSignup(CreateView):
         )
 
         return http.HttpResponseRedirect(self.get_success_url())
+
+
+class FacilitatorSignupSuccess(TemplateView):
+    template_name = 'studygroups/facilitator_signup_success.html'
 
 
 class FacilitatorStudyGroupCreate(View, TemplateResponseMixin, ContextMixin):
