@@ -27,6 +27,7 @@
 			  <li class="">
           <a href="http://info.p2pu.org/category/Chicago-Public-Library/" target="_blank">News</a>
         </li>
+        {% if user.is_authenticated %}
         {% if user.organizer %}
         <li>
           <a href="{% url 'studygroups_organize' %}">Organize</a>
@@ -37,7 +38,6 @@
           <a href="{% url 'studygroups_facilitator' %}">Dashboard</a>
         </li>
         {% endif %}
-        {% if user.is_authenticated %}
         <li><a href="{% url 'logout' %}">Log out</a></li>
         {% endif %}
       </ul>
@@ -47,14 +47,14 @@
 						<img src="{% static 'images/logo.png' %}" alt="P2PU Logo">
 					</a>
 				</li>
-				<li>
+				<!--li>
 					<span class="icon"><i class="fa fa-plus"></i></span>
 				</li>
 				<li>
 					<a href="http://www.chipublib.org/" class="cpl-logo" target="_blank">
 						<img src="{% static 'images/cpl-logo.png' %}" alt="CPL Logo">
 					</a>
-				</li>
+				</li-->
 			</ul>
 		</div>
 		<!-- /.navbar-collapse -->
