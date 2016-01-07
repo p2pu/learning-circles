@@ -2,9 +2,14 @@
 {% block body %}
 <p>Hi there</p>
 
-<p>Someone created a new facilitator account for you on <a href="{{ protocol}}://{{ domain }}">{{ domain }}</a> with username {{ emai }}.</p>
+<p>Welcome to the P2PU Learning Circle community! To use your account, follow <a href="{{ protocol}}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}">this link</a> to reset your password and log in. Your username is {{ email }}.</p>
 
-To use your account, follow <a href="{{ protocol}}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}">this link</a> to reset your password and log in.
+<p>Here are a few important links to get you started.</p>
+<ul>
+    <li><a href="https://p2pu.org/faciliate">p2pu.org/faciliate</a> - This is the facilitator hub - if this is your first time facilitating, you’ll want to check this out to familiarize yourself with the experience and download the necessary materials.</li>
+    <li><a href="https://learningcircles.p2pu.org">learningcircles.p2pu.org</a> - This is the homepage of Learning Circles - it’s where you login to your dashboard and where learners come to sign up.</li>
+    <li><a href="https://community.p2pu.org/c/learning-circles">community.p2pu.org/c/learning-circles</a> - This is the online facilitator community. Head over here  to share feedback, photos, suggestions, and questions with facilitators from around the world.</li>
+</ul>
 
 <p>Cheers</p>
 <p>P2PU</p>

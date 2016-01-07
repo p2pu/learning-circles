@@ -1,2 +1,11 @@
-Someone created a new facilitator account for you on {{ domain }} with username {{ emai }}. To log in and use your account,  follow the link below and reset your password:
-{{ protocol}}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}
+Hi there
+
+Welcome to the P2PU Learning Circle community!  To log in and use your account, follow the link below and reset your password. Your username is {{ email }}.
+
+{{ protocol}}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}.
+
+Here are a few important links to get you started:
+ - p2pu.org/faciliate: This is the facilitator hub - if this is your first time facilitating, you’ll want to check this out to familiarize yourself with the experience and download the necessary materials.
+ - learningcircles.p2pu.org: This is the homepage of Learning Circles - it’s where you login to your dashboard and where learners come to sign up.
+ - community.p2pu.org/c/learning-circles: This is the online facilitator community. Head over here  to share feedback, photos, suggestions, and questions with facilitators from around the world.
+
