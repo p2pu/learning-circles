@@ -47,6 +47,7 @@ INSTALLED_APPS = (
     'studygroups',
     'interest',
     'backup',
+    'analytics',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -142,6 +143,9 @@ TWILIO_NUMBER = os.environ.get('TWILIO_NUMBER')
 
 LOGIN_REDIRECT_URL = '/login_redirect/'
 DOMAIN = os.environ.get('DOMAIN', 'example.net')
+
+####### Google analytics tracking info ####### 
+GA_TRACKING_ID = os.environ.get('GA_TRACKING_ID', 'UA-0000000-00')
 
 ####### Celery config #######
 BROKER_URL = os.environ.get('BROKER_URL', 'amqp://guest:guest@localhost//')

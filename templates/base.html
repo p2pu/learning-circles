@@ -1,4 +1,5 @@
 {% load static %}
+{% load analytics %}
 
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html lang="{{language}}" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
@@ -42,7 +43,7 @@
 		{% include 'scripts.html' %}
     {% block scripts %}{% endblock %}
 
-		{% include 'ga.html' %}
+		{% ga_tracking_code %}
 
     </body>
 </html>
