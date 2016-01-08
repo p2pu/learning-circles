@@ -67,7 +67,7 @@ class Location(models.Model):
     contact_name = models.CharField(max_length=256, help_text='Person that can be contacted at the location.')
     contact = models.CharField(max_length=256, help_text='Email of phone for the contact person.')
     link = models.URLField(blank=True, help_text='URL where more info about the location can be seen.')
-    image = models.ImageField(blank=True)
+    image = models.ImageField(blank=True, help_text='A photo to represent your Learning Circle. It could be a picture of the building, or anything else you\'d like to choose!')
 
     def __unicode__(self):
         return self.name
