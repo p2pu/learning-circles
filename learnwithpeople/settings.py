@@ -41,8 +41,6 @@ INSTALLED_APPS = (
     # 3rd party apps
     'crispy_forms',
     'localflavor',
-    'django_extensions',
-    'debug_toolbar',
     # own 
     'studygroups',
     'interest',
