@@ -1,6 +1,6 @@
 <form id= "su-contact-form" class="form-inline" action="{% url 'interest:sync' %}" method="POST">
     {% csrf_token %}
-	<p>Sign up and we’ll notify you once courses, dates, and locations are confirmed.</p>
+	<p>Join our mailing list to hear about new courses and learning circles.</p>
     <input type="hidden" name="utm" />
     <div class="form-group name">
         <label class="sr-only" for="su-name-input">Name</label>
@@ -19,7 +19,7 @@
        <input id="su-mobile-input" type="tel" class="form-control" placeholder="Mobile number" name="mobile" />
     </div>
     <div class="signup">
-      <button type="submit" class="btn btn-success">Sign up</button>
+      <p><button type="submit" class="btn btn-success">Join mailing list</button></p>
     </div>
     <div class="alert alert-warning error hidden">Please enter either an email address or a mobile number.</div>
 </form>
