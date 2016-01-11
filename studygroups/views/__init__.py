@@ -340,9 +340,7 @@ class StudyGroupDelete(DeleteView):
     model = StudyGroup
     success_url = reverse_lazy('studygroups_organize')
     template_name = 'studygroups/confirm_delete.html'
-
-# TODO - only set deleted_at when deleting
-
+    pk_url_kwarg = 'study_group_id'
 
 
 @user_is_organizer
