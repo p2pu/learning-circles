@@ -44,7 +44,7 @@ def landing(request):
     courses = Course.objects.all().order_by('key')
 
     for course in courses:
-        course.studygroups = course.studygroup_set.all()
+        course.studygroups = course.studygroup_set.all().active()
 
     context = {
         'courses': courses,
@@ -167,7 +167,7 @@ def login_redirect(request):
 
 @login_required
 def facilitator(request):
-    study_groups = StudyGroup.objects.filter(facilitator=request.user)
+    study_groups = StudyGroup.objects.active().filter(facilitator=request.user)
     current_study_groups = study_groups.filter(end_date__gt=timezone.now())
     past_study_groups = study_groups.filter(end_date__lte=timezone.now())
     context = {
@@ -253,7 +253,7 @@ class ApplicationDelete(DeleteView):
 def organize(request):
     context = {
         'courses': Course.objects.all(),
-        'study_groups': StudyGroup.objects.all(),
+        'study_groups': StudyGroup.objects.active(),
         'meetings': StudyGroupMeeting.objects.all(),
         'locations': Location.objects.all(),
         'facilitators': Facilitator.objects.all(),
@@ -341,10 +341,13 @@ class StudyGroupDelete(DeleteView):
     success_url = reverse_lazy('studygroups_organize')
     template_name = 'studygroups/confirm_delete.html'
 
+# TODO - only set deleted_at when deleting
+
+
 
 @user_is_organizer
 def report(request):
-    study_groups = StudyGroup.objects.all()
+    study_groups = StudyGroup.objects.active()
     for study_group in study_groups:
         study_group.laptop_stats = {}
         study_group.laptop_stats['yes'] = study_group.application_set.all().filter(computer_access=Application.YES).count()

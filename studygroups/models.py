@@ -45,6 +45,33 @@ def _study_group_name():
     return ' '.join([STUDY_GROUP_NAMES[idx%num_names], "I"*(idx/num_names)])
 
 
+class SoftDeleteQuerySet(models.QuerySet):
+
+    def active(self):
+        return self.filter(deleted_at__isnull=True)
+
+    def delete(self, *args, **kwargs):
+        # Stop bulk deletes
+        self.update(deleted_at=timezone.now())
+        #TODO: check if we need to set any flags on the query set after the delete
+
+
+class LifeTimeTrackingModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
+
+    objects = SoftDeleteQuerySet.as_manager()
+
+    def delete(self, *args, **kwargs):
+        # Don't actually delete the object, affects django admin also
+        self.deleted_at = timezone.now()
+        self.save()
+        
+    class Meta:
+        abstract = True
+
+
 class Course(models.Model):
     title = models.CharField(max_length=128)
     provider = models.CharField(max_length=256)
@@ -96,7 +123,7 @@ class Organizer(models.Model):
         return self.user.__unicode__()
 
 
-class StudyGroup(models.Model):
+class StudyGroup(LifeTimeTrackingModel):
     name = models.CharField(max_length=128, default=_study_group_name)
     course = models.ForeignKey('studygroups.Course')
     location = models.ForeignKey('studygroups.Location')
@@ -106,7 +133,6 @@ class StudyGroup(models.Model):
     end_date = models.DateTimeField()
     duration = models.IntegerField(help_text='Meeting duration in minutes.') # meeting duration in minutes
     timezone = models.CharField(max_length=128)
-    created_at = models.DateTimeField(auto_now_add=True)
     signup_open = models.BooleanField(default=True)
     # consider storing number of weeks/meetings instead of end time
 
