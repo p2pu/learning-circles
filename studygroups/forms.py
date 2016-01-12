@@ -1,5 +1,6 @@
 from django import forms
 from django.utils.translation import ugettext as _
+from django.utils import timezone
 from django.contrib.auth.models import User
 
 from localflavor.us.forms import USPhoneNumberField
@@ -47,18 +48,17 @@ class MessageForm(forms.ModelForm):
 
 class StudyGroupForm(forms.ModelForm):
     start_date = forms.SplitDateTimeField(input_time_formats=['%I:%M %p'])
-    end_date = forms.SplitDateTimeField(input_time_formats=['%I:%M %p'])
+    weeks = forms.IntegerField(min_value=1, label=_('How many weeks will your learning circle run?'))
     timezone = forms.ChoiceField(choices=zip(pytz.common_timezones, pytz.common_timezones))
 
-    def clean(self):
-        cleaned_data = super(StudyGroupForm, self).clean()
-        start_date = cleaned_data.get('start_date')
-        end_date = cleaned_data.get('end_date')
-        if end_date < start_date:
-            msg = _('Start date needs to be after end date')
-            self.add_error('end_date', msg)
+    #def clean(self):
+        #cleaned_data = super(StudyGroupForm, self).clean()
+        #start_date = cleaned_data.get('start_date')
+        #end_date = cleaned_data.get('end_date')
+        #if start_date < timezone.now():
+        #    msg = _('Start date cannot be in the past.')
+        #    self.add_error('start_date', msg)
 
-        # TODO - Make sure days are the same
 
     class Meta:
         model = StudyGroup
@@ -68,7 +68,7 @@ class StudyGroupForm(forms.ModelForm):
             'location_details',
             'facilitator',
             'start_date',
-            'end_date',
+            'weeks',
             'duration',
             'timezone',
         ]

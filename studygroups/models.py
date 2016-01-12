@@ -131,7 +131,7 @@ class StudyGroup(LifeTimeTrackingModel):
     facilitator = models.ForeignKey(User)
     start_date = models.DateTimeField() # start_date also implies regular meeting day & time. Ex. Wednesday 1 July at 19:00 implies regular meetings on Wednesday at 19:00
     end_date = models.DateTimeField()
-    duration = models.IntegerField(help_text='Meeting duration in minutes.') # meeting duration in minutes
+    duration = models.IntegerField(help_text='Meeting duration in minutes.', default=90) # meeting duration in minutes
     timezone = models.CharField(max_length=128)
     signup_open = models.BooleanField(default=True)
     # consider storing number of weeks/meetings instead of end time

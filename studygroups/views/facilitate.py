@@ -13,7 +13,7 @@ from studygroups.forms import FacilitatorForm, StudyGroupForm
 from studygroups.models import Facilitator, StudyGroup, Location
 from studygroups.models import generate_all_meetings
 
-import string, random
+import string, random, datetime
 
 class FacilitatorSignup(CreateView):
     model = User
@@ -60,11 +60,9 @@ class FacilitatorStudyGroupCreate(View, TemplateResponseMixin, ContextMixin):
 
     def get_location_form_class(self):
         return modelform_factory(Location, fields=self.location_fields)
-
     
     def get_studygroup_form_class(self):
         return modelform_factory(StudyGroup, form=StudyGroupForm, exclude=['location', 'facilitator'])
-
 
     def get(self, request, *args, **kwargs):
         location_form_cls = self.get_location_form_class()
@@ -81,6 +79,7 @@ class FacilitatorStudyGroupCreate(View, TemplateResponseMixin, ContextMixin):
             location = location_form.save()
             study_group.facilitator = request.user
             study_group.location = location
+            study_group.end_date = study_group.start_date + datetime.timedelta(weeks=studygroup_form.cleaned_data['weeks'] - 1) # TODO - consider doing this in the form
             study_group.save()
             generate_all_meetings(study_group)
             messages.success(request, _('Learning circle successfully created.'))
