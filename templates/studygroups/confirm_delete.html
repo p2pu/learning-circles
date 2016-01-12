@@ -5,12 +5,18 @@
 <div class="container">
   <div class="row">
     <div class="col-md-12">
+        <h2>Confirm deletion</h2>
       <form action="" method="post">{% csrf_token %}
         <p>Are you sure you want to delete "{{ object }}"?</p>
         <p><input class="btn btn-primary" type="submit" value="Confirm" /></p>
       </form>
+      {% if user.facilitator %}
+      <p><a href="{% url 'studygroups_facilitator' %}">Back to dashboard</a></p>
+      {% else %}
+      <p><a href="{% url 'studygroups_organize' %}">Back to dashboard</a></p>
+      {% endif %}
     </div>
   </div>
 </div>
-
+  
 {% endblock %}

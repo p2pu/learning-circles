@@ -338,9 +338,14 @@ class StudyGroupUpdate(UpdateView):
 
 class StudyGroupDelete(DeleteView):
     model = StudyGroup
-    success_url = reverse_lazy('studygroups_organize')
     template_name = 'studygroups/confirm_delete.html'
     pk_url_kwarg = 'study_group_id'
+
+    def get_success_url(self):
+        if Facilitator.objects.filter(user=self.request.user).exists():
+            return reverse_lazy('studygroups_facilitator')
+        return reverse_lazy('studygroups_organize')
+
 
 
 @user_is_organizer
