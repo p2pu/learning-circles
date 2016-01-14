@@ -51,14 +51,6 @@ class StudyGroupForm(forms.ModelForm):
     weeks = forms.IntegerField(min_value=1, label=_('How many weeks will your learning circle run?'))
     timezone = forms.ChoiceField(choices=zip(pytz.common_timezones, pytz.common_timezones))
 
-    #def clean(self):
-        #cleaned_data = super(StudyGroupForm, self).clean()
-        #start_date = cleaned_data.get('start_date')
-        #end_date = cleaned_data.get('end_date')
-        #if start_date < timezone.now():
-        #    msg = _('Start date cannot be in the past.')
-        #    self.add_error('start_date', msg)
-
     def save(self, commit=True):
         self.instance.end_date = self.cleaned_data['start_date'] + datetime.timedelta(weeks=self.cleaned_data['weeks'] - 1)
         return super(StudyGroupForm, self).save(commit)
