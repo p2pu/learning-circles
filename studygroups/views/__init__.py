@@ -15,6 +15,9 @@ from django import http
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
+from django.utils.translation import ugettext as _
+from django.views.generic.base import View, RedirectView
+from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, TemplateView
 from django.contrib.auth.models import User
@@ -346,6 +349,25 @@ class StudyGroupDelete(DeleteView):
             return reverse_lazy('studygroups_facilitator')
         return reverse_lazy('studygroups_organize')
 
+
+class StudyGroupToggleSignup(RedirectView, SingleObjectMixin):
+    model = StudyGroup
+    pk_url_kwarg = 'study_group_id'
+    permanent = False
+
+    def get(self, request, *args, **kwargs):
+        #TODO - should be a post
+        #TODO - redirect is probably not the best way to indicate success
+        study_group = self.get_object()
+        study_group.signup_open = not study_group.signup_open
+        study_group.save()
+        messages.success(self.request, _('Signup successfully changed'))
+        return super(StudyGroupToggleSignup, self).get(request, *args, **kwargs)
+
+    def get_redirect_url(self, *args, **kwargs):
+        if Facilitator.objects.filter(user=self.request.user).exists():
+            return reverse_lazy('studygroups_facilitator')
+        return reverse_lazy('studygroups_organize')
 
 
 @user_is_organizer

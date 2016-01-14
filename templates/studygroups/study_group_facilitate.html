@@ -11,8 +11,16 @@
       <p>
       <a class="btn btn-primary" href="{% url 'studygroups_edit_study_group' lc.id %}">edit</a>
       <a class="btn btn-primary" href="{% url 'studygroups_studygroup_delete' lc.id %}">delete</a>
+      {% if lc.signup_open %}
+        <a class="btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' lc.id %}">close signup</a>
+      {% else %}
+        <a class="btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' lc.id %}">open signup</a>
+      {% endif %}
       <!--a class="btn btn-primary">download flyer</a-->
       </p>
+      {% if not lc.signup_open %}
+      <div class="alert alert-info" role="alert"><p>Signup is currently closed and your learning circle will not be listed on the landing page.</div></p>
+      {% endif %}
   </div>
   <div class="col-md-12 well">
     <p><strong>Next meeting:</strong> {{ lc.next_meeting.meeting_time|date:"D d M Y \a\t P" }}</p>
