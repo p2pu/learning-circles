@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 from localflavor.us.forms import USPhoneNumberField
 
-import pytz
+import pytz, datetime
 
 from studygroups.models import Application
 from studygroups.models import Reminder
@@ -59,6 +59,9 @@ class StudyGroupForm(forms.ModelForm):
         #    msg = _('Start date cannot be in the past.')
         #    self.add_error('start_date', msg)
 
+    def save(self, commit=True):
+        self.instance.end_date = self.cleaned_data['start_date'] + datetime.timedelta(weeks=self.cleaned_data['weeks'] - 1)
+        return super(StudyGroupForm, self).save(commit)
 
     class Meta:
         model = StudyGroup

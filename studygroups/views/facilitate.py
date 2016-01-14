@@ -79,7 +79,6 @@ class FacilitatorStudyGroupCreate(View, TemplateResponseMixin, ContextMixin):
             location = location_form.save()
             study_group.facilitator = request.user
             study_group.location = location
-            study_group.end_date = study_group.start_date + datetime.timedelta(weeks=studygroup_form.cleaned_data['weeks'] - 1) # TODO - consider doing this in the form
             study_group.save()
             generate_all_meetings(study_group)
             messages.success(request, _('Learning circle successfully created.'))
