@@ -18,7 +18,7 @@
     <p>{{ reminder.sms_body }}</p>
 </div>
 
-<p>If you wish to edit the reminder, you can follow <a href="{{ protocol }}://{{ domain }}{% url 'studygroups_messages_edit' reminder.study_group.id reminder.id %}"> this link</a>.</p>
+<p>If you wish to edit the reminder, you can follow <a href="{{ protocol }}://{{ domain }}{% url 'studygroups_message_edit' reminder.study_group.id reminder.id %}"> this link</a>.</p>
 
 {% if reminder.study_group_meeting.meeting_activity %}
 <p><strong>Recommended activity for this week:</strong> <a href="{{ protocol }}://{{ domain }}{{ reminder.study_group_meeting.meeting_activity.card.url }}" target="_blank">{{ reminder.study_group_meeting.meeting_activity.description }}</a></p>

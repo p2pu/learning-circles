@@ -64,19 +64,18 @@ class TestSignupModels(TestCase):
         # setup test accross daylight savings time
         sg = StudyGroup.objects.all()[0]
         sg.timezone = 'US/Central'
+        sg.meeting_time = datetime.time(16, 0)
         tz = pytz.timezone(sg.timezone)
 
         for i in range(56):
-            start_date = tz.localize(datetime.datetime(2015, 1, 1, 16, 0) + datetime.timedelta(weeks=i))
+            start_date = datetime.date(2015, 1, 1) + datetime.timedelta(weeks=i)
             end_date = start_date + datetime.timedelta(weeks=5)
-            end_date = datetime.datetime.combine(end_date, end_date.time())
-            end_date = tz.localize(end_date)
-            sg.start_date = pytz.utc.normalize(start_date)
-            sg.end_date = pytz.utc.normalize(end_date)
+            sg.start_date = start_date
+            sg.end_date = end_date
             meeting_times = get_all_meeting_times(sg)
             self.assertEqual(len(meeting_times), 6)
-            self.assertEqual(meeting_times[0], sg.start_date)
-            self.assertEqual(meeting_times[-1], sg.end_date)
+            self.assertEqual(meeting_times[0].date(), sg.start_date)
+            self.assertEqual(meeting_times[-1].date(), sg.end_date)
             for meeting_time in meeting_times:
                 self.assertEqual(datetime.time(16,0), meeting_time.time())
 
@@ -85,10 +84,13 @@ class TestSignupModels(TestCase):
         sg = StudyGroup.objects.all()[0]
         now = timezone.now()
         sg.start_date = now - datetime.timedelta(weeks=2)
+        sg.meeting_time = sg.start_date.time()
         sg.end_date = now + datetime.timedelta(weeks=2)
+        sg.save()
+        sg = StudyGroup.objects.all()[0]
         next_date = next_meeting_date(sg)
         tz = pytz.timezone(sg.timezone)
-        self.assertEquals(next_date.weekday(), sg.start_date.astimezone(tz).weekday())
+        self.assertEquals(next_date.weekday(), sg.start_date.weekday())
         self.assertTrue(next_date > now)
         diff = next_date - timezone.now()
         self.assertTrue(diff < datetime.timedelta(weeks=1))
@@ -99,14 +101,17 @@ class TestSignupModels(TestCase):
         sg = StudyGroup.objects.all()[0]
         now = timezone.now()
         sg.start_date = now + datetime.timedelta(weeks=4)
+        sg.meeting_time = sg.start_date.time()
         sg.end_date = now + datetime.timedelta(weeks=10)
+        sg.save()
+        sg = StudyGroup.objects.all()[0]
         next_date = next_meeting_date(sg)
         tz = pytz.timezone(sg.timezone)
-        self.assertEquals(next_date.weekday(), sg.start_date.astimezone(tz).weekday())
+        self.assertEquals(next_date.weekday(), sg.start_date.weekday())
         self.assertTrue(next_date > now)
         diff = next_date - now
-        self.assertTrue(next_date >= sg.start_date)
-        self.assertTrue(next_date <= sg.end_date)
+        self.assertTrue(next_date.date() >= sg.start_date)
+        self.assertTrue(next_date.date() <= sg.end_date)
 
 
     def test_generate_all_meetings(self):
@@ -114,9 +119,11 @@ class TestSignupModels(TestCase):
         self.assertEqual(Reminder.objects.all().count(), 0)
         sg = StudyGroup.objects.all()[0]
         sg.start_date = now - datetime.timedelta(days=3)
+        sg.meeting_time = sg.start_date.time()
         # TODO - add 1 hour to compensate for when daylight savings start
         sg.end_date = sg.start_date + datetime.timedelta(weeks=5, hours=1)
         sg.save()
+        sg = StudyGroup.objects.all()[0]
         self.assertEqual(StudyGroupMeeting.objects.all().count(),0)
         generate_all_meetings(sg)
         self.assertEqual(StudyGroupMeeting.objects.all().count(),6)
@@ -128,8 +135,10 @@ class TestSignupModels(TestCase):
         self.assertEqual(Reminder.objects.all().count(), 0)
         sg = StudyGroup.objects.all()[0]
         sg.start_date = now + datetime.timedelta(days=4, hours=1)
+        sg.meeting_time = sg.start_date.time()
         sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
         sg.save()
+        sg = StudyGroup.objects.all()[0]
         generate_all_meetings(sg)
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 0)
@@ -139,9 +148,11 @@ class TestSignupModels(TestCase):
         # Make sure we generate a reminder less than 4 days before
         now = timezone.now()
         sg = StudyGroup.objects.all()[0]
-        sg.start_date = now + datetime.timedelta(days=3, hours=23)
+        sg.start_date = now + datetime.timedelta(days=3)
+        sg.meeting_time = (now - datetime.timedelta(hours=1)).time()
         sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
         sg.save()
+        sg = StudyGroup.objects.all()[0]
         generate_all_meetings(sg)
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
@@ -161,8 +172,10 @@ class TestSignupModels(TestCase):
         # Make sure we don't generate a reminder for old study groups
         sg = StudyGroup.objects.all()[0]
         sg.start_date = now - datetime.timedelta(days=5, weeks=7)
+        sg.meeting_time = sg.start_date.time()
         sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
         sg.save()
+        sg = StudyGroup.objects.all()[0]
         generate_all_meetings(sg)
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 0)
@@ -175,8 +188,10 @@ class TestSignupModels(TestCase):
         # Make sure we don't generate a reminder for future study groups
         sg = StudyGroup.objects.all()[0]
         sg.start_date = now + datetime.timedelta(days=2, weeks=1)
+        sg.meeting_time = sg.start_date.time()
         sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
         sg.save()
+        sg = StudyGroup.objects.all()[0]
         generate_all_meetings(sg)
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 0)
@@ -187,8 +202,10 @@ class TestSignupModels(TestCase):
         now = timezone.now()
         sg = StudyGroup.objects.all()[0]
         sg.start_date = now - datetime.timedelta(days=5)
+        sg.meeting_time = sg.start_date.time()
         sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
         sg.save()
+        sg = StudyGroup.objects.all()[0]
         data = self.APPLICATION_DATA
         data['study_group'] = sg
         application = Application(**data)
@@ -212,8 +229,10 @@ class TestSignupModels(TestCase):
         now = timezone.now()
         sg = StudyGroup.objects.all()[0]
         sg.start_date = now - datetime.timedelta(days=5)
+        sg.meeting_time = sg.start_date.time()
         sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
         sg.save()
+        sg = StudyGroup.objects.all()[0]
         data = self.APPLICATION_DATA
         data['study_group'] = sg
         data['contact_method'] = Application.TEXT

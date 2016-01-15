@@ -333,7 +333,6 @@ class StudyGroupCreate(CreateView):
 ## This form is used by facilitators
 class StudyGroupUpdate(UpdateView):
     model = StudyGroup
-    #fields = ['location_details', 'start_date', 'end_date', 'duration']
     form_class =  modelform_factory(StudyGroup, StudyGroupForm, exclude=['location', 'facilitator'])
     success_url = reverse_lazy('studygroups_facilitator')
     pk_url_kwarg = 'study_group_id'
@@ -400,7 +399,7 @@ def weekly_report(request, year=None, month=None, day=None ):
 
 
 @user_is_group_facilitator
-def email(request, study_group_id):
+def message_send(request, study_group_id):
     # TODO - this piggy backs of Reminder, won't work of Reminder is coupled to StudyGroupMeeting
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
     if request.method == 'POST':
@@ -424,7 +423,7 @@ def email(request, study_group_id):
 
 
 @user_is_group_facilitator
-def messages_edit(request, study_group_id, message_id):
+def message_edit(request, study_group_id, message_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
     reminder = get_object_or_404(Reminder, pk=message_id)
     if not reminder.sent_at == None:
