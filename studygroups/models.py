@@ -152,7 +152,11 @@ class StudyGroup(LifeTimeTrackingModel):
 
     def local_start_date(self):
         tz = pytz.timezone(self.timezone)
-        return tz.localize(self.start_date)
+        date = datetime.datetime.combine(self.start_date, self.meeting_time)
+        return tz.localize(date)
+
+    def timezone_display(self):
+        return self.local_start_date().strftime("%Z")
 
     def __unicode__(self):
         return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day(), self.meeting_time, self.location)
