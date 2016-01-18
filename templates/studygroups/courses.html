@@ -31,7 +31,7 @@
 									{{ sg.location_details }}
 								</div>
 								<div class="study-group-details">
-									<p><strong><i class="fa fa-calendar"></i>&nbsp; &nbsp;{{ sg.day }}s {{ sg.start_date|date:"f A" }} - {{ sg.end_time|time:"fA" }}</strong></p>
+                  <p><strong><i class="fa fa-calendar"></i>&nbsp; &nbsp;{{ sg.day }}s {{ sg.meeting_time|time:"f A" }} - {{ sg.end_time|time:"f A" }}, {{ sg.timezone_display }}</strong></p>
                   <p><strong>{{ sg.studygroupmeeting_set.count }} week{{sg.studygroupmeeting_set.count|pluralize}}</strong> beginning <strong>{{ sg.start_date|date:"j N Y" }}</strong></p>
 								</div>
               {% if sg.signup_open %}

@@ -21,7 +21,7 @@
             <tr>
                 <td>
                     <a href="#{{ group.course.id }}" target="_blank">{{ group.course }}</a><br>
-                    {{group.start_date|date:"l" }}s, {{ group.start_date|date:"f A" }} at <a href="{{group.location.link}}" target="_blank">{{ group.location }}</a>
+                    {{group.start_date|date:"l" }}s, {{ group.meeting_time|date:"f A" }} at <a href="{{group.location.link}}" target="_blank">{{ group.location }}</a>
                 </td>
                 <td>
                     {{ group.application_set.count }}<br>

@@ -26,7 +26,7 @@
                 <td>{{ message.sent_at }}</td>
                 <td>
                     {% if not message.sent_at %}
-                        <a href="{% url 'studygroups_messages_edit' study_group.id message.id %}" class="btn btn-info">Edit</a>
+                        <a href="{% url 'studygroups_message_edit' study_group.id message.id %}" class="btn btn-info">Edit</a>
                     {% endif %}
                 </td>
             </tr>

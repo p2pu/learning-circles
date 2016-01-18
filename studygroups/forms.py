@@ -47,7 +47,7 @@ class MessageForm(forms.ModelForm):
 
 
 class StudyGroupForm(forms.ModelForm):
-    start_date = forms.SplitDateTimeField(input_time_formats=['%I:%M %p'])
+    meeting_time = forms.TimeField(input_formats=['%I:%M %p'])
     weeks = forms.IntegerField(min_value=1, label=_('How many weeks will your learning circle run?'))
     timezone = forms.ChoiceField(choices=zip(pytz.common_timezones, pytz.common_timezones))
 
@@ -63,6 +63,7 @@ class StudyGroupForm(forms.ModelForm):
             'location_details',
             'facilitator',
             'start_date',
+            'meeting_time',
             'weeks',
             'duration',
             'timezone',

@@ -5,7 +5,7 @@
 <div class="panel-body">
 <div class="row">
   <div class="col-md-12">
-      <p>At <a href="{{lc.location.link}}">{{ lc.location }}</a> {{lc.location_details}} every {{ lc.day }}, {{ lc.start_date|time:"f A" }} to {{ lc.end_time|time:"f A" }} starting {{ lc.start_date|date:"D d M Y" }}</p>
+    <p>At <a href="{{lc.location.link}}">{{ lc.location }}</a> {{lc.location_details}} every {{ lc.day }}, {{ lc.meeting_time|time:"f A" }} to {{ lc.end_time|time:"f A" }} {{ lc.timezone_display }} starting {{ lc.start_date|date:"D d M Y" }}</p>
   </div>
   <div class="col-md-12">
       <p>
@@ -107,14 +107,14 @@
               <td>{{ message.sent_at|date:"D d M Y \a\t P" }}</td>
               <td>
                   {% if not message.sent_at %}
-                      <a href="{% url 'studygroups_messages_edit' lc.id message.id %}" class="btn btn-info">Edit</a>
+                      <a href="{% url 'studygroups_message_edit' lc.id message.id %}" class="btn btn-info">Edit</a>
                   {% endif %}
               </td>
           </tr>
       {% endfor %}
       </tbody>
     </table>
-    <a href="{% url 'studygroups_email' lc.id %}" class="btn btn-primary">New message</a>
+    <a href="{% url 'studygroups_message_send' lc.id %}" class="btn btn-primary">New message</a>
   </div>
 
 

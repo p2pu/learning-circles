@@ -8,7 +8,7 @@
         <h2>You successfully signed up!</h2>
     </div>
     <div class="col-md-12">
-        <p>Thank you for signing up for {{study_group.course.title}} at {{study_group.location.name}}. The first meeting will be on <strong>{{study_group.start_date|date:"l, j F, fA"}}</strong>. Your facilitator will be in contact before then.</p>
+        <p>Thank you for signing up for {{study_group.course.title}} at {{study_group.location.name}}. The first meeting will be on <strong>{{study_group.start_date|date:"l, j F"}}, {{study_group.meeting_time|time:"fA"}}</strong>. Your facilitator will be in contact before then.</p>
     </div>
     {% if study_group.location.image %}
     <div class="col-md-4 col-md-offset-4">

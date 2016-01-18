@@ -129,21 +129,20 @@ class StudyGroup(LifeTimeTrackingModel):
     location = models.ForeignKey('studygroups.Location')
     location_details = models.CharField(max_length=128, help_text='Meeting room or office number.')
     facilitator = models.ForeignKey(User)
-    start_date = models.DateTimeField() # start_date also implies regular meeting day & time. Ex. Wednesday 1 July at 19:00 implies regular meetings on Wednesday at 19:00
-    end_date = models.DateTimeField()
+    start_date = models.DateField(help_text='Date of the first meeting')
+    meeting_time = models.TimeField()
+    end_date = models.DateField()
     duration = models.IntegerField(help_text='Meeting duration in minutes.', default=90) # meeting duration in minutes
     timezone = models.CharField(max_length=128)
     signup_open = models.BooleanField(default=False)
     # consider storing number of weeks/meetings instead of end time
 
     def day(self):
-        #TODO this will be wrong if the timezone and UTC have different days for the meeting time!
         return calendar.day_name[self.start_date.weekday()]
 
     def end_time(self):
-        q = self.start_date + datetime.timedelta(minutes=self.duration)
-        # without date we loose timezone info used to display date correctly
-        return q
+        q = datetime.datetime.combine(self.start_date, self.meeting_time) + datetime.timedelta(minutes=self.duration)
+        return q.time()
 
     def next_meeting(self):
         return self.studygroupmeeting_set.filter(meeting_time__gt=timezone.now()).order_by('meeting_time').first()
@@ -151,10 +150,16 @@ class StudyGroup(LifeTimeTrackingModel):
     def meeting_times(self):
         return get_all_meeting_times(self)
 
-    def __unicode__(self):
-        # TODO time is given in wrong timezone
+    def local_start_date(self):
         tz = pytz.timezone(self.timezone)
-        return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day(), tz.normalize(self.start_date).time(), self.location)
+        date = datetime.datetime.combine(self.start_date, self.meeting_time)
+        return tz.localize(date)
+
+    def timezone_display(self):
+        return self.local_start_date().strftime("%Z")
+
+    def __unicode__(self):
+        return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day(), self.meeting_time, self.location)
 
 
 class Application(models.Model):
@@ -286,14 +291,12 @@ def get_all_meeting_times(study_group):
     # times are in the study group timezone
     # meeting time stays constant, eg 18:00 stays 18:00 even when daylight savings changes
     tz = pytz.timezone(study_group.timezone)
-    next_meeting = tz.normalize(study_group.start_date)
+    meeting_date = study_group.start_date
     meetings = []
-    while next_meeting <= study_group.end_date:
+    while meeting_date <= study_group.end_date:
+        next_meeting = tz.localize(datetime.datetime.combine(meeting_date, study_group.meeting_time))
         meetings += [next_meeting]
-        next_meeting += datetime.timedelta(days=7)
-        # Next two steps are to keep meetings at the same time even when daylight savings kick in or end 
-        next_meeting = datetime.datetime.combine(next_meeting, next_meeting.time()) 
-        next_meeting = tz.localize(next_meeting)
+        meeting_date += datetime.timedelta(days=7)
     return meetings
 
 
