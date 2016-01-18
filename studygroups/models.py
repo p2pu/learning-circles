@@ -454,8 +454,7 @@ def send_weekly_update():
     html_body = render_to_string('studygroups/weekly-update.html', context)
     text_body = render_to_string('studygroups/weekly-update.txt', context)
     timezone.deactivate()
-    # TODO Organizers not in group anymore
-    to = [o.email for o in Group.objects.get(name='organizers').user_set.all()]
+    to = [o.user.email for o in Organizer.objects.all()]
  
     update = EmailMultiAlternatives(
         'Weekly Learning Circles update',
