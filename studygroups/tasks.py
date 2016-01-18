@@ -26,7 +26,7 @@ def send_reminders():
 
 @shared_task
 def gen_reminders():
-    for study_group in StudyGroup.objects.all():
+    for study_group in StudyGroup.objects.active():
         translation.activate(settings.LANGUAGE_CODE)
         generate_reminder(study_group)
 
