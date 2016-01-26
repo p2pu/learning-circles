@@ -1,6 +1,6 @@
 Hi there
 
-{{ application.name }} applied for "{{application.study_group.course.title}}" at {{application.study_group.location.name}}.
+{{ application.name }} applied for "{{application.study_group.course.title}}" at {{application.study_group.venue_name}}.
 
 Their response to the signup questions: 
 

@@ -10,9 +10,9 @@
     <div class="col-md-12">
         <p>If you want to change your RSVP status, just visit the appropriate link in your reminder email.</p>
     </div>
-    {% if study_group.location.image %}
+    {% if study_group.image %}
     <div class="col-md-4 col-md-offset-4">
-        <p><img src="{{study_group.location.image.url}}"></p>
+        <p><img src="{{study_group.image.url}}"></p>
      </div>
     {% endif %}
  </div>

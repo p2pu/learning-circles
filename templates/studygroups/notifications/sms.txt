@@ -1,1 +1,1 @@
-Remember the {{ study_group.course.title | safe }} meeting this {{ next_meeting.meeting_time|date:"l j N fA" }} at {{ study_group.location.name }}, {{ study_group.location_details }}.
+Remember the {{ study_group.course.title | safe }} meeting this {{ next_meeting.meeting_time|date:"l j N fA" }} at {{ study_group.venue_name }}, {{ study_group.venue_details }}.
