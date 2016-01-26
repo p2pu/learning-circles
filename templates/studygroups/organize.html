@@ -28,7 +28,7 @@
             <tr>
                 <td>
                     <a href="#{{ group.course.id }}" target="_blank">{{ group.course }}</a><br>
-                    {{group.start_date|date:"l" }}s, {{ group.meeting_time|date:"f A" }} at <a href="{{group.location.link}}" target="_blank">{{ group.location }}</a>
+                    {{group.start_date|date:"l" }}s, {{ group.meeting_time|date:"f A" }} at <a href="{{group.website}}" target="_blank">{{ group.venue_name }}</a>
                 </td>
                 <td>
                     {{ group.application_set.count }} 
@@ -123,41 +123,6 @@
     </div>
   </div>
 
-  <div class="row">
-    <div class="col-md-12">
-      <h1>Locations</h1>
-      <table class="table table-bordered">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Address</th>
-            <th>Contact</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for location in locations %}
-            <tr>
-                <td>
-                    <a href="{{location.link }}" target="_blank">{{ location.name }}</a>
-                </td>
-                <td>
-                    {{ location.address }}
-                </td>
-                <td>
-                    <a href="mailto:{{location.contact}}">{{ location.contact_name }} &lt;{{ location.contact }}&gt;</a>
-                </td>
-                <td>
-                    <a class="btn btn-primary" href="{% url 'studygroups_location_edit' location.id %}">Edit</a>
-                    <a class="btn btn-primary" href="{% url 'studygroups_location_delete' location.id %}">Delete</a>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-      <p><a href="{% url 'studygroups_location_create' %}" class="btn btn-primary">Add location</a></p>
-
-    </div>
-  </div>
 </div> <!-- /container -->
 
 {% endblock %}

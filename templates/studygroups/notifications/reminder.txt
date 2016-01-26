@@ -1,6 +1,6 @@
 Hi there!
 
-The {{ study_group.course.title | safe }} Learning Circle will meet this {{ next_meeting.meeting_time|date:"l, j N, fA" }} at {{ study_group.location.name }}, {{ study_group.location_details }}.
+The {{ study_group.course.title | safe }} Learning Circle will meet this {{ next_meeting.meeting_time|date:"l, j N, fA" }} at {{ study_group.venue_name }}, {{ study_group.venue_details }}.
 
 {% if feedback %}From last week's meeting: {{ feedback.feedback }}{% endif %}
 

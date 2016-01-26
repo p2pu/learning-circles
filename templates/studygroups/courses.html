@@ -21,21 +21,21 @@
 				<h5>Offered at:</h5>
 					{% for sg in course.studygroups %}
 						<div class="study-group col-md-4 col-sm-4">
-                {% if sg.location.image %}
-                <img class="img-thumbnail" src="{{ sg.location.image.url }}" alt="{{ sg.location.name }}" />
+                {% if sg.image %}
+                <img class="img-thumbnail" src="{{ sg.image.url }}" alt="{{ sg.venue_name }}" />
                 {% endif %}
 								<div class="location">
-									{{ sg.location }}
+									{{ sg.venue_name }}
 								</div>
 								<div class="location-details">
-									{{ sg.location_details }}
+									{{ sg.venue_details }}
 								</div>
 								<div class="study-group-details">
                   <p><strong><i class="fa fa-calendar"></i>&nbsp; &nbsp;{{ sg.day }}s {{ sg.meeting_time|time:"f A" }} - {{ sg.end_time|time:"f A" }}, {{ sg.timezone_display }}</strong></p>
                   <p><strong>{{ sg.studygroupmeeting_set.count }} week{{sg.studygroupmeeting_set.count|pluralize}}</strong> beginning <strong>{{ sg.start_date|date:"j N Y" }}</strong></p>
 								</div>
               {% if sg.signup_open %}
-							<a href="{% url 'studygroups_signup' location=sg.location.name|slugify study_group_id=sg.pk %}"
+							<a href="{% url 'studygroups_signup' location=sg.venue_name|slugify study_group_id=sg.pk %}"
 							   class="course-apply btn btn-info"> Sign up </a>
               {% endif %}
 						</div>

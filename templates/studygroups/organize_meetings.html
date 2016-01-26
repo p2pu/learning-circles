@@ -33,7 +33,7 @@
 
           {% for meeting in week.list|dictsort:"meeting_time" %}
           <tr>
-              <td>{{meeting.study_group.course.title}} at {{meeting.study_group.location.name}}</td>
+              <td>{{meeting.study_group.course.title}} at {{meeting.study_group.venue_name}}</td>
             </td>
             <td>{{ meeting.meeting_time|date:"l P d M" }}</td>
               <td>{% if meeting.rsvp_set.all.count %}Yes ({{ meeting.rsvps.yes|length }}), No ({{ meeting.rsvps.no|length }}){% endif %}</td>

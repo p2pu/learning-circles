@@ -59,14 +59,17 @@ class StudyGroupForm(forms.ModelForm):
         model = StudyGroup
         fields = [
             'course',
-            'location',
-            'location_details',
+            'venue_name',
+            'venue_address',
+            'venue_details',
+            'venue_website',
             'facilitator',
             'start_date',
-            'meeting_time',
             'weeks',
+            'meeting_time',
             'duration',
             'timezone',
+            'image',
         ]
 
 
