@@ -8,9 +8,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib import messages
 from django.utils.translation import ugettext as _
+from django.db.models import Q
 
 from studygroups.forms import FacilitatorForm, StudyGroupForm
-from studygroups.models import Facilitator, StudyGroup, Location
+from studygroups.models import Facilitator, StudyGroup, Location, Course
 from studygroups.models import generate_all_meetings
 
 import string, random, datetime
@@ -68,6 +69,7 @@ class FacilitatorStudyGroupCreate(View, TemplateResponseMixin, ContextMixin):
         location_form_cls = self.get_location_form_class()
         location_form = location_form_cls(prefix='location_')
         studygroup_form = self.get_studygroup_form_class()()
+        studygroup_form.fields["course"].queryset = Course.objects.filter(Q(created_by=request.user) | Q(created_by__isnull=True))
         return self.render_to_response(self.get_context_data(location_form=location_form, studygroup_form=studygroup_form))
 
     def post(self, request, *args, **kwargs):

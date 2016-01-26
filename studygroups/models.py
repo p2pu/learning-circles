@@ -82,6 +82,7 @@ class Course(models.Model):
     prerequisite = models.TextField(blank=True)
     time_required = models.IntegerField(help_text='Number of hours per week.')
     caption = models.TextField(help_text='Short description of the course.')
+    created_by = models.ForeignKey(User, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):

@@ -65,7 +65,7 @@ urlpatterns = patterns('',
     url(r'^location/(?P<pk>[\d]+)/edit/$', user_is_organizer(LocationUpdate.as_view()), name='studygroups_location_edit'),
     url(r'^location/(?P<pk>[\d]+)/delete/$', user_is_organizer(LocationDelete.as_view()), name='studygroups_location_delete'),
 
-    url(r'^course/create/$', user_is_organizer(CourseCreate.as_view()), name='studygroups_course_create'),
+    url(r'^course/create/$', login_required(CourseCreate.as_view()), name='studygroups_course_create'),
     url(r'^course/(?P<pk>[\d]+)/edit/$', user_is_organizer(CourseUpdate.as_view()), name='studygroups_course_edit'),
     url(r'^course/(?P<pk>[\d]+)/delete/$', user_is_organizer(CourseDelete.as_view()), name='studygroups_course_delete'),
 

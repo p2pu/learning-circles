@@ -44,7 +44,7 @@ from facilitate import FacilitatorStudyGroupCreate
 
 
 def landing(request):
-    courses = Course.objects.all().order_by('key')
+    courses = Course.objects.filter(created_by__isnull=True).order_by('key')
 
     for course in courses:
         course.studygroups = course.studygroup_set.all().active()
@@ -295,7 +295,20 @@ class CourseCreate(CreateView):
         'time_required',
         'caption',
     ]
-    success_url = reverse_lazy('studygroups_organize')
+
+    def form_valid(self, form):
+        # TODO - courses created by organizers will always be global
+        if Organizer.objects.filter(user=self.request.user).exists():
+            return super(CourseCreate, self).form_valid(form)
+        self.object = form.save(commit=False)
+        self.object.created_by = self.request.user
+        self.object.save()
+        return http.HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        if Facilitator.objects.filter(user=self.request.user).exists():
+            return reverse_lazy('studygroups_facilitator')
+        return reverse_lazy('studygroups_organize')
 
 
 class CourseUpdate(UpdateView):
