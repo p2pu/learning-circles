@@ -54,39 +54,20 @@ class FacilitatorSignupSuccess(TemplateView):
     template_name = 'studygroups/facilitator_signup_success.html'
 
 
-class FacilitatorStudyGroupCreate(View, TemplateResponseMixin, ContextMixin):
+class FacilitatorStudyGroupCreate(CreateView):
     success_url = reverse_lazy('studygroups_facilitator')
     template_name = 'studygroups/facilitator_studygroup_form.html'
-    location_fields = ['name', 'address', 'contact_name', 'contact', 'link', 'image']
-
-    def get_location_form_class(self):
-        return modelform_factory(Location, fields=self.location_fields)
     
-    def get_studygroup_form_class(self):
-        return modelform_factory(StudyGroup, form=StudyGroupForm, exclude=['location', 'facilitator'])
+    def get_form_class(self):
+        return modelform_factory(StudyGroup, form=StudyGroupForm, exclude=['facilitator'])
 
-    def get(self, request, *args, **kwargs):
-        location_form_cls = self.get_location_form_class()
-        location_form = location_form_cls(prefix='location_')
-        studygroup_form = self.get_studygroup_form_class()()
-        studygroup_form.fields["course"].queryset = Course.objects.filter(Q(created_by=request.user) | Q(created_by__isnull=True))
-        return self.render_to_response(self.get_context_data(location_form=location_form, studygroup_form=studygroup_form))
-
-    def post(self, request, *args, **kwargs):
-        location_form_cls = self.get_location_form_class()
-        location_form = location_form_cls(self.request.POST, self.request.FILES, prefix='location_')
-        studygroup_form = self.get_studygroup_form_class()(self.request.POST)
-        if location_form.is_valid() and studygroup_form.is_valid():
-            study_group = studygroup_form.save(commit=False)
-            location = location_form.save()
-            study_group.facilitator = request.user
-            study_group.location = location
-            study_group.save()
-            generate_all_meetings(study_group)
-            messages.success(request, _('Learning circle successfully created.'))
-            return http.HttpResponseRedirect(self.success_url)
-        else:
-            return self.render_to_response(self.get_context_data(location_form=location_form, studygroup_form=studygroup_form))
+    def form_valid(self, form):
+        study_group = form.save(commit=False)
+        study_group.facilitator = self.request.user
+        study_group.save()
+        generate_all_meetings(study_group)
+        messages.success(self.request, _('Learning circle successfully created.'))
+        return http.HttpResponseRedirect(self.success_url)
 
 
 class FacilitatorCreate(CreateView):

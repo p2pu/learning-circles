@@ -13,10 +13,7 @@
   <div class="col-md-12 col-sm-12">
 	  <form action="" method="POST" enctype="multipart/form-data">
 	    {% csrf_token %}
-        <h3>Location details</h3>
-	    {{ location_form|crispy }}
-        <h3>Learning Circle details</h3>
-	    {{ studygroup_form|crispy }}
+	    {{ form|crispy }}
         <p><button type="submit" class="btn btn-default">Save</button></p>
 	  </form>
   </div>

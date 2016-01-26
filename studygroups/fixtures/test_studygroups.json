@@ -30,7 +30,6 @@
       "end_date": "2015-04-23",
       "duration": 120,
       "timezone": "US/Central",
-      "location": 1,
       "facilitator": 1
    },
    "model": "studygroups.studygroup",
@@ -47,7 +46,6 @@
       "end_date": "2015-03-23",
       "duration": 120,
       "timezone": "US/Central",
-      "location": 1,
       "facilitator": 1
    },
    "model": "studygroups.studygroup",
@@ -64,7 +62,6 @@
       "end_date": "2015-03-23",
       "duration": 120,
       "timezone": "US/Central",
-      "location": 1,
       "facilitator": 1
    },
    "model": "studygroups.studygroup",
@@ -81,7 +78,6 @@
       "end_date": "2015-03-23",
       "duration": 120,
       "timezone": "US/Central",
-      "location": 1,
       "facilitator": 1
    },
    "model": "studygroups.studygroup",

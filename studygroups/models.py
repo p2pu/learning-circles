@@ -127,12 +127,10 @@ class Organizer(models.Model):
 class StudyGroup(LifeTimeTrackingModel):
     name = models.CharField(max_length=128, default=_study_group_name)
     course = models.ForeignKey('studygroups.Course', help_text='Choose one or add a new course.')
-    location = models.ForeignKey('studygroups.Location') # TODO - remove this
     venue_name = models.CharField(max_length=256, verbose_name='Common name of venue.', help_text='e.g. Pretoria Library or Bekka\'s house')
     venue_address = models.CharField(max_length=256, help_text='Like you were mailing a letter. Include country!.')
     venue_details = models.CharField(max_length=128, verbose_name='Meeting spot', help_text='e.g. second floor meeting room or kitchen.')
     venue_website = models.URLField(blank=True, help_text='Link to any website that has more info about the venue or Circle.')
-    location_details = models.CharField(max_length=128, help_text='Meeting room or office number.') # TODO - remove this field
     facilitator = models.ForeignKey(User)
     start_date = models.DateField(verbose_name='First meeting date', help_text='Give yourself at least 4 weeks to market, if possible.')
     meeting_time = models.TimeField()
@@ -164,7 +162,7 @@ class StudyGroup(LifeTimeTrackingModel):
         return self.local_start_date().strftime("%Z")
 
     def __unicode__(self):
-        return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day(), self.meeting_time, self.location)
+        return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day(), self.meeting_time, self.venue_name)
 
 
 class Application(models.Model):

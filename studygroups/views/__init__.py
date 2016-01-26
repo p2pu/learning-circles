@@ -258,7 +258,6 @@ def organize(request):
         'courses': Course.objects.all(),
         'study_groups': StudyGroup.objects.active(),
         'meetings': StudyGroupMeeting.objects.filter(study_group__in=StudyGroup.objects.active()),
-        'locations': Location.objects.all(),
         'facilitators': Facilitator.objects.all(),
         'today': timezone.now(),
     }
@@ -346,7 +345,7 @@ class StudyGroupCreate(CreateView):
 ## This form is used by facilitators
 class StudyGroupUpdate(UpdateView):
     model = StudyGroup
-    form_class =  modelform_factory(StudyGroup, StudyGroupForm, exclude=['location', 'facilitator'])
+    form_class =  modelform_factory(StudyGroup, StudyGroupForm, exclude=['facilitator'])
     success_url = reverse_lazy('studygroups_facilitator')
     pk_url_kwarg = 'study_group_id'
 
