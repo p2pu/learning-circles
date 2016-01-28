@@ -66,7 +66,7 @@ class FacilitatorStudyGroupCreate(CreateView):
         study_group.facilitator = self.request.user
         study_group.save()
         generate_all_meetings(study_group)
-        messages.success(self.request, _('Learning circle successfully created.'))
+        messages.success(self.request, _('You created a new Learning Circle!'))
         return http.HttpResponseRedirect(self.success_url)
 
 
