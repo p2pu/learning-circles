@@ -97,6 +97,11 @@ class StudyGroupForm(forms.ModelForm):
     weeks = forms.IntegerField(min_value=1, label=_('How many weeks will your learning circle run?'))
     timezone = forms.ChoiceField(choices=zip(pytz.common_timezones, pytz.common_timezones))
 
+    def __init__(self, *args, **kwargs):
+        super(StudyGroupForm, self).__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.fields['weeks'].initial = self.instance.studygroupmeeting_set.active().count()
+
     def save(self, commit=True):
         self.instance.end_date = self.cleaned_data['start_date'] + datetime.timedelta(weeks=self.cleaned_data['weeks'] - 1)
         return super(StudyGroupForm, self).save(commit)
