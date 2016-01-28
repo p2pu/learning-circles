@@ -5,7 +5,10 @@ from django.contrib.auth.models import User
 
 from localflavor.us.forms import USPhoneNumberField
 
-import pytz, datetime
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit, Layout, Fieldset, MultiField
+
+import pytz, datetime, json
 
 from studygroups.models import Application
 from studygroups.models import Reminder
@@ -15,27 +18,70 @@ from studygroups.models import Feedback
 
 
 class ApplicationForm(forms.ModelForm):
-    mobile = USPhoneNumberField(required=False)
+    COMPUTER_ACCESS = (
+        ('Both', 'Both'),
+        ('Just a laptop', 'Just a laptop'),
+        ('Just headphones', 'Just headphones'),
+        ('Neither', 'Neither'),
+    )
+    DIGITAL_LITERACY_CHOICES = (
+        ('0', _(u'Can\'t do')), 
+        ('1', _(u'Need help doing')),
+        ('2', _(u'Can do with difficulty')), 
+        ('3', _(u'Can do')),
+        ('4', _(u'Expert (can teach others)')),
+    )
+
+    mobile = USPhoneNumberField(required=False, label=_('Phone Number for SMS'), help_text=_('if no email available (currently US numbers only)'))
+    computer_access = forms.ChoiceField(
+        choices=COMPUTER_ACCESS,
+        label=_('Can you bring a laptop and headphones to the Learning Circle each week?')
+    )
+    goals = forms.CharField(
+        label=_('In one sentence, please explain your goals for taking this course.')
+    )
+    support = forms.CharField(
+        label=_('A successful study group requires the support of all of its members. How will you help your peers achieve their goals?')
+    )
+
+    send_email = forms.ChoiceField(label=_('Send an email'), choices=DIGITAL_LITERACY_CHOICES)
+    delete_spam = forms.ChoiceField(label=_('Delete spam email'), choices=DIGITAL_LITERACY_CHOICES)
+    search_online = forms.ChoiceField(label=_('Find stuff online using Google'), choices=DIGITAL_LITERACY_CHOICES)
+    browse_video = forms.ChoiceField(label=_('Watch a video on Youtube'), choices=DIGITAL_LITERACY_CHOICES)
+    online_shopping = forms.ChoiceField(label=_('Fill out an application form or buy something online'), choices=DIGITAL_LITERACY_CHOICES)
+    mobile_apps = forms.ChoiceField(label=_('Use a mobile app'), choices=DIGITAL_LITERACY_CHOICES)
+    web_safety = forms.ChoiceField(label=_('Evaluate whether a website is safe/can be trusted'), choices=DIGITAL_LITERACY_CHOICES)
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.layout = Layout(
+            'study_group', 'name', 'email', 'mobile', 'goals', 'support', 'computer_access',
+            Fieldset(
+                _(u'How comfortable are you doing the following tasks?'),
+                'send_email', 'delete_spam', 'search_online', 'browse_video', 'online_shopping', 'mobile_apps', 'web_safety'
+            )
+        )
+        self.helper.add_input(Submit('submit', 'Submit'))
+        super(ApplicationForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        signup_questions = {}
+        questions = ['computer_access', 'goals', 'support', 'send_email', 'delete_spam', 'search_online', 'browse_video', 'online_shopping', 'mobile_apps', 'web_safety']
+        for question in questions:
+            signup_questions[question] = self.cleaned_data[question]
+        self.instance.signup_questions = json.dumps(signup_questions)
+        return super(ApplicationForm, self).save(commit)
 
     def clean(self):
         cleaned_data = super(ApplicationForm, self).clean()
         contact_method = cleaned_data.get("contact_method")
 
-        if contact_method == Application.EMAIL and not cleaned_data.get('email'):
-            self.add_error('email', _('Please enter your email address or change your preferred contact method.'))
-        elif contact_method == Application.TEXT and not cleaned_data.get('mobile'):
-            self.add_error('mobile', _('Please enter your mobile number or change your preferred contact method.'))
+        if not cleaned_data.get('mobile') and not cleaned_data.get('email'):
+            self.add_error('email', _('Please provide your email address or a US mobile number to sign up.'))
 
     class Meta:
         model = Application
-        labels = {
-            'mobile': _('What is your mobile number?'),
-            'contact_method': _('Preferred Method of Contact.'),
-            'computer_access': _('Can you bring your own laptop to the Learning Circle?'),
-            'goals': _('In one sentence, please explain your goals for taking this course.'),
-            'support': _('A successful study group requires the support of all of its members. How will you help your peers achieve their goals?'),
-        }
-        exclude = ['accepted_at']
+        fields = ['study_group', 'name', 'email', 'mobile']
         widgets = {'study_group': forms.HiddenInput} 
 
 

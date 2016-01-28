@@ -66,15 +66,18 @@ def signup(request, location, study_group_id):
         form = ApplicationForm(request.POST)
         if form.is_valid():
             application = form.save(commit=False)
-            if application.contact_method == Application.EMAIL and Application.objects.filter(email=application.email, study_group=study_group):
-                application = Application.objects.filter(email=application.email, study_group=study_group).first()
+            if application.email and Application.objects.filter(email=application.email, study_group=study_group).exists():
+                old_application = Application.objects.filter(email=application.email, study_group=study_group).first()
+                application.pk = old_application.pk
+                application.created_at = old_application.created_at
                 #TODO messages.success(request, 'Your signup details have been updated!')
-            elif application.contact_method == Application.TEXT and Application.objects.filter(mobile=application.mobile, study_group=study_group):
-                application = Application.objects.filter(email=application.email, study_group=study_group).first()
+
+            if application.mobile and Application.objects.filter(mobile=application.mobile, study_group=study_group).exists():
+                old_application = Application.objects.filter(mobile=application.mobile, study_group=study_group).first()
+                application.pk = old_application.pk
+                application.created_at = old_application.created_at
                 #TODO messages.success(request, 'Your signup details have been updated!')
-            else:
-                #TODO messages.success(request, 'You successfully signed up for a Learning Circle!')
-                pass
+
             # TODO - remove accepted_at or use accepting applications flow
             application.accepted_at = timezone.now()
             application.save()
@@ -386,9 +389,9 @@ def report(request):
     study_groups = StudyGroup.objects.active()
     for study_group in study_groups:
         study_group.laptop_stats = {}
-        study_group.laptop_stats['yes'] = study_group.application_set.all().filter(computer_access=Application.YES).count()
-        study_group.laptop_stats['sometimes'] = study_group.application_set.all().filter(computer_access=Application.SOMETIMES).count()
-        study_group.laptop_stats['no'] = study_group.application_set.all().filter(computer_access=Application.NO).count()
+        #TODO study_group.laptop_stats['yes'] = study_group.application_set.all().filter(computer_access=Application.YES).count()
+        #TODO study_group.laptop_stats['sometimes'] = study_group.application_set.all().filter(computer_access=Application.SOMETIMES).count()
+        #TODO study_group.laptop_stats['no'] = study_group.application_set.all().filter(computer_access=Application.NO).count()
     context = {
         'study_groups': study_groups,
     }

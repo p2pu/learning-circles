@@ -28,6 +28,7 @@ import pytz
 import re
 import urlparse
 import urllib
+import json
 
 # Create your tests here.
 class TestSignupModels(TestCase):
@@ -36,11 +37,13 @@ class TestSignupModels(TestCase):
 
     APPLICATION_DATA = {
         'name': 'Test User',
-        'contact_method': 'Email',
         'email': 'test@mail.com',
-        'computer_access': 'Yes', 
-        'goals': 'try hard',
-        'support': 'thinking how to?',
+
+        'signup_questions': json.dumps({
+            'computer_access': 'Yes',
+            'goals': 'try hard',
+            'support': 'thinking how to?',
+        }),
         'study_group': '1',
     }
 
@@ -235,7 +238,6 @@ class TestSignupModels(TestCase):
         sg = StudyGroup.objects.all()[0]
         data = self.APPLICATION_DATA
         data['study_group'] = sg
-        data['contact_method'] = Application.TEXT
         application = Application(**data)
         application.save()
         generate_all_meetings(sg)

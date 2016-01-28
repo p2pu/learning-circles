@@ -166,35 +166,16 @@ class StudyGroup(LifeTimeTrackingModel):
 
 
 class Application(models.Model):
-    EMAIL = 'Email'
-    TEXT = 'Text'
-    PREFERRED_CONTACT_METHOD = [
-        (EMAIL, 'Email'),
-        (TEXT, 'Text'),
-    ]
-
-    NO = 'No'
-    SOMETIMES = 'Sometimes'
-    YES = 'Yes'
-    COMPUTER_ACCESS = [
-        (NO, 'No'),
-        (SOMETIMES, 'Sometimes'),
-        (YES, 'Yes'),
-    ]
-
     study_group = models.ForeignKey('studygroups.StudyGroup')
     name = models.CharField(max_length=128)
-    contact_method = models.CharField(max_length=128, choices=PREFERRED_CONTACT_METHOD)
-    email = models.EmailField(null=True, blank=True)
-    mobile = models.CharField(max_length=20, null=True, blank=True)
-    computer_access = models.CharField(max_length=128, choices=COMPUTER_ACCESS)
-    goals = models.TextField()
-    support = models.TextField()
+    email = models.EmailField(verbose_name='Email address', blank=True)
+    mobile = models.CharField(max_length=20, blank=True)
+    signup_questions = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     accepted_at = models.DateTimeField(blank=True, null=True)
 
     def __unicode__(self):
-        return u"{0} <{1}>".format(self.name, self.email if self.contact_method==self.EMAIL else self.mobile)
+        return u"{0} <{1}>".format(self.name, self.email if self.email else self.mobile)
 
 
 class StudyGroupMeeting(models.Model):
@@ -379,7 +360,7 @@ def generate_reminder(study_group):
 # If called directly, be sure to active language to use for constructing URLs
 # Failed text delivery won't case this function to fail, simply log an error
 def send_reminder(reminder):
-    to = [su.email for su in reminder.study_group.application_set.filter(accepted_at__isnull=False, contact_method=Application.EMAIL)]
+    to = [su.email for su in reminder.study_group.application_set.filter(accepted_at__isnull=False).exclude(email='')]
     if reminder.study_group_meeting:
         # this is a reminder and we need RSVP links
         for email in to:
@@ -399,7 +380,7 @@ def send_reminder(reminder):
         send_mail(reminder.email_subject.strip('\n'), reminder.email_body, reminder.study_group.facilitator.email, to, fail_silently=False)
 
     # send SMS
-    tos = [su.mobile for su in reminder.study_group.application_set.filter(accepted_at__isnull=False, contact_method=Application.TEXT)]
+    tos = [su.mobile for su in reminder.study_group.application_set.filter(accepted_at__isnull=False).exclude(mobile='')]
     for to in tos:
         try:
             #TODO - insert RSVP link

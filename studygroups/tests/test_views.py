@@ -25,13 +25,19 @@ class TestSignupViews(TestCase):
     fixtures = ['test_courses.json', 'test_studygroups.json']
 
     APPLICATION_DATA = {
+        'study_group': '1',
         'name': 'Test User',
-        'contact_method': Application.EMAIL,
         'email': 'test@mail.com',
-        'computer_access': 'Yes', 
         'goals': 'try hard',
         'support': 'thinking how to?',
-        'study_group': '1',
+        'computer_access': 'Both', 
+        'send_email': '2', 
+        'delete_spam': '2', 
+        'search_online': '2', 
+        'browse_video': '2', 
+        'online_shopping': '2', 
+        'mobile_apps': '2', 
+        'web_safety': '2'
     }
 
     def setUp(self):
@@ -40,6 +46,7 @@ class TestSignupViews(TestCase):
         user.is_staff = True
         user.save()
 
+# TODO - test at least every view!
 
     def test_submit_application(self):
         c = Client()
@@ -57,7 +64,6 @@ class TestSignupViews(TestCase):
         self.assertEquals(Application.objects.all().count(), 1)
         # Make sure notification was sent 
         self.assertEqual(len(mail.outbox), 1)
-
         resp = c.post('/en/signup/foo-bob-1/', self.APPLICATION_DATA)
         self.assertRedirects(resp, '/en/signup/1/success/')
         self.assertEquals(Application.objects.all().count(), 1)
@@ -68,6 +74,25 @@ class TestSignupViews(TestCase):
         self.assertRedirects(resp, '/en/signup/1/success/')
         self.assertEquals(Application.objects.all().count(), 2)
 
+        data = self.APPLICATION_DATA.copy()
+        del data['email']
+        data['mobile'] = '123-456-7890'
+        resp = c.post('/en/signup/foo-bob-1/', data)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEquals(Application.objects.all().count(), 3)
+        resp = c.post('/en/signup/foo-bob-1/', data)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEquals(Application.objects.all().count(), 3)
+        data = self.APPLICATION_DATA.copy()
+        data['mobile'] = '123-456-7890'
+        resp = c.post('/en/signup/foo-bob-1/', data)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEquals(Application.objects.all().count(), 3)
+        resp = c.post('/en/signup/foo-bob-1/', data)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEquals(Application.objects.all().count(), 3)
+
+
     
     @patch('studygroups.models.send_message')
     def test_send_email(self, send_message):
@@ -75,14 +100,15 @@ class TestSignupViews(TestCase):
         c = Client()
         c.login(username='admin', password='password')
         signup_data = self.APPLICATION_DATA.copy()
-        signup_data['study_group'] = StudyGroup.objects.all()[0]
-        signup = Application(**signup_data)
-        signup.accepted_at = timezone.now()
-        signup.save()
-        url = '/en/studygroup/{0}/message/compose/'.format(signup.study_group_id)
+        resp = c.post('/en/signup/foo-bob-1/', signup_data)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEquals(Application.objects.all().count(), 1)
+        mail.outbox = []
+
+        url = '/en/studygroup/{0}/message/compose/'.format(signup_data['study_group'])
         email_body = u'Hi there!\n\nThe first study group for GED® Prep Math will meet this Thursday, May 7th, from 6:00 pm - 7:45 pm at Edgewater on the 2nd floor. Feel free to bring a study buddy!\nFor any questions you can contact Emily at emily@p2pu.org.\n\nSee you soon'
         mail_data = {
-            u'study_group': signup.study_group_id,
+            u'study_group': signup_data['study_group'],
             u'email_subject': u'GED® Prep Math study group meeting Thursday 7 May 6:00 PM at Edgewater', 
             u'email_body': email_body, 
             u'sms_body': 'The first study group for GED® Prep Math will meet next Thursday, May 7th, from 6:00 pm-7:45 pm at Edgewater on the 2nd floor. Feel free to bring a study buddy!'
@@ -100,15 +126,16 @@ class TestSignupViews(TestCase):
         c = Client()
         c.login(username='admin', password='password')
         signup_data = self.APPLICATION_DATA.copy()
-        signup_data['contact_method'] = Application.TEXT
         signup_data['mobile'] = '123-456-7890'
-        signup_data['study_group'] = StudyGroup.objects.all()[0]
-        signup = Application(**signup_data)
-        signup.accepted_at = timezone.now()
-        signup.save()
-        url = '/en/studygroup/{0}/message/compose/'.format(signup.study_group_id)
+        del signup_data['email']
+        resp = c.post('/en/signup/foo-bob-1/', signup_data)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEquals(Application.objects.all().count(), 1)
+        mail.outbox = []
+
+        url = '/en/studygroup/{0}/message/compose/'.format(signup_data['study_group'])
         mail_data = {
-            'study_group': signup.study_group_id,
+            'study_group': signup_data['study_group'],
             'email_subject': 'test', 
             'email_body': 'Email body', 
             'sms_body': 'Sms body'
@@ -119,40 +146,17 @@ class TestSignupViews(TestCase):
         self.assertTrue(send_message.called)
 
 
-    @patch('studygroups.models.send_message')
-    def test_dont_send_email_to_unaccepted_signup(self, send_message):
-        # Test sending a message
-        c = Client()
-        c.login(username='admin', password='password')
-        signup_data = self.APPLICATION_DATA.copy()
-        signup_data['study_group'] = StudyGroup.objects.all()[0]
-        signup = Application(**signup_data)
-        signup.save()
-        url = '/en/studygroup/{0}/message/compose/'.format(signup.study_group_id)
-        email_body = u'Hi there!\n\nThe first study group for GED® Prep Math will meet this Thursday, May 7th, from 6:00 pm - 7:45 pm at Edgewater on the 2nd floor. Feel free to bring a study buddy!\nFor any questions you can contact Emily at emily@p2pu.org.\n\nSee you soon'
-        mail_data = {
-            u'study_group': signup.study_group_id,
-            u'email_subject': u'GED® Prep Math study group meeting Thursday 7 May 6:00 PM at Edgewater', 
-            u'email_body': email_body, 
-            u'sms_body': 'The first study group for GED® Prep Math will meet next Thursday, May 7th, from 6:00 pm-7:45 pm at Edgewater on the 2nd floor. Feel free to bring a study buddy!'
-        }
-        resp = c.post(url, mail_data)
-        self.assertRedirects(resp, '/en/facilitator/')
-        self.assertEqual(len(mail.outbox), 0)
-        self.assertFalse(send_message.called)
-
-
     def test_receive_sms(self):
         # Test receiving a message
         signup_data = self.APPLICATION_DATA.copy()
-        signup_data['contact_method'] = 'Text'
         signup_data['mobile'] = '123-456-7890'
-        signup_data['study_group'] = StudyGroup.objects.all()[0]
-        signup = Application(**signup_data)
-        signup.accepted_at = timezone.now()
-        signup.save()
-
+        del signup_data['email']
         c = Client()
+        resp = c.post('/en/signup/foo-bob-1/', signup_data)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEquals(Application.objects.all().count(), 1)
+
+        mail.outbox = []
         url = '/en/receive_sms/'
         sms_data = {
             u'Body': 'The first study group for GED® Prep Math will meet next Thursday, May 7th, from 6:00 pm-7:45 pm at Edgewater on the 2nd floor. Feel free to bring a study buddy!',
@@ -160,26 +164,26 @@ class TestSignupViews(TestCase):
         }
         resp = c.post(url, sms_data)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertTrue(mail.outbox[0].subject.find('123-456-7890') > 0)
-        self.assertTrue(mail.outbox[0].subject.find('Test User') > 0)
+        self.assertTrue(mail.outbox[0].subject.find(signup_data['name']) > 0)
+        self.assertTrue(mail.outbox[0].subject.find(signup_data['mobile']) > 0)
         self.assertIn(StudyGroup.objects.all()[0].facilitator.email, mail.outbox[0].to)
         self.assertIn('admin@localhost', mail.outbox[0].bcc)
 
 
     def test_receive_sms_rsvp(self):
         signup_data = self.APPLICATION_DATA.copy()
-        signup_data['contact_method'] = 'Text'
         signup_data['mobile'] = '123-456-7890'
-        signup_data['study_group'] = StudyGroup.objects.first()
-        signup = Application(**signup_data)
-        signup.accepted_at = timezone.now()
-        signup.save()
+        c = Client()
+        resp = c.post('/en/signup/foo-bob-1/', signup_data)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEquals(Application.objects.all().count(), 1)
+        mail.outbox = []
+
         next_meeting = StudyGroupMeeting()
-        next_meeting.study_group = signup_data['study_group']
+        next_meeting.study_group = StudyGroup.objects.get(pk=signup_data['study_group'])
         next_meeting.meeting_time = timezone.now() + datetime.timedelta(days=1)
         next_meeting.save()
 
-        c = Client()
         url = '/en/receive_sms/'
         sms_data = {
             u'Body': 'Sorry, I won\'t make it, have family responsibilities this week :(',
@@ -291,6 +295,7 @@ class TestSignupViews(TestCase):
     def test_rsvp_view(self):
         # Setup data for RSVP -> StudyGroup + Signup + Meeting in future
 
+        c = Client()
         study_group = StudyGroup.objects.all()[0]
         meeting_time = timezone.now() + datetime.timedelta(days=2)
         study_group_meeting = StudyGroupMeeting(
@@ -300,13 +305,12 @@ class TestSignupViews(TestCase):
         study_group_meeting.save()
 
         signup_data = self.APPLICATION_DATA.copy()
-        signup_data['study_group'] = study_group
-        signup = Application(**signup_data)
-        signup.accepted_at = timezone.now()
-        signup.save()
+        resp = c.post('/en/signup/foo-bob-1/', signup_data)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEquals(Application.objects.all().count(), 1)
 
         qs = gen_rsvp_querystring(
-            signup.email,
+            signup_data['email'],
             study_group.pk,
             study_group_meeting.meeting_time,
             'yes'
@@ -315,14 +319,13 @@ class TestSignupViews(TestCase):
 
         # Generate RSVP link
         # visit link
-        c = Client()
         self.assertEqual(0, Rsvp.objects.count())
         resp = c.get(url)
         self.assertEqual(1, Rsvp.objects.count())
         self.assertTrue(Rsvp.objects.first().attending)
 
         qs = gen_rsvp_querystring(
-            signup.email,
+            signup_data['email'],
             study_group.pk,
             study_group_meeting.meeting_time,
             'no'
@@ -335,15 +338,15 @@ class TestSignupViews(TestCase):
 
         # Test RSVP with mobile number
         signup_data = self.APPLICATION_DATA.copy()
-        signup_data['study_group'] = study_group
-        signup_data['contact_method'] = Application.TEXT
+        del signup_data['email']
         signup_data['mobile'] = '123-456-7890'
-        signup = Application(**signup_data)
-        signup.accepted_at = timezone.now()
-        signup.save()
+        
+        resp = c.post('/en/signup/foo-bob-1/', signup_data)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEquals(Application.objects.all().count(), 2)
 
         qs = gen_rsvp_querystring(
-            signup.mobile,
+            signup_data['mobile'],
             study_group.pk,
             study_group_meeting.meeting_time,
             'yes'

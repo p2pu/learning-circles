@@ -29,7 +29,7 @@ class ActivityAdmin(admin.ModelAdmin):
     pass
 
 class ApplicationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'study_group', 'contact_method', 'created_at')
+    list_display = ('name', 'study_group', 'email', 'mobile', 'created_at')
 
 def reminder_course_title(obj):
     return obj.study_group.course.title
