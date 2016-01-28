@@ -32,7 +32,7 @@
 								</div>
 								<div class="study-group-details">
                   <p><strong><i class="fa fa-calendar"></i>&nbsp; &nbsp;{{ sg.day }}s {{ sg.meeting_time|time:"f A" }} - {{ sg.end_time|time:"f A" }}, {{ sg.timezone_display }}</strong></p>
-                  <p><strong>{{ sg.studygroupmeeting_set.count }} week{{sg.studygroupmeeting_set.count|pluralize}}</strong> beginning <strong>{{ sg.start_date|date:"j N Y" }}</strong></p>
+                  <p><strong>{{ sg.studygroupmeeting_set.active.count }} week{{sg.studygroupmeeting_set.active.count|pluralize}}</strong> beginning <strong>{{ sg.start_date|date:"j N Y" }}</strong></p>
 								</div>
               {% if sg.signup_open %}
 							<a href="{% url 'studygroups_signup' location=sg.venue_name|slugify study_group_id=sg.pk %}"

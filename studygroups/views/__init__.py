@@ -260,7 +260,7 @@ def organize(request):
     context = {
         'courses': Course.objects.all(),
         'study_groups': StudyGroup.objects.active(),
-        'meetings': StudyGroupMeeting.objects.filter(study_group__in=StudyGroup.objects.active()),
+        'meetings': StudyGroupMeeting.objects.active().filter(study_group__in=StudyGroup.objects.active()),
         'facilitators': Facilitator.objects.all(),
         'today': timezone.now(),
     }

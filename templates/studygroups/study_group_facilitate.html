@@ -43,7 +43,7 @@
       {% endif %}
   </div>
   <div class="col-md-12">
-      <h3>Meetings ({{lc.studygroupmeeting_set.count}})</h3>
+      <h3>Meetings ({{lc.studygroupmeeting_set.active.count}})</h3>
       <table class="table table-bordered">
           <thead>
               <tr>
@@ -54,7 +54,7 @@
               </tr>
           </thead>
           <tbody>
-              {% for meeting in lc.studygroupmeeting_set.all|dictsort:"meeting_time" %}
+              {% for meeting in lc.studygroupmeeting_set.active|dictsort:"meeting_time" %}
               <tr>
                 <td>{{ meeting.meeting_time|date:"D, d M Y, P" }}
                   <div class="pull-right">

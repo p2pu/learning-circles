@@ -67,7 +67,7 @@ class LifeTimeTrackingModel(models.Model):
         # Don't actually delete the object, affects django admin also
         self.deleted_at = timezone.now()
         self.save()
-        
+
     class Meta:
         abstract = True
 
@@ -148,7 +148,7 @@ class StudyGroup(LifeTimeTrackingModel):
         return q.time()
 
     def next_meeting(self):
-        return self.studygroupmeeting_set.filter(meeting_time__gt=timezone.now()).order_by('meeting_time').first()
+        return self.studygroupmeeting_set.active().filter(meeting_time__gt=timezone.now()).order_by('meeting_time').first()
 
     def meeting_times(self):
         return get_all_meeting_times(self)
@@ -178,7 +178,7 @@ class Application(models.Model):
         return u"{0} <{1}>".format(self.name, self.email if self.email else self.mobile)
 
 
-class StudyGroupMeeting(models.Model):
+class StudyGroupMeeting(LifeTimeTrackingModel):
     study_group = models.ForeignKey('studygroups.StudyGroup')
     meeting_time = models.DateTimeField()
 
@@ -241,7 +241,7 @@ class Rsvp(models.Model):
         return u'{0} ({1})'.format(self.application, 'yes' if self.attending else 'no')
 
 
-class Feedback(models.Model):
+class Feedback(LifeTimeTrackingModel):
 
     BAD = '1'
     NOT_SO_GOOD = '2'
@@ -257,7 +257,7 @@ class Feedback(models.Model):
         (BAD, 'I need some help'),
     ]
 
-    study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting')
+    study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting') # TODO should this be a OneToOneField?
     feedback = models.TextField() # Shared with learners
     attendance = models.PositiveIntegerField()
     reflection = models.TextField() # Not shared
