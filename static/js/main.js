@@ -9,6 +9,7 @@ var P2PU = window.P2PU || {};
 
 
     var init = function () {
+
         $(function () {
             // Smoth scrolling
             $('a[href*=#]:not([href=#],[href=#interest-extra],[data-toggle="collapse"])').click(function () {
@@ -23,6 +24,11 @@ var P2PU = window.P2PU || {};
                     }
                 }
             });
+        });
+        $('input[type=url]').keyup(function () {
+            if (($(this).val().length >=5) && ($(this).val().substr(0, 5) != 'http:') && ($(this).val().substr(0, 5) != 'https') ) {
+                $(this).val('http://' + $(this).val());
+            }
         });
     };
 
