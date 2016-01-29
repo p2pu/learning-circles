@@ -28,6 +28,7 @@ from studygroups.views import FacilitatorStudyGroupCreate
 
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import user_is_organizer
+from studygroups.decorators import user_is_not_logged_in
 
 urlpatterns = patterns('',
     url(r'^$', 'studygroups.views.landing', name='studygroups_landing'),
@@ -70,7 +71,7 @@ urlpatterns = patterns('',
     url(r'^course/(?P<pk>[\d]+)/delete/$', user_is_organizer(CourseDelete.as_view()), name='studygroups_course_delete'),
 
     url(r'^facilitator/study_group/create/$', login_required(FacilitatorStudyGroupCreate.as_view()), name='studygroups_facilitator_studygroup_create'),
-    url(r'^facilitator/signup/$', FacilitatorSignup.as_view(), name='studygroups_facilitator_signup'),
+    url(r'^facilitator/signup/$', user_is_not_logged_in(FacilitatorSignup.as_view()), name='studygroups_facilitator_signup'),
     url(r'^facilitator/signup/success/$', FacilitatorSignupSuccess.as_view(), name='studygroups_facilitator_signup_success'),
     url(r'^facilitator/create/$', user_is_organizer(FacilitatorCreate.as_view()), name='studygroups_facilitator_create'),
     url(r'^facilitator/(?P<pk>[\d]+)/edit/$', user_is_organizer(FacilitatorUpdate.as_view()), name='studygroups_facilitator_edit'),
