@@ -61,6 +61,11 @@ class FacilitatorStudyGroupCreate(CreateView):
     def get_form_class(self):
         return modelform_factory(StudyGroup, form=StudyGroupForm, exclude=['facilitator'])
 
+    def get_form(self, form_class=None):
+        form = super(FacilitatorStudyGroupCreate, self).get_form(form_class)
+        form.fields["course"].queryset = Course.objects.filter(Q(created_by=self.request.user) | Q(created_by__isnull=True))
+        return form
+
     def form_valid(self, form):
         study_group = form.save(commit=False)
         study_group.facilitator = self.request.user
