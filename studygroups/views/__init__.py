@@ -234,7 +234,6 @@ class FeedbackCreate(CreateView):
 
     def form_valid(self, form):
         to = [o.email for o in Group.objects.get(name='organizers').user_set.all()]
-        # Try to find a signup with the mobile number
         context = {
             'feedback': form.save(commit=False),
             'study_group_meeting': self.get_initial()['study_group_meeting']
