@@ -147,11 +147,15 @@ class StudyGroupMeetingForm(forms.ModelForm):
 class FeedbackForm(forms.ModelForm):
     class Meta:
         model = Feedback
-        exclude = ['']
+        fields = ['study_group_meeting', 'feedback', 'reflection', 'attendance', 'rating']
         labels = {
-            'feedback': _('Write your Learning Circle summary here (this will be sent out to the Learning Circle with next week\'s reminder message). Include the plus delta, feedback from the intervention, and anything else you want included.'),
+            'feedback': _('For learners: Write a brief summary of this week\'s Learning Circle.'),
             'attendance': _('How many people attended?'),
-            'reflection': _('Just between us, anything else you want to add? (Use this for reflections, concerns, and anything else you want us to know to help improve Learning Circles).'),
+            'reflection': _('Between us: Is there anything you want to let us know?'),
             'rating': _('Overall, how would you say this week went?')
+        }
+        help_texts = {
+            'feedback': _('You may want to include your impressions of how it went, plus/delta feedback, and anything the group agreed on having completed before the next meeting. This will be automatically sent to learners two days before next week\'s meeting.'),
+            'reflection': _('You can use this space for reflections, concerns, and anything else you think might help us improve Learning Circles. We won\'t share anything here without contacting you first.'),
         }
         widgets = {'study_group_meeting': forms.HiddenInput} 
