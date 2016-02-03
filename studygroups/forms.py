@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from localflavor.us.forms import USPhoneNumberField
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Fieldset, MultiField
+from crispy_forms.layout import Submit, Layout, Fieldset, HTML
 
 import pytz, datetime, json
 
@@ -99,6 +99,10 @@ class StudyGroupForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(StudyGroupForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.add_input(Submit('submit', 'Save'))
+        self.helper.layout.insert(1, HTML("""<p><a href="{% url 'studygroups_course_create' %}">Add course</a></p>"""))
+
         if self.instance.pk:
             self.fields['weeks'].initial = self.instance.studygroupmeeting_set.active().count()
 
