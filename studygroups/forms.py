@@ -108,8 +108,8 @@ class OptOutForm(forms.Form):
             self.add_error('email', _('Please provide either the email address or the phone number used to sign up.'))
 
         conditions = [
-            not email or Application.objects.filter(email=email).count() == 0,
-            not mobile or Application.objects.filter(mobile=mobile).count() == 0,
+            not email or Application.objects.active().filter(email=email).count() == 0,
+            not mobile or Application.objects.active().filter(mobile=mobile).count() == 0,
             email or mobile
         ]
 
@@ -120,7 +120,7 @@ class OptOutForm(forms.Form):
         email = self.cleaned_data['email']
         mobile = self.cleaned_data['mobile']
         if email:
-            for application in Application.objects.filter(email=email):
+            for application in Application.objects.active().filter(email=email):
                 # send opt-out email
                 context = { 'application': application }
                 subject = render_to_string('studygroups/optout_confirm_email_subject.txt', context).strip('\n')
@@ -133,7 +133,7 @@ class OptOutForm(forms.Form):
 
         # Find all signups with mobile with email and delete
         if mobile:
-            applications = Application.objects.filter(mobile=mobile)
+            applications = Application.objects.active().filter(mobile=mobile)
             if email:
                 # don't send text to applications with a valid email in opt out form
                 applications = application.exclude(email=email)

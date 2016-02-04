@@ -56,13 +56,13 @@ class TestSignupModels(TestCase):
 
     def test_accept_application(self):
         # TODO remove this test
-        self.assertEqual(Application.objects.all().count(),0)
+        self.assertEqual(Application.objects.active().count(), 0)
         data = self.APPLICATION_DATA
         data['study_group'] = StudyGroup.objects.all()[0]
         application = Application(**data)
         application.save()
         accept_application(application)
-        self.assertEqual(Application.objects.all().count() ,1)
+        self.assertEqual(Application.objects.active().count(), 1)
 
 
     def test_get_all_meeting_datetimes(self):

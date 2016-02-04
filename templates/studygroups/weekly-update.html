@@ -10,7 +10,7 @@
       <h2>{{study_group.course.title}} at {{study_group.venue_name}}</h2>
       <p>Met {{ meeting.meeting_time|date:"fA, l, j F" }} for the {{ meeting.meeting_number|ordinal }} time.</p>
       <p><strong>Facilitator:</strong> {{study_group.facilitator.first_name}} {{study_group.facilitator.last_name}} &lt;{{study_group.facilitator.email}}&gt;<p>
-      <p><strong>Circle size:</strong> {{study_group.application_set.all.count}}</p>
+      <p><strong>Circle size:</strong> {{study_group.application_set.active.count}}</p>
       <h3>Feedback from meeting</h3>
       <div style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9;">
         {% if meeting.feedback_set.first %}

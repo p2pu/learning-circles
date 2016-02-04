@@ -52,7 +52,7 @@ class TestSignupViews(TestCase):
         c = Client()
         resp = c.post('/en/signup/foo-bob-1/', self.APPLICATION_DATA)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.all().count(), 1)
+        self.assertEquals(Application.objects.active().count(), 1)
         # Make sure notification was sent 
         self.assertEqual(len(mail.outbox), 1)
 
@@ -61,48 +61,48 @@ class TestSignupViews(TestCase):
         c = Client()
         resp = c.post('/en/signup/foo-bob-1/', self.APPLICATION_DATA)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.all().count(), 1)
+        self.assertEquals(Application.objects.active().count(), 1)
         # Make sure notification was sent 
         self.assertEqual(len(mail.outbox), 1)
         resp = c.post('/en/signup/foo-bob-1/', self.APPLICATION_DATA)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.all().count(), 1)
+        self.assertEquals(Application.objects.active().count(), 1)
         
         data = self.APPLICATION_DATA.copy()
         data['email'] = 'test2@mail.com'
         resp = c.post('/en/signup/foo-bob-1/', data)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.all().count(), 2)
+        self.assertEquals(Application.objects.active().count(), 2)
 
         data = self.APPLICATION_DATA.copy()
         del data['email']
         data['mobile'] = '123-456-7890'
         resp = c.post('/en/signup/foo-bob-1/', data)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.all().count(), 3)
+        self.assertEquals(Application.objects.active().count(), 3)
         resp = c.post('/en/signup/foo-bob-1/', data)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.all().count(), 3)
+        self.assertEquals(Application.objects.active().count(), 3)
         data = self.APPLICATION_DATA.copy()
         data['mobile'] = '123-456-7890'
         resp = c.post('/en/signup/foo-bob-1/', data)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.all().count(), 3)
+        self.assertEquals(Application.objects.active().count(), 3)
         resp = c.post('/en/signup/foo-bob-1/', data)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.all().count(), 3)
+        self.assertEquals(Application.objects.active().count(), 3)
 
 
     def test_unapply(self):
         c = Client()
         resp = c.post('/en/signup/foo-bob-1/', self.APPLICATION_DATA)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.all().count(), 1)
-        app = Application.objects.first()
+        self.assertEquals(Application.objects.active().count(), 1)
+        app = Application.objects.active().first()
         url = app.unapply_link().replace('https://example.net/', '/')
         resp = c.post(url)
         self.assertRedirects(resp, '/en/')
-        self.assertEquals(Application.objects.all().count(), 0)
+        self.assertEquals(Application.objects.active().count(), 0)
 
     
     @patch('studygroups.models.send_message')
@@ -113,7 +113,7 @@ class TestSignupViews(TestCase):
         signup_data = self.APPLICATION_DATA.copy()
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.all().count(), 1)
+        self.assertEquals(Application.objects.active().count(), 1)
         mail.outbox = []
 
         url = '/en/studygroup/{0}/message/compose/'.format(signup_data['study_group'])
@@ -142,7 +142,7 @@ class TestSignupViews(TestCase):
         del signup_data['email']
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.all().count(), 1)
+        self.assertEquals(Application.objects.active().count(), 1)
         mail.outbox = []
 
         url = '/en/studygroup/{0}/message/compose/'.format(signup_data['study_group'])
@@ -166,7 +166,7 @@ class TestSignupViews(TestCase):
         c = Client()
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.all().count(), 1)
+        self.assertEquals(Application.objects.active().count(), 1)
 
         mail.outbox = []
         url = '/en/receive_sms/'
@@ -188,7 +188,7 @@ class TestSignupViews(TestCase):
         c = Client()
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.all().count(), 1)
+        self.assertEquals(Application.objects.active().count(), 1)
         mail.outbox = []
 
         next_meeting = StudyGroupMeeting()
@@ -320,7 +320,7 @@ class TestSignupViews(TestCase):
         signup_data = self.APPLICATION_DATA.copy()
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.all().count(), 1)
+        self.assertEquals(Application.objects.active().count(), 1)
 
         qs = gen_rsvp_querystring(
             signup_data['email'],
@@ -356,7 +356,7 @@ class TestSignupViews(TestCase):
         
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.all().count(), 2)
+        self.assertEquals(Application.objects.active().count(), 2)
 
         qs = gen_rsvp_querystring(
             signup_data['mobile'],
@@ -401,14 +401,14 @@ class TestSignupViews(TestCase):
         c = Client()
         resp = c.post('/en/signup/foo-bob-1/', self.APPLICATION_DATA)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.all().count(), 1)
-        app = Application.objects.first()
+        self.assertEquals(Application.objects.active().count(), 1)
+        app = Application.objects.active().first()
 
         # test for email
         mail.outbox = []
         resp = c.post('/en/optout/', {'email': app.email} )
         self.assertRedirects(resp, '/en/')
-        self.assertEquals(Application.objects.all().count(), 1)
+        self.assertEquals(Application.objects.active().count(), 1)
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn(app.unapply_link(), mail.outbox[0].body)
 
@@ -418,14 +418,14 @@ class TestSignupViews(TestCase):
         data['mobile'] = '123-456-7777'
         resp = c.post('/en/signup/foo-bob-1/', data)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.all().count(), 2)
-        app = Application.objects.last()
+        self.assertEquals(Application.objects.active().count(), 2)
+        app = Application.objects.active().last()
         self.assertEquals(app.mobile, data['mobile'])
 
         mail.outbox = []
         resp = c.post('/en/optout/', {'mobile': app.mobile} )
         self.assertRedirects(resp, '/en/')
-        self.assertEquals(Application.objects.all().count(), 1)
+        self.assertEquals(Application.objects.active().count(), 1)
         self.assertEquals(len(mail.outbox), 0)
         self.assertTrue(send_message.called)
 

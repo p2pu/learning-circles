@@ -68,14 +68,14 @@ def signup(request, location, study_group_id):
         form = ApplicationForm(request.POST)
         if form.is_valid():
             application = form.save(commit=False)
-            if application.email and Application.objects.filter(email=application.email, study_group=study_group).exists():
-                old_application = Application.objects.filter(email=application.email, study_group=study_group).first()
+            if application.email and Application.objects.active().filter(email=application.email, study_group=study_group).exists():
+                old_application = Application.objects.active().filter(email=application.email, study_group=study_group).first()
                 application.pk = old_application.pk
                 application.created_at = old_application.created_at
                 #TODO messages.success(request, 'Your signup details have been updated!')
 
-            if application.mobile and Application.objects.filter(mobile=application.mobile, study_group=study_group).exists():
-                old_application = Application.objects.filter(mobile=application.mobile, study_group=study_group).first()
+            if application.mobile and Application.objects.active().filter(mobile=application.mobile, study_group=study_group).exists():
+                old_application = Application.objects.active().filter(mobile=application.mobile, study_group=study_group).first()
                 application.pk = old_application.pk
                 application.created_at = old_application.created_at
                 #TODO messages.success(request, 'Your signup details have been updated!')
@@ -131,7 +131,7 @@ def optout_confirm(request):
         yield check_unsubscribe_signature(user, sig)
 
     if all(conditions()):
-        signup = Application.objects.filter(pk=user)
+        signup = Application.objects.active().filter(pk=user)
         signup.delete()
         messages.success(request, 'You successfully opted out of the learning circle.')
     else:
@@ -500,16 +500,17 @@ def message_edit(request, study_group_id, message_id):
 @user_is_group_facilitator
 def add_member(request, study_group_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
-
+    
+    # TODO - update or remove this
     if request.method == 'POST':
         form = ApplicationForm(request.POST)
         if form.is_valid():
             application = form.save(commit=False)
-            if application.contact_method == Application.EMAIL and Application.objects.filter(email=application.email, study_group=study_group):
-                application = Application.objects.filter(email=application.email, study_group=study_group).first()
+            if application.contact_method == Application.EMAIL and Application.objects.active().filter(email=application.email, study_group=study_group):
+                application = Application.objects.active().filter(email=application.email, study_group=study_group).first()
                 messages.success(request, 'Your signup details have been updated!')
-            elif application.contact_method == Application.TEXT and Application.objects.filter(mobile=application.mobile, study_group=study_group):
-                application = Application.objects.filter(email=application.email, study_group=study_group).first()
+            elif application.contact_method == Application.TEXT and Application.objects.active().filter(mobile=application.mobile, study_group=study_group):
+                application = Application.objects.active().filter(email=application.email, study_group=study_group).first()
                 messages.success(request, 'Your signup details have been updated!')
             else:
                 messages.success(request, 'Successfully added member!')
@@ -543,7 +544,7 @@ def receive_sms(request):
         'message': message,
         'sender': sender,
     }
-    signups = Application.objects.filter(mobile=sender)
+    signups = Application.objects.active().filter(mobile=sender)
     if signups.count() > 0:
         # Send to all facilitators if user is signed up to more than 1 study group
         signup = next(s for s in signups)
