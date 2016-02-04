@@ -12,6 +12,7 @@ import twilio
 
 from studygroups.sms import send_message
 from studygroups import rsvp
+from studygroups.utils import gen_unsubscribe_querystring
 
 import calendar
 import datetime
@@ -165,17 +166,22 @@ class StudyGroup(LifeTimeTrackingModel):
         return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day(), self.meeting_time, self.venue_name)
 
 
-class Application(models.Model):
+class Application(LifeTimeTrackingModel):
     study_group = models.ForeignKey('studygroups.StudyGroup')
     name = models.CharField(max_length=128)
     email = models.EmailField(verbose_name='Email address', blank=True)
     mobile = models.CharField(max_length=20, blank=True)
     signup_questions = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
     accepted_at = models.DateTimeField(blank=True, null=True)
 
     def __unicode__(self):
         return u"{0} <{1}>".format(self.name, self.email if self.email else self.mobile)
+
+    def unapply_link(self):
+        domain = 'https://{0}'.format(settings.DOMAIN)
+        url = reverse('studygroups_leave')
+        qs = gen_unsubscribe_querystring(self.pk)
+        return '{0}{1}?{2}'.format(domain, url, qs)
 
 
 class StudyGroupMeeting(LifeTimeTrackingModel):
@@ -360,15 +366,18 @@ def generate_reminder(study_group):
 # If called directly, be sure to active language to use for constructing URLs
 # Failed text delivery won't case this function to fail, simply log an error
 def send_reminder(reminder):
-    to = [su.email for su in reminder.study_group.application_set.filter(accepted_at__isnull=False).exclude(email='')]
+    to = [su.email for su in reminder.study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')]
     if reminder.study_group_meeting:
         # this is a reminder and we need RSVP links
         for email in to:
             yes_link = reminder.study_group_meeting.rsvp_yes_link(email)
             no_link = reminder.study_group_meeting.rsvp_no_link(email)
+            application = reminder.study_group_meeting.study_group.application_set.active().filter(email=email).first()
+            unsubscribe_link = application.unapply_link()
             email_body = reminder.email_body
             email_body = re.sub(r'\(<!--RSVP:YES-->.*\)', yes_link, email_body)
             email_body = re.sub(r'\(<!--RSVP:NO-->.*\)', no_link, email_body)
+            email_body = re.sub(r'\(<!--UNSUBSCRIBE-->.*\)', unsubscribe_link, email_body)
             send_mail(
                 reminder.email_subject.strip('\n'),
                 email_body,
@@ -377,13 +386,15 @@ def send_reminder(reminder):
                 fail_silently=False
             )
     else:
-        send_mail(reminder.email_subject.strip('\n'), reminder.email_body, reminder.study_group.facilitator.email, to, fail_silently=False)
+        email_body = reminder.email_body
+        email_body = u'{0}\n\nTo leave this learning circle you can visit https://{1}{2}'.format(email_body, settings.DOMAIN, reverse('studygroups_optout'))
+        send_mail(reminder.email_subject.strip('\n'), email_body, reminder.study_group.facilitator.email, to, fail_silently=False)
 
     # send SMS
-    tos = [su.mobile for su in reminder.study_group.application_set.filter(accepted_at__isnull=False).exclude(mobile='')]
+    tos = [su.mobile for su in reminder.study_group.application_set.active().filter(accepted_at__isnull=False).exclude(mobile='')]
     for to in tos:
         try:
-            #TODO - insert RSVP link
+            #TODO - insert opt out link
             #if reminder.study_group_meeting:
             send_message(to, reminder.sms_body)
         except twilio.TwilioRestException as e:
@@ -400,9 +411,9 @@ def create_rsvp(contact, study_group, meeting_date, attending):
     study_group_meeting = StudyGroupMeeting.objects.get(study_group__id=study_group, meeting_time=meeting_date)
     application = None
     if '@' in contact:
-        application = Application.objects.get(study_group__id=study_group, email=contact)
+        application = Application.objects.active().get(study_group__id=study_group, email=contact)
     else:
-        application = Application.objects.get(study_group__id=study_group, mobile=contact)
+        application = Application.objects.active().get(study_group__id=study_group, mobile=contact)
     rsvp = Rsvp.objects.all().filter(study_group_meeting=study_group_meeting, application=application).first()
     if not rsvp:
         rsvp = Rsvp(study_group_meeting=study_group_meeting, application=application, attending=attending=='yes')
@@ -417,7 +428,7 @@ def report_data(start_time, end_time):
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     report = {
         'meetings': StudyGroupMeeting.objects.filter(meeting_time__gte=start_time, meeting_time__lt=end_time),
-        'signups': Application.objects.filter(created_at__gte=start_time, created_at__lt=end_time),
+        'signups': Application.objects.active().filter(created_at__gte=start_time, created_at__lt=end_time),
     }
     return report
 

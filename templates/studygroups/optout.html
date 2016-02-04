@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+  <div class="container">
+      <h1>Opt Out</h1>
+      <p>Please enter the email address or mobile number you used to sign up for a learning circle to opt out.</p>
+    <form action="" method="POST">
+      {% csrf_token %}
+      {{ form|crispy }}
+      <p><button type="submit" class="btn btn-primary">Opt out</button></p>
+    </form>
+  </div>
+{% endblock %}

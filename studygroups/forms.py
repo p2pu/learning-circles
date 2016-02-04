@@ -1,7 +1,10 @@
 from django import forms
+from django.conf import settings
 from django.utils.translation import ugettext as _
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives, send_mail
 
 from localflavor.us.forms import USPhoneNumberField
 
@@ -10,11 +13,18 @@ from crispy_forms.layout import Submit, Layout, Fieldset, HTML
 
 import pytz, datetime, json
 
+import twilio
+
 from studygroups.models import Application
 from studygroups.models import Reminder
 from studygroups.models import StudyGroup
 from studygroups.models import StudyGroupMeeting
 from studygroups.models import Feedback
+from studygroups.sms import send_message
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ApplicationForm(forms.ModelForm):
@@ -83,6 +93,58 @@ class ApplicationForm(forms.ModelForm):
         model = Application
         fields = ['study_group', 'name', 'email', 'mobile']
         widgets = {'study_group': forms.HiddenInput} 
+
+
+class OptOutForm(forms.Form):
+    email = forms.EmailField(help_text=_('Email address used to sign up.'), required=False)
+    mobile = USPhoneNumberField(required=False, label=_('Phone Number for SMS'), help_text=_('Phone number used to sign up.'))
+
+    def clean(self):
+        cleaned_data = super(OptOutForm, self).clean()
+        email = cleaned_data['email']
+        mobile = cleaned_data['mobile']
+
+        if not email and not mobile:
+            self.add_error('email', _('Please provide either the email address or the phone number used to sign up.'))
+
+        conditions = [
+            not email or Application.objects.active().filter(email=email).count() == 0,
+            not mobile or Application.objects.active().filter(mobile=mobile).count() == 0,
+            email or mobile
+        ]
+
+        if all(conditions):
+            raise forms.ValidationError(_('Could not find any signup matching your email address or phone number. Please make sure to enter the email or phone number you used to sign up.'))
+
+    def send_optout_message(self):
+        email = self.cleaned_data['email']
+        mobile = self.cleaned_data['mobile']
+        if email:
+            for application in Application.objects.active().filter(email=email):
+                # send opt-out email
+                context = { 'application': application }
+                subject = render_to_string('studygroups/optout_confirm_email_subject.txt', context).strip('\n')
+                html_body = render_to_string('studygroups/optout_confirm_email.html', context)
+                text_body = render_to_string('studygroups/optout_confirm_email.txt', context)
+                notification = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, [application.email])
+                notification.attach_alternative(html_body, 'text/html')
+                notification.send()
+ 
+
+        # Find all signups with mobile with email and delete
+        if mobile:
+            applications = Application.objects.active().filter(mobile=mobile)
+            if email:
+                # don't send text to applications with a valid email in opt out form
+                applications = application.exclude(email=email)
+            for application in applications:
+                context = { 'application': application }
+                message = render_to_string('studygroups/optout_confirm_text.txt', context)
+                try:
+                    send_message(application.mobile, message)
+                except twilio.TwilioRestException as e:
+                    logger.exception(u"Could not send text message to %s", to, exc_info=e)
+                application.delete()
 
 
 class MessageForm(forms.ModelForm):

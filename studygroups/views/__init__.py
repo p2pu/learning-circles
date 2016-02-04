@@ -18,7 +18,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.views.generic.base import View, RedirectView
 from django.views.generic.detail import SingleObjectMixin
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, TemplateView
 from django.contrib.auth.models import User
 from django.forms import modelform_factory
@@ -33,9 +33,11 @@ from studygroups.models import generate_all_meetings
 from studygroups.forms import ApplicationForm, MessageForm, StudyGroupForm
 from studygroups.forms import StudyGroupMeetingForm
 from studygroups.forms import FeedbackForm
+from studygroups.forms import OptOutForm
 from studygroups.rsvp import check_rsvp_signature
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import user_is_organizer
+from studygroups.utils import check_unsubscribe_signature
 
 from facilitate import FacilitatorCreate, FacilitatorUpdate, FacilitatorDelete
 from facilitate import FacilitatorSignup
@@ -66,14 +68,14 @@ def signup(request, location, study_group_id):
         form = ApplicationForm(request.POST)
         if form.is_valid():
             application = form.save(commit=False)
-            if application.email and Application.objects.filter(email=application.email, study_group=study_group).exists():
-                old_application = Application.objects.filter(email=application.email, study_group=study_group).first()
+            if application.email and Application.objects.active().filter(email=application.email, study_group=study_group).exists():
+                old_application = Application.objects.active().filter(email=application.email, study_group=study_group).first()
                 application.pk = old_application.pk
                 application.created_at = old_application.created_at
                 #TODO messages.success(request, 'Your signup details have been updated!')
 
-            if application.mobile and Application.objects.filter(mobile=application.mobile, study_group=study_group).exists():
-                old_application = Application.objects.filter(mobile=application.mobile, study_group=study_group).first()
+            if application.mobile and Application.objects.active().filter(mobile=application.mobile, study_group=study_group).exists():
+                old_application = Application.objects.active().filter(mobile=application.mobile, study_group=study_group).first()
                 application.pk = old_application.pk
                 application.created_at = old_application.created_at
                 #TODO messages.success(request, 'Your signup details have been updated!')
@@ -116,6 +118,39 @@ def signup(request, location, study_group_id):
         'study_group': study_group,
     }
     return render_to_response('studygroups/signup.html', context, context_instance=RequestContext(request))
+
+
+def optout_confirm(request):
+    user = request.GET.get('user')
+    sig = request.GET.get('sig')
+
+    # Generator for conditions
+    def conditions():
+        yield user
+        yield sig
+        yield check_unsubscribe_signature(user, sig)
+
+    if all(conditions()):
+        signup = Application.objects.active().filter(pk=user)
+        signup.delete()
+        messages.success(request, 'You successfully opted out of the learning circle.')
+    else:
+        messages.error(request, 'Bad RSVP code')
+
+    url = reverse('studygroups_landing')
+    return http.HttpResponseRedirect(url)
+
+
+class OptOutView(FormView):
+    template_name = 'studygroups/optout.html'
+    form_class = OptOutForm
+    success_url = reverse_lazy('studygroups_landing')
+
+    def form_valid(self, form):
+        # Find all signups with email and send opt out confirmation
+        form.send_optout_message()
+        messages.info(self.request, 'You will shortly receive an email or text message confirming that you wish to opt out.')
+        return super(OptOutView, self).form_valid(form)
 
 
 class SignupSuccess(TemplateView):
@@ -465,16 +500,17 @@ def message_edit(request, study_group_id, message_id):
 @user_is_group_facilitator
 def add_member(request, study_group_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
-
+    
+    # TODO - update or remove this
     if request.method == 'POST':
         form = ApplicationForm(request.POST)
         if form.is_valid():
             application = form.save(commit=False)
-            if application.contact_method == Application.EMAIL and Application.objects.filter(email=application.email, study_group=study_group):
-                application = Application.objects.filter(email=application.email, study_group=study_group).first()
+            if application.contact_method == Application.EMAIL and Application.objects.active().filter(email=application.email, study_group=study_group):
+                application = Application.objects.active().filter(email=application.email, study_group=study_group).first()
                 messages.success(request, 'Your signup details have been updated!')
-            elif application.contact_method == Application.TEXT and Application.objects.filter(mobile=application.mobile, study_group=study_group):
-                application = Application.objects.filter(email=application.email, study_group=study_group).first()
+            elif application.contact_method == Application.TEXT and Application.objects.active().filter(mobile=application.mobile, study_group=study_group):
+                application = Application.objects.active().filter(email=application.email, study_group=study_group).first()
                 messages.success(request, 'Your signup details have been updated!')
             else:
                 messages.success(request, 'Successfully added member!')
@@ -508,7 +544,7 @@ def receive_sms(request):
         'message': message,
         'sender': sender,
     }
-    signups = Application.objects.filter(mobile=sender)
+    signups = Application.objects.active().filter(mobile=sender)
     if signups.count() > 0:
         # Send to all facilitators if user is signed up to more than 1 study group
         signup = next(s for s in signups)

@@ -25,6 +25,7 @@ from studygroups.views import FacilitatorDelete
 from studygroups.views import FacilitatorSignup
 from studygroups.views import FacilitatorSignupSuccess
 from studygroups.views import FacilitatorStudyGroupCreate
+from studygroups.views import OptOutView
 
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import user_is_organizer
@@ -35,6 +36,8 @@ urlpatterns = patterns('',
     url(r'^login_redirect/$', 'studygroups.views.login_redirect', name='studygroups_login_redirect'),
     url(r'^signup/(?P<location>[\w-]+)-(?P<study_group_id>[\d]+)/$', 'studygroups.views.signup', name='studygroups_signup'),
     url(r'^signup/(?P<study_group_id>[\d]+)/success/$', SignupSuccess.as_view(), name='studygroups_signup_success'),
+    url(r'^optout/$', OptOutView.as_view(), name='studygroups_optout'),
+    url(r'^optout/confirm/$', 'studygroups.views.optout_confirm', name='studygroups_leave'),
     url(r'^rsvp/$', 'studygroups.views.rsvp', name='studygroups_rsvp'),
     url(r'^rsvp/success/$', TemplateView.as_view(template_name='studygroups/rsvp_success.html'), name='studygroups_rsvp_success'),
 

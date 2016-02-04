@@ -1,0 +1,10 @@
+Hi there
+
+You requested to be removed from the learning circle mentioned in the subject. Visit the link below to confirm:
+
+{{ application.unapply_link | safe}}
+
+If you didn't request to be removed from the learning circle, you can safely ignore this message.
+
+Cheers
+P2PU

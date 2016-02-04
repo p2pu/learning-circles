@@ -1,0 +1,13 @@
+{% extends 'email_base.html' %}
+{% block body %}
+<p>Hi there</p>
+
+<p>You requested to be removed from the learning circle mentioned in the subject. Visit the link below to confirm:</p>
+
+<p><a href="{{application.unapply_link}}">{{application.unapply_link}}</a></p>
+
+<p>If you didn't request to be removed from the learning circle, you can safely ignore this message.</p>
+
+<p>Cheers</p>
+<p>P2PU</p>
+{% endblock %}

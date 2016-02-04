@@ -6,7 +6,7 @@ You can also view this report online: {{ protocol }}://{{ domain }}{% url 'study
   {% with study_group=meeting.study_group %}
 # {{study_group.course.title}} at {{study_group.venue_name}}
 Facilitator: {{study_group.facilitator.first_name}} {{study_group.facilitator.last_name}} <{{study_group.facilitator.email}}>;
-Circle size: {{study_group.application_set.all.count}}
+Circle size: {{study_group.application_set.active.count}}
 Met {{ meeting.meeting_time|date:"fA, l, j F" }}
 Feedback from meeting:
     {% if meeting.feedback_set.first %}

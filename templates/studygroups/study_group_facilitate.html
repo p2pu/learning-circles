@@ -120,7 +120,7 @@
 
 
   <div class="col-md-12">
-      <h3>Members ({{lc.application_set.count}})</h3>
+      <h3>Members ({{lc.application_set.active.count}})</h3>
       <table class="table table-bordered">
           <thead>
               <tr>
@@ -132,7 +132,7 @@
               </tr>
           </thead>
           <tbody>
-              {% for member in lc.application_set.all %}
+              {% for member in lc.application_set.active %}
               <tr>
                   <td>{{ member.name }}
                   <br/>
@@ -151,7 +151,7 @@
               {% endfor %}
           </tbody>
       </table>
-      <p><a class="btn btn-primary" href="{% url 'studygroups_add_member' lc.id %}">Add learner</a></p>
+      <!--p><a class="btn btn-primary" href="{% url 'studygroups_add_member' lc.id %}">Add learner</a></p-->
   </div>
 </div>
 </div>
