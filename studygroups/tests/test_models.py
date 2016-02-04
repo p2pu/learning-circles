@@ -21,6 +21,8 @@ from studygroups.models import get_all_meeting_times
 from studygroups.models import generate_all_meetings
 from studygroups.rsvp import gen_rsvp_querystring
 from studygroups.rsvp import check_rsvp_signature
+from studygroups.utils import gen_unsubscribe_querystring
+from studygroups.utils import check_unsubscribe_signature
 
 import calendar
 import datetime
@@ -225,6 +227,7 @@ class TestSignupModels(TestCase):
         self.assertFalse(send_message.called)
         self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=yes&sig='.format(get_language(), urllib.quote(sg.next_meeting().meeting_time.isoformat())), mail.outbox[1].body)
         self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=no&sig='.format(get_language(), urllib.quote(sg.next_meeting().meeting_time.isoformat())), mail.outbox[1].body)
+        self.assertIn('https://example.net/{0}/leave/?user='.format(get_language()), mail.outbox[1].body)
 
 
     @patch('studygroups.models.send_message')
@@ -249,6 +252,17 @@ class TestSignupModels(TestCase):
         #self.assertEqual(mail.outbox[0].subject, mail_data['email_subject'])
         self.assertFalse(send_message.called)
 
+
+    def test_unapply_signing(self):
+        data = self.APPLICATION_DATA
+        data['study_group'] = StudyGroup.objects.all().first()
+        application = Application(**data)
+        application.save()
+        qs = application.unapply_link()
+        qs = qs[qs.index('?')+1:]
+        sig = urlparse.parse_qs(qs).get('sig')[0]
+        self.assertTrue(check_unsubscribe_signature(application.pk, sig))
+        self.assertFalse(check_unsubscribe_signature(application.pk+1, sig))
 
 
     def test_rsvp_signing(self):

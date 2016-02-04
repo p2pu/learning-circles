@@ -93,6 +93,17 @@ class TestSignupViews(TestCase):
         self.assertEquals(Application.objects.all().count(), 3)
 
 
+    def test_unapply(self):
+        c = Client()
+        resp = c.post('/en/signup/foo-bob-1/', self.APPLICATION_DATA)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEquals(Application.objects.all().count(), 1)
+        app = Application.objects.first()
+        url = app.unapply_link().replace('https://example.net/', '/')
+        resp = c.post(url)
+        self.assertRedirects(resp, '/en/')
+        self.assertEquals(Application.objects.all().count(), 0)
+
     
     @patch('studygroups.models.send_message')
     def test_send_email(self, send_message):
@@ -277,6 +288,7 @@ class TestSignupViews(TestCase):
             resp = c.get(url)
             self.assertEquals(resp.status_code, status)
 
+        assertAllowed('/en/')
         assertAllowed('/en/organize/')
         assertAllowed('/en/report/')
         assertAllowed('/en/report/weekly/')

@@ -36,6 +36,7 @@ from studygroups.forms import FeedbackForm
 from studygroups.rsvp import check_rsvp_signature
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import user_is_organizer
+from studygroups.utils import check_unsubscribe_signature
 
 from facilitate import FacilitatorCreate, FacilitatorUpdate, FacilitatorDelete
 from facilitate import FacilitatorSignup
@@ -116,6 +117,27 @@ def signup(request, location, study_group_id):
         'study_group': study_group,
     }
     return render_to_response('studygroups/signup.html', context, context_instance=RequestContext(request))
+
+
+def leave(request):
+    user = request.GET.get('user')
+    sig = request.GET.get('sig')
+
+    # Generator for conditions
+    def conditions():
+        yield user
+        yield sig
+        yield check_unsubscribe_signature(user, sig)
+
+    if all(conditions()):
+        signup = Application.objects.filter(pk=user)
+        # TODO - save data
+        signup.delete()
+    else:
+        messages.error(request, 'Bad RSVP code')
+
+    url = reverse('studygroups_landing')
+    return http.HttpResponseRedirect(url)
 
 
 class SignupSuccess(TemplateView):

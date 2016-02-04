@@ -9,3 +9,5 @@ Yes, I can make it: (<!--RSVP:YES--> link will be inserted here )
 No, I can't make it: (<!--RSVP:NO--> link will be inserted here )
 
 See you soon.
+
+To leave this study group and stop receiving subsequent notifications, click here: (<!--UNSUBSCRIBE--> link will be inserted here )

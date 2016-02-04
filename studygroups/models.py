@@ -12,6 +12,7 @@ import twilio
 
 from studygroups.sms import send_message
 from studygroups import rsvp
+from studygroups.utils import gen_unsubscribe_querystring
 
 import calendar
 import datetime
@@ -176,6 +177,12 @@ class Application(models.Model):
 
     def __unicode__(self):
         return u"{0} <{1}>".format(self.name, self.email if self.email else self.mobile)
+
+    def unapply_link(self):
+        domain = 'https://{0}'.format(settings.DOMAIN)
+        url = reverse('studygroups_leave')
+        qs = gen_unsubscribe_querystring(self.pk)
+        return '{0}{1}?{2}'.format(domain, url, qs)
 
 
 class StudyGroupMeeting(LifeTimeTrackingModel):
@@ -366,9 +373,12 @@ def send_reminder(reminder):
         for email in to:
             yes_link = reminder.study_group_meeting.rsvp_yes_link(email)
             no_link = reminder.study_group_meeting.rsvp_no_link(email)
+            application = reminder.study_group_meeting.study_group.application_set.filter(email=email).first()
+            unsubscribe_link = application.unapply_link()
             email_body = reminder.email_body
             email_body = re.sub(r'\(<!--RSVP:YES-->.*\)', yes_link, email_body)
             email_body = re.sub(r'\(<!--RSVP:NO-->.*\)', no_link, email_body)
+            email_body = re.sub(r'\(<!--UNSUBSCRIBE-->.*\)', unsubscribe_link, email_body)
             send_mail(
                 reminder.email_subject.strip('\n'),
                 email_body,
