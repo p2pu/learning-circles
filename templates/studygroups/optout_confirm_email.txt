@@ -1,10 +1,10 @@
 Hi there
 
-You asked to leave the learning circle mentioned in the subject line. To confirm your action, please visit the link below.
+You requested to be removed from the learning circle mentioned in the subject. Visit the link below to confirm:
 
 {{ application.unapply_link | safe}}
 
-If you didn't ask to opt out of the learning circle, you can safely ignore this message.
+If you didn't request to be removed from the learning circle, you can safely ignore this message.
 
 Cheers
 P2PU
