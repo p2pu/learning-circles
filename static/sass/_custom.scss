@@ -37,33 +37,39 @@
 	border: 0;
 }
 
-.strech-banner {
-	height: 350px;
-	width: 100%;
-	background-repeat: no-repeat;
-	margin-top: 50px;
-	background-size: cover;
-
-	&.about {
-		background-image: url(../images/about/about-banner.jpg);
-		background-position: 0 100%;
-	}
-
-	&.philosophy {
-		background-image: url(../images/about/philosophy-banner.jpg);
-		background-position: 0 22%;
-	}
-
-	&.people {
-		background-image: url(../images/about/people-banner.jpg);
-		background-position: 0 38%;
-	}
-
-	&.credits {
-		background-image: url(../images/about/p2pu_lego.jpg);
-		background-position: 0 51%;
-	}
+.about-teal{
+		color: #04b0aa;
 }
+
+h1.lc-about-header {
+		font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    	font-size: 48px;
+    	font-weight: 800;
+    	margin-bottom: 24px;
+}
+
+.lc-about-section p.about-body{
+		font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    	font-size: 15px;
+    	color: #515665;
+    	margin-bottom: 15px;
+}
+
+
+.lc-about-section a.lc-about-link:link, a.lc-about-link:visited{
+    text-decoration: underline;
+    color: #04b0aa;
+    font-weight: 800;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 15px;
+}
+
+
+.lc-about-section img.lc-about-image{
+    max-width: 100%;
+}
+
+
 
 .bottom-link {
 	margin: 2em 0;
@@ -130,15 +136,6 @@
 		.item-title {
 			color: $p2pu-orange;
 		}
-	}
-}
-
-section.featured-work{
-	padding: 3em 1.5em;
-	background-color: #F3F4F8;
-
-	.inner{
-		margin: 2em 0;
 	}
 }
 
