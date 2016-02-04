@@ -1,0 +1,1 @@
+Opt out of {{ application.study_group.course.title | safe}} {{application.study_group.day}}s {{ application.study_group.meeting_time|date:"fA" }} at {{ study_group.venue_name }}. 

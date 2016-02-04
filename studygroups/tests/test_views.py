@@ -130,6 +130,7 @@ class TestSignupViews(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, mail_data['email_subject'])
         self.assertFalse(send_message.called)
+        self.assertIn('https://example.net/en/optout/', mail.outbox[0].body)
 
 
     @patch('studygroups.models.send_message')
@@ -393,3 +394,39 @@ class TestSignupViews(TestCase):
         c.login(username='bob123', password='password')
         resp = c.get('/en/login_redirect/')
         self.assertRedirects(resp, '/en/facilitator/')
+
+
+    @patch('studygroups.forms.send_message')
+    def test_optout_view(self, send_message):
+        c = Client()
+        resp = c.post('/en/signup/foo-bob-1/', self.APPLICATION_DATA)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEquals(Application.objects.all().count(), 1)
+        app = Application.objects.first()
+
+        # test for email
+        mail.outbox = []
+        resp = c.post('/en/optout/', {'email': app.email} )
+        self.assertRedirects(resp, '/en/')
+        self.assertEquals(Application.objects.all().count(), 1)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn(app.unapply_link(), mail.outbox[0].body)
+
+        # test for mobile
+        data = self.APPLICATION_DATA.copy()
+        del data['email']
+        data['mobile'] = '123-456-7777'
+        resp = c.post('/en/signup/foo-bob-1/', data)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEquals(Application.objects.all().count(), 2)
+        app = Application.objects.last()
+        self.assertEquals(app.mobile, data['mobile'])
+
+        mail.outbox = []
+        resp = c.post('/en/optout/', {'mobile': app.mobile} )
+        self.assertRedirects(resp, '/en/')
+        self.assertEquals(Application.objects.all().count(), 1)
+        self.assertEquals(len(mail.outbox), 0)
+        self.assertTrue(send_message.called)
+
+

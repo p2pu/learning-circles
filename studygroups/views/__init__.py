@@ -18,7 +18,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.views.generic.base import View, RedirectView
 from django.views.generic.detail import SingleObjectMixin
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, TemplateView
 from django.contrib.auth.models import User
 from django.forms import modelform_factory
@@ -33,6 +33,7 @@ from studygroups.models import generate_all_meetings
 from studygroups.forms import ApplicationForm, MessageForm, StudyGroupForm
 from studygroups.forms import StudyGroupMeetingForm
 from studygroups.forms import FeedbackForm
+from studygroups.forms import OptOutForm
 from studygroups.rsvp import check_rsvp_signature
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import user_is_organizer
@@ -119,7 +120,7 @@ def signup(request, location, study_group_id):
     return render_to_response('studygroups/signup.html', context, context_instance=RequestContext(request))
 
 
-def leave(request):
+def optout_confirm(request):
     user = request.GET.get('user')
     sig = request.GET.get('sig')
 
@@ -131,13 +132,25 @@ def leave(request):
 
     if all(conditions()):
         signup = Application.objects.filter(pk=user)
-        # TODO - save data
         signup.delete()
+        messages.success(request, 'You successfully opted out of the learning circle.')
     else:
         messages.error(request, 'Bad RSVP code')
 
     url = reverse('studygroups_landing')
     return http.HttpResponseRedirect(url)
+
+
+class OptOutView(FormView):
+    template_name = 'studygroups/optout.html'
+    form_class = OptOutForm
+    success_url = reverse_lazy('studygroups_landing')
+
+    def form_valid(self, form):
+        # Find all signups with email and send opt out confirmation
+        form.send_optout_message()
+        messages.info(self.request, 'You will shortly receive an email or text message confirming that you wish to opt out.')
+        return super(OptOutView, self).form_valid(form)
 
 
 class SignupSuccess(TemplateView):

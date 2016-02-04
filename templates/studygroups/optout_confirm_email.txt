@@ -1,0 +1,10 @@
+Hi there
+
+You asked to leave the learning circle mentioned in the subject line. To confirm your action, please visit the link below.
+
+{{ application.unapply_link | safe}}
+
+If you didn't ask to opt out of the learning circle, you can safely ignore this message.
+
+Cheers
+P2PU

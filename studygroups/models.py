@@ -167,6 +167,7 @@ class StudyGroup(LifeTimeTrackingModel):
 
 
 class Application(models.Model):
+    # TODO - change to LifeTimeTrackingModel
     study_group = models.ForeignKey('studygroups.StudyGroup')
     name = models.CharField(max_length=128)
     email = models.EmailField(verbose_name='Email address', blank=True)
@@ -387,13 +388,15 @@ def send_reminder(reminder):
                 fail_silently=False
             )
     else:
-        send_mail(reminder.email_subject.strip('\n'), reminder.email_body, reminder.study_group.facilitator.email, to, fail_silently=False)
+        email_body = reminder.email_body
+        email_body = u'{0}\n\nTo leave this learning circle you can visit https://{1}{2}'.format(email_body, settings.DOMAIN, reverse('studygroups_optout'))
+        send_mail(reminder.email_subject.strip('\n'), email_body, reminder.study_group.facilitator.email, to, fail_silently=False)
 
     # send SMS
     tos = [su.mobile for su in reminder.study_group.application_set.filter(accepted_at__isnull=False).exclude(mobile='')]
     for to in tos:
         try:
-            #TODO - insert RSVP link
+            #TODO - insert opt out link
             #if reminder.study_group_meeting:
             send_message(to, reminder.sms_body)
         except twilio.TwilioRestException as e:
