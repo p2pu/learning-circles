@@ -7,6 +7,7 @@
   <!-- Card Html START --> 
   <div class="col-lg-3 col-md-4 col-sm-6">
     <div class="lc-card">
+      <a class="link-overlay" href="{% url 'studygroups_signup' location=lc.venue_name|slugify study_group_id=lc.pk %}"></a>
       {% if lc.image %}<img src="/media/{{ lc.image }}" height="143" width="286" alt="Image of the Learning Circle location">{% else %}<img src="{% static 'images/learning-circle-default.jpg' %}" height="143" width="286" alt="Image of the Learning Circle location">{% endif %}
       <div class="title-container"><h1>{{lc.course.title}}</h1></div>
       <div class="body-container">
@@ -16,7 +17,6 @@
         <p class="lc-daysX"><span class="extrabold">{{lc.day}}s</span>, {{lc.meeting_time|time:"f A"}} - {{lc.end_time|time:"f A"}}, {{lc.timezone}}</p>
         <p class="lc-startX"><span class="extrabold">{{lc.studygroupmeeting_set.active.count}} week{{lc.studygroupmeeting_set.active.count|pluralize}}</span> beginning <span class="extrabold lc-card-teal">{{lc.start_date|date:"j N Y"}}</span></p>
       </div>
-      <a class="link-overlay" href="{% url 'studygroups_signup' location=lc.venue_name|slugify study_group_id=lc.pk %}"></a>
     </div>
   </div>
   <!-- Card Html END -->
