@@ -23,6 +23,7 @@
       {% endif %}
   </div>
   <div class="col-md-12 well">
+    <p><a href="{% url 'studygroups_signup' location=lc.venue_name|slugify study_group_id=lc.pk %}"><strong>Use this link for marketing</strong></a></p>
     <p><strong>Next meeting:</strong> {{ lc.next_meeting.meeting_time|date:"D d M Y \a\t P" }}</p>
       <p>
         <strong>Attending ({{ lc.next_meeting.rsvps.yes|length }}):</strong>
