@@ -7,7 +7,7 @@
 			        data-target="#nav-links-collapse">
 				<i class="fa fa-bars"></i>
 			</a>
-			<a class="navbar-logo" href="{% if request.path == "/" %}#top{% else %}{% url 'studygroups_landing' %}#top{% endif %}">
+			<a class="navbar-logo" href="{% if request.path == "/" %}#top{% else %}{% url 'studygroups_landing' %}{% endif %}">
 				<img src="{% static 'images/course-logo.png' %}" alt="Course Logo" />
 			</a>
 		</div>
@@ -16,7 +16,7 @@
 		<div class="collapse navbar-collapse" id="nav-links-collapse">
 			<ul class="nav navbar-nav">
 				<li class="">
-          <a href="{% if request.path == "/" %}#courses{% else %}{% url 'studygroups_landing' %}#courses{% endif %}">Courses</a>
+          <a href="{% url 'studygroups_courses' %}">Courses</a>
         </li>
 			  <li class="">
           <a href="{% url 'about' %}">About</a>

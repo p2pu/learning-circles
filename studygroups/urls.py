@@ -26,6 +26,7 @@ from studygroups.views import FacilitatorSignup
 from studygroups.views import FacilitatorSignupSuccess
 from studygroups.views import FacilitatorStudyGroupCreate
 from studygroups.views import OptOutView
+from studygroups.views import CourseListView
 
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import user_is_organizer
@@ -33,6 +34,7 @@ from studygroups.decorators import user_is_not_logged_in
 
 urlpatterns = patterns('',
     url(r'^$', 'studygroups.views.landing', name='studygroups_landing'),
+    url(r'^courses/$', CourseListView.as_view(), name='studygroups_courses'),
     url(r'^login_redirect/$', 'studygroups.views.login_redirect', name='studygroups_login_redirect'),
     url(r'^signup/(?P<location>[\w-]+)-(?P<study_group_id>[\d]+)/$', 'studygroups.views.signup', name='studygroups_signup'),
     url(r'^signup/(?P<study_group_id>[\d]+)/success/$', SignupSuccess.as_view(), name='studygroups_signup_success'),

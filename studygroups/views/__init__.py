@@ -17,6 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.views.generic.base import View, RedirectView
+from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteView
 from django.views.generic import DetailView, TemplateView
@@ -53,12 +54,20 @@ def landing(request):
 
     context = {
         'courses': courses,
+        'learning_circles': StudyGroup.objects.active(),
         'interest': {
             'courses': courses,
             'locations': Location.objects.all(),
         },
     }
     return render_to_response('studygroups/index.html', context, context_instance=RequestContext(request))
+
+
+class CourseListView(ListView):
+    template = 'studygroups/course_list.html'
+
+    def get_queryset(self):
+        return Course.objects.filter(created_by__isnull=True)
 
 
 def signup(request, location, study_group_id):
