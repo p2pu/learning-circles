@@ -7345,6 +7345,87 @@ button.close {
   src: url("/static/fonts/Arvo.woff") format("woff"), url("/static/fonts/Arvo.ttf") format("truetype");
   font-weight: normal;
   font-style: normal; }
+.card-container {
+  text-align: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  margin-top: 60px; }
+
+.extrabold {
+  font-weight: 800; }
+
+.lc-card-teal {
+  color: #04b0aa; }
+
+.lc-card {
+  height: 420px;
+  background-color: #ffffff;
+  border: 1px solid #e1e1e1;
+  position: relative;
+  margin-bottom: 1em;
+  text-align: left; }
+  .lc-card img {
+    display: block;
+    width: 100%; }
+  .lc-card div.title-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: table;
+    height: 143px;
+    width: 100%;
+    background-image: url("../images/lc-overlay.png");
+    /* Gradient overlay under the course name to make the text more readable over any kind of image*/
+    background-position: bottom center; }
+  .lc-card div.title-container h1 {
+    display: table-cell;
+    vertical-align: bottom;
+    color: #ffffff;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    padding: 12px 16px; }
+  .lc-card div.body-container {
+    padding-top: 1em; }
+  .lc-card p {
+    position: relative;
+    color: #515665;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    text-align: center; }
+  .lc-card p.facilitator:before {
+    font-family: FontAwesome;
+    content: "\f007";
+    font-size: 24px;
+    color: #7e7e7e;
+    position: absolute;
+    left: 18px; }
+  .lc-card p.lc-venue {
+    text-transform: uppercase;
+    color: #04b0aa;
+    font-weight: 800; }
+  .lc-card p.lc-venue:before {
+    font-family: FontAwesome;
+    content: "\f041";
+    font-size: 24px;
+    color: #7e7e7e;
+    position: absolute;
+    left: 16px; }
+  .lc-card p.lc-days:before {
+    font-family: FontAwesome;
+    content: "\f073";
+    font-size: 24px;
+    color: #7e7e7e;
+    position: absolute;
+    left: 16px; }
+  .lc-card a.link-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    z-index: 1; }
+
 .thumbnail {
   background-color: #FCFCFC;
   position: relative;
