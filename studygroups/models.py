@@ -74,14 +74,14 @@ class LifeTimeTrackingModel(models.Model):
 
 
 class Course(models.Model):
-    title = models.CharField(max_length=128)
-    provider = models.CharField(max_length=256)
-    link = models.URLField(help_text='URL where the course can be accessed.')
+    title = models.CharField(max_length=128, verbose_name='Course title')
+    provider = models.CharField(max_length=256, verbose_name='Course provider', help_text='e.g. Khan Academy, edX, Coursera.')
+    link = models.URLField(verbose_name='Course website', help_text='Paste full URL above.')
     key = models.CharField(max_length=255, default='NOT SET')
-    start_date = models.DateField()
-    duration = models.IntegerField(help_text='Number of weeks.')
-    prerequisite = models.TextField(blank=True)
-    time_required = models.IntegerField(help_text='Number of hours per week.')
+    start_date = models.DateField(verbose_name='Course start date', help_text='If the course is always available (many are), choose today\'s date. Note that this is the start date for the course - not for your specific Learning Circle.')
+    duration = models.IntegerField(verbose_name='Number of weeks', help_text='Check the course website, or approximate.')
+    prerequisite = models.TextField(blank=True, help_text='e.g. high school diploma or equivalent, pre-calculus, HTML/CSS.')
+    time_required = models.IntegerField(verbose_name='Hours per week', help_text='Check the course website, or approximate.')
     caption = models.TextField(help_text='Short description of the course.')
     created_by = models.ForeignKey(User, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

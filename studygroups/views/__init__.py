@@ -334,11 +334,11 @@ class CourseCreate(CreateView):
         'title',
         'provider',
         'link',
+        'caption',
         'start_date',
         'duration',
-        'prerequisite',
         'time_required',
-        'caption',
+        'prerequisite',
     ]
 
     def form_valid(self, form):
