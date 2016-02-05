@@ -1,8 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
+<div class="c-jumbotron-conf">
+    <div class="j-text-container">
+        <span class="c-jumbo-title">Looking for a course for your Learning Circle?</span> </br>
+        <span class="c-jumbo-body">These are courses that we've worked with in the past and think work pretty well as Learning Circles. When you create a Learning Circle, you'll have the option to select from these courses or to add your own.
+</span> 
+    </div>	
+</div>
+
 <div class="container" >
-    <h1 class="lc-about-header about-teal">Courses</h1>
     {% for course in object_list %}
         {% include 'studygroups/course_card.html' %}
     {% endfor %}
