@@ -2,6 +2,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django import http
 from django.forms import modelform_factory
 from django.views.generic.base import View, TemplateResponseMixin, ContextMixin
+from django.template.loader import render_to_string
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.models import User
@@ -9,6 +10,8 @@ from django.contrib.auth.forms import PasswordResetForm
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.db.models import Q
+from django.core.mail import EmailMultiAlternatives
+from django.conf import settings
 
 from studygroups.forms import FacilitatorForm, StudyGroupForm
 from studygroups.models import Facilitator, StudyGroup, Location, Course
@@ -71,6 +74,27 @@ class FacilitatorStudyGroupCreate(CreateView):
         study_group.facilitator = self.request.user
         study_group.save()
         generate_all_meetings(study_group)
+
+        context = {
+            'study_group': study_group,
+            'protocol': 'https',
+            'domain': settings.DOMAIN,
+        }
+        subject = render_to_string('studygroups/learning_circle_created_subject.txt', context).strip(' \n')
+        text_body = render_to_string('studygroups/learning_circle_created.txt', context)
+        html_body = render_to_string('studygroups/learning_circle_created.html', context)
+
+        bcc = [ a[1] for a in settings.ADMINS ]
+        notification = EmailMultiAlternatives(
+            subject,
+            text_body,
+            settings.DEFAULT_FROM_EMAIL,
+            [study_group.facilitator.email],
+            bcc
+        )
+        notification.attach_alternative(html_body, 'text/html')
+        notification.send()
+
         messages.success(self.request, _('You created a new Learning Circle!'))
         return http.HttpResponseRedirect(self.success_url)
 
