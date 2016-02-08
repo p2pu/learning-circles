@@ -165,7 +165,7 @@ class StudyGroupForm(forms.ModelForm):
         super(StudyGroupForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.add_input(Submit('submit', 'Save'))
-        self.helper.layout.insert(1, HTML("""<p><a href="{% url 'studygroups_course_create' %}">Add course</a></p>"""))
+        self.helper.layout.insert(1, HTML("""<p><a class="btn btn-default" href="{% url 'studygroups_course_create' %}">Add course</a></p>"""))
 
         if self.instance.pk:
             self.fields['weeks'].initial = self.instance.studygroupmeeting_set.active().count()
