@@ -5,7 +5,7 @@
 <div class="panel-body">
 <div class="row">
   <div class="col-md-12">
-    <p>At <a href="{{lc.venue_website}}">{{ lc.venue_name }}</a> {{lc.venue_details}} every {{ lc.day }}, {{ lc.meeting_time|time:"f A" }} to {{ lc.end_time|time:"f A" }} {{ lc.timezone_display }} starting {{ lc.start_date|date:"D d M Y" }}</p>
+    <p>At {% if lc.venue_website %}<a href="{{lc.venue_website}}">{{ lc.venue_name }}</a>{% else %}<strong>{{lc.venue_name}}</strong>{% endif %}, {{lc.venue_details}} every {{ lc.day }}, {{ lc.meeting_time|time:"f A" }} to {{ lc.end_time|time:"f A" }} {{ lc.timezone_display }} starting {{ lc.start_date|date:"D d M Y" }}</p>
   </div>
   <div class="col-md-12">
       <p>
