@@ -2,11 +2,11 @@ Hi {{study_group.facilitator.first_name}},
 
 Congratulations! Your Learning Circle is now live at: {{protocol}}://{{domain}}{% url 'studygroups_signup' location=study_group.venue_name|slugify study_group_id=study_group.pk %}. 
 
-Share this link freely with anyone who you think might want to sign up. For ideas on where to share, and what to say, head back over to the facilitator guide and read through the Getting Started section.
+Share this link freely with anyone who you think might want to sign up. For ideas on where to share, and what to say, head back over to the facilitator guide and read through the Getting Started section: https://www.p2pu.org/en/facilitate/starting/
 
 And remember, you can log in to your facilitator dashboard at any time to view signups and send messages to your future learners!
 
-You’ll hear from us again a few days before your first Learning Circle. If you have any questions in the meantime, you can ask in our facilitator community.
+You’ll hear from us again a few days before your first Learning Circle. If you have any questions in the meantime, you can ask in our facilitator community: https://community.p2pu.org.
 
 Cheers,
 P2PU
