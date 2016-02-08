@@ -67,7 +67,7 @@ class FacilitatorStudyGroupCreate(CreateView):
 
     def get_form(self, form_class=None):
         form = super(FacilitatorStudyGroupCreate, self).get_form(form_class)
-        form.fields["course"].queryset = Course.objects.filter(Q(created_by=self.request.user) | Q(created_by__isnull=True))
+        form.fields["course"].queryset = Course.objects.filter(Q(created_by=self.request.user) | Q(created_by__isnull=True)).order_by('title')
         return form
 
     def form_valid(self, form):
