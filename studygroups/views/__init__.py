@@ -54,7 +54,7 @@ def landing(request):
 
     context = {
         'courses': courses,
-        'learning_circles': StudyGroup.objects.active(),
+        'learning_circles': StudyGroup.objects.active().filter(signup_open=True),
         'interest': {
             'courses': courses,
             'locations': Location.objects.all(),
