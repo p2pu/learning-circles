@@ -28,38 +28,14 @@
       <div class="container">
         <div class="text-center col-md-12">
           <div class="session" id="signup">
-            <div class="collapse" id="interest-extra" aria-expanded="false">
-              {% include 'lead-extra.html' %}
-            </div>
             <h2>Don't see any courses in a location near you?</h2>
             <p>Check out the <a href="https://www.p2pu.org/en/facilitate/">Facilitator Guide</a> and run your own Learning Circle!</p>
             <p>or</p>
-            {% include 'lead.html' %}
+            {% include 'mailchimp.html' %}
           </div>
         </div>
       </div>
     </section>
 
-  <!--<section id="more" class="shaded">
-      <div class="container">
-  			<div class="col-md-6 video">
-                  <iframe width="100%" height="360" src="https://www.youtube.com/embed/9asVuChS04Q" frameborder="0" allowfullscreen></iframe>
-  			</div>
-  			<div class="col-md-6">
-  				<p>
-  					<h3>What is a Learning Circle?</h3>
-  The Learning Circles model brings together learners in open community spaces to take online courses together. As a support group for learning, Learning Circles offer individuals a comfortable and consistent environment to motivate and to be motivated.
-  				</p>
-  				<p>
-  					If you are not in Chicago or want to learn more, check out <a
-  						href="https://p2pu.org">our homepage</a>.
-  				</p>
-  			</div>
-      </div>
-		</section>-->
-
 {% endblock %}
 
-{% block scripts %}
-    <script src="{% static 'js/interest.js' %}"></script>
-{% endblock %}
