@@ -129,7 +129,7 @@ class StudyGroup(LifeTimeTrackingModel):
     name = models.CharField(max_length=128, default=_study_group_name)
     course = models.ForeignKey('studygroups.Course', help_text='Choose one or add a new course.')
     venue_name = models.CharField(max_length=256, verbose_name='Common name of venue.', help_text='e.g. Pretoria Library or Bekka\'s house')
-    venue_address = models.CharField(max_length=256, help_text='Like you were mailing a letter. Include country!.')
+    venue_address = models.CharField(max_length=256, help_text='Like you were mailing a letter. Include country!')
     venue_details = models.CharField(max_length=128, verbose_name='Meeting spot', help_text='e.g. second floor meeting room or kitchen.')
     venue_website = models.URLField(blank=True, help_text='Link to any website that has more info about the venue or Circle.')
     facilitator = models.ForeignKey(User)

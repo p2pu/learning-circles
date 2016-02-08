@@ -40,6 +40,7 @@ class FacilitatorSignup(CreateView):
         facilitator.save()
 
         # send password reset email to facilitator
+        # TODO - who does this email come from?
         reset_form = PasswordResetForm({'email': self.object.email})
         if not reset_form.is_valid():
             raise Exception(reset_form.errors)
@@ -95,7 +96,7 @@ class FacilitatorStudyGroupCreate(CreateView):
         notification.attach_alternative(html_body, 'text/html')
         notification.send()
 
-        messages.success(self.request, _('You created a new Learning Circle!'))
+        messages.success(self.request, _('You created a new Learning Circle! Check your email for next steps.'))
         return http.HttpResponseRedirect(self.success_url)
 
 

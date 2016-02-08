@@ -156,7 +156,7 @@ class MessageForm(forms.ModelForm):
 
 class StudyGroupForm(forms.ModelForm):
     meeting_time = forms.TimeField(input_formats=['%I:%M %p'])
-    weeks = forms.IntegerField(min_value=1, label=_('How many weeks will your learning circle run?'))
+    weeks = forms.IntegerField(min_value=1, label=_('How many weeks will your learning circle run for?'))
     timezone = forms.ChoiceField(choices=zip(pytz.common_timezones, pytz.common_timezones))
 
     def __init__(self, *args, **kwargs):
