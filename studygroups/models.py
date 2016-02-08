@@ -19,6 +19,7 @@ import datetime
 import pytz
 import dateutil.parser
 import re
+import json
 import logging
 
 logger = logging.getLogger(__name__)
@@ -182,6 +183,9 @@ class Application(LifeTimeTrackingModel):
         url = reverse('studygroups_leave')
         qs = gen_unsubscribe_querystring(self.pk)
         return '{0}{1}?{2}'.format(domain, url, qs)
+
+    def get_signup_questions(self):
+        return json.loads(self.signup_questions)
 
 
 class StudyGroupMeeting(LifeTimeTrackingModel):

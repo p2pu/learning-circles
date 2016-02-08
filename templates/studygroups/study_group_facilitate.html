@@ -128,7 +128,7 @@
                   <th>Name</th>
                   <th>Goal</th>
                   <th>Support</th>
-                  <th>Can bring laptop</th>
+                  <th>Laptop and headphones</th>
                   <th></th>
               </tr>
           </thead>
@@ -137,15 +137,15 @@
               <tr>
                   <td>{{ member.name }}
                   <br/>
-                      {% if member.contact_method == "Email" %}
+                      {% if member.email %}
                           &lt;{{member.email}}&gt;
                       {% else %}
                           &lt;{{member.mobile}}&gt;
                       {% endif %}
                   </td>
-                  <td>{{ member.goals }}</td>
-                  <td>{{ member.support }}</td>
-                  <td>{{ member.computer_access }}</td>
+                  <td>{{ member.get_signup_questions.goals }}</td>
+                  <td>{{ member.get_signup_questions.support }}</td>
+                  <td>{{ member.get_signup_questions.computer_access }}</td>
                   <td><a class="btn btn-primary" href="{% url 'studygroups_application_delete' lc.id member.id %}">Remove</a></td>
                   </td>
               </tr>

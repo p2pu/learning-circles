@@ -29,12 +29,14 @@ logger = logging.getLogger(__name__)
 
 class ApplicationForm(forms.ModelForm):
     COMPUTER_ACCESS = (
+        ('', _('Select one of the following')),
         ('Both', 'Both'),
         ('Just a laptop', 'Just a laptop'),
         ('Just headphones', 'Just headphones'),
         ('Neither', 'Neither'),
     )
     DIGITAL_LITERACY_CHOICES = (
+        ('', _('Select one of the following')),
         ('0', _(u'Can\'t do')), 
         ('1', _(u'Need help doing')),
         ('2', _(u'Can do with difficulty')), 
