@@ -13,14 +13,13 @@
       {% if study_group.image %}
       <img src="{{study_group.image.url}}">
       {% endif %}
-      <p>at <a href="{{study_group.venue_website}}">{{study_group.venue_name}}</a>, {{study_group.venue_details }}</p>
+      <p>at {% if study_group.venue_website %}<a href="{{study_group.venue_website}}">{{ study_group.venue_name }}</a>{% else %}<strong>{{study_group.venue_name}}</strong>{% endif %}, {{study_group.venue_details}}</p>
       <p>{{study_group.course.caption}}</p>
       <p>Course content from <a href="{{ study_group.course.link }}" target="_blank">{{ study_group.course.provider }}</a></p>
       <p><strong>This Learning Circle meets every {{study_group.day}} from {{study_group.meeting_time|time:"fA"}} to {{study_group.end_time|time:"fA"}} {{study_group.timezone_display}} starting {{study_group.start_date|date:"j N"}} for {{study_group.studygroupmeeting_set.active.count}} week{{study_group.studygroupmeeting_set.active.count|pluralize}}.</strong></p>
   </div>
   <div class="col-md-8 col-sm-12">
 	    {% crispy form %}
-        <!--p><button type="submit" class="btn btn-default">Sign up</button></p-->
   </div>
 </div>
 </div>
