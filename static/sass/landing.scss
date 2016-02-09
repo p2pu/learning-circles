@@ -27,11 +27,11 @@ section{
 .navbar-logo {
 
 	img {
-		width: 140px;
+		width: 100px;
 		padding: 1em 1em 1em 0;
 
 		@media (min-width: $screen-xs-max) {
-			width: 123px;
+			width: 100px;
 		}
 	}
 }
@@ -191,6 +191,80 @@ padding-bottom: 20px;
         padding: 14px 0;
     }
 }
+
+
+.c-jumbotron-conf {
+    height:320px;
+    width:100%;
+    margin-top: -80px;
+    background-color:#fdbc1f;
+   	background-image:url("/static/images/jumbotron.jpg");
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: cover;
+}
+
+	.j-text-container{
+		text-align: center;
+		width: 100%;
+		height: 320px;
+		padding: 0 16px;
+	}
+
+
+
+.c-jumbo-title{
+	display: inline-block;
+	color: #04b0aa;
+	font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 52px;
+    font-weight: 800;
+	padding: 50px 0 20px;
+    line-height: 1;
+    max-width: 660px;
+}
+
+.c-jumbo-body{
+	display: inline-block;
+	color: #ffffff;
+	font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 18px;
+    font-weight: 300;
+    max-width: 800px;
+	padding: 20px 0;
+
+}
+
+
+
+@media screen and (max-width: 680px) {
+.c-jumbo-title{
+    font-size: 40px;
+	padding: 40px 0 20px;
+}
+}
+
+
+@media screen and (max-width: 490px) {
+.c-jumbo-title{
+    font-size: 40px;
+	padding: 35px 0 20px;
+}
+
+.c-jumbo-body{
+    font-size: 16px;
+	padding: 10px 0;
+}
+}
+
+
+@media screen and (max-width: 370px) {
+.c-jumbo-title{
+    font-size: 33px;
+	padding: 23px 0 20px;
+}
+}
+
 
 #signup{
 	padding: 2em 0;
