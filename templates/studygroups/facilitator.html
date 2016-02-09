@@ -4,23 +4,19 @@
 
 <div class="container">
 
- <!--div class="row">
-    <div class="col-md-12">
-      <h1>Resources</h1>
-      <ul class="nav nav-tabs nav-stacked">
-          <li><a href="#">What are learning circles?</a></li>
-          <li><a href="#">How do I create a learning circle?</a></li>
-          <li><a href="#">What should I do during a learning circle?</a></li>
-      </ul>
-  </div>
-  </div-->
+  <h1>{{user.first_name}}&#39;s Facilitator Dashboard</h1>
 
+  <h2>Useful links:</h2>
+  <ul class="list-unstyled">
+      <li><a href="https://www.p2pu.org/en/facilitate/">Facilitator Guide</a></li>
+      <li><a href="https://community.p2pu.org">Facilitator Community</a></li>
+  </ul>
 
-  <h2>Active learning circles</h2>
+  <h2>Active Learning Circles</h2>
   {% for lc in current_study_groups %}
     {% include 'studygroups/study_group_facilitate.html' %}
   {% empty %}
-    <p>No active learning circles found.</p>
+    <p>No active Learning Circles found.</p>
   {% endfor %}
   <p>
     <a class="btn btn-primary" href="{% url 'studygroups_facilitator_studygroup_create' %}">Create a new Learning Circle</a>
@@ -29,7 +25,7 @@
     <a class="btn btn-primary" href="{% url 'studygroups_course_create' %}">Add a new Course</a>
   </p>
 
-  {% if past_study_groups %}<h2>Past learning circles</h2>{% endif %}
+  {% if past_study_groups %}<h2>Past Learning Circles</h2>{% endif %}
   {% for lc in past_study_groups %}
     {% include 'studygroups/study_group_facilitate.html' %}
   {% endfor %}

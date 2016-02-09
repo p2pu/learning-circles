@@ -159,12 +159,15 @@ class MessageForm(forms.ModelForm):
 class StudyGroupForm(forms.ModelForm):
     meeting_time = forms.TimeField(input_formats=['%I:%M %p'])
     weeks = forms.IntegerField(min_value=1, label=_('How many weeks will your learning circle run for?'))
-    timezone = forms.ChoiceField(choices=zip(pytz.common_timezones, pytz.common_timezones))
+    timezone = forms.ChoiceField(choices=zip(pytz.common_timezones, pytz.common_timezones), label=_('What timezone is your Learning Circle happening in?'))
 
     def __init__(self, *args, **kwargs):
         super(StudyGroupForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
-        self.helper.add_input(Submit('submit', 'Save'))
+        if self.instance:
+            self.helper.add_input(Submit('submit', 'Create Learning Circle'))
+        else:
+            self.helper.add_input(Submit('submit', 'Save'))
         self.helper.layout.insert(1, HTML("""<p><a class="btn btn-default" href="{% url 'studygroups_course_create' %}">Add course</a></p>"""))
 
         if self.instance.pk:
