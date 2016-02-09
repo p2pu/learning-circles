@@ -29,7 +29,7 @@
     <a class="btn btn-primary" href="{% url 'studygroups_course_create' %}">Add a new Course</a>
   </p>
 
-  <h2>Past learning circles</h2>
+  {% if past_study_groups %}<h2>Past learning circles</h2>{% endif %}
   {% for lc in past_study_groups %}
     {% include 'studygroups/study_group_facilitate.html' %}
   {% endfor %}
