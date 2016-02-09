@@ -6,24 +6,16 @@
 <div class="row">
     
   <div class="col-md-12 col-sm-12">
-      <h2>Welcome to your Learning Circle</h2>
+      <h2>Create an account</h2>
+      Or <a href="https://learningcircles.p2pu.org/en/accounts/login/">log in</a>
       <p>Fill in your email address and name below, and you’ll soon get an email prompting you 
-      to reset your password and log in. Once you’re set up with your own dashboard, you’ll be able to:</p>
-      <ul>
-        <li>Market your Learning Circle with your own webpage</li>
-        <li>View signups and manage applications</li>
-        <li>Send messages to learners</li>
-        <li>Customize automatic weekly reminders</li>
-        <li>Update details for speciic Learning Circle meetings</li>
-        <li>View weekly RSVPs</li>
-        <li>Capture weekly feedback</li>
-      </ul>
+      to reset your password and log in to create your first Learning Circle.</p>
   </div>
   <div class="col-md-12 col-sm-12">
 	  <form action="" method="POST" enctype="multipart/form-data">
 	    {% csrf_token %}
 	    {{ form|crispy }}
-        <p><button type="submit" class="btn btn-default">Save</button></p>
+        <p><button type="submit" class="btn btn-default">Submit</button></p>
 	  </form>
   </div>
 </div>
