@@ -37,12 +37,7 @@ class ApplicationForm(forms.ModelForm):
     )
     DIGITAL_LITERACY_CHOICES = (
         ('', _('Select one of the following')),
-        ('0', _(u'Can\'t do')), 
-        ('1', _(u'Need help doing')),
-        ('2', _(u'Can do with difficulty')), 
-        ('3', _(u'Can do')),
-        ('4', _(u'Expert (can teach others)')),
-    )
+    ) + Application.DIGITAL_LITERACY_CHOICES
 
     mobile = USPhoneNumberField(required=False, label=_('Phone Number for SMS'), help_text=_('if no email available (currently US numbers only)'))
     computer_access = forms.ChoiceField(
@@ -56,13 +51,13 @@ class ApplicationForm(forms.ModelForm):
         label=_('A successful study group requires the support of all of its members. How will you help your peers achieve their goals?')
     )
 
-    send_email = forms.ChoiceField(label=_('Send an email'), choices=DIGITAL_LITERACY_CHOICES)
-    delete_spam = forms.ChoiceField(label=_('Delete spam email'), choices=DIGITAL_LITERACY_CHOICES)
-    search_online = forms.ChoiceField(label=_('Find stuff online using Google'), choices=DIGITAL_LITERACY_CHOICES)
-    browse_video = forms.ChoiceField(label=_('Watch a video on Youtube'), choices=DIGITAL_LITERACY_CHOICES)
-    online_shopping = forms.ChoiceField(label=_('Fill out an application form or buy something online'), choices=DIGITAL_LITERACY_CHOICES)
-    mobile_apps = forms.ChoiceField(label=_('Use a mobile app'), choices=DIGITAL_LITERACY_CHOICES)
-    web_safety = forms.ChoiceField(label=_('Evaluate whether a website is safe/can be trusted'), choices=DIGITAL_LITERACY_CHOICES)
+    send_email = forms.ChoiceField(label=Application.DIGITAL_LITERACY_QUESTIONS['send_email'], choices=DIGITAL_LITERACY_CHOICES)
+    delete_spam = forms.ChoiceField(label=Application.DIGITAL_LITERACY_QUESTIONS['delete_spam'], choices=DIGITAL_LITERACY_CHOICES)
+    search_online = forms.ChoiceField(label=Application.DIGITAL_LITERACY_QUESTIONS['search_online'], choices=DIGITAL_LITERACY_CHOICES)
+    browse_video = forms.ChoiceField(label=Application.DIGITAL_LITERACY_QUESTIONS['browse_video'], choices=DIGITAL_LITERACY_CHOICES)
+    online_shopping = forms.ChoiceField(label=Application.DIGITAL_LITERACY_QUESTIONS['online_shopping'], choices=DIGITAL_LITERACY_CHOICES)
+    mobile_apps = forms.ChoiceField(label=Application.DIGITAL_LITERACY_QUESTIONS['mobile_apps'], choices=DIGITAL_LITERACY_CHOICES)
+    web_safety = forms.ChoiceField(label=Application.DIGITAL_LITERACY_QUESTIONS['web_safety'], choices=DIGITAL_LITERACY_CHOICES)
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()

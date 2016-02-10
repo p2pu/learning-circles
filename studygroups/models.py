@@ -198,17 +198,17 @@ class Application(LifeTimeTrackingModel):
         'web_safety': _('Evaluate whether a website is safe/can be trusted'),
     }
 
-    DIGITAL_LITERACY_CHOICES = dict((
+    DIGITAL_LITERACY_CHOICES = (
         ('0', _(u'Can\'t do')), 
         ('1', _(u'Need help doing')),
         ('2', _(u'Can do with difficulty')), 
         ('3', _(u'Can do')),
         ('4', _(u'Expert (can teach others)')),
-    ))
+    )
 
     def digital_literacy_for_display(self):
         answers = json.loads(self.signup_questions)
-        return { q: {'question_text': text, 'answer': answers.get(q), 'answer_text': self.DIGITAL_LITERACY_CHOICES.get(answers.get(q)) if q in answers else ''} for q, text in self.DIGITAL_LITERACY_QUESTIONS.iteritems() }
+        return { q: {'question_text': text, 'answer': answers.get(q), 'answer_text': dict(self.DIGITAL_LITERACY_CHOICES).get(answers.get(q)) if q in answers else ''} for q, text in self.DIGITAL_LITERACY_QUESTIONS.iteritems() }
 
 
 
