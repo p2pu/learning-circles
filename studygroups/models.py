@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.signals import post_init
 from django.utils import timezone
 from django.utils import translation
+from django.utils.translation import ugettext as _
 from django.template.loader import render_to_string
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.conf import settings
@@ -186,6 +187,29 @@ class Application(LifeTimeTrackingModel):
 
     def get_signup_questions(self):
         return json.loads(self.signup_questions)
+
+    DIGITAL_LITERACY_QUESTIONS = {
+        'send_email': _('Send an email'),
+        'delete_spam': _('Delete spam email'),
+        'search_online': _('Find stuff online using Google'),
+        'browse_video': _('Watch a video on Youtube'),
+        'online_shopping': _('Fill out an application form or buy something online'),
+        'mobile_apps': _('Use a mobile app'),
+        'web_safety': _('Evaluate whether a website is safe/can be trusted'),
+    }
+
+    DIGITAL_LITERACY_CHOICES = dict((
+        ('0', _(u'Can\'t do')), 
+        ('1', _(u'Need help doing')),
+        ('2', _(u'Can do with difficulty')), 
+        ('3', _(u'Can do')),
+        ('4', _(u'Expert (can teach others)')),
+    ))
+
+    def digital_literacy_for_display(self):
+        answers = json.loads(self.signup_questions)
+        return { q: {'question_text': text, 'answer': answers.get(q), 'answer_text': self.DIGITAL_LITERACY_CHOICES.get(answers.get(q)) if q in answers else ''} for q, text in self.DIGITAL_LITERACY_QUESTIONS.iteritems() }
+
 
 
 class StudyGroupMeeting(LifeTimeTrackingModel):

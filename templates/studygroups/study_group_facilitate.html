@@ -128,7 +128,8 @@
                   <th>Name</th>
                   <th>Goal</th>
                   <th>Support</th>
-                  <th>Laptop and headphones</th>
+                  <th>Laptop &amp; headphones</th>
+                  <th>Digital literacy</th>
                   <th></th>
               </tr>
           </thead>
@@ -146,6 +147,17 @@
                   <td>{{ learner.get_signup_questions.goals }}</td>
                   <td>{{ learner.get_signup_questions.support }}</td>
                   <td>{{ learner.get_signup_questions.computer_access }}</td>
+                  <td class="digital-literacy">
+                    {% with dl=learner.digital_literacy_for_display %}
+                    <button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.send_email.question_text}}: {{dl.send_email.answer_text}}"><i class="fa fa-envelope level-{{dl.send_email.answer}}"></i></button>
+                    <button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.delete_spam.question_text}}: {{dl.delete_spam.answer_text}}"><i class="fa fa-flag level-{{dl.delete_spam.answer}}"></i></button>
+                    <button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.search_online.question_text}}: {{dl.search_online.answer_text}}"><i class="fa fa-search level-{{dl.search_online.answer}}"></i></button>
+                    <button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.browse_video.question_text}}: {{dl.browse_video.answer_text}}"><i class="fa fa-youtube-play level-{{dl.browse_video.answer}}"></i></button>
+                    <button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.online_shopping.question_text}}: {{dl.online_shopping.answer_text}}"><i class="fa fa-shopping-cart level-{{dl.online_shopping.answer}}"></i></button>
+                    <button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.mobile_apps.question_text}}: {{dl.mobile_apps.answer_text}}"><i class="fa fa-mobile level-{{dl.mobile_apps}}"></i></button>
+                    <button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.web_safety.question_text}}: {{dl.web_safety.answer_text}}"><i class="fa fa-lock level-{{dl.web_safety.answer}}"></i></button>
+                    {% endwith %}
+                  </td>
                   <td><a class="btn btn-primary" href="{% url 'studygroups_application_delete' lc.id learner.id %}">Remove</a></td>
                   </td>
               </tr>

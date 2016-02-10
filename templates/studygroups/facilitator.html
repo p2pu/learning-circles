@@ -34,3 +34,10 @@
 </div> <!-- /container -->
 
 {% endblock %}
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+        $('[data-toggle="popover"]').popover();
+    });
+</script>
+{% endblock %}
