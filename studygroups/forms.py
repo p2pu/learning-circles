@@ -154,8 +154,8 @@ class MessageForm(forms.ModelForm):
 class StudyGroupForm(forms.ModelForm):
     TIMEZONES = [('', _('Select one of the following')),] + zip(pytz.common_timezones, pytz.common_timezones)
 
-    meeting_time = forms.TimeField(input_formats=['%I:%M %p'])
-    weeks = forms.IntegerField(min_value=1, label=_('How many weeks will your Learning Circle run for?'))
+    meeting_time = forms.TimeField(input_formats=['%I:%M %p'], label=_('What time will your Learning Circle meet each week?'), help_text=_('We recommend establishing a consistent weekly meeting time. You can always change individual meeting times from your Dashboard later.'))
+    weeks = forms.IntegerField(min_value=1, label=_('How many weeks will your Learning Circle run for?'), help_text=_('If you\'re not sure, six weeks is generally a good bet!'))
     timezone = forms.ChoiceField(choices=TIMEZONES, label=_('What timezone is your Learning Circle happening in?'))
 
     def __init__(self, *args, **kwargs):
@@ -165,7 +165,12 @@ class StudyGroupForm(forms.ModelForm):
             self.helper.add_input(Submit('submit', 'Create Learning Circle'))
         else:
             self.helper.add_input(Submit('submit', 'Save'))
-        self.helper.layout.insert(1, HTML("""<p><a class="btn btn-default" href="{% url 'studygroups_course_create' %}">Add course</a></p>"""))
+        self.helper.layout.insert(11, HTML("""<p>For inspiration, check out <a href="https://www.flickr.com/search/?license=2%2C3%2C4%2C5%2C6%2C9" target="_blank">openly licensed images on Flickr</a>.</p>"""))
+        self.helper.layout.insert(1, HTML("""
+            <p>You can read more about each course <a href="{% url 'studygroups_courses' %}">here</a>.</p>
+            <p>Or add a new course that isn't listed yet. Note that courses you add will be visible only to you.</p>
+            <p><a class="btn btn-default" href="{% url 'studygroups_course_create' %}">Add a new course</a></p>
+        """))
 
         if self.instance.pk:
             self.fields['weeks'].initial = self.instance.studygroupmeeting_set.active().count()
@@ -179,17 +184,35 @@ class StudyGroupForm(forms.ModelForm):
         fields = [
             'course',
             'venue_name',
-            'venue_address',
             'venue_details',
-            'venue_website',
-            'facilitator',
+            'venue_address',
             'start_date',
+            'venue_website',
             'weeks',
             'meeting_time',
             'duration',
             'timezone',
             'image',
+            'facilitator',
         ]
+        labels = {
+            'course': _('Choose the course that your Learning Circle will study.'),
+            'venue_name': _('Where will you meet?'),
+            'venue_details': _('Where is the specific meeting spot?'),
+            'venue_address': _('What is the address of the venue?'),
+            'start_date': _('What is the date of the first Learning Circle?'),
+            'duration': _('How long will each Learning Circle last (in minutes)?'),
+            'image': _('Care to add an image?'),
+        }
+        help_texts = {
+            'course': _(''),
+            'venue_name': _('Name of the venue, e.g. Pretoria Library or Bekka\'s house'),
+            'venue_details': _('e.g. second floor kitchen or Room 409 (third floor)'),
+            'venue_address': _('Write it out like you were mailing a letter. Include the country!'),
+            'start_date': _('Give yourself at least 4 weeks to advertise, if possible.'),
+            'duration': _('We recommend 90 - 120 minutes.'),
+            'image': _('Make your Learning Circle stand out with a picture or .gif. It could be related to location, subject matter, or anything else you want to identify with!'),
+        }
 
 
 class FacilitatorForm(forms.ModelForm):

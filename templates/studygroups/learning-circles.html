@@ -12,10 +12,10 @@
       <div class="title-container"><h1>{{lc.course.title}}</h1></div>
       <div class="body-container">
         <p class="facilitatorX">Facilitator: <span class="extrabold">{{lc.facilitator.first_name}} {{lc.facilitator.last_name}}</span></p>
-        <p class="lc-venueX"><span class="extrabold"><i class="fa fa-map-marker"></i> {{lc.venue_name}}</span><br/>
+        <p class="lc-venueX"><span class="extrabold lc-card-teal"><i class="fa fa-map-marker"></i> {{lc.venue_name}}</span><br/>
         {{lc.venue_address}}</p>
         <p class="lc-daysX"><span class="extrabold">{{lc.day}}s</span>, {{lc.meeting_time|time:"f A"}} - {{lc.end_time|time:"f A"}}, {{lc.timezone}}</p>
-        <p class="lc-startX"><span class="extrabold">{{lc.studygroupmeeting_set.active.count}} week{{lc.studygroupmeeting_set.active.count|pluralize}}</span> beginning <span class="extrabold lc-card-teal">{{lc.start_date|date:"j N Y"}}</span></p>
+        <p class="lc-startX"><span class="extrabold">{{lc.studygroupmeeting_set.active.count}} week{{lc.studygroupmeeting_set.active.count|pluralize}}</span> beginning <span class="extrabold">{{lc.start_date|date:"j N Y"}}</span></p>
       </div>
     </div>
   </div>

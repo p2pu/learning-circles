@@ -260,7 +260,7 @@ class Reminder(models.Model):
     study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting', blank=True, null=True)
     email_subject = models.CharField(max_length=256)
     email_body = models.TextField()
-    sms_body = models.CharField(max_length=160)
+    sms_body = models.CharField(verbose_name=_('SMS (Text)'), max_length=160)
 
     created_at = models.DateTimeField(auto_now_add=True)
     sent_at = models.DateTimeField(blank=True, null=True)

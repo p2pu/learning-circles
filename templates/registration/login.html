@@ -5,6 +5,7 @@
   <div class="container">
       <h1>Log in</h1>
       <p>Or <a href="{% url 'studygroups_facilitator_signup' %}">create account</a></p>
+      <p>Your username is the email address you signed up with.</p>
     <form action="" method="POST">
       {% csrf_token %}
       {{ form|crispy }}
