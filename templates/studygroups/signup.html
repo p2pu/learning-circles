@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
 
 {% block content %}
 <div class="container learning-circle-signup">
@@ -11,7 +12,9 @@
     <div class="row">
   <div class="col-md-4 col-sm-12">
       {% if study_group.image %}
-      <img src="{{study_group.image.url}}">
+          <img src="{{study_group.image.url}}">
+      {% else %}
+          <img src="{% static 'images/learning-circle-default.jpg' %}">
       {% endif %}
       <p>at {% if study_group.venue_website %}<a href="{{study_group.venue_website}}">{{ study_group.venue_name }}</a>{% else %}<strong>{{study_group.venue_name}}</strong>{% endif %}, {{study_group.venue_details}}</p>
       <p>{{study_group.course.caption}}</p>
