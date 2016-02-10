@@ -352,7 +352,7 @@ class CourseCreate(CreateView):
 
     def get_success_url(self):
         if Facilitator.objects.filter(user=self.request.user).exists():
-            return reverse_lazy('studygroups_facilitator')
+            return reverse('studygroups_facilitator_studygroup_create')
         return reverse_lazy('studygroups_organize')
 
 
