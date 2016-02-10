@@ -9,7 +9,7 @@
 </div>
 
 {% if rsvp_yes and rsvp_no %}
-<p>If this is a RSVP for the learning circle meeting {{ next_meeting.meeting_time|date:"fA, l, j F" }} please click the appropriate link below.</p>
+<p>If this is a RSVP for the Learning Circle meeting {{ next_meeting.meeting_time|date:"fA, l, j F" }} please click the appropriate link below.</p>
 
 <ul>
   <li><a href="{{ rsvp_yes|safe }}">The learner said they can attend.</a></li>

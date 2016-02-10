@@ -142,9 +142,9 @@ def optout_confirm(request):
     if all(conditions()):
         signup = Application.objects.active().filter(pk=user)
         signup.delete()
-        messages.success(request, 'You successfully opted out of the learning circle.')
+        messages.success(request, _('You successfully opted out of the Learning Circle.'))
     else:
-        messages.error(request, 'Bad RSVP code')
+        messages.error(request, _('Please check the email you received and make sure this is the correct URL.'))
 
     url = reverse('studygroups_landing')
     return http.HttpResponseRedirect(url)
@@ -158,7 +158,7 @@ class OptOutView(FormView):
     def form_valid(self, form):
         # Find all signups with email and send opt out confirmation
         form.send_optout_message()
-        messages.info(self.request, 'You will shortly receive an email or text message confirming that you wish to opt out.')
+        messages.info(self.request, _('You will shortly receive an email or text message confirming that you wish to opt out.'))
         return super(OptOutView, self).form_valid(form)
 
 

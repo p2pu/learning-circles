@@ -1,5 +1,5 @@
 {% spaceless %}
     {% with feedback.study_group_meeting.study_group as study_group %}
-        New feedback submitted for the "{{ study_group.course.title|safe }}" learning circle meeting at {{ study_group.venue_name }} {{ feedback.study_group_meeting.meeting_time }}
+        New feedback submitted for the "{{ study_group.course.title|safe }}" Learning Circle meeting at {{ study_group.venue_name }} {{ feedback.study_group_meeting.meeting_time }}
     {% endwith %}
 {% endspaceless %}
