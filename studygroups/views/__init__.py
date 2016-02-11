@@ -47,18 +47,16 @@ from facilitate import FacilitatorStudyGroupCreate
 
 
 def landing(request):
-    courses = Course.objects.filter(created_by__isnull=True).order_by('key')
+    #courses = Course.objects.filter(created_by__isnull=True).order_by('key')
 
-    for course in courses:
-        course.studygroups = course.studygroup_set.all().active()
+    #for course in courses:
+    #    course.studygroups = course.studygroup_set.all().active()
+    two_weeks = (datetime.datetime.now() - datetime.timedelta(weeks=2)).date()
+    study_groups = StudyGroup.objects.active().filter(signup_open=True, start_date__gte=two_weeks).order_by('start_date')
 
     context = {
-        'courses': courses,
-        'learning_circles': StudyGroup.objects.active().filter(signup_open=True),
-        'interest': {
-            'courses': courses,
-            'locations': Location.objects.all(),
-        },
+        #'courses': courses,
+        'learning_circles': study_groups[:50],
     }
     return render_to_response('studygroups/index.html', context, context_instance=RequestContext(request))
 
