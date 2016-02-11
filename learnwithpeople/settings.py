@@ -27,6 +27,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'youshouldchangethis')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
+CRISPY_FAIL_SILENTLY = not DEBUG
 
 # Application definition
 
@@ -120,7 +121,7 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
-SERVER_EMAIL = "sysadmin@p2up.org"
+SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'no-reply@p2up.org') #TODO grab this from environment
 
 ##### Heroku config
 
