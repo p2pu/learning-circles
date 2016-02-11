@@ -3,14 +3,26 @@
  
 <p>Hi {{study_group.facilitator.first_name}},</p>
 
-<p>Congratulations! Your Learning Circle is now live.</p>
+<p>Congratulations! Your Learning Circle is now live at: <a href="{{protocol}}://{{domain}}{% url 'studygroups_signup' location=study_group.venue_name|slugify study_group_id=study_group.pk %}">{{protocol}}://{{domain}}{% url 'studygroups_signup' location=study_group.venue_name|slugify study_group_id=study_group.pk %}</a> 
+</p>
 
-<p>Share this link: <a href="{{protocol}}://{{domain}}{% url 'studygroups_signup' location=study_group.venue_name|slugify study_group_id=study_group.pk %}">{{protocol}}://{{domain}}{% url 'studygroups_signup' location=study_group.venue_name|slugify study_group_id=study_group.pk %}</a> freely with anyone who you think might want to sign up. For ideas on where to share, and what to say, head over to the <a href="https://www.p2pu.org/en/facilitate/">facilitator guide</a> and read through the <a href="https://www.p2pu.org/en/facilitate/starting/">Getting Started</a> section.</p>
+<p>What next?
+<ul>
+<li><a href="http://p2pu.org/facilitate"><b>Review the Facilitator Guide</b></a>. It contains 40 pages of great tips, tricks, checklists, and templates to help you advertise, prepare for, and run your Learning Circle.</li>
+<li><a href="http://community.p2pu.org"><b>Get in touch with other facilitators</b></a>. Ask questions, share advice, and contribute new ideas on our community forum.</li>
+<li><a href="https://learningcircles.p2pu.org/en/facilitator/"><b>Read the applications</b></a>. You’ll receive an email whenever somebody applies to your Learning Circle. You can view their applications and send them messages directly through your dashboard.</li>
+</ul>
+
+You&#39;ll hear from us again a few days before your first Learning Circle.</p>
+
+<p>Cheers,<br/>
+P2PU</p>
+{% endblock %}
+ 
+</p>freely with anyone who you think might want to sign up. For ideas on where to share, and what to say, head over to the <a href="https://www.p2pu.org/en/facilitate/">facilitator guide</a> and read through the <a href="https://www.p2pu.org/en/facilitate/starting/">Getting Started</a> section.
 
 <p>And remember, you can log in to your facilitator dashboard at any time to view signups and send messages to your future learners!</p>
 
 <p>You&#39;ll hear from us again a few days before your first Learning Circle. If you have any questions in the meantime, you can ask in our <a href="https://community.p2pu.org">facilitator community</a>.</p>
 
-<p>Cheers,<br/>
-P2PU</p>
-{% endblock %}
+
