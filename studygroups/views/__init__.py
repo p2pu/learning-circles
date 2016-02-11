@@ -508,22 +508,24 @@ def message_edit(request, study_group_id, message_id):
 def add_member(request, study_group_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
     
-    # TODO - update or remove this
     if request.method == 'POST':
         form = ApplicationForm(request.POST)
         if form.is_valid():
             application = form.save(commit=False)
-            if application.contact_method == Application.EMAIL and Application.objects.active().filter(email=application.email, study_group=study_group):
-                application = Application.objects.active().filter(email=application.email, study_group=study_group).first()
-                messages.success(request, 'Your signup details have been updated!')
-            elif application.contact_method == Application.TEXT and Application.objects.active().filter(mobile=application.mobile, study_group=study_group):
-                application = Application.objects.active().filter(email=application.email, study_group=study_group).first()
-                messages.success(request, 'Your signup details have been updated!')
-            else:
-                messages.success(request, 'Successfully added member!')
-            # TODO - remove accepted_at logic or use it. Currently just bypassing it.
+            if application.email and Application.objects.active().filter(email=application.email, study_group=study_group).exists():
+                old_application = Application.objects.active().filter(email=application.email, study_group=study_group).first()
+                application.pk = old_application.pk
+                application.created_at = old_application.created_at
+
+            if application.mobile and Application.objects.active().filter(mobile=application.mobile, study_group=study_group).exists():
+                old_application = Application.objects.active().filter(mobile=application.mobile, study_group=study_group).first()
+                application.pk = old_application.pk
+                application.created_at = old_application.created_at
+
+            # TODO - remove accepted_at or use accepting applications flow
             application.accepted_at = timezone.now()
             application.save()
+
             url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
     else:
