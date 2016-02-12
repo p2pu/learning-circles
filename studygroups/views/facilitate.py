@@ -48,7 +48,8 @@ class FacilitatorSignup(CreateView):
             subject_template_name='studygroups/facilitator_created_subject.txt',
             email_template_name='studygroups/facilitator_created_email.txt',
             html_email_template_name='studygroups/facilitator_created_email.html',
-            request=self.request
+            request=self.request,
+            from_email=settings.SERVER_EMAIL,
         )
 
         return http.HttpResponseRedirect(self.get_success_url())
