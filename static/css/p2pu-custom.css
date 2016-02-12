@@ -7358,12 +7358,17 @@ button.close {
   color: #04b0aa; }
 
 .lc-card {
-  height: 420px;
+  max-width: 340px;
   background-color: #ffffff;
   border: 1px solid #e1e1e1;
   position: relative;
-  margin-bottom: 1em;
-  text-align: left; }
+  margin: 0 auto 1em;
+  overflow: hidden; }
+  @media (min-width: 768px) {
+    .lc-card {
+      height: 380px; } }
+  .lc-card:hover {
+    overflow: visible; }
   .lc-card img {
     display: block;
     width: 100%; }
@@ -7386,7 +7391,8 @@ button.close {
     font-weight: 800;
     padding: 12px 16px; }
   .lc-card div.body-container {
-    padding-top: 1em; }
+    padding: 1em;
+    background-color: #ffffff; }
   .lc-card p {
     position: relative;
     color: #515665;
