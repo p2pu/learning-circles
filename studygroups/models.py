@@ -252,7 +252,7 @@ class StudyGroupMeeting(LifeTimeTrackingModel):
 
     def __unicode__(self):
         tz = pytz.timezone(self.study_group.timezone)
-        return u'{0}, {1} at {2}'.format(self.study_group.course.title, tz.normalize(self.meeting_time), self.study_group.location.name)
+        return u'{0}, {1} at {2}'.format(self.study_group.course.title, tz.normalize(self.meeting_time), self.study_group.venue_name)
 
 
 class Reminder(models.Model):
