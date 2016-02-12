@@ -7479,7 +7479,7 @@ h1.lc-about-header {
   font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
   font-size: 15px; }
 
-.lc-about-section img.lc-about-image {
+img.lc-about-image {
   max-width: 100%; }
 
 .bottom-link {
@@ -7813,13 +7813,8 @@ body {
       float: right; }
 
 body {
-  padding-top: 69px; }
-  @media (min-width: 768px) {
-    body {
-      padding-top: 63px; } }
-  @media (min-width: 1199px) {
-    body {
-      padding-top: 93px; } }
+  padding: 68px 0 0 0;
+  margin: 0; }
 
 section {
   padding-top: 2em; }
@@ -7829,15 +7824,15 @@ section {
   margin: 1em;
   text-transform: capitalize; }
 
-.page-content {
-  padding-top: 60px; }
+.navbar {
+  border-bottom: 0px; }
 
 .navbar-logo img {
-  width: 100px;
-  padding: 1em 1em 1em 0; }
+  height: 68px;
+  padding: 15px 0 15px 1em; }
   @media (min-width: 767px) {
     .navbar-logo img {
-      width: 100px; } }
+      padding: 15px 1em 15px 0; } }
 
 .logos {
   float: right;
@@ -7848,9 +7843,8 @@ section {
   .logos a {
     display: block; }
   .logos img {
-    width: 75px; }
-  .logos .cpl-logo img {
-    width: 50px; }
+    height: 66px;
+    padding: 21px 0 21px 0; }
   .logos .icon {
     color: white;
     line-height: 4;
@@ -7861,8 +7855,6 @@ section {
 .lc-jumbotron-conf {
   height: 320px;
   width: 100%;
-  margin-top: -80px;
-  background-color: #fdbc1f;
   background-image: url("/static/images/jumbotron.jpg");
   background-repeat: no-repeat;
   background-position: center bottom;
@@ -7947,8 +7939,6 @@ section {
 .c-jumbotron-conf {
   height: 320px;
   width: 100%;
-  margin-top: -80px;
-  background-color: #fdbc1f;
   background-image: url("/static/images/jumbotron.jpg");
   background-repeat: no-repeat;
   background-position: center bottom;
@@ -8150,9 +8140,6 @@ section {
 .course-provider {
   margin: 1em 0;
   font-style: italic; }
-
-.video {
-  margin-top: 25px; }
 
 .course-tile {
   position: relative;
