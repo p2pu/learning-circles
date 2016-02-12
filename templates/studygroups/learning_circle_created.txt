@@ -4,7 +4,7 @@ Congratulations! Your Learning Circle is now live at: {{protocol}}://{{domain}}{
 
 Here's what we recommend you do next to prepare for running your Learning Circle:
 
-- Review the Facilitator Guide. Read through 40 pages of great tips, tricks, checklists, and templates to help you advertise, prepare for, and run your Learning Circle at: http://p2pu.org/facilitate
+- Review the Facilitator Guide. Read through 40 pages of great tips, tricks, checklists, and templates to help you advertise, prepare for, and run your Learning Circle at: https://www.p2pu.org/en/facilitate/
 
 - Get in touch with other facilitators. You can ask questions, share advice, and contribute new ideas on our community forum at: https://community.p2pu.org
 
