@@ -217,7 +217,7 @@ class StudyGroupMeeting(LifeTimeTrackingModel):
     meeting_time = models.DateTimeField()
 
     def meeting_number(self):
-        return StudyGroupMeeting.objects.filter(meeting_time__lte=self.meeting_time, study_group=self.study_group).count()
+        return StudyGroupMeeting.objects.active().filter(meeting_time__lte=self.meeting_time, study_group=self.study_group).count()
 
     def meeting_activity(self):
         return next((a for a in Activity.objects.filter(index=self.meeting_number)), None)
@@ -256,7 +256,7 @@ class StudyGroupMeeting(LifeTimeTrackingModel):
 
 
 class Reminder(models.Model):
-    study_group = models.ForeignKey('studygroups.StudyGroup')
+    study_group = models.ForeignKey('studygroups.StudyGroup') #TODO redundant field
     study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting', blank=True, null=True)
     email_subject = models.CharField(max_length=256)
     email_body = models.TextField()
@@ -455,7 +455,7 @@ def report_data(start_time, end_time):
     study_groups = StudyGroup.objects.all().order_by('start_date')
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     report = {
-        'meetings': StudyGroupMeeting.objects.filter(meeting_time__gte=start_time, meeting_time__lt=end_time),
+        'meetings': StudyGroupMeeting.objects.active().filter(meeting_time__gte=start_time, meeting_time__lt=end_time),
         'signups': Application.objects.active().filter(created_at__gte=start_time, created_at__lt=end_time),
     }
     return report
