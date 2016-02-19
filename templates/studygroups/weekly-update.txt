@@ -1,10 +1,13 @@
-Learning Circles update for meetings that happened between {{start_time|date:"l, j F" }} and {{end_time|date:"l, j F" }}.
+Learning Circles update for the period starting {{start_time|date:"l, j F" }} and ending {{end_time|date:"l, j F" }}.
 
 You can also view this report online: {{ protocol }}://{{ domain }}{% url 'studygroups_weekly_report_date' start_time.year start_time.month start_time.day %}
 
-{% for meeting in meetings %}
-  {% with study_group=meeting.study_group %}
-# {{study_group.course.title}} at {{study_group.venue_name}}
+This week {{facilitators|length}} facilitator{{facilitators|pluralize}} signed up!
+{{logins|length}} facilitator{{logins|length|pluralize}} logged in.
+{{study_groups|length}} Learning Circle{{study_groups|length|pluralize}} {{study_groups|length|pluralize:"was,were"}} created.
+{{signups|length}} learner{{signups|length|pluralize}} applied to join a Learning Circle.
+{% for meeting in meetings %}{% with study_group=meeting.study_group %}
+# {{study_group.course.title|safe}} at {{study_group.venue_name|safe}}
 Facilitator: {{study_group.facilitator.first_name}} {{study_group.facilitator.last_name}} <{{study_group.facilitator.email}}>;
 Circle size: {{study_group.application_set.active.count}}
 Met {{ meeting.meeting_time|date:"fA, l, j F" }}
@@ -18,9 +21,5 @@ Feedback from meeting:
   Internall reflection:
   {{meeting.feedback_set.first.reflection}}
 
-  Overall rating: {{meeting.feedback_set.first.get_rating_display}}
-    {% else %}
-  No feedback recorded yet
-    {% endif %}
-  {% endwith %}
-{% endfor %}
+  Overall rating: {{meeting.feedback_set.first.get_rating_display}}{% else %}No feedback recorded yet{% endif %}
+{% endwith %}{% endfor %}
