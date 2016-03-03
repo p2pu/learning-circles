@@ -211,7 +211,7 @@ class StudyGroupForm(forms.ModelForm):
             'course': _(''),
             'venue_name': _('Name of the venue, e.g. Pretoria Library or Bekka\'s house'),
             'venue_details': _('e.g. second floor kitchen or Room 409 (third floor)'),
-            'venue_address': _('Write it out like you were mailing a letter. Include the country!'),
+            'venue_address': _('Write it out like you were mailing a letter.'),
             'city': _('This will be used for learners looking for Learning Circles by city.'),
             'venue_website': _('Link to any website that has more info about the venue or Learning Circle.'),
             'start_date': _('Give yourself at least 4 weeks to advertise, if possible.'),

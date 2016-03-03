@@ -19,16 +19,31 @@
 {% block css %}
   <link type="text/css" rel="stylesheet" href="{% static 'css/datepicker.css' %}" charset="utf-8">
   <link type="text/css" rel="stylesheet" href="{% static 'css/jquery.timepicker.css' %}" charset="utf-8">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 {% endblock %}
 
 
 {% block scripts %}
 <script src="{% static 'js/vendor/bootstrap-datepicker.js' %}"></script>
 <script src="{% static 'js/vendor/jquery.timepicker.js' %}"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 <script>
     $(document).ready(function(){
-            $('.dateinput').datepicker({'format':'yyyy-mm-dd'});
-            $('.timeinput').timepicker({ 'step': 15, 'timeFormat': 'h:i A' });
+        $('.dateinput').datepicker({'format':'yyyy-mm-dd'});
+        $('.timeinput').timepicker({ 'step': 15, 'timeFormat': 'h:i A' });
+        $( "#id_city" ).autocomplete({
+            source: function( request, response ) {
+                $.ajax({
+                    url: "http://gd.geobytes.com/AutoCompleteCity",
+                    dataType: "jsonp",
+                    data: { q: request.term },
+                    success: function( data ) {
+                        response( data );
+                    }
+                });
+            },
+            minLength: 3
+        });
     });
 </script>
 {% endblock %}
