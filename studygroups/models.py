@@ -134,6 +134,7 @@ class StudyGroup(LifeTimeTrackingModel):
     venue_address = models.CharField(max_length=256, help_text='Like you were mailing a letter. Include country!')
     venue_details = models.CharField(max_length=128, verbose_name='Meeting spot', help_text='e.g. second floor meeting room or kitchen.')
     venue_website = models.URLField(blank=True, help_text='Link to any website that has more info about the venue or Circle.')
+    city = models.CharField(max_length=256, blank=True)
     facilitator = models.ForeignKey(User)
     start_date = models.DateField(verbose_name='First meeting date', help_text='Give yourself at least 4 weeks to market, if possible.')
     meeting_time = models.TimeField()
