@@ -98,8 +98,8 @@ class OptOutForm(forms.Form):
 
     def clean(self):
         cleaned_data = super(OptOutForm, self).clean()
-        email = cleaned_data['email']
-        mobile = cleaned_data['mobile']
+        email = cleaned_data.get('email')
+        mobile = cleaned_data.get('mobile')
 
         if not email and not mobile:
             self.add_error('email', _('Please provide either the email address or the phone number used to sign up.'))
@@ -114,8 +114,8 @@ class OptOutForm(forms.Form):
             raise forms.ValidationError(_('Could not find any signup matching your email address or phone number. Please make sure to enter the email or phone number you used to sign up.'))
 
     def send_optout_message(self):
-        email = self.cleaned_data['email']
-        mobile = self.cleaned_data['mobile']
+        email = self.cleaned_data.get('email')
+        mobile = self.cleaned_data.get('mobile')
         if email:
             for application in Application.objects.active().filter(email=email):
                 # send opt-out email
@@ -133,7 +133,7 @@ class OptOutForm(forms.Form):
             applications = Application.objects.active().filter(mobile=mobile)
             if email:
                 # don't send text to applications with a valid email in opt out form
-                applications = application.exclude(email=email)
+                applications = applications.exclude(email=email)
             for application in applications:
                 context = { 'application': application }
                 message = render_to_string('studygroups/optout_confirm_text.txt', context)
@@ -186,6 +186,7 @@ class StudyGroupForm(forms.ModelForm):
             'venue_name',
             'venue_details',
             'venue_address',
+            'city',
             'start_date',
             'weeks',
             'meeting_time',
@@ -200,6 +201,7 @@ class StudyGroupForm(forms.ModelForm):
             'venue_name': _('Where will you meet?'),
             'venue_details': _('Where is the specific meeting spot?'),
             'venue_address': _('What is the address of the venue?'),
+            'city': _('In which city is this happening?'),
             'venue_website': _('Do you have a website you want to link to?'),
             'start_date': _('What is the date of the first Learning Circle?'),
             'duration': _('How long will each Learning Circle last (in minutes)?'),
@@ -210,6 +212,7 @@ class StudyGroupForm(forms.ModelForm):
             'venue_name': _('Name of the venue, e.g. Pretoria Library or Bekka\'s house'),
             'venue_details': _('e.g. second floor kitchen or Room 409 (third floor)'),
             'venue_address': _('Write it out like you were mailing a letter. Include the country!'),
+            'city': _('This will be used for learners looking for Learning Circles by city.'),
             'venue_website': _('Link to any website that has more info about the venue or Learning Circle.'),
             'start_date': _('Give yourself at least 4 weeks to advertise, if possible.'),
             'duration': _('We recommend 90 - 120 minutes.'),
