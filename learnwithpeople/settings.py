@@ -47,6 +47,7 @@ INSTALLED_APPS = (
     'interest',
     'backup',
     'analytics',
+    'uxhelpers',
 )
 
 MIDDLEWARE_CLASSES = (

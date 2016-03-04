@@ -34,7 +34,7 @@
         $( "#id_city" ).autocomplete({
             source: function( request, response ) {
                 $.ajax({
-                    url: "http://gd.geobytes.com/AutoCompleteCity",
+                    url: "{% url 'uxhelpers_city_complete' %}",
                     dataType: "jsonp",
                     data: { q: request.term },
                     success: function( data ) {
