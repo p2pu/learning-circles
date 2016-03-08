@@ -45,6 +45,7 @@ from facilitate import FacilitatorSignup
 from facilitate import FacilitatorSignupSuccess
 from facilitate import FacilitatorStudyGroupCreate
 
+import cities
 
 def landing(request):
     #courses = Course.objects.filter(created_by__isnull=True).order_by('key')
@@ -62,10 +63,27 @@ def landing(request):
 
 
 class CourseListView(ListView):
-    template = 'studygroups/course_list.html'
-
     def get_queryset(self):
         return Course.objects.filter(created_by__isnull=True)
+
+
+def city(request, city_name):
+
+    matches = [ c for c in cities.read_autocomplete_list() if c.lower().startswith(city_name.lower()) ]
+    if len(matches) == 0:
+        raise http.Http404('City not found')
+
+    m_city_name = matches[0].split(',')[0]
+    if len(matches) == 1 and m_city_name != city_name:
+        return http.HttpResponseRedirect(reverse('studygroups_city', args=(m_city_name,) )
+)
+    #TODO handle multiple matches. Ex. city_name = Springfield
+
+    context = {
+        'learning_circles': StudyGroup.objects.active().filter(city__startswith=city_name),
+        'city': city_name
+    }
+    return render_to_response('studygroups/city_list.html', context, context_instance=RequestContext(request))
 
 
 def signup(request, location, study_group_id):
@@ -298,6 +316,9 @@ class ApplicationDelete(DeleteView):
 
 @user_is_organizer
 def organize(request):
+    # TODO 
+    # - Only show learning circles with meetings in the future
+    # - Only show meetings for current week 
     context = {
         'courses': Course.objects.all(),
         'study_groups': StudyGroup.objects.active(),
