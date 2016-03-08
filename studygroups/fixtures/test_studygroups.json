@@ -9,17 +9,6 @@
    "pk": 1
 },
 {
-    "fields": {
-      "name": "Harold Washington Library Center",
-      "link": "http://www.chipublib.org/locations/15/",
-      "address": "18 Blah Street",
-      "contact_name": "The Boss",
-      "contact": "mail@dab.oss"
-   },
-   "model": "studygroups.location",
-   "pk": 1
-},
-{
    "fields": {
       "created_at": "2015-03-23T15:18:39.462Z",
       "updated_at": "2015-03-23T15:18:39.462Z",
@@ -33,7 +22,8 @@
       "facilitator": 1,
       "venue_name": "Harold Washington",
       "venue_address": "123 Street",
-      "venue_details": "3rd floor"
+      "venue_details": "3rd floor",
+      "city": "Chicago"
    },
    "model": "studygroups.studygroup",
    "pk": 1
@@ -52,7 +42,8 @@
       "facilitator": 1,
       "venue_name": "Harold Washington",
       "venue_address": "123 Street",
-      "venue_details": "3rd floor"
+      "venue_details": "3rd floor",
+      "city": "Chicago"
    },
    "model": "studygroups.studygroup",
    "pk": 2
@@ -71,8 +62,8 @@
       "facilitator": 1,
       "venue_name": "Harold Washington",
       "venue_address": "123 Street",
-      "venue_details": "3rd floor"
-
+      "venue_details": "3rd floor",
+      "city": "Chicago"
    },
    "model": "studygroups.studygroup",
    "pk": 3
@@ -91,7 +82,8 @@
       "facilitator": 1,
       "venue_name": "Harold Washington",
       "venue_address": "123 Street",
-      "venue_details": "3rd floor"
+      "venue_details": "3rd floor",
+      "city": "Chicago"
 
    },
    "model": "studygroups.studygroup",
