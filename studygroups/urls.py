@@ -37,7 +37,7 @@ urlpatterns = patterns('',
 
     url(r'^courses/$', CourseListView.as_view(), name='studygroups_courses'),
 
-    url(r'^city/(?P<city_name>[\w]+)/$', 'studygroups.views.city', name='studygroups_city'),
+    url(r'^city/(?P<city_name>[\w\ ]+)/$', 'studygroups.views.city', name='studygroups_city'),
 
     url(r'^login_redirect/$', 'studygroups.views.login_redirect', name='studygroups_login_redirect'),
 
