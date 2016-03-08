@@ -27,7 +27,7 @@
         {% for group in study_groups|dictsort:"start_date" %}
             <tr>
                 <td>
-                    <a href="#{{ group.course.id }}" target="_blank">{{ group.course }}</a><br>
+                    {{ group.course }}<br>
                     {{group.start_date|date:"l" }}s, {{ group.meeting_time|date:"f A" }} at <a href="{{group.website}}" target="_blank">{{ group.venue_name }}</a>
                 </td>
                 <td>
