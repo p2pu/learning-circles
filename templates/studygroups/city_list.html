@@ -17,12 +17,12 @@
     <section id="courses" class="shaded">
       <div class="container">
         <div class="col-md-12">
-          <h2>Active Learning Circles in {{ city }}</h2>
+          <h2>Active Learning Circles in {{ city|title }}</h2>
         </div>
         <div class="courses-list col-md-12">
           {% include 'studygroups/learning-circles.html' %}
           {% if not learning_circles %}
-            <p>Currently there aren't any active Learning Circles in {{city}}.</p>
+            <p>Currently there aren't any active Learning Circles in {{city|title}}.</p>
           {% endif %}
         </div>
       </div>
