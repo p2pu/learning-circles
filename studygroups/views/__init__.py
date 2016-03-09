@@ -80,7 +80,7 @@ def city(request, city_name):
     #TODO handle multiple matches. Ex. city_name = Springfield
 
     two_weeks = (datetime.datetime.now() - datetime.timedelta(weeks=2)).date()
-    learning_circles = StudyGroup.objects.active().filter(city__startswith=city_name)
+    learning_circles = StudyGroup.objects.active().filter(city__istartswith=city_name)
     learning_circles = learning_circles.filter(signup_open=True, start_date__gte=two_weeks).order_by('start_date')
 
     context = {
