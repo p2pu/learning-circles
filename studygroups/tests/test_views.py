@@ -193,7 +193,8 @@ class TestSignupViews(TestCase):
 
         next_meeting = StudyGroupMeeting()
         next_meeting.study_group = StudyGroup.objects.get(pk=signup_data['study_group'])
-        next_meeting.meeting_time = timezone.now() + datetime.timedelta(days=1)
+        next_meeting.meeting_time = (timezone.now() + datetime.timedelta(days=1)).time()
+        next_meeting.meeting_date = timezone.now().date() + datetime.timedelta(days=1)
         next_meeting.save()
 
         url = '/en/receive_sms/'
@@ -206,8 +207,8 @@ class TestSignupViews(TestCase):
         self.assertTrue(mail.outbox[0].subject.find('123-456-7890') > 0)
         self.assertTrue(mail.outbox[0].subject.find('Test User') > 0)
         self.assertIn(StudyGroup.objects.all()[0].facilitator.email, mail.outbox[0].to)
-        self.assertIn('https://example.net/{0}/rsvp/?user=123-456-7890&study_group=1&meeting_date={1}&attending=yes&sig='.format(get_language(), urllib.quote(next_meeting.meeting_time.isoformat())), mail.outbox[0].body)
-        self.assertIn('https://example.net/{0}/rsvp/?user=123-456-7890&study_group=1&meeting_date={1}&attending=no&sig='.format(get_language(), urllib.quote(next_meeting.meeting_time.isoformat())), mail.outbox[0].body)
+        self.assertIn('https://example.net/{0}/rsvp/?user=123-456-7890&study_group=1&meeting_date={1}&attending=yes&sig='.format(get_language(), urllib.quote(next_meeting.meeting_datetime().isoformat())), mail.outbox[0].body)
+        self.assertIn('https://example.net/{0}/rsvp/?user=123-456-7890&study_group=1&meeting_date={1}&attending=no&sig='.format(get_language(), urllib.quote(next_meeting.meeting_datetime().isoformat())), mail.outbox[0].body)
 
 
     def test_receive_random_sms(self):
@@ -313,7 +314,8 @@ class TestSignupViews(TestCase):
         meeting_time = timezone.now() + datetime.timedelta(days=2)
         study_group_meeting = StudyGroupMeeting(
             study_group=study_group,
-            meeting_time=meeting_time
+            meeting_time=meeting_time.time(),
+            meeting_date=meeting_time.date()
         )
         study_group_meeting.save()
 
@@ -325,7 +327,7 @@ class TestSignupViews(TestCase):
         qs = gen_rsvp_querystring(
             signup_data['email'],
             study_group.pk,
-            study_group_meeting.meeting_time,
+            study_group_meeting.meeting_datetime(),
             'yes'
         )
         url = '/en/rsvp/?{0}'.format(qs)
@@ -340,7 +342,7 @@ class TestSignupViews(TestCase):
         qs = gen_rsvp_querystring(
             signup_data['email'],
             study_group.pk,
-            study_group_meeting.meeting_time,
+            study_group_meeting.meeting_datetime(),
             'no'
         )
         url = '/en/rsvp/?{0}'.format(qs)
@@ -361,7 +363,7 @@ class TestSignupViews(TestCase):
         qs = gen_rsvp_querystring(
             signup_data['mobile'],
             study_group.pk,
-            study_group_meeting.meeting_time,
+            study_group_meeting.meeting_datetime(),
             'yes'
         )
         url = '/en/rsvp/?{0}'.format(qs)
