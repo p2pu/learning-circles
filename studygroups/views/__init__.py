@@ -23,6 +23,7 @@ from django.views.generic.edit import FormView, CreateView, UpdateView, DeleteVi
 from django.views.generic import DetailView, TemplateView
 from django.contrib.auth.models import User
 from django.forms import modelform_factory
+from django.db.models import Count
 
 from studygroups.models import Course, Location, StudyGroup, Application, Reminder, Feedback
 from studygroups.models import Organizer, Facilitator
@@ -58,6 +59,7 @@ def landing(request):
     context = {
         #'courses': courses,
         'learning_circles': study_groups[:50],
+        'cities': study_groups.values('city').exclude(city='').annotate(total=Count('city')).order_by('-total'),
     }
     return render_to_response('studygroups/index.html', context, context_instance=RequestContext(request))
 
@@ -73,10 +75,9 @@ def city(request, city_name):
     if len(matches) == 0:
         raise http.Http404('City not found')
 
-    m_city_name = matches[0].split(',')[0]
+    m_city_name = matches[0]
     if len(matches) == 1 and m_city_name != city_name:
-        return http.HttpResponseRedirect(reverse('studygroups_city', args=(m_city_name,) )
-)
+        return http.HttpResponseRedirect(reverse('studygroups_city', args=(m_city_name,)))
     #TODO handle multiple matches. Ex. city_name = Springfield
 
     two_weeks = (datetime.datetime.now() - datetime.timedelta(weeks=2)).date()

@@ -7991,6 +7991,9 @@ section {
   .c-jumbo-title {
     font-size: 33px;
     padding: 23px 0 20px; } }
+.city-list ul > li {
+  padding-bottom: 5px; }
+
 #signup {
   padding: 2em 0; }
   @media (min-width: 768px) {

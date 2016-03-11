@@ -19,6 +19,15 @@
         <div class="courses-list col-md-12">
           {% include 'studygroups/learning-circles.html' %}
         </div>
+        <div class="city-list col-md-12">
+            <p>Learning Circles by city:</p>
+            <ul class="list-inline">
+                {% for city in cities %}
+                <li><a class="btn btn-primary" href="{% url 'studygroups_city' city.city %}">{{city.city}}</a></li>
+                {% endfor %}
+            </nav>
+        </div>
+
       </div>
     </section>
     <section id="leads">

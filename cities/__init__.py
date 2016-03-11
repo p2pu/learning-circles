@@ -40,7 +40,7 @@ def read_cities():
 
 def read_autocomplete_list():
     with codecs.open('cities/autocomplete_list.csv', 'r', 'utf-8') as f:
-        autocomplete_list = list(f)
+        autocomplete_list = [l.strip('\n') for l in f]
     return autocomplete_list
 
 
