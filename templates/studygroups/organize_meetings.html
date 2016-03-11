@@ -31,11 +31,11 @@
       </thead>
       <tbody>
 
-          {% for meeting in week.list|dictsort:"meeting_time" %}
+          {% for meeting in week.list|dictsort:"meeting_datetime" %}
           <tr>
               <td>{{meeting.study_group.course.title}} at {{meeting.study_group.venue_name}}</td>
             </td>
-            <td>{{ meeting.meeting_time|date:"l P d M" }}</td>
+            <td>{{ meeting.meeting_date|date:"D d M Y" }}, {{ meeting.meeting_time|time:"f A"}} {{meeting.study_group.timezone_display}}</td>
               <td>{% if meeting.rsvp_set.all.count %}Yes ({{ meeting.rsvps.yes|length }}), No ({{ meeting.rsvps.no|length }}){% endif %}</td>
               <td>
                 {% if meeting.feedback_set.all.first %}

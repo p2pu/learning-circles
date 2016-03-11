@@ -1,6 +1,6 @@
 Hi there {{study_group.facilitator.first_name}}
 
-We've generated a reminder for the Learning Circle meeting this {{ next_meeting.meeting_time|date:"l, j N, fA" }}. The reminder will be sent automatically in 2 days from now.
+We've generated a reminder for the Learning Circle meeting this {{ next_meeting.meeting_datetime|date:"l, j N, fA" }}. The reminder will be sent automatically in 2 days from now.
 
 This is what the reminder will look like.
 

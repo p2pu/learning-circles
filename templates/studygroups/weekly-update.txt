@@ -10,7 +10,7 @@ This week {{facilitators|length}} facilitator{{facilitators|pluralize}} signed u
 # {{study_group.course.title|safe}} at {{study_group.venue_name|safe}}
 Facilitator: {{study_group.facilitator.first_name}} {{study_group.facilitator.last_name}} <{{study_group.facilitator.email}}>;
 Circle size: {{study_group.application_set.active.count}}
-Met {{ meeting.meeting_time|date:"fA, l, j F" }}
+Met {{ meeting.meeting_datetime|date:"fA, l, j F" }}
 Feedback from meeting:
     {% if meeting.feedback_set.first %}
   Learning circle summary:

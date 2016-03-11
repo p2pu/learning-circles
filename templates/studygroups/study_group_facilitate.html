@@ -72,7 +72,7 @@
                       <a href="{% url 'studygroups_feedback_detail' lc.id meeting.id feedback.id %}">View feedback</a>
                       {% endwith %}
                     {% else %}
-                      {% if meeting.meeting_time < today %}
+                      {% if meeting.meeting_datetime < today %}
                         <a class="btn btn-primary" href="{% url 'studygroups_feedback' lc.id meeting.id %}">Capture feedback</a>
                       {% else %}
                         <a class="btn btn-primary disabled" href="{% url 'studygroups_feedback' lc.id meeting.id %}">Capture feedback</a>

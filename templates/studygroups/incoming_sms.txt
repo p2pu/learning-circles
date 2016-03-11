@@ -5,7 +5,8 @@ We received the following SMS{% if signup %} from {{signup.name}} as a response 
 {{ message }}
 
 {% if rsvp_yes and rsvp_no %}
-Was this a RSVP for the Learning Circle meeting on {{ next_meeting.meeting_time|date:"fA, l, j F" }}:
+Was this a RSVP for the Learning Circle meeting on {{ next_meeting.meeting_date|date:"D, d M Y" }}, {{ next_meeting.meeting_time|time:"f A" }}
+:
 
 Yes, the learner can go: {{ rsvp_yes | safe}}
 No, they can't make it: {{ rsvp_no | safe}}

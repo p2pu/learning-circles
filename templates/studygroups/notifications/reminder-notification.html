@@ -2,7 +2,7 @@
 {% block body %}
 <p>Hi there {{study_group.facilitator.first_name}}</p>
 
-<p>We've generated a reminder for the Learning Circle meeting this {{ next_meeting.meeting_time|date:"l, j N, fA" }}. The reminder will be sent automatically in 2 days from now.</p>
+<p>We've generated a reminder for the Learning Circle meeting this {{ next_meeting.meeting_datetime|date:"l, j N, fA" }}. The reminder will be sent automatically in 2 days from now.</p>
 
 <p>This is what the reminder will look like.</p>
 
