@@ -55,7 +55,7 @@
               </tr>
           </thead>
           <tbody>
-              {% for meeting in lc.studygroupmeeting_set.active|dictsort:"meeting_date" %}
+              {% for meeting in lc.studygroupmeeting_set.active|dictsort:"meeting_datetime" %}
               <tr>
                 <td>{{ meeting.meeting_date|date:"D, d M Y" }}, {{ meeting.meeting_time|time:"f A" }}
 
