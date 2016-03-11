@@ -4,7 +4,7 @@
 
 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 
-    {% regroup meetings|dictsort:"meeting_time" by meeting_time|first_weekday_date as weekly_meetings %}
+    {% regroup meetings|dictsort:"meeting_datetime" by meeting_datetime|first_weekday_date as weekly_meetings %}
     {% for week in weekly_meetings %}
     <div class="panel panel-default">
 
