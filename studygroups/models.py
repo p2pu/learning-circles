@@ -152,10 +152,9 @@ class StudyGroup(LifeTimeTrackingModel):
         return q.time()
 
     def next_meeting(self):
-        return self.studygroupmeeting_set.active().filter(meeting_time__gt=timezone.now()).order_by('meeting_time').first()
-
-    def meeting_times(self):
-        return get_all_meeting_times(self)
+        now = timezone.now()
+        meeting_list = self.studygroupmeeting_set.active().order_by('meeting_date', 'meeting_time')
+        return next((m for m in meeting_list if m.meeting_datetime() > now), None)
 
     def local_start_date(self):
         tz = pytz.timezone(self.timezone)
@@ -212,16 +211,20 @@ class Application(LifeTimeTrackingModel):
         return { q: {'question_text': text, 'answer': answers.get(q), 'answer_text': dict(self.DIGITAL_LITERACY_CHOICES).get(answers.get(q)) if q in answers else ''} for q, text in self.DIGITAL_LITERACY_QUESTIONS.iteritems() }
 
 
-
 class StudyGroupMeeting(LifeTimeTrackingModel):
     study_group = models.ForeignKey('studygroups.StudyGroup')
-    meeting_time = models.DateTimeField()
+    meeting_date = models.DateField()
+    meeting_time = models.TimeField()
 
     def meeting_number(self):
-        return StudyGroupMeeting.objects.active().filter(meeting_time__lte=self.meeting_time, study_group=self.study_group).count()
+        return StudyGroupMeeting.objects.active().filter(meeting_date__lte=self.meeting_date, study_group=self.study_group).count()
 
     def meeting_activity(self):
         return next((a for a in Activity.objects.filter(index=self.meeting_number)), None)
+
+    def meeting_datetime(self):
+        tz = pytz.timezone(self.study_group.timezone)
+        return tz.localize(datetime.datetime.combine(self.meeting_date, self.meeting_time))
 
     def rsvps(self):
         return {
@@ -235,7 +238,7 @@ class StudyGroupMeeting(LifeTimeTrackingModel):
         yes_qs = rsvp.gen_rsvp_querystring(
             email,
             self.study_group.pk,
-            self.meeting_time,
+            self.meeting_datetime(),
             'yes'
         )
         return '{0}{1}?{2}'.format(domain,url,yes_qs)
@@ -246,14 +249,14 @@ class StudyGroupMeeting(LifeTimeTrackingModel):
         no_qs = rsvp.gen_rsvp_querystring(
             email,
             self.study_group.pk,
-            self.meeting_time,
+            self.meeting_datetime(),
             'no'
         )
         return '{0}{1}?{2}'.format(domain,url,no_qs)
 
     def __unicode__(self):
         tz = pytz.timezone(self.study_group.timezone)
-        return u'{0}, {1} at {2}'.format(self.study_group.course.title, tz.normalize(self.meeting_time), self.study_group.venue_name)
+        return u'{0}, {1} at {2}'.format(self.study_group.course.title, self.meeting_datetime(), self.study_group.venue_name)
 
 
 class Reminder(models.Model):
@@ -319,25 +322,26 @@ def get_all_meeting_times(study_group):
     return meetings
 
 
-def next_meeting_date(study_group):
-    meetings = get_all_meeting_times(study_group)
-    return next((meeting for meeting in meetings if meeting > timezone.now()), [None])
-
-
 def generate_all_meetings(study_group):
     if StudyGroupMeeting.objects.filter(study_group=study_group).exists():
         raise Exception('Meetings already exist for this study group')
-    meeting_times = get_all_meeting_times(study_group)
-    for meeting_time in meeting_times:
-        meeting = StudyGroupMeeting(study_group=study_group, meeting_time=meeting_time)
+
+    meeting_date = study_group.start_date
+    while meeting_date <= study_group.end_date:
+        meeting = StudyGroupMeeting(
+            study_group=study_group,
+            meeting_date=meeting_date,
+            meeting_time=study_group.meeting_time
+        )
         meeting.save()
+        meeting_date += datetime.timedelta(days=7)
 
 
 # If called directly, be sure to activate the current language
 def generate_reminder(study_group):
     now = timezone.now()
     next_meeting = study_group.next_meeting()
-    if next_meeting and next_meeting.meeting_time - now < datetime.timedelta(days=4):
+    if next_meeting and next_meeting.meeting_datetime() - now < datetime.timedelta(days=4):
         # check if a notifcation already exists for this meeting
         if not Reminder.objects.filter(study_group=study_group, study_group_meeting=next_meeting).exists():
             reminder = Reminder()
@@ -350,7 +354,7 @@ def generate_reminder(study_group):
                 'protocol': 'https',
                 'domain': settings.DOMAIN,
             }
-            previous_meeting = study_group.studygroupmeeting_set.filter(meeting_time__lt=next_meeting.meeting_time).order_by('meeting_time').last()
+            previous_meeting = study_group.studygroupmeeting_set.filter(meeting_date__lt=next_meeting.meeting_date).order_by('meeting_date').last()
             if previous_meeting and previous_meeting.feedback_set.first():
                 context['feedback'] = previous_meeting.feedback_set.first()
             timezone.activate(pytz.timezone(study_group.timezone))

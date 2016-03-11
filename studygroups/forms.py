@@ -229,10 +229,10 @@ class FacilitatorForm(forms.ModelForm):
 
 
 class StudyGroupMeetingForm(forms.ModelForm):
-    meeting_time = forms.SplitDateTimeField(input_time_formats=['%I:%M %p'])
+    meeting_time = forms.TimeField(input_formats=['%I:%M %p'])
     class Meta:
         model = StudyGroupMeeting
-        fields = ['meeting_time', 'study_group']
+        fields = ['meeting_date', 'meeting_time', 'study_group']
         widgets = {'study_group': forms.HiddenInput} 
 
 

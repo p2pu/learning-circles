@@ -24,7 +24,7 @@
       {% endif %}
   </div>
   <div class="col-md-12 well">
-    <p><strong>Next meeting:</strong> {{ lc.next_meeting.meeting_time|date:"D d M Y \a\t P" }}</p>
+    <p><strong>Next meeting:</strong> {{ lc.next_meeting.meeting_date|date:"D d M Y" }} at {{ lc.next_meeting.meeting_time|time:"f A" }}</p>
     {% if lc.next_meeting.meeting_activity %}
       <p><strong>Upcoming recipe card:</strong> <a href="{{ lc.next_meeting.meeting_activity.card.url }}" target="_blank">{{ lc.next_meeting.meeting_activity.description }}</a></p>
     {% endif %}
@@ -55,9 +55,10 @@
               </tr>
           </thead>
           <tbody>
-              {% for meeting in lc.studygroupmeeting_set.active|dictsort:"meeting_time" %}
+              {% for meeting in lc.studygroupmeeting_set.active|dictsort:"meeting_datetime" %}
               <tr>
-                <td>{{ meeting.meeting_time|date:"D, d M Y, P" }}
+                <td>{{ meeting.meeting_date|date:"D, d M Y" }}, {{ meeting.meeting_time|time:"f A" }}
+
                   <div class="pull-right">
                     <a class="btn btn-primary" href="{% url 'studygroups_edit_study_group_meeting' lc.id meeting.id %}"><i class="fa fa-edit"></i> Edit</a>
                     <a class="btn btn-primary" href="{% url 'studygroups_meeting_delete' lc.id meeting.id %}"><i class="fa fa-times"></i> Delete</a>

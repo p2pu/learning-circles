@@ -594,7 +594,7 @@ def receive_sms(request):
     if signups.count() == 1 and signups.first().study_group.next_meeting():
         next_meeting = signups.first().study_group.next_meeting()
         # TODO - replace this check with a check to see if the meeting reminder has been sent
-        if next_meeting.meeting_time - timezone.now() < datetime.timedelta(days=2):
+        if next_meeting.meeting_datetime() - timezone.now() < datetime.timedelta(days=2):
             context['next_meeting'] = next_meeting
             context['rsvp_yes'] = next_meeting.rsvp_yes_link(sender)
             context['rsvp_no'] = next_meeting.rsvp_no_link(sender)
