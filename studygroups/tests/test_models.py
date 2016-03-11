@@ -89,15 +89,18 @@ class TestSignupModels(TestCase):
         now = timezone.now()
         self.assertEqual(Reminder.objects.all().count(), 0)
         sg = StudyGroup.objects.all()[0]
-        sg.timezone = now.strftime("%Z")
-        sg.start_date = now.date() - datetime.timedelta(days=3)
-        sg.meeting_time = now.time()
-        sg.end_date = sg.start_date + datetime.timedelta(weeks=5, hours=1)
+        sg.timezone = 'US/Central'
+        sg.start_date = now.date() + datetime.timedelta(days=3)
+        sg.meeting_time = datetime.time(16,0)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
         sg.save()
         sg = StudyGroup.objects.all()[0]
         self.assertEqual(StudyGroupMeeting.objects.all().count(),0)
         generate_all_meetings(sg)
         self.assertEqual(StudyGroupMeeting.objects.all().count(),6)
+        self.assertEqual(sg.next_meeting().meeting_datetime().tzinfo.zone, 'US/Central')
+        for meeting in StudyGroupMeeting.objects.all():
+            self.assertEqual(meeting.meeting_datetime().time(), datetime.time(16,0))
 
 
     def test_dont_generate_reminder_4days_before(self):
