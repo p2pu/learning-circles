@@ -1,10 +1,14 @@
 language: python
 python:
   - "2.7"
-
+addons:
+  postgresql: "9.3"
+services:
+  - postgresql
 env:
   global:
     - SECRET_KEY=blajblajbasdf
+    - DATABASE_URL="postgres://postgres:@127.0.0.1:5432/lc"
   matrix:
     - DJANGO=1.8
 
