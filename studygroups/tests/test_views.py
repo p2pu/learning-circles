@@ -178,7 +178,7 @@ class TestSignupViews(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertTrue(mail.outbox[0].subject.find(signup_data['name']) > 0)
         self.assertTrue(mail.outbox[0].subject.find(signup_data['mobile']) > 0)
-        self.assertIn(StudyGroup.objects.all()[0].facilitator.email, mail.outbox[0].to)
+        self.assertIn(StudyGroup.objects.get(pk=1).facilitator.email, mail.outbox[0].to)
         self.assertIn('admin@localhost', mail.outbox[0].bcc)
 
 
@@ -206,7 +206,7 @@ class TestSignupViews(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertTrue(mail.outbox[0].subject.find('123-456-7890') > 0)
         self.assertTrue(mail.outbox[0].subject.find('Test User') > 0)
-        self.assertIn(StudyGroup.objects.all()[0].facilitator.email, mail.outbox[0].to)
+        self.assertIn(StudyGroup.objects.get(pk=1).facilitator.email, mail.outbox[0].to)
         self.assertIn('https://example.net/{0}/rsvp/?user=123-456-7890&study_group=1&meeting_date={1}&attending=yes&sig='.format(get_language(), urllib.quote(next_meeting.meeting_datetime().isoformat())), mail.outbox[0].body)
         self.assertIn('https://example.net/{0}/rsvp/?user=123-456-7890&study_group=1&meeting_date={1}&attending=no&sig='.format(get_language(), urllib.quote(next_meeting.meeting_datetime().isoformat())), mail.outbox[0].body)
 
@@ -310,7 +310,7 @@ class TestSignupViews(TestCase):
         # Setup data for RSVP -> StudyGroup + Signup + Meeting in future
 
         c = Client()
-        study_group = StudyGroup.objects.all()[0]
+        study_group = StudyGroup.objects.get(pk=1)
         meeting_time = timezone.now() + datetime.timedelta(days=2)
         study_group_meeting = StudyGroupMeeting(
             study_group=study_group,

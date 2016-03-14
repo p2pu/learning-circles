@@ -56,7 +56,7 @@ class TestSignupModels(TestCase):
         # TODO remove this test
         self.assertEqual(Application.objects.active().count(), 0)
         data = self.APPLICATION_DATA
-        data['study_group'] = StudyGroup.objects.all()[0]
+        data['study_group'] = StudyGroup.objects.get(pk=1)
         application = Application(**data)
         application.save()
         accept_application(application)
@@ -67,7 +67,7 @@ class TestSignupModels(TestCase):
         # TODO
         return
         # setup test accross daylight savings time
-        sg = StudyGroup.objects.all()[0]
+        sg = StudyGroup.objects.get(pk=1)
         sg.timezone = 'US/Central'
         sg.meeting_time = datetime.time(16, 0)
         tz = pytz.timezone(sg.timezone)
@@ -88,13 +88,13 @@ class TestSignupModels(TestCase):
     def test_generate_all_meetings(self):
         now = timezone.now()
         self.assertEqual(Reminder.objects.all().count(), 0)
-        sg = StudyGroup.objects.all()[0]
+        sg = StudyGroup.objects.get(pk=1)
         sg.timezone = 'US/Central'
         sg.start_date = now.date() + datetime.timedelta(days=3)
         sg.meeting_time = datetime.time(16,0)
         sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
         sg.save()
-        sg = StudyGroup.objects.all()[0]
+        sg = StudyGroup.objects.get(pk=1)
         self.assertEqual(StudyGroupMeeting.objects.all().count(),0)
         generate_all_meetings(sg)
         self.assertEqual(StudyGroupMeeting.objects.all().count(),6)
@@ -107,13 +107,13 @@ class TestSignupModels(TestCase):
         # Make sure we don't generate a reminder more than 4 days before
         now = timezone.now()
         self.assertEqual(Reminder.objects.all().count(), 0)
-        sg = StudyGroup.objects.all()[0]
+        sg = StudyGroup.objects.get(pk=1)
         sg.timezone = now.strftime("%Z")
         sg.start_date = now + datetime.timedelta(days=4, hours=1)
         sg.meeting_time = sg.start_date.time()
         sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
         sg.save()
-        sg = StudyGroup.objects.all()[0]
+        sg = StudyGroup.objects.get(pk=1)
         generate_all_meetings(sg)
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 0)
@@ -122,13 +122,13 @@ class TestSignupModels(TestCase):
     def test_generate_reminder_4days_before(self):
         # Make sure we generate a reminder less than 4 days before
         now = timezone.now()
-        sg = StudyGroup.objects.all()[0]
+        sg = StudyGroup.objects.get(pk=1)
         sg.timezone = now.strftime("%Z")
         sg.start_date = now.date() + datetime.timedelta(days=3)
         sg.meeting_time = now.time()
         sg.end_date = now.date() + datetime.timedelta(weeks=5, days=3)
         sg.save()
-        sg = StudyGroup.objects.all()[0]
+        sg = StudyGroup.objects.get(pk=1)
         generate_all_meetings(sg)
         self.assertEqual(sg.studygroupmeeting_set.active().count(), 6)
         self.assertTrue(sg.next_meeting().meeting_datetime() - now < datetime.timedelta(days=4))
@@ -147,13 +147,13 @@ class TestSignupModels(TestCase):
         self.assertEqual(Reminder.objects.all().count(), 0)
 
         # Make sure we don't generate a reminder for old study groups
-        sg = StudyGroup.objects.all()[0]
+        sg = StudyGroup.objects.get(pk=1)
         sg.timezone = now.strftime("%Z")
         sg.start_date = now - datetime.timedelta(days=5, weeks=7)
         sg.meeting_time = sg.start_date.time()
         sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
         sg.save()
-        sg = StudyGroup.objects.all()[0]
+        sg = StudyGroup.objects.get(pk=1)
         generate_all_meetings(sg)
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 0)
@@ -164,28 +164,55 @@ class TestSignupModels(TestCase):
         self.assertEqual(Reminder.objects.all().count(), 0)
 
         # Make sure we don't generate a reminder for future study groups
-        sg = StudyGroup.objects.all()[0]
+        sg = StudyGroup.objects.get(pk=1)
         sg.timezone = now.strftime("%Z")
         sg.start_date = now + datetime.timedelta(days=2, weeks=1)
         sg.meeting_time = sg.start_date.time()
         sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
         sg.save()
-        sg = StudyGroup.objects.all()[0]
+        sg = StudyGroup.objects.get(pk=1)
         generate_all_meetings(sg)
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 0)
+
+    def test_generate_reminder_with_long_name_and_location(self):
+        # Make sure we generate a reminder less than 4 days before
+        now = timezone.now()
+        sg = StudyGroup.objects.get(pk=1)
+        sg.timezone = now.strftime("%Z")
+        sg.venue_name = 'This is a very long venue name to test for sms reminders that are longer than a 160 caracters long'
+        sg.venue_details = 'This is an even longer venue detail field. I am almost 100% certain this will be cut off. What do you think'
+        sg.start_date = now.date() + datetime.timedelta(days=3)
+        sg.meeting_time = now.time()
+        sg.end_date = now.date() + datetime.timedelta(weeks=5, days=3)
+        sg.save()
+        sg = StudyGroup.objects.get(pk=1)
+        generate_all_meetings(sg)
+        self.assertEqual(sg.studygroupmeeting_set.active().count(), 6)
+        self.assertTrue(sg.next_meeting().meeting_datetime() - now < datetime.timedelta(days=4))
+        generate_reminder(sg)
+        self.assertEqual(Reminder.objects.all().count(), 1)
+        reminder = Reminder.objects.all()[0]
+        #TODO check that email was sent to site admin
+        #TODO test with unicode in generated email subject
+
+        # Make sure we do it only once
+        generate_reminder(sg)
+        self.assertEqual(Reminder.objects.all().count(), 1)
+
+
 
 
     @patch('studygroups.models.send_message')
     def test_send_reminder_email(self, send_message):
         now = timezone.now()
-        sg = StudyGroup.objects.all()[0]
+        sg = StudyGroup.objects.get(pk=1)
         sg.timezone = now.strftime("%Z")
         sg.start_date = now - datetime.timedelta(days=5)
         sg.meeting_time = sg.start_date.time()
         sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
         sg.save()
-        sg = StudyGroup.objects.all()[0]
+        sg = StudyGroup.objects.get(pk=1)
         data = self.APPLICATION_DATA
         data['study_group'] = sg
         application = Application(**data)
@@ -208,13 +235,13 @@ class TestSignupModels(TestCase):
     @patch('studygroups.models.send_message')
     def test_send_reminder_sms(self, send_message):
         now = timezone.now()
-        sg = StudyGroup.objects.all()[0]
+        sg = StudyGroup.objects.get(pk=1)
         sg.timezone = now.strftime("%Z")
         sg.start_date = now - datetime.timedelta(days=5)
         sg.meeting_time = sg.start_date.time()
         sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
         sg.save()
-        sg = StudyGroup.objects.all()[0]
+        sg = StudyGroup.objects.get(pk=1)
         data = self.APPLICATION_DATA
         data['study_group'] = sg
         application = Application(**data)
@@ -255,10 +282,10 @@ class TestSignupModels(TestCase):
 
     def test_create_rsvp(self):
         data = self.APPLICATION_DATA
-        data['study_group'] = StudyGroup.objects.all()[0]
+        data['study_group'] = StudyGroup.objects.get(pk=1)
         application = Application(**data)
         application.save()
-        sg = StudyGroup.objects.all()[0]
+        sg = StudyGroup.objects.get(pk=1)
         meeting_date = timezone.now()
         sgm = StudyGroupMeeting(
             study_group=sg,
