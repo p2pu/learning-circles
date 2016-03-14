@@ -370,7 +370,11 @@ def generate_reminder(study_group):
             reminder.sms_body = render_to_string(
                 'studygroups/notifications/sms.txt',
                 context
-            )
+                )
+            # TODO - handle SMS reminders that are too long
+            if len(reminder.sms_body) > 160:
+                logger.error('SMS body too long: ' + reminder.sms_body)
+            reminder.sms_body = reminder.sms_body[:160]
             reminder.save()
 
             facilitator_notification_subject = u'A reminder for {0} was generated'.format(study_group.course.title)
