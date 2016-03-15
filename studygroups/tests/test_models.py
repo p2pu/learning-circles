@@ -293,6 +293,13 @@ class TestSignupModels(TestCase):
             meeting_date=meeting_date.date()
         )
         sgm.save()
+        sgm = StudyGroupMeeting(
+            study_group=sg,
+            meeting_time=meeting_date.time(),
+            meeting_date=meeting_date.date() + datetime.timedelta(weeks=1)
+        )
+        sgm.save()
+
 
         # Test creating an RSVP
         self.assertEqual(Rsvp.objects.all().count(), 0)
