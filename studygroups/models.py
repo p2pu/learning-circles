@@ -441,11 +441,11 @@ def send_reminder(reminder):
     reminder.save()
 
 
-def create_rsvp(contact, study_group, meeting_date, attending):
+def create_rsvp(contact, study_group, meeting_datetime, attending):
     # expect meeting_date as python datetime
     # contact is an email address of mobile number
     # study_group is the study group id
-    study_group_meeting = StudyGroupMeeting.objects.get(study_group__id=study_group, meeting_time=meeting_date)
+    study_group_meeting = StudyGroupMeeting.objects.get(study_group__id=study_group, meeting_date=meeting_datetime.date(), meeting_time=meeting_datetime.time())
     application = None
     if '@' in contact:
         application = Application.objects.active().get(study_group__id=study_group, email=contact)
@@ -462,7 +462,8 @@ def create_rsvp(contact, study_group, meeting_date, attending):
 
 def report_data(start_time, end_time):
     report = {
-        'meetings': StudyGroupMeeting.objects.active().filter(meeting_time__gte=start_time, meeting_time__lt=end_time),
+        #TODO update meetings query
+        'meetings': StudyGroupMeeting.objects.active().filter(meeting_date__gte=start_time, meeting_date__lt=end_time),
         'study_groups': StudyGroup.objects.active().filter(created_at__gte=start_time, created_at__lt=end_time),
         'facilitators': User.objects.filter(date_joined__gte=start_time, date_joined__lt=end_time),
         'logins': User.objects.filter(last_login__gte=start_time, last_login__lt=end_time),
