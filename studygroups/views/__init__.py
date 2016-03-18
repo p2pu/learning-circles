@@ -70,14 +70,11 @@ class CourseListView(ListView):
 
 
 def city(request, city_name):
-
     matches = [ c for c in cities.read_autocomplete_list() if c.lower().startswith(city_name.lower()) ]
-    if len(matches) == 0:
-        raise http.Http404('City not found')
 
-    m_city_name = matches[0]
-    if len(matches) == 1 and m_city_name != city_name:
-        return http.HttpResponseRedirect(reverse('studygroups_city', args=(m_city_name,)))
+    if len(matches) == 1 and matches[0] != city_name:
+        return http.HttpResponseRedirect(reverse('studygroups_city', args=(matches[0],)))
+
     #TODO handle multiple matches. Ex. city_name = Springfield
 
     two_weeks = (datetime.datetime.now() - datetime.timedelta(weeks=2)).date()
