@@ -217,6 +217,7 @@ class StudyGroupMeeting(LifeTimeTrackingModel):
     meeting_time = models.TimeField()
 
     def meeting_number(self):
+        # TODO this will break for two meetings on the same day
         return StudyGroupMeeting.objects.active().filter(meeting_date__lte=self.meeting_date, study_group=self.study_group).count()
 
     def meeting_activity(self):
