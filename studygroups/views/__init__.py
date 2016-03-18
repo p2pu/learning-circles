@@ -49,17 +49,17 @@ from facilitate import FacilitatorStudyGroupCreate
 import cities
 
 def landing(request):
-    #courses = Course.objects.filter(created_by__isnull=True).order_by('key')
-
-    #for course in courses:
-    #    course.studygroups = course.studygroup_set.all().active()
     two_weeks = (datetime.datetime.now() - datetime.timedelta(weeks=2)).date()
     study_groups = StudyGroup.objects.active().filter(signup_open=True, start_date__gte=two_weeks).order_by('start_date')
+    
+    city_list = study_groups.values('city').exclude(city='').annotate(total=Count('city')).order_by('-total')
+    # Not sure what the performance implication of the following line would be - it reads a file from disk every time
+    #filter_func = lambda x: next( (c for c in cities.read_autocomplete_list() if c.lower().startswith(x['city'].lower())), (None) ) != None
+    #city_list = filter(filter_func, city_list)
 
     context = {
-        #'courses': courses,
         'learning_circles': study_groups[:50],
-        'cities': study_groups.values('city').exclude(city='').annotate(total=Count('city')).order_by('-total'),
+        'cities': city_list
     }
     return render_to_response('studygroups/index.html', context, context_instance=RequestContext(request))
 
