@@ -321,11 +321,14 @@ def organize(request):
     # TODO 
     # - Only show learning circles with meetings in the future
     # - Only show meetings for current week 
+    today = datetime.datetime.now().date()
+    two_weeks_ago = today - datetime.timedelta(weeks=2, days=today.weekday())
+    two_weeks = today - datetime.timedelta(days=today.weekday()) + datetime.timedelta(weeks=3)
     context = {
         'courses': Course.objects.all(),
         'study_groups': StudyGroup.objects.active(),
-        'meetings': StudyGroupMeeting.objects.active().filter(study_group__in=StudyGroup.objects.active()),
-        'facilitators': Facilitator.objects.all(),
+        'meetings': StudyGroupMeeting.objects.active().filter(study_group__in=StudyGroup.objects.active(), meeting_date__gte=two_weeks_ago).exclude(meeting_date__gte=two_weeks),
+        'facilitators': Facilitator.objects.order_by('-user__date_joined')[:20],
         'today': timezone.now(),
     }
     return render_to_response('studygroups/organize.html', context, context_instance=RequestContext(request))
