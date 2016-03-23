@@ -7541,6 +7541,9 @@ img.lc-about-image {
 .learning-circle-signup img {
   width: 100%; }
 
+.signup-success {
+  max-width: 100%; }
+
 .close {
   color: #FF0000;
   opacity: 1;
