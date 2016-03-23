@@ -2,7 +2,7 @@
 {% block body %}
 <p>Hi there {{application.study_group.facilitator.first_name}}</p>
 
-<p>{{ application.name }} applied for "{{application.study_group.course.title}}" at {{application.study_group.venue_name}}.</p>
+<p>{{ application.name }} {% if application.email %}<a href="mailto:{{application.email}}">&lt;{{application.email}}&gt;</a>{% endif %} applied for "{{application.study_group.course.title}}" at {{application.study_group.venue_name}}.</p>
 
 <!--p>Their response to the signup questions:</p>
 

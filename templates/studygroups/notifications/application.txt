@@ -1,6 +1,6 @@
 Hi there {{application.study_group.facilitator.first_name}}
 
-{{ application.name }} applied for "{{application.study_group.course.title}}" at {{application.study_group.venue_name}}.
+{{ application.name }} {% if application.email %}<{{application.email}}>{% endif %} applied for "{{application.study_group.course.title}}" at {{application.study_group.venue_name}}.
 {% comment %}
 Their response to the signup questions: 
 
