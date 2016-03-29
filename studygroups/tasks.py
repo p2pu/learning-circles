@@ -4,6 +4,8 @@ from celery import shared_task
 
 from django.utils import timezone
 from django.conf import settings
+from django.utils import translation
+from django.contrib.auth.models import User
 
 from studygroups.models import StudyGroup
 from studygroups.models import StudyGroupMeeting
@@ -11,7 +13,8 @@ from studygroups.models import Reminder
 from studygroups.models import generate_reminder
 from studygroups.models import send_reminder
 from studygroups.models import send_weekly_update
-from django.utils import translation
+from studygroups.models import send_new_studygroup_email
+from studygroups.models import send_new_facilitator_email
 
 import datetime
 
@@ -37,3 +40,24 @@ def gen_reminders():
 def weekly_update():
     # Create a report for the previous week
     send_weekly_update()
+
+
+@shared_task
+def send_new_facilitator_emails():
+    # send email to organizers who signed up a week ago
+    now = timezone.now()
+    seven_days_ago = now.date() - datetime.timeteldta(days=7)
+    six_days_ago = now.date() - datetime.timeteldta(days=6)
+    for faciltator in User.objects.filter(date_joined__gte=seven_days_ago, date_joined__lt=six_days_ago):
+        send_new_facilitator_email(facilitator)
+
+@shared_task
+def send_new_studygroup_emails():
+    # send email to organizers who signed up a week ago
+    now = timezone.now()
+    seven_days_ago = now.date() - datetime.timeteldta(days=7)
+    six_days_ago = now.date() - datetime.timeteldta(days=6)
+    for studygroup in StudyGroup.objects.filter(created_at__gte=seven_days_ago, created_at__lt=six_days_ago):
+        send_new_studygroup_email(studygroup)
+
+

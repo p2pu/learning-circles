@@ -1,0 +1,11 @@
+Hi there {{studygroup.facilitator.first_name}},
+
+We saw that you created a Learning Circle last week. Amazing!
+
+The Getting Started section of the handbook (https://www.p2pu.org/en/facilitate/starting/) has lots of tips on how to promote your Learning Circle in your community. Once this is complete, you can check out the Running Learning Circles section (https://www.p2pu.org/en/facilitate/running/) to read facilitation tips and tricks from past facilitators.
+
+If you have any other questions, or are looking for general support, post your questions in our facilitator community (https://community.p2pu.org/).
+
+Cheers, 
+P2PU
+

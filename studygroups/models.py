@@ -6,7 +6,7 @@ from django.utils.translation import ugettext as _
 from django.template.loader import render_to_string
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.conf import settings
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse #TODO ideally this shouldn't be in the model
 
 import twilio
@@ -500,3 +500,38 @@ def send_weekly_update():
     update.attach_alternative(html_body, 'text/html')
     update.send()
 
+
+def send_new_facilitator_email(facilitator):
+    context = {
+        'facilitator': facilitator
+    }
+
+    timezone.activate(pytz.timezone(settings.TIME_ZONE))
+    translation.activate(settings.LANGUAGE_CODE)
+    subject = render_to_string('studygroups/new_facilitator_update-subject.txt', context).strip('\n')
+    html_body = render_to_string('studygroups/new_facilitator_update.html', context)
+    text_body = render_to_string('studygroups/new_facilitator_update.txt', context)
+    timezone.deactivate()
+    to = [facilitator.email]
+ 
+    msg = EmailMultiAlternatives(subject, text_body, settings.SERVER_EMAIL, to)
+    msg.attach_alternative(html_body, 'text/html')
+    msg.send()
+
+
+def send_new_studygroup_email(studygroup):
+    context = {
+        'studygroup': studygroup
+    }
+
+    timezone.activate(pytz.timezone(settings.TIME_ZONE))
+    translation.activate(settings.LANGUAGE_CODE)
+    subject = render_to_string('studygroups/new_studygroup_update-subject.txt', context).strip('\n')
+    html_body = render_to_string('studygroups/new_studygroup_update.html', context)
+    text_body = render_to_string('studygroups/new_studygroup_update.txt', context)
+    timezone.deactivate()
+    to = [studygroup.facilitator.email]
+ 
+    msg = EmailMultiAlternatives(subject, text_body, settings.SERVER_EMAIL, to)
+    msg.attach_alternative(html_body, 'text/html')
+    msg.send()
