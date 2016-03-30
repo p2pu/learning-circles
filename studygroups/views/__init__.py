@@ -50,10 +50,13 @@ import cities
 
 def landing(request):
     two_weeks = (datetime.datetime.now() - datetime.timedelta(weeks=2)).date()
-    study_groups = StudyGroup.objects.active().filter(signup_open=True, start_date__gte=two_weeks).order_by('start_date')
-    
+
+    study_group_ids = StudyGroupMeeting.objects.active().filter(meeting_date__gte=timezone.now()).values('study_group')
+    study_groups = StudyGroup.objects.active().filter(id__in=study_group_ids).order_by('start_date')
+
     city_list = study_groups.values('city').exclude(city='').annotate(total=Count('city')).order_by('-total')
-    # Not sure what the performance implication of the following line would be - it reads a file from disk every time
+
+    # NOTE: Not sure what the performance implication of the following line would be - it reads a file from disk every time
     #filter_func = lambda x: next( (c for c in cities.read_autocomplete_list() if c.lower().startswith(x['city'].lower())), (None) ) != None
     #city_list = filter(filter_func, city_list)
 
@@ -76,10 +79,14 @@ def city(request, city_name):
         return http.HttpResponseRedirect(reverse('studygroups_city', args=(matches[0],)))
 
     #TODO handle multiple matches. Ex. city_name = Springfield
+    #two_weeks = (datetime.datetime.now() - datetime.timedelta(weeks=2)).date()
+    #learning_circles = StudyGroup.objects.active().filter(city__istartswith=city_name)
 
-    two_weeks = (datetime.datetime.now() - datetime.timedelta(weeks=2)).date()
-    learning_circles = StudyGroup.objects.active().filter(city__istartswith=city_name)
-    learning_circles = learning_circles.filter(signup_open=True, start_date__gte=two_weeks).order_by('start_date')
+    study_group_ids = StudyGroupMeeting.objects.active().filter(meeting_date__gte=timezone.now()).values('study_group')
+    study_group_ids = study_group_ids.filter(study_group__city__istartswith=city_name)
+    learning_circles = StudyGroup.objects.active().filter(id__in=study_group_ids).order_by('start_date')
+
+    #learning_circles = learning_circles.filter(signup_open=True, start_date__gte=two_weeks).order_by('start_date')
 
     context = {
         'learning_circles': learning_circles,
