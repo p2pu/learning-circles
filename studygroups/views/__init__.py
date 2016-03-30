@@ -52,7 +52,7 @@ def landing(request):
     two_weeks = (datetime.datetime.now() - datetime.timedelta(weeks=2)).date()
 
     study_group_ids = StudyGroupMeeting.objects.active().filter(meeting_date__gte=timezone.now()).values('study_group')
-    study_groups = StudyGroup.objects.active().filter(id__in=study_group_ids).order_by('start_date')
+    study_groups = StudyGroup.objects.active().filter(id__in=study_group_ids, signup_open=True).order_by('start_date')
 
     city_list = study_groups.values('city').exclude(city='').annotate(total=Count('city')).order_by('-total')
 
@@ -84,7 +84,7 @@ def city(request, city_name):
 
     study_group_ids = StudyGroupMeeting.objects.active().filter(meeting_date__gte=timezone.now()).values('study_group')
     study_group_ids = study_group_ids.filter(study_group__city__istartswith=city_name)
-    learning_circles = StudyGroup.objects.active().filter(id__in=study_group_ids).order_by('start_date')
+    learning_circles = StudyGroup.objects.active().filter(id__in=study_group_ids, signup_open=True).order_by('start_date')
 
     #learning_circles = learning_circles.filter(signup_open=True, start_date__gte=two_weeks).order_by('start_date')
 
