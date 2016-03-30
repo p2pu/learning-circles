@@ -46,17 +46,17 @@ def weekly_update():
 def send_new_facilitator_emails():
     # send email to organizers who signed up a week ago
     now = timezone.now()
-    seven_days_ago = now.date() - datetime.timeteldta(days=7)
-    six_days_ago = now.date() - datetime.timeteldta(days=6)
-    for faciltator in User.objects.filter(date_joined__gte=seven_days_ago, date_joined__lt=six_days_ago):
+    seven_days_ago = now.date() - datetime.timedelta(days=7)
+    six_days_ago = now.date() - datetime.timedelta(days=6)
+    for facilitator in User.objects.filter(date_joined__gte=seven_days_ago, date_joined__lt=six_days_ago):
         send_new_facilitator_email(facilitator)
 
 @shared_task
 def send_new_studygroup_emails():
     # send email to organizers who signed up a week ago
     now = timezone.now()
-    seven_days_ago = now.date() - datetime.timeteldta(days=7)
-    six_days_ago = now.date() - datetime.timeteldta(days=6)
+    seven_days_ago = now.date() - datetime.timedelta(days=7)
+    six_days_ago = now.date() - datetime.timedelta(days=6)
     for studygroup in StudyGroup.objects.filter(created_at__gte=seven_days_ago, created_at__lt=six_days_ago):
         send_new_studygroup_email(studygroup)
 
