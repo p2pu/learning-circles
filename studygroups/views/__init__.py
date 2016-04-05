@@ -24,6 +24,7 @@ from django.views.generic import DetailView, TemplateView
 from django.contrib.auth.models import User
 from django.forms import modelform_factory
 from django.db.models import Count
+from django.template.defaultfilters import slugify
 
 from studygroups.models import Course, Location, StudyGroup, Application, Reminder, Feedback
 from studygroups.models import Organizer, Facilitator
@@ -45,6 +46,8 @@ from facilitate import FacilitatorCreate, FacilitatorUpdate, FacilitatorDelete
 from facilitate import FacilitatorSignup
 from facilitate import FacilitatorSignupSuccess
 from facilitate import FacilitatorStudyGroupCreate
+
+from uxhelpers.utils import json_response
 
 import cities
 
@@ -93,6 +96,35 @@ def city(request, city_name):
         'city': city_name
     }
     return render_to_response('studygroups/city_list.html', context, context_instance=RequestContext(request))
+
+
+def studygroups(request):
+    study_groups = StudyGroup.objects.active()
+    if 'course_id' in request.REQUEST:
+        study_groups = study_groups.filter(course_id=request.REQUEST.get('course_id'))
+    
+    def to_json(sg):
+        data = {
+            "course_title": sg.course.title,
+            "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
+            "venue": sg.venue_name,
+            "venue_address": sg.venue_address + ", " + sg.city,
+            "day": sg.day(),
+            "start_date": sg.start_date,
+            "meeting_time": sg.meeting_time,
+            "time_zone": sg.timezone_display(),
+            "end_time": sg.end_time(),
+            "weeks": sg.studygroupmeeting_set.active().count(),
+            "url": "https://learningcircles.p2pu.org" + reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
+        }
+        if sg.image:
+            data["image_url"] = "https://learningcircles.p2pu.org" + sg.image.url
+        #TODO else set default image URL
+        return data
+
+    data = [ to_json(sg) for sg in study_groups ]
+    return json_response(request, data)
+
 
 
 def signup(request, location, study_group_id):

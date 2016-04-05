@@ -39,6 +39,8 @@ urlpatterns = patterns('',
 
     url(r'^city/(?P<city_name>[\w\W\ ,]+)/$', 'studygroups.views.city', name='studygroups_city'),
 
+    url(r'^studygroups/$', 'studygroups.views.studygroups', name='studygroups_search'),
+
     url(r'^login_redirect/$', 'studygroups.views.login_redirect', name='studygroups_login_redirect'),
 
     url(r'^signup/(?P<location>[\w-]+)-(?P<study_group_id>[\d]+)/$', 'studygroups.views.signup', name='studygroups_signup'),
