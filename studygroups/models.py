@@ -9,7 +9,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse #TODO ideally this shouldn't be in the model
 
-import twilio
+from twilio import TwilioRestException
 
 from studygroups.sms import send_message
 from studygroups import rsvp
@@ -435,7 +435,7 @@ def send_reminder(reminder):
             #TODO - insert opt out link
             #if reminder.study_group_meeting:
             send_message(to, reminder.sms_body)
-        except twilio.TwilioRestException as e:
+        except TwilioRestException as e:
             logger.exception(u"Could not send text message to %s", to, exc_info=e)
 
     reminder.sent_at = timezone.now()
