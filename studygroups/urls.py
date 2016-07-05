@@ -10,9 +10,6 @@ from studygroups.views import FeedbackDetail
 from studygroups.views import FeedbackCreate
 from studygroups.views import ApplicationDelete
 from studygroups.views import SignupSuccess
-from studygroups.views import LocationCreate
-from studygroups.views import LocationUpdate
-from studygroups.views import LocationDelete
 from studygroups.views import CourseCreate
 from studygroups.views import CourseUpdate
 from studygroups.views import CourseDelete
@@ -65,11 +62,6 @@ urlpatterns = patterns('',
    
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/(?P<pk>[\d]+)/$', user_is_group_facilitator(FeedbackDetail.as_view()), name='studygroups_feedback_detail'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/create/$', user_is_group_facilitator(FeedbackCreate.as_view()), name='studygroups_feedback'),
-
-    # TODO should remove Location views and model
-    url(r'^location/create/$', user_is_organizer(LocationCreate.as_view()), name='studygroups_location_create'),
-    url(r'^location/(?P<pk>[\d]+)/edit/$', user_is_organizer(LocationUpdate.as_view()), name='studygroups_location_edit'),
-    url(r'^location/(?P<pk>[\d]+)/delete/$', user_is_organizer(LocationDelete.as_view()), name='studygroups_location_delete'),
 
     url(r'^course/create/$', login_required(CourseCreate.as_view()), name='studygroups_course_create'),
     url(r'^course/(?P<pk>[\d]+)/edit/$', user_is_organizer(CourseUpdate.as_view()), name='studygroups_course_edit'),

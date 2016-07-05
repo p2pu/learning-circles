@@ -14,7 +14,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 
 from studygroups.forms import FacilitatorForm, StudyGroupForm
-from studygroups.models import Facilitator, StudyGroup, Location, Course
+from studygroups.models import Facilitator, StudyGroup, Course
 from studygroups.models import generate_all_meetings
 
 import string, random, datetime

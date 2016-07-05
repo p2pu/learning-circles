@@ -26,7 +26,7 @@ from django.forms import modelform_factory
 from django.db.models import Count
 from django.template.defaultfilters import slugify
 
-from studygroups.models import Course, Location, StudyGroup, Application, Reminder, Feedback
+from studygroups.models import Course, StudyGroup, Application, Reminder, Feedback
 from studygroups.models import Organizer, Facilitator
 from studygroups.models import StudyGroupMeeting
 from studygroups.models import send_reminder
@@ -371,24 +371,6 @@ def organize(request):
         'today': timezone.now(),
     }
     return render_to_response('studygroups/organize.html', context, context_instance=RequestContext(request))
-
-
-class LocationCreate(CreateView):
-    model = Location
-    fields = ['name', 'address', 'contact_name', 'contact', 'link', 'image']
-    success_url = reverse_lazy('studygroups_organize')
-
-
-class LocationUpdate(UpdateView):
-    model = Location
-    fields = ['name', 'address', 'contact_name', 'contact', 'link', 'image']
-    success_url = reverse_lazy('studygroups_organize')
-
-
-class LocationDelete(DeleteView):
-    model = Location
-    success_url = reverse_lazy('studygroups_organize')
-    template_name = 'studygroups/confirm_delete.html'
 
 
 class CourseCreate(CreateView):

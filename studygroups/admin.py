@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from studygroups.models import Course, Location, StudyGroup, StudyGroupMeeting, Application, Reminder, Activity
+from studygroups.models import Course, StudyGroup, StudyGroupMeeting, Application, Reminder, Activity
 from studygroups.models import Organizer
 from studygroups.models import Facilitator
 
@@ -20,9 +20,6 @@ class StudyGroupSignupAdmin(admin.ModelAdmin):
     pass
 
 class CourseAdmin(admin.ModelAdmin):
-    pass
-
-class LocationAdmin(admin.ModelAdmin):
     pass
 
 class ActivityAdmin(admin.ModelAdmin):
@@ -45,7 +42,6 @@ class FacilitatorAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Course, CourseAdmin)
-admin.site.register(Location, LocationAdmin)
 admin.site.register(Activity, ActivityAdmin)
 admin.site.register(StudyGroup, StudyGroupAdmin)
 admin.site.register(StudyGroupMeeting, StudyGroupMeetingAdmin)
