@@ -5,11 +5,7 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 
 
-urlpatterns = patterns('',
-    url(r'^s3direct/', include('s3direct.urls')),
-)
-
-urlpatterns += i18n_patterns('',
+urlpatterns = i18n_patterns('',
     url(r'^', include('studygroups.urls')),
     url(r'^interest/', include('interest.urls', namespace='interest')),
     url(r'^about/$', TemplateView.as_view(template_name="about.html"), name="about"),
