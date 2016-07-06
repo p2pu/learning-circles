@@ -12,8 +12,9 @@ from studygroups.models import StudyGroup
 from studygroups.models import StudyGroupMeeting
 from studygroups.models import Application
 from studygroups.models import Organizer
-from studygroups.models import Facilitator
 from studygroups.models import Rsvp
+from studygroups.models import Team
+from studygroups.models import TeamMembership
 from studygroups.rsvp import gen_rsvp_querystring
 
 import datetime
@@ -276,9 +277,17 @@ class TestSignupViews(TestCase):
 
 
     def test_organizer_access(self):
-        User.objects.create_user('bob123', 'bob@example.net', 'password')
-        user = User.objects.get(username='bob123')
-        Organizer.objects.create(user=user)
+        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
+        faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', '1234')
+
+        team = Team.objects.create(name='test team')
+        TeamMembership.objects.create(team=team, user=user, role=TeamMembership.ORGANIZER)
+        TeamMembership.objects.create(team=team, user=faci1, role=TeamMembership.MEMBER)
+
+        sg = StudyGroup.objects.get(pk=1)
+        sg.facilitator = faci1
+        sg.save()
+
         c = Client()
         c.login(username='bob123', password='password')
 
@@ -290,10 +299,62 @@ class TestSignupViews(TestCase):
             resp = c.get(url)
             self.assertEquals(resp.status_code, status)
 
+        def assertForbidden(url):
+            resp = c.get(url)
+            self.assertEqual(resp.status_code, 403)
+
         assertAllowed('/en/')
         assertAllowed('/en/organize/')
         assertAllowed('/en/report/')
         assertAllowed('/en/report/weekly/')
+
+        # Make sure the organizer can access their study groups
+        assertAllowed('/en/studygroup/1/')
+        assertAllowed('/en/studygroup/1/edit/')
+        assertAllowed('/en/studygroup/1/message/compose/')
+        assertStatus('/en/studygroup/1/message/edit/1/', 404)
+        assertAllowed('/en/studygroup/1/member/add/')
+        assertStatus('/en/studygroup/1/member/2/delete/', 404)
+        assertAllowed('/en/studygroup/1/meeting/create/')
+        assertStatus('/en/studygroup/1/meeting/2/edit/', 404)
+        assertStatus('/en/studygroup/1/meeting/2/delete/', 404)
+        assertStatus('/en/studygroup/1/meeting/2/feedback/create/', 404)
+
+        # Make sure the organizer can't access other study groups
+        assertForbidden('/en/studygroup/2/')
+        assertForbidden('/en/studygroup/2/edit/')
+        assertForbidden('/en/studygroup/2/message/compose/')
+        assertForbidden('/en/studygroup/2/message/edit/1/')
+        assertForbidden('/en/studygroup/2/member/add/')
+        assertForbidden('/en/studygroup/2/member/2/delete/')
+        assertForbidden('/en/studygroup/2/meeting/create/')
+        assertForbidden('/en/studygroup/2/meeting/2/edit/')
+        assertForbidden('/en/studygroup/2/meeting/2/delete/')
+        assertForbidden('/en/studygroup/2/meeting/2/feedback/create/')
+
+
+    def test_organizer_admin_access(self):
+        c = Client()
+        c.login(username='admin', password='password')
+
+        def assertAllowed(url):
+            resp = c.get(url)
+            self.assertIn(resp.status_code, [200, 301, 302])
+
+        def assertStatus(url, status):
+            resp = c.get(url)
+            self.assertEquals(resp.status_code, status)
+
+        def assertForbidden(url):
+            resp = c.get(url)
+            self.assertEqual(resp.status_code, 403)
+
+        assertAllowed('/en/')
+        assertAllowed('/en/organize/')
+        assertAllowed('/en/report/')
+        assertAllowed('/en/report/weekly/')
+
+        # Make sure the organizer can access their study groups
         assertAllowed('/en/studygroup/1/')
         assertAllowed('/en/studygroup/1/edit/')
         assertAllowed('/en/studygroup/1/message/compose/')
@@ -379,9 +440,9 @@ class TestSignupViews(TestCase):
 
 
     def test_organizer_login_redirect(self):
-        User.objects.create_user('bob123', 'bob@example.net', 'password')
-        user = User.objects.get(username='bob123')
-        Organizer.objects.create(user=user)
+        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
+        team = Team.objects.create(name='test team')
+        TeamMembership.objects.create(team=team, user=user, role=TeamMembership.ORGANIZER)
         c = Client()
         c.login(username='bob123', password='password')
         resp = c.get('/en/login_redirect/')
@@ -389,9 +450,7 @@ class TestSignupViews(TestCase):
 
 
     def test_facilitator_login_redirect(self):
-        User.objects.create_user('bob123', 'bob@example.net', 'password')
-        user = User.objects.get(username='bob123')
-        Facilitator.objects.create(user=user)
+        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
         c = Client()
         c.login(username='bob123', password='password')
         resp = c.get('/en/login_redirect/')
@@ -432,3 +491,32 @@ class TestSignupViews(TestCase):
         self.assertTrue(send_message.called)
 
 
+    def test_organizer_dash(self):
+
+        # create users
+        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', '1234')
+        faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', '1234')
+        faci2 = User.objects.create_user('faci2@team.com', 'faci2@team.com', '1234')
+
+        sg = StudyGroup.objects.get(pk=1)
+        sg.facilitator = faci1
+        sg.save()
+
+        sg = StudyGroup.objects.get(pk=2)
+        sg.facilitator = faci2
+        sg.save()
+        
+        # create team
+        team = Team.objects.create(name='test team')
+        TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
+        TeamMembership.objects.create(team=team, user=faci1, role=TeamMembership.MEMBER)
+        TeamMembership.objects.create(team=team, user=faci2, role=TeamMembership.MEMBER)
+
+        c = Client()
+        c.login(username='organ@team.com', password='1234')
+        resp = c.get('/en/organize/')
+        self.assertEquals(resp.status_code, 200)
+
+        # make sure only the relevant study groups are returned
+        self.assertIn(StudyGroup.objects.get(pk=1), resp.context['study_groups'])
+        self.assertIn(StudyGroup.objects.get(pk=2), resp.context['study_groups'])

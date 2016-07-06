@@ -115,6 +115,7 @@ class Activity(models.Model):
         return self.description
 
 
+# TODO remove this - all users are considered facilitators
 class Facilitator(models.Model):
     user = models.OneToOneField(User)
 
@@ -563,11 +564,19 @@ def send_new_studygroup_email(studygroup):
     msg.send()
 
 
-""" Return the  """
-def get_team_users(user):
-    team_membership = TeamMembership.objects.filter(user=user)
+""" Return the organizers for the study group """
+def get_study_group_organizers(study_group):
+    team_membership = TeamMembership.objects.filter(user=study_group.facilitator)
     if team_membership.count() == 1:
-        return team_membership.first().team.teammembership_set.values('user')
+        organizers = team_membership.first().team.teammembership_set.filter(role=TeamMembership.ORGANIZER).values('user')
+        return User.objects.filter(pk__in=organizers)
     return []
 
 
+""" Return the team members for a user """
+def get_team_users(user):
+    team_membership = TeamMembership.objects.filter(user=user)
+    if team_membership.count() == 1:
+        members = team_membership.first().team.teammembership_set.values('user')
+        return User.objects.filter(pk__in=members)
+    return []

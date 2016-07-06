@@ -5,7 +5,7 @@ from django.shortcuts import render, render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.core.urlresolvers import reverse, reverse_lazy
-from django.contrib.auth.models import Permission, Group
+from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMultiAlternatives, send_mail
@@ -27,12 +27,13 @@ from django.db.models import Count
 from django.template.defaultfilters import slugify
 
 from studygroups.models import Course, StudyGroup, Application, Reminder, Feedback
-from studygroups.models import Organizer, Facilitator
+from studygroups.models import Organizer, Facilitator, TeamMembership
 from studygroups.models import StudyGroupMeeting
 from studygroups.models import send_reminder
 from studygroups.models import create_rsvp
 from studygroups.models import report_data
 from studygroups.models import generate_all_meetings
+from studygroups.models import get_team_users
 from studygroups.forms import ApplicationForm, MessageForm, StudyGroupForm
 from studygroups.forms import StudyGroupMeetingForm
 from studygroups.forms import FeedbackForm
@@ -263,12 +264,10 @@ def rsvp(request):
 
 @login_required
 def login_redirect(request):
-    if Organizer.objects.filter(user=request.user).exists():
+    if TeamMembership.objects.filter(user=request.user, role=TeamMembership.ORGANIZER).exists():
         url = reverse('studygroups_organize')
-    elif Facilitator.objects.filter(user=request.user).exists():
-        url = reverse('studygroups_facilitator')
     else:
-        url = reverse('studygroups_landing')
+        url = reverse('studygroups_facilitator')
     return http.HttpResponseRedirect(url)
 
 
@@ -334,6 +333,7 @@ class FeedbackCreate(CreateView):
         }
 
     def form_valid(self, form):
+        # TODO this should be removed - we're not using django permissions for organizers any more!
         to = [o.email for o in Group.objects.get(name='organizers').user_set.all()]
         context = {
             'feedback': form.save(commit=False),
@@ -363,11 +363,19 @@ def organize(request):
     today = datetime.datetime.now().date()
     two_weeks_ago = today - datetime.timedelta(weeks=2, days=today.weekday())
     two_weeks = today - datetime.timedelta(days=today.weekday()) + datetime.timedelta(weeks=3)
+    study_groups = StudyGroup.objects.active()
+    facilitators = Facilitator.objects.all()    
+
+    if not request.user.is_staff:
+        team_users = get_team_users(request.user)
+        study_groups = study_groups.filter(facilitator__in=team_users)
+        facilitators = facilitators.filter(user__in=team_users)
+
     context = {
         'courses': Course.objects.all(),
-        'study_groups': StudyGroup.objects.active(),
+        'study_groups': study_groups,
         'meetings': StudyGroupMeeting.objects.active().filter(study_group__in=StudyGroup.objects.active(), meeting_date__gte=two_weeks_ago).exclude(meeting_date__gte=two_weeks),
-        'facilitators': Facilitator.objects.order_by('-user__date_joined')[:20],
+        'facilitators': facilitators,
         'today': timezone.now(),
     }
     return render_to_response('studygroups/organize.html', context, context_instance=RequestContext(request))
