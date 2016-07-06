@@ -122,8 +122,31 @@ class Facilitator(models.Model):
         return self.user.__unicode__()
 
 
+# TODO remove organizer model - only use Facilitator model + Team Membership
 class Organizer(models.Model):
     user = models.OneToOneField(User)
+
+    def __unicode__(self):
+        return self.user.__unicode__()
+
+
+class Team(models.Model):
+    name = models.CharField(max_length=128)
+
+    def __unicode__(self):
+        return self.name
+
+
+class TeamMembership(models.Model):
+    ORGANIZER = 'ORGANIZER'
+    MEMBER = 'MEMBER'
+    ROLES = (
+        (ORGANIZER, _('Organizer')),
+        (MEMBER, _('Member')),
+    )
+    team = models.ForeignKey('studygroups.Team')
+    user = models.OneToOneField(User)
+    role = models.CharField(max_length=256, choices=ROLES)
 
     def __unicode__(self):
         return self.user.__unicode__()
@@ -538,3 +561,13 @@ def send_new_studygroup_email(studygroup):
     msg = EmailMultiAlternatives(subject, text_body, settings.SERVER_EMAIL, to)
     msg.attach_alternative(html_body, 'text/html')
     msg.send()
+
+
+""" Return the  """
+def get_team_users(user):
+    team_membership = TeamMembership.objects.filter(user=user)
+    if team_membership.count() == 1:
+        return team_membership.first().team.teammembership_set.values('user')
+    return []
+
+
