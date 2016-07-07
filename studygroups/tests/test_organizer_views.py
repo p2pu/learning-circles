@@ -29,27 +29,13 @@ class TestOrganizerViews(TestCase):
 
     fixtures = ['test_courses.json', 'test_studygroups.json']
 
-    APPLICATION_DATA = {
-        'study_group': '1',
-        'name': 'Test User',
-        'email': 'test@mail.com',
-        'goals': 'try hard',
-        'support': 'thinking how to?',
-        'computer_access': 'Both', 
-        'send_email': '2', 
-        'delete_spam': '2', 
-        'search_online': '2', 
-        'browse_video': '2', 
-        'online_shopping': '2', 
-        'mobile_apps': '2', 
-        'web_safety': '2'
-    }
 
     def setUp(self):
         user = User.objects.create_user('admin', 'admin@test.com', 'password')
         user.is_superuser = True
         user.is_staff = True
         user.save()
+        #TODO basic data setup for organizers - 1 team, organizer & 2 facilitators
 
 
     def test_organizer_login_redirect(self):
@@ -191,3 +177,35 @@ class TestOrganizerViews(TestCase):
 
         # make sure all study groups are returned
         self.assertEquals(StudyGroup.objects.active().count(), len(resp.context['study_groups']))
+
+
+    def test_weekly_report(self):
+        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
+        faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', 'password')
+        StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
+
+        team = Team.objects.create(name='test team')
+        TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
+        TeamMembership.objects.create(team=team, user=faci1, role=TeamMembership.MEMBER)
+
+        study_group = StudyGroup.objects.get(pk=1)
+        meeting = StudyGroupMeeting()
+        meeting.study_group = study_group
+        meeting.meeting_time = timezone.now().time()
+        meeting.meeting_date = timezone.now().date() - datetime.timedelta(days=1)
+        meeting.save()
+
+        study_group = StudyGroup.objects.get(pk=2)
+        meeting = StudyGroupMeeting()
+        meeting.study_group = study_group
+        meeting.meeting_time = timezone.now().time()
+        meeting.meeting_date = timezone.now().date() - datetime.timedelta(days=1)
+        meeting.save()
+
+ 
+        c = Client()
+        c.login(username='organ@team.com', password='password')
+        resp = c.get('/en/report/weekly/{0}/'.format(timezone.now().strftime("%Y-%m-%d")))
+        self.assertEquals(resp.status_code, 200)
+        self.assertEquals(len(resp.context['meetings']), 1)
+        #TODO test other parts of the weekly report

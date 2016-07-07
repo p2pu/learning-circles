@@ -12,11 +12,14 @@ from studygroups.models import StudyGroupMeeting
 from studygroups.models import Application
 from studygroups.models import Reminder
 from studygroups.models import Rsvp
+from studygroups.models import Team
+from studygroups.models import TeamMembership
 from studygroups.models import accept_application
 from studygroups.models import generate_reminder
 from studygroups.models import send_reminder
 from studygroups.models import create_rsvp
 from studygroups.models import generate_all_meetings
+from studygroups.models import send_weekly_update
 from studygroups.rsvp import gen_rsvp_querystring
 from studygroups.rsvp import check_rsvp_signature
 from studygroups.utils import gen_unsubscribe_querystring
@@ -337,3 +340,34 @@ class TestSignupModels(TestCase):
 
         tasks.send_new_studygroup_emails()
         self.assertEqual(len(mail.outbox), 1)
+
+
+    def test_send_weekly_report(self):
+        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
+        faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', 'password')
+        StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
+
+        team = Team.objects.create(name='test team')
+        TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
+        TeamMembership.objects.create(team=team, user=faci1, role=TeamMembership.MEMBER)
+
+        study_group = StudyGroup.objects.get(pk=1)
+        meeting = StudyGroupMeeting()
+        meeting.study_group = study_group
+        meeting.meeting_time = timezone.now().time()
+        meeting.meeting_date = timezone.now().date() - datetime.timedelta(days=1)
+        meeting.save()
+
+        study_group = StudyGroup.objects.get(pk=2)
+        meeting = StudyGroupMeeting()
+        meeting.study_group = study_group
+        meeting.meeting_time = timezone.now().time()
+        meeting.meeting_date = timezone.now().date() - datetime.timedelta(days=1)
+        meeting.save()
+
+        send_weekly_update()
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to[0], 'organ@team.com')
+
+        

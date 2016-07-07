@@ -510,7 +510,13 @@ def weekly_report(request, year=None, month=None, day=None ):
         'start_time': start_time,
         'end_time': end_time,
     }
-    context.update(report_data(start_time, end_time))
+    # get team for current user
+    team = None
+    membership = TeamMembership.objects.filter(user=request.user, role=TeamMembership.ORGANIZER).first()
+    if membership:
+        team = membership.team
+
+    context.update(report_data(start_time, end_time, team))
     return render_to_response('studygroups/weekly-update.html', context, context_instance=RequestContext(request))
 
 

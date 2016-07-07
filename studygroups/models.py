@@ -487,22 +487,36 @@ def create_rsvp(contact, study_group, meeting_datetime, attending):
     return rsvp
 
 
-def report_data(start_time, end_time):
+def report_data(start_time, end_time, team):
+
+    meetings = StudyGroupMeeting.objects.active()\
+            .filter(meeting_date__gte=start_time, meeting_date__lt=end_time)
+    new_study_groups = StudyGroup.objects.active()\
+            .filter(created_at__gte=start_time, created_at__lt=end_time)
+    new_facilitators = User.objects.filter(date_joined__gte=start_time, date_joined__lt=end_time)
+    logins = User.objects.filter(last_login__gte=start_time, last_login__lt=end_time)
+    signups = Application.objects.active().filter(created_at__gte=start_time, created_at__lt=end_time)
+
+    if team:
+        members = team.teammembership_set.all().values('user')
+        meetings = meetings.filter(study_group__facilitator__in=members)
+        new_study_groups = new_study_groups.filter(facilitator__in=members)
+        logins = logins.filter(pk__in=members)
+        signups = signups.filter(study_group__facilitator__in=members)
+
     report = {
-        #TODO update meetings query
-        'meetings': StudyGroupMeeting.objects.active().filter(meeting_date__gte=start_time, meeting_date__lt=end_time),
-        'study_groups': StudyGroup.objects.active().filter(created_at__gte=start_time, created_at__lt=end_time),
-        'facilitators': User.objects.filter(date_joined__gte=start_time, date_joined__lt=end_time),
-        'logins': User.objects.filter(last_login__gte=start_time, last_login__lt=end_time),
-        'signups': Application.objects.active().filter(created_at__gte=start_time, created_at__lt=end_time),
+        'meetings': meetings,
+        'study_groups': new_study_groups,
+        'facilitators': new_facilitators,
+        'logins': logins,
+        'signups': signups
     }
     return report
 
 
 def send_weekly_update():
-    # TODO
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    start_time = today - datetime.timedelta(days=today.weekday()+7)
+    start_time = today - datetime.timedelta(days=today.weekday()+7) #start of previous week
     end_time = start_time + datetime.timedelta(days=7)
     context = {
         'start_time': start_time,
@@ -510,22 +524,28 @@ def send_weekly_update():
         'protocol': 'https',
         'domain': settings.DOMAIN,
     }
-    context.update(report_data(start_time, end_time))
-    timezone.activate(pytz.timezone(settings.TIME_ZONE))
-    translation.activate(settings.LANGUAGE_CODE)
-    html_body = render_to_string('studygroups/weekly-update.html', context)
-    text_body = render_to_string('studygroups/weekly-update.txt', context)
-    timezone.deactivate()
-    to = [o.user.email for o in Organizer.objects.all()]
+
+    for team in Team.objects.all():
+        report_context = report_data(start_time, end_time, team)
+        report_context.update(context)
+        timezone.activate(pytz.timezone(settings.TIME_ZONE)) #TODO not sure what this influences anymore?
+        translation.activate(settings.LANGUAGE_CODE)
+        html_body = render_to_string('studygroups/weekly-update.html', report_context)
+        text_body = render_to_string('studygroups/weekly-update.txt', report_context)
+        timezone.deactivate()
  
-    update = EmailMultiAlternatives(
-        _('Weekly Learning Circles update'),
-        text_body,
-        settings.SERVER_EMAIL,
-        to
-    )
-    update.attach_alternative(html_body, 'text/html')
-    update.send()
+        to = [o.user.email for o in team.teammembership_set.filter(role=TeamMembership.ORGANIZER)]
+        # TODO, extract this to make delegating to celery in the future easier
+        update = EmailMultiAlternatives(
+            _('Weekly Learning Circles update'),
+            text_body,
+            settings.SERVER_EMAIL,
+            to
+        )
+        update.attach_alternative(html_body, 'text/html')
+        update.send()
+
+    #TODO send weekly staff update
 
 
 def send_new_facilitator_email(facilitator):
