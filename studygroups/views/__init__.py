@@ -5,7 +5,6 @@ from django.shortcuts import render, render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.core.urlresolvers import reverse, reverse_lazy
-from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMultiAlternatives, send_mail
@@ -34,6 +33,7 @@ from studygroups.models import create_rsvp
 from studygroups.models import report_data
 from studygroups.models import generate_all_meetings
 from studygroups.models import get_team_users
+from studygroups.models import get_study_group_organizers
 from studygroups.forms import ApplicationForm, MessageForm, StudyGroupForm
 from studygroups.forms import StudyGroupMeetingForm
 from studygroups.forms import FeedbackForm
@@ -333,8 +333,13 @@ class FeedbackCreate(CreateView):
         }
 
     def form_valid(self, form):
-        # TODO this should be removed - we're not using django permissions for organizers any more!
-        to = [o.email for o in Group.objects.get(name='organizers').user_set.all()]
+        # send notification to organizers about feedback 
+        to = [] #TODO should we send this to someone if the facilitators is not part of a team? - for now, don't worry, this notification is likely to be removed.
+        meeting = get_object_or_404(StudyGroupMeeting, pk=self.kwargs.get('study_group_meeting_id'))
+        organizers = get_study_group_organizers(meeting.study_group)
+        if organizers:
+            to = [o.email for o in organizers]
+
         context = {
             'feedback': form.save(commit=False),
             'study_group_meeting': self.get_initial()['study_group_meeting']

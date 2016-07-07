@@ -15,6 +15,7 @@ from studygroups.models import Organizer
 from studygroups.models import Rsvp
 from studygroups.models import Team
 from studygroups.models import TeamMembership
+from studygroups.models import Feedback
 from studygroups.rsvp import gen_rsvp_querystring
 
 import datetime
@@ -518,5 +519,53 @@ class TestSignupViews(TestCase):
         self.assertEquals(resp.status_code, 200)
 
         # make sure only the relevant study groups are returned
+        self.assertEquals(len(resp.context['study_groups']), 2)
         self.assertIn(StudyGroup.objects.get(pk=1), resp.context['study_groups'])
         self.assertIn(StudyGroup.objects.get(pk=2), resp.context['study_groups'])
+
+
+    def test_organizer_dash_for_staff(self):
+        c = Client()
+        c.login(username='admin', password='password')
+        resp = c.get('/en/organize/')
+        self.assertEquals(resp.status_code, 200)
+
+        # make sure all study groups are returned
+        self.assertEquals(StudyGroup.objects.active().count(), len(resp.context['study_groups']))
+
+
+    def test_feedback_submit(self):
+        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', '1234')
+        faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', '1234')
+        StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
+        
+        # create team
+        team = Team.objects.create(name='test team')
+        TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
+        TeamMembership.objects.create(team=team, user=faci1, role=TeamMembership.MEMBER)
+
+
+        c = Client()
+        c.login(username='faci1@team.com', password='1234')
+        study_group = StudyGroup.objects.get(pk=1)
+        meeting = StudyGroupMeeting()
+        meeting.study_group = study_group
+        meeting.meeting_time = timezone.now().time()
+        meeting.meeting_date = timezone.now().date() - datetime.timedelta(days=1)
+        meeting.save()
+
+        feedback_data = {
+            'study_group_meeting': '{0}'.format(meeting.id),
+            'feedback': 'Test some feedback',
+            'reflection': 'Please help me',
+            'attendance': '9',
+            'rating': '5',
+        }
+        feedback_url = '/en/studygroup/1/meeting/{0}/feedback/create/'.format(meeting.id)
+        self.assertEqual(len(mail.outbox), 0)
+        resp = c.post(feedback_url, feedback_data)
+        self.assertEquals(resp.status_code, 302)
+        # make sure email was sent to organizers
+        self.assertEquals(len(mail.outbox), 1)
+        self.assertEquals(Feedback.objects.filter(study_group_meeting=meeting).count(), 1)
+        
