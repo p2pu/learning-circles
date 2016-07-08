@@ -487,7 +487,7 @@ def create_rsvp(contact, study_group, meeting_datetime, attending):
     return rsvp
 
 
-def report_data(start_time, end_time, team):
+def report_data(start_time, end_time, team=None):
 
     meetings = StudyGroupMeeting.objects.active()\
             .filter(meeting_date__gte=start_time, meeting_date__lt=end_time)
@@ -545,7 +545,24 @@ def send_weekly_update():
         update.attach_alternative(html_body, 'text/html')
         update.send()
 
-    #TODO send weekly staff update
+    # send weekly update to staff
+    report_context = report_data(start_time, end_time)
+    report_context.update(context)
+    timezone.activate(pytz.timezone(settings.TIME_ZONE)) 
+    translation.activate(settings.LANGUAGE_CODE)
+    html_body = render_to_string('studygroups/weekly-update.html', report_context)
+    text_body = render_to_string('studygroups/weekly-update.txt', report_context)
+    timezone.deactivate()
+ 
+    to = [o.email for o in User.objects.filter(is_staff=True)]
+    update = EmailMultiAlternatives(
+        _('Weekly Learning Circles update'),
+        text_body,
+        settings.SERVER_EMAIL,
+        to
+    )
+    update.attach_alternative(html_body, 'text/html')
+    update.send()
 
 
 def send_new_facilitator_email(facilitator):

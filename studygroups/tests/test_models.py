@@ -55,6 +55,8 @@ class TestSignupModels(TestCase):
 
     def setUp(self):
         user = User.objects.create_user('admin', 'admin@test.com', 'password')
+        user.is_staff = True
+        user.save()
 
 
     def test_accept_application(self):
@@ -367,7 +369,8 @@ class TestSignupModels(TestCase):
 
         send_weekly_update()
 
-        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(len(mail.outbox), 2)
         self.assertEqual(mail.outbox[0].to[0], 'organ@team.com')
+        self.assertEqual(mail.outbox[1].to[0], 'admin@test.com')
 
         
