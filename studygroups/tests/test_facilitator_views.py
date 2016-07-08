@@ -110,6 +110,31 @@ class TestFacilitatorViews(TestCase):
         assertStatus('/en/studygroup/1/meeting/2/feedback/create/', 404)
 
 
+    def test_create_study_group(self):
+        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
+        c = Client()
+        c.login(username='bob123', password='password')
+        study_group_data = {
+            'course': '1',
+            'venue_name': 'My house',
+            'venue_details': 'Garrage at my house',
+            'venue_address': 'Rosemary Street 6',
+            'city': 'Johannesburg',
+            'start_date': '07/25/2016',
+            'weeks': '6',
+            'meeting_time': '07:00 PM',
+            'duration': '90',
+            'timezone': 'Africa/Johannesburg',
+            'venue_website': 'http://venue.com'
+            #'image':
+        }
+        resp = c.post('/en/facilitator/study_group/create/', study_group_data)
+        self.assertRedirects(resp, '/en/facilitator/')
+        study_groups = StudyGroup.objects.filter(facilitator=user)
+        self.assertEquals(study_groups.count(), 1)
+        self.assertEquals(study_groups.first().studygroupmeeting_set.count(), 6)
+
+
     @patch('studygroups.models.send_message')
     def test_send_email(self, send_message):
         # Test sending a message
