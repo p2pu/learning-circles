@@ -68,6 +68,7 @@ class FacilitatorStudyGroupCreate(CreateView):
 
     def get_form(self, form_class=None):
         form = super(FacilitatorStudyGroupCreate, self).get_form(form_class)
+        # TODO - filter courses for facilitators that are part of a team (probably move the logic to models)
         form.fields["course"].queryset = Course.objects.filter(Q(created_by=self.request.user) | Q(created_by__isnull=True)).order_by('title')
         return form
 
@@ -86,13 +87,11 @@ class FacilitatorStudyGroupCreate(CreateView):
         text_body = render_to_string('studygroups/learning_circle_created.txt', context)
         html_body = render_to_string('studygroups/learning_circle_created.html', context)
 
-        bcc = [ a[1] for a in settings.ADMINS ]
         notification = EmailMultiAlternatives(
             subject,
             text_body,
             settings.DEFAULT_FROM_EMAIL,
-            [study_group.facilitator.email],
-            bcc
+            [study_group.facilitator.email]
         )
         notification.attach_alternative(html_body, 'text/html')
         notification.send()
