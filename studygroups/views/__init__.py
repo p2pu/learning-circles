@@ -100,9 +100,10 @@ def city(request, city_name):
 
 
 def studygroups(request):
+    #TODO only accept GET requests 
     study_groups = StudyGroup.objects.active()
-    if 'course_id' in request.REQUEST:
-        study_groups = study_groups.filter(course_id=request.REQUEST.get('course_id'))
+    if 'course_id' in request.GET:
+        study_groups = study_groups.filter(course_id=request.GET.get('course_id'))
     
     def to_json(sg):
         data = {
