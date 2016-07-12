@@ -245,8 +245,9 @@ def message_edit(request, study_group_id, message_id):
         if form.is_valid():
             reminder = form.save()
             messages.success(request, 'Message successfully edited')
-            # TODO - redirect
-            url = reverse('studygroups_facilitator')
+            url = reverse('studygroups_view_study_group', args=(study_group_id,))
+            if study_group.facilitator == request.user:
+                url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
     else:
         form = MessageForm(instance=reminder)
@@ -280,8 +281,9 @@ def add_member(request, study_group_id):
             # TODO - remove accepted_at or use accepting applications flow
             application.accepted_at = timezone.now()
             application.save()
-            # TODO - redirect
-            url = reverse('studygroups_facilitator')
+            url = reverse('studygroups_view_study_group', args=(study_group_id,))
+            if study_group.facilitator == request.user:
+                url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
     else:
         form = ApplicationForm(initial={'study_group': study_group})
