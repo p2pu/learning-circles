@@ -74,10 +74,19 @@ def view_study_group(request, study_group_id):
     return render_to_response('studygroups/view_study_group.html', context, context_instance=RequestContext(request))
 
 
-class MeetingCreate(CreateView):
+class FacilitatorRedirectMixin(object):
+    """ Redirect facilitators back to their dashboard & organizers to the study group page """
+
+    def get_success_url(self, *args, **kwargs):
+        study_group = get_object_or_404(StudyGroup, pk=self.kwargs.get('study_group_id'))
+        if study_group.facilitator == self.request.user:
+            return reverse_lazy('studygroups_facilitator')
+        return reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
+
+
+class MeetingCreate(FacilitatorRedirectMixin, CreateView):
     model = StudyGroupMeeting
     form_class = StudyGroupMeetingForm
-    success_url = reverse_lazy('studygroups_facilitator') #TODO redirect
 
     def get_initial(self):
         study_group = get_object_or_404(StudyGroup, pk=self.kwargs.get('study_group_id'))
@@ -86,25 +95,22 @@ class MeetingCreate(CreateView):
         }
 
 
-class MeetingUpdate(UpdateView):
+class MeetingUpdate(FacilitatorRedirectMixin, UpdateView):
     model = StudyGroupMeeting
     form_class = StudyGroupMeetingForm
-    success_url = reverse_lazy('studygroups_facilitator') #TODO redirect
 
 
-class MeetingDelete(DeleteView):
+class MeetingDelete(FacilitatorRedirectMixin, DeleteView):
     model = StudyGroupMeeting
-    success_url = reverse_lazy('studygroups_facilitator') #TODO redirect
 
 
-class FeedbackDetail(DetailView):
+class FeedbackDetail(FacilitatorRedirectMixin, DetailView):
     model = Feedback
 
 
-class FeedbackCreate(CreateView):
+class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
     model = Feedback
     form_class = FeedbackForm
-    success_url = reverse_lazy('studygroups_facilitator') #TODO redirect
 
     def get_initial(self):
         meeting = get_object_or_404(StudyGroupMeeting, pk=self.kwargs.get('study_group_meeting_id'))
@@ -134,13 +140,14 @@ class FeedbackCreate(CreateView):
         return super(FeedbackCreate, self).form_valid(form)
 
 
-class ApplicationDelete(DeleteView):
+class ApplicationDelete(FacilitatorRedirectMixin, DeleteView):
     model = Application
-    success_url = reverse_lazy('studygroups_facilitator') #TODO redirect
+    success_url = reverse_lazy('studygroups_facilitator')
     template_name = 'studygroups/confirm_delete.html'
 
 
 class CourseCreate(CreateView):
+    """ View used by organizers and facilitators """
     model = Course
     fields = [    
         'title',
@@ -170,23 +177,16 @@ class CourseCreate(CreateView):
 
 
 ## This form is used by facilitators
-class StudyGroupUpdate(UpdateView):
+class StudyGroupUpdate(FacilitatorRedirectMixin, UpdateView):
     model = StudyGroup
     form_class =  modelform_factory(StudyGroup, StudyGroupForm, exclude=['facilitator'])
-    success_url = reverse_lazy('studygroups_facilitator') #TODO redirect
     pk_url_kwarg = 'study_group_id'
 
 
-class StudyGroupDelete(DeleteView):
+class StudyGroupDelete(FacilitatorRedirectMixin, DeleteView):
     model = StudyGroup
     template_name = 'studygroups/confirm_delete.html'
     pk_url_kwarg = 'study_group_id'
-
-    def get_success_url(self):
-        #TODO redirect
-        if Facilitator.objects.filter(user=self.request.user).exists():
-            return reverse_lazy('studygroups_facilitator')
-        return reverse_lazy('studygroups_organize')
 
 
 class StudyGroupToggleSignup(RedirectView, SingleObjectMixin):
@@ -219,7 +219,6 @@ def message_send(request, study_group_id):
             reminder = form.save()
             send_reminder(reminder)
             messages.success(request, 'Email successfully sent')
-
             url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
     else:
@@ -246,6 +245,7 @@ def message_edit(request, study_group_id, message_id):
         if form.is_valid():
             reminder = form.save()
             messages.success(request, 'Message successfully edited')
+            # TODO - redirect
             url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
     else:
@@ -280,7 +280,7 @@ def add_member(request, study_group_id):
             # TODO - remove accepted_at or use accepting applications flow
             application.accepted_at = timezone.now()
             application.save()
-
+            # TODO - redirect
             url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
     else:
@@ -371,34 +371,3 @@ class FacilitatorStudyGroupCreate(CreateView):
 
         messages.success(self.request, _('You created a new Learning Circle! Check your email for next steps.'))
         return http.HttpResponseRedirect(self.success_url)
-
-
-class FacilitatorCreate(CreateView):
-    model = User
-    form_class = FacilitatorForm
-    success_url = reverse_lazy('studygroups_organize')
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.email = self.object.username
-        self.object.save()
-        facilitator = Facilitator(user=self.object)
-        facilitator.save()
-        # TODO - send password reset email to facilitator
-        return http.HttpResponseRedirect(self.get_success_url())
-
-
-class FacilitatorUpdate(UpdateView):
-    model = User
-    form_class = FacilitatorForm
-    success_url = reverse_lazy('studygroups_organize')
-    context_object_name = 'facilitator' # Need this to prevent the SingleObjectMixin from overriding the user context variable used by the auth system
-
-
-class FacilitatorDelete(DeleteView):
-    model = User
-    success_url = reverse_lazy('studygroups_organize')
-    template_name = 'studygroups/confirm_delete.html'
-    context_object_name = 'facilitator' # Need this to prevent the SingleObjectMixin from overriding the user context variable used by the auth system
-
-
