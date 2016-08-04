@@ -17,6 +17,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.views.generic.base import View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic import ListView
 
 from studygroups.models import Course
 from studygroups.models import StudyGroup
@@ -40,21 +41,44 @@ def organize(request):
     two_weeks_ago = today - datetime.timedelta(weeks=2, days=today.weekday())
     two_weeks = today - datetime.timedelta(days=today.weekday()) + datetime.timedelta(weeks=3)
     study_groups = StudyGroup.objects.active()
-    facilitators = Facilitator.objects.all()    
+    facilitators = Facilitator.objects.all()
+    courses = Course.objects.all()
 
     if not request.user.is_staff:
         team_users = get_team_users(request.user)
         study_groups = study_groups.filter(facilitator__in=team_users)
         facilitators = facilitators.filter(user__in=team_users)
+        #TODO - show team courses
+        courses = courses
+
+    active_study_groups = study_groups.filter(
+        id__in=StudyGroupMeeting.objects.active().filter(meeting_date__gte=two_weeks_ago).values('study_group')
+    )
+    meetings = StudyGroupMeeting.objects.active()\
+            .filter(study_group__in=study_groups, meeting_date__gte=two_weeks_ago)\
+            .exclude(meeting_date__gte=two_weeks)
 
     context = {
-        'courses': Course.objects.all(),
+        'courses': courses,
+        'meetings': meetings,
         'study_groups': study_groups,
-        'meetings': StudyGroupMeeting.objects.active().filter(study_group__in=StudyGroup.objects.active(), meeting_date__gte=two_weeks_ago).exclude(meeting_date__gte=two_weeks),
+        'active_study_groups':  active_study_groups,
         'facilitators': facilitators,
         'today': timezone.now(),
     }
     return render_to_response('studygroups/organize.html', context, context_instance=RequestContext(request))
+
+
+class StudyGroupList(ListView):
+    model = StudyGroup
+    paginate_by = 10
+
+    def get_queryset(self):
+        study_groups = StudyGroup.objects.active()
+        if not self.request.user.is_staff:
+            team_users = get_team_users(self.request.user)
+            study_groups = study_groups.filter(facilitator__in=team_users)
+        return study_groups
 
 
 class FacilitatorCreate(CreateView):

@@ -2,7 +2,6 @@ from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 
-from studygroups.views import StudyGroupUpdate
 from studygroups.views import MeetingCreate
 from studygroups.views import MeetingUpdate
 from studygroups.views import MeetingDelete
@@ -14,8 +13,10 @@ from studygroups.views import CourseCreate
 from studygroups.views import CourseUpdate
 from studygroups.views import CourseDelete
 from studygroups.views import StudyGroupCreate
+from studygroups.views import StudyGroupUpdate
 from studygroups.views import StudyGroupDelete
 from studygroups.views import StudyGroupToggleSignup
+from studygroups.views import StudyGroupList
 from studygroups.views import FacilitatorCreate
 from studygroups.views import FacilitatorUpdate
 from studygroups.views import FacilitatorDelete
@@ -82,6 +83,7 @@ urlpatterns = patterns('',
     url(r'^rsvp/success/$', TemplateView.as_view(template_name='studygroups/rsvp_success.html'), name='studygroups_rsvp_success'),
 
     url(r'^organize/$', 'studygroups.views.organize', name='studygroups_organize'),
+    url(r'^organize/studygroups/$', user_is_organizer(StudyGroupList.as_view()), name='studygroups_organizer_studygroup_list'),
 
     url(r'^report/$', 'studygroups.views.report', name='studygroups_report'),
     url(r'^report/weekly/$', 'studygroups.views.weekly_report', name='studygroups_weekly_report'),

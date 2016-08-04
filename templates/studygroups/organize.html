@@ -12,7 +12,7 @@
 
   <div class="row">
     <div class="col-md-12">
-      <h1>Learning Circles</h1>
+      <h1>Active Learning Circles</h1>
       <table class="table table-bordered">
         <thead>
         <tr>
@@ -24,7 +24,7 @@
         </tr>
         </thead>
         <tbody>
-        {% for group in study_groups|dictsort:"start_date" %}
+        {% for group in active_study_groups|dictsort:"start_date" %}
             <tr>
                 <td>
                     {{ group.course }}<br>
@@ -49,13 +49,14 @@
         {% endfor %}
         </tbody>
       </table>
-      <p><a href="{% url 'studygroups_studygroup_create' %}" class="btn btn-primary">Add Learning Circle</a></p>
+      <!--p><a href="{% url 'studygroups_studygroup_create' %}" class="btn btn-primary">Add Learning Circle</a></p-->
+      <p><a href="{% url 'studygroups_organizer_studygroup_list' %}">View old Learning Circles</a></p>
     </div>
   </div>
 
   <div class="row">
     <div class="col-md-12">
-        <h1>Facilitators <small>(20 most recently joined)</small></h1>
+        <h1>Facilitators</h1>
       <table class="table table-bordered">
         <thead>
         <tr>
@@ -82,7 +83,7 @@
     </div>
   </div>
 
-
+  {% if courses %}
   <div class="row">
     <div class="col-md-12">
       <h1>Courses</h1>
@@ -122,6 +123,7 @@
       <p><a href="{% url 'studygroups_course_create' %}" class="btn btn-primary">Add course</a></p>
     </div>
   </div>
+  {% endif %}
 
 </div> <!-- /container -->
 
