@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <a href={% url 'studygroups_organize' %}>back to organizer dashboard</a>
+      <h1>Learning Circles meetings</h1>
+      <table class="table table-bordered">
+        <thead>
+        <tr>
+          <th>Learning Circle</th>
+          <th>Facilitator</th>
+          <th>Meeting time</th>
+          <th>RSVPs</th>
+          <th>Feedback</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for meeting in object_list|dictsort:"meeting_datetime" %}
+          {% include 'studygroups/_meeting_tr.html' %}
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
