@@ -81,6 +81,20 @@ class StudyGroupList(ListView):
         return study_groups
 
 
+class StudyGroupMeetingList(ListView):
+    model  = StudyGroupMeeting
+
+    def get_queryset(self):
+
+        study_groups = StudyGroup.objects.active()
+        if not self.request.user.is_staff:
+            team_users = get_team_users(self.request.user)
+            study_groups = study_groups.filter(facilitator__in=team_users)
+
+        meetings = StudyGroupMeeting.objects.active().filter(study_group__in=study_groups)
+        return meetings
+
+
 class FacilitatorCreate(CreateView):
     model = User
     form_class = FacilitatorForm

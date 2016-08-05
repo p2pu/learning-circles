@@ -17,6 +17,7 @@ from studygroups.views import StudyGroupUpdate
 from studygroups.views import StudyGroupDelete
 from studygroups.views import StudyGroupToggleSignup
 from studygroups.views import StudyGroupList
+from studygroups.views import StudyGroupMeetingList
 from studygroups.views import FacilitatorCreate
 from studygroups.views import FacilitatorUpdate
 from studygroups.views import FacilitatorDelete
@@ -84,6 +85,7 @@ urlpatterns = patterns('',
 
     url(r'^organize/$', 'studygroups.views.organize', name='studygroups_organize'),
     url(r'^organize/studygroups/$', user_is_organizer(StudyGroupList.as_view()), name='studygroups_organizer_studygroup_list'),
+    url(r'^organize/studygroup_meetings/$', user_is_organizer(StudyGroupMeetingList.as_view()), name='studygroups_organizer_studygroup_meetings'),
 
     url(r'^report/$', 'studygroups.views.report', name='studygroups_report'),
     url(r'^report/weekly/$', 'studygroups.views.weekly_report', name='studygroups_weekly_report'),

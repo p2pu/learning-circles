@@ -7,6 +7,7 @@
   <div class="row">
     <div class="col-md-12">
         {% include 'studygroups/organize_meetings.html' %}
+        <a href="{% url 'studygroups_organizer_studygroup_meetings' %}">View all meetings</a>
     </div>
   </div>
 
@@ -50,7 +51,7 @@
         </tbody>
       </table>
       <!--p><a href="{% url 'studygroups_studygroup_create' %}" class="btn btn-primary">Add Learning Circle</a></p-->
-      <p><a href="{% url 'studygroups_organizer_studygroup_list' %}">View old Learning Circles</a></p>
+      <p><a href="{% url 'studygroups_organizer_studygroup_list' %}">View all Learning Circles</a></p>
     </div>
   </div>
 

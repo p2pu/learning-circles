@@ -1,0 +1,23 @@
+{% load humanize %}
+
+<tr>
+    <td>
+        {{meeting.meeting_number|ordinal}} meeting for
+        {{meeting.study_group.course.title}} <br/>
+        at {{meeting.study_group.venue_name}}</td>
+    <td>
+      {{ meeting.study_group.facilitator.first_name }} {{ meeting.study_group.facilitator.last_name }}
+    </td>
+  </td>
+  <td>{{ meeting.meeting_date|date:"D, j M Y" }}, {{ meeting.meeting_time|time:"f A"}} {{meeting.study_group.timezone_display}}</td>
+    <td>{% if meeting.rsvp_set.all.count %}Yes ({{ meeting.rsvps.yes|length }}), No ({{ meeting.rsvps.no|length }}){% endif %}</td>
+    <td>
+      {% if meeting.feedback_set.all.first %}
+        {% with feedback=meeting.feedback_set.all.first %}
+        {{feedback.feedback | truncatewords:10 }}
+        <a href="{% url 'studygroups_feedback_detail' meeting.study_group.id meeting.id feedback.id %}">View feedback</a>
+        {% endwith %}
+      {% endif %}
+    </td>
+</tr>
+
