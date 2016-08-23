@@ -42,7 +42,7 @@ def organize(request):
     two_weeks = today - datetime.timedelta(days=today.weekday()) + datetime.timedelta(weeks=3)
     study_groups = StudyGroup.objects.active()
     facilitators = Facilitator.objects.all()
-    courses = Course.objects.all()
+    courses = []# TODO Course.objects.all()
 
     if not request.user.is_staff:
         team_users = get_team_users(request.user)
@@ -71,7 +71,7 @@ def organize(request):
 
 class StudyGroupList(ListView):
     model = StudyGroup
-    paginate_by = 10
+    paginate_by = 10 # TODO pagination without search is painful
 
     def get_queryset(self):
         study_groups = StudyGroup.objects.active()
