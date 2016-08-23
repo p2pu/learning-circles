@@ -23,8 +23,8 @@
       <div class="alert alert-info" role="alert"><p>Signup is currently closed and your Learning Circle will not be listed on the landing page.</div></p>
       {% endif %}
   </div>
-  <div class="col-md-12 well">
-    <p><strong>Next meeting:</strong> {{ lc.next_meeting.meeting_date|date:"D d M Y" }} at {{ lc.next_meeting.meeting_time|time:"f A" }}</p>
+    <div class="col-md-12 well">
+    <p><strong>Next meeting:</strong>{% if lc.next_meeting %} {{ lc.next_meeting.meeting_date|date:"D d M Y" }} at {{ lc.next_meeting.meeting_time|time:"f A" }}{% else %} No meeting scheduled.{% endif %}</p>
     {% if lc.next_meeting.meeting_activity %}
       <p><strong>Upcoming recipe card:</strong> <a href="{{ lc.next_meeting.meeting_activity.card.url }}" target="_blank">{{ lc.next_meeting.meeting_activity.description }}</a></p>
     {% endif %}
