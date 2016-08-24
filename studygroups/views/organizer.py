@@ -27,6 +27,7 @@ from studygroups.models import StudyGroupMeeting
 from studygroups.models import report_data
 from studygroups.models import generate_all_meetings
 from studygroups.models import get_team_users
+from studygroups.models import get_user_team
 from studygroups.forms import StudyGroupForm
 from studygroups.forms import FacilitatorForm
 from studygroups.decorators import user_is_organizer
@@ -43,8 +44,10 @@ def organize(request):
     study_groups = StudyGroup.objects.active()
     facilitators = Facilitator.objects.all()
     courses = []# TODO Course.objects.all()
+    team = None
 
     if not request.user.is_staff:
+        team = get_user_team(request.user)
         team_users = get_team_users(request.user)
         study_groups = study_groups.filter(facilitator__in=team_users)
         facilitators = facilitators.filter(user__in=team_users)
@@ -59,6 +62,7 @@ def organize(request):
             .exclude(meeting_date__gte=two_weeks)
 
     context = {
+        'team': team,
         'courses': courses,
         'meetings': meetings,
         'study_groups': study_groups,
@@ -123,6 +127,16 @@ class FacilitatorDelete(DeleteView):
     template_name = 'studygroups/confirm_delete.html'
     context_object_name = 'facilitator' # Need this to prevent the SingleObjectMixin from overriding the user context variable used by the auth system
 
+
+class TeamMembershipDelete(DeleteView):
+    model = TeamMembership
+    success_url = reverse_lazy('studygroups_organize')
+    template_name = 'studygroups/confirm_delete_membership.html'
+
+    def get_object(self, queryset=None):
+        if queryset == None:
+            queryset = TeamMembership.objects
+        return queryset.get(user_id=self.kwargs.get('user_id'), team_id=self.kwargs.get('team_id'))
 
 class CourseUpdate(UpdateView):
     model = Course

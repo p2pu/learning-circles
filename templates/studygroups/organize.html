@@ -62,20 +62,20 @@
         <thead>
         <tr>
             <th>Name</th>
-            <!--th></th-->
+            <th></th>
         </tr>
         </thead>
         <tbody>
         {% for facilitator in facilitators %}
             <tr>
                 <td>
-                    
                     <a href="mailto:{{facilitator.user.email}}">{{ facilitator.user.first_name }} {{ facilitator.user.last_name }} &lt;{{ facilitator.user.email }}&gt;</a>
                 </td>
-                <!--td>
-                    <a class="btn btn-primary" href="{% url 'studygroups_facilitator_edit' facilitator.user.id %}">Edit</a>
-                    <a class="btn btn-primary" href="{% url 'studygroups_facilitator_delete' facilitator.user.id %}">Delete</a>
-                </td-->
+                <td>
+                    {% if team %}
+                    <a class="btn btn-primary" href="{% url 'studygroups_teammembership_delete' team.id facilitator.user.id %}">Delete</a>
+                    {% endif %}
+                </td>
             </tr>
         {% endfor %}
         </tbody>

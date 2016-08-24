@@ -150,7 +150,7 @@ class TeamMembership(models.Model):
     role = models.CharField(max_length=256, choices=ROLES)
 
     def __unicode__(self):
-        return self.user.__unicode__()
+        return 'Team membership: {}'.format(self.user.__unicode__())
 
 
 class StudyGroup(LifeTimeTrackingModel):
@@ -617,3 +617,9 @@ def get_team_users(user):
         members = team_membership.first().team.teammembership_set.values('user')
         return User.objects.filter(pk__in=members)
     return []
+
+
+""" Return the team a user belongs to """
+def get_user_team(user):
+    team_membership = TeamMembership.objects.filter(user=user).get()
+    return team_membership.team
