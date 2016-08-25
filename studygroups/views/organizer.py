@@ -75,7 +75,7 @@ def organize(request):
 
 class StudyGroupList(ListView):
     model = StudyGroup
-    paginate_by = 10 # TODO pagination without search is painful
+    # paginate_by = 10 # TODO pagination without search is painful
 
     def get_queryset(self):
         study_groups = StudyGroup.objects.active()

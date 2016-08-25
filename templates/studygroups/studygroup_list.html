@@ -17,7 +17,7 @@
         </tr>
         </thead>
         <tbody>
-        {% for group in object_list|dictsort:"start_date" %}
+        {% for group in object_list|dictsortreversed:"start_date" %}
             <tr>
                 <td>
                     {{ group.course }}<br>
@@ -39,6 +39,7 @@
         {% endfor %}
         </tbody>
       </table>
+      {% if page_obj %}
       <div class="pagination">
         <span class="step-links">
           {% if page_obj.has_previous %}
@@ -54,6 +55,7 @@
           {% endif %}
         </span>
       </div>
+      {% endif %}
     </div>
   </div>
 </div>
