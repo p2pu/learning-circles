@@ -4,6 +4,14 @@
 
 <div class="container">
 
+  {% if team %}
+    <div class="row">
+      <div class="col-md-12">
+          <h1>{{team.name}} team dashboard</h1>
+      </div>
+    </div>
+  {% endif %}
+
   <div class="row">
     <div class="col-md-12">
         {% include 'studygroups/organize_meetings.html' %}
@@ -13,7 +21,7 @@
 
   <div class="row">
     <div class="col-md-12">
-      <h1>Active Learning Circles</h1>
+      <h2>Active Learning Circles</h2>
       <table class="table table-bordered">
         <thead>
         <tr>
@@ -57,7 +65,7 @@
 
   <div class="row">
     <div class="col-md-12">
-        <h1>Facilitators</h1>
+        <h2>Facilitators</h2>
       <table class="table table-bordered">
         <thead>
         <tr>
@@ -87,7 +95,7 @@
   {% if courses %}
   <div class="row">
     <div class="col-md-12">
-      <h1>Courses</h1>
+      <h2>Courses</h2>
       <table class="table table-bordered">
         <thead>
         <tr>
