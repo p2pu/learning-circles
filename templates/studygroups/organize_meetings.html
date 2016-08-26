@@ -1,63 +1,42 @@
 {% load extras %}
 
-<h1>Scheduled meetings</h1>
+<h2>Upcoming meetings</h2>
 
 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 
-    {% regroup meetings|dictsort:"meeting_datetime" by meeting_datetime|first_weekday_date as weekly_meetings %}
-    {% for week in weekly_meetings %}
+  {% regroup meetings|dictsort:"meeting_datetime" by meeting_datetime|first_weekday_date as weekly_meetings %}
+  {% for week in weekly_meetings %}
     <div class="panel panel-default">
-
-        <div class="panel-heading" role="tab" id="heading{{forloop.counter}}">
-            <h4 class="panel-title">
-                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}" aria-expanded="true" aria-controls="collapse{{forloop.counter}}">
-                    Week of {{week.grouper}}
-                </a>
-            </h4>
+ 
+      <div class="panel-heading" role="tab" id="heading{{forloop.counter}}">
+          <h4 class="panel-title">
+              <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}" aria-expanded="true" aria-controls="collapse{{forloop.counter}}">
+                  Week of {{week.grouper}}
+              </a>
+          </h4>
+      </div>
+ 
+      <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{%if week.grouper == today|first_weekday_date %} in{% endif %}" role="tabpanel" aria-labelledby="heading{{forloop.counter}}">
+        <div class="panel-body">
+          <table class="table table-bordered">
+              <thead>
+                  <tr>
+                      <th>Learning Circle</th>
+                      <th>Facilitator</th>
+                      <th>Meeting time</th>
+                      <th>RSVPs</th>
+                      <th>Feedback</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for meeting in week.list|dictsort:"meeting_datetime" %}
+                    {% include 'studygroups/_meeting_tr.html' %}
+                  {% endfor %}
+              </tbody>
+          </table>
         </div>
-
-        <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{%if week.grouper == today|first_weekday_date %} in{% endif %}" role="tabpanel" aria-labelledby="heading{{forloop.counter}}">
-            <div class="panel-body">
-
-
-  <table class="table table-bordered">
-      <thead>
-          <tr>
-              <th>Learning Circle</th>
-              <th>Meeting time</th>
-              <th>RSVPs</th>
-              <th>Feedback</th>
-          </tr>
-      </thead>
-      <tbody>
-
-          {% for meeting in week.list|dictsort:"meeting_datetime" %}
-          <tr>
-              <td>{{meeting.study_group.course.title}} at {{meeting.study_group.venue_name}}</td>
-            </td>
-            <td>{{ meeting.meeting_date|date:"D d M Y" }}, {{ meeting.meeting_time|time:"f A"}} {{meeting.study_group.timezone_display}}</td>
-              <td>{% if meeting.rsvp_set.all.count %}Yes ({{ meeting.rsvps.yes|length }}), No ({{ meeting.rsvps.no|length }}){% endif %}</td>
-              <td>
-                {% if meeting.feedback_set.all.first %}
-                  {% with feedback=meeting.feedback_set.all.first %}
-                  {{feedback.feedback | truncatewords:10 }}
-                  <a href="{% url 'studygroups_feedback_detail' meeting.study_group.id meeting.id feedback.id %}">View feedback</a>
-                  {% endwith %}
-                {% endif %}
-              </td>
-          </tr>
-          {% endfor %}
-      </tbody>
-  </table>
-
-
-
-            </div>
-        </div>
+      </div>
     </div>
-
-    {% endfor %}
-    </tbody>
-  </table>
+  {% endfor %}
 </div>
 

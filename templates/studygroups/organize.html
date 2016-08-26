@@ -4,15 +4,24 @@
 
 <div class="container">
 
+  {% if team %}
+    <div class="row">
+      <div class="col-md-12">
+          <h1>{{team.name}} team dashboard</h1>
+      </div>
+    </div>
+  {% endif %}
+
   <div class="row">
     <div class="col-md-12">
         {% include 'studygroups/organize_meetings.html' %}
+        <a href="{% url 'studygroups_organizer_studygroup_meetings' %}">View all meetings</a>
     </div>
   </div>
 
   <div class="row">
     <div class="col-md-12">
-      <h1>Learning Circles</h1>
+      <h2>Active Learning Circles</h2>
       <table class="table table-bordered">
         <thead>
         <tr>
@@ -24,7 +33,7 @@
         </tr>
         </thead>
         <tbody>
-        {% for group in study_groups|dictsort:"start_date" %}
+        {% for group in active_study_groups|dictsort:"start_date" %}
             <tr>
                 <td>
                     {{ group.course }}<br>
@@ -43,49 +52,49 @@
                 </td>
                 <td>
                     <a class="btn btn-primary" href="{% url 'studygroups_view_study_group' group.pk %}">View</a>
-                    <a class="btn btn-primary" href="{% url 'studygroups_studygroup_delete' group.pk %}">Delete</a>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
       </table>
-      <p><a href="{% url 'studygroups_studygroup_create' %}" class="btn btn-primary">Add Learning Circle</a></p>
+      <!--p><a href="{% url 'studygroups_studygroup_create' %}" class="btn btn-primary">Add Learning Circle</a></p-->
+      <p><a href="{% url 'studygroups_organizer_studygroup_list' %}">View all Learning Circles</a></p>
     </div>
   </div>
 
   <div class="row">
     <div class="col-md-12">
-        <h1>Facilitators <small>(20 most recently joined)</small></h1>
+        <h2>Facilitators</h2>
       <table class="table table-bordered">
         <thead>
         <tr>
             <th>Name</th>
-            <th></th>
+            <!--th></th-->
         </tr>
         </thead>
         <tbody>
         {% for facilitator in facilitators %}
             <tr>
                 <td>
-                    
                     <a href="mailto:{{facilitator.user.email}}">{{ facilitator.user.first_name }} {{ facilitator.user.last_name }} &lt;{{ facilitator.user.email }}&gt;</a>
                 </td>
-                <td>
-                    <a class="btn btn-primary" href="{% url 'studygroups_facilitator_edit' facilitator.user.id %}">Edit</a>
-                    <a class="btn btn-primary" href="{% url 'studygroups_facilitator_delete' facilitator.user.id %}">Delete</a>
-                </td>
+                <!--td>
+                    {% if team %}
+                    <a class="btn btn-primary" href="{% url 'studygroups_teammembership_delete' team.id facilitator.user.id %}">Remove</a>
+                    {% endif %}
+                </td-->
             </tr>
         {% endfor %}
         </tbody>
       </table>
-      <p><a href="{% url 'studygroups_facilitator_create' %}" class="btn btn-primary">Add facilitator</a></p>
+      <!--p><a href="TODO" class="btn btn-primary">Invite facilitator</a></p-->
     </div>
   </div>
 
-
+  {% if courses %}
   <div class="row">
     <div class="col-md-12">
-      <h1>Courses</h1>
+      <h2>Courses</h2>
       <table class="table table-bordered">
         <thead>
         <tr>
@@ -122,6 +131,7 @@
       <p><a href="{% url 'studygroups_course_create' %}" class="btn btn-primary">Add course</a></p>
     </div>
   </div>
+  {% endif %}
 
 </div> <!-- /container -->
 

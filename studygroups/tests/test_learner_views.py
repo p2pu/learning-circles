@@ -12,15 +12,21 @@ from studygroups.models import StudyGroup
 from studygroups.models import StudyGroupMeeting
 from studygroups.models import Application
 from studygroups.models import Organizer
-from studygroups.models import Facilitator
 from studygroups.models import Rsvp
+from studygroups.models import Team
+from studygroups.models import TeamMembership
+from studygroups.models import Feedback
 from studygroups.rsvp import gen_rsvp_querystring
 
 import datetime
 import urllib
 
-# Create your tests here.
-class TestSignupViews(TestCase):
+"""
+Tests for when a learner interacts with the system. IOW:
+    - signups
+    - rsvps
+"""
+class TestLearnerViews(TestCase):
 
     fixtures = ['test_courses.json', 'test_studygroups.json']
 
@@ -46,7 +52,6 @@ class TestSignupViews(TestCase):
         user.is_staff = True
         user.save()
 
-# TODO - test at least every view!
 
     def test_submit_application(self):
         c = Client()
@@ -103,59 +108,6 @@ class TestSignupViews(TestCase):
         resp = c.post(url)
         self.assertRedirects(resp, '/en/')
         self.assertEquals(Application.objects.active().count(), 0)
-
-    
-    @patch('studygroups.models.send_message')
-    def test_send_email(self, send_message):
-        # Test sending a message
-        c = Client()
-        c.login(username='admin', password='password')
-        signup_data = self.APPLICATION_DATA.copy()
-        resp = c.post('/en/signup/foo-bob-1/', signup_data)
-        self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.active().count(), 1)
-        mail.outbox = []
-
-        url = '/en/studygroup/{0}/message/compose/'.format(signup_data['study_group'])
-        email_body = u'Hi there!\n\nThe first study group for GED® Prep Math will meet this Thursday, May 7th, from 6:00 pm - 7:45 pm at Edgewater on the 2nd floor. Feel free to bring a study buddy!\nFor any questions you can contact Emily at emily@p2pu.org.\n\nSee you soon'
-        mail_data = {
-            u'study_group': signup_data['study_group'],
-            u'email_subject': u'GED® Prep Math study group meeting Thursday 7 May 6:00 PM at Edgewater', 
-            u'email_body': email_body, 
-            u'sms_body': 'The first study group for GED® Prep Math will meet next Thursday, May 7th, from 6:00 pm-7:45 pm at Edgewater on the 2nd floor. Feel free to bring a study buddy!'
-        }
-        resp = c.post(url, mail_data)
-        self.assertRedirects(resp, '/en/facilitator/')
-
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject, mail_data['email_subject'])
-        self.assertFalse(send_message.called)
-        self.assertIn('https://example.net/en/optout/', mail.outbox[0].body)
-
-
-    @patch('studygroups.models.send_message')
-    def test_send_sms(self, send_message):
-        c = Client()
-        c.login(username='admin', password='password')
-        signup_data = self.APPLICATION_DATA.copy()
-        signup_data['mobile'] = '123-456-7890'
-        del signup_data['email']
-        resp = c.post('/en/signup/foo-bob-1/', signup_data)
-        self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.active().count(), 1)
-        mail.outbox = []
-
-        url = '/en/studygroup/{0}/message/compose/'.format(signup_data['study_group'])
-        mail_data = {
-            'study_group': signup_data['study_group'],
-            'email_subject': 'test', 
-            'email_body': 'Email body', 
-            'sms_body': 'Sms body'
-        }
-        resp = c.post(url, mail_data)
-        self.assertRedirects(resp, '/en/facilitator/')
-        self.assertEqual(len(mail.outbox), 0)
-        self.assertTrue(send_message.called)
 
 
     def test_receive_sms(self):
@@ -223,87 +175,6 @@ class TestSignupViews(TestCase):
         self.assertTrue(mail.outbox[0].subject.find('098-765-4321') > 0)
         self.assertFalse(mail.outbox[0].subject.find('Test User') > 0)
         self.assertIn('admin@localhost', mail.outbox[0].to)
-
-
-    def test_user_forbidden(self):
-        user = User.objects.create_user('bob', 'bob@example.net', 'password')
-        c = Client()
-        c.login(username='bob', password='password')
-        def assertForbidden(url):
-            resp = c.get(url)
-            self.assertEqual(resp.status_code, 403)
-        assertForbidden('/en/organize/')
-        assertForbidden('/en/report/')
-        assertForbidden('/en/report/weekly/')
-        assertForbidden('/en/studygroup/1/')
-        assertForbidden('/en/studygroup/1/edit/')
-        assertForbidden('/en/studygroup/1/message/compose/')
-        assertForbidden('/en/studygroup/1/message/edit/1/')
-        assertForbidden('/en/studygroup/1/member/add/')
-        assertForbidden('/en/studygroup/1/member/1/delete/')
-        assertForbidden('/en/studygroup/1/meeting/create/')
-        assertForbidden('/en/studygroup/1/meeting/2/edit/')
-        assertForbidden('/en/studygroup/1/meeting/2/delete/')
-        assertForbidden('/en/studygroup/1/meeting/2/feedback/create/')
-
-
-    def test_facilitator_access(self):
-        User.objects.create_user('bob123', 'bob@example.net', 'password')
-        user = User.objects.get(username='bob123')
-        sg = StudyGroup.objects.get(pk=1)
-        sg.facilitator = user
-        sg.save()
-        c = Client()
-        c.login(username='bob123', password='password')
-        def assertAllowed(url):
-            resp = c.get(url)
-            #TODO not sure if it's a good idea to include 404 here!
-            self.assertIn(resp.status_code, [200, 301, 302])
-
-        def assertStatus(url, status):
-            resp = c.get(url)
-            self.assertEquals(resp.status_code, status)
-        assertAllowed('/en/studygroup/1/')
-        assertAllowed('/en/studygroup/1/edit/')
-        assertAllowed('/en/studygroup/1/message/compose/')
-        assertStatus('/en/studygroup/1/message/edit/1/', 404)
-        assertAllowed('/en/studygroup/1/member/add/')
-        assertStatus('/en/studygroup/1/member/2/delete/', 404)
-        assertAllowed('/en/studygroup/1/meeting/create/')
-        assertStatus('/en/studygroup/1/meeting/2/edit/', 404)
-        assertStatus('/en/studygroup/1/meeting/2/delete/', 404)
-        assertStatus('/en/studygroup/1/meeting/2/feedback/create/', 404)
-
-
-    def test_organizer_access(self):
-        User.objects.create_user('bob123', 'bob@example.net', 'password')
-        user = User.objects.get(username='bob123')
-        Organizer.objects.create(user=user)
-        c = Client()
-        c.login(username='bob123', password='password')
-
-        def assertAllowed(url):
-            resp = c.get(url)
-            self.assertIn(resp.status_code, [200, 301, 302])
-
-        def assertStatus(url, status):
-            resp = c.get(url)
-            self.assertEquals(resp.status_code, status)
-
-        assertAllowed('/en/')
-        assertAllowed('/en/organize/')
-        assertAllowed('/en/report/')
-        assertAllowed('/en/report/weekly/')
-        assertAllowed('/en/studygroup/1/')
-        assertAllowed('/en/studygroup/1/edit/')
-        assertAllowed('/en/studygroup/1/message/compose/')
-        assertStatus('/en/studygroup/1/message/edit/1/', 404)
-        assertAllowed('/en/studygroup/1/member/add/')
-        assertStatus('/en/studygroup/1/member/2/delete/', 404)
-        assertAllowed('/en/studygroup/1/meeting/create/')
-        assertStatus('/en/studygroup/1/meeting/2/edit/', 404)
-        assertStatus('/en/studygroup/1/meeting/2/delete/', 404)
-        assertStatus('/en/studygroup/1/meeting/2/feedback/create/', 404)
 
 
     def test_rsvp_view(self):
@@ -378,26 +249,6 @@ class TestSignupViews(TestCase):
         self.assertTrue(Rsvp.objects.first().attending)
 
 
-    def test_organizer_login_redirect(self):
-        User.objects.create_user('bob123', 'bob@example.net', 'password')
-        user = User.objects.get(username='bob123')
-        Organizer.objects.create(user=user)
-        c = Client()
-        c.login(username='bob123', password='password')
-        resp = c.get('/en/login_redirect/')
-        self.assertRedirects(resp, '/en/organize/')
-
-
-    def test_facilitator_login_redirect(self):
-        User.objects.create_user('bob123', 'bob@example.net', 'password')
-        user = User.objects.get(username='bob123')
-        Facilitator.objects.create(user=user)
-        c = Client()
-        c.login(username='bob123', password='password')
-        resp = c.get('/en/login_redirect/')
-        self.assertRedirects(resp, '/en/facilitator/')
-
-
     @patch('studygroups.forms.send_message')
     def test_optout_view(self, send_message):
         c = Client()
@@ -430,5 +281,4 @@ class TestSignupViews(TestCase):
         self.assertEquals(Application.objects.active().count(), 1)
         self.assertEquals(len(mail.outbox), 0)
         self.assertTrue(send_message.called)
-
 

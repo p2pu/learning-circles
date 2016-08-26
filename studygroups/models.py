@@ -9,7 +9,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse #TODO ideally this shouldn't be in the model
 
-import twilio
+from twilio import TwilioRestException
 
 from studygroups.sms import send_message
 from studygroups import rsvp
@@ -25,6 +25,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# TODO - remove this
 STUDY_GROUP_NAMES = [
     "The Riders",
     "The Master Minds of Mars",
@@ -76,15 +77,15 @@ class LifeTimeTrackingModel(models.Model):
 
 
 class Course(models.Model):
-    title = models.CharField(max_length=128, verbose_name='Course title')
-    provider = models.CharField(max_length=256, verbose_name='Course provider', help_text='e.g. Khan Academy, edX, Coursera.')
-    link = models.URLField(verbose_name='Course website', help_text='Paste full URL above.')
+    title = models.CharField(max_length=128, verbose_name=_('Course title'))
+    provider = models.CharField(max_length=256, verbose_name=_('Course provider'), help_text=_('e.g. Khan Academy, edX, Coursera.'))
+    link = models.URLField(verbose_name=_('Course website'), help_text=_('Paste full URL above.'))
     key = models.CharField(max_length=255, default='NOT SET')
-    start_date = models.DateField(verbose_name='Course start date', help_text='If the course is always available (many are), choose today\'s date. Note that this is the start date for the course - not for your specific Learning Circle.')
-    duration = models.IntegerField(verbose_name='Number of weeks', help_text='Check the course website, or approximate.')
-    prerequisite = models.TextField(blank=True, help_text='e.g. high school diploma or equivalent, pre-calculus, HTML/CSS.')
-    time_required = models.IntegerField(verbose_name='Hours per week', help_text='Check the course website, or approximate.')
-    caption = models.TextField(help_text='Short description of the course.')
+    start_date = models.DateField(verbose_name=_('Course start date'), help_text=_('If the course is always available (many are), choose today\'s date. Note that this is the start date for the course - not for your specific Learning Circle.'))
+    duration = models.IntegerField(verbose_name=_('Number of weeks'), help_text=_('Check the course website, or approximate.'))
+    prerequisite = models.TextField(blank=True, help_text=_('e.g. high school diploma or equivalent, pre-calculus, HTML/CSS.'))
+    time_required = models.IntegerField(verbose_name=_('Hours per week'), help_text=_('Check the course website, or approximate.'))
+    caption = models.TextField(help_text=_('Short description of the course.'))
     created_by = models.ForeignKey(User, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -92,13 +93,14 @@ class Course(models.Model):
         return self.title
 
 
+# TODO remove Location
 class Location(models.Model):
-    name = models.CharField(max_length=256, help_text='Common name used to refer to the location.')
-    address = models.CharField(max_length=256, help_text='Street address of the location.')
-    contact_name = models.CharField(max_length=256, help_text='Person that can be contacted at the location.')
-    contact = models.CharField(max_length=256, help_text='Email or phone for the contact person.')
-    link = models.URLField(blank=True, help_text='URL where more info about the location can be seen.')
-    image = models.ImageField(blank=True, help_text='A photo to represent your Learning Circle. It could be a picture of the building, or anything else you\'d like to choose!')
+    name = models.CharField(max_length=256, help_text=_('Common name used to refer to the location.'))
+    address = models.CharField(max_length=256, help_text=_('Street address of the location.'))
+    contact_name = models.CharField(max_length=256, help_text=_('Person that can be contacted at the location.'))
+    contact = models.CharField(max_length=256, help_text=_('Email or phone for the contact person.'))
+    link = models.URLField(blank=True, help_text=_('URL where more info about the location can be seen.'))
+    image = models.ImageField(blank=True, help_text=_('A photo to represent your Learning Circle. It could be a picture of the building, or anything else you\'d like to choose!'))
 
     def __unicode__(self):
         return self.name
@@ -106,13 +108,14 @@ class Location(models.Model):
 
 class Activity(models.Model):
     description = models.CharField(max_length=256)
-    index = models.PositiveIntegerField(help_text='meeting index this activity corresponds to')
+    index = models.PositiveIntegerField(help_text=_('meeting index this activity corresponds to'))
     card = models.FileField()
 
     def __unicode__(self):
         return self.description
 
 
+# TODO remove this - all users are considered facilitators
 class Facilitator(models.Model):
     user = models.OneToOneField(User)
 
@@ -120,6 +123,7 @@ class Facilitator(models.Model):
         return self.user.__unicode__()
 
 
+# TODO remove organizer model - only use Facilitator model + Team Membership
 class Organizer(models.Model):
     user = models.OneToOneField(User)
 
@@ -127,22 +131,44 @@ class Organizer(models.Model):
         return self.user.__unicode__()
 
 
+class Team(models.Model):
+    name = models.CharField(max_length=128)
+
+    def __unicode__(self):
+        return self.name
+
+
+class TeamMembership(models.Model):
+    ORGANIZER = 'ORGANIZER'
+    MEMBER = 'MEMBER'
+    ROLES = (
+        (ORGANIZER, _('Organizer')),
+        (MEMBER, _('Member')),
+    )
+    team = models.ForeignKey('studygroups.Team')
+    user = models.OneToOneField(User)
+    role = models.CharField(max_length=256, choices=ROLES)
+
+    def __unicode__(self):
+        return 'Team membership: {}'.format(self.user.__unicode__())
+
+
 class StudyGroup(LifeTimeTrackingModel):
     name = models.CharField(max_length=128, default=_study_group_name)
-    course = models.ForeignKey('studygroups.Course', help_text='Choose one or add a new course.')
-    venue_name = models.CharField(max_length=256, verbose_name='Common name of venue.', help_text='e.g. Pretoria Library or Bekka\'s house')
-    venue_address = models.CharField(max_length=256, help_text='Like you were mailing a letter. Include country!')
-    venue_details = models.CharField(max_length=128, verbose_name='Meeting spot', help_text='e.g. second floor meeting room or kitchen.')
-    venue_website = models.URLField(blank=True, help_text='Link to any website that has more info about the venue or Circle.')
+    course = models.ForeignKey('studygroups.Course', help_text=_('Choose one or add a new course.'))
+    venue_name = models.CharField(max_length=256, verbose_name=_('Common name of venue.'), help_text=_('e.g. Pretoria Library or Bekka\'s house'))
+    venue_address = models.CharField(max_length=256, help_text=_('Like you were mailing a letter. Include country!'))
+    venue_details = models.CharField(max_length=128, verbose_name=_('Meeting spot'), help_text=_('e.g. second floor meeting room or kitchen.'))
+    venue_website = models.URLField(blank=True, help_text=_('Link to any website that has more info about the venue or Circle.'))
     city = models.CharField(max_length=256)
     facilitator = models.ForeignKey(User)
-    start_date = models.DateField(verbose_name='First meeting date', help_text='Give yourself at least 4 weeks to market, if possible.')
+    start_date = models.DateField(verbose_name=_('First meeting date'), help_text=_('Give yourself at least 4 weeks to market, if possible.'))
     meeting_time = models.TimeField()
     end_date = models.DateField() # TODO consider storing number of weeks/meetings instead of end_date
-    duration = models.IntegerField(verbose_name='Length of each Circle', help_text='We recommend 90 minutes - 2 hours.', default=90) # meeting duration in minutes
+    duration = models.IntegerField(verbose_name=_('Length of each Circle'), help_text=_('We recommend 90 minutes - 2 hours.'), default=90) # meeting duration in minutes
     timezone = models.CharField(max_length=128)
     signup_open = models.BooleanField(default=True)
-    image = models.ImageField(blank=True, help_text='Make your Circle stand out with a picture. It could be related to location, subject matter, or anything else you want to identify your Circle with.')
+    image = models.ImageField(blank=True, help_text=_('Make your Circle stand out with a picture. It could be related to location, subject matter, or anything else you want to identify your Circle with.'))
 
     def day(self):
         return calendar.day_name[self.start_date.weekday()]
@@ -221,7 +247,7 @@ class StudyGroupMeeting(LifeTimeTrackingModel):
         return StudyGroupMeeting.objects.active().filter(meeting_date__lte=self.meeting_date, study_group=self.study_group).count()
 
     def meeting_activity(self):
-        return next((a for a in Activity.objects.filter(index=self.meeting_number)), None)
+        return next((a for a in Activity.objects.filter(index=self.meeting_number())), None)
 
     def meeting_datetime(self):
         tz = pytz.timezone(self.study_group.timezone)
@@ -289,11 +315,11 @@ class Feedback(LifeTimeTrackingModel):
     GREAT = '5'
 
     RATING = [
-        (GREAT, 'Great'),
-        (WELL, 'Pretty well'),
-        (GOOD, 'Good'),
-        (NOT_SO_GOOD, 'Not so great'),
-        (BAD, 'I need some help'),
+        (GREAT, _('Great')),
+        (WELL, _('Pretty well')),
+        (GOOD, _('Good')),
+        (NOT_SO_GOOD, _('Not so great')),
+        (BAD, _('I need some help')),
     ]
 
     study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting') # TODO should this be a OneToOneField?
@@ -325,7 +351,7 @@ def get_all_meeting_times(study_group):
 
 def generate_all_meetings(study_group):
     if StudyGroupMeeting.objects.filter(study_group=study_group).exists():
-        raise Exception('Meetings already exist for this study group')
+        raise Exception(_('Meetings already exist for this study group'))
 
     meeting_date = study_group.start_date
     while meeting_date <= study_group.end_date:
@@ -435,7 +461,7 @@ def send_reminder(reminder):
             #TODO - insert opt out link
             #if reminder.study_group_meeting:
             send_message(to, reminder.sms_body)
-        except twilio.TwilioRestException as e:
+        except TwilioRestException as e:
             logger.exception(u"Could not send text message to %s", to, exc_info=e)
 
     reminder.sent_at = timezone.now()
@@ -461,21 +487,36 @@ def create_rsvp(contact, study_group, meeting_datetime, attending):
     return rsvp
 
 
-def report_data(start_time, end_time):
+def report_data(start_time, end_time, team=None):
+
+    meetings = StudyGroupMeeting.objects.active()\
+            .filter(meeting_date__gte=start_time, meeting_date__lt=end_time)
+    new_study_groups = StudyGroup.objects.active()\
+            .filter(created_at__gte=start_time, created_at__lt=end_time)
+    new_facilitators = User.objects.filter(date_joined__gte=start_time, date_joined__lt=end_time)
+    logins = User.objects.filter(last_login__gte=start_time, last_login__lt=end_time)
+    signups = Application.objects.active().filter(created_at__gte=start_time, created_at__lt=end_time)
+
+    if team:
+        members = team.teammembership_set.all().values('user')
+        meetings = meetings.filter(study_group__facilitator__in=members)
+        new_study_groups = new_study_groups.filter(facilitator__in=members)
+        logins = logins.filter(pk__in=members)
+        signups = signups.filter(study_group__facilitator__in=members)
+
     report = {
-        #TODO update meetings query
-        'meetings': StudyGroupMeeting.objects.active().filter(meeting_date__gte=start_time, meeting_date__lt=end_time),
-        'study_groups': StudyGroup.objects.active().filter(created_at__gte=start_time, created_at__lt=end_time),
-        'facilitators': User.objects.filter(date_joined__gte=start_time, date_joined__lt=end_time),
-        'logins': User.objects.filter(last_login__gte=start_time, last_login__lt=end_time),
-        'signups': Application.objects.active().filter(created_at__gte=start_time, created_at__lt=end_time),
+        'meetings': meetings,
+        'study_groups': new_study_groups,
+        'facilitators': new_facilitators,
+        'logins': logins,
+        'signups': signups
     }
     return report
 
 
 def send_weekly_update():
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    start_time = today - datetime.timedelta(days=today.weekday()+7)
+    start_time = today - datetime.timedelta(days=today.weekday()+7) #start of previous week
     end_time = start_time + datetime.timedelta(days=7)
     context = {
         'start_time': start_time,
@@ -483,16 +524,39 @@ def send_weekly_update():
         'protocol': 'https',
         'domain': settings.DOMAIN,
     }
-    context.update(report_data(start_time, end_time))
-    timezone.activate(pytz.timezone(settings.TIME_ZONE))
-    translation.activate(settings.LANGUAGE_CODE)
-    html_body = render_to_string('studygroups/weekly-update.html', context)
-    text_body = render_to_string('studygroups/weekly-update.txt', context)
-    timezone.deactivate()
-    to = [o.user.email for o in Organizer.objects.all()]
+
+    for team in Team.objects.all():
+        report_context = report_data(start_time, end_time, team)
+        report_context.update(context)
+        timezone.activate(pytz.timezone(settings.TIME_ZONE)) #TODO not sure what this influences anymore?
+        translation.activate(settings.LANGUAGE_CODE)
+        html_body = render_to_string('studygroups/weekly-update.html', report_context)
+        text_body = render_to_string('studygroups/weekly-update.txt', report_context)
+        timezone.deactivate()
  
+        to = [o.user.email for o in team.teammembership_set.filter(role=TeamMembership.ORGANIZER)]
+        # TODO, extract this to make delegating to celery in the future easier
+        update = EmailMultiAlternatives(
+            _('Weekly Learning Circles update'),
+            text_body,
+            settings.SERVER_EMAIL,
+            to
+        )
+        update.attach_alternative(html_body, 'text/html')
+        update.send()
+
+    # send weekly update to staff
+    report_context = report_data(start_time, end_time)
+    report_context.update(context)
+    timezone.activate(pytz.timezone(settings.TIME_ZONE)) 
+    translation.activate(settings.LANGUAGE_CODE)
+    html_body = render_to_string('studygroups/weekly-update.html', report_context)
+    text_body = render_to_string('studygroups/weekly-update.txt', report_context)
+    timezone.deactivate()
+ 
+    to = [o.email for o in User.objects.filter(is_staff=True)]
     update = EmailMultiAlternatives(
-        'Weekly Learning Circles update',
+        _('Weekly Learning Circles update'),
         text_body,
         settings.SERVER_EMAIL,
         to
@@ -535,3 +599,27 @@ def send_new_studygroup_email(studygroup):
     msg = EmailMultiAlternatives(subject, text_body, settings.SERVER_EMAIL, to)
     msg.attach_alternative(html_body, 'text/html')
     msg.send()
+
+
+""" Return the organizers for the study group """
+def get_study_group_organizers(study_group):
+    team_membership = TeamMembership.objects.filter(user=study_group.facilitator)
+    if team_membership.count() == 1:
+        organizers = team_membership.first().team.teammembership_set.filter(role=TeamMembership.ORGANIZER).values('user')
+        return User.objects.filter(pk__in=organizers)
+    return []
+
+
+""" Return the team members for a user """
+def get_team_users(user):
+    team_membership = TeamMembership.objects.filter(user=user)
+    if team_membership.count() == 1:
+        members = team_membership.first().team.teammembership_set.values('user')
+        return User.objects.filter(pk__in=members)
+    return []
+
+
+""" Return the team a user belongs to """
+def get_user_team(user):
+    team_membership = TeamMembership.objects.filter(user=user).get()
+    return team_membership.team

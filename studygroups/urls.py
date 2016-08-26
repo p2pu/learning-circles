@@ -2,7 +2,6 @@ from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 
-from studygroups.views import StudyGroupUpdate
 from studygroups.views import MeetingCreate
 from studygroups.views import MeetingUpdate
 from studygroups.views import MeetingDelete
@@ -10,18 +9,16 @@ from studygroups.views import FeedbackDetail
 from studygroups.views import FeedbackCreate
 from studygroups.views import ApplicationDelete
 from studygroups.views import SignupSuccess
-from studygroups.views import LocationCreate
-from studygroups.views import LocationUpdate
-from studygroups.views import LocationDelete
 from studygroups.views import CourseCreate
 from studygroups.views import CourseUpdate
 from studygroups.views import CourseDelete
 from studygroups.views import StudyGroupCreate
+from studygroups.views import StudyGroupUpdate
 from studygroups.views import StudyGroupDelete
 from studygroups.views import StudyGroupToggleSignup
-from studygroups.views import FacilitatorCreate
-from studygroups.views import FacilitatorUpdate
-from studygroups.views import FacilitatorDelete
+from studygroups.views import StudyGroupList
+from studygroups.views import StudyGroupMeetingList
+from studygroups.views import TeamMembershipDelete
 from studygroups.views import FacilitatorSignup
 from studygroups.views import FacilitatorSignupSuccess
 from studygroups.views import FacilitatorStudyGroupCreate
@@ -66,11 +63,6 @@ urlpatterns = patterns('',
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/(?P<pk>[\d]+)/$', user_is_group_facilitator(FeedbackDetail.as_view()), name='studygroups_feedback_detail'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/create/$', user_is_group_facilitator(FeedbackCreate.as_view()), name='studygroups_feedback'),
 
-    # TODO should remove Location views and model
-    url(r'^location/create/$', user_is_organizer(LocationCreate.as_view()), name='studygroups_location_create'),
-    url(r'^location/(?P<pk>[\d]+)/edit/$', user_is_organizer(LocationUpdate.as_view()), name='studygroups_location_edit'),
-    url(r'^location/(?P<pk>[\d]+)/delete/$', user_is_organizer(LocationDelete.as_view()), name='studygroups_location_delete'),
-
     url(r'^course/create/$', login_required(CourseCreate.as_view()), name='studygroups_course_create'),
     url(r'^course/(?P<pk>[\d]+)/edit/$', user_is_organizer(CourseUpdate.as_view()), name='studygroups_course_edit'),
     url(r'^course/(?P<pk>[\d]+)/delete/$', user_is_organizer(CourseDelete.as_view()), name='studygroups_course_delete'),
@@ -79,9 +71,6 @@ urlpatterns = patterns('',
     url(r'^facilitator/study_group/create/$', login_required(FacilitatorStudyGroupCreate.as_view()), name='studygroups_facilitator_studygroup_create'),
     url(r'^facilitator/signup/$', user_is_not_logged_in(FacilitatorSignup.as_view()), name='studygroups_facilitator_signup'),
     url(r'^facilitator/signup/success/$', FacilitatorSignupSuccess.as_view(), name='studygroups_facilitator_signup_success'),
-    url(r'^facilitator/create/$', user_is_organizer(FacilitatorCreate.as_view()), name='studygroups_facilitator_create'),
-    url(r'^facilitator/(?P<pk>[\d]+)/edit/$', user_is_organizer(FacilitatorUpdate.as_view()), name='studygroups_facilitator_edit'),
-    url(r'^facilitator/(?P<pk>[\d]+)/delete/$', user_is_organizer(FacilitatorDelete.as_view()), name='studygroups_facilitator_delete'),
 
     url(r'^optout/$', OptOutView.as_view(), name='studygroups_optout'),
     url(r'^optout/confirm/$', 'studygroups.views.optout_confirm', name='studygroups_leave'),
@@ -90,6 +79,9 @@ urlpatterns = patterns('',
     url(r'^rsvp/success/$', TemplateView.as_view(template_name='studygroups/rsvp_success.html'), name='studygroups_rsvp_success'),
 
     url(r'^organize/$', 'studygroups.views.organize', name='studygroups_organize'),
+    url(r'^organize/studygroups/$', user_is_organizer(StudyGroupList.as_view()), name='studygroups_organizer_studygroup_list'),
+    url(r'^organize/studygroup_meetings/$', user_is_organizer(StudyGroupMeetingList.as_view()), name='studygroups_organizer_studygroup_meetings'),
+    url(r'^organize/teammembership/(?P<team_id>[\d]+)/(?P<user_id>[\d]+)/delete/$', user_is_organizer(TeamMembershipDelete.as_view()), name='studygroups_teammembership_delete'),
 
     url(r'^report/$', 'studygroups.views.report', name='studygroups_report'),
     url(r'^report/weekly/$', 'studygroups.views.weekly_report', name='studygroups_weekly_report'),

@@ -1,4 +1,5 @@
 {% load static %}
+{% load extras %}
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation" id="home">
 	<div class="container">
 		<!-- Brand and toggle get grouped for better mobile display -->
@@ -25,16 +26,14 @@
           <a href="https://www.p2pu.org/en/facilitate/" target="_blank">Facilitator Guide</a>
         </li>
         {% if user.is_authenticated %}
-        {% if user.organizer %}
+        {% if user|is_organizer %}
         <li>
           <a href="{% url 'studygroups_organize' %}">Organize</a>
         </li>
         {% endif %}
-        {% if user.facilitator %}
         <li>
           <a href="{% url 'studygroups_facilitator' %}">Dashboard</a>
         </li>
-        {% endif %}
         <li><a href="{% url 'logout' %}">Log out</a></li>
         {% else %}
         <li><a href="{% url 'studygroups_login_redirect' %}">Log in</a></li>

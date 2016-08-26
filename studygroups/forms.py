@@ -248,6 +248,6 @@ class FeedbackForm(forms.ModelForm):
         }
         help_texts = {
             'feedback': _('You may want to include your impressions of how it went, plus/delta feedback, and anything the group agreed on having completed before the next meeting. This will be automatically sent to learners two days before next week\'s meeting.'),
-            'reflection': _('You can use this space for reflections, concerns, and anything else you think might help us improve Learning Circles. We won\'t share anything here without contacting you first.'),
+            'reflection': _('You can use this space for reflections, concerns, and anything else you think might help. This will be shared with the P2PU community coordinator and your team organizer if you are part of a team.'),
         }
         widgets = {'study_group_meeting': forms.HiddenInput} 

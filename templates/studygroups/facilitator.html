@@ -21,15 +21,11 @@
   <p>
     <a class="btn btn-primary" href="{% url 'studygroups_facilitator_studygroup_create' %}">Create a Learning Circle</a>
   </p>
-  <!--<p>
-    <a class="btn btn-primary" href="{% url 'studygroups_course_create' %}">Add a new Course</a>
-  </p>-->
 
   {% if past_study_groups %}<h2>Past Learning Circles</h2>{% endif %}
   {% for lc in past_study_groups %}
     {% include 'studygroups/study_group_facilitate.html' %}
   {% endfor %}
-
 
 </div> <!-- /container -->
 
