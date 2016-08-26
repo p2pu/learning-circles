@@ -66,7 +66,9 @@ def facilitator(request):
 
 @user_is_group_facilitator
 def view_study_group(request, study_group_id):
+    # TODO - redirect user if the study group has been deleted
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+
     context = {
         'study_group': study_group,
         'today': timezone.now()
@@ -184,6 +186,7 @@ class StudyGroupUpdate(FacilitatorRedirectMixin, UpdateView):
 
 
 class StudyGroupDelete(FacilitatorRedirectMixin, DeleteView):
+    # TODO Need to fix back link for confirmation page 
     model = StudyGroup
     template_name = 'studygroups/confirm_delete.html'
     pk_url_kwarg = 'study_group_id'

@@ -10,7 +10,7 @@
         <p>Are you sure you want to delete "{{ object }}"?</p>
         <p><input class="btn btn-primary" type="submit" value="Confirm" /></p>
       </form>
-      {% if user.facilitator %}
+      {% if user.facilitator %} {% comment %} TODO - this doesn't work anymore! {% endcomment %}
       <p><a href="{% url 'studygroups_facilitator' %}">Back to dashboard</a></p>
       {% else %}
       <p><a href="{% url 'studygroups_organize' %}">Back to dashboard</a></p>

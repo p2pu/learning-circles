@@ -35,15 +35,12 @@ from studygroups.decorators import user_is_organizer
 
 @user_is_organizer
 def organize(request):
-    # TODO 
-    # - Only show learning circles with meetings in the future
-    # - Only show meetings for current week 
     today = datetime.datetime.now().date()
     two_weeks_ago = today - datetime.timedelta(weeks=2, days=today.weekday())
     two_weeks = today - datetime.timedelta(days=today.weekday()) + datetime.timedelta(weeks=3)
     study_groups = StudyGroup.objects.active()
     facilitators = Facilitator.objects.all()
-    courses = []# TODO Course.objects.all()
+    courses = []# TODO Remove courses until we implement course selection for teams
     team = None
 
     if not request.user.is_staff:
@@ -51,15 +48,13 @@ def organize(request):
         team_users = get_team_users(request.user)
         study_groups = study_groups.filter(facilitator__in=team_users)
         facilitators = facilitators.filter(user__in=team_users)
-        #TODO - show team courses
-        courses = courses
-
+    
     active_study_groups = study_groups.filter(
         id__in=StudyGroupMeeting.objects.active().filter(meeting_date__gte=two_weeks_ago).values('study_group')
     )
     meetings = StudyGroupMeeting.objects.active()\
-            .filter(study_group__in=study_groups, meeting_date__gte=two_weeks_ago)\
-            .exclude(meeting_date__gte=two_weeks)
+        .filter(study_group__in=study_groups, meeting_date__gte=two_weeks_ago)\
+        .exclude(meeting_date__gte=two_weeks)
 
     context = {
         'team': team,
@@ -75,7 +70,6 @@ def organize(request):
 
 class StudyGroupList(ListView):
     model = StudyGroup
-    # paginate_by = 10 # TODO pagination without search is painful
 
     def get_queryset(self):
         study_groups = StudyGroup.objects.active()
@@ -89,7 +83,6 @@ class StudyGroupMeetingList(ListView):
     model  = StudyGroupMeeting
 
     def get_queryset(self):
-
         study_groups = StudyGroup.objects.active()
         if not self.request.user.is_staff:
             team_users = get_team_users(self.request.user)
@@ -97,35 +90,6 @@ class StudyGroupMeetingList(ListView):
 
         meetings = StudyGroupMeeting.objects.active().filter(study_group__in=study_groups)
         return meetings
-
-
-class FacilitatorCreate(CreateView):
-    model = User
-    form_class = FacilitatorForm
-    success_url = reverse_lazy('studygroups_organize')
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.email = self.object.username
-        self.object.save()
-        facilitator = Facilitator(user=self.object)
-        facilitator.save()
-        # TODO - send password reset email to facilitator
-        return http.HttpResponseRedirect(self.get_success_url())
-
-
-class FacilitatorUpdate(UpdateView):
-    model = User
-    form_class = FacilitatorForm
-    success_url = reverse_lazy('studygroups_organize')
-    context_object_name = 'facilitator' # Need this to prevent the SingleObjectMixin from overriding the user context variable used by the auth system
-
-
-class FacilitatorDelete(DeleteView):
-    model = User
-    success_url = reverse_lazy('studygroups_organize')
-    template_name = 'studygroups/confirm_delete.html'
-    context_object_name = 'facilitator' # Need this to prevent the SingleObjectMixin from overriding the user context variable used by the auth system
 
 
 class TeamMembershipDelete(DeleteView):
@@ -137,6 +101,7 @@ class TeamMembershipDelete(DeleteView):
         if queryset == None:
             queryset = TeamMembership.objects
         return queryset.get(user_id=self.kwargs.get('user_id'), team_id=self.kwargs.get('team_id'))
+
 
 class CourseUpdate(UpdateView):
     model = Course
