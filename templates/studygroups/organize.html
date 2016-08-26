@@ -70,7 +70,7 @@
         <thead>
         <tr>
             <th>Name</th>
-            <th></th>
+            <!--th></th-->
         </tr>
         </thead>
         <tbody>
@@ -79,11 +79,11 @@
                 <td>
                     <a href="mailto:{{facilitator.user.email}}">{{ facilitator.user.first_name }} {{ facilitator.user.last_name }} &lt;{{ facilitator.user.email }}&gt;</a>
                 </td>
-                <td>
+                <!--td>
                     {% if team %}
-                    <a class="btn btn-primary" href="{% url 'studygroups_teammembership_delete' team.id facilitator.user.id %}">Delete</a>
+                    <a class="btn btn-primary" href="{% url 'studygroups_teammembership_delete' team.id facilitator.user.id %}">Remove</a>
                     {% endif %}
-                </td>
+                </td-->
             </tr>
         {% endfor %}
         </tbody>
