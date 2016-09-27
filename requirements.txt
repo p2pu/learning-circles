@@ -1,3 +1,4 @@
+Babel==2.3.4
 Django==1.9.7
 Pillow==2.8.1
 amqp==1.4.6
@@ -13,7 +14,7 @@ dj-database-url==0.3.0
 dj-static==0.0.6
 django-appconf==1.0.1
 django-crispy-forms==1.5.1
-django-localflavor==1.1
+django-phonenumber-field==1.1.0
 django-s3direct==0.3.10
 django-toolbelt==0.0.1
 docutils==0.12
@@ -24,6 +25,7 @@ httplib2==0.9.1
 jmespath==0.9.0
 kombu==3.0.26
 mock==1.0.1
+phonenumberslite==7.7.0
 psycopg2==2.6
 python-dateutil==2.4.2
 pytz==2015.2

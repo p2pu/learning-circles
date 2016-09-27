@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives, send_mail
 
-from localflavor.us.forms import USPhoneNumberField
+from phonenumber_field.formfields import PhoneNumberField
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Fieldset, HTML
@@ -39,7 +39,8 @@ class ApplicationForm(forms.ModelForm):
         ('', _('Select one of the following')),
     ) + Application.DIGITAL_LITERACY_CHOICES
 
-    mobile = USPhoneNumberField(required=False, label=_('Phone Number for SMS'), help_text=_('if no email available (currently US numbers only)'))
+    mobile = PhoneNumberField(required=False, label=_('Phone Number for SMS'), help_text=_('if no email available'))
+
     computer_access = forms.ChoiceField(
         choices=COMPUTER_ACCESS,
         label=_('Can you bring a laptop and headphones to the Learning Circle each week?')
@@ -84,7 +85,7 @@ class ApplicationForm(forms.ModelForm):
         contact_method = cleaned_data.get("contact_method")
 
         if not cleaned_data.get('mobile') and not cleaned_data.get('email'):
-            self.add_error('email', _('Please provide your email address or a US mobile number to sign up.'))
+            self.add_error('email', _('Please provide your email address or a mobile number to sign up.'))
 
     class Meta:
         model = Application
@@ -94,7 +95,7 @@ class ApplicationForm(forms.ModelForm):
 
 class OptOutForm(forms.Form):
     email = forms.EmailField(help_text=_('Email address used to sign up.'), required=False)
-    mobile = USPhoneNumberField(required=False, label=_('Phone Number for SMS'), help_text=_('Phone number used to sign up.'))
+    mobile = PhoneNumberField(required=False, label=_('Phone Number for SMS'), help_text=_('Phone number used to sign up.'))
 
     def clean(self):
         cleaned_data = super(OptOutForm, self).clean()

@@ -41,7 +41,7 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     # 3rd party apps
     'crispy_forms',
-    'localflavor',
+    'phonenumber_field',
     # own 
     'studygroups',
     'interest',
