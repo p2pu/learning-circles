@@ -2,7 +2,7 @@ Learning circles are study groups that meet weekly to work through an online cou
 
 This application is intended to help learners and facilitators to run learning circles. It also offers an overview of all learning circles.
 
-[![](https://travis-ci.org/p2pu/knight-app.svg)](https://travis-ci.org/p2pu/knight-app)
+[![Build Status](https://travis-ci.org/p2pu/learning-circles.svg?branch=master)](https://travis-ci.org/p2pu/learning-circles)
 
 Learners can
 
