@@ -33,6 +33,7 @@ class TestFacilitatorViews(TestCase):
         'study_group': '1',
         'name': 'Test User',
         'email': 'test@mail.com',
+        'mobile': '',
         'goals': 'try hard',
         'support': 'thinking how to?',
         'computer_access': 'Both', 
@@ -168,7 +169,7 @@ class TestFacilitatorViews(TestCase):
         c = Client()
         c.login(username='admin', password='password')
         signup_data = self.APPLICATION_DATA.copy()
-        signup_data['mobile'] = '123-456-7890'
+        signup_data['mobile'] = '+12812345678'
         del signup_data['email']
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
         self.assertRedirects(resp, '/en/signup/1/success/')

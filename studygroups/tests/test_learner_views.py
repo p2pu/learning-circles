@@ -34,6 +34,7 @@ class TestLearnerViews(TestCase):
         'study_group': '1',
         'name': 'Test User',
         'email': 'test@mail.com',
+        'mobile': '',
         'goals': 'try hard',
         'support': 'thinking how to?',
         'computer_access': 'Both', 
@@ -81,7 +82,7 @@ class TestLearnerViews(TestCase):
 
         data = self.APPLICATION_DATA.copy()
         del data['email']
-        data['mobile'] = '123-456-7890'
+        data['mobile'] = '+12812347890'
         resp = c.post('/en/signup/foo-bob-1/', data)
         self.assertRedirects(resp, '/en/signup/1/success/')
         self.assertEquals(Application.objects.active().count(), 3)
@@ -89,7 +90,7 @@ class TestLearnerViews(TestCase):
         self.assertRedirects(resp, '/en/signup/1/success/')
         self.assertEquals(Application.objects.active().count(), 3)
         data = self.APPLICATION_DATA.copy()
-        data['mobile'] = '123-456-7890'
+        data['mobile'] = '+12812347890'
         resp = c.post('/en/signup/foo-bob-1/', data)
         self.assertRedirects(resp, '/en/signup/1/success/')
         self.assertEquals(Application.objects.active().count(), 3)
@@ -113,7 +114,7 @@ class TestLearnerViews(TestCase):
     def test_receive_sms(self):
         # Test receiving a message
         signup_data = self.APPLICATION_DATA.copy()
-        signup_data['mobile'] = '123-456-7890'
+        signup_data['mobile'] = '+12812347890'
         del signup_data['email']
         c = Client()
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
@@ -124,7 +125,7 @@ class TestLearnerViews(TestCase):
         url = '/en/receive_sms/'
         sms_data = {
             u'Body': 'The first study group for GED® Prep Math will meet next Thursday, May 7th, from 6:00 pm-7:45 pm at Edgewater on the 2nd floor. Feel free to bring a study buddy!',
-            u'From': '+11234567890'
+            u'From': '+12812347890'
         }
         resp = c.post(url, sms_data)
         self.assertEqual(len(mail.outbox), 1)
@@ -136,7 +137,7 @@ class TestLearnerViews(TestCase):
 
     def test_receive_sms_rsvp(self):
         signup_data = self.APPLICATION_DATA.copy()
-        signup_data['mobile'] = '123-456-7890'
+        signup_data['mobile'] = '+12812347890'
         c = Client()
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
         self.assertRedirects(resp, '/en/signup/1/success/')
@@ -152,15 +153,15 @@ class TestLearnerViews(TestCase):
         url = '/en/receive_sms/'
         sms_data = {
             u'Body': 'Sorry, I won\'t make it, have family responsibilities this week :(',
-            u'From': '+11234567890'
+            u'From': '+12812347890'
         }
         resp = c.post(url, sms_data)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertTrue(mail.outbox[0].subject.find('123-456-7890') > 0)
+        self.assertTrue(mail.outbox[0].subject.find('+12812347890') > 0)
         self.assertTrue(mail.outbox[0].subject.find('Test User') > 0)
         self.assertIn(StudyGroup.objects.get(pk=1).facilitator.email, mail.outbox[0].to)
-        self.assertIn('https://example.net/{0}/rsvp/?user=123-456-7890&study_group=1&meeting_date={1}&attending=yes&sig='.format(get_language(), urllib.quote(next_meeting.meeting_datetime().isoformat())), mail.outbox[0].body)
-        self.assertIn('https://example.net/{0}/rsvp/?user=123-456-7890&study_group=1&meeting_date={1}&attending=no&sig='.format(get_language(), urllib.quote(next_meeting.meeting_datetime().isoformat())), mail.outbox[0].body)
+        self.assertIn('https://example.net/{0}/rsvp/?user=%2B12812347890&study_group=1&meeting_date={1}&attending=yes&sig='.format(get_language(), urllib.quote(next_meeting.meeting_datetime().isoformat())), mail.outbox[0].body)
+        self.assertIn('https://example.net/{0}/rsvp/?user=%2B12812347890&study_group=1&meeting_date={1}&attending=no&sig='.format(get_language(), urllib.quote(next_meeting.meeting_datetime().isoformat())), mail.outbox[0].body)
 
 
     def test_receive_random_sms(self):
@@ -168,11 +169,11 @@ class TestLearnerViews(TestCase):
         url = '/en/receive_sms/'
         sms_data = {
             u'Body': 'Sorry, I won\'t make it, have family responsibilities this week :(',
-            u'From': '+10987654321'
+            u'From': '+12812344321'
         }
         resp = c.post(url, sms_data)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertTrue(mail.outbox[0].subject.find('098-765-4321') > 0)
+        self.assertTrue(mail.outbox[0].subject.find('+12812344321') > 0)
         self.assertFalse(mail.outbox[0].subject.find('Test User') > 0)
         self.assertIn('admin@localhost', mail.outbox[0].to)
 
@@ -225,7 +226,7 @@ class TestLearnerViews(TestCase):
         # Test RSVP with mobile number
         signup_data = self.APPLICATION_DATA.copy()
         del signup_data['email']
-        signup_data['mobile'] = '123-456-7890'
+        signup_data['mobile'] = '+12812347890'
         
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
         self.assertRedirects(resp, '/en/signup/1/success/')
@@ -268,7 +269,7 @@ class TestLearnerViews(TestCase):
         # test for mobile
         data = self.APPLICATION_DATA.copy()
         del data['email']
-        data['mobile'] = '123-456-7777'
+        data['mobile'] = '+12812347777'
         resp = c.post('/en/signup/foo-bob-1/', data)
         self.assertRedirects(resp, '/en/signup/1/success/')
         self.assertEquals(Application.objects.active().count(), 2)

@@ -255,7 +255,7 @@ def receive_sms(request):
     to = []
     bcc = None
     # Try to find a signup with the mobile number
-    sender = '-'.join([sender[2:5], sender[5:8], sender[8:12]])
+    #sender = '-'.join([sender[2:5], sender[5:8], sender[8:12]])
     subject = 'New SMS reply from {0}'.format(sender)
     context = {
         'message': message,
