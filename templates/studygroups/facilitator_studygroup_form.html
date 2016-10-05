@@ -30,6 +30,7 @@
 <script src="{% static 'js/vendor/jquery.timepicker.js' %}"></script>
 <script src="{% static 'js/vendor/jstz.min.js' %}"></script>
 <script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/places.js/1/places.min.js"></script>
 <script>
     $(document).ready(function(){
         $('.dateinput').datepicker({'format':'yyyy-mm-dd'});
@@ -38,7 +39,13 @@
         if (typeof (tz) !== 'undefined' && $('#id_timezone').val() === "") {
             $('#id_timezone').val(tz.name());
         }
-        $( "#id_city" ).autocomplete({
+        var placesAutocomplete = places({
+            container: document.querySelector('#id_city'),
+            type: 'city'
+        });
+
+
+        /*$( "#id_city" ).autocomplete({
             source: function( request, response ) {
                 $.ajax({
                     url: "{% url 'uxhelpers_city_complete' %}",
@@ -50,7 +57,7 @@
                 });
             },
             minLength: 3
-        });
+        });*/
     });
 </script>
 {% endblock %}
