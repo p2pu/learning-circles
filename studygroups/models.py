@@ -133,6 +133,8 @@ class Organizer(models.Model):
 
 class Team(models.Model):
     name = models.CharField(max_length=128)
+    page_slug = models.SlugField(max_length=256, blank=True)
+    page_image = models.ImageField(blank=True)
 
     def __unicode__(self):
         return self.name
@@ -612,6 +614,8 @@ def get_study_group_organizers(study_group):
 
 """ Return the team members for a user """
 def get_team_users(user):
+    # TODO this function doesn't make sense - only applies for logged in users
+    # change functionality or rename to get_team_mates
     team_membership = TeamMembership.objects.filter(user=user)
     if team_membership.count() == 1:
         members = team_membership.first().team.teammembership_set.values('user')

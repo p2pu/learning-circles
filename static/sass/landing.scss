@@ -77,9 +77,8 @@ $next-section-color: $gray-lighter;
 
 .lc-jumbotron-conf {
 
-    height:320px;
+    height:340px;
     width:100%;
-    //margin-top: -80px;
    	background-image:url("/static/images/jumbotron.jpg");
     background-repeat: no-repeat;
     background-position: center bottom;
@@ -91,7 +90,6 @@ $next-section-color: $gray-lighter;
 .j-text-container{
 	text-align: center;
 	width: 100%;
-	height: 320px;
 	padding: 0 16px;
 }
 
@@ -135,6 +133,13 @@ padding-bottom: 20px;
 
 }
 
+.lc-jumbo-team{
+    display: inline-block;
+    color: #04b0aa;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 25px;
+    font-weight: 400;
+}
 
 .lc-jumbo-rule{
     width: 100%;
@@ -177,6 +182,11 @@ padding-bottom: 20px;
     .j-text-container a.lc-jumbo-link:link, .j-text-container a.lc-jumbo-link:visited{
         font-size: 14px;
     }
+
+    .lc-jumbo-team{
+        font-size: 20px;
+    }
+
 }
 
 

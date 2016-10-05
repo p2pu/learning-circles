@@ -24,6 +24,7 @@ from studygroups.views import FacilitatorSignupSuccess
 from studygroups.views import FacilitatorStudyGroupCreate
 from studygroups.views import OptOutView
 from studygroups.views import CourseListView
+from studygroups.views import TeamPage
 
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import user_is_organizer
@@ -88,5 +89,7 @@ urlpatterns = patterns('',
     url(r'^report/weekly/(?P<year>[\d]+)-(?P<month>[\d]+)-(?P<day>[\d]+)/$', 'studygroups.views.weekly_report', name='studygroups_weekly_report_date'),
 
     url(r'^receive_sms/$', 'studygroups.views.receive_sms', name='studygroups_receive_sms'),
+
+    url(r'^(?P<slug>[\w-]+)/$', TeamPage.as_view(), name='studygroups_team_page'),
 )
 

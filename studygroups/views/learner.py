@@ -15,7 +15,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.utils.translation import ugettext as _
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from django.views.generic.edit import FormView
 from django.views.generic import TemplateView
 from django.contrib.auth.models import User
@@ -28,7 +28,10 @@ from studygroups.models import Application
 from studygroups.models import Reminder
 from studygroups.models import Feedback
 from studygroups.models import StudyGroupMeeting
+from studygroups.models import Team
+from studygroups.models import TeamMembership
 from studygroups.models import create_rsvp
+from studygroups.models import get_team_users
 from studygroups.forms import ApplicationForm
 from studygroups.forms import OptOutForm
 from studygroups.rsvp import check_rsvp_signature
@@ -55,6 +58,30 @@ def landing(request):
         'cities': city_list
     }
     return render_to_response('studygroups/index.html', context, context_instance=RequestContext(request))
+
+
+class TeamPage(DetailView):
+    model = Team
+    template_name = 'studygroups/team_page.html'
+    slug_field = 'page_slug'
+    context_object_name = 'team'
+
+
+    def get_context_data(self, **kwargs):
+        context = super(TeamPage, self).get_context_data(**kwargs)
+        two_weeks = (datetime.datetime.now() - datetime.timedelta(weeks=2)).date()
+
+        team_users = TeamMembership.objects.filter(team=self.object).values('user')
+        study_group_ids = StudyGroupMeeting.objects.active()\
+                .filter(meeting_date__gte=timezone.now())\
+                .values('study_group')
+        study_groups = StudyGroup.objects.active()\
+                .filter(facilitator__in=team_users)\
+                .filter(id__in=study_group_ids, signup_open=True)\
+                .order_by('start_date')
+
+        context['learning_circles'] = study_groups
+        return context
 
 
 class CourseListView(ListView):
