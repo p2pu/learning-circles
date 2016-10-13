@@ -6,12 +6,12 @@ from django.views.generic import TemplateView
 
 
 urlpatterns = i18n_patterns('',
-    url(r'^', include('studygroups.urls')),
+    url(r'^admin/', include(admin.site.urls)),
     url(r'^interest/', include('interest.urls', namespace='interest')),
     url(r'^about/$', TemplateView.as_view(template_name="about.html"), name="about"),
-    url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include('django.contrib.auth.urls')),
-    url(r'^ux/', include('uxhelpers.urls'))
+    url(r'^ux/', include('uxhelpers.urls')),
+    url(r'^', include('studygroups.urls'))
 )
 
 if settings.DEBUG:
