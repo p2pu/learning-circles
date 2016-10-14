@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models.signals import post_init
 from django.utils import timezone
 from django.utils import translation
 from django.utils.translation import ugettext as _
@@ -7,7 +6,7 @@ from django.template.loader import render_to_string
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse #TODO ideally this shouldn't be in the model
+from django.core.urlresolvers import reverse  # TODO ideally this shouldn't be in the model
 
 from twilio import TwilioRestException
 
@@ -18,7 +17,6 @@ from studygroups.utils import gen_unsubscribe_querystring
 import calendar
 import datetime
 import pytz
-import dateutil.parser
 import re
 import json
 import logging
@@ -46,7 +44,7 @@ STUDY_GROUP_NAMES = [
 def _study_group_name():
     idx = 1 + StudyGroup.objects.count()
     num_names = len(STUDY_GROUP_NAMES)
-    return ' '.join([STUDY_GROUP_NAMES[idx%num_names], "I"*(idx/num_names)])
+    return ' '.join([STUDY_GROUP_NAMES[idx % num_names], "I"*(idx/num_names)])
 
 
 class SoftDeleteQuerySet(models.QuerySet):
@@ -270,7 +268,7 @@ class StudyGroupMeeting(LifeTimeTrackingModel):
             self.meeting_datetime(),
             'yes'
         )
-        return '{0}{1}?{2}'.format(domain,url,yes_qs)
+        return '{0}{1}?{2}'.format(domain, url, yes_qs)
 
     def rsvp_no_link(self, email):
         domain = 'https://{0}'.format(settings.DOMAIN)
