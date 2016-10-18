@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 <footer class="p2pu-footer">
 
 	<div class="container">
@@ -18,32 +19,32 @@
 		</ul>
 		<hr>
 		<div class="col-md-4 first">
-			<h4>What is P2PU?</h4>
+            <h4>{% trans "What is P2PU?" %}</h4>
 
-			<p>
-        Founded in 2009, Peer 2 Peer University is a non-profit organization that facilitates learning outside of institutional walls. Designing and leveraging open education tools and resources, P2PU strives to cultivate a high-quality, low-cost model for learning.
+            <p>{% blocktrans %}
+            Founded in 2009, Peer 2 Peer University is a non-profit organization that facilitates learning outside of institutional walls. Designing and leveraging open education tools and resources, P2PU strives to cultivate a high-quality, low-cost model for learning.{% endblocktrans %}
 			</p>
 
 		</div>
 
 		<div class="col-md-4 col-md-offset-1">
-			<h4>Meta</h4>
+            <h4>{% trans "Meta" %}</h4>
 			<ul class="footer-links">
 				<li>
 					<i class="fa fa-angle-right "></i>
 					<a href="https://p2pu.org/en/terms/">
-						Terms of Use
+                        {% trans "Terms of Use" %}
 					</a>
 				</li>
 				<li>
 					<i class="fa fa-angle-right "></i>
 					<a class="donate" href="https://p2pu.org/en/donate/" target="_blank">
-						Donate
+                        {% trans "Donate" %}
 					</a>
 				</li>
 				<li>
 					<i class="fa fa-angle-right "></i>
-					<a href="{% url 'studygroups_optout' %}">Opt out of a Learning Circle</a>
+                    <a href="{% url 'studygroups_optout' %}">{% trans "Opt out of a Learning Circle" %}</a>
 				</li>
 			</ul>
 		</div>
@@ -51,10 +52,11 @@
 
 		<div class="pull-right col-md-3 cc-by-sa">
 			<img src="{% static 'images/cc-icons.png' %}" alt="CC-BY-SA Icon">
-			<p>
+            <p>{% blocktrans %}
 				Unless otherwise noted, all the materials on this site are licensed under a
 				<a target="_blank" href="http://creativecommons.org/licenses/by-sa/4.0/">
 					Creative Commons Attribution Share Alike 4.0</a> license.
+                {% endblocktrans %}
 			</p>
 		</div>
 

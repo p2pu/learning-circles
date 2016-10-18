@@ -1,16 +1,18 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
 {% block content %}
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <!--Jumbotron START-->
     <div class="lc-jumbotron-conf">
       <div class="j-text-container">
-        <span class="lc-jumbo-subhead">P2PU presents:</span> </br>
-        <span class="lc-jumbo-title">Learning Circles	</span> </br>
+          <span class="lc-jumbo-subhead">{% trans "P2PU presents:" %}</span> </br>
+          <span class="lc-jumbo-title">{% trans "Learning Circles" %}	</span> </br>
         <span class="lc-jumbo-rule"></span></br>
-        <span class="lc-jumbo-body">Study groups for people who want to take online courses together, in-person.</span> </br>
-        <span class="lc-jumbo-call">Sign up below for a Learning Circle in your area, or <a class="lc-jumbo-link" href="{% url 'studygroups_facilitator_signup' %}">create your own!</a></span> 
+        <span class="lc-jumbo-body">{% trans "Study groups for people who want to take online courses together, in-person." %}</span> </br>
+        {% url 'studygroups_facilitator_signup' as facilitator_signup_url %}
+        <span class="lc-jumbo-call">{% blocktrans %}Sign up below for a Learning Circle in your area, or <a class="lc-jumbo-link" href="{{facilitator_signup_url}}">create your own!</a>{% endblocktrans %}</span> 
       </div>	
     </div>
 
@@ -20,7 +22,7 @@
           {% include 'studygroups/learning-circles.html' %}
         </div>
         <div class="city-list col-md-12">
-            <p>Learning Circles by city:</p>
+            <p>{% trans "Learning Circles by city:" %}</p>
             <ul class="list-inline">
                 {% for city in cities %}
                 <li><a class="btn btn-primary" href="{% url 'studygroups_city' city.city %}">{{city.city}}</a></li>
@@ -34,8 +36,8 @@
       <div class="container">
         <div class="text-center col-md-12">
           <div class="session" id="signup">
-            <h2>Don't see any Learning Circles near you?</h2>
-            <p><a href="https://learningcircles.p2pu.org/en/facilitator/signup/">Create your own</a> Learning Circle!</p>
+              <h2>{% trans "Don't see any Learning Circles near you?" %}</h2>
+              <p>{% blocktrans %}<a href="{{facilitator_signup_url}}">Create your own</a> Learning Circle!{% endblocktrans %}</p>
             {% include 'mailchimp.html' %}
           </div>
         </div>

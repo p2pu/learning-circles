@@ -209,7 +209,7 @@ class StudyGroupForm(forms.ModelForm):
             'image': _('Care to add an image?'),
         }
         help_texts = {
-            'course': _(''),
+            'course': '',
             'venue_name': _('Name of the venue, e.g. Pretoria Library or Bekka\'s house'),
             'venue_details': _('e.g. second floor kitchen or Room 409 (third floor)'),
             'venue_address': _('Write it out like you were mailing a letter.'),

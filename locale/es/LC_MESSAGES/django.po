@@ -1,0 +1,582 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-10-18 13:46+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: studygroups/forms.py:32 studygroups/forms.py:39 studygroups/forms.py:156
+msgid "Select one of the following"
+msgstr ""
+
+#: studygroups/forms.py:42 studygroups/forms.py:98
+msgid "Phone Number for SMS"
+msgstr ""
+
+#: studygroups/forms.py:42
+msgid "if no email available"
+msgstr ""
+
+#: studygroups/forms.py:46
+msgid "Can you bring a laptop and headphones to the Learning Circle each week?"
+msgstr ""
+
+#: studygroups/forms.py:49
+msgid "In one sentence, please explain your goals for taking this course."
+msgstr ""
+
+#: studygroups/forms.py:52
+msgid ""
+"A successful study group requires the support of all of its members. How "
+"will you help your peers achieve their goals?"
+msgstr ""
+
+#: studygroups/forms.py:68
+msgid "How comfortable are you doing the following tasks?"
+msgstr ""
+
+#: studygroups/forms.py:88
+msgid "Please provide your email address or a mobile number to sign up."
+msgstr ""
+
+#: studygroups/forms.py:97
+msgid "Email address used to sign up."
+msgstr ""
+
+#: studygroups/forms.py:98
+msgid "Phone number used to sign up."
+msgstr ""
+
+#: studygroups/forms.py:106
+msgid ""
+"Please provide either the email address or the phone number used to sign up."
+msgstr ""
+
+#: studygroups/forms.py:115
+msgid ""
+"Could not find any signup matching your email address or phone number. "
+"Please make sure to enter the email or phone number you used to sign up."
+msgstr ""
+
+#: studygroups/forms.py:158
+msgid "What time will your Learning Circle meet each week?"
+msgstr ""
+
+#: studygroups/forms.py:158
+msgid ""
+"We recommend establishing a consistent weekly meeting time. You can always "
+"change individual meeting times from your Dashboard later."
+msgstr ""
+
+#: studygroups/forms.py:159
+msgid "How many weeks will your Learning Circle run for?"
+msgstr ""
+
+#: studygroups/forms.py:159
+msgid "If you're not sure, six weeks is generally a good bet!"
+msgstr ""
+
+#: studygroups/forms.py:160
+msgid "What timezone is your Learning Circle happening in?"
+msgstr ""
+
+#: studygroups/forms.py:201
+msgid "Choose the course that your Learning Circle will study."
+msgstr ""
+
+#: studygroups/forms.py:202
+msgid "Where will you meet?"
+msgstr ""
+
+#: studygroups/forms.py:203
+msgid "Where is the specific meeting spot?"
+msgstr ""
+
+#: studygroups/forms.py:204
+msgid "What is the address of the venue?"
+msgstr ""
+
+#: studygroups/forms.py:205
+msgid "In which city is this happening?"
+msgstr ""
+
+#: studygroups/forms.py:206
+msgid "Do you have a website you want to link to?"
+msgstr ""
+
+#: studygroups/forms.py:207
+msgid "What is the date of the first Learning Circle?"
+msgstr ""
+
+#: studygroups/forms.py:208
+msgid "How long will each Learning Circle last (in minutes)?"
+msgstr ""
+
+#: studygroups/forms.py:209
+msgid "Care to add an image?"
+msgstr ""
+
+#: studygroups/forms.py:213
+msgid "Name of the venue, e.g. Pretoria Library or Bekka's house"
+msgstr ""
+
+#: studygroups/forms.py:214
+msgid "e.g. second floor kitchen or Room 409 (third floor)"
+msgstr ""
+
+#: studygroups/forms.py:215
+msgid "Write it out like you were mailing a letter."
+msgstr ""
+
+#: studygroups/forms.py:216
+msgid "This will be used for learners looking for Learning Circles by city."
+msgstr ""
+
+#: studygroups/forms.py:217
+msgid ""
+"Link to any website that has more info about the venue or Learning Circle."
+msgstr ""
+
+#: studygroups/forms.py:218
+msgid "Give yourself at least 4 weeks to advertise, if possible."
+msgstr ""
+
+#: studygroups/forms.py:219
+msgid "We recommend 90 - 120 minutes."
+msgstr ""
+
+#: studygroups/forms.py:220
+msgid ""
+"Make your Learning Circle stand out with a picture or .gif. It could be "
+"related to location, subject matter, or anything else you want to identify "
+"with!"
+msgstr ""
+
+#: studygroups/forms.py:225
+msgid "Email"
+msgstr ""
+
+#: studygroups/forms.py:245
+msgid "For learners: Write a brief summary of this week's Learning Circle."
+msgstr ""
+
+#: studygroups/forms.py:246
+msgid "How many people attended?"
+msgstr ""
+
+#: studygroups/forms.py:247
+msgid "Between us: Is there anything you want to let us know?"
+msgstr ""
+
+#: studygroups/forms.py:248
+msgid "Overall, how would you say this week went?"
+msgstr ""
+
+#: studygroups/forms.py:251
+msgid ""
+"You may want to include your impressions of how it went, plus/delta "
+"feedback, and anything the group agreed on having completed before the next "
+"meeting. This will be automatically sent to learners two days before next "
+"week's meeting."
+msgstr ""
+
+#: studygroups/forms.py:252
+msgid ""
+"You can use this space for reflections, concerns, and anything else you "
+"think might help. This will be shared with the P2PU community coordinator "
+"and your team organizer if you are part of a team."
+msgstr ""
+
+#: studygroups/models.py:78
+msgid "Course title"
+msgstr ""
+
+#: studygroups/models.py:79
+msgid "Course provider"
+msgstr ""
+
+#: studygroups/models.py:79
+msgid "e.g. Khan Academy, edX, Coursera."
+msgstr ""
+
+#: studygroups/models.py:80
+msgid "Course website"
+msgstr ""
+
+#: studygroups/models.py:80
+msgid "Paste full URL above."
+msgstr ""
+
+#: studygroups/models.py:82
+msgid "Course start date"
+msgstr ""
+
+#: studygroups/models.py:82
+msgid ""
+"If the course is always available (many are), choose today's date. Note that "
+"this is the start date for the course - not for your specific Learning "
+"Circle."
+msgstr ""
+
+#: studygroups/models.py:83
+msgid "Number of weeks"
+msgstr ""
+
+#: studygroups/models.py:83 studygroups/models.py:85
+msgid "Check the course website, or approximate."
+msgstr ""
+
+#: studygroups/models.py:84
+msgid "e.g. high school diploma or equivalent, pre-calculus, HTML/CSS."
+msgstr ""
+
+#: studygroups/models.py:85
+msgid "Hours per week"
+msgstr ""
+
+#: studygroups/models.py:86
+msgid "Short description of the course."
+msgstr ""
+
+#: studygroups/models.py:96
+msgid "Common name used to refer to the location."
+msgstr ""
+
+#: studygroups/models.py:97
+msgid "Street address of the location."
+msgstr ""
+
+#: studygroups/models.py:98
+msgid "Person that can be contacted at the location."
+msgstr ""
+
+#: studygroups/models.py:99
+msgid "Email or phone for the contact person."
+msgstr ""
+
+#: studygroups/models.py:100
+msgid "URL where more info about the location can be seen."
+msgstr ""
+
+#: studygroups/models.py:101
+msgid ""
+"A photo to represent your Learning Circle. It could be a picture of the "
+"building, or anything else you'd like to choose!"
+msgstr ""
+
+#: studygroups/models.py:109
+msgid "meeting index this activity corresponds to"
+msgstr ""
+
+#: studygroups/models.py:145
+msgid "Organizer"
+msgstr ""
+
+#: studygroups/models.py:146
+msgid "Member"
+msgstr ""
+
+#: studygroups/models.py:158
+msgid "Choose one or add a new course."
+msgstr ""
+
+#: studygroups/models.py:159
+msgid "Common name of venue."
+msgstr ""
+
+#: studygroups/models.py:159
+msgid "e.g. Pretoria Library or Bekka's house"
+msgstr ""
+
+#: studygroups/models.py:160
+msgid "Like you were mailing a letter. Include country!"
+msgstr ""
+
+#: studygroups/models.py:161
+msgid "Meeting spot"
+msgstr ""
+
+#: studygroups/models.py:161
+msgid "e.g. second floor meeting room or kitchen."
+msgstr ""
+
+#: studygroups/models.py:162
+msgid "Link to any website that has more info about the venue or Circle."
+msgstr ""
+
+#: studygroups/models.py:165
+msgid "First meeting date"
+msgstr ""
+
+#: studygroups/models.py:165
+msgid "Give yourself at least 4 weeks to market, if possible."
+msgstr ""
+
+#: studygroups/models.py:168
+msgid "Length of each Circle"
+msgstr ""
+
+#: studygroups/models.py:168
+msgid "We recommend 90 minutes - 2 hours."
+msgstr ""
+
+#: studygroups/models.py:171
+msgid ""
+"Make your Circle stand out with a picture. It could be related to location, "
+"subject matter, or anything else you want to identify your Circle with."
+msgstr ""
+
+#: studygroups/models.py:218
+msgid "Send an email"
+msgstr ""
+
+#: studygroups/models.py:219
+msgid "Delete spam email"
+msgstr ""
+
+#: studygroups/models.py:220
+msgid "Find stuff online using Google"
+msgstr ""
+
+#: studygroups/models.py:221
+msgid "Watch a video on Youtube"
+msgstr ""
+
+#: studygroups/models.py:222
+msgid "Fill out an application form or buy something online"
+msgstr ""
+
+#: studygroups/models.py:223
+msgid "Use a mobile app"
+msgstr ""
+
+#: studygroups/models.py:224
+msgid "Evaluate whether a website is safe/can be trusted"
+msgstr ""
+
+#: studygroups/models.py:228
+msgid "Can't do"
+msgstr ""
+
+#: studygroups/models.py:229
+msgid "Need help doing"
+msgstr ""
+
+#: studygroups/models.py:230
+msgid "Can do with difficulty"
+msgstr ""
+
+#: studygroups/models.py:231
+msgid "Can do"
+msgstr ""
+
+#: studygroups/models.py:232
+msgid "Expert (can teach others)"
+msgstr ""
+
+#: studygroups/models.py:294
+msgid "SMS (Text)"
+msgstr ""
+
+#: studygroups/models.py:318
+msgid "Great"
+msgstr ""
+
+#: studygroups/models.py:319
+msgid "Pretty well"
+msgstr ""
+
+#: studygroups/models.py:320
+msgid "Good"
+msgstr ""
+
+#: studygroups/models.py:321
+msgid "Not so great"
+msgstr ""
+
+#: studygroups/models.py:322
+msgid "I need some help"
+msgstr ""
+
+#: studygroups/models.py:354
+msgid "Meetings already exist for this study group"
+msgstr ""
+
+#: studygroups/models.py:540 studygroups/models.py:559
+msgid "Weekly Learning Circles update"
+msgstr ""
+
+#: studygroups/views/facilitate.py:206
+msgid "Signup successfully changed"
+msgstr ""
+
+#: studygroups/views/facilitate.py:377
+msgid "You created a new Learning Circle! Check your email for next steps."
+msgstr ""
+
+#: studygroups/views/learner.py:214
+msgid "You successfully opted out of the Learning Circle."
+msgstr ""
+
+#: studygroups/views/learner.py:216
+msgid ""
+"Please check the email you received and make sure this is the correct URL."
+msgstr ""
+
+#: studygroups/views/learner.py:230
+msgid ""
+"You will shortly receive an email or text message confirming that you wish "
+"to opt out."
+msgstr ""
+
+#: templates/base.html:13 templates/studygroups/index.html:11
+msgid "Learning Circles"
+msgstr ""
+
+#: templates/footer.html:22
+msgid "What is P2PU?"
+msgstr ""
+
+#: templates/footer.html:24
+msgid ""
+"\n"
+"            Founded in 2009, Peer 2 Peer University is a non-profit "
+"organization that facilitates learning outside of institutional walls. "
+"Designing and leveraging open education tools and resources, P2PU strives to "
+"cultivate a high-quality, low-cost model for learning."
+msgstr ""
+
+#: templates/footer.html:31
+msgid "Meta"
+msgstr ""
+
+#: templates/footer.html:36
+msgid "Terms of Use"
+msgstr ""
+
+#: templates/footer.html:42
+msgid "Donate"
+msgstr ""
+
+#: templates/footer.html:47
+msgid "Opt out of a Learning Circle"
+msgstr ""
+
+#: templates/footer.html:55
+msgid ""
+"\n"
+"\t\t\t\tUnless otherwise noted, all the materials on this site are licensed "
+"under a\n"
+"\t\t\t\t<a target=\"_blank\" href=\"http://creativecommons.org/licenses/by-"
+"sa/4.0/\">\n"
+"\t\t\t\t\tCreative Commons Attribution Share Alike 4.0</a> license.\n"
+"                "
+msgstr ""
+
+#: templates/header.html:22
+msgid "Courses"
+msgstr ""
+
+#: templates/header.html:25
+msgid "About"
+msgstr ""
+
+#: templates/header.html:28
+msgid "Facilitator Guide"
+msgstr ""
+
+#: templates/header.html:33
+msgid "Organize"
+msgstr ""
+
+#: templates/header.html:37
+msgid "Dashboard"
+msgstr ""
+
+#: templates/header.html:39
+msgid "Log out"
+msgstr ""
+
+#: templates/header.html:41
+msgid "Log in"
+msgstr ""
+
+#: templates/mailchimp.html:5
+msgid "Or sign up to our general mailing list:"
+msgstr ""
+
+#: templates/mailchimp.html:11
+msgid "Subscribe"
+msgstr ""
+
+#: templates/studygroups/course.html:12
+#, python-format
+msgid "Course starts on %(start_date)s"
+msgstr ""
+
+#: templates/studygroups/index.html:10
+msgid "P2PU presents:"
+msgstr ""
+
+#: templates/studygroups/index.html:13
+msgid ""
+"Study groups for people who want to take online courses together, in-person."
+msgstr ""
+
+#: templates/studygroups/index.html:15
+#, python-format
+msgid ""
+"Sign up below for a Learning Circle in your area, or <a class=\"lc-jumbo-link"
+"\" href=\"%(facilitator_signup_url)s\">create your own!</a>"
+msgstr ""
+
+#: templates/studygroups/index.html:25
+msgid "Learning Circles by city:"
+msgstr ""
+
+#: templates/studygroups/index.html:39
+msgid "Don't see any Learning Circles near you?"
+msgstr ""
+
+#: templates/studygroups/index.html:40
+#, python-format
+msgid ""
+"<a href=\"%(facilitator_signup_url)s\">Create your own</a> Learning Circle!"
+msgstr ""
+
+#: templates/studygroups/learning-circles.html:14
+#, python-format
+msgid ""
+"Facilitator: <span class=\"extrabold\">%(first_name)s %(last_name)s</span>"
+msgstr ""
+
+#: templates/studygroups/learning-circles.html:17
+#, python-format
+msgid ""
+"<span class=\"extrabold\">%(day)ss</span>, %(meeting_time)s - %(end_time)s, "
+"%(timezone)s"
+msgstr ""
+
+#: templates/studygroups/learning-circles.html:18
+#, python-format
+msgid ""
+"<span class=\"extrabold\">One week</span> beginning <span class=\"extrabold"
+"\">%(start_date)s</span>"
+msgid_plural ""
+"<span class=\"extrabold\">%(weeks)s weeks</span> beginning <span class="
+"\"extrabold\">%(start_date)s</span>"
+msgstr[0] ""
+msgstr[1] ""

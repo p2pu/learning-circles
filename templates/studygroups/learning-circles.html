@@ -1,5 +1,6 @@
 {% load static %}
 {% load extras %}
+{% load i18n %}
 
   <div class="row">
 {% for lc in learning_circles %}
@@ -10,11 +11,11 @@
       {% if lc.image %}<img src="/media/{{ lc.image }}" height="143" width="286" alt="Image of the Learning Circle location">{% else %}<img src="{% static 'images/learning-circle-default.jpg' %}" height="143" width="286" alt="Image of the Learning Circle location">{% endif %}
       <div class="title-container"><h1>{{lc.course.title}}</h1></div>
       <div class="body-container">
-        <p class="facilitatorX">Facilitator: <span class="extrabold">{{lc.facilitator.first_name}} {{lc.facilitator.last_name}}</span></p>
+          <p class="facilitatorX">{% blocktrans with first_name=lc.facilitator.first_name last_name=lc.facilitator.last_name %}Facilitator: <span class="extrabold">{{first_name}} {{last_name}}</span>{% endblocktrans %}</p>
         <p class="lc-venueX"><span class="extrabold lc-card-teal"><i class="fa fa-map-marker"></i> {{lc.venue_name}}</span><br/>
         {{lc.venue_address}}, {{lc.city}}</p>
-        <p class="lc-daysX"><span class="extrabold">{{lc.day}}s</span>, {{lc.meeting_time|time:"f A"}} - {{lc.end_time|time:"f A"}}, {{lc.timezone}}</p>
-        <p class="lc-startX"><span class="extrabold">{{lc.studygroupmeeting_set.active.count}} week{{lc.studygroupmeeting_set.active.count|pluralize}}</span> beginning <span class="extrabold">{{lc.start_date|date:"j N Y"}}</span></p>
+        <p class="lc-daysX">{% blocktrans with day=lc.day meeting_time=lc.meeting_time|time:"f A" end_time=lc.end_time|time:"f A" timezone=lc.timezone %}<span class="extrabold">{{day}}s</span>, {{meeting_time}} - {{end_time}}, {{timezone}}{% endblocktrans %}</p>
+        <p class="lc-startX">{% blocktrans with start_date=lc.start_date|date:"j N Y" count weeks=lc.studygroupmeeting_set.active.count %}<span class="extrabold">One week</span> beginning <span class="extrabold">{{start_date}}</span>{% plural %}<span class="extrabold">{{weeks}} weeks</span> beginning <span class="extrabold">{{start_date}}</span>{% endblocktrans %}</p>
       </div>
     </div>
   </div>

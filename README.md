@@ -45,3 +45,7 @@ pip install -r requirements.txt
 python manage.py syncdb
 python manage.py runserver
 ```
+
+## Generate strings for translation
+
+    python manage.py makemessages -l es -i venv
