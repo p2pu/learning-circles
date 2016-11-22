@@ -489,8 +489,11 @@ def create_rsvp(contact, study_group, meeting_datetime, attending):
 
 def report_data(start_time, end_time, team=None):
 
+    study_groups = StudyGroup.objects.active()
     meetings = StudyGroupMeeting.objects.active()\
-            .filter(meeting_date__gte=start_time, meeting_date__lt=end_time)
+            .filter(meeting_date__gte=start_time, meeting_date__lt=end_time)\
+            .filter(study_group__in=study_groups)
+
     new_study_groups = StudyGroup.objects.active()\
             .filter(created_at__gte=start_time, created_at__lt=end_time)
     new_facilitators = User.objects.filter(date_joined__gte=start_time, date_joined__lt=end_time)

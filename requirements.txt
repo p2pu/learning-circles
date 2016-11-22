@@ -19,6 +19,7 @@ django-s3direct==0.3.10
 django-toolbelt==0.0.1
 docutils==0.12
 filechunkio==1.6
+freezegun==0.3.8
 futures==2.2.0
 gunicorn==19.3.0
 httplib2==0.9.1
