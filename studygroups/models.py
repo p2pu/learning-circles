@@ -155,20 +155,20 @@ class TeamMembership(models.Model):
 
 class StudyGroup(LifeTimeTrackingModel):
     name = models.CharField(max_length=128, default=_study_group_name)
-    course = models.ForeignKey('studygroups.Course', help_text=_('Choose one or add a new course.'))
-    venue_name = models.CharField(max_length=256, verbose_name=_('Common name of venue.'), help_text=_('e.g. Pretoria Library or Bekka\'s house'))
-    venue_address = models.CharField(max_length=256, help_text=_('Like you were mailing a letter. Include country!'))
-    venue_details = models.CharField(max_length=128, verbose_name=_('Meeting spot'), help_text=_('e.g. second floor meeting room or kitchen.'))
-    venue_website = models.URLField(blank=True, help_text=_('Link to any website that has more info about the venue or Circle.'))
+    course = models.ForeignKey('studygroups.Course')
+    venue_name = models.CharField(max_length=256)
+    venue_address = models.CharField(max_length=256)
+    venue_details = models.CharField(max_length=128)
+    venue_website = models.URLField(blank=True)
     city = models.CharField(max_length=256)
     facilitator = models.ForeignKey(User)
-    start_date = models.DateField(verbose_name=_('First meeting date'), help_text=_('Give yourself at least 4 weeks to market, if possible.'))
+    start_date = models.DateField()
     meeting_time = models.TimeField()
     end_date = models.DateField() # TODO consider storing number of weeks/meetings instead of end_date
-    duration = models.IntegerField(verbose_name=_('Length of each Circle'), help_text=_('We recommend 90 minutes - 2 hours.'), default=90) # meeting duration in minutes
+    duration = models.IntegerField(default=90) # meeting duration in minutes
     timezone = models.CharField(max_length=128)
     signup_open = models.BooleanField(default=True)
-    image = models.ImageField(blank=True, help_text=_('Make your Circle stand out with a picture. It could be related to location, subject matter, or anything else you want to identify your Circle with.'))
+    image = models.ImageField(blank=True)
 
     def day(self):
         return calendar.day_name[self.start_date.weekday()]
@@ -512,8 +512,10 @@ def report_data(start_time, end_time, team=None):
         'study_groups': new_study_groups,
         'facilitators': new_facilitators,
         'logins': logins,
-        'signups': signups
+        'signups': signups,
     }
+    if team:
+        report['team'] = team
     return report
 
 

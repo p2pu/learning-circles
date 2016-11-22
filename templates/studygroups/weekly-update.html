@@ -5,7 +5,7 @@
   <h1>Learning Circles update</h1>
   <p>for the time period starting {{start_time|date:"l, j F" }} and ending {{end_time|date:"l, j F" }}.</p>
   {% if protocol and domain %}<p>You can also view this report <a href="{{protocol}}://{{domain}}{% url 'studygroups_weekly_report_date' start_time.year start_time.month start_time.day%}">online</a>.</p>{% endif %}
-  <p>This week {{facilitators|length}} facilitator{{facilitators|pluralize}} signed up!</p>
+  {% if not team %}<p>This week {{facilitators|length}} facilitator{{facilitators|pluralize}} signed up!</p>{% endif %}
   <p>{{logins|length}} facilitator{{logins|length|pluralize}} logged in.</p>
   <p>{{study_groups|length}} Learning Circle{{study_groups|length|pluralize}} {{study_groups|length|pluralize:"was,were"}} created.</p>
   <p>{{signups|length}} learner{{signups|length|pluralize}} applied to join a Learning Circle.</p>
