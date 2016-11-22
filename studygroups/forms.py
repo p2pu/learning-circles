@@ -82,7 +82,6 @@ class ApplicationForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super(ApplicationForm, self).clean()
-        contact_method = cleaned_data.get("contact_method")
 
         if not cleaned_data.get('mobile') and not cleaned_data.get('email'):
             self.add_error('email', _('Please provide your email address or a mobile number to sign up.'))
