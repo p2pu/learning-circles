@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 class ApplicationForm(forms.ModelForm):
+
     COMPUTER_ACCESS = (
         ('', _('Select one of the following')),
         ('Both', 'Both'),
@@ -38,9 +39,11 @@ class ApplicationForm(forms.ModelForm):
     DIGITAL_LITERACY_CHOICES = (
         ('', _('Select one of the following')),
     ) + Application.DIGITAL_LITERACY_CHOICES
-
-    mobile = PhoneNumberField(required=False, label=_('Phone Number for SMS'), help_text=_('if no email available'))
-
+    mobile = PhoneNumberField(
+        required=False,
+        label=_('Phone Number for SMS'),
+        help_text=_('if you want to receive meeting reminders via text message.')
+    )
     computer_access = forms.ChoiceField(
         choices=COMPUTER_ACCESS,
         label=_('Can you bring a laptop and headphones to the Learning Circle each week?')
@@ -51,7 +54,6 @@ class ApplicationForm(forms.ModelForm):
     support = forms.CharField(
         label=_('A successful study group requires the support of all of its members. How will you help your peers achieve their goals?')
     )
-
     send_email = forms.ChoiceField(label=Application.DIGITAL_LITERACY_QUESTIONS['send_email'], choices=DIGITAL_LITERACY_CHOICES)
     delete_spam = forms.ChoiceField(label=Application.DIGITAL_LITERACY_QUESTIONS['delete_spam'], choices=DIGITAL_LITERACY_CHOICES)
     search_online = forms.ChoiceField(label=Application.DIGITAL_LITERACY_QUESTIONS['search_online'], choices=DIGITAL_LITERACY_CHOICES)
@@ -71,6 +73,10 @@ class ApplicationForm(forms.ModelForm):
         )
         self.helper.add_input(Submit('submit', 'Submit'))
         super(ApplicationForm, self).__init__(*args, **kwargs)
+        self.fields['email'].required = True
+        study_group = kwargs.get('initial', {}).get('study_group')
+        if study_group and study_group.country == 'United States of America':
+            self.fields['mobile'].help_text += ' Ex. +1 281-234-5678'
 
     def save(self, commit=True):
         signup_questions = {}
@@ -82,9 +88,7 @@ class ApplicationForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super(ApplicationForm, self).clean()
-
-        if not cleaned_data.get('mobile') and not cleaned_data.get('email'):
-            self.add_error('email', _('Please provide your email address or a mobile number to sign up.'))
+        # TODO - if mobile format is wrong, show error with example format for region
 
     class Meta:
         model = Application
@@ -105,12 +109,11 @@ class OptOutForm(forms.Form):
             self.add_error('email', _('Please provide either the email address or the phone number used to sign up.'))
 
         conditions = [
-            not email or Application.objects.active().filter(email=email).count() == 0,
-            not mobile or Application.objects.active().filter(mobile=mobile).count() == 0,
-            email or mobile
+            email and Application.objects.active().filter(email=email).count() > 0,
+            mobile and Application.objects.active().filter(mobile=mobile).count() > 0
         ]
 
-        if all(conditions):
+        if not any(conditions):
             raise forms.ValidationError(_('Could not find any signup matching your email address or phone number. Please make sure to enter the email or phone number you used to sign up.'))
 
     def send_optout_message(self):
@@ -135,6 +138,7 @@ class OptOutForm(forms.Form):
                 # don't send text to applications with a valid email in opt out form
                 applications = applications.exclude(email=email)
             for application in applications:
+                # This remains for old signups without email address 
                 context = { 'application': application }
                 message = render_to_string('studygroups/optout_confirm_text.txt', context)
                 try:

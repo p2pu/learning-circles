@@ -146,7 +146,7 @@ def signup(request, location, study_group_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
 
     if request.method == 'POST':
-        form = ApplicationForm(request.POST)
+        form = ApplicationForm(request.POST, initial={'study_group': study_group})
         if form.is_valid():
             application = form.save(commit=False)
             if application.email and Application.objects.active().filter(email=application.email, study_group=study_group).exists():

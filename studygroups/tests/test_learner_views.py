@@ -81,22 +81,23 @@ class TestLearnerViews(TestCase):
         self.assertEquals(Application.objects.active().count(), 2)
 
         data = self.APPLICATION_DATA.copy()
-        del data['email']
         data['mobile'] = '+12812347890'
         resp = c.post('/en/signup/foo-bob-1/', data)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.active().count(), 3)
+        self.assertEquals(Application.objects.active().count(), 2)
+
         resp = c.post('/en/signup/foo-bob-1/', data)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.active().count(), 3)
+        self.assertEquals(Application.objects.active().count(), 2)
+
         data = self.APPLICATION_DATA.copy()
         data['mobile'] = '+12812347890'
         resp = c.post('/en/signup/foo-bob-1/', data)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.active().count(), 3)
+        self.assertEquals(Application.objects.active().count(), 2)
         resp = c.post('/en/signup/foo-bob-1/', data)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.active().count(), 3)
+        self.assertEquals(Application.objects.active().count(), 2)
 
 
     def test_unapply(self):
@@ -115,7 +116,6 @@ class TestLearnerViews(TestCase):
         # Test receiving a message
         signup_data = self.APPLICATION_DATA.copy()
         signup_data['mobile'] = '+12812347890'
-        del signup_data['email']
         c = Client()
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
         self.assertRedirects(resp, '/en/signup/1/success/')
@@ -225,7 +225,7 @@ class TestLearnerViews(TestCase):
 
         # Test RSVP with mobile number
         signup_data = self.APPLICATION_DATA.copy()
-        del signup_data['email']
+        signup_data['email'] = 'mmmmmm@lllll.ces'
         signup_data['mobile'] = '+12812347890'
         
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
@@ -268,7 +268,7 @@ class TestLearnerViews(TestCase):
 
         # test for mobile
         data = self.APPLICATION_DATA.copy()
-        del data['email']
+        data['email'] = 'some@other.mail'
         data['mobile'] = '+12812347777'
         resp = c.post('/en/signup/foo-bob-1/', data)
         self.assertRedirects(resp, '/en/signup/1/success/')

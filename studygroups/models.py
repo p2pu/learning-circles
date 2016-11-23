@@ -190,6 +190,18 @@ class StudyGroup(LifeTimeTrackingModel):
     def timezone_display(self):
         return self.local_start_date().strftime("%Z")
 
+    @property
+    def country(self):
+        country = self.city.split(',')[-1].strip()
+        country_list = [
+            'United States of America',
+            'Kenya',
+            'France'
+        ]
+        if country in country_list:
+            return country
+        return None
+
     def __unicode__(self):
         return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day(), self.meeting_time, self.venue_name)
 

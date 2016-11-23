@@ -170,7 +170,6 @@ class TestFacilitatorViews(TestCase):
         c.login(username='admin', password='password')
         signup_data = self.APPLICATION_DATA.copy()
         signup_data['mobile'] = '+12812345678'
-        del signup_data['email']
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
         self.assertRedirects(resp, '/en/signup/1/success/')
         self.assertEquals(Application.objects.active().count(), 1)
@@ -185,7 +184,7 @@ class TestFacilitatorViews(TestCase):
         }
         resp = c.post(url, mail_data)
         self.assertRedirects(resp, '/en/facilitator/')
-        self.assertEqual(len(mail.outbox), 0)
+        self.assertEqual(len(mail.outbox), 1)  # Send both email and text message
         self.assertTrue(send_message.called)
 
 
