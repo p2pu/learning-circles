@@ -9,3 +9,5 @@ mailbox/
 fixtures/
 upload/
 docs/_build/
+node_modules/
+assets/bundles/

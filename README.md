@@ -46,6 +46,13 @@ python manage.py syncdb
 python manage.py runserver
 ```
 
+## Compile javascript files
+
+```
+npm install
+./node_modules/.bin/webpack --config webpack.config.js --watch
+```
+
 ## Generate strings for translation
 
     python manage.py makemessages -l es -i venv
