@@ -5,7 +5,7 @@ var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var fs = require("fs");
 
 function getReactChunks(){
-    // Add all jsx file in /assets/js as entries
+    // Add all jsx files in /assets/js as entries
     var files = fs.readdirSync('./assets/js/').filter(function(f){
         return f.endsWith('.jsx');
     })
@@ -20,16 +20,12 @@ function getReactChunks(){
 module.exports = [
   {
     name: 'react',
-
     context: __dirname,
-
     entry: getReactChunks(),
-
     output: {
         path: path.resolve('./assets/bundles/'),
         filename: "[name]-[hash].js",
     },
-
     module: {
       loaders: [
         { 
@@ -43,11 +39,7 @@ module.exports = [
         },
       ],
     },
-
-    plugins: [
-      new BundleTracker({filename: './webpack-stats.json'}),
-    ],
-
+    plugins: [],
     resolve: {
       modulesDirectories: ['node_modules', 'bower_components'],
       extensions: ['', '.js', '.jsx', '.scss']
