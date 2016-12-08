@@ -11,3 +11,4 @@ upload/
 docs/_build/
 node_modules/
 assets/bundles/
+webpack-stats.json

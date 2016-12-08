@@ -1,7 +1,7 @@
 import React from 'react'
 import PagedTable from './paged-table'
 
-require("./stylesheets/organizer-dash.scss");
+require("./stylesheets/facilitator-list.scss");
 
 export default class FacilitatorList extends React.Component {
     constructor(props){
@@ -18,16 +18,16 @@ export default class FacilitatorList extends React.Component {
     }
 
     render(){
-        let re = new RegExp(this.state.filterQuery);
+        let re = new RegExp(this.state.filterQuery, 'i');
         let facilitators = this.props.facilitators.filter(f => 
             re.test(f.name + f.email)
         );
-        let heading = <tr><th>Username</th><th>Email</th></tr>;
+        let heading = <tr><th>Name</th><th>Email</th></tr>;
         let facilitatorRows = facilitators.sort(function(a,b){
-            if (a.name < b.name) {
+            if (a.name.toLowerCase() < b.name.toLowerCase()) {
                 return -1;
             }
-            if (a.name > b.name) {
+            if (a.name.toLowerCase() > b.name.toLowerCase()) {
                 return 1;
             }
             return 0;
@@ -41,7 +41,6 @@ export default class FacilitatorList extends React.Component {
                     <input type="text" className="form-control" value={this.state.filterQuery} onChange={this.handleChange} placeholder="Filter users by name or email" />
                 </div>
                 <PagedTable perPage={10} heading={heading}>{facilitatorRows}</PagedTable>
-                <a>Invite facilitator</a>
             </div>
         );
     }

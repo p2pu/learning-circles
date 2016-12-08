@@ -1,8 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import FacilitatorList from './components/facilitator-list'
+import OrganizerDash from './components/organizer-dash'
 
 ReactDOM.render(
-    <FacilitatorList facilitators={window.organizer_dash.facilitators} />, 
-    document.getElementById('organizer-dash-facilitators')
+    <OrganizerDash
+        activeLearningCircles={window.organizerDash.activeLearningCircle}
+        facilitators={window.organizerDash.facilitators}
+        meetings={window.organizerDash.meetings} />, 
+    document.getElementById('organizer-dash')
 );

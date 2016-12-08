@@ -2,7 +2,9 @@ from django.db import models
 from django.utils import timezone
 from django.utils import translation
 from django.utils.translation import ugettext as _
+from django.core.serializers.json import DjangoJSONEncoder
 from django.template.loader import render_to_string
+from django.template.defaultfilters import slugify
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -202,6 +204,34 @@ class StudyGroup(LifeTimeTrackingModel):
             return country
         return None
 
+    def to_dict(self):
+        sg = self  # TODO
+        data = {
+            "course_title": sg.course.title,
+            "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
+            "signup_count": sg.application_set.count(),
+            "venue": sg.venue_name,
+            "venue_address": sg.venue_address + ", " + sg.city,
+            "day": sg.day(),
+            "start_date": sg.start_date,
+            "meeting_time": sg.meeting_time,
+            "time_zone": sg.timezone_display(),
+            "end_time": sg.end_time(),
+            "weeks": sg.studygroupmeeting_set.active().count(),
+            "url": reverse('studygroups_view_study_group', args=(sg.id,)),
+            "signup_url": reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
+        }
+        next_meeting = self.next_meeting()
+        if next_meeting:
+            data['next_meeting_date'] = next_meeting.meeting_date
+        if sg.image:
+            data["image_url"] = "https://learningcircles.p2pu.org" + sg.image.url
+        return data
+
+    def to_json(self):
+        return json.dumps(self.to_dict(), cls=DjangoJSONEncoder)
+
+
     def __unicode__(self):
         return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day(), self.meeting_time, self.venue_name)
 
@@ -296,6 +326,14 @@ class StudyGroupMeeting(LifeTimeTrackingModel):
     def __unicode__(self):
         tz = pytz.timezone(self.study_group.timezone)
         return u'{0}, {1} at {2}'.format(self.study_group.course.title, self.meeting_datetime(), self.study_group.venue_name)
+
+    def to_json(self):
+        data = {
+            'study_group': self.study_group.pk,
+            'meeting_date': self.meeting_date,
+            'meeting_time': self.meeting_time
+        }
+        return json.dumps(data, cls=DjangoJSONEncoder)
 
 
 class Reminder(models.Model):

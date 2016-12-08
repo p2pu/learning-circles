@@ -141,7 +141,6 @@ def studygroups(request):
     return json_response(request, data)
 
 
-
 def signup(request, location, study_group_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
 

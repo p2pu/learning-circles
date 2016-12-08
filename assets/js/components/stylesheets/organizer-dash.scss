@@ -1,9 +1,5 @@
-.organizer {
-
-  h1 {
-    color: blue;
-  }
-    
+.organizer-dash {
+   
   table {
     width: 100%;
     table-layout: fixed;
@@ -17,4 +13,31 @@
     padding: 0.1em 0.5em;
   }
 
+  .active-learning-circles-list {
+      tr > td:last-child {
+          text-align: right;
+      }
+
+      thead > tr > th:nth-child(1) {
+          width: 40%;
+      }
+
+      thead > tr > th:nth-child(2) {
+          width: 10%;
+      }
+  }
+
+  .weekly-meeting-list {
+      thead > tr:first-child {
+        background-color: #B1B3BA;
+        color: white;
+      }
+      thead > tr > th:first-child {
+          width: 30%;
+      }
+
+      thead > tr > th:nth-child(3), thead > tr > th:nth-child(4) {
+          width: 10%;
+      }
+  }
 }

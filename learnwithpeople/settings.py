@@ -31,7 +31,7 @@ CRISPY_FAIL_SILENTLY = not DEBUG
 
 # Application definition
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,7 +48,8 @@ INSTALLED_APPS = (
     'backup',
     'analytics',
     'uxhelpers',
-)
+    'webpack_loader',
+]
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -101,23 +102,31 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = path('static_serve')
 
-STATICFILES_DIRS = (
+STATICFILES_DIRS = [
     path('static'),
-)
+    path('assets'),
+]
 
-STATICFILES_FINDERS = (
+STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     # other finders..
-)
+]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = path('upload')
 
 
-TEMPLATE_DIRS = (
+TEMPLATE_DIRS = [
     path('templates'),
-)
+]
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'dist/',
+        'STATS_FILE': path('webpack-stats-prod.json')
+    }
+}
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
