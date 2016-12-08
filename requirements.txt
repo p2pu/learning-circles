@@ -15,6 +15,7 @@ dj-static==0.0.6
 django-appconf==1.0.1
 django-crispy-forms==1.5.1
 django-phonenumber-field==1.1.0
+django-webpack-loader==0.4.1
 django-s3direct==0.3.10
 django-toolbelt==0.0.1
 docutils==0.12
