@@ -1,5 +1,6 @@
 import React from 'react'
 import PagedTable from './paged-table'
+import moment from 'moment'
 
 export default class ActiveLearningCircleList extends React.Component {
 
@@ -27,7 +28,7 @@ export default class ActiveLearningCircleList extends React.Component {
                     { lc.facilitator.first_name } { lc.facilitator }
                 </td>
                 <td>
-                    { lc.next_meeting_date }
+                    { moment(lc.next_meeting_date).format('ddd, D MMM') }
                 </td>
                 <td>
                     <a className="btn btn-primary" href={ lc.url }>View</a>

@@ -164,6 +164,7 @@
                   {% endwith %}
                 },
             {% endif %}
+            meeting_number: {{meeting.meeting_number}},
             study_group: {{meeting.study_group.to_json|safe}}
         },
         {% endfor %}

@@ -14,7 +14,7 @@ class MeetingRow extends React.Component {
         }
         return (
             <tr>
-                <td>{meeting.study_group.course_title}</td>
+                <td>{meeting.study_group.course_title} - week {meeting.meeting_number}</td>
                 <td>{meeting.study_group.facilitator}</td>
                 <td>{moment(meeting.meeting_date + ' ' + meeting.meeting_time).format('H:mm') + ' ' + meeting.study_group.time_zone}</td>
                 <td>{rsvp}</td>
@@ -83,11 +83,13 @@ export default class WeeklyMeetingsList extends React.Component {
         ).map(
             m => m.meeting_time
         );
+        const nextWeek = moment(weekStart).add(1, 'week');
+        const prevWeek = moment(weekStart).subtract(1, 'week');
         return (
             <div>
                 <h2>Upcoming meetings Week of {weekStart.format('MMM. D, YYYY')}</h2>
-                <a className="btn btn-primary" onClick={e=> this._handleWeekChange(this.state.weekStart.subtract(1, 'week')) }>Previous week</a>&nbsp;
-                <a className="btn btn-primary" onClick={e=> this._handleWeekChange(this.state.weekStart.add(1, 'week')) }>Next week</a>&nbsp;
+                <a className="btn btn-primary" onClick={e=> this._handleWeekChange(prevWeek) }>Week of {prevWeek.format('MMM. D, YYYY')}</a>&nbsp;
+                <a className="btn btn-primary" onClick={e=> this._handleWeekChange(nextWeek) }>Week of {nextWeek.format('MMM. D, YYYY')}</a>&nbsp;
                 <a className="btn btn-primary" onClick={e=> this._handleWeekChange(moment().startOf('week')) }>This week</a>
                 { week.map(day => <DayMeetingTable day={day} {...this.props} />) }
                 <p><a href="/organize/studygroup_meetings/">View all meetings</a></p>
