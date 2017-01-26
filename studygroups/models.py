@@ -502,7 +502,15 @@ def send_reminder(reminder):
     else:
         email_body = reminder.email_body
         email_body = u'{0}\n\nTo leave this Learning Circle you can visit https://{1}{2}'.format(email_body, settings.DOMAIN, reverse('studygroups_optout'))
-        send_mail(reminder.email_subject.strip('\n'), email_body, reminder.study_group.facilitator.email, to, fail_silently=False)
+        # TODO - all emails should contain the unsubscribe link
+        reminder_email = EmailMultiAlternatives(
+            reminder.email_subject.strip('\n'),
+            email_body,
+            reminder.study_group.facilitator.email,
+            [],
+            bcc=to,
+        )
+        reminder_email.send()
 
     # send SMS
     tos = [su.mobile for su in reminder.study_group.application_set.active().filter(accepted_at__isnull=False).exclude(mobile='')]
