@@ -1,7 +1,5 @@
 FROM ubuntu:14.04
 
-MAINTAINER Dirk Uys <dirkcuys@gmail.com>
-
 # Install requirements
 RUN apt-get update && apt-get install -y \
     git-core \
