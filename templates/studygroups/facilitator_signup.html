@@ -1,21 +1,21 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
-
+{% load i18n %}
+{% url 'studygroups_login_redirect' as login_url %}
 {% block content %}
 <div class="container learning-circle-signup">
 <div class="row">
     
   <div class="col-md-12 col-sm-12">
-      <h2>Create an account</h2>
-      Or <a href="{% url 'studygroups_login_redirect' %}">log in</a>
-      <p>Fill in your email address and name below, and you’ll soon get an email prompting you 
-      to reset your password and log in to create your first Learning Circle.</p>
+      <h2>{% trans "Create an account" %}</h2>
+      {% blocktrans %}Or <a href="{{ login_url }}">log in</a>{% endblocktrans %}
+      <p>{% trans "Fill in your email address and name below, and you’ll soon get an email prompting you to reset your password and log in to create your first Learning Circle." %}</p>
   </div>
   <div class="col-md-12 col-sm-12">
 	  <form action="" method="POST" enctype="multipart/form-data">
 	    {% csrf_token %}
 	    {{ form|crispy }}
-        <p><button type="submit" class="btn btn-default">Submit</button></p>
+        <p><button type="submit" class="btn btn-default">{% trans "Submit" %}</button></p>
 	  </form>
   </div>
 </div>

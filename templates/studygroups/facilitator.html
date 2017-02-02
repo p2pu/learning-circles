@@ -1,28 +1,29 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block content %}
 
 <div class="container">
 
-  <h1>{{user.first_name}}&#39;s Facilitator Dashboard</h1>
+  <h1>{% blocktrans with first_name=user.first_name %}{{first_name}}&#39;s Facilitator Dashboard{% endblocktrans %}</h1>
 
-  <h4>For help with your Learning Circle, check out:</h4>
+  <h4>{% trans "For help with your Learning Circle, check out:" %}</h4>
   <ul class="list-unstyled">
-      <li><a href="https://www.p2pu.org/en/facilitate/">Facilitator Guide</a></li>
-      <li><a href="https://community.p2pu.org">Facilitator Community</a></li>
+      <li>{% blocktrans %}<a href="https://www.p2pu.org/en/facilitate/">Facilitator Guide</a>{% endblocktrans %}</li>
+      <li>{% blocktrans %}<a href="https://community.p2pu.org">Facilitator Community</a>{% endblocktrans %}</li>
   </ul>
 
-  <h2>Active Learning Circles</h2>
+  <h2>{% trans "Active Learning Circles" %}</h2>
   {% for lc in current_study_groups %}
     {% include 'studygroups/study_group_facilitate.html' %}
   {% empty %}
-    <p>No active Learning Circles found, why not create one?</p>
+  <p>{% trans "No active Learning Circles found, why not create one?" %}</p>
   {% endfor %}
   <p>
-    <a class="btn btn-primary" href="{% url 'studygroups_facilitator_studygroup_create' %}">Create a Learning Circle</a>
+  <a class="btn btn-primary" href="{% url 'studygroups_facilitator_studygroup_create' %}">{% trans "Create a Learning Circle" %}</a>
   </p>
 
-  {% if past_study_groups %}<h2>Past Learning Circles</h2>{% endif %}
+  {% if past_study_groups %}<h2>{% trans "Past Learning Circles" %}</h2>{% endif %}
   {% for lc in past_study_groups %}
     {% include 'studygroups/study_group_facilitate.html' %}
   {% endfor %}

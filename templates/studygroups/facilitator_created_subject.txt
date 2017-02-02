@@ -1,1 +1,1 @@
-New facilitator account created on {{ domain }}.
+{% load i18n %}{% blocktrans %}New facilitator account created on {{ domain }}.{% endblocktrans %}

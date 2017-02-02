@@ -1,18 +1,19 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
+{% load i18n %}
 
 {% block content %}
 <div class="container learning-circle-signup">
 <div class="row">
     
   <div class="col-md-12 col-sm-12">
-      <h2>Add a Course</h2>
-      <p>Want to run an online course that isn&#39;t listed on our website yet? Just fill in this form and then you&#39;ll be able to select this course when creating Learning Circles going forward.</p>
+      <h2>{% trans "Add a Course" %}</h2>
+      <p>{% trans "Want to run an online course that isn&#39;t listed on our website yet? Just fill in this form and then you&#39;ll be able to select this course when creating Learning Circles going forward." %}</p>
 	  <form action="" method="POST" enctype="multipart/form-data">
 	    {% csrf_token %}
 	    {{ form|crispy }}
-        <p><button type="submit" class="btn btn-default">Add Course</button></p>
+        <p><button type="submit" class="btn btn-default">{% trans "Add Course" %}</button></p>
 	  </form>
   </div>
 </div>

@@ -1,17 +1,18 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
+{% load i18n %}
 
 {% block content %}
 <div class="container learning-circle-signup">
 <div class="row">
     
   <div class="col-md-12 col-sm-12">
-      <h2>Create a Learning Circle</h2>
-      <p>This information will be used to generate your public webpage for your Learning Circle. If you get stuck, the <a href="https://www.p2pu.org/en/facilitate/" target="_blank">Facilitator Guide</a> and the <a href="community.p2pu.org">Facilitator Community</a> can provide tips and suggestions. You can edit this form at any point in the future through your Dashboard.</p>
+      <h2>{% trans "Create a Learning Circle" %}</h2>
+      <p>{% blocktrans %}This information will be used to generate your public webpage for your Learning Circle. If you get stuck, the <a href="https://www.p2pu.org/en/facilitate/" target="_blank">Facilitator Guide</a> and the <a href="community.p2pu.org">Facilitator Community</a> can provide tips and suggestions. You can edit this form at any point in the future through your Dashboard.{% endblocktrans %}</p>
   </div>
   <div class="col-md-6 col-offset-md-3 col-sm-12">
-      <p>* indicates a required field.</p>
+      <p>{% trans "* indicates a required field." %}</p>
     {% crispy form %}
   </div>
 </div>
@@ -43,21 +44,6 @@
             container: document.querySelector('#id_city'),
             type: 'city'
         });
-
-
-        /*$( "#id_city" ).autocomplete({
-            source: function( request, response ) {
-                $.ajax({
-                    url: "{% url 'uxhelpers_city_complete' %}",
-                    dataType: "jsonp",
-                    data: { q: request.term },
-                    success: function( data ) {
-                        response( data );
-                    }
-                });
-            },
-            minLength: 3
-        });*/
     });
 </script>
 {% endblock %}
