@@ -1,21 +1,24 @@
 {% load humanize %}
+{% load i18n %}
 
 <tr>
     <td>
-        {{meeting.meeting_number|ordinal}} meeting for
-        {{meeting.study_group.course.title}} <br/>
-        at {{meeting.study_group.venue_name}}</td>
+        {% blocktrans with meeting_number=meeting.meeting_number|ordinal course_title=meeting.study_group.course.title venue_name=meeting.study_group.venue_name %}
+        {{meeting_number}} meeting for {{course_title}} <br/> at {{venue_name}}</td>
+        {% endblocktrans %}
     <td>
-      {{ meeting.study_group.facilitator.first_name }} {{ meeting.study_group.facilitator.last_name }}
+        {% blocktrans with first_name=meeting.study_group.facilitator.first_name last_name=meeting.study_group.facilitator.last_name %}
+            {{ first_name }} {{ last_name }}
+        {% endblocktrans %}
     </td>
   </td>
-  <td>{{ meeting.meeting_date|date:"D, j M Y" }}, {{ meeting.meeting_time|time:"f A"}} {{meeting.study_group.timezone_display}}</td>
-    <td>{% if meeting.rsvp_set.all.count %}Yes ({{ meeting.rsvps.yes|length }}), No ({{ meeting.rsvps.no|length }}){% endif %}</td>
+  <td>{% blocktrans with meeting_date=meeting.meeting_date|date:"D, j M Y" meeting_time=meeting.meeting_time|time:"f A" timezone=meeting.study_group.timezone_display %}{{meeting_date}}, {{meeting_time}} {{timezone}}{% endblocktrans %}</td>
+  <td>{% if meeting.rsvp_set.all.count %}{% trans "Yes" %} ({{ meeting.rsvps.yes|length }}), {% trans "No" %} ({{ meeting.rsvps.no|length }}){% endif %}</td>
     <td>
       {% if meeting.feedback_set.all.first %}
         {% with feedback=meeting.feedback_set.all.first %}
         {{feedback.feedback | truncatewords:10 }}
-        <a href="{% url 'studygroups_feedback_detail' meeting.study_group.id meeting.id feedback.id %}">View feedback</a>
+        <a href="{% url 'studygroups_feedback_detail' meeting.study_group.id meeting.id feedback.id %}">{% trans "View feedback" %}</a>
         {% endwith %}
       {% endif %}
     </td>
