@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
+{% load i18n %}
 
 {% block content %}
 <div class="container learning-circle-signup">
@@ -9,7 +10,7 @@
 	  <form action="" method="POST" enctype="multipart/form-data">
 	    {% csrf_token %}
 	    {{ form|crispy }}
-        <p><button type="submit" class="btn btn-primary">Save</button></p>
+        <p><button type="submit" class="btn btn-primary">{% trans "Save" %}</button></p>
 	  </form>
   </div>
 </div>
@@ -36,20 +37,6 @@
             container: document.querySelector('#id_city'),
             type: 'city'
         });
-
-        /*$( "#id_city" ).autocomplete({
-            source: function( request, response ) {
-                $.ajax({
-                    url: "{% url 'uxhelpers_city_complete' %}",
-                    dataType: "jsonp",
-                    data: { q: request.term },
-                    success: function( data ) {
-                        response( data );
-                    }
-                });
-            },
-            minLength: 3
-        });*/
     });
 </script>
 {% endblock %}

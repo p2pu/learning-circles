@@ -1,14 +1,15 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load i18n %}
 
 {% block content %}
 <div class="container">
   <div class="row">
     <div class="col-md-12">
-        <h2>Confirm deletion of Learning Circle meeting.</h2>
+      <h2>{% trans "Confirm deletion of Learning Circle meeting." %}</h2>
       <form action="" method="post">{% csrf_token %}
-          <p>Are you sure you want to delete the meeting on "{{ object.meeting_date|date:"D d M Y"}} at {{object.meeting_time|time:"f A" }}"?</p>
-        <p><input class="btn btn-primary" type="submit" value="Confirm" /></p>
+          <p>{% blocktrans with meeting_date=object.meeting_date|date:"D d M Y" meeting_time=object.meeting_time|time:"f A"  %}Are you sure you want to delete the meeting on {{meeting_date}} at {{meeting_time}}?{% endblocktrans %}</p>
+          <p><input class="btn btn-primary" type="submit" value="{% trans "Confirm" %}" /></p>
       </form>
     </div>
   </div>

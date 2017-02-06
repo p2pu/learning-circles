@@ -1,1 +1,1 @@
-New signup for {{application.study_group.course.title|safe}} at {{application.study_group.venue_name|safe}}.
+{% load i18n %}{% blocktrans with course_title=application.study_group.course.title|safe venue_name=application.study_group.venue_name|safe %}New signup for {{course_title}} at {{venue_name}}.{% endblocktrans %}
