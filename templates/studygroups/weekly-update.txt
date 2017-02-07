@@ -4,17 +4,17 @@
 
 {% url 'studygroups_weekly_report_date' start_time.year start_time.month start_time.day as report_url %}{% if protocol and domain %}{% blocktrans %}You can also view this report online: {{protocol}}://{{domain}}{{report_url}}{% endblocktrans %}{% endif %}
 
-{% if not team %}{% blocktrans with count facilitator_count=facilitators|length %}This week {{facilitator_count}} facilitator signed up!{% plural %}This week {{facilitator_count}} facilitators signed up!{% endblocktrans %}
+{% if not team %}{% blocktrans count facilitator_count=facilitators|length %}This week {{facilitator_count}} facilitator signed up!{% plural %}This week {{facilitator_count}} facilitators signed up!{% endblocktrans %}
 {% endif %}
 
-{% blocktrans with count login_count=logins|length%}{{login_count}} facilitator logged in.{% plural %}{{login_count}} facilitators logged in.{% endblocktrans %}
+{% blocktrans count login_count=logins|length%}{{login_count}} facilitator logged in.{% plural %}{{login_count}} facilitators logged in.{% endblocktrans %}
 
-{% blocktrans with count study_group_count=study_groups|length %}{{study_group_count}} Learning Circle was created.{% plural %}{{study_group_count}} Learning Circles were created.{% endblocktrans %}
+{% blocktrans count study_group_count=study_groups|length %}{{study_group_count}} Learning Circle was created.{% plural %}{{study_group_count}} Learning Circles were created.{% endblocktrans %}
 
-{% blocktrans with count signup_count=signups|length %}{{signup_count}} learner applied to join a Learning Circle.{% plural %}{{signup_count}} learners applied to join a Learning Circle.{% endblocktrans %}
+{% blocktrans count signup_count=signups|length %}{{signup_count}} learner applied to join a Learning Circle.{% plural %}{{signup_count}} learners applied to join a Learning Circle.{% endblocktrans %}
 
 {% for meeting in meetings|dictsort:"meeting_datetime" %}{% with study_group=meeting.study_group %}# {{study_group.course.title|safe}} {% trans "at" %} {{study_group.venue_name}}
-{% blocktrans with meeting_date=meeting.meeting_datetime|date:"fA, l, j F" meeting_number={{ meeting.meeting_number|ordinal }} %}Met {{meeting_date}} for the {{meeting_number}} time.{% endblocktrans %}
+{% blocktrans with meeting_date=meeting.meeting_datetime|date:"fA, l, j F" meeting_number=meeting.meeting_number|ordinal %}Met {{meeting_date}} for the {{meeting_number}} time.{% endblocktrans %}
 {% trans "Facilitator" %}: {{study_group.facilitator.first_name}} {{study_group.facilitator.last_name}} <{{study_group.facilitator.email}}>
 {% trans "Circle size" %}: {{study_group.application_set.active.count}}
 {% trans "Feedback from meeting" %}
