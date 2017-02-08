@@ -1,6 +1,7 @@
 {% load extras %}
+{% load i18n %}
 
-<h2>Upcoming meetings</h2>
+<h2>{% trans "Upcoming meetings" %}</h2>
 
 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 
@@ -11,7 +12,7 @@
       <div class="panel-heading" role="tab" id="heading{{forloop.counter}}">
           <h4 class="panel-title">
               <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}" aria-expanded="true" aria-controls="collapse{{forloop.counter}}">
-                  Week of {{week.grouper}}
+                  {% blocktrans with week_date=week.grouper %}Week of {{week_date}}{% endblocktrans %}
               </a>
           </h4>
       </div>
@@ -21,11 +22,11 @@
           <table class="table table-bordered">
               <thead>
                   <tr>
-                      <th>Learning Circle</th>
-                      <th>Facilitator</th>
-                      <th>Meeting time</th>
-                      <th>RSVPs</th>
-                      <th>Feedback</th>
+                      <th>{% trans "Learning Circle" %}</th>
+                      <th>{% trans "Facilitator" %}</th>
+                      <th>{% trans "Meeting time" %}</th>
+                      <th>{% trans "RSVPs" %}</th>
+                      <th>{% trans "Feedback" %}</th>
                   </tr>
               </thead>
               <tbody>

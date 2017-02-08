@@ -1,33 +1,33 @@
 {% extends 'base.html' %}
 {% load render_bundle from webpack_loader %}
+{% load i18n %}
 
 {% block content %}
 
 <div class="container">
-
   {% if team %}
     <div class="row">
       <div class="col-md-12">
-          <h1>{{team.name}} team dashboard</h1>
+          <h1>{% blocktrans with team_name=team.name %}{{team_name}} team dashboard{% endblocktrans %}</h1>
       </div>
     </div>
     <div class="row">
       <div class="col-md-12">
           {% include 'studygroups/organize_meetings.html' %}
-          <a href="{% url 'studygroups_organizer_studygroup_meetings' %}">View all meetings</a>
+          <a href="{% url 'studygroups_organizer_studygroup_meetings' %}">{% trans "View all meetings" %}</a>
       </div>
     </div>
  
     <div class="row">
       <div class="col-md-12">
-        <h2>Active Learning Circles</h2>
+          <h2>{% trans "Active Learning Circles" %}</h2>
         <table class="table table-bordered">
           <thead>
           <tr>
-              <th>Details</th>
-              <th>Signups</th>
-              <th>Facilitator</th>
-              <th>Next meeting</th>
+              <th>{% trans "Details" %}</th>
+              <th>{% trans "Signups" %}</th>
+              <th>{% trans "Facilitator" %}</th>
+              <th>{% trans "Next meeting" %}</th>
               <th></th>
           </tr>
           </thead>
@@ -36,7 +36,7 @@
               <tr>
                   <td>
                       {{ group.course }}<br>
-                      {{group.start_date|date:"l" }}s, {{ group.meeting_time|date:"f A" }} at <a href="{{group.website}}" target="_blank">{{ group.venue_name }}</a>
+                      {{group.start_date|date:"l" }}s, {{ group.meeting_time|date:"f A" }} {% trans "at" %} <a href="{{group.website}}" target="_blank">{{ group.venue_name }}</a>
                   </td>
                   <td>
                       {{ group.application_set.active.count }} 
@@ -50,24 +50,24 @@
                       {% endif %}
                   </td>
                   <td>
-                      <a class="btn btn-primary" href="{% url 'studygroups_view_study_group' group.pk %}">View</a>
+                      <a class="btn btn-primary" href="{% url 'studygroups_view_study_group' group.pk %}">{% trans "View" %}</a>
                   </td>
               </tr>
           {% endfor %}
           </tbody>
         </table>
         <!--p><a href="{% url 'studygroups_studygroup_create' %}" class="btn btn-primary">Add Learning Circle</a></p-->
-        <p><a href="{% url 'studygroups_organizer_studygroup_list' %}">View all Learning Circles</a></p>
+        <p><a href="{% url 'studygroups_organizer_studygroup_list' %}">{% trans "View all Learning Circles" %}</a></p>
       </div>
     </div>
 
     <div class="row">
       <div class="col-md-12">
-          <h2>Facilitators</h2>
+        <h2>{% trans "Facilitators" %}</h2>
         <table class="table table-bordered">
           <thead>
           <tr>
-              <th>Name</th>
+              <th>{% trans "Name" %}</th>
           </tr>
           </thead>
           <tbody>
@@ -90,45 +90,45 @@
     </div>
 
     {% if courses %}
-    <div class="row">
-      <div class="col-md-12">
-        <h2>Courses</h2>
-        <table class="table table-bordered">
-          <thead>
-          <tr>
-              <th>Title</th>
-              <th>Caption</th>
-              <th>Start date</th>
-              <th>Duration</th>
-          </tr>
-          </thead>
-          <tbody>
-          {% for course in courses %}
-              <tr>
-                  <td>
-                      <a id="{{course.id}}"></a>
-                      <a href="{{course.link }}" target="_blank">{{ course.title }}</a>
-                  </td>
-                  <td>
-                      {{ course.caption }}
-                  </td>
-                  <td>
-                      {{ course.start_date }}
-                  </td>
-                  <td>
-                      {{ course.duration }} week{{course.duration|pluralize}}
-                  </td>
-                  <td>
-                      <a href="{% url 'studygroups_course_edit' course.id %}" class="btn btn-primary">Edit</a>
-                      <a href="{% url 'studygroups_course_delete' course.id %}" class="btn btn-primary">Delete</a>
-                  </td>
-              </tr>
-          {% endfor %}
-          </tbody>
-        </table>
-        <p><a href="{% url 'studygroups_course_create' %}" class="btn btn-primary">Add course</a></p>
+      <div class="row">
+        <div class="col-md-12">
+          <h2>Courses</h2>
+          <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Caption</th>
+                <th>Start date</th>
+                <th>Duration</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for course in courses %}
+                <tr>
+                    <td>
+                        <a id="{{course.id}}"></a>
+                        <a href="{{course.link }}" target="_blank">{{ course.title }}</a>
+                    </td>
+                    <td>
+                        {{ course.caption }}
+                    </td>
+                    <td>
+                        {{ course.start_date }}
+                    </td>
+                    <td>
+                        {{ course.duration }} week{{course.duration|pluralize}}
+                    </td>
+                    <td>
+                        <a href="{% url 'studygroups_course_edit' course.id %}" class="btn btn-primary">Edit</a>
+                        <a href="{% url 'studygroups_course_delete' course.id %}" class="btn btn-primary">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+          <p><a href="{% url 'studygroups_course_create' %}" class="btn btn-primary">Add course</a></p>
+        </div>
       </div>
-    </div>
     {% endif %}
   {% else %}
     <div class="row">

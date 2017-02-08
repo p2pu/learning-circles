@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-07 14:33+0000\n"
+"POT-Creation-Date: 2017-02-08 12:36+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -654,6 +654,7 @@ msgid "<a href=\"https://community.p2pu.org\">Facilitator Community</a>"
 msgstr ""
 
 #: templates/studygroups/facilitator.html:16
+#: templates/studygroups/organize.html:23
 #: templates/studygroups/team_page.html:21
 msgid "Active Learning Circles"
 msgstr ""
@@ -1340,6 +1341,96 @@ msgid ""
 "%(application.study_group.venue_name)s."
 msgstr ""
 
+#: templates/studygroups/organize.html:11
+#, python-format
+msgid "%(team_name)s team dashboard"
+msgstr ""
+
+#: templates/studygroups/organize.html:17
+msgid "View all meetings"
+msgstr ""
+
+#: templates/studygroups/organize.html:27
+#: templates/studygroups/studygroup_list.html:13
+msgid "Details"
+msgstr ""
+
+#: templates/studygroups/organize.html:28
+#: templates/studygroups/studygroup_list.html:14
+msgid "Signups"
+msgstr ""
+
+#: templates/studygroups/organize.html:29
+#: templates/studygroups/organize_meetings.html:26
+#: templates/studygroups/studygroup_list.html:15
+#: templates/studygroups/studygroupmeeting_list.html:14
+#: templates/studygroups/weekly-update.html:45
+#: templates/studygroups/weekly-update.txt:18
+msgid "Facilitator"
+msgstr ""
+
+#: templates/studygroups/organize.html:30
+#: templates/studygroups/study_group_facilitate.html:41
+msgid "Next meeting"
+msgstr ""
+
+#: templates/studygroups/organize.html:39 templates/studygroups/signup.html:21
+#: templates/studygroups/study_group_facilitate.html:41
+#: templates/studygroups/studygroup_list.html:25
+#: templates/studygroups/weekly-update.html:43
+#: templates/studygroups/weekly-update.txt:16
+msgid "at"
+msgstr ""
+
+#: templates/studygroups/organize.html:53
+#: templates/studygroups/studygroup_list.html:37
+msgid "View"
+msgstr ""
+
+#: templates/studygroups/organize.html:60
+msgid "View all Learning Circles"
+msgstr ""
+
+#: templates/studygroups/organize.html:66
+msgid "Facilitators"
+msgstr ""
+
+#: templates/studygroups/organize.html:70
+#: templates/studygroups/study_group_facilitate.html:143
+msgid "Name"
+msgstr ""
+
+#: templates/studygroups/organize_meetings.html:4
+msgid "Upcoming meetings"
+msgstr ""
+
+#: templates/studygroups/organize_meetings.html:15
+#, python-format
+msgid "Week of %(week_date)s"
+msgstr ""
+
+#: templates/studygroups/organize_meetings.html:25
+#: templates/studygroups/studygroupmeeting_list.html:13
+msgid "Learning Circle"
+msgstr ""
+
+#: templates/studygroups/organize_meetings.html:27
+#: templates/studygroups/studygroupmeeting_list.html:15
+msgid "Meeting time"
+msgstr ""
+
+#: templates/studygroups/organize_meetings.html:28
+#: templates/studygroups/study_group_facilitate.html:66
+#: templates/studygroups/studygroupmeeting_list.html:16
+msgid "RSVPs"
+msgstr ""
+
+#: templates/studygroups/organize_meetings.html:29
+#: templates/studygroups/study_group_facilitate.html:67
+#: templates/studygroups/studygroupmeeting_list.html:17
+msgid "Feedback"
+msgstr ""
+
 #: templates/studygroups/rsvp_success.html:9
 msgid "Thank you for letting us know!"
 msgstr ""
@@ -1353,14 +1444,6 @@ msgstr ""
 #: templates/studygroups/signup.html:10
 #, python-format
 msgid "Sign up for %(course_title)s"
-msgstr ""
-
-#: templates/studygroups/signup.html:21
-#: templates/studygroups/study_group_facilitate.html:41
-#: templates/studygroups/studygroup_list.html:25
-#: templates/studygroups/weekly-update.html:43
-#: templates/studygroups/weekly-update.txt:16
-msgid "at"
 msgstr ""
 
 #: templates/studygroups/signup.html:22
@@ -1453,10 +1536,6 @@ msgid ""
 msgstr ""
 
 #: templates/studygroups/study_group_facilitate.html:41
-msgid "Next meeting"
-msgstr ""
-
-#: templates/studygroups/study_group_facilitate.html:41
 msgid "No meeting scheduled"
 msgstr ""
 
@@ -1478,16 +1557,6 @@ msgstr ""
 
 #: templates/studygroups/study_group_facilitate.html:65
 msgid "Date"
-msgstr ""
-
-#: templates/studygroups/study_group_facilitate.html:66
-#: templates/studygroups/studygroupmeeting_list.html:16
-msgid "RSVPs"
-msgstr ""
-
-#: templates/studygroups/study_group_facilitate.html:67
-#: templates/studygroups/studygroupmeeting_list.html:17
-msgid "Feedback"
 msgstr ""
 
 #: templates/studygroups/study_group_facilitate.html:77
@@ -1536,10 +1605,6 @@ msgstr ""
 msgid "Learners"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:143
-msgid "Name"
-msgstr ""
-
 #: templates/studygroups/study_group_facilitate.html:144
 msgid "Goal"
 msgstr ""
@@ -1569,27 +1634,8 @@ msgstr ""
 msgid "back to organizer dashboard"
 msgstr ""
 
-#: templates/studygroups/studygroup_list.html:13
-msgid "Details"
-msgstr ""
-
-#: templates/studygroups/studygroup_list.html:14
-msgid "Signups"
-msgstr ""
-
-#: templates/studygroups/studygroup_list.html:15
-#: templates/studygroups/studygroupmeeting_list.html:14
-#: templates/studygroups/weekly-update.html:45
-#: templates/studygroups/weekly-update.txt:18
-msgid "Facilitator"
-msgstr ""
-
 #: templates/studygroups/studygroup_list.html:16
 msgid "First meeting"
-msgstr ""
-
-#: templates/studygroups/studygroup_list.html:37
-msgid "View"
 msgstr ""
 
 #: templates/studygroups/studygroup_list.html:47
@@ -1618,14 +1664,6 @@ msgstr ""
 
 #: templates/studygroups/studygroupmeeting_list.html:9
 msgid "Learning Circles meetings"
-msgstr ""
-
-#: templates/studygroups/studygroupmeeting_list.html:13
-msgid "Learning Circle"
-msgstr ""
-
-#: templates/studygroups/studygroupmeeting_list.html:15
-msgid "Meeting time"
 msgstr ""
 
 #: templates/studygroups/team_page.html:10
