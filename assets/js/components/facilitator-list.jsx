@@ -22,7 +22,7 @@ export default class FacilitatorList extends React.Component {
         let facilitators = this.props.facilitators.filter(f => 
             re.test(f.name + f.email)
         );
-        let heading = <tr><th>Name</th><th>Email</th></tr>;
+        let heading = <tr><th>{gettext("Name")}</th><th>{gettext("Email")}</th></tr>;
         let facilitatorRows = facilitators.sort(function(a,b){
             if (a.name.toLowerCase() < b.name.toLowerCase()) {
                 return -1;
@@ -36,9 +36,9 @@ export default class FacilitatorList extends React.Component {
         );
         return (
             <div className="organizer">
-                <h2>Facilitators</h2>
+                <h2>{gettext("Facilitators")}</h2>
                 <div className="form-group">
-                    <input type="text" className="form-control" value={this.state.filterQuery} onChange={this.handleChange} placeholder="Filter users by name or email" />
+                    <input type="text" className="form-control" value={this.state.filterQuery} onChange={this.handleChange} placeholder={gettext("Filter users by name or email")} />
                 </div>
                 <PagedTable perPage={10} heading={heading}>{facilitatorRows}</PagedTable>
             </div>

@@ -32,7 +32,7 @@ export default class Pager extends React.Component {
             <li key='prev'
                 className={activePage==0&&'disabled'}
                 onClick={this._handleChange.bind(this, activePage-1)}>
-                <a href='#'>Prev</a>
+                <a href='#'>{gettext("Prev")}</a>
             </li>
         );
 
@@ -66,7 +66,7 @@ export default class Pager extends React.Component {
             <li key='next'
                 className={activePage==pages-1&&'disabled'}
                 onClick={this._handleChange.bind(this, activePage+1)}>
-                <a href='#'>Next</a>
+                <a href='#'>{gettext("Next")}</a>
             </li>
         );
 

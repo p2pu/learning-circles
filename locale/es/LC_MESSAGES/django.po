@@ -2,20 +2,20 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-07 14:33+0000\n"
+"POT-Creation-Date: 2017-02-07 14:57+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Last-Translator: Dirk Uys <dirkcuys@gmail.com>, 2017\n"
+"Language-Team: Spanish (https://www.transifex.com/p2pu/teams/68023/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: es\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: studygroups/forms.py:33 studygroups/forms.py:40 studygroups/forms.py:159
@@ -31,7 +31,8 @@ msgid "if you want to receive meeting reminders via text message."
 msgstr ""
 
 #: studygroups/forms.py:49
-msgid "Can you bring a laptop and headphones to the Learning Circle each week?"
+msgid ""
+"Can you bring a laptop and headphones to the Learning Circle each week?"
 msgstr ""
 
 #: studygroups/forms.py:52
@@ -50,7 +51,7 @@ msgstr ""
 
 #: studygroups/forms.py:100
 msgid "Email address used to sign up."
-msgstr ""
+msgstr "Correo electronico usada por inscripción"
 
 #: studygroups/forms.py:101
 msgid "Phone number used to sign up."
@@ -226,8 +227,8 @@ msgstr ""
 
 #: studygroups/models.py:84
 msgid ""
-"If the course is always available (many are), choose today's date. Note that "
-"this is the start date for the course - not for your specific Learning "
+"If the course is always available (many are), choose today's date. Note that"
+" this is the start date for the course - not for your specific Learning "
 "Circle."
 msgstr ""
 
@@ -406,10 +407,7 @@ msgstr ""
 #: templates/footer.html:24
 msgid ""
 "\n"
-"            Founded in 2009, Peer 2 Peer University is a non-profit "
-"organization that facilitates learning outside of institutional walls. "
-"Designing and leveraging open education tools and resources, P2PU strives to "
-"cultivate a high-quality, low-cost model for learning."
+"            Founded in 2009, Peer 2 Peer University is a non-profit organization that facilitates learning outside of institutional walls. Designing and leveraging open education tools and resources, P2PU strives to cultivate a high-quality, low-cost model for learning."
 msgstr ""
 
 #: templates/footer.html:31
@@ -431,17 +429,15 @@ msgstr ""
 #: templates/footer.html:55
 msgid ""
 "\n"
-"\t\t\t\tUnless otherwise noted, all the materials on this site are licensed "
-"under a\n"
-"\t\t\t\t<a target=\"_blank\" href=\"http://creativecommons.org/licenses/by-"
-"sa/4.0/\">\n"
+"\t\t\t\tUnless otherwise noted, all the materials on this site are licensed under a\n"
+"\t\t\t\t<a target=\"_blank\" href=\"http://creativecommons.org/licenses/by-sa/4.0/\">\n"
 "\t\t\t\t\tCreative Commons Attribution Share Alike 4.0</a> license.\n"
 "                "
 msgstr ""
 
 #: templates/header.html:22
 msgid "Courses"
-msgstr ""
+msgstr "Cursos"
 
 #: templates/header.html:25
 msgid "About"
@@ -449,11 +445,11 @@ msgstr ""
 
 #: templates/header.html:28
 msgid "Facilitator Guide"
-msgstr ""
+msgstr "Guia"
 
 #: templates/header.html:33
 msgid "Organize"
-msgstr ""
+msgstr "Organizar"
 
 #: templates/header.html:37
 msgid "Dashboard"
@@ -479,8 +475,7 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"        %(meeting_number)s meeting for %(course_title)s <br/> at "
-"%(venue_name)s</td>\n"
+"        %(meeting_number)s meeting for %(course_title)s <br/> at %(venue_name)s</td>\n"
 "        "
 msgstr ""
 
@@ -534,8 +529,8 @@ msgstr ""
 #: templates/studygroups/city_list.html:15
 #, python-format
 msgid ""
-"Sign up below for a Learning Circle in your area, or <a class=\"lc-jumbo-link"
-"\" href=\"%(signup_url)s\">create your own!</a>"
+"Sign up below for a Learning Circle in your area, or <a class=\"lc-jumbo-"
+"link\" href=\"%(signup_url)s\">create your own!</a>"
 msgstr ""
 
 #: templates/studygroups/city_list.html:22
@@ -607,8 +602,8 @@ msgstr ""
 #: templates/studygroups/course_list.html:9
 msgid ""
 "These are courses that we've worked with in the past and think work pretty "
-"well as Learning Circles. When you create a Learning Circle, you'll have the "
-"option to select from these courses or to add your own."
+"well as Learning Circles. When you create a Learning Circle, you'll have the"
+" option to select from these courses or to add your own."
 msgstr ""
 
 #: templates/studygroups/edit_study_group_meeting.html:12
@@ -628,8 +623,8 @@ msgstr ""
 msgid ""
 "Send messages to everyone in your Learning Circle. You can include text in "
 "both the email and SMS (text message) field, and the message will be "
-"delivered to learners in whichever medium they selected when they signed up. "
-"Note that all messages will appear from your email address."
+"delivered to learners in whichever medium they selected when they signed up."
+" Note that all messages will appear from your email address."
 msgstr ""
 
 #: templates/studygroups/email.html:13
@@ -695,10 +690,11 @@ msgstr ""
 
 #: templates/studygroups/facilitator_created_email.html:12
 msgid ""
-"<a href=\"https://www.p2pu.org/en/facilitate/\">www.p2pu.org/en/facilitate/</"
-"a> - This is the facilitator guide - if this is your first time "
-"facilitating, you’ll want to check this out to familiarize yourself with the "
-"experience and download the necessary materials."
+"<a "
+"href=\"https://www.p2pu.org/en/facilitate/\">www.p2pu.org/en/facilitate/</a>"
+" - This is the facilitator guide - if this is your first time facilitating, "
+"you’ll want to check this out to familiarize yourself with the experience "
+"and download the necessary materials."
 msgstr ""
 
 #: templates/studygroups/facilitator_created_email.html:13
@@ -710,8 +706,8 @@ msgstr ""
 
 #: templates/studygroups/facilitator_created_email.html:14
 msgid ""
-"<a href=\"https://community.p2pu.org/\">community.p2pu.org</a> - This is the "
-"online facilitator community - head over there  to share feedback, photos, "
+"<a href=\"https://community.p2pu.org/\">community.p2pu.org</a> - This is the"
+" online facilitator community - head over there  to share feedback, photos, "
 "suggestions, and questions with facilitators from around the world."
 msgstr ""
 
@@ -736,9 +732,7 @@ msgstr ""
 msgid ""
 "Hi there\n"
 "\n"
-"Welcome to the P2PU Learning Circle community!  To log in and use your "
-"account, follow the link below and reset your password. Your username is "
-"%(email)s.\n"
+"Welcome to the P2PU Learning Circle community!  To log in and use your account, follow the link below and reset your password. Your username is %(email)s.\n"
 "\n"
 "%(protocol)s://%(domain)s%(password_reset_confirm_url)s."
 msgstr ""
@@ -776,18 +770,19 @@ msgstr ""
 #: templates/studygroups/facilitator_signup_success.html:12
 msgid ""
 "You will shortly receive an email with instruction on setting your password "
-"and logging on. If you haven't already seen the <a href=\"https://p2pu.org/"
-"en/facilitate\">Facilitator Guide</a>, be sure to have a look now."
+"and logging on. If you haven't already seen the <a "
+"href=\"https://p2pu.org/en/facilitate\">Facilitator Guide</a>, be sure to "
+"have a look now."
 msgstr ""
 
 #: templates/studygroups/facilitator_studygroup_form.html:12
 msgid ""
 "This information will be used to generate your public webpage for your "
-"Learning Circle. If you get stuck, the <a href=\"https://www.p2pu.org/en/"
-"facilitate/\" target=\"_blank\">Facilitator Guide</a> and the <a href="
-"\"community.p2pu.org\">Facilitator Community</a> can provide tips and "
-"suggestions. You can edit this form at any point in the future through your "
-"Dashboard."
+"Learning Circle. If you get stuck, the <a "
+"href=\"https://www.p2pu.org/en/facilitate/\" target=\"_blank\">Facilitator "
+"Guide</a> and the <a href=\"community.p2pu.org\">Facilitator Community</a> "
+"can provide tips and suggestions. You can edit this form at any point in the"
+" future through your Dashboard."
 msgstr ""
 
 #: templates/studygroups/facilitator_studygroup_form.html:15
@@ -806,8 +801,7 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"            Feedback from meeting that happened %(meeting_date)s, "
-"%(meeting_time)s\n"
+"            Feedback from meeting that happened %(meeting_date)s, %(meeting_time)s\n"
 "          "
 msgstr ""
 
@@ -827,23 +821,21 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"            Capture feedback for the meeting that happened on "
-"%(meeting_date)s, %(meeting_time)s\n"
+"            Capture feedback for the meeting that happened on %(meeting_date)s, %(meeting_time)s\n"
 "          "
 msgstr ""
 
 #: templates/studygroups/feedback_form.html:22
 msgid ""
-"Get in touch with other facilitators at <a href=\"https://community.p2pu.org/"
-"\">community.p2pu.org</a>"
+"Get in touch with other facilitators at <a "
+"href=\"https://community.p2pu.org/\">community.p2pu.org</a>"
 msgstr ""
 
 #: templates/studygroups/incoming_sms.html:7
 #, python-format
 msgid ""
 "\n"
-"        <p>We received the following SMS from %(name)s as a response to a "
-"reminder you&#39;ve sent.</p>\n"
+"        <p>We received the following SMS from %(name)s as a response to a reminder you&#39;ve sent.</p>\n"
 "    "
 msgstr ""
 
@@ -856,9 +848,7 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"        <p>If this is a RSVP for the Learning Circle meeting "
-"%(meeting_date)s, %(meeting_time)s please click the appropriate link below.</"
-"p>\n"
+"        <p>If this is a RSVP for the Learning Circle meeting %(meeting_date)s, %(meeting_time)s please click the appropriate link below.</p>\n"
 "    "
 msgstr ""
 
@@ -889,8 +879,8 @@ msgstr ""
 #: templates/studygroups/index.html:15
 #, python-format
 msgid ""
-"Sign up below for a Learning Circle in your area, or <a class=\"lc-jumbo-link"
-"\" href=\"%(facilitator_signup_url)s\">create your own!</a>"
+"Sign up below for a Learning Circle in your area, or <a class=\"lc-jumbo-"
+"link\" href=\"%(facilitator_signup_url)s\">create your own!</a>"
 msgstr ""
 
 #: templates/studygroups/index.html:25
@@ -913,8 +903,7 @@ msgstr ""
 
 #: templates/studygroups/learning-circles.html:14
 #, python-format
-msgid ""
-"Facilitator: <span class=\"extrabold\">%(first_name)s %(last_name)s</span>"
+msgid "Facilitator: <span class=\"extrabold\">%(first_name)s %(last_name)s</span>"
 msgstr ""
 
 #: templates/studygroups/learning-circles.html:17
@@ -927,11 +916,11 @@ msgstr ""
 #: templates/studygroups/learning-circles.html:18
 #, python-format
 msgid ""
-"<span class=\"extrabold\">One week</span> beginning <span class=\"extrabold"
-"\">%(start_date)s</span>"
+"<span class=\"extrabold\">One week</span> beginning <span "
+"class=\"extrabold\">%(start_date)s</span>"
 msgid_plural ""
-"<span class=\"extrabold\">%(weeks)s weeks</span> beginning <span class="
-"\"extrabold\">%(start_date)s</span>"
+"<span class=\"extrabold\">%(weeks)s weeks</span> beginning <span "
+"class=\"extrabold\">%(start_date)s</span>"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -945,9 +934,7 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"    <p>Congratulations! Your Learning Circle is now live at: <a href="
-"\"%(protocol)s://%(domain)s%(study_group_url)s\">%(protocol)s://%(domain)s"
-"%(study_group_url)s</a></p>\n"
+"    <p>Congratulations! Your Learning Circle is now live at: <a href=\"%(protocol)s://%(domain)s%(study_group_url)s\">%(protocol)s://%(domain)s%(study_group_url)s</a></p>\n"
 msgstr ""
 
 #: templates/studygroups/learning_circle_created.html:12
@@ -973,23 +960,22 @@ msgstr ""
 msgid ""
 "<a href=\"https://learningcircles.p2pu.org/en/facilitator/\"><b>Read the "
 "applications</b></a>. You’ll receive an email whenever somebody applies to "
-"your Learning Circle. You can view their applications and send them messages "
-"directly through your dashboard."
+"your Learning Circle. You can view their applications and send them messages"
+" directly through your dashboard."
 msgstr ""
 
 #: templates/studygroups/learning_circle_created.html:19
 msgid ""
 "You&#39;ll hear from us again a few days before your first Learning Circle. "
-"If you have any questions in the meantime, you can ask in our <a href="
-"\"https://community.p2pu.org\">facilitator community</a>."
+"If you have any questions in the meantime, you can ask in our <a "
+"href=\"https://community.p2pu.org\">facilitator community</a>."
 msgstr ""
 
 #: templates/studygroups/learning_circle_created.txt:2
 #, python-format
 msgid ""
 "\n"
-"Congratulations! Your Learning Circle is now live at: %(protocol)s://"
-"%(domain)s%(study_group_url)s"
+"Congratulations! Your Learning Circle is now live at: %(protocol)s://%(domain)s%(study_group_url)s"
 msgstr ""
 
 #: templates/studygroups/learning_circle_created.txt:6
@@ -1009,8 +995,8 @@ msgstr ""
 msgid ""
 "Read the applications: https://learningcircles.p2pu.org/en/facilitator. "
 "You’ll receive an email whenever somebody applies to your Learning Circle. "
-"You can view their applications and send them messages directly through your "
-"dashboard."
+"You can view their applications and send them messages directly through your"
+" dashboard."
 msgstr ""
 
 #: templates/studygroups/learning_circle_created.txt:10
@@ -1046,16 +1032,17 @@ msgstr ""
 #: templates/studygroups/new_facilitator_update.html:6
 msgid ""
 "A week ago you signed up to be a facilitate a Learning Circle. If you "
-"haven&#39;t already, head over to <a href=\"https://www.p2pu.org/en/"
-"facilitate/\">www.p2pu.org/facilitate\"</a> to get your first Learning "
-"Circle up and running."
+"haven&#39;t already, head over to <a "
+"href=\"https://www.p2pu.org/en/facilitate/\">www.p2pu.org/facilitate\"</a> "
+"to get your first Learning Circle up and running."
 msgstr ""
 
 #: templates/studygroups/new_facilitator_update.html:8
 msgid ""
 "If you have any questions, our team and growing community of facilitators "
-"are available at <a href=\"https://community.p2pu.org\">community.p2pu.org</"
-"a> to answer questions and share feedback. We&#39;d love to see you there!"
+"are available at <a "
+"href=\"https://community.p2pu.org\">community.p2pu.org</a> to answer "
+"questions and share feedback. We&#39;d love to see you there!"
 msgstr ""
 
 #: templates/studygroups/new_facilitator_update.html:10
@@ -1096,11 +1083,11 @@ msgstr ""
 
 #: templates/studygroups/new_studygroup_update.html:8
 msgid ""
-"The <a href=\"https://www.p2pu.org/en/facilitate/starting/\">Getting Started "
-"section</a> of the handbook has lots of tips on how to promote your Learning "
-"Circle in your community. Once this is complete, you can check out the <a "
-"href=\"https://www.p2pu.org/en/facilitate/running/\">Running Learning "
-"Circles section</a> to read facilitation tips and tricks from past "
+"The <a href=\"https://www.p2pu.org/en/facilitate/starting/\">Getting Started"
+" section</a> of the handbook has lots of tips on how to promote your "
+"Learning Circle in your community. Once this is complete, you can check out "
+"the <a href=\"https://www.p2pu.org/en/facilitate/running/\">Running Learning"
+" Circles section</a> to read facilitation tips and tricks from past "
 "facilitators."
 msgstr ""
 
@@ -1113,11 +1100,12 @@ msgstr ""
 
 #: templates/studygroups/new_studygroup_update.txt:5
 msgid ""
-"The Getting Started section of the handbook (https://www.p2pu.org/en/"
-"facilitate/starting/) has lots of tips on how to promote your Learning "
-"Circle in your community. Once this is complete, you can check out the "
-"Running Learning Circles section (https://www.p2pu.org/en/facilitate/"
-"running/) to read facilitation tips and tricks from past facilitators."
+"The Getting Started section of the handbook "
+"(https://www.p2pu.org/en/facilitate/starting/) has lots of tips on how to "
+"promote your Learning Circle in your community. Once this is complete, you "
+"can check out the Running Learning Circles section "
+"(https://www.p2pu.org/en/facilitate/running/) to read facilitation tips and "
+"tricks from past facilitators."
 msgstr ""
 
 #: templates/studygroups/new_studygroup_update.txt:7
@@ -1143,8 +1131,7 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"      %(name)s <a href=\"mailto:%(email)s\">&lt;%(email)s&gt;</a> applied "
-"for \"%(course_title)s\" at %(venue_name)s.\n"
+"      %(name)s <a href=\"mailto:%(email)s\">&lt;%(email)s&gt;</a> applied for \"%(course_title)s\" at %(venue_name)s.\n"
 "    "
 msgstr ""
 
@@ -1158,8 +1145,7 @@ msgstr ""
 
 #: templates/studygroups/notifications/application.txt:3
 #, python-format
-msgid ""
-"%(name)s <%(email)s> applied for \"%(course_title)s\" at %(venue_name)s."
+msgid "%(name)s <%(email)s> applied for \"%(course_title)s\" at %(venue_name)s."
 msgstr ""
 
 #: templates/studygroups/notifications/application.txt:3
@@ -1171,8 +1157,7 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"            New feedback submitted for the \"%(course_title)s\" Learning "
-"Circle meeting at %(venue_name)s %(meeting_date)s\n"
+"            New feedback submitted for the \"%(course_title)s\" Learning Circle meeting at %(venue_name)s %(meeting_date)s\n"
 "        "
 msgstr ""
 
@@ -1180,9 +1165,7 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"    %(first_name)s %(last_name)s submitted feedback for the "
-"\"%(course_title)s\" Learning Circle meeting at %(venue_name)s, "
-"%(meeting_date)s.\n"
+"    %(first_name)s %(last_name)s submitted feedback for the \"%(course_title)s\" Learning Circle meeting at %(venue_name)s, %(meeting_date)s.\n"
 "  "
 msgstr ""
 
@@ -1208,8 +1191,8 @@ msgstr ""
 #: templates/studygroups/notifications/feedback-submitted.txt:4
 #, python-format
 msgid ""
-"%(first_name)s %(last_name)s submitted feedback for the \"%(course_title)s\" "
-"Learning Circle meeting at %(venue_name)s, %(meeting_date)s."
+"%(first_name)s %(last_name)s submitted feedback for the \"%(course_title)s\""
+" Learning Circle meeting at %(venue_name)s, %(meeting_date)s."
 msgstr ""
 
 #: templates/studygroups/notifications/reminder-notification.html:6
@@ -1217,7 +1200,8 @@ msgstr ""
 #, python-format
 msgid ""
 "We've generated a reminder for the Learning Circle meeting this "
-"%(meeting_date)s. The reminder will be sent automatically in 2 days from now."
+"%(meeting_date)s. The reminder will be sent automatically in 2 days from "
+"now."
 msgstr ""
 
 #: templates/studygroups/notifications/reminder-notification.html:8
@@ -1238,8 +1222,8 @@ msgstr ""
 #: templates/studygroups/notifications/reminder-notification.html:22
 #, python-format
 msgid ""
-"If you wish to edit the reminder, you can follow <a href=\"%(protocol)s://"
-"%(domain)s%(message_edit_url)s\">this link</a>."
+"If you wish to edit the reminder, you can follow <a "
+"href=\"%(protocol)s://%(domain)s%(message_edit_url)s\">this link</a>."
 msgstr ""
 
 #: templates/studygroups/notifications/reminder-notification.html:25
@@ -1250,8 +1234,8 @@ msgstr ""
 #: templates/studygroups/notifications/reminder-notification.txt:15
 #, python-format
 msgid ""
-"If you wish to edit the reminder, you can follow this link: %(protocol)s://"
-"%(domain)s%(message_edit_url)s."
+"If you wish to edit the reminder, you can follow this link: "
+"%(protocol)s://%(domain)s%(message_edit_url)s."
 msgstr ""
 
 #: templates/studygroups/notifications/reminder-subject.txt:1
@@ -1278,7 +1262,8 @@ msgstr ""
 
 #: templates/studygroups/notifications/reminder.txt:7
 msgid ""
-"Please let us know if you can make it by visiting the appropriate link below."
+"Please let us know if you can make it by visiting the appropriate link "
+"below."
 msgstr ""
 
 #: templates/studygroups/notifications/reminder.txt:8
@@ -1301,8 +1286,8 @@ msgstr ""
 
 #: templates/studygroups/notifications/reminder.txt:13
 msgid ""
-"To leave this study group and stop receiving subsequent notifications, click "
-"here"
+"To leave this study group and stop receiving subsequent notifications, click"
+" here"
 msgstr ""
 
 #: templates/studygroups/notifications/sms.txt:1
@@ -1322,8 +1307,8 @@ msgstr ""
 #: templates/studygroups/optout_confirm_email.html:10
 #: templates/studygroups/optout_confirm_email.txt:7
 msgid ""
-"If you didn't request to be removed from the Learning Circle, you can safely "
-"ignore this message."
+"If you didn't request to be removed from the Learning Circle, you can safely"
+" ignore this message."
 msgstr ""
 
 #: templates/studygroups/optout_confirm_email_subject.txt:1
@@ -1370,23 +1355,18 @@ msgstr ""
 
 #: templates/studygroups/signup.html:23
 #, python-format
-msgid ""
-"Course content from <a href=\"%(link)s\" target=\"_blank\">%(provider)s</a>"
+msgid "Course content from <a href=\"%(link)s\" target=\"_blank\">%(provider)s</a>"
 msgstr ""
 
 #: templates/studygroups/signup.html:26
 #, python-format
 msgid ""
 "\n"
-"        <strong>This Learning Circle meets every %(day)s from "
-"%(meeting_time)s to %(end_time)s %(timezone)s starting %(start_date)s for "
-"%(meeting_count)s week.</strong>\n"
+"        <strong>This Learning Circle meets every %(day)s from %(meeting_time)s to %(end_time)s %(timezone)s starting %(start_date)s for %(meeting_count)s week.</strong>\n"
 "        "
 msgid_plural ""
 "\n"
-"        <strong>This Learning Circle meets every %(day)s from "
-"%(meeting_time)s to %(end_time)s %(timezone)s starting %(start_date)s for "
-"%(meeting_count)s weeks.</strong>\n"
+"        <strong>This Learning Circle meets every %(day)s from %(meeting_time)s to %(end_time)s %(timezone)s starting %(start_date)s for %(meeting_count)s weeks.</strong>\n"
 "      "
 msgstr[0] ""
 msgstr[1] ""
@@ -1395,17 +1375,14 @@ msgstr[1] ""
 #, python-format
 msgid ""
 "\n"
-"        Thank you for signing up for &quot;"
-"%(study_group.course.title)s&quot; at %(study_group.venue_name)s. The first "
-"meeting will be on <strong>%(start_date)s, %(meeting_time)s</strong>. Your "
-"facilitator will be in contact before then."
+"        Thank you for signing up for &quot;%(study_group.course.title)s&quot; at %(study_group.venue_name)s. The first meeting will be on <strong>%(start_date)s, %(meeting_time)s</strong>. Your facilitator will be in contact before then."
 msgstr ""
 
 #: templates/studygroups/study_group_facilitate.html:11
 #, python-format
 msgid ""
-"At <a href=\"%(venue_website)s\">%(venue_name)s</a>, %(venue_details)s every "
-"%(day)s, %(meeting_time)s to %(end_time)s %(timezone)s starting "
+"At <a href=\"%(venue_website)s\">%(venue_name)s</a>, %(venue_details)s every"
+" %(day)s, %(meeting_time)s to %(end_time)s %(timezone)s starting "
 "%(start_date)s"
 msgstr ""
 
@@ -1422,8 +1399,8 @@ msgstr ""
 
 #: templates/studygroups/study_group_facilitate.html:21
 msgid ""
-"This study group has been deleted. If that is a mistake, please contact your "
-"team coordinator or the P2PU learning circles coordinator."
+"This study group has been deleted. If that is a mistake, please contact your"
+" team coordinator or the P2PU learning circles coordinator."
 msgstr ""
 
 #: templates/studygroups/study_group_facilitate.html:27
@@ -1654,8 +1631,8 @@ msgstr ""
 #: templates/studygroups/weekly-update.html:9
 #, python-format
 msgid ""
-"You can also view this report <a href=\"%(protocol)s://%(domain)s"
-"%(report_url)s\">online</a>."
+"You can also view this report <a "
+"href=\"%(protocol)s://%(domain)s%(report_url)s\">online</a>."
 msgstr ""
 
 #: templates/studygroups/weekly-update.html:12
@@ -1746,7 +1723,8 @@ msgstr ""
 #: templates/studygroups/weekly-update.txt:5
 #, python-format
 msgid ""
-"You can also view this report online: %(protocol)s://%(domain)s%(report_url)s"
+"You can also view this report online: "
+"%(protocol)s://%(domain)s%(report_url)s"
 msgstr ""
 
 #: templates/studygroups/weekly-update.txt:7

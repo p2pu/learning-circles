@@ -7,10 +7,10 @@ export default class ActiveLearningCircleList extends React.Component {
     render(){
         var heading = (
             <tr>
-                <th>Details</th>
-                <th>Signups</th>
-                <th>Facilitator</th>
-                <th>Next meeting</th>
+                <th>{gettext("Details")}</th>
+                <th>{gettext("Signups")}</th>
+                <th>{gettext("Facilitator")}</th>
+                <th>{gettext("Next meeting")}</th>
                 <th></th>
             </tr>
         );
@@ -19,7 +19,7 @@ export default class ActiveLearningCircleList extends React.Component {
             <tr>
                 <td>
                     { lc.course_title }<br/>
-                    { lc.day }s, { lc.meeting_time } at { lc.venue_name }
+                    { lc.day }s, { lc.meeting_time } {gettext("at")} { lc.venue_name }
                 </td>
                 <td>
                     { lc.signup_count }
@@ -31,16 +31,16 @@ export default class ActiveLearningCircleList extends React.Component {
                     { moment(lc.next_meeting_date).format('ddd, D MMM') }
                 </td>
                 <td>
-                    <a className="btn btn-primary" href={ lc.url }>View</a>
+                    <a className="btn btn-primary" href={ lc.url }>{gettext("View")}</a>
                 </td>
             </tr>
         ));
 
         return (
             <div className="active-learning-circles-list">
-                <h2>Active Learning Circles</h2>
+                <h2>{gettext("Active Learning Circles")}</h2>
                 <PagedTable perPage={10} heading={heading}>{learningCircleRows}</PagedTable>
-                <a href="/organize/studygroups/">View all learning circles</a>
+                <a href="/organize/studygroups/">{gettext("View all learning circles")}</a>
             </div>
         );
     }
