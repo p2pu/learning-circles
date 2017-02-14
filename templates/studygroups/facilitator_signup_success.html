@@ -1,14 +1,15 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
 {% block content %}
   <div class="container">
     <div class="row">
       <div class="section-title col-md-12">
-          <h2>You successfully signed up!</h2>
+          <h2>{% trans "You successfully signed up!" %}</h2>
       </div>
       <div class="col-md-12">
-          <p>You will shortly receive an email with instruction on setting your password and logging on. If you haven't already seen the <a href="https://p2pu.org/en/facilitate">Facilitator Guide</a>, be sure to have a look now.</p>
+          <p>{% blocktrans %}You will shortly receive an email with instruction on setting your password and logging on. If you haven't already seen the <a href="https://p2pu.org/en/facilitate">Facilitator Guide</a>, be sure to have a look now.{% endblocktrans %}</p>
       </div>
     </div>
   </div>

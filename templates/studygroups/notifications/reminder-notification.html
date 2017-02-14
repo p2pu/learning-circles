@@ -1,29 +1,30 @@
 {% extends 'email_base.html' %}
+{% load i18n %}
 {% block body %}
-<p>Hi there {{study_group.facilitator.first_name}}</p>
+<p>{% blocktrans with first_name=study_group.facilitator.first_name %}Hi there {{first_name}}{% endblocktrans %}</p>
 
-<p>We've generated a reminder for the Learning Circle meeting this {{ next_meeting.meeting_datetime|date:"l, j N, fA" }}. The reminder will be sent automatically in 2 days from now.</p>
+<p>{% blocktrans with meeting_date=next_meeting.meeting_datetime|date:"l, j N, fA" %}We've generated a reminder for the Learning Circle meeting this {{meeting_date}}. The reminder will be sent automatically in 2 days from now.{% endblocktrans %}</p>
 
-<p>This is what the reminder will look like.</p>
+<p>{% trans "This is what the reminder will look like." %}</p>
 
-<p><strong>Email to Learning Circle participants</strong></p>
+<p><strong>{% trans "Email to Learning Circle participants" %}</strong></p>
 
 <div style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9;">
     {{ reminder.email_body | linebreaks }}
 </div>
 
-<p><strong>Text message to Learning Circle participants</strong></p>
+<p><strong>{% trans "Text message to Learning Circle participants" %}</strong></p>
 
 <div style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9;">
     <p>{{ reminder.sms_body }}</p>
 </div>
-
-<p>If you wish to edit the reminder, you can follow <a href="{{ protocol }}://{{ domain }}{% url 'studygroups_message_edit' reminder.study_group.id reminder.id %}"> this link</a>.</p>
+{% url 'studygroups_message_edit' reminder.study_group.id reminder.id as message_edit_url %}
+<p>{% blocktrans %}If you wish to edit the reminder, you can follow <a href="{{protocol}}://{{domain}}{{message_edit_url}}">this link</a>.{% endblocktrans %}</p>
 
 {% if reminder.study_group_meeting.meeting_activity %}
-<p><strong>Recommended recipe card for this week:</strong> <a href="{{ protocol }}://{{ domain }}{{ reminder.study_group_meeting.meeting_activity.card.url }}" target="_blank">{{ reminder.study_group_meeting.meeting_activity.description }}</a></p>
+<p><strong>{% trans "Recommended recipe card for this week" %}:</strong> <a href="{{ protocol }}://{{ domain }}{{ reminder.study_group_meeting.meeting_activity.card.url }}" target="_blank">{{ reminder.study_group_meeting.meeting_activity.description }}</a></p>
 {% endif %}
 
-<p>Regards</p>
-<p>Automaton</p>
+<p>{% trans "Regards" %}</p>
+<p>P2PU</p>
 {% endblock %}

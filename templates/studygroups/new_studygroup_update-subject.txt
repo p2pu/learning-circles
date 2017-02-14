@@ -1,1 +1,1 @@
-Can we help you start your Learning Circle?
+{% load i18n %}{% trans "Can we help you start your Learning Circle?" %}

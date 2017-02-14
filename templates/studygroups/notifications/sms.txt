@@ -1,1 +1,1 @@
-Remember the {{ study_group.course.title | safe }} meeting this {{ next_meeting.meeting_datetime|date:"l j N fA" }} at {{ study_group.venue_name }}, {{ study_group.venue_details }}.
+{%load i18n %}{% blocktrans with meeting_date=next_meeting.meeting_datetime|date:"l j N fA" course_title=study_group.course.title|safe %}Remember the {{course_title}} meeting this {{meeting_date}} at {{ study_group.venue_name }}, {{ study_group.venue_details }}.{% endblocktrans %}

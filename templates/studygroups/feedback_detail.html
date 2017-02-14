@@ -1,31 +1,39 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block content %}
 
 <div class="container">
-  <!-- Example row of columns -->
   <div class="row">
     <div class="col-md-12">
-      <h2>{{feedback.study_group_meeting.study_group.course.title}} at {{feedback.study_group_meeting.study_group.venue_name}}</h2>
-      <h3>Feedback from meeting that happened {{ feedback.study_group_meeting.meeting_date|date:"D, d M Y" }}, {{feedback.study_group_meeting.meeting_time|time:"f A" }}</h3>
+        <h2>
+          {% blocktrans with course_title=feedback.study_group_meeting.study_group.course.title venue_name=feedback.study_group_meeting.study_group.venue_name %}
+            {{course_title}} at {{venue_name}}
+          {% endblocktrans %}
+        </h2>
+        <h3>
+          {% blocktrans with meeting_date=feedback.study_group_meeting.meeting_date|date:"D, d M Y" meeting_time=feedback.study_group_meeting.meeting_time|time:"f A" %}
+            Feedback from meeting that happened {{meeting_date}}, {{meeting_time}}
+          {% endblocktrans %}
+        </h3>
 
       <div class="well">
       {% with feedback=object %}
-        <p><strong>Learning circle summary:</strong></p>
-        <p> {{ feedback.feedback }}</p>
-        <p><strong>How many people attended?</strong> {{ feedback.attendance }}</p>
-        <p><strong>Internall reflection:</strong></p>
+      <p><strong>{% trans "Learning circle summary:" %}</strong></p>
+        <p>{{ feedback.feedback }}</p>
+        <p><strong>{% trans "How many people attended?" %}</strong> {{ feedback.attendance }}</p>
+        <p><strong>{% trans "Internall reflection:" %}</strong></p>
         <p>{{ feedback.reflection }}</p>
-        <p><strong>Overall rating:</strong> {{ feedback.get_rating_display }}</p>
+        <p><strong>{% trans "Overall rating:" %}</strong> {{ feedback.get_rating_display }}</p>
       {% endwith %}
       </div>
       {% if user == feedback.study_group_meeting.study_group.facilitator %}
-      <p><a href="{% url 'studygroups_facilitator' %}">Back to dashboard</a></p>
+      <p><a href="{% url 'studygroups_facilitator' %}">{% trans "Back to dashboard" %}</a></p>
       {% else %}
-      <p><a href="{% url 'studygroups_organize' %}">Back to dashboard</a></p>
+      <p><a href="{% url 'studygroups_organize' %}">{% trans "Back to dashboard" %}</a></p>
       {% endif %}
     </div>
   </div>
-</div> <!-- /container -->
+</div>
 
 {% endblock %}

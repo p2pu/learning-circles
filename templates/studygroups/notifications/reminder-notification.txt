@@ -1,20 +1,20 @@
-Hi there {{study_group.facilitator.first_name}}
+{% load i18n %}{% blocktrans with first_name=study_group.facilitator.first_name %}Hi there {{first_name}}{% endblocktrans %}
 
-We've generated a reminder for the Learning Circle meeting this {{ next_meeting.meeting_datetime|date:"l, j N, fA" }}. The reminder will be sent automatically in 2 days from now.
+{% blocktrans with meeting_date=next_meeting.meeting_datetime|date:"l, j N, fA" %}We've generated a reminder for the Learning Circle meeting this {{meeting_date}}. The reminder will be sent automatically in 2 days from now.{% endblocktrans %}
 
-This is what the reminder will look like.
+{% trans "This is what the reminder will look like." %}
 
-# Email to Learning Circle participants
+# {% trans "Email to Learning Circle participants" %}
 
 {{ reminder.email_body | safe }}
 
-# Text message to Learning Circle participants
+# {% trans "Text message to Learning Circle participants" %}
 
 {{ reminder.sms_body | safe }}
 
-If you wish to edit the reminder, you can follow this link: {{ protocol }}://{{ domain }}{% url 'studygroups_message_edit' reminder.study_group.id reminder.id %}.
+{% url 'studygroups_message_edit' reminder.study_group.id reminder.id as message_edit_url %}{% blocktrans %}If you wish to edit the reminder, you can follow this link: {{protocol}}://{{domain}}{{message_edit_url}}.{% endblocktrans %}
 
-{% if reminder.study_group_meeting.meeting_activity %}Recommended recipe card for this week: {{ reminder.study_group_meeting.meeting_activity.description }} ({{ protocol }}://{{ domain }}{{ reminder.study_group_meeting.meeting_activity.card.url }}){% endif %}
+{% if reminder.study_group_meeting.meeting_activity %}{% trans "Recommended recipe card for this week" %}: {{reminder.study_group_meeting.meeting_activity.description}} ({{protocol}}://{{domain}}{{reminder.study_group_meeting.meeting_activity.card.url}}){% endif %}
 
-Regards
-Automaton
+{% trans "Regards" %}
+P2PU

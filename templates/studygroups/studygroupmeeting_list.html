@@ -1,19 +1,20 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block content %}
 <div class="container">
   <div class="row">
     <div class="col-md-12">
-      <a href={% url 'studygroups_organize' %}>back to organizer dashboard</a>
-      <h1>Learning Circles meetings</h1>
+      <a href={% url 'studygroups_organize' %}>{% trans "back to organizer dashboard" %}</a>
+      <h1>{% trans "Learning Circles meetings" %}</h1>
       <table class="table table-bordered">
         <thead>
         <tr>
-          <th>Learning Circle</th>
-          <th>Facilitator</th>
-          <th>Meeting time</th>
-          <th>RSVPs</th>
-          <th>Feedback</th>
+          <th>{% trans "Learning Circle" %}</th>
+          <th>{% trans "Facilitator" %}</th>
+          <th>{% trans "Meeting time" %}</th>
+          <th>{% trans "RSVPs" %}</th>
+          <th>{% trans "Feedback" %}</th>
         </tr>
         </thead>
         <tbody>

@@ -1,20 +1,25 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load i18n %}
 
 {% block content %}
 <div class="container learning-circle-signup">
 <div class="row">
     
   <div class="col-md-12 col-sm-12">
-      <h2>Capture feedback for the meeting that happened on {{form.initial.study_group_meeting.meeting_date|date:"D, d M Y" }}, {{form.initial.study_group_meeting.meeting_time|time:"f A"}}</h2>
+      <h2>
+          {% blocktrans with meeting_date=form.initial.study_group_meeting.meeting_date|date:"D, d M Y" meeting_time=form.initial.study_group_meeting.meeting_time|time:"f A" %}
+            Capture feedback for the meeting that happened on {{meeting_date}}, {{meeting_time}}
+          {% endblocktrans %}
+      </h2>
   </div>
   <div class="col-md-12 col-sm-12">
 	  <form action="" method="POST">
 	    {% csrf_token %}
 	    {{ form|crispy }}
-        <p><button type="submit" class="btn btn-default">Save</button></p>
+        <p><button type="submit" class="btn btn-default">{% trans "Save" %}</button></p>
 	  </form>
-    <p>Get in touch with other facilitators at <a href="https://community.p2pu.org/">community.p2pu.org</a></p>
+      <p>{% blocktrans %}Get in touch with other facilitators at <a href="https://community.p2pu.org/">community.p2pu.org</a>{% endblocktrans %}</p>
   </div>
 
 </div>

@@ -1,8 +1,8 @@
-Hi there {{ facilitator.first_name }},
+{% load i18n %}{% blocktrans %}Hi there {{ facilitator.first_name }}{% endblocktrans %},
 
-A week ago you signed up to be a facilitate a Learning Circle. If you haven't already, head over to www.p2pu.org/facilitate to get your first Learning Circle up and running.
+{% blocktrans %}A week ago you signed up to be a facilitate a Learning Circle. If you haven't already, head over to https://www.p2pu.org/facilitate to get your first Learning Circle up and running.{% endblocktrans %}
 
-If you have any questions, our team and growing community of facilitators are available at community.p2pu.org to answer questions and share feedback. We'd love to see you there!
+{% blocktrans %}If you have any questions, our team and growing community of facilitators are available at https://community.p2pu.org to answer questions and share feedback. We'd love to see you there!{% endblocktrans %}
 
-Regards,
-The P2PU Team
+{% trans "Regards" %},
+P2PU

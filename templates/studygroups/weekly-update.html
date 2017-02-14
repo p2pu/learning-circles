@@ -1,34 +1,62 @@
 {% extends 'email_base.html' %}
 {% load humanize %}
+{% load i18n %}
 
 {% block body %}
-  <h1>Learning Circles update</h1>
-  <p>for the time period starting {{start_time|date:"l, j F" }} and ending {{end_time|date:"l, j F" }}.</p>
-  {% if protocol and domain %}<p>You can also view this report <a href="{{protocol}}://{{domain}}{% url 'studygroups_weekly_report_date' start_time.year start_time.month start_time.day%}">online</a>.</p>{% endif %}
-  {% if not team %}<p>This week {{facilitators|length}} facilitator{{facilitators|pluralize}} signed up!</p>{% endif %}
-  <p>{{logins|length}} facilitator{{logins|length|pluralize}} logged in.</p>
-  <p>{{study_groups|length}} Learning Circle{{study_groups|length|pluralize}} {{study_groups|length|pluralize:"was,were"}} created.</p>
-  <p>{{signups|length}} learner{{signups|length|pluralize}} applied to join a Learning Circle.</p>
+  <h1>{% trans "Learning Circles update" %}</h1>
+  <p>{% blocktrans with start_date=start_time|date:"l, j F" end_date=end_time|date:"l, j F" %}for the time period starting {{start_date}} and ending {{end_date}}.{% endblocktrans %}</p>
+  {% url 'studygroups_weekly_report_date' start_time.year start_time.month start_time.day as report_url %}
+  {% if protocol and domain %}<p>{% blocktrans %}You can also view this report <a href="{{protocol}}://{{domain}}{{report_url}}">online</a>.{% endblocktrans %}</p>{% endif %}
+  {% if not team %}
+    <p>
+      {% blocktrans count facilitator_count=facilitators|length %}
+        This week {{facilitator_count}} facilitator signed up!
+      {% plural %}
+        This week {{facilitator_count}} facilitators signed up!
+      {% endblocktrans %}
+    </p>
+  {% endif %}
+  <p>
+    {% blocktrans count login_count=logins|length%}
+      {{login_count}} facilitator logged in.
+    {% plural %}
+      {{login_count}} facilitators logged in.
+    {% endblocktrans %}
+  </p>
+  <p>
+    {% blocktrans count study_group_count=study_groups|length %}
+      {{study_group_count}} Learning Circle was created.
+    {% plural %}
+      {{study_group_count}} Learning Circles were created.
+    {% endblocktrans %}
+  </p>
+  <p>
+    {% blocktrans count signup_count=signups|length %}
+      {{signup_count}} learner applied to join a Learning Circle.
+    {% plural %}
+      {{signup_count}} learners applied to join a Learning Circle.
+    {% endblocktrans %}
+  </p>
 
   {% for meeting in meetings|dictsort:"meeting_datetime" %}
     {% with study_group=meeting.study_group %}
-      <h2>{{study_group.course.title}} at {{study_group.venue_name}}</h2>
-      <p>Met {{ meeting.meeting_datetime|date:"fA, l, j F" }} for the {{ meeting.meeting_number|ordinal }} time.</p>
-      <p><strong>Facilitator:</strong> {{study_group.facilitator.first_name}} {{study_group.facilitator.last_name}} &lt;{{study_group.facilitator.email}}&gt;<p>
-      <p><strong>Circle size:</strong> {{study_group.application_set.active.count}}</p>
-      <h3>Feedback from meeting</h3>
+      <h2>{{study_group.course.title}} {% trans "at" %} {{study_group.venue_name}}</h2>
+      <p>{% blocktrans with meeting_date=meeting.meeting_datetime|date:"fA, l, j F" meeting_number=meeting.meeting_number|ordinal %}Met {{meeting_date}} for the {{meeting_number}} time.{% endblocktrans %}</p>
+      <p><strong>{% trans "Facilitator" %}:</strong> {{study_group.facilitator.first_name}} {{study_group.facilitator.last_name}} &lt;{{study_group.facilitator.email}}&gt;<p>
+      <p><strong>{% trans "Circle size" %}:</strong> {{study_group.application_set.active.count}}</p>
+      <h3>{% trans "Feedback from meeting" %}</h3>
       <div style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9;">
         {% if meeting.feedback_set.first %}
           {% with feedback=meeting.feedback_set.first %}
-            <p><strong>Learning circle summary:</strong></p>
+          <p><strong>{% trans "Learning circle summary" %}:</strong></p>
             <p> {{ feedback.feedback }}</p>
-            <p><strong>How many people attended?</strong> {{ feedback.attendance }}</p>
-            <p><strong>Internall reflection:</strong></p>
+            <p><strong>{% trans "How many people attended?" %}</strong> {{ feedback.attendance }}</p>
+            <p><strong>{% trans "Internal reflection" %}:</strong></p>
             <p>{{ feedback.reflection }}</p>
-            <p><strong>Overall rating:</strong> {{ feedback.get_rating_display }}</p>
+            <p><strong>{% trans "Overall rating" %}:</strong> {{ feedback.get_rating_display }}</p>
           {% endwith %}
         {% else %}
-          <p>No feedback recorded yet</p>
+          <p>{% trans "No feedback recorded yet" %}</p>
         {% endif %}
       </div>
     {% endwith %}

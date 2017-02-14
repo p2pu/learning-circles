@@ -1,17 +1,13 @@
-Hi {{study_group.facilitator.first_name}},
+{% load i18n %}{% blocktrans with name=study_group.facilitator.first_name %}Hi {{name}}{% endblocktrans %},
+{% url 'studygroups_signup' location=study_group.venue_name|slugify study_group_id=study_group.pk as study_group_url%}{% blocktrans %}
+Congratulations! Your Learning Circle is now live at: {{protocol}}://{{domain}}{{study_group_url}}{% endblocktrans %}
 
-Congratulations! Your Learning Circle is now live at: {{protocol}}://{{domain}}{% url 'studygroups_signup' location=study_group.venue_name|slugify study_group_id=study_group.pk %}. 
+{% trans "What next?" %}
+- {% blocktrans %}Review the Facilitator Guide: https://www.p2pu.org/en/facilitate/. It contains 40 pages of great tips, tricks, checklists, and templates to help you advertise, prepare for, and run your Learning Circle.{% endblocktrans %}
+- {% blocktrans %}Get in touch with other facilitators: https://community.p2pu.org. Ask questions, share advice, and contribute new ideas on our community forum.{% endblocktrans %}
+- {% blocktrans %}Read the applications: https://learningcircles.p2pu.org/en/facilitator. You’ll receive an email whenever somebody applies to your Learning Circle. You can view their applications and send them messages directly through your dashboard.{% endblocktrans %}
 
-Here's what we recommend you do next to prepare for running your Learning Circle:
+{% blocktrans %}Your'll hear from us again a few days before your first Learning Circle. If you have any questions in the meantime, you can ask in our facilitator community: https://community.p2pu.org.{% endblocktrans %}
 
-- Review the Facilitator Guide. Read through 40 pages of great tips, tricks, checklists, and templates to help you advertise, prepare for, and run your Learning Circle at: https://www.p2pu.org/en/facilitate/
-
-- Get in touch with other facilitators. You can ask questions, share advice, and contribute new ideas on our community forum at: https://community.p2pu.org
-
-- Read the applications. You’ll receive an email whenever somebody applies to your Learning Circle. You can view their applications and send them messages directly through your dashboard.
-
-You’ll hear from us again a few days before your first Learning Circle.
-
-Cheers,
+{% trans "Cheers" %},
 P2PU
-

@@ -1,23 +1,24 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
 {% block content %}
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <!--Jumbotron START-->
     <div class="lc-jumbotron-conf" {% if team.page_image %}style='background-image: url("{{team.page_image.url}}");'{% endif %}>
       <div class="j-text-container">
-          <span class="lc-jumbo-subhead">P2PU presents:</span> </br>
-        <span class="lc-jumbo-title">Learning Circles</span> </br>
+          <span class="lc-jumbo-subhead">{% trans "P2PU presents" %}:</span> </br>
+          <span class="lc-jumbo-title">{% trans "Learning Circles" %}</span> </br>
         <span class="lc-jumbo-rule"></span></br>
-        <span class="lc-jumbo-body">Study groups for people who want to take online courses together, in-person.</span> </br>
-        <span class="lc-jumbo-team">in collaboration with {{team.name}}</span> </br>
+        <span class="lc-jumbo-body">{% trans "Study groups for people who want to take online courses together, in-person." %}</span> </br>
+        <span class="lc-jumbo-team">{% blocktrans with team_name=team.name %}In collaboration with {{team_name}}{% endblocktrans %}</span> </br>
       </div>	
     </div>
 
     <section id="courses" class="shaded">
       <div class="container">
         <div class="courses-list col-md-12">
-            <h2>Active Learning Circles</h2>
+            <h2>{% trans "Active Learning Circles" %}</h2>
         </div>
 
         <div class="courses-list col-md-12">
@@ -29,8 +30,9 @@
       <div class="container">
         <div class="text-center col-md-12">
           <div class="session" id="signup">
-            <h2>Don't see any Learning Circles near you?</h2>
-            <p><a href="https://learningcircles.p2pu.org/en/facilitator/signup/">Create your own</a> Learning Circle!</p>
+            <h2>{% trans "Don't see any Learning Circles near you?" %}</h2>
+            {% url 'studygroups_facilitator_signup' as signup_url %}
+            <p>{% blocktrans %}<a href="{{signup_url}}">Create your own</a> Learning Circle!{% endblocktrans %}</p>
             {% include 'mailchimp.html' %}
           </div>
         </div>

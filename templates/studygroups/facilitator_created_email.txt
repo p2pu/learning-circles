@@ -1,8 +1,5 @@
-Hi there
+{% load i18n %}{% url 'password_reset_confirm' uidb64=uid token=token as password_reset_confirm_url %}{% blocktrans %}Hi there
 
 Welcome to the P2PU Learning Circle community!  To log in and use your account, follow the link below and reset your password. Your username is {{ email }}.
 
-{{ protocol}}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}.
-
-
-
+{{ protocol}}://{{ domain }}{{ password_reset_confirm_url }}.{% endblocktrans %}

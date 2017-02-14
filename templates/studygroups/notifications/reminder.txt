@@ -1,13 +1,13 @@
-Hi there!
+{% load i18n %}{% trans "Hi there!" %}
 
-The {{ study_group.course.title | safe }} Learning Circle will meet this {{ next_meeting.meeting_datetime|date:"l, j N, fA" }} at {{ study_group.venue_name }}, {{ study_group.venue_details }}.
+{% blocktrans with course_title=study_group.course.title|safe meeting_date=next_meeting.meeting_datetime|date:"l, j N, fA" venue_name=study_group.venue_name venue_details=study_group.venue_details %}The {{course_title}} Learning Circle will meet this {{meeting_date}} at {{venue_name}}, {{venue_details}}.{% endblocktrans %}
 
-{% if feedback %}From last week's meeting: {{ feedback.feedback }}{% endif %}
+{% if feedback %}{% blocktrans with feedback_text=feedback.feedback %}From last week's meeting: {{feedback_text}}{% endblocktrans %}{% endif %}
 
-Please let us know if you can make it by visiting the appropriate link below.
-Yes, I can make it: (<!--RSVP:YES--> link will be inserted here )
-No, I can't make it: (<!--RSVP:NO--> link will be inserted here )
+{% trans "Please let us know if you can make it by visiting the appropriate link below." %}
+{% trans "Yes, I can make it" %}: (<!--RSVP:YES--> {% trans "link will be inserted here" %} )
+{% trans "No, I can't make it" %}: (<!--RSVP:NO--> {% trans "link will be inserted here" %} )
 
-See you soon.
+{% trans "See you soon." %}
 
-To leave this study group and stop receiving subsequent notifications, click here: (<!--UNSUBSCRIBE--> link will be inserted here )
+{% trans "To leave this study group and stop receiving subsequent notifications, click here" %}: (<!--UNSUBSCRIBE--> {% trans "link will be inserted here" %} )

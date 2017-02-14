@@ -1,13 +1,15 @@
-Hi there.
+{% load i18n %}{% trans "Hi there" %}.
 
-We received the following SMS{% if signup %} from {{signup.name}} as a response to a reminder you sent.{% endif %}
+{% if signup %}{% blocktrans with name=signup.name %}We received the following SMS from {{name}} as a response to a reminder you've sent.{% endblocktrans %}{% else %}{% trans "We received the following SMS" %}{% endif %}
 
 {{ message }}
 
-{% if rsvp_yes and rsvp_no %}
-Was this a RSVP for the Learning Circle meeting on {{ next_meeting.meeting_date|date:"D, d M Y" }}, {{ next_meeting.meeting_time|time:"f A" }}
-:
+{% if rsvp_yes and rsvp_no %}{% blocktrans with meeting_date=next_meeting.meeting_date|date:"D, d M Y" meeting_time=next_meeting.meeting_time|time:"f A" %}If this is a RSVP for the Learning Circle meeting {{meeting_date}}, {{meeting_time}} please click the appropriate link below.{% endblocktrans %}
 
-Yes, the learner can go: {{ rsvp_yes | safe}}
-No, they can't make it: {{ rsvp_no | safe}}
+{% trans "The learner said they can attend" %}: {{ rsvp_yes | safe}}
+{% trans "The learner cannot attend" %}: {{ rsvp_no | safe}}
 {% endif %}
+
+{% trans "Cheers" %}
+P2PU
+

@@ -1,22 +1,31 @@
 {% extends 'email_base.html' %}
 {% block body %}
-<p>Hi there</p>
+{% load i18n %}
+<p>{% trans "Hi there" %}</p>
 
-<p>We received the following SMS{% if signup %} from {{signup.name}} as a response to a reminder you&#39;ve sent.{% endif %}</p>
+{% if signup %}
+    {% blocktrans with name=signup.name %}
+        <p>We received the following SMS from {{name}} as a response to a reminder you&#39;ve sent.</p>
+    {% endblocktrans %}
+{% else %}
+<p>{% trans "We received the following SMS" %}</p>
+{% endif %}
 
 <div style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9;">
   {{ message }}
 </div>
 
 {% if rsvp_yes and rsvp_no %}
-<p>If this is a RSVP for the Learning Circle meeting {{ next_meeting.meeting_date|date:"D, d M Y" }}, {{ next_meeting.meeting_time|time:"f A" }} please click the appropriate link below.</p>
+    {% blocktrans with meeting_date=next_meeting.meeting_date|date:"D, d M Y" meeting_time=next_meeting.meeting_time|time:"f A" %}
+        <p>If this is a RSVP for the Learning Circle meeting {{meeting_date}}, {{meeting_time}} please click the appropriate link below.</p>
+    {% endblocktrans %}
 
 <ul>
-  <li><a href="{{ rsvp_yes|safe }}">The learner said they can attend.</a></li>
-  <li><a href="{{ rsvp_no|safe }}">The learner cannot attend.</a></li>
+    <li><a href="{{ rsvp_yes|safe }}">{% trans "The learner said they can attend" %}</a></li>
+    <li><a href="{{ rsvp_no|safe }}">{% trans "The learner cannot attend" %}</a></li>
 </ul>
 {% endif %}
 
-<p>Cheers</p>
+<p>{% trans "Cheers" %}</p>
 <p>P2PU</p>
 {% endblock %}

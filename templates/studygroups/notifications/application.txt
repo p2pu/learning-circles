@@ -1,6 +1,7 @@
-Hi there {{application.study_group.facilitator.first_name}}
+{% load i18n %}{% blocktrans with first_name=study_group.facilitator.first_name %}Hi there {{first_name}}{% endblocktrans %}
 
-{{ application.name }} {% if application.email %}<{{application.email}}>{% endif %} applied for "{{application.study_group.course.title}}" at {{application.study_group.venue_name}}.
+{% if application.email %}{% blocktrans with name=application.name email=application.email course_title=application.study_group.course.title venue_name=application.study_group.venue_name %}{{ name }} <{{email}}> applied for "{{course_title}}" at {{venue_name}}.{% endblocktrans %}{% else %}{% blocktrans with name=application.name course_title=application.study_group.course.title venue_name=application.study_group.venue_name %}{{ name }} applied for "{{course_title}}" at {{venue_name}}.{% endblocktrans %}{% endif %}
+
 {% comment %}
 Their response to the signup questions: 
 
@@ -14,5 +15,5 @@ Q: A successful study group requires the support of all of its members. How will
 A: {{application.support}}
 {% endcomment %}
 
-Cheers
+{% trans "Cheers" %}
 P2PU

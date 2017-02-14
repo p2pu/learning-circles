@@ -1,9 +1,21 @@
 {% extends 'email_base.html' %}
+{% load i18n %}
 {% block body %}
-<p>Hi there {{application.study_group.facilitator.first_name}}</p>
+<p>{% blocktrans with first_name=study_group.facilitator.first_name %}Hi there {{first_name}}{% endblocktrans %}</p>
 
-<p>{{ application.name }} {% if application.email %}<a href="mailto:{{application.email}}">&lt;{{application.email}}&gt;</a>{% endif %} applied for "{{application.study_group.course.title}}" at {{application.study_group.venue_name}}.</p>
+<p>
+  {% if application.email %}
+    {% blocktrans with name=application.name email=application.email course_title=application.study_group.course.title venue_name=application.study_group.venue_name %}
+      {{ name }} <a href="mailto:{{email}}">&lt;{{email}}&gt;</a> applied for "{{course_title}}" at {{venue_name}}.
+    {% endblocktrans %}
+  {% else %}
+    {% blocktrans with name=application.name course_title=application.study_group.course.title venue_name=application.study_group.venue_name %}
+      {{ name }} applied for "{{course_title}}" at {{venue_name}}.
+    {% endblocktrans %}
+  {% endif %}
+</p>
 
+{% comment %}
 <!--p>Their response to the signup questions:</p>
 
 <p><strong>Q: Can you bring your own laptop to the Learning Circle?</strong><br>
@@ -14,7 +26,8 @@ A: {{application.goals}}</p>
 
 <p><strong>Q: A successful study group requires the support of all of its members. How will you help your peers achieve their goals?</strong><br>
 A: {{application.support}}</p-->
+{% endcomment %}
 
-<p>Cheers</p>
+<p>{% trans "Cheers" %}</p>
 <p>P2PU</p>
 {% endblock %}

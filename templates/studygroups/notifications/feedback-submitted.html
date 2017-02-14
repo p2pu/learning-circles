@@ -1,20 +1,25 @@
 {% extends 'email_base.html' %}
+{% load i18n %}
 {% block body %}
-<p>Hi there</p>
+<p>{% trans "Hi there" %}</p>
 
-{% with study_group_meeting.study_group as study_group %}
-<p>{{ study_group.facilitator.first_name }} {{ study_group.facilitator.last_name }} submitted feedback for the "{{ study_group.course.title }}" Learning Circle meeting at {{ study_group.venue_name }}, {{ study_group_meeting.meeting_datetime|date:"fA, l, j F"  }}.</p>
+{% with study_group=study_group_meeting.study_group%}
+<p>
+  {% blocktrans with first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name course_title=study_group.course.title venue_name=study_group.venue_name meeting_date=study_group_meeting.meeting_datetime|date:"fA, l, j F" %}
+    {{first_name}} {{last_name}} submitted feedback for the "{{course_title}}" Learning Circle meeting at {{venue_name}}, {{meeting_date}}.
+  {% endblocktrans %}
+</p>
 
 <div style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9;">
-  <p><strong>Learning Circle summary:</strong></p>
+    <p><strong>{% trans "Learning Circle summary" %}:</strong></p>
   <p> {{ feedback.feedback }}</p>
-  <p><strong>How many people attended?</strong> {{ feedback.attendance }}</p>
-  <p><strong>Internal reflection:</strong></p>
+  <p><strong>{% trans "How many people attended?" %}</strong> {{ feedback.attendance }}</p>
+  <p><strong>{% trans "Internal reflection" %}:</strong></p>
   <p>{{ feedback.reflection }}</p>
-  <p><strong>Overall rating:</strong> {{ feedback.get_rating_display }}</p>
+  <p><strong>{% trans "Overall rating" %}:</strong> {{ feedback.get_rating_display }}</p>
 </div>
-
 {% endwith %}
-<p>Cheers</p>
+
+<p>{% trans "Cheers" %}</p>
 <p>P2PU</p>
 {% endblock %}

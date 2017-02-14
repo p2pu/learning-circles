@@ -1,5 +1,7 @@
-{% spaceless %}
-    {% with feedback.study_group_meeting.study_group as study_group %}
-        New feedback submitted for the "{{ study_group.course.title|safe }}" Learning Circle meeting at {{ study_group.venue_name }} {{ feedback.study_group_meeting.meeting_datetime }}
+{% load i18n %}{% spaceless %}
+    {% with study_group=feedback.study_group_meeting.study_group %}
+        {% blocktrans with course_title=study_group.course.title|safe venue_name=study_group.venue_name meeting_date=feedback.study_group_meeting.meeting_datetime|date:"l, j N, fA" %}
+            New feedback submitted for the "{{ course_title }}" Learning Circle meeting at {{ venue_name }} {{ meeting_date }}
+        {% endblocktrans %}
     {% endwith %}
 {% endspaceless %}

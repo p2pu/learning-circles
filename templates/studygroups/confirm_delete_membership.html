@@ -1,16 +1,17 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load i18n %}
 
 {% block content %}
 <div class="container">
   <div class="row">
     <div class="col-md-12">
-        <h2>Confirm removing member</h2>
+        <h2>{% trans "Confirm removing member" %}</h2>
       <form action="" method="post">{% csrf_token %}
-          <p>Are you sure you want to remove {{ object.user }} from {{ object.team.name }}?</p>
-        <p><input class="btn btn-primary" type="submit" value="Confirm" /></p>
+          <p>{% blocktrans with user=object.user team=object.team.name %}Are you sure you want to remove {{user}} from {{team}}?{% endblocktrans %}</p>
+          <p><input class="btn btn-primary" type="submit" value="{% trans "Confirm" %}" /></p>
       </form>
-      <p><a href="{% url 'studygroups_organize' %}">Back to dashboard</a></p>
+      <p><a href="{% url 'studygroups_organize' %}">{% trans "Back to dashboard" %}</a></p>
     </div>
   </div>
 </div>

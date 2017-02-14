@@ -11,8 +11,8 @@ export default class OrganizerDash extends React.Component{
     render() {
         return (
             <div className="organizer-dash">
-                <h1>Organizer Dashboard</h1>
-                <TabSelector header={['Upcoming Meetings', 'Active Learning Circles', 'Facilitators']} >
+                <h1>{gettext("Organizer Dashboard")}</h1>
+                <TabSelector header={[gettext('Upcoming Meetings'), gettext('Active Learning Circles'), gettext('Facilitators')]} >
                     <WeeklyMeetingsList
                         meetings={this.props.meetings} 
                         learningCircles={this.props.activeLearningCircles} />
