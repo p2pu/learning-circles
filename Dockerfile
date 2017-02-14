@@ -13,8 +13,9 @@ RUN apt-get update && apt-get install -y \
     supervisor
 
 # Setup application
-COPY . /var/app/
+COPY requirements.txt /var/app/
 RUN virtualenv /var/django-venv && /var/django-venv/bin/pip install -r /var/app/requirements.txt
+COPY . /var/app/
 COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY config/docker-entry.sh /docker-entry.sh
 RUN mkdir -p /var/lib/celery && useradd celery && chown celery:celery /var/lib/celery/
