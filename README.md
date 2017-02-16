@@ -46,7 +46,7 @@ python manage.py syncdb
 python manage.py runserver
 ```
 
-## Compile javascript files
+## Compile JavaScript files
 
 ```
 npm install
@@ -55,4 +55,7 @@ npm install
 
 ## Generate strings for translation
 
-    python manage.py makemessages -l es -i venv
+    python manage.py makemessages -l es -l fr -i venv
+    python manage.py makemessages -l es -l fr -i venv -i node_modules -i assets/dist/* -i docs -d djangojs -e jsx,js
+
+    Translation is done using [Transifex](https://www.transifex.com/p2pu/learning-circles/)
