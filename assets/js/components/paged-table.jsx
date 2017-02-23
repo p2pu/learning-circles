@@ -1,5 +1,4 @@
 import React from 'react'
-
 import Pager from './pager'
 
 export default class PagedTable extends React.Component {
@@ -12,7 +11,7 @@ export default class PagedTable extends React.Component {
     }
 
     pageCount(){
-        return Math.ceil(React.Children.count(this.props.children)/this.props.perPage);
+        return Math.max(1, Math.ceil(React.Children.count(this.props.children)/this.props.perPage));
     }
 
     handlePageChange(page){
