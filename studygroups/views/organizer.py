@@ -167,8 +167,22 @@ class TeamInvitationCreate(View):
                     "email": [_("invalid email address")] 
                 }
             })
-        # TODO make sure email not already invited to this team
-        # TODO make sure user not already part of this team
+        # make sure email not already invited to this team
+        if TeamInvitation.objects.filter(team=team, email=email, responded_at__isnull=True).exists():
+            return  http.JsonResponse({
+                "status": "ERROR", 
+                "errors": {
+                    "_": [_("There is already a pending invitation for a user with this email address to join your team")] 
+                }
+            })
+        # make sure user not already part of this team
+        if TeamMembership.objects.filter(team=team, user__email=email).exists():
+            return  http.JsonResponse({
+                "status": "ERROR", 
+                "errors": {
+                    "_": [_("User with the given email address is already part of your team.")] 
+                }
+            })
         invitation = TeamInvitation.objects.create(
             team=team,
             organizer=request.user,

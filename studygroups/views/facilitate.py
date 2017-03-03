@@ -414,13 +414,16 @@ class InvitationConfirm(FormView):
     def form_valid(self, form):
         # Update invitation
         invitation = TeamInvitation.objects.filter(email=self.request.user.email, responded_at__isnull=True).first()
+        current_membership_qs = TeamMembership.objects.filter(user=self.request.user)
+        if current_membership_qs.filter(role=TeamMembership.ORGANIZER).exists():
+            messages.warning(self.request, _('You are currently the organizer of another team and cannot join this team.'))
+            return http.HttpResponseRedirect(reverse('studygroups_facilitator'))
         invitation.responded_at = timezone.now()
         invitation.joined = self.request.POST['response'] == 'yes'
         invitation.save()
         if invitation.joined is True:
-            # TODO - if the user is the only organizer of the team, they will orphan that team! 
-            if TeamMembership.objects.filter(user=self.request.user).exists():
-                TeamMembership.objects.filter(user=self.request.user).delete()
+            if current_membership_qs.exists():
+                current_membership_qs.delete()
             TeamMembership.objects.create(team=invitation.team, user=self.request.user, role=invitation.role)
 
         return super(InvitationConfirm, self).form_valid(form)
