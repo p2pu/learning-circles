@@ -2,13 +2,15 @@ from django.shortcuts import render, render_to_response, get_object_or_404
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django import http
-from django.forms import modelform_factory
+from django import forms
+from django.forms import modelform_factory, HiddenInput
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.views.generic.base import View, TemplateResponseMixin, ContextMixin
 from django.views.generic.base import RedirectView
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import FormView
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic import DetailView
 from django.contrib.auth.models import User
@@ -22,6 +24,7 @@ from django.conf import settings
 
 from studygroups.models import Facilitator
 from studygroups.models import TeamMembership
+from studygroups.models import TeamInvitation
 from studygroups.models import StudyGroup
 from studygroups.models import StudyGroupMeeting
 from studygroups.models import Course
@@ -56,10 +59,16 @@ def facilitator(request):
     study_groups = StudyGroup.objects.active().filter(facilitator=request.user)
     current_study_groups = study_groups.filter(end_date__gt=timezone.now())
     past_study_groups = study_groups.filter(end_date__lte=timezone.now())
+    team = None
+    if TeamMembership.objects.filter(user=request.user).exists():
+        team = TeamMembership.objects.filter(user=request.user).first().team
+    invitation = TeamInvitation.objects.filter(email=request.user.email, responded_at__isnull=True).first()
     context = {
         'current_study_groups': current_study_groups,
         'past_study_groups': past_study_groups,
-        'today': timezone.now()
+        'invitation': invitation,
+        'today': timezone.now(),
+        'team': team
     }
     return render_to_response('studygroups/facilitator.html', context, context_instance=RequestContext(request))
 
@@ -266,36 +275,35 @@ def message_edit(request, study_group_id, message_id):
 @user_is_group_facilitator
 def add_member(request, study_group_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+
+    # only require name, email and/or mobile
+    form_class =  modelform_factory(Application, fields=['study_group', 'name', 'email', 'mobile'], widgets={'study_group': HiddenInput})
     
     if request.method == 'POST':
-        form = ApplicationForm(request.POST, initial={'study_group': study_group})
+        form = form_class(request.POST, initial={'study_group': study_group})
         if form.is_valid():
+            url = reverse('studygroups_view_study_group', args=(study_group_id,))
             application = form.save(commit=False)
             if application.email and Application.objects.active().filter(email=application.email, study_group=study_group).exists():
-                old_application = Application.objects.active().filter(email=application.email, study_group=study_group).first()
-                application.pk = old_application.pk
-                application.created_at = old_application.created_at
-
-            if application.mobile and Application.objects.active().filter(mobile=application.mobile, study_group=study_group).exists():
-                old_application = Application.objects.active().filter(mobile=application.mobile, study_group=study_group).first()
-                application.pk = old_application.pk
-                application.created_at = old_application.created_at
-
-            # TODO - remove accepted_at or use accepting applications flow
-            application.accepted_at = timezone.now()
-            application.save()
-            url = reverse('studygroups_view_study_group', args=(study_group_id,))
+                messages.warning(request, _('User with the given email address already signed up.'))
+            elif application.mobile and Application.objects.active().filter(mobile=application.mobile, study_group=study_group).exists():
+                messages.warning(request, _('User with the given mobile number already signed up.'))
+            else:
+                # TODO - remove accepted_at or use accepting applications flow
+                application.accepted_at = timezone.now()
+                application.save()
             if study_group.facilitator == request.user:
                 url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
     else:
-        form = ApplicationForm(initial={'study_group': study_group})
+        form = form_class(initial={'study_group': study_group})
 
     context = {
         'form': form,
         'study_group': study_group,
     }
     return render_to_response('studygroups/add_member.html', context, context_instance=RequestContext(request))
+
 
 class FacilitatorSignup(CreateView):
     model = User
@@ -376,3 +384,43 @@ class FacilitatorStudyGroupCreate(CreateView):
 
         messages.success(self.request, _('You created a new Learning Circle! Check your email for next steps.'))
         return http.HttpResponseRedirect(self.success_url)
+
+
+class InvitationConfirm(FormView):
+    form_class = forms.Form
+    template_name = 'studygroups/invitation_confirm.html'
+    success_url = reverse_lazy('studygroups_facilitator')
+
+    def get(self, request, *args, **kwargs):
+        invitation = TeamInvitation.objects.filter(
+                email=self.request.user.email,
+                responded_at__isnull=True).first()
+        if invitation is None:
+            messages.warning(self.request, _('No team invitations found'))
+            return http.HttpResponseRedirect(reverse('studygroups_facilitator'))
+
+        return super(InvitationConfirm, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(InvitationConfirm, self).get_context_data(**kwargs)
+        invitation = TeamInvitation.objects.filter(
+                email=self.request.user.email,
+                responded_at__isnull=True).first()
+        team_membership = TeamMembership.objects.filter(user=self.request.user).first()
+        context['invitation'] = invitation
+        context['team_membership'] = team_membership
+        return context
+
+    def form_valid(self, form):
+        # Update invitation
+        invitation = TeamInvitation.objects.filter(email=self.request.user.email, responded_at__isnull=True).first()
+        invitation.responded_at = timezone.now()
+        invitation.joined = self.request.POST['response'] == 'yes'
+        invitation.save()
+        if invitation.joined is True:
+            # TODO - if the user is the only organizer of the team, they will orphan that team! 
+            if TeamMembership.objects.filter(user=self.request.user).exists():
+                TeamMembership.objects.filter(user=self.request.user).delete()
+            TeamMembership.objects.create(team=invitation.team, user=self.request.user, role=invitation.role)
+
+        return super(InvitationConfirm, self).form_valid(form)

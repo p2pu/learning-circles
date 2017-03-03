@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+
+      <h2>Invitation to join team</h2>
+      {% if team_membership %}
+        <div class="alert alert-danger">{% blocktrans with team_name=team_membership.team.name %}You are currently part of {{team_name}}. Accepting this invitation will remove you from {{team_name}} and you will have to be invited again to join.{% endblocktrans %}</div>
+      {% endif %}
+      <form action="" method="post">{% csrf_token %}
+        <p>{% blocktrans with team_name=invitation.team.name %}You were invited to join {{ team_name }}? Do you wish to accept the invitation?{% endblocktrans %}</p>
+        <p>
+        <button class="btn btn-primary" type="submit" value="yes" name="response">{% trans "Yes" %}</button>&nbsp;
+        <button class="btn btn-primary" type="submit" value="no"  name="response">{% trans "No" %}</button></p>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
