@@ -1,0 +1,12 @@
+{% extends 'email_base.html' %}
+{% load i18n %}
+{% block body %}
+
+<p>{% trans 'Hi there' %},</p>
+
+{% url 'studygroups_facilitator_signup' as facilitator_signup_url %}
+<p>{% blocktrans with organizer_name=organizer.first_name %}{{organizer_name}} invited you to join their team on <a href="https://learningcircles.p2pu.org">learningcircles.p2pu.org</a>. You first have to sign up at <a href="https://{{domain}}{{facilitator_signup_url}}">{{domain}}{{facilitator_signup_url}}</a> and then accept the invitation.{% endblocktrans %}</p>
+
+<p>{% trans 'Cheers' %}</p>
+<p>P2PU</p>
+{% endblock %}

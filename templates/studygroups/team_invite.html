@@ -1,0 +1,12 @@
+{% extends 'email_base.html' %}
+{% load i18n %}
+{% block body %}
+
+<p>{% blocktrans with name=user.first_name %}Hi there {{name}}{% endblocktrans %},</p>
+
+{% url 'studygroups_facilitator' as facilitator_url %}
+<p>{% blocktrans with organizer_name=organizer.first_name %}{{organizer_name}} invited you to join their team. You can respond to the invitation on your <a href="http://{{domain}}{{facilitator_url}}">dashboard</a>.{% endblocktrans %}</p>
+
+<p>{% trans 'Cheers' %}</p>
+<p>P2PU</p>
+{% endblock %}

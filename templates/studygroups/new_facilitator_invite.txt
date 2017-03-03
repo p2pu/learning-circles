@@ -1,0 +1,6 @@
+{% load i18n %}{% trans 'Hi there' %}, {% url 'studygroups_facilitator_signup' as facilitator_signup_url %}
+
+{% blocktrans with organizer_name=organizer.first_name %}{{organizer_name}} invited you to join their team on learningcircles.p2pu.org. You first have to sign up at https://{{domain}}{{facilitator_signup_url}} and then accept the invitation.{% endblocktrans %}</p>
+
+{% trans 'Cheers' %},
+P2PU

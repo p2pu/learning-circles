@@ -1,0 +1,6 @@
+{% load i18n %}{% blocktrans with name=user.first_name %}Hi there {{name}}{% endblocktrans %},
+
+{% url 'studygroups_facilitator' as facilitator_url %}{% blocktrans with organizer_name=organizer.first_name %}{{organizer_name}} invited you to join their team. You can respond to the invitation on your dashboard: http://{{domain}}{{facilitator_signup_url}}.{% endblocktrans %}
+
+{% trans 'Cheers' %}
+P2PU
