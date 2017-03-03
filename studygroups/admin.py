@@ -11,6 +11,7 @@ from studygroups.models import Organizer
 from studygroups.models import Facilitator
 from studygroups.models import Team
 from studygroups.models import TeamMembership
+from studygroups.models import TeamInvitation
 
 class ApplicationInline(admin.TabularInline):
     model = Application
@@ -43,3 +44,4 @@ admin.site.register(Reminder, ReminderAdmin)
 admin.site.register(Organizer)
 admin.site.register(Facilitator)
 admin.site.register(Team, TeamAdmin)
+admin.site.register(TeamInvitation)

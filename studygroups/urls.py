@@ -19,9 +19,11 @@ from studygroups.views import StudyGroupToggleSignup
 from studygroups.views import StudyGroupList
 from studygroups.views import StudyGroupMeetingList
 from studygroups.views import TeamMembershipDelete
+from studygroups.views import TeamInvitationCreate
 from studygroups.views import FacilitatorSignup
 from studygroups.views import FacilitatorSignupSuccess
 from studygroups.views import FacilitatorStudyGroupCreate
+from studygroups.views import InvitationConfirm
 from studygroups.views import OptOutView
 from studygroups.views import CourseListView
 from studygroups.views import TeamPage
@@ -72,6 +74,7 @@ urlpatterns = patterns('',
     url(r'^facilitator/study_group/create/$', login_required(FacilitatorStudyGroupCreate.as_view()), name='studygroups_facilitator_studygroup_create'),
     url(r'^facilitator/signup/$', user_is_not_logged_in(FacilitatorSignup.as_view()), name='studygroups_facilitator_signup'),
     url(r'^facilitator/signup/success/$', FacilitatorSignupSuccess.as_view(), name='studygroups_facilitator_signup_success'),
+    url(r'^facilitator/team-invitation/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm'),
 
     url(r'^optout/$', OptOutView.as_view(), name='studygroups_optout'),
     url(r'^optout/confirm/$', 'studygroups.views.optout_confirm', name='studygroups_leave'),
@@ -83,6 +86,7 @@ urlpatterns = patterns('',
     url(r'^organize/studygroups/$', user_is_organizer(StudyGroupList.as_view()), name='studygroups_organizer_studygroup_list'),
     url(r'^organize/studygroup_meetings/$', user_is_organizer(StudyGroupMeetingList.as_view()), name='studygroups_organizer_studygroup_meetings'),
     url(r'^organize/teammembership/(?P<team_id>[\d]+)/(?P<user_id>[\d]+)/delete/$', user_is_organizer(TeamMembershipDelete.as_view()), name='studygroups_teammembership_delete'),
+    url(r'^organize/team/(?P<team_id>[\d]+)/member/invite/$', TeamInvitationCreate.as_view(), name='studygroups_team_member_invite'),
 
     url(r'^report/$', 'studygroups.views.report', name='studygroups_report'),
     url(r'^report/weekly/$', 'studygroups.views.weekly_report', name='studygroups_weekly_report'),

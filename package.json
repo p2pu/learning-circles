@@ -37,6 +37,8 @@
     "sass-loader": "^4.0.2",
     "style-loader": "^0.13.1",
     "webpack": "^1.13.3",
-    "webpack-bundle-tracker": "0.0.93"
+    "webpack-bundle-tracker": "0.0.93",
+    "promise-polyfill": "^6.0.2",
+    "whatwg-fetch": "^2.0.3"
   }
 }

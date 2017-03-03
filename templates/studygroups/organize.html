@@ -48,7 +48,21 @@
     ];
     window.organizerDash.facilitators = facilitators;
 
+    var invitations = [
+        {% for invitation in invitations %}{ email: "{{invitation.email}}", created_at: "{{invitation.created_at|date:"c"}}" },
+        {% endfor %}
+    ];
+    window.organizerDash.invitations = invitations;
+
+    window.organizerDash.teamInviteUrl = null;
+    {% if team %}
+        window.organizerDash.teamInviteUrl = "{% url 'studygroups_team_member_invite' team.id %}";
+    {% endif %}
+
 </script>
+{% endblock %}
+
+{% block scripts %}
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 {% render_bundle 'organizer' %}
 

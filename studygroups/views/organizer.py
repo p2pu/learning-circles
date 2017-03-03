@@ -1,4 +1,5 @@
 import datetime
+import json
 
 from django.shortcuts import render, render_to_response, get_object_or_404
 from django.template import RequestContext
@@ -8,9 +9,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMultiAlternatives, send_mail
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from django.contrib import messages
 from django.conf import settings
 from django import http
+from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
@@ -22,15 +26,20 @@ from django.views.generic import ListView
 from studygroups.models import Course
 from studygroups.models import StudyGroup
 from studygroups.models import TeamMembership
+from studygroups.models import TeamInvitation
 from studygroups.models import Facilitator
 from studygroups.models import StudyGroupMeeting
 from studygroups.models import report_data
 from studygroups.models import generate_all_meetings
+from studygroups.models import Team
 from studygroups.models import get_team_users
 from studygroups.models import get_user_team
+from studygroups.models import send_team_invitation_email
 from studygroups.forms import StudyGroupForm
 from studygroups.forms import FacilitatorForm
 from studygroups.decorators import user_is_organizer
+from studygroups.decorators import user_is_team_organizer
+
 
 
 @user_is_organizer
@@ -42,12 +51,14 @@ def organize(request):
     facilitators = Facilitator.objects.all()
     courses = []# TODO Remove courses until we implement course selection for teams
     team = None
+    invitations = []
 
     if not request.user.is_staff:
         team = get_user_team(request.user)
         team_users = get_team_users(request.user)
         study_groups = study_groups.filter(facilitator__in=team_users)
         facilitators = facilitators.filter(user__in=team_users)
+        invitations = TeamInvitation.objects.filter(team=team, responded_at__isnull=True)
     
     active_study_groups = study_groups.filter(
         id__in=StudyGroupMeeting.objects.active().filter(meeting_date__gte=two_weeks_ago).values('study_group')
@@ -63,6 +74,7 @@ def organize(request):
         'study_groups': study_groups,
         'active_study_groups':  active_study_groups,
         'facilitators': facilitators,
+        'invitations': invitations,
         'today': timezone.now(),
     }
     return render_to_response('studygroups/organize.html', context, context_instance=RequestContext(request))
@@ -133,6 +145,38 @@ class StudyGroupCreate(CreateView):
         self.object = form.save()
         generate_all_meetings(self.object)
         return http.HttpResponseRedirect(self.get_success_url())
+
+
+class TeamInvitationCreate(View):
+
+    @method_decorator(csrf_exempt)
+    @method_decorator(user_is_team_organizer)
+    def dispatch(self, *args, **kwargs):
+        return super(TeamInvitationCreate, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        team = Team.objects.get(pk=self.kwargs.get('team_id'))
+        email = json.loads(request.body).get('email')
+        # check email address
+        try:
+            validate_email(email)
+        except ValidationError:
+            return http.JsonResponse({
+                "status": "ERROR", 
+                "errors": {
+                    "email": [_("invalid email address")] 
+                }
+            })
+        # TODO make sure email not already invited to this team
+        # TODO make sure user not already part of this team
+        invitation = TeamInvitation.objects.create(
+            team=team,
+            organizer=request.user,
+            email=email,
+            role=TeamMembership.MEMBER
+        )
+        send_team_invitation_email(team, invitation.email, request.user)
+        return http.JsonResponse({"status": "CREATED"})
 
 
 @user_is_organizer

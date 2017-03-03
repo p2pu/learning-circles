@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse
 from django import http
 
 from studygroups.models import StudyGroup, Organizer
+from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import get_study_group_organizers
 
@@ -26,6 +27,18 @@ def user_is_organizer(func):
     def decorated(*args, **kwargs):
         # TODO this logic should be in the model
         if args[0].user.is_staff or TeamMembership.objects.filter(user=args[0].user, role=TeamMembership.ORGANIZER).exists():
+            return func(*args, **kwargs)
+        raise PermissionDenied
+    return login_required(decorated)
+
+
+def user_is_team_organizer(func):
+    def decorated(*args, **kwargs):
+        team_id = kwargs.get('team_id')
+        team = Team.objects.filter(pk=team_id).first()
+        if team is None:
+            raise PermissionDenied
+        if args[0].user.is_staff or TeamMembership.objects.filter(user=args[0].user, team=team, role=TeamMembership.ORGANIZER).exists():
             return func(*args, **kwargs)
         raise PermissionDenied
     return login_required(decorated)
