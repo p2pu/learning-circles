@@ -28,7 +28,7 @@ export default class ActiveLearningCircleList extends React.Component {
                     { lc.facilitator.first_name } { lc.facilitator }
                 </td>
                 <td>
-                    { moment(lc.next_meeting_date).format('ddd, D MMM') }
+                    { lc.next_meeting_date && moment(lc.next_meeting_date).format('ddd, D MMM') }
                 </td>
                 <td>
                     <a className="btn btn-primary" href={ lc.url }>{gettext("View")}</a>
