@@ -107,6 +107,7 @@ class Location(models.Model):
 
 
 class Activity(models.Model):
+    """ Activity to do during a meeting """
     description = models.CharField(max_length=256)
     index = models.PositiveIntegerField(help_text=_('meeting index this activity corresponds to'))
     card = models.FileField()
@@ -148,11 +149,25 @@ class TeamMembership(models.Model):
         (MEMBER, _('Member')),
     )
     team = models.ForeignKey('studygroups.Team')
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User) # TODO should this be a OneToOneField?
     role = models.CharField(max_length=256, choices=ROLES)
 
     def __unicode__(self):
         return 'Team membership: {}'.format(self.user.__unicode__())
+
+
+class TeamInvitation(models.Model):
+    """ invittion for users to join a team """
+    team = models.ForeignKey('studygroups.Team')
+    organizer = models.ForeignKey(User) # organizer who invited the user
+    email = models.EmailField()
+    role = models.CharField(max_length=256, choices=TeamMembership.ROLES)
+    created_at = models.DateTimeField(auto_now_add=True)
+    responded_at = models.DateTimeField(null=True, blank=True)
+    joined = models.NullBooleanField(null=True)
+
+    def __unicode__(self):
+        return u'Invatation <{} to join {}>'.format(self.email, self.team.name)
 
 
 class StudyGroup(LifeTimeTrackingModel):
@@ -241,7 +256,7 @@ class Application(LifeTimeTrackingModel):
     name = models.CharField(max_length=128)
     email = models.EmailField(verbose_name='Email address', blank=True)
     mobile = models.CharField(max_length=20, blank=True)
-    signup_questions = models.TextField()
+    signup_questions = models.TextField(default='{}')
     accepted_at = models.DateTimeField(blank=True, null=True)
 
     def __unicode__(self):
@@ -664,8 +679,37 @@ def send_new_studygroup_email(studygroup):
     msg.send()
 
 
-""" Return the organizers for the study group """
+def send_team_invitation_email(team, email, organizer):
+    """ Send email to new or existing facilitators """
+    """ organizer should be a User object """
+    user_qs = User.objects.filter(email=email)
+    context = {
+        "team": team,
+        "organizer": organizer,
+        "domain": "learningcircles.p2pu.org"
+    }
+
+    if user_qs.count() == 0:
+        # invite user to join 
+        subject = render_to_string('studygroups/new_facilitator_invite-subject.txt', context).strip('\n')
+        html_body = render_to_string('studygroups/new_facilitator_invite.html', context)
+        text_body = render_to_string('studygroups/new_facilitator_invite.txt', context)
+    else:
+        context['user'] = user_qs.get()
+        subject = render_to_string('studygroups/team_invite-subject.txt', context).strip('\n')
+        html_body = render_to_string('studygroups/team_invite.html', context)
+        text_body = render_to_string('studygroups/team_invite.txt', context)
+
+    to = [email]
+    from_ = organizer.email
+ 
+    msg = EmailMultiAlternatives(subject, text_body, from_, to)
+    msg.attach_alternative(html_body, 'text/html')
+    msg.send()
+
+
 def get_study_group_organizers(study_group):
+    """ Return the organizers for the study group """
     team_membership = TeamMembership.objects.filter(user=study_group.facilitator)
     if team_membership.count() == 1:
         organizers = team_membership.first().team.teammembership_set.filter(role=TeamMembership.ORGANIZER).values('user')
@@ -673,8 +717,8 @@ def get_study_group_organizers(study_group):
     return []
 
 
-""" Return the team members for a user """
 def get_team_users(user):
+    """ Return the team members for a user """
     # TODO this function doesn't make sense - only applies for logged in users
     # change functionality or rename to get_team_mates
     team_membership = TeamMembership.objects.filter(user=user)
