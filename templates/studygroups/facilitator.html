@@ -9,6 +9,7 @@
   {% if team %}
   <p>{% blocktrans with team_name=team.name %}You are currently part of <strong>{{team_name}}</strong>{% endblocktrans %}</p>
   {% endif %}
+  {% url 'studygroups_facilitator_invitation_confirm' as invite_confirm_url %}
   {% if invitation %}
     <p>{% blocktrans with team_name=invitation.team.name %}You've been invited to join {{team_name}}. <a href="{{invite_confirm_url}}">Respond to this invitation</a>{% endblocktrans %}</p>
   {% endif %}
@@ -19,7 +20,6 @@
       <li>{% blocktrans %}<a href="https://community.p2pu.org">Facilitator Community</a>{% endblocktrans %}</li>
   </ul>
 
-  {% url 'studygroups_facilitator_invitation_confirm' as invite_confirm_url %}
   <h2>{% trans "Active Learning Circles" %}</h2>
   {% for lc in current_study_groups %}
     {% include 'studygroups/study_group_facilitate.html' %}

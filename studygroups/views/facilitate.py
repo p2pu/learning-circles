@@ -415,7 +415,7 @@ class InvitationConfirm(FormView):
         # Update invitation
         invitation = TeamInvitation.objects.filter(email=self.request.user.email, responded_at__isnull=True).first()
         current_membership_qs = TeamMembership.objects.filter(user=self.request.user)
-        if current_membership_qs.filter(role=TeamMembership.ORGANIZER).exists():
+        if current_membership_qs.filter(role=TeamMembership.ORGANIZER).exists() and self.request.POST['response'] == 'yes':
             messages.warning(self.request, _('You are currently the organizer of another team and cannot join this team.'))
             return http.HttpResponseRedirect(reverse('studygroups_facilitator'))
         invitation.responded_at = timezone.now()
