@@ -15,6 +15,7 @@ from studygroups.models import Organizer
 from studygroups.models import Rsvp
 from studygroups.models import Team
 from studygroups.models import TeamMembership
+from studygroups.models import TeamInvitation
 from studygroups.models import Feedback
 from studygroups.rsvp import gen_rsvp_querystring
 
@@ -222,4 +223,45 @@ class TestFacilitatorViews(TestCase):
         # make sure email was sent to organizers
         self.assertEquals(len(mail.outbox), 1)
         self.assertEquals(Feedback.objects.filter(study_group_meeting=meeting).count(), 1)
+    
+
+    def test_user_accept_invitation(self):
+        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', '1234')
+        faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', '1234')
+        StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
         
+        # create team
+        team = Team.objects.create(name='test team')
+        TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
+
+        c = Client()
+        c.login(username='faci1@team.com', password='1234')
+        resp = c.get('/en/facilitator/team-invitation/')
+        self.assertRedirects(resp, '/en/facilitator/')
+
+        TeamInvitation.objects.create(team=team, organizer=organizer, role=TeamMembership.MEMBER, email=faci1.email)
+        self.assertTrue(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email=faci1.email).responded_at is None)
+        resp = c.post('/en/facilitator/team-invitation/', {'response': 'yes'})
+        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertEquals(TeamMembership.objects.filter(team=team, role=TeamMembership.MEMBER, user=faci1).count(), 1)
+        self.assertFalse(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email=faci1.email).responded_at is None)
+
+
+    def test_user_rejept_invitation(self):
+        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', '1234')
+        faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', '1234')
+        StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
+        
+        # create team
+        team = Team.objects.create(name='test team')
+        TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
+
+        c = Client()
+        c.login(username='faci1@team.com', password='1234')
+
+        TeamInvitation.objects.create(team=team, organizer=organizer, role=TeamMembership.MEMBER, email=faci1.email)
+        self.assertTrue(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email=faci1.email).responded_at is None)
+        resp = c.post('/en/facilitator/team-invitation/', {'response': 'no'})
+        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertEquals(TeamMembership.objects.filter(team=team, role=TeamMembership.MEMBER, user=faci1).count(), 0)
+        self.assertFalse(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email=faci1.email).responded_at is None)

@@ -16,11 +16,13 @@ from studygroups.models import Organizer
 from studygroups.models import Rsvp
 from studygroups.models import Team
 from studygroups.models import TeamMembership
+from studygroups.models import TeamInvitation
 from studygroups.models import Feedback
 from studygroups.rsvp import gen_rsvp_querystring
 
 import datetime
 import urllib
+import json
 
 
 """
@@ -218,3 +220,77 @@ class TestOrganizerViews(TestCase):
         self.assertEquals(len(resp.context['meetings']), 1)
         self.assertEquals(resp.context['meetings'][0].pk, active_meeting.pk)
         #TODO test other parts of the weekly report
+
+
+    def test_invite_new_user(self):
+        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
+        organizer.first_name = 'Orgaborga'
+        organizer.save()
+        team = Team.objects.create(name='test team')
+        TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
+        
+        c = Client()
+        c.login(username='organ@team.com', password='password')
+        invite_url = '/en/organize/team/{0}/member/invite/'.format(team.pk)
+        resp = c.post(invite_url, json.dumps({"email":"hume@team.com"}), content_type="application/json")
+        self.assertEquals(resp.status_code, 200)
+        
+        self.assertEquals(TeamInvitation.objects.filter(team=team).count(),1)
+        self.assertEquals(len(mail.outbox), 1)
+        # Make sure correct email was sent
+        self.assertIn('sign up', mail.outbox[0].body)
+        self.assertIn('Orgaborga', mail.outbox[0].body)
+
+
+    def test_invite_existing_user(self):
+        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
+        organizer.first_name = 'Orgaborga'
+        organizer.save()
+        faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', 'password')
+        faci1.first_name = 'Bobobob'
+        faci1.save()
+
+        team = Team.objects.create(name='test team')
+        TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
+        
+        c = Client()
+        c.login(username='organ@team.com', password='password')
+        invite_url = '/en/organize/team/{0}/member/invite/'.format(team.pk)
+        resp = c.post(invite_url, json.dumps({"email":"faci1@team.com"}), content_type="application/json")
+        self.assertEquals(resp.status_code, 200)
+        self.assertEquals(TeamInvitation.objects.filter(team=team).count(),1)
+        self.assertEquals(len(mail.outbox), 1)
+        # Make sure correct email was sent
+        self.assertIn('Bobobob', mail.outbox[0].body)
+        self.assertIn('Orgaborga', mail.outbox[0].body)
+
+
+    def test_only_group_organizer_can_invite(self):
+        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
+        organizer.first_name = 'Orgaborga'
+        organizer.save()
+        team = Team.objects.create(name='test team')
+        team2 = Team.objects.create(name='test team 2')
+        TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
+        
+        c = Client()
+        c.login(username='organ@team.com', password='password')
+        invite_url = '/en/organize/team/{0}/member/invite/'.format(team2.pk)
+        resp = c.post(invite_url, json.dumps({"email":"hume@team.com"}), content_type="application/json")
+        self.assertEquals(resp.status_code, 403)
+
+
+    def test_valid_invite(self):
+        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
+        organizer.first_name = 'Orgaborga'
+        organizer.save()
+        team = Team.objects.create(name='test team')
+        TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
+        
+        c = Client()
+        c.login(username='organ@team.com', password='password')
+        invite_url = '/en/organize/team/{0}/member/invite/'.format(team.pk)
+        resp = c.post(invite_url, json.dumps({"email":"humemail.mail"}), content_type="application/json")
+        self.assertEquals(resp.status_code, 200)
+        self.assertEquals(resp.json().get('status'), 'ERROR')
+
