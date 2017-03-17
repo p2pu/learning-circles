@@ -1,7 +1,7 @@
 import datetime
 import dateutil.parser
 
-from django.shortcuts import render, render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.core.urlresolvers import reverse, reverse_lazy
@@ -57,7 +57,7 @@ def landing(request):
         'learning_circles': study_groups[:50],
         'cities': city_list
     }
-    return render_to_response('studygroups/index.html', context, context_instance=RequestContext(request))
+    return render(request, 'studygroups/index.html', context)
 
 
 class TeamPage(DetailView):
@@ -109,7 +109,7 @@ def city(request, city_name):
         'learning_circles': learning_circles,
         'city': city_name
     }
-    return render_to_response('studygroups/city_list.html', context, context_instance=RequestContext(request))
+    return render(request, 'studygroups/city_list.html', context)
 
 
 def studygroups(request):
@@ -196,7 +196,7 @@ def signup(request, location, study_group_id):
         'form': form,
         'study_group': study_group,
     }
-    return render_to_response('studygroups/signup.html', context, context_instance=RequestContext(request))
+    return render(request, 'studygroups/signup.html', context)
 
 
 def optout_confirm(request):

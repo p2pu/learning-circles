@@ -1,8 +1,7 @@
 import datetime
 import json
 
-from django.shortcuts import render, render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
@@ -77,7 +76,7 @@ def organize(request):
         'invitations': invitations,
         'today': timezone.now(),
     }
-    return render_to_response('studygroups/organize.html', context, context_instance=RequestContext(request))
+    return render(request, 'studygroups/organize.html', context)
 
 
 class StudyGroupList(ListView):
@@ -202,7 +201,7 @@ def report(request):
     context = {
         'study_groups': study_groups,
     }
-    return render_to_response('studygroups/report.html', context, context_instance=RequestContext(request))
+    return render(request, 'studygroups/report.html', context)
 
 
 @user_is_organizer
@@ -223,5 +222,5 @@ def weekly_report(request, year=None, month=None, day=None ):
         team = membership.team
 
     context.update(report_data(start_time, end_time, team))
-    return render_to_response('studygroups/weekly-update.html', context, context_instance=RequestContext(request))
+    return render(request, 'studygroups/weekly-update.html', context)
 

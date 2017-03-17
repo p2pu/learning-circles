@@ -1,4 +1,4 @@
-from django.shortcuts import render, render_to_response, get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django import http
@@ -70,7 +70,7 @@ def facilitator(request):
         'today': timezone.now(),
         'team': team
     }
-    return render_to_response('studygroups/facilitator.html', context, context_instance=RequestContext(request))
+    return render(request, 'studygroups/facilitator.html', context)
 
 
 @user_is_group_facilitator
@@ -82,7 +82,7 @@ def view_study_group(request, study_group_id):
         'study_group': study_group,
         'today': timezone.now()
     }
-    return render_to_response('studygroups/view_study_group.html', context, context_instance=RequestContext(request))
+    return render(request, 'studygroups/view_study_group.html', context)
 
 
 class FacilitatorRedirectMixin(object):
@@ -241,7 +241,7 @@ def message_send(request, study_group_id):
         'course': study_group.course,
         'form': form
     }
-    return render_to_response('studygroups/email.html', context, context_instance=RequestContext(request))
+    return render(request, 'studygroups/email.html', context)
 
 
 @user_is_group_facilitator
@@ -269,7 +269,7 @@ def message_edit(request, study_group_id, message_id):
         'course': study_group.course,
         'form': form
     }
-    return render_to_response('studygroups/message_edit.html', context, context_instance=RequestContext(request))
+    return render(request, 'studygroups/message_edit.html', context)
 
 
 @user_is_group_facilitator
@@ -302,7 +302,7 @@ def add_member(request, study_group_id):
         'form': form,
         'study_group': study_group,
     }
-    return render_to_response('studygroups/add_member.html', context, context_instance=RequestContext(request))
+    return render(request, 'studygroups/add_member.html', context)
 
 
 class FacilitatorSignup(CreateView):

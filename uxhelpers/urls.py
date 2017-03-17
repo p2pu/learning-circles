@@ -1,6 +1,7 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
-urlpatterns = patterns('',
-    url(r'^city_complete/$', 'uxhelpers.views.city_complete', name='uxhelpers_city_complete'),
-)
+from . import views
 
+urlpatterns = [
+    url(r'^city_complete/$', views.city_complete, name='uxhelpers_city_complete'),
+]

@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.conf.urls.i18n import i18n_patterns
 from django.conf import settings
 from django.contrib import admin
@@ -10,9 +10,8 @@ js_info_dict = {
 }
 
 
-urlpatterns = i18n_patterns('',
+urlpatterns = i18n_patterns(
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^interest/', include('interest.urls', namespace='interest')),
     url(r'^about/$', TemplateView.as_view(template_name="about.html"), name="about"),
     url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^ux/', include('uxhelpers.urls')),
@@ -22,10 +21,12 @@ urlpatterns = i18n_patterns('',
 
 if settings.DEBUG:
     media_url = settings.MEDIA_URL.lstrip('/').rstrip('/')
-    urlpatterns += patterns('',
-        (r'^%s/(?P<path>.*)$' % media_url, 'django.views.static.serve',
-         {
-             'document_root': settings.MEDIA_ROOT,
-         }),
-    )
+    from django.views.static import serve
+    urlpatterns += [
+        url(r'^%s/(?P<path>.*)$' % media_url, serve,
+           {
+               'document_root': settings.MEDIA_ROOT,
+           }
+        ),
+    ]
 

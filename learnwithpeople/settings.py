@@ -26,7 +26,6 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'youshouldchangethis')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-TEMPLATE_DEBUG = DEBUG
 CRISPY_FAIL_SILENTLY = not DEBUG
 
 # Application definition
@@ -116,9 +115,16 @@ STATICFILES_FINDERS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = path('upload')
 
-
-TEMPLATE_DIRS = [
-    path('templates'),
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'APP_DIRS': True,
+        'DIRS': [path('templates')],
+        'OPTIONS': {
+            'context_processors': ['django.contrib.auth.context_processors.auth'],
+            'debug': DEBUG
+        }
+    },
 ]
 
 WEBPACK_LOADER = {
