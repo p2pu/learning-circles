@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-09 13:27+0000\n"
+"POT-Creation-Date: 2017-03-17 13:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,150 +18,144 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:21908
-#: assets/js/components/organizer-dash.jsx:14
-msgid "Organizer Dashboard"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:21912
-#: assets/js/components/organizer-dash.jsx:15
-msgid "Upcoming Meetings"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:21912
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37872
-#: assets/js/components/active-learning-circles-list.jsx:41
-#: assets/js/components/organizer-dash.jsx:15
-msgid "Active Learning Circles"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:21912
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37430
-#: assets/js/components/organizer-dash.jsx:15
-msgid "Facilitators"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37086
-#: assets/js/components/weekly-meetings-list.jsx:9
-msgid "Yes"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37090
-#: assets/js/components/weekly-meetings-list.jsx:9
-msgid "No"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37101
-#: assets/js/components/weekly-meetings-list.jsx:13
-msgid "View feedback"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37112
-#: assets/js/components/weekly-meetings-list.jsx:17
-msgid "week"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37175
-msgid "No meetings"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37200
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37800
 #: assets/js/components/active-learning-circles-list.jsx:10
 #: assets/js/components/weekly-meetings-list.jsx:45
 msgid "Details"
 msgstr ""
 
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37205
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37810
-#: assets/js/components/active-learning-circles-list.jsx:12
-msgid "Facilitator"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37210
-#: assets/js/components/weekly-meetings-list.jsx:47
-msgid "Time"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37215
-msgid "RSVPs"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37220
-#: assets/js/components/weekly-meetings-list.jsx:49
-msgid "Feedback"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37282
-#: assets/js/components/weekly-meetings-list.jsx:90
-#, javascript-format
-msgid "Upcoming meetings Week of %s"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37289
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37297
-#: assets/js/components/weekly-meetings-list.jsx:91
-#: assets/js/components/weekly-meetings-list.jsx:92
-#, javascript-format
-msgid "Week of %s"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37305
-#: assets/js/components/weekly-meetings-list.jsx:93
-msgid "This week"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37316
-#: assets/js/components/weekly-meetings-list.jsx:95
-msgid "View all meetings"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37392
-#: assets/js/components/facilitator-list.jsx:25
-msgid "Name"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37397
-#: assets/js/components/facilitator-list.jsx:25
-msgid "Email"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37435
-#: assets/js/components/facilitator-list.jsx:41
-msgid "Filter users by name or email"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37632
-#: assets/js/components/pager.jsx:35
-msgid "Prev"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37682
-#: assets/js/components/pager.jsx:69
-msgid "Next"
-msgstr ""
-
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37805
 #: assets/js/components/active-learning-circles-list.jsx:11
 msgid "Signups"
 msgstr ""
 
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37815
+#: assets/js/components/active-learning-circles-list.jsx:12
+msgid "Facilitator"
+msgstr ""
+
 #: assets/js/components/active-learning-circles-list.jsx:13
 msgid "Next meeting"
 msgstr ""
 
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37833
 #: assets/js/components/active-learning-circles-list.jsx:22
 msgid "at"
 msgstr ""
 
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37860
 #: assets/js/components/active-learning-circles-list.jsx:34
 msgid "View"
 msgstr ""
 
-#: assets/bundles/organizer-e05146fedb18e7d69a49.js:37882
+#: assets/js/components/active-learning-circles-list.jsx:41
+#: assets/js/components/organizer-dash.jsx:16
+msgid "Active Learning Circles"
+msgstr ""
+
 #: assets/js/components/active-learning-circles-list.jsx:43
 msgid "View all learning circles"
+msgstr ""
+
+#: assets/js/components/facilitator-list.jsx:25
+#: assets/js/components/invitation-list.jsx:56
+msgid "Name"
+msgstr ""
+
+#: assets/js/components/facilitator-list.jsx:25
+msgid "Email"
+msgstr ""
+
+#: assets/js/components/facilitator-list.jsx:41
+msgid "Filter users by name or email"
+msgstr ""
+
+#: assets/js/components/invitation-list.jsx:50
+msgid "Unknown error occured. Please try again later or contact support"
+msgstr ""
+
+#: assets/js/components/invitation-list.jsx:56
+msgid "Date invited"
+msgstr ""
+
+#: assets/js/components/invitation-list.jsx:64
+msgid "No pending invitations"
+msgstr ""
+
+#: assets/js/components/invitation-list.jsx:72
+msgid "Pending invitations"
+msgstr ""
+
+#: assets/js/components/invitation-list.jsx:76
+msgid "Invite facilitators"
+msgstr ""
+
+#: assets/js/components/invitation-list.jsx:78
+msgid "Email address of user to invite"
+msgstr ""
+
+#: assets/js/components/invitation-list.jsx:79
+msgid "Invite facilitator"
+msgstr ""
+
+#: assets/js/components/organizer-dash.jsx:15
+msgid "Organizer Dashboard"
+msgstr ""
+
+#: assets/js/components/organizer-dash.jsx:16
+msgid "Upcoming Meetings"
+msgstr ""
+
+#: assets/js/components/organizer-dash.jsx:16
+msgid "Facilitators"
+msgstr ""
+
+#: assets/js/components/organizer-dash.jsx:16
+msgid "Invitations"
+msgstr ""
+
+#: assets/js/components/pager.jsx:35
+msgid "Prev"
+msgstr ""
+
+#: assets/js/components/pager.jsx:69
+msgid "Next"
+msgstr ""
+
+#: assets/js/components/weekly-meetings-list.jsx:9
+msgid "Yes"
+msgstr ""
+
+#: assets/js/components/weekly-meetings-list.jsx:9
+msgid "No"
+msgstr ""
+
+#: assets/js/components/weekly-meetings-list.jsx:13
+msgid "View feedback"
+msgstr ""
+
+#: assets/js/components/weekly-meetings-list.jsx:17
+msgid "week"
+msgstr ""
+
+#: assets/js/components/weekly-meetings-list.jsx:47
+msgid "Time"
+msgstr ""
+
+#: assets/js/components/weekly-meetings-list.jsx:49
+msgid "Feedback"
+msgstr ""
+
+#: assets/js/components/weekly-meetings-list.jsx:92
+#, javascript-format
+msgid "Upcoming meetings Week of %s"
+msgstr ""
+
+#: assets/js/components/weekly-meetings-list.jsx:93
+#: assets/js/components/weekly-meetings-list.jsx:94
+#, javascript-format
+msgid "Week of %s"
+msgstr ""
+
+#: assets/js/components/weekly-meetings-list.jsx:95
+msgid "This week"
+msgstr ""
+
+#: assets/js/components/weekly-meetings-list.jsx:97
+msgid "View all meetings"
 msgstr ""

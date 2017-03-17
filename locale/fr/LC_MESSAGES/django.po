@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-08 12:36+0000\n"
+"POT-Creation-Date: 2017-03-17 13:11+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -277,119 +277,150 @@ msgid ""
 "building, or anything else you'd like to choose!"
 msgstr ""
 
-#: studygroups/models.py:111
+#: studygroups/models.py:112
 msgid "meeting index this activity corresponds to"
 msgstr ""
 
-#: studygroups/models.py:147 teams/models.py:14
+#: studygroups/models.py:148
 msgid "Organizer"
 msgstr ""
 
-#: studygroups/models.py:148 teams/models.py:15
+#: studygroups/models.py:149
 msgid "Member"
 msgstr ""
 
-#: studygroups/models.py:260
+#: studygroups/models.py:275
 msgid "Send an email"
 msgstr ""
 
-#: studygroups/models.py:261
+#: studygroups/models.py:276
 msgid "Delete spam email"
 msgstr ""
 
-#: studygroups/models.py:262
+#: studygroups/models.py:277
 msgid "Find stuff online using Google"
 msgstr ""
 
-#: studygroups/models.py:263
+#: studygroups/models.py:278
 msgid "Watch a video on Youtube"
 msgstr ""
 
-#: studygroups/models.py:264
+#: studygroups/models.py:279
 msgid "Fill out an application form or buy something online"
 msgstr ""
 
-#: studygroups/models.py:265
+#: studygroups/models.py:280
 msgid "Use a mobile app"
 msgstr ""
 
-#: studygroups/models.py:266
+#: studygroups/models.py:281
 msgid "Evaluate whether a website is safe/can be trusted"
 msgstr ""
 
-#: studygroups/models.py:270
+#: studygroups/models.py:285
 msgid "Can't do"
 msgstr ""
 
-#: studygroups/models.py:271
+#: studygroups/models.py:286
 msgid "Need help doing"
 msgstr ""
 
-#: studygroups/models.py:272
+#: studygroups/models.py:287
 msgid "Can do with difficulty"
 msgstr ""
 
-#: studygroups/models.py:273
+#: studygroups/models.py:288
 msgid "Can do"
 msgstr ""
 
-#: studygroups/models.py:274
+#: studygroups/models.py:289
 msgid "Expert (can teach others)"
 msgstr ""
 
-#: studygroups/models.py:344
+#: studygroups/models.py:359
 msgid "SMS (Text)"
 msgstr ""
 
-#: studygroups/models.py:368
+#: studygroups/models.py:383
 msgid "Great"
 msgstr ""
 
-#: studygroups/models.py:369
+#: studygroups/models.py:384
 msgid "Pretty well"
 msgstr ""
 
-#: studygroups/models.py:370
+#: studygroups/models.py:385
 msgid "Good"
 msgstr ""
 
-#: studygroups/models.py:371
+#: studygroups/models.py:386
 msgid "Not so great"
 msgstr ""
 
-#: studygroups/models.py:372
+#: studygroups/models.py:387
 msgid "I need some help"
 msgstr ""
 
-#: studygroups/models.py:404
+#: studygroups/models.py:419
 msgid "Meetings already exist for this study group"
 msgstr ""
 
-#: studygroups/models.py:603 studygroups/models.py:622
+#: studygroups/models.py:618 studygroups/models.py:637
 msgid "Weekly Learning Circles update"
 msgstr ""
 
-#: studygroups/views/facilitate.py:206
+#: studygroups/views/facilitate.py:215
 msgid "Signup successfully changed"
 msgstr ""
 
-#: studygroups/views/facilitate.py:377
+#: studygroups/views/facilitate.py:288
+msgid "User with the given email address already signed up."
+msgstr ""
+
+#: studygroups/views/facilitate.py:290
+msgid "User with the given mobile number already signed up."
+msgstr ""
+
+#: studygroups/views/facilitate.py:385
 msgid "You created a new Learning Circle! Check your email for next steps."
 msgstr ""
 
-#: studygroups/views/learner.py:213
-msgid "You successfully opted out of the Learning Circle."
+#: studygroups/views/facilitate.py:399
+msgid "No team invitations found"
+msgstr ""
+
+#: studygroups/views/facilitate.py:419
+msgid ""
+"You are currently the organizer of another team and cannot join this team."
 msgstr ""
 
 #: studygroups/views/learner.py:215
+msgid "You successfully opted out of the Learning Circle."
+msgstr ""
+
+#: studygroups/views/learner.py:217
 msgid ""
 "Please check the email you received and make sure this is the correct URL."
 msgstr ""
 
-#: studygroups/views/learner.py:229
+#: studygroups/views/learner.py:231
 msgid ""
 "You will shortly receive an email or text message confirming that you wish "
 "to opt out."
+msgstr ""
+
+#: studygroups/views/organizer.py:166
+msgid "invalid email address"
+msgstr ""
+
+#: studygroups/views/organizer.py:174
+msgid ""
+"There is already a pending invitation for a user with this email address to "
+"join your team"
+msgstr ""
+
+#: studygroups/views/organizer.py:182
+msgid "User with the given email address is already part of your team."
 msgstr ""
 
 #: templates/base.html:13 templates/studygroups/city_list.html:11
@@ -498,11 +529,13 @@ msgid "%(meeting_date)s, %(meeting_time)s %(timezone)s"
 msgstr ""
 
 #: templates/studygroups/_meeting_tr.html:16
+#: templates/studygroups/invitation_confirm.html:16
 #: templates/studygroups/study_group_facilitate.html:81
 msgid "Yes"
 msgstr ""
 
 #: templates/studygroups/_meeting_tr.html:16
+#: templates/studygroups/invitation_confirm.html:17
 #: templates/studygroups/study_group_facilitate.html:81
 msgid "No"
 msgstr ""
@@ -642,39 +675,52 @@ msgid "%(first_name)s&#39;s Facilitator Dashboard"
 msgstr ""
 
 #: templates/studygroups/facilitator.html:10
+#, python-format
+msgid "You are currently part of <strong>%(team_name)s</strong>"
+msgstr ""
+
+#: templates/studygroups/facilitator.html:14
+#, python-format
+msgid ""
+"You've been invited to join %(team_name)s. <a href=\"%(invite_confirm_url)s"
+"\">Respond to this invitation</a>"
+msgstr ""
+
+#: templates/studygroups/facilitator.html:17
 msgid "For help with your Learning Circle, check out:"
 msgstr ""
 
-#: templates/studygroups/facilitator.html:12
+#: templates/studygroups/facilitator.html:19
 msgid "<a href=\"https://www.p2pu.org/en/facilitate/\">Facilitator Guide</a>"
 msgstr ""
 
-#: templates/studygroups/facilitator.html:13
+#: templates/studygroups/facilitator.html:20
 msgid "<a href=\"https://community.p2pu.org\">Facilitator Community</a>"
 msgstr ""
 
-#: templates/studygroups/facilitator.html:16
-#: templates/studygroups/organize.html:23
+#: templates/studygroups/facilitator.html:23
 #: templates/studygroups/team_page.html:21
 msgid "Active Learning Circles"
 msgstr ""
 
-#: templates/studygroups/facilitator.html:20
+#: templates/studygroups/facilitator.html:27
 msgid "No active Learning Circles found, why not create one?"
 msgstr ""
 
-#: templates/studygroups/facilitator.html:23
+#: templates/studygroups/facilitator.html:30
 #: templates/studygroups/facilitator_studygroup_form.html:11
 msgid "Create a Learning Circle"
 msgstr ""
 
-#: templates/studygroups/facilitator.html:26
+#: templates/studygroups/facilitator.html:33
 msgid "Past Learning Circles"
 msgstr ""
 
 #: templates/studygroups/facilitator_created_email.html:4
 #: templates/studygroups/incoming_sms.html:4
 #: templates/studygroups/incoming_sms.txt:1
+#: templates/studygroups/new_facilitator_invite.html:5
+#: templates/studygroups/new_facilitator_invite.txt:1
 #: templates/studygroups/notifications/feedback-submitted.html:4
 #: templates/studygroups/notifications/feedback-submitted.txt:2
 #: templates/studygroups/optout_confirm_email.html:4
@@ -721,6 +767,8 @@ msgstr ""
 #: templates/studygroups/incoming_sms.txt:13
 #: templates/studygroups/learning_circle_created.html:21
 #: templates/studygroups/learning_circle_created.txt:12
+#: templates/studygroups/new_facilitator_invite.html:10
+#: templates/studygroups/new_facilitator_invite.txt:5
 #: templates/studygroups/new_studygroup_update.html:12
 #: templates/studygroups/new_studygroup_update.txt:9
 #: templates/studygroups/notifications/application.html:31
@@ -729,6 +777,8 @@ msgstr ""
 #: templates/studygroups/notifications/feedback-submitted.txt:13
 #: templates/studygroups/optout_confirm_email.html:12
 #: templates/studygroups/optout_confirm_email.txt:9
+#: templates/studygroups/team_invite.html:10
+#: templates/studygroups/team_invite.txt:5
 msgid "Cheers"
 msgstr ""
 
@@ -908,6 +958,19 @@ msgid ""
 "<a href=\"%(facilitator_signup_url)s\">Create your own</a> Learning Circle!"
 msgstr ""
 
+#: templates/studygroups/invitation_confirm.html:11
+#, python-format
+msgid ""
+"You are currently part of %(team_name)s. Accepting this invitation will "
+"remove you from %(team_name)s and you will have to be invited again to join."
+msgstr ""
+
+#: templates/studygroups/invitation_confirm.html:14
+#, python-format
+msgid ""
+"You were invited to join %(team_name)s? Do you wish to accept the invitation?"
+msgstr ""
+
 #: templates/studygroups/learning-circles.html:11
 msgid "Image of the Learning Circle location"
 msgstr ""
@@ -1032,6 +1095,30 @@ msgstr ""
 #: templates/studygroups/message_edit.html:9
 #, python-format
 msgid "Edit email to %(study_group)s"
+msgstr ""
+
+#: templates/studygroups/new_facilitator_invite-subject.txt:1
+#: templates/studygroups/team_invite-subject.txt:1
+#, python-format
+msgid ""
+"%(organizer_name)s invited you to join their team on learningcircles.p2pu.org"
+msgstr ""
+
+#: templates/studygroups/new_facilitator_invite.html:8
+#, python-format
+msgid ""
+"%(organizer_name)s invited you to join their team on <a href=\"https://"
+"learningcircles.p2pu.org\">learningcircles.p2pu.org</a>. You first have to "
+"sign up at <a href=\"https://%(domain)s%(facilitator_signup_url)s\">"
+"%(domain)s%(facilitator_signup_url)s</a> and then accept the invitation."
+msgstr ""
+
+#: templates/studygroups/new_facilitator_invite.txt:3
+#, python-format
+msgid ""
+"%(organizer_name)s invited you to join their team on learningcircles.p2pu."
+"org. You first have to sign up at https://%(domain)s"
+"%(facilitator_signup_url)s and then accept the invitation."
 msgstr ""
 
 #: templates/studygroups/new_facilitator_update-subject.txt:1
@@ -1341,65 +1428,6 @@ msgid ""
 "%(application.study_group.venue_name)s."
 msgstr ""
 
-#: templates/studygroups/organize.html:11
-#, python-format
-msgid "%(team_name)s team dashboard"
-msgstr ""
-
-#: templates/studygroups/organize.html:17
-msgid "View all meetings"
-msgstr ""
-
-#: templates/studygroups/organize.html:27
-#: templates/studygroups/studygroup_list.html:13
-msgid "Details"
-msgstr ""
-
-#: templates/studygroups/organize.html:28
-#: templates/studygroups/studygroup_list.html:14
-msgid "Signups"
-msgstr ""
-
-#: templates/studygroups/organize.html:29
-#: templates/studygroups/organize_meetings.html:26
-#: templates/studygroups/studygroup_list.html:15
-#: templates/studygroups/studygroupmeeting_list.html:14
-#: templates/studygroups/weekly-update.html:45
-#: templates/studygroups/weekly-update.txt:18
-msgid "Facilitator"
-msgstr ""
-
-#: templates/studygroups/organize.html:30
-#: templates/studygroups/study_group_facilitate.html:41
-msgid "Next meeting"
-msgstr ""
-
-#: templates/studygroups/organize.html:39 templates/studygroups/signup.html:21
-#: templates/studygroups/study_group_facilitate.html:41
-#: templates/studygroups/studygroup_list.html:25
-#: templates/studygroups/weekly-update.html:43
-#: templates/studygroups/weekly-update.txt:16
-msgid "at"
-msgstr ""
-
-#: templates/studygroups/organize.html:53
-#: templates/studygroups/studygroup_list.html:37
-msgid "View"
-msgstr ""
-
-#: templates/studygroups/organize.html:60
-msgid "View all Learning Circles"
-msgstr ""
-
-#: templates/studygroups/organize.html:66
-msgid "Facilitators"
-msgstr ""
-
-#: templates/studygroups/organize.html:70
-#: templates/studygroups/study_group_facilitate.html:143
-msgid "Name"
-msgstr ""
-
 #: templates/studygroups/organize_meetings.html:4
 msgid "Upcoming meetings"
 msgstr ""
@@ -1412,6 +1440,14 @@ msgstr ""
 #: templates/studygroups/organize_meetings.html:25
 #: templates/studygroups/studygroupmeeting_list.html:13
 msgid "Learning Circle"
+msgstr ""
+
+#: templates/studygroups/organize_meetings.html:26
+#: templates/studygroups/studygroup_list.html:15
+#: templates/studygroups/studygroupmeeting_list.html:14
+#: templates/studygroups/weekly-update.html:45
+#: templates/studygroups/weekly-update.txt:18
+msgid "Facilitator"
 msgstr ""
 
 #: templates/studygroups/organize_meetings.html:27
@@ -1446,6 +1482,14 @@ msgstr ""
 msgid "Sign up for %(course_title)s"
 msgstr ""
 
+#: templates/studygroups/signup.html:21
+#: templates/studygroups/study_group_facilitate.html:41
+#: templates/studygroups/studygroup_list.html:25
+#: templates/studygroups/weekly-update.html:43
+#: templates/studygroups/weekly-update.txt:16
+msgid "at"
+msgstr ""
+
 #: templates/studygroups/signup.html:22
 #, python-format
 msgid "Facilitated by %(first_name)s %(last_name)s"
@@ -1473,6 +1517,10 @@ msgid_plural ""
 "      "
 msgstr[0] ""
 msgstr[1] ""
+
+#: templates/studygroups/signup.html:37
+msgid "Unfortunately this learning circle is now closed for signup."
+msgstr ""
 
 #: templates/studygroups/signup_success.html:12
 #, python-format
@@ -1533,6 +1581,10 @@ msgstr ""
 msgid ""
 "Signup is currently closed and your Learning Circle will not be listed on "
 "the landing page."
+msgstr ""
+
+#: templates/studygroups/study_group_facilitate.html:41
+msgid "Next meeting"
 msgstr ""
 
 #: templates/studygroups/study_group_facilitate.html:41
@@ -1605,6 +1657,10 @@ msgstr ""
 msgid "Learners"
 msgstr ""
 
+#: templates/studygroups/study_group_facilitate.html:143
+msgid "Name"
+msgstr ""
+
 #: templates/studygroups/study_group_facilitate.html:144
 msgid "Goal"
 msgstr ""
@@ -1634,8 +1690,20 @@ msgstr ""
 msgid "back to organizer dashboard"
 msgstr ""
 
+#: templates/studygroups/studygroup_list.html:13
+msgid "Details"
+msgstr ""
+
+#: templates/studygroups/studygroup_list.html:14
+msgid "Signups"
+msgstr ""
+
 #: templates/studygroups/studygroup_list.html:16
 msgid "First meeting"
+msgstr ""
+
+#: templates/studygroups/studygroup_list.html:37
+msgid "View"
 msgstr ""
 
 #: templates/studygroups/studygroup_list.html:47
@@ -1664,6 +1732,27 @@ msgstr ""
 
 #: templates/studygroups/studygroupmeeting_list.html:9
 msgid "Learning Circles meetings"
+msgstr ""
+
+#: templates/studygroups/team_invite.html:5
+#: templates/studygroups/team_invite.txt:1
+#, python-format
+msgid "Hi there %(name)s"
+msgstr ""
+
+#: templates/studygroups/team_invite.html:8
+#, python-format
+msgid ""
+"%(organizer_name)s invited you to join their team. You can respond to the "
+"invitation on your <a href=\"http://%(domain)s%(facilitator_url)s"
+"\">dashboard</a>."
+msgstr ""
+
+#: templates/studygroups/team_invite.txt:3
+#, python-format
+msgid ""
+"%(organizer_name)s invited you to join their team. You can respond to the "
+"invitation on your dashboard: http://%(domain)s%(facilitator_signup_url)s."
 msgstr ""
 
 #: templates/studygroups/team_page.html:10
