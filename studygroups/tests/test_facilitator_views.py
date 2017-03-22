@@ -11,7 +11,7 @@ from mock import patch
 from studygroups.models import StudyGroup
 from studygroups.models import StudyGroupMeeting
 from studygroups.models import Application
-from studygroups.models import Organizer
+from studygroups.models import Facilitator
 from studygroups.models import Rsvp
 from studygroups.models import Team
 from studygroups.models import TeamMembership
@@ -52,6 +52,24 @@ class TestFacilitatorViews(TestCase):
         user.is_superuser = True
         user.is_staff = True
         user.save()
+
+
+    def test_facilitator_signup(self):
+        c = Client()
+        data = {
+            "username": "test@example.net",
+            "first_name": "firstname",
+            "last_name": "lastname",
+            "mailing_list_signup": "on",
+        }
+        resp = c.post('/en/facilitator/signup/', data)
+        self.assertRedirects(resp, '/en/facilitator/signup/success/')
+        users = User.objects.filter(email=data['username'])
+        self.assertEquals(users.count(), 1)
+        facilitator = Facilitator.objects.get(user=users.first())
+        self.assertEquals(facilitator.mailing_list_signup, True)
+        self.assertEquals(len(mail.outbox), 1)
+        self.assertIn('New facilitator account created on', mail.outbox[0].subject)
 
 
     def test_facilitator_login_redirect(self):

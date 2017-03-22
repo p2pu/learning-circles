@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.utils import translation
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.core.serializers.json import DjangoJSONEncoder
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
@@ -116,9 +116,10 @@ class Activity(models.Model):
         return self.description
 
 
-# TODO remove this - all users are considered facilitators
+# TODO rename to profile or something else
 class Facilitator(models.Model):
     user = models.OneToOneField(User)
+    mailing_list_signup = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.user.__unicode__()

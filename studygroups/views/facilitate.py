@@ -322,7 +322,8 @@ class FacilitatorSignup(CreateView):
         self.object.first_name = user.first_name
         self.object.last_name = user.last_name
         self.object.save()
-        facilitator = Facilitator(user=self.object)
+        facilitator = Facilitator(user=self.object) #TODO are we still using Facilitator?
+        facilitator.mailing_list_signup = form.cleaned_data['mailing_list_signup']
         facilitator.save()
 
         # send password reset email to facilitator

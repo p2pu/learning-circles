@@ -47,7 +47,7 @@ def organize(request):
     two_weeks_ago = today - datetime.timedelta(weeks=2, days=today.weekday())
     two_weeks = today - datetime.timedelta(days=today.weekday()) + datetime.timedelta(weeks=3)
     study_groups = StudyGroup.objects.active()
-    facilitators = Facilitator.objects.all()
+    facilitators = Facilitator.objects.all() # TODO rather use User model
     courses = []# TODO Remove courses until we implement course selection for teams
     team = None
     invitations = []
