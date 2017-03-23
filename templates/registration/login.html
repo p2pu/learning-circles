@@ -1,16 +1,18 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load crispy_forms_tags %}
 
 {% block content %}
   <div class="container">
-      <h1>Log in</h1>
-      <p>Or <a href="{% url 'studygroups_facilitator_signup' %}">create account</a></p>
-      <p>Your username is the email address you signed up with.</p>
+      <h1>{% trans "Log in" %}</h1>
+      {% url 'studygroups_facilitator_signup' as signup_url %}
+      <p>{% blocktrans %}Or <a href="{{ signup_url }}">create account</a>{% endlbocktrans %}</p>
+      <p>{% trans "Your username is the email address you signed up with." %}</p>
     <form action="" method="POST">
       {% csrf_token %}
       {{ form|crispy }}
-      <button type="submit" class="btn btn-primary">Login</button>
+      <button type="submit" class="btn btn-primary">{% trans "Login" %}</button>
     </form>
-    <p><a href="{% url 'password_reset' %}">Lost password?</a></p>
+    <p><a href="{% url 'password_reset' %}">{% trans "Lost password?" %}</a></p>
   </div>
 {% endblock %}
