@@ -248,11 +248,11 @@ class FeedbackForm(forms.ModelForm):
         labels = {
             'feedback': _('For learners: Write a brief summary of this week\'s Learning Circle.'),
             'attendance': _('How many people attended?'),
-            'reflection': _('Between us: Is there anything you want to let us know?'),
+            'reflection': _('For the rest of us: Anything you want to share?*'),
             'rating': _('Overall, how would you say this week went?')
         }
         help_texts = {
             'feedback': _('You may want to include your impressions of how it went, plus/delta feedback, and anything the group agreed on having completed before the next meeting. This will be automatically sent to learners two days before next week\'s meeting.'),
-            'reflection': _('You can use this space for reflections, concerns, and anything else you think might help. This will be shared with the P2PU community coordinator and your team organizer if you are part of a team.'),
+            'reflection': _('What went well this week? What surprised you? Any funny stories? We’ll pull what you write here into our community newsletters and updates.'),
         }
         widgets = {'study_group_meeting': forms.HiddenInput} 
