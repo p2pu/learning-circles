@@ -1,3 +1,4 @@
+# coding=utf8
 from django import forms
 from django.conf import settings
 from django.utils.translation import ugettext as _
@@ -253,6 +254,6 @@ class FeedbackForm(forms.ModelForm):
         }
         help_texts = {
             'feedback': _('You may want to include your impressions of how it went, plus/delta feedback, and anything the group agreed on having completed before the next meeting. This will be automatically sent to learners two days before next week\'s meeting.'),
-            'reflection': _('What went well this week? What surprised you? Any funny stories? We’ll pull what you write here into our community newsletters and updates.'),
+            'reflection': _(u'What went well this week? What surprised you? Any funny stories? We’ll pull what you write here into our community newsletters and updates.'),
         }
         widgets = {'study_group_meeting': forms.HiddenInput} 
