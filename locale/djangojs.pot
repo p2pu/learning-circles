@@ -1,0 +1,160 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-03-24 07:58+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: assets/js/components/active-learning-circles-list.jsx:10
+#: assets/js/components/weekly-meetings-list.jsx:45
+msgid "Details"
+msgstr ""
+
+#: assets/js/components/active-learning-circles-list.jsx:11
+msgid "Signups"
+msgstr ""
+
+#: assets/js/components/active-learning-circles-list.jsx:12
+msgid "Facilitator"
+msgstr ""
+
+#: assets/js/components/active-learning-circles-list.jsx:13
+msgid "Next meeting"
+msgstr ""
+
+#: assets/js/components/active-learning-circles-list.jsx:22
+msgid "at"
+msgstr ""
+
+#: assets/js/components/active-learning-circles-list.jsx:34
+msgid "View"
+msgstr ""
+
+#: assets/js/components/active-learning-circles-list.jsx:41
+#: assets/js/components/organizer-dash.jsx:16
+msgid "Active Learning Circles"
+msgstr ""
+
+#: assets/js/components/active-learning-circles-list.jsx:43
+msgid "View all learning circles"
+msgstr ""
+
+#: assets/js/components/facilitator-list.jsx:25
+#: assets/js/components/invitation-list.jsx:56
+msgid "Name"
+msgstr ""
+
+#: assets/js/components/facilitator-list.jsx:25
+msgid "Email"
+msgstr ""
+
+#: assets/js/components/facilitator-list.jsx:41
+msgid "Filter users by name or email"
+msgstr ""
+
+#: assets/js/components/invitation-list.jsx:50
+msgid "Unknown error occured. Please try again later or contact support"
+msgstr ""
+
+#: assets/js/components/invitation-list.jsx:56
+msgid "Date invited"
+msgstr ""
+
+#: assets/js/components/invitation-list.jsx:64
+msgid "No pending invitations"
+msgstr ""
+
+#: assets/js/components/invitation-list.jsx:72
+msgid "Pending invitations"
+msgstr ""
+
+#: assets/js/components/invitation-list.jsx:76
+msgid "Invite facilitators"
+msgstr ""
+
+#: assets/js/components/invitation-list.jsx:78
+msgid "Email address of user to invite"
+msgstr ""
+
+#: assets/js/components/invitation-list.jsx:79
+msgid "Invite facilitator"
+msgstr ""
+
+#: assets/js/components/organizer-dash.jsx:15
+msgid "Organizer Dashboard"
+msgstr ""
+
+#: assets/js/components/organizer-dash.jsx:16
+msgid "Upcoming Meetings"
+msgstr ""
+
+#: assets/js/components/organizer-dash.jsx:16
+msgid "Facilitators"
+msgstr ""
+
+#: assets/js/components/organizer-dash.jsx:16
+msgid "Invitations"
+msgstr ""
+
+#: assets/js/components/pager.jsx:35
+msgid "Prev"
+msgstr ""
+
+#: assets/js/components/pager.jsx:69
+msgid "Next"
+msgstr ""
+
+#: assets/js/components/weekly-meetings-list.jsx:9
+msgid "Yes"
+msgstr ""
+
+#: assets/js/components/weekly-meetings-list.jsx:9
+msgid "No"
+msgstr ""
+
+#: assets/js/components/weekly-meetings-list.jsx:13
+msgid "View feedback"
+msgstr ""
+
+#: assets/js/components/weekly-meetings-list.jsx:17
+msgid "week"
+msgstr ""
+
+#: assets/js/components/weekly-meetings-list.jsx:47
+msgid "Time"
+msgstr ""
+
+#: assets/js/components/weekly-meetings-list.jsx:49
+msgid "Feedback"
+msgstr ""
+
+#: assets/js/components/weekly-meetings-list.jsx:92
+#, javascript-format
+msgid "Upcoming meetings Week of %s"
+msgstr ""
+
+#: assets/js/components/weekly-meetings-list.jsx:93
+#: assets/js/components/weekly-meetings-list.jsx:94
+#, javascript-format
+msgid "Week of %s"
+msgstr ""
+
+#: assets/js/components/weekly-meetings-list.jsx:95
+msgid "This week"
+msgstr ""
+
+#: assets/js/components/weekly-meetings-list.jsx:97
+msgid "View all meetings"
+msgstr ""

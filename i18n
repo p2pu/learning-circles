@@ -1,0 +1,13 @@
+python manage.py makemessages -a -i venv -i node_modules --settings=learnwithpeople.settings --keep-pot
+python manage.py makemessages -a -i venv -i node_modules -i assets/dist -i docs -d djangojs -e jsx,js --keep-pot
+
+
+
+
+
+python manage.py makemessages -l es -i venv
+python manage.py makemessages -l es -i venv -i node_modules -i assets/bundles/ -i assets/dist -i docs -d djangojs
+python manage.py makemessages -l es -i venv -i node_modules -i assets/bundles/* -i assets/dist/* -i docs -d djangojs -e jsx -e js
+python manage.py makemessages -l es -i venv -i node_modules -i assets/dist/* -i docs -d djangojs -e jsx,js
+python manage.py makemessages -l es -l fr -i venv -i node_modules -i assets/dist/* -i docs -d djangojs -e jsx,js
+python manage.py makemessages -a -i venv -i node_modules --settings=learnwithpeople.settings
