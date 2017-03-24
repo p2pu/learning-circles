@@ -6,7 +6,7 @@
   <div class="container">
       <h1>{% trans "Log in" %}</h1>
       {% url 'studygroups_facilitator_signup' as signup_url %}
-      <p>{% blocktrans %}Or <a href="{{ signup_url }}">create account</a>{% endlbocktrans %}</p>
+      <p>{% blocktrans %}Or <a href="{{ signup_url }}">create account</a>{% endblocktrans %}</p>
       <p>{% trans "Your username is the email address you signed up with." %}</p>
     <form action="" method="POST">
       {% csrf_token %}
