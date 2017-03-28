@@ -227,7 +227,7 @@ class StudyGroupForm(forms.ModelForm):
 
 class FacilitatorForm(forms.ModelForm):
     username = forms.EmailField(required=True, label=_('Email'))
-    mailing_list_signup = forms.BooleanField(label=_('Subscribe to facilitator mailing list?'))
+    mailing_list_signup = forms.BooleanField(required=False, label=_('Subscribe to facilitator mailing list?'))
 
     class Meta:
         model = User
