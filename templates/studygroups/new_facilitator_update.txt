@@ -2,7 +2,7 @@
 
 {% blocktrans %}A week ago you signed up to be a facilitator on Learning Circle. If you haven't already, head over to https://www.p2pu.org/facilitate to get your first Learning Circle up and running.{% endblocktrans %}
 
-{% blocktrans %}If you have any questions, our team and growing community of facilitators are available at https://community.p2pu.org to answer questions and share feedback. We'd love to see you there!{% endblocktrans %}
+{% blocktrans %}If you have any questions, our team and growing community of facilitators are available at https://groups.google.com/a/p2pu.org/forum/#!forum/community to answer questions and share feedback. We'd love to see you there!{% endblocktrans %}
 
 {% trans "Regards" %},
 P2PU

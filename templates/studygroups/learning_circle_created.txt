@@ -4,10 +4,10 @@ Congratulations! Your Learning Circle is now live at: {{protocol}}://{{domain}}{
 
 {% trans "What next?" %}
 - {% blocktrans %}Review the Facilitator Guide: https://www.p2pu.org/en/facilitate/. It contains 40 pages of great tips, tricks, checklists, and templates to help you advertise, prepare for, and run your Learning Circle.{% endblocktrans %}
-- {% blocktrans %}Get in touch with other facilitators: https://community.p2pu.org. Ask questions, share advice, and contribute new ideas on our community forum.{% endblocktrans %}
+- {% blocktrans %}Get in touch with other facilitators: https://groups.google.com/a/p2pu.org/forum/#!forum/community. Ask questions, share advice, and contribute new ideas on our community forum.{% endblocktrans %}
 - {% blocktrans %}Read the applications: https://learningcircles.p2pu.org/en/facilitator. You’ll receive an email whenever somebody applies to your Learning Circle. You can view their applications and send them messages directly through your dashboard.{% endblocktrans %}
 
-{% blocktrans %}Your'll hear from us again a few days before your first Learning Circle. If you have any questions in the meantime, you can ask in our facilitator community: https://community.p2pu.org.{% endblocktrans %}
+{% blocktrans %}Your'll hear from us again a few days before your first Learning Circle. If you have any questions in the meantime, you can ask in our facilitator community: https://groups.google.com/a/p2pu.org/forum/#!forum/community.{% endblocktrans %}
 
 {% trans "Cheers" %},
 P2PU
