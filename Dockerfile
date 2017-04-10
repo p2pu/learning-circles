@@ -2,7 +2,6 @@ FROM ubuntu:14.04
 
 # Install requirements
 RUN apt-get update && apt-get install -y \
-    git-core \
     libpq-dev \
     postgresql-client \
     python \
