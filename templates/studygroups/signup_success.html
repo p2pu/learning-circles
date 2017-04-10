@@ -9,8 +9,8 @@
         <h2>{% trans "You successfully signed up!" %}</h2>
     </div>
     <div class="col-md-12">
-        <p>{% blocktrans with start_date=study_group.start_date|date:"l j F" meeting_time=study_group.meeting_time|time:"fA" %}
-        Thank you for signing up for &quot;{{study_group.course.title}}&quot; at {{study_group.venue_name}}. The first meeting will be on <strong>{{start_date}}, {{meeting_time}}</strong>. Your facilitator will be in contact before then.{% endblocktrans %}</p>
+        <p>{% blocktrans with start_date=study_group.start_date|date:"l j F" meeting_time=study_group.meeting_time|time:"fA" course_title=study_group.course.title venue_name=study_group.venue_name %}
+        Thank you for signing up for &quot;{{course_title}}&quot; at {{venue_name}}. The first meeting will be on <strong>{{start_date}}, {{meeting_time}}</strong>. Your facilitator will be in contact before then.{% endblocktrans %}</p>
     </div>
     <div class="section-title col-md-12">
     {% if study_group.image %}
