@@ -20,5 +20,12 @@ config[0].plugins = config[0].plugins.concat([
 ]);
 
 config[0].output.path = path.resolve('./assets/dist');
+config[1].plugins = config[1].plugins.concat([
+    new webpack.optimize.UglifyJsPlugin({
+        compressor: {
+            warnings: false
+        }
+    })
+]);
 
 module.exports = config;
