@@ -265,6 +265,31 @@ class TestOrganizerViews(TestCase):
         self.assertIn('Orgaborga', mail.outbox[0].body)
 
 
+    def test_invite_existing_user_with_email_mixed_case(self):
+        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
+        organizer.first_name = 'Orgaborga'
+        organizer.save()
+        faci1 = User.objects.create_user('faci1@team.com', 'fAcI1@team.com', 'password')
+        faci1.first_name = 'Bobobob'
+        faci1.save()
+
+        team = Team.objects.create(name='test team')
+        TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
+        
+        c = Client()
+        c.login(username='organ@team.com', password='password')
+        invite_url = '/en/organize/team/{0}/member/invite/'.format(team.pk)
+        resp = c.post(invite_url, json.dumps({"email":"faCi1@team.com"}), content_type="application/json")
+        self.assertEquals(resp.status_code, 200)
+        self.assertEquals(resp.json()['status'], 'CREATED')
+        self.assertEquals(TeamInvitation.objects.filter(team=team).count(),1)
+        self.assertEquals(len(mail.outbox), 1)
+        # Make sure correct email was sent
+        self.assertIn('Bobobob', mail.outbox[0].body)
+        self.assertIn('Orgaborga', mail.outbox[0].body)
+
+
+
     def test_only_group_organizer_can_invite(self):
         organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
         organizer.first_name = 'Orgaborga'

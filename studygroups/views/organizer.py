@@ -6,6 +6,7 @@ from django.template.loader import render_to_string
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.auth.models import BaseUserManager
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMultiAlternatives, send_mail
 from django.core.validators import validate_email
@@ -156,6 +157,7 @@ class TeamInvitationCreate(View):
     def post(self, request, *args, **kwargs):
         team = Team.objects.get(pk=self.kwargs.get('team_id'))
         email = json.loads(request.body).get('email')
+        email = BaseUserManager.normalize_email(email)
         # check email address
         try:
             validate_email(email)
@@ -167,7 +169,7 @@ class TeamInvitationCreate(View):
                 }
             })
         # make sure email not already invited to this team
-        if TeamInvitation.objects.filter(team=team, email=email, responded_at__isnull=True).exists():
+        if TeamInvitation.objects.filter(team=team, email__iexact=email, responded_at__isnull=True).exists():
             return  http.JsonResponse({
                 "status": "ERROR", 
                 "errors": {
@@ -175,7 +177,7 @@ class TeamInvitationCreate(View):
                 }
             })
         # make sure user not already part of this team
-        if TeamMembership.objects.filter(team=team, user__email=email).exists():
+        if TeamMembership.objects.filter(team=team, user__email__iexact=email).exists():
             return  http.JsonResponse({
                 "status": "ERROR", 
                 "errors": {

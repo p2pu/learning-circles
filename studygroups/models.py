@@ -503,7 +503,7 @@ def send_reminder(reminder):
         for email in to:
             yes_link = reminder.study_group_meeting.rsvp_yes_link(email)
             no_link = reminder.study_group_meeting.rsvp_no_link(email)
-            application = reminder.study_group_meeting.study_group.application_set.active().filter(email=email).first()
+            application = reminder.study_group_meeting.study_group.application_set.active().filter(email__iexact=email).first()
             unsubscribe_link = application.unapply_link()
             email_body = reminder.email_body
             email_body = re.sub(r'\(<!--RSVP:YES-->.*\)', yes_link, email_body)
@@ -550,7 +550,7 @@ def create_rsvp(contact, study_group, meeting_datetime, attending):
     study_group_meeting = StudyGroupMeeting.objects.get(study_group__id=study_group, meeting_date=meeting_datetime.date(), meeting_time=meeting_datetime.time())
     application = None
     if '@' in contact:
-        application = Application.objects.active().get(study_group__id=study_group, email=contact)
+        application = Application.objects.active().get(study_group__id=study_group, email__iexact=contact)
     else:
         application = Application.objects.active().get(study_group__id=study_group, mobile=contact)
     rsvp = Rsvp.objects.all().filter(study_group_meeting=study_group_meeting, application=application).first()
@@ -684,7 +684,7 @@ def send_new_studygroup_email(studygroup):
 def send_team_invitation_email(team, email, organizer):
     """ Send email to new or existing facilitators """
     """ organizer should be a User object """
-    user_qs = User.objects.filter(email=email)
+    user_qs = User.objects.filter(email__iexact=email)
     context = {
         "team": team,
         "organizer": organizer,

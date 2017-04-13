@@ -110,7 +110,7 @@ class OptOutForm(forms.Form):
             self.add_error('email', _('Please provide either the email address or the phone number used to sign up.'))
 
         conditions = [
-            email and Application.objects.active().filter(email=email).count() > 0,
+            email and Application.objects.active().filter(email__iexact=email).count() > 0,
             mobile and Application.objects.active().filter(mobile=mobile).count() > 0
         ]
 
@@ -121,7 +121,7 @@ class OptOutForm(forms.Form):
         email = self.cleaned_data.get('email')
         mobile = self.cleaned_data.get('mobile')
         if email:
-            for application in Application.objects.active().filter(email=email):
+            for application in Application.objects.active().filter(email__iexact=email):
                 # send opt-out email
                 context = { 'application': application }
                 subject = render_to_string('studygroups/optout_confirm_email_subject.txt', context).strip('\n')
@@ -137,7 +137,7 @@ class OptOutForm(forms.Form):
             applications = Application.objects.active().filter(mobile=mobile)
             if email:
                 # don't send text to applications with a valid email in opt out form
-                applications = applications.exclude(email=email)
+                applications = applications.exclude(email__iexact=email)
             for application in applications:
                 # This remains for old signups without email address 
                 context = { 'application': application }
@@ -228,6 +228,13 @@ class StudyGroupForm(forms.ModelForm):
 class FacilitatorForm(forms.ModelForm):
     username = forms.EmailField(required=True, label=_('Email'))
     mailing_list_signup = forms.BooleanField(required=False, label=_('Subscribe to facilitator mailing list?'))
+
+    def clean(self):
+        cleaned_data = super(FacilitatorForm, self).clean()
+        username = cleaned_data.get('username')
+        if User.objects.filter(username__iexact=username).exists():
+            self.add_error('username', _('A user with that username already exists.'))
+        return cleaned_data
 
     class Meta:
         model = User

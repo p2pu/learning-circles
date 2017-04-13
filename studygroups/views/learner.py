@@ -150,8 +150,8 @@ def signup(request, location, study_group_id):
         form = ApplicationForm(request.POST, initial={'study_group': study_group})
         if form.is_valid() and study_group.signup_open is True:
             application = form.save(commit=False)
-            if application.email and Application.objects.active().filter(email=application.email, study_group=study_group).exists():
-                old_application = Application.objects.active().filter(email=application.email, study_group=study_group).first()
+            if application.email and Application.objects.active().filter(email__iexact=application.email, study_group=study_group).exists():
+                old_application = Application.objects.active().filter(email__iexact=application.email, study_group=study_group).first()
                 application.pk = old_application.pk
                 application.created_at = old_application.created_at
                 #TODO messages.success(request, 'Your signup details have been updated!')

@@ -153,6 +153,8 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Allow all host headers
 ALLOWED_HOSTS = ['*']
 
+AUTHENTICATION_BACKENDS = ['studygroups.backend.CaseInsensitiveBackend']
+
 ##### Twilio config
 
 TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID')

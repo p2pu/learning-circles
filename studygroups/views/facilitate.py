@@ -62,7 +62,7 @@ def facilitator(request):
     team = None
     if TeamMembership.objects.filter(user=request.user).exists():
         team = TeamMembership.objects.filter(user=request.user).first().team
-    invitation = TeamInvitation.objects.filter(email=request.user.email, responded_at__isnull=True).first()
+    invitation = TeamInvitation.objects.filter(email__iexact=request.user.email, responded_at__isnull=True).first()
     context = {
         'current_study_groups': current_study_groups,
         'past_study_groups': past_study_groups,
@@ -284,7 +284,7 @@ def add_member(request, study_group_id):
         if form.is_valid():
             url = reverse('studygroups_view_study_group', args=(study_group_id,))
             application = form.save(commit=False)
-            if application.email and Application.objects.active().filter(email=application.email, study_group=study_group).exists():
+            if application.email and Application.objects.active().filter(email__iexact=application.email, study_group=study_group).exists():
                 messages.warning(request, _('User with the given email address already signed up.'))
             elif application.mobile and Application.objects.active().filter(mobile=application.mobile, study_group=study_group).exists():
                 messages.warning(request, _('User with the given mobile number already signed up.'))
@@ -314,11 +314,10 @@ class FacilitatorSignup(CreateView):
     def form_valid(self, form):
         user = form.save(commit=False)
         self.object = User.objects.create_user(
-            user.username,
+            user.username.lower(),
             user.username,
             "".join([random.choice(string.letters) for i in range(64)])
         )
-        self.object.username = user.username
         self.object.first_name = user.first_name
         self.object.last_name = user.last_name
         self.object.save()
@@ -394,7 +393,7 @@ class InvitationConfirm(FormView):
 
     def get(self, request, *args, **kwargs):
         invitation = TeamInvitation.objects.filter(
-                email=self.request.user.email,
+                email__iexact=self.request.user.email,
                 responded_at__isnull=True).first()
         if invitation is None:
             messages.warning(self.request, _('No team invitations found'))
@@ -405,7 +404,7 @@ class InvitationConfirm(FormView):
     def get_context_data(self, **kwargs):
         context = super(InvitationConfirm, self).get_context_data(**kwargs)
         invitation = TeamInvitation.objects.filter(
-                email=self.request.user.email,
+                email__iexact=self.request.user.email,
                 responded_at__isnull=True).first()
         team_membership = TeamMembership.objects.filter(user=self.request.user).first()
         context['invitation'] = invitation
@@ -414,7 +413,7 @@ class InvitationConfirm(FormView):
 
     def form_valid(self, form):
         # Update invitation
-        invitation = TeamInvitation.objects.filter(email=self.request.user.email, responded_at__isnull=True).first()
+        invitation = TeamInvitation.objects.filter(email__iexact=self.request.user.email, responded_at__isnull=True).first()
         current_membership_qs = TeamMembership.objects.filter(user=self.request.user)
         if current_membership_qs.filter(role=TeamMembership.ORGANIZER).exists() and self.request.POST['response'] == 'yes':
             messages.warning(self.request, _('You are currently the organizer of another team and cannot join this team.'))

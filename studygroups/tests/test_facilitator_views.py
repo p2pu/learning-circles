@@ -64,7 +64,27 @@ class TestFacilitatorViews(TestCase):
         }
         resp = c.post('/en/facilitator/signup/', data)
         self.assertRedirects(resp, '/en/facilitator/signup/success/')
-        users = User.objects.filter(email=data['username'])
+        users = User.objects.filter(email__iexact=data['username'])
+        self.assertEquals(users.count(), 1)
+        facilitator = Facilitator.objects.get(user=users.first())
+        self.assertEquals(facilitator.mailing_list_signup, True)
+        self.assertEquals(len(mail.outbox), 1)
+        self.assertIn('New facilitator account created on', mail.outbox[0].subject)
+
+
+    def test_facilitator_signup_with_mixed_case(self):
+        c = Client()
+        data = {
+            "username": "ThIsNoTaGoOd@EmAil.CoM",
+            "first_name": "firstname",
+            "last_name": "lastname",
+            "mailing_list_signup": "on",
+        }
+        resp = c.post('/en/facilitator/signup/', data)
+        self.assertRedirects(resp, '/en/facilitator/signup/success/')
+        data['username'] = data['username'].upper()
+        resp = c.post('/en/facilitator/signup/', data)
+        users = User.objects.filter(username__iexact=data['username'])
         self.assertEquals(users.count(), 1)
         facilitator = Facilitator.objects.get(user=users.first())
         self.assertEquals(facilitator.mailing_list_signup, True)
@@ -258,11 +278,11 @@ class TestFacilitatorViews(TestCase):
         self.assertRedirects(resp, '/en/facilitator/')
 
         TeamInvitation.objects.create(team=team, organizer=organizer, role=TeamMembership.MEMBER, email=faci1.email)
-        self.assertTrue(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email=faci1.email).responded_at is None)
+        self.assertTrue(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email__iexact=faci1.email).responded_at is None)
         resp = c.post('/en/facilitator/team-invitation/', {'response': 'yes'})
         self.assertRedirects(resp, '/en/facilitator/')
         self.assertEquals(TeamMembership.objects.filter(team=team, role=TeamMembership.MEMBER, user=faci1).count(), 1)
-        self.assertFalse(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email=faci1.email).responded_at is None)
+        self.assertFalse(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email__iexact=faci1.email).responded_at is None)
 
 
     def test_user_rejept_invitation(self):
@@ -278,8 +298,8 @@ class TestFacilitatorViews(TestCase):
         c.login(username='faci1@team.com', password='1234')
 
         TeamInvitation.objects.create(team=team, organizer=organizer, role=TeamMembership.MEMBER, email=faci1.email)
-        self.assertTrue(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email=faci1.email).responded_at is None)
+        self.assertTrue(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email__iexact=faci1.email).responded_at is None)
         resp = c.post('/en/facilitator/team-invitation/', {'response': 'no'})
         self.assertRedirects(resp, '/en/facilitator/')
         self.assertEquals(TeamMembership.objects.filter(team=team, role=TeamMembership.MEMBER, user=faci1).count(), 0)
-        self.assertFalse(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email=faci1.email).responded_at is None)
+        self.assertFalse(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email__iexact=faci1.email).responded_at is None)
