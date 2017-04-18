@@ -256,7 +256,7 @@ class FeedbackForm(forms.ModelForm):
         labels = {
             'feedback': _('For learners: Write a brief summary of this week\'s Learning Circle.'),
             'attendance': _('How many people attended?'),
-            'reflection': _('For the rest of us: Anything you want to share?*'),
+            'reflection': _('For the rest of us: Anything you want to share?'),
             'rating': _('Overall, how would you say this week went?')
         }
         help_texts = {
