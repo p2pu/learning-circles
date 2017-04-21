@@ -54,7 +54,7 @@ const styleBuild = {
     loaders: [
       {
         test: /\.woff2?$|\.ttf$|\.eot$|\.svg$|\.png$/,
-        loader: 'file'
+        loader: 'file-loader?outputPath=dist/',
       },
       { 
         test: /\.scss$/,
