@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% block content %}
-<div class="container">
-    <p>{% trans "You have been logged out!" %}</p>
+<div class="container logged-out-page">
+    <h1>{% trans "You have been logged out!" %}</h1>
     <a href="/">{% trans "Go back to home page." %}</a>
 </div>
 {% endblock %}
