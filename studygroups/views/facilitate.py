@@ -173,15 +173,17 @@ class CourseCreate(CreateView):
 
     def form_valid(self, form):
         # courses created by staff will be global
+        messages.success(self.request, _('Your course has been created. You can now select it from the dropdown list.'))
         if self.request.user.is_staff:
             return super(CourseCreate, self).form_valid(form)
         self.object = form.save(commit=False)
         self.object.created_by = self.request.user
         self.object.save()
+
         return http.HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        if TeamMembership.objects.filter(user=self.request.user, role=TeamMembership.ORGANIZER).exists():
+        if self.request.user.is_staff: #TeamMembership.objects.filter(user=self.request.user, role=TeamMembership.ORGANIZER).exists():
             return reverse_lazy('studygroups_organize')
         else:
             return reverse('studygroups_facilitator_studygroup_create')
