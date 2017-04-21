@@ -38,7 +38,6 @@ class TestOrganizerViews(TestCase):
         user.is_superuser = True
         user.is_staff = True
         user.save()
-        #TODO basic data setup for organizers - 1 team, organizer & 2 facilitators
 
 
     def test_organizer_login_redirect(self):
@@ -48,7 +47,7 @@ class TestOrganizerViews(TestCase):
         c = Client()
         c.login(username='bob123', password='password')
         resp = c.get('/en/login_redirect/')
-        self.assertRedirects(resp, '/en/organize/')
+        self.assertRedirects(resp, '/en/organize/{}/'.format(team.pk))
 
 
     def test_organizer_access(self):
@@ -80,7 +79,7 @@ class TestOrganizerViews(TestCase):
 
         assertAllowed('/en/')
         assertAllowed('/en/organize/')
-        assertAllowed('/en/report/')
+        assertAllowed('/en/organize/{}/'.format(team.pk))
         assertAllowed('/en/report/weekly/')
 
         # Make sure the organizer can access their study groups
@@ -96,6 +95,7 @@ class TestOrganizerViews(TestCase):
         assertStatus('/en/studygroup/1/meeting/2/feedback/create/', 404)
 
         # Make sure the organizer can't access other study groups
+        assertForbidden('/en/organize/{}/'.format(team.pk + 1))
         assertForbidden('/en/studygroup/2/')
         assertForbidden('/en/studygroup/2/edit/')
         assertForbidden('/en/studygroup/2/message/compose/')
@@ -126,7 +126,6 @@ class TestOrganizerViews(TestCase):
 
         assertAllowed('/en/')
         assertAllowed('/en/organize/')
-        assertAllowed('/en/report/')
         assertAllowed('/en/report/weekly/')
 
         # Make sure staff can access study groups
@@ -164,8 +163,10 @@ class TestOrganizerViews(TestCase):
         c = Client()
         c.login(username='organ@team.com', password='1234')
         resp = c.get('/en/organize/')
-        self.assertEquals(resp.status_code, 200)
+        self.assertRedirects(resp, '/en/organize/{}/'.format(team.pk))
 
+        resp = c.get('/en/organize/{}/'.format(team.pk))
+        self.assertEquals(resp.status_code, 200)
         # make sure only the relevant study groups are returned
         self.assertEquals(len(resp.context['study_groups']), 2)
         self.assertIn(StudyGroup.objects.get(pk=1), resp.context['study_groups'])

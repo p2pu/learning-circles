@@ -48,7 +48,8 @@ import string, random
 @login_required
 def login_redirect(request):
     if TeamMembership.objects.filter(user=request.user, role=TeamMembership.ORGANIZER).exists():
-        url = reverse('studygroups_organize')
+        team = TeamMembership.objects.get(user=request.user, role=TeamMembership.ORGANIZER).team
+        url = reverse('studygroups_organize_team', args=(team.pk,))
     else:
         url = reverse('studygroups_facilitator')
     return http.HttpResponseRedirect(url)

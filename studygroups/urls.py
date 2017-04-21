@@ -85,12 +85,12 @@ urlpatterns = [
     url(r'^rsvp/success/$', TemplateView.as_view(template_name='studygroups/rsvp_success.html'), name='studygroups_rsvp_success'),
 
     url(r'^organize/$', views.organize, name='studygroups_organize'),
+    url(r'^organize/(?P<team_id>[\d]+)/', views.organize_team, name='studygroups_organize_team'),
     url(r'^organize/studygroups/$', user_is_organizer(StudyGroupList.as_view()), name='studygroups_organizer_studygroup_list'),
     url(r'^organize/studygroup_meetings/$', user_is_organizer(StudyGroupMeetingList.as_view()), name='studygroups_organizer_studygroup_meetings'),
     url(r'^organize/teammembership/(?P<team_id>[\d]+)/(?P<user_id>[\d]+)/delete/$', user_is_organizer(TeamMembershipDelete.as_view()), name='studygroups_teammembership_delete'),
     url(r'^organize/team/(?P<team_id>[\d]+)/member/invite/$', TeamInvitationCreate.as_view(), name='studygroups_team_member_invite'),
 
-    url(r'^report/$', views.report, name='studygroups_report'),
     url(r'^report/weekly/$', views.weekly_report, name='studygroups_weekly_report'),
     url(r'^report/weekly/(?P<year>[\d]+)-(?P<month>[\d]+)-(?P<day>[\d]+)/$', views.weekly_report, name='studygroups_weekly_report_date'),
 

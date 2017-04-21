@@ -108,7 +108,6 @@ class TestFacilitatorViews(TestCase):
             resp = c.get(url)
             self.assertEqual(resp.status_code, 403)
         assertForbidden('/en/organize/')
-        assertForbidden('/en/report/')
         assertForbidden('/en/report/weekly/')
         assertForbidden('/en/studygroup/1/')
         assertForbidden('/en/studygroup/1/edit/')

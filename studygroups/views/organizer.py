@@ -41,9 +41,13 @@ from studygroups.decorators import user_is_organizer
 from studygroups.decorators import user_is_team_organizer
 
 
-
 @user_is_organizer
 def organize(request):
+    if not request.user.is_staff:
+        #redirect user to team organizer page
+        team = get_user_team(request.user)
+        url = reverse('studygroups_organize_team', args=(team.id,))
+        return http.HttpResponseRedirect(url)
     today = datetime.datetime.now().date()
     two_weeks_ago = today - datetime.timedelta(weeks=2, days=today.weekday())
     two_weeks = today - datetime.timedelta(days=today.weekday()) + datetime.timedelta(weeks=3)
@@ -53,13 +57,6 @@ def organize(request):
     team = None
     invitations = []
 
-    if not request.user.is_staff:
-        team = get_user_team(request.user)
-        team_users = get_team_users(request.user)
-        study_groups = study_groups.filter(facilitator__in=team_users)
-        facilitators = facilitators.filter(user__in=team_users)
-        invitations = TeamInvitation.objects.filter(team=team, responded_at__isnull=True)
-    
     active_study_groups = study_groups.filter(
         id__in=StudyGroupMeeting.objects.active().filter(meeting_date__gte=two_weeks_ago).values('study_group')
     )
@@ -70,6 +67,37 @@ def organize(request):
     context = {
         'team': team,
         'courses': courses,
+        'meetings': meetings,
+        'study_groups': study_groups,
+        'active_study_groups':  active_study_groups,
+        'facilitators': facilitators,
+        'invitations': invitations,
+        'today': timezone.now(),
+    }
+    return render(request, 'studygroups/organize.html', context)
+
+
+@user_is_team_organizer
+def organize_team(request, team_id):
+    today = datetime.datetime.now().date()
+    two_weeks_ago = today - datetime.timedelta(weeks=2, days=today.weekday())
+    two_weeks = today - datetime.timedelta(days=today.weekday()) + datetime.timedelta(weeks=3)
+    team = get_object_or_404(Team, pk=team_id)
+
+    members = team.teammembership_set.values('user')
+    team_users = User.objects.filter(pk__in=members)
+    study_groups = StudyGroup.objects.active().filter(facilitator__in=team_users)
+    facilitators = Facilitator.objects.filter(user__in=team_users)
+    invitations = TeamInvitation.objects.filter(team=team, responded_at__isnull=True)
+    active_study_groups = study_groups.filter(
+        id__in=StudyGroupMeeting.objects.active().filter(meeting_date__gte=two_weeks_ago).values('study_group')
+    )
+    meetings = StudyGroupMeeting.objects.active()\
+        .filter(study_group__in=study_groups, meeting_date__gte=two_weeks_ago)\
+        .exclude(meeting_date__gte=two_weeks)
+
+    context = {
+        'team': team,
         'meetings': meetings,
         'study_groups': study_groups,
         'active_study_groups':  active_study_groups,
@@ -164,13 +192,11 @@ class TeamInvitationCreate(View):
         except ValidationError:
             return http.JsonResponse({
                 "status": "ERROR", 
-                "errors": {
-                    "email": [_("invalid email address")] 
-                }
+                "errors": {"email": [_("invalid email address")]}
             })
         # make sure email not already invited to this team
         if TeamInvitation.objects.filter(team=team, email__iexact=email, responded_at__isnull=True).exists():
-            return  http.JsonResponse({
+            return http.JsonResponse({
                 "status": "ERROR", 
                 "errors": {
                     "_": [_("There is already a pending invitation for a user with this email address to join your team")] 
@@ -178,7 +204,7 @@ class TeamInvitationCreate(View):
             })
         # make sure user not already part of this team
         if TeamMembership.objects.filter(team=team, user__email__iexact=email).exists():
-            return  http.JsonResponse({
+            return http.JsonResponse({
                 "status": "ERROR", 
                 "errors": {
                     "_": [_("User with the given email address is already part of your team.")] 
@@ -192,18 +218,6 @@ class TeamInvitationCreate(View):
         )
         send_team_invitation_email(team, invitation.email, request.user)
         return http.JsonResponse({"status": "CREATED"})
-
-
-@user_is_organizer
-def report(request):
-    # TODO - remove this view
-    study_groups = StudyGroup.objects.active()
-    for study_group in study_groups:
-        study_group.laptop_stats = {}
-    context = {
-        'study_groups': study_groups,
-    }
-    return render(request, 'studygroups/report.html', context)
 
 
 @user_is_organizer
