@@ -1,17 +1,18 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block content %}
 	<div class="container">
 		<div class="col-md-8 col-md-offset-2">
-          <h1 class="lc-about-header about-teal">About</h1>
+            <h1 class="lc-about-header about-teal">{% trans "About" %}</h1>
          
-          <p class="about-body">Learning Circles are lightly-facilitated study groups for learners who want to take online courses together, in-person. Learning Circles are peer supported, facilitated by non-content experts, hosted in publicly accessible spaces, designed to be taken with few prerequisites, and free for learners. You can think of Learning Circles like a book group for learning.</p> 
+            <p class="about-body">{% trans "Learning Circles are lightly-facilitated study groups for learners who want to take online courses together, in-person. Learning Circles are peer supported, facilitated by non-content experts, hosted in publicly accessible spaces, designed to be taken with few prerequisites, and free for learners. You can think of Learning Circles like a book group for learning." %}</p> 
          
-          <p class="about-body">Generally, Learning Circles meet for 90 minutes a week in a public space (like a library) for 6 to 8 weeks. Each Learning Circle has a facilitator. He or she is not necessarily a content expert, but has been trained in helping support a peer learning environment for learners like you who want to work through online courses together.</p> 
+            <p class="about-body">{% trans "Generally, Learning Circles meet for 90 minutes a week in a public space (like a library) for 6 to 8 weeks. Each Learning Circle has a facilitator. He or she is not necessarily a content expert, but has been trained in helping support a peer learning environment for learners like you who want to work through online courses together." %}</p> 
          
-          <p class="about-body">Learning Circles offer much more than a dedicated weekly study time and space. Past participants have commented on the value of working through material with peers, gaining access to new study strategies, finding a support group of like minded individuals, and learning at one's own pace in low pressure environment. </p> 
-         
-          <p class="about-body">Whatever your motivation, we believe that Learning Circles can help you get through online learning materials in a social setting that is motivating, insightful, and fun. If you don't see a Learning Circle that interests you in your neighborhood, reach out to a local library or community center and see if they'll support one! If you want run a Learning Circle, <a class="lc-about-link" href="{% url 'studygroups_facilitator_signup' %}">sign up here</a>!</p> 
+            <p class="about-body">{% trans "Learning Circles offer much more than a dedicated weekly study time and space. Past participants have commented on the value of working through material with peers, gaining access to new study strategies, finding a support group of like minded individuals, and learning at one's own pace in low pressure environment." %}</p> 
+            {% url 'studygroups_facilitator_signup' as signup_url %}
+            <p class="about-body">{% blocktrans %}Whatever your motivation, we believe that Learning Circles can help you get through online learning materials in a social setting that is motivating, insightful, and fun. If you don't see a Learning Circle that interests you in your neighborhood, reach out to a local library or community center and see if they'll support one! If you want run a Learning Circle, <a class="lc-about-link" href="{{signup_url}}">sign up here</a>{% endblocktrans %}</p> 
            
           <img class="lc-about-image" src="/static/images/about.png"> 
      
