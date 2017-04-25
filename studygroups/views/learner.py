@@ -112,35 +112,6 @@ def city(request, city_name):
     return render(request, 'studygroups/city_list.html', context)
 
 
-def studygroups(request):
-    #TODO only accept GET requests 
-    study_groups = StudyGroup.objects.active()
-    if 'course_id' in request.GET:
-        study_groups = study_groups.filter(course_id=request.GET.get('course_id'))
-    
-    def to_json(sg):
-        data = {
-            "course_title": sg.course.title,
-            "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
-            "venue": sg.venue_name,
-            "venue_address": sg.venue_address + ", " + sg.city,
-            "day": sg.day(),
-            "start_date": sg.start_date,
-            "meeting_time": sg.meeting_time,
-            "time_zone": sg.timezone_display(),
-            "end_time": sg.end_time(),
-            "weeks": sg.studygroupmeeting_set.active().count(),
-            "url": "https://learningcircles.p2pu.org" + reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
-        }
-        if sg.image:
-            data["image_url"] = "https://learningcircles.p2pu.org" + sg.image.url
-        #TODO else set default image URL
-        return data
-
-    data = [ to_json(sg) for sg in study_groups ]
-    return json_response(request, data)
-
-
 def signup(request, location, study_group_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
     if not study_group.deleted_at is None:
