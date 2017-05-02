@@ -24,7 +24,12 @@ from django.views import View
 
 def _map_to_json(sg):
     data = {
-        "course_title": sg.course.title,
+        "course": {
+            "id": sg.course.pk,
+            "title": sg.course.title,
+            "provider": sg.course.provider,
+            "link": sg.course.link
+        },
         "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
         "venue": sg.venue_name,
         "venue_address": sg.venue_address + ", " + sg.city,
@@ -63,4 +68,8 @@ class LearningCircleListView(View):
         data = [ _map_to_json(sg) for sg in study_groups ]
         return json_response(request, data)
  
- 
+
+class SignupView(View):
+    def post(self, request):
+        pass
+
