@@ -137,8 +137,8 @@ def signup(request, location, study_group_id):
             application.accepted_at = timezone.now()
             application.save()
             notification_subject = render_to_string(
-                    'studygroups/notifications/application-subject.txt',
-                    {'application': application}
+                'studygroups/notifications/application-subject.txt',
+                {'application': application}
             ).strip('\n')
             notification_body = render_to_string(
                 'studygroups/notifications/application.txt', 
