@@ -7,36 +7,53 @@
   <p>{% blocktrans with start_date=start_time|date:"l, j F" end_date=end_time|date:"l, j F" %}for the time period starting {{start_date}} and ending {{end_date}}.{% endblocktrans %}</p>
   {% url 'studygroups_weekly_report_date' start_time.year start_time.month start_time.day as report_url %}
   {% if protocol and domain %}<p>{% blocktrans %}You can also view this report <a href="{{protocol}}://{{domain}}{{report_url}}">online</a>.{% endblocktrans %}</p>{% endif %}
-  {% if not team %}
-    <p>
-      {% blocktrans count facilitator_count=facilitators|length %}
-        This week {{facilitator_count}} facilitator signed up!
+  <p><strong>{% trans "This week" %}</strong></p>
+  <ul>
+    <li>
+        {% blocktrans count meeting_count=meetings|length %}
+          {{meeting_count}} learning circle met!
+        {% plural %}
+          {{meeting_count}} learning circles met!
+        {% endblocktrans %}
+    </li>
+    <li>
+        {% blocktrans count feedback_count=feedback|length %}
+          {{feedback_count}} facilitator recorded feedback!
+        {% plural %}
+          {{feedback_count}} facilitators recorded feedback!
+        {% endblocktrans %}
+    </li>
+    {% if not team %}
+      <li>
+        {% blocktrans count facilitator_count=facilitators|length %}
+          {{facilitator_count}} facilitator signed up!
+        {% plural %}
+          {{facilitator_count}} facilitators signed up!
+        {% endblocktrans %}
+      </li>
+    {% endif %}
+    <li>
+      {% blocktrans count login_count=logins|length%}
+        {{login_count}} facilitator logged in.
       {% plural %}
-        This week {{facilitator_count}} facilitators signed up!
+        {{login_count}} facilitators logged in.
       {% endblocktrans %}
-    </p>
-  {% endif %}
-  <p>
-    {% blocktrans count login_count=logins|length%}
-      {{login_count}} facilitator logged in.
-    {% plural %}
-      {{login_count}} facilitators logged in.
-    {% endblocktrans %}
-  </p>
-  <p>
-    {% blocktrans count study_group_count=study_groups|length %}
-      {{study_group_count}} Learning Circle was created.
-    {% plural %}
-      {{study_group_count}} Learning Circles were created.
-    {% endblocktrans %}
-  </p>
-  <p>
-    {% blocktrans count signup_count=signups|length %}
-      {{signup_count}} learner applied to join a Learning Circle.
-    {% plural %}
-      {{signup_count}} learners applied to join a Learning Circle.
-    {% endblocktrans %}
-  </p>
+    </li>
+    <li>
+      {% blocktrans count study_group_count=study_groups|length %}
+        {{study_group_count}} Learning Circle was created.
+      {% plural %}
+        {{study_group_count}} Learning Circles were created.
+      {% endblocktrans %}
+    </li>
+    <li>
+      {% blocktrans count signup_count=signups|length %}
+        {{signup_count}} learner applied to join a Learning Circle.
+      {% plural %}
+        {{signup_count}} learners applied to join a Learning Circle.
+      {% endblocktrans %}
+    </li>
+  </ul>
 
   {% for meeting in meetings|dictsort:"meeting_datetime" %}
     {% with study_group=meeting.study_group %}

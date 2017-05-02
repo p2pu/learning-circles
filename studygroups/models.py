@@ -563,7 +563,10 @@ def create_rsvp(contact, study_group, meeting_datetime, attending):
 
 
 def report_data(start_time, end_time, team=None):
+    """ Return data for the indicated time period
 
+    If team is given, study groups will be filtered by team
+    """
     study_groups = StudyGroup.objects.active()
     meetings = StudyGroupMeeting.objects.active()\
             .filter(meeting_date__gte=start_time, meeting_date__lt=end_time)\
@@ -582,8 +585,11 @@ def report_data(start_time, end_time, team=None):
         logins = logins.filter(pk__in=members)
         signups = signups.filter(study_group__facilitator__in=members)
 
+    feedback = Feedback.objects.filter(study_group_meeting__in=meetings)
+
     report = {
         'meetings': meetings,
+        'feedback': feedback,
         'study_groups': new_study_groups,
         'facilitators': new_facilitators,
         'logins': logins,
