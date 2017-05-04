@@ -19,6 +19,10 @@ urlpatterns = i18n_patterns(
     url(r'^', include('studygroups.urls'))
 )
 
+urlpatterns += [
+    url(r'^api/', include('api.urls')),
+]
+
 if settings.DEBUG:
     media_url = settings.MEDIA_URL.lstrip('/').rstrip('/')
     from django.views.static import serve
