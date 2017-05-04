@@ -229,7 +229,7 @@ class TestSignupModels(TestCase):
         reminder = Reminder.objects.all()[0]
         self.assertEqual(len(mail.outbox), 1)
         send_reminder(reminder)
-        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(len(mail.outbox), 3) # should be sent to facilitator & application
         self.assertEqual(mail.outbox[1].to[0], data['email'])
         self.assertFalse(send_message.called)
         self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=yes&sig='.format(get_language(), urllib.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].body)
@@ -267,7 +267,7 @@ class TestSignupModels(TestCase):
         self.assertEqual(len(mail.outbox), 0)
         send_reminder(reminder)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(len(mail.outbox[0].bcc), 1)
+        self.assertEqual(len(mail.outbox[0].bcc), 2)
         self.assertEqual(mail.outbox[0].bcc[0], data['email'])
         self.assertFalse(send_message.called)
         #self.assertIn('https://example.net/{0}/optout/confirm/?user='.format(get_language()), mail.outbox[0].body)
@@ -292,7 +292,7 @@ class TestSignupModels(TestCase):
         self.assertEqual(Reminder.objects.all().count(), 1)
         reminder = Reminder.objects.all()[0]
         send_reminder(reminder)
-        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(len(mail.outbox), 2)
         #self.assertEqual(mail.outbox[0].subject, mail_data['email_subject'])
         self.assertFalse(send_message.called)
 

@@ -516,10 +516,20 @@ def send_reminder(reminder):
                 [email],
                 fail_silently=False
             )
+        # Send to organizer without RSVP & unsubscribe links
+        send_mail(
+            reminder.email_subject.strip('\n'),
+            reminder.email_body,
+            reminder.study_group.facilitator.email,
+            [reminder.study_group.facilitator.email],
+            fail_silently=False
+        )
     else:
         email_body = reminder.email_body
+        # TODO i18n
         email_body = u'{0}\n\nTo leave this Learning Circle you can visit https://{1}{2}'.format(email_body, settings.DOMAIN, reverse('studygroups_optout'))
         # TODO - all emails should contain the unsubscribe link
+        to += [reminder.study_group.facilitator.email]
         reminder_email = EmailMultiAlternatives(
             reminder.email_subject.strip('\n'),
             email_body,
