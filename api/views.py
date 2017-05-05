@@ -51,7 +51,8 @@ def _map_to_json(sg):
 
 class LearningCircleListView(View):
     def get(self, request):
-        study_groups = StudyGroup.objects.active()
+        study_groups = StudyGroup.objects.active().order_by('id')
+
         if 'course_id' in request.GET:
             study_groups = study_groups.filter(course_id=request.GET.get('course_id'))
         city = request.GET.get('city')
@@ -64,8 +65,37 @@ class LearningCircleListView(View):
             members = team.teammembership_set.values('user')
             team_users = User.objects.filter(pk__in=members)
             study_groups = study_groups.filter(facilitator__in=team_users)
+
+        if 'signup' in request.GET:
+            signup_open = request.GET.get('signup') == 'open'
+            study_groups = study_groups.filter(signup_open=signup_open)
+
+        if 'active' in request.GET:
+            active = request.GET.get('active') == 'true'
+            study_group_ids = StudyGroupMeeting.objects.active().filter(meeting_date__gte=timezone.now()).values('study_group')
+            if active:
+                study_groups = study_groups.filter(id__in=study_group_ids)
+            else:
+                study_groups = study_groups.exclude(id__in=study_group_ids)
+
+        data = {
+            'count': study_groups.count()
+        }
+        if 'offset' in request.GET or 'limit' in request.GET:
+            try:
+                offset = int(request.GET.get('offset', 0))
+            except ValueError as e:
+                offset = 0
+            try: 
+                limit = int(request.GET.get('limit', 100))
+            except ValueError as e:
+                limit = 100
+
+            data['offset'] = offset
+            data['limit'] = limit
+            study_groups = study_groups[offset:offset+limit]
  
-        data = [ _map_to_json(sg) for sg in study_groups ]
+        data['items'] = [ _map_to_json(sg) for sg in study_groups ]
         return json_response(request, data)
  
 
