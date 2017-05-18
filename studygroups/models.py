@@ -94,19 +94,6 @@ class Course(models.Model):
         return self.title
 
 
-# TODO remove Location
-class Location(models.Model):
-    name = models.CharField(max_length=256, help_text=_('Common name used to refer to the location.'))
-    address = models.CharField(max_length=256, help_text=_('Street address of the location.'))
-    contact_name = models.CharField(max_length=256, help_text=_('Person that can be contacted at the location.'))
-    contact = models.CharField(max_length=256, help_text=_('Email or phone for the contact person.'))
-    link = models.URLField(blank=True, help_text=_('URL where more info about the location can be seen.'))
-    image = models.ImageField(blank=True, help_text=_('A photo to represent your Learning Circle. It could be a picture of the building, or anything else you\'d like to choose!'))
-
-    def __unicode__(self):
-        return self.name
-
-
 class Activity(models.Model):
     """ Activity to do during a meeting """
     description = models.CharField(max_length=256)
