@@ -439,7 +439,9 @@ def generate_reminder(study_group):
             previous_meeting = study_group.studygroupmeeting_set.filter(meeting_date__lt=next_meeting.meeting_date).order_by('meeting_date').last()
             if previous_meeting and previous_meeting.feedback_set.first():
                 context['feedback'] = previous_meeting.feedback_set.first()
-            # TODO - send PDF survey if this is the final weeks meeting
+            # send PDF survey if this is the final weeks meeting
+            last_meeting = study_group.studygroupmeeting_set.active().order_by('-meeting_date', '-meeting_time').first()
+            context['is_last_meeting'] = last_meeting.pk == next_meeting.pk
             timezone.activate(pytz.timezone(study_group.timezone))
             #TODO do I need to activate a locale?
             reminder.email_subject = render_to_string(

@@ -16,5 +16,7 @@
 
 {% if reminder.study_group_meeting.meeting_activity %}{% trans "Recommended recipe card for this week" %}: {{reminder.study_group_meeting.meeting_activity.description}} ({{protocol}}://{{domain}}{{reminder.study_group_meeting.meeting_activity.card.url}}){% endif %}
 
+{% if is_last_meeting %}{% blocktrans %}This is the last learning circle meeting. Please print a few copies of this learner survey (https://learningcircles.p2pu.org/static/uploads/learner_survey.pdf) for learners who can't complete the online survey.{% endblocktrans %}{% endif %}
+
 {% trans "Regards" %}
 P2PU

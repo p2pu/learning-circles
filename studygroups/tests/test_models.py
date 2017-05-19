@@ -465,5 +465,32 @@ class TestSignupModels(TestCase):
         with freeze_time("2010-02-05 18:40:34"):
             send_survey_reminder(sg)
             self.assertEqual(len(mail.outbox), 0)
-        
+  
+
+    def test_generate_final_reminder(self):
+        now = timezone.now()
+        sg = StudyGroup.objects.get(pk=1)
+        sg.timezone = now.strftime("%Z")
+        sg.start_date = datetime.date(2010, 1, 1)
+        sg.meeting_time = datetime.time(18,0)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
+        sg.save()
+        sg = StudyGroup.objects.get(pk=1)
+        generate_all_meetings(sg)
+    
+        last_meeting = sg.studygroupmeeting_set.active().order_by('meeting_date', 'meeting_time').last()
+        self.assertEqual(last_meeting.meeting_date, datetime.date(2010, 2, 5))
+        self.assertEqual(last_meeting.meeting_time, datetime.time(18,0))
+        self.assertEqual(sg.studygroupmeeting_set.active().count(), 6)
+        self.assertEqual(Reminder.objects.all().count(), 0)
+
+        # freeze time to 2 days before last meeting
+        with freeze_time("2010-02-03 17:55:34"):
+            send_survey_reminder(sg)
+            self.assertEqual(len(mail.outbox), 0)
+            generate_reminder(sg)
+            self.assertEqual(Reminder.objects.all().count(), 1)
+            self.assertEqual(len(mail.outbox), 1)
+            self.assertIn('/static/uploads/learner_survey.pdf', mail.outbox[0].body)
+
 
