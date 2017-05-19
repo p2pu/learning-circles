@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.utils.translation import get_language
 
 from mock import patch
+from freezegun import freeze_time
 
 from studygroups.models import StudyGroup
 from studygroups.models import StudyGroupMeeting
@@ -20,6 +21,7 @@ from studygroups.models import send_reminder
 from studygroups.models import create_rsvp
 from studygroups.models import generate_all_meetings
 from studygroups.models import send_weekly_update
+from studygroups.models import send_survey_reminder
 from studygroups.rsvp import gen_rsvp_querystring
 from studygroups.rsvp import check_rsvp_signature
 from studygroups.utils import gen_unsubscribe_querystring
@@ -408,3 +410,60 @@ class TestSignupModels(TestCase):
         self.assertEqual(mail.outbox[1].to[0], 'admin@test.com')
 
         
+    def test_send_survey_reminder(self):
+        now = timezone.now()
+        sg = StudyGroup.objects.get(pk=1)
+        sg.timezone = now.strftime("%Z")
+        sg.start_date = datetime.date(2010, 1, 1)
+        sg.meeting_time = datetime.time(18,0)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
+        sg.save()
+        sg = StudyGroup.objects.get(pk=1)
+        generate_all_meetings(sg)
+
+        data = dict(self.APPLICATION_DATA)
+        data['study_group'] = sg
+        data['email'] = 'mail1@example.net'
+        application = Application(**data)
+        application.save()
+        accept_application(application)
+
+        data = dict(self.APPLICATION_DATA)
+        data['study_group'] = sg
+        data['email'] = 'mail2@example.net'
+        application = Application(**data)
+        accept_application(application)
+        application.save()
+
+        last_meeting = sg.studygroupmeeting_set.active().order_by('meeting_date', 'meeting_time').last()
+        self.assertEqual(last_meeting.meeting_date, datetime.date(2010, 2, 5))
+        self.assertEqual(last_meeting.meeting_time, datetime.time(18,0))
+        self.assertEqual(sg.studygroupmeeting_set.active().count(), 6)
+        self.assertEqual(sg.application_set.active().count(), 2)
+
+        # freeze time to 5 minutes before
+        with freeze_time("2010-02-05 17:55:34"):
+            send_survey_reminder(sg)
+            self.assertEqual(len(mail.outbox), 0)
+
+        # 10 minutes after start
+        with freeze_time("2010-02-05 18:10:34"):
+            send_survey_reminder(sg)
+            self.assertEqual(len(mail.outbox), 0)
+
+        # 25 minutes after start
+        with freeze_time("2010-02-05 18:25:34"):
+            send_survey_reminder(sg)
+            self.assertEqual(len(mail.outbox), 1)
+            self.assertEqual(len(mail.outbox[0].bcc), 2)
+            self.assertIn('mail1@example.net', mail.outbox[0].bcc)
+            self.assertIn('mail2@example.net', mail.outbox[0].bcc)
+            self.assertIn('https://docs.google.com/forms/d/e/1FAIpQLScuRY5CFGR_LrEUvWjyw9H3KCBJANzfuNxkMvpFa3umyusOFQ/viewform?usp=pp_url&entry.1456652861=Public%20Speaking%20at%20Harold%20Washington%20%28harold-washington-1%29', mail.outbox[0].body)
+
+        mail.outbox = []
+        # 40 minutes after start
+        with freeze_time("2010-02-05 18:40:34"):
+            send_survey_reminder(sg)
+            self.assertEqual(len(mail.outbox), 0)
+        
+

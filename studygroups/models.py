@@ -22,6 +22,7 @@ import datetime
 import pytz
 import re
 import json
+import urllib
 import logging
 
 logger = logging.getLogger(__name__)
@@ -438,6 +439,7 @@ def generate_reminder(study_group):
             previous_meeting = study_group.studygroupmeeting_set.filter(meeting_date__lt=next_meeting.meeting_date).order_by('meeting_date').last()
             if previous_meeting and previous_meeting.feedback_set.first():
                 context['feedback'] = previous_meeting.feedback_set.first()
+            # TODO - send PDF survey if this is the final weeks meeting
             timezone.activate(pytz.timezone(study_group.timezone))
             #TODO do I need to activate a locale?
             reminder.email_subject = render_to_string(
@@ -469,6 +471,7 @@ def generate_reminder(study_group):
             )
             timezone.deactivate()
             to = [study_group.facilitator.email]
+            # TODO remove admin here, don't need to get these updates
             bcc = [ admin[1] for admin in settings.ADMINS ]
             notification = EmailMultiAlternatives(
                 facilitator_notification_subject,
@@ -481,7 +484,48 @@ def generate_reminder(study_group):
             notification.send()
 
 
-# If called directly, be sure to active language to use for constructing URLs
+# If called directly, be sure to activate the current language
+# Should be called every 15 minutes starting just after the hour
+def send_survey_reminder(study_group):
+    now = timezone.now()
+    ## last :00, :15, :30 or :45
+    last_15 = now.replace(minute=now.minute//15*15, second=0)
+    last_meeting = study_group.studygroupmeeting_set.active().order_by('-meeting_date', '-meeting_time').first()
+
+    if last_meeting and last_15 - datetime.timedelta(minutes=15) <= last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < last_15:
+        slug = '{}-{}'.format(slugify(study_group.venue_name), study_group.id)
+        learning_circle_text = "{} at {} ({})".format(study_group.course.title, study_group.venue_name, slug)
+        context = {
+            'learning_circle':  urllib.quote(learning_circle_text)
+        }
+        subject = render_to_string(
+            'studygroups/learner_survey_reminder-subject.txt',
+            context
+        )
+        html = render_to_string(
+            'studygroups/learner_survey_reminder.html',
+            context
+        )
+        txt = render_to_string(
+            'studygroups/learner_survey_reminder.txt',
+            context
+        )
+        timezone.deactivate()
+        to = []
+        applications = study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')
+        bcc = [su.email for su in applications]
+        notification = EmailMultiAlternatives(
+            subject.strip(),
+            txt,
+            settings.SERVER_EMAIL,
+            to,
+            bcc
+        )
+        notification.attach_alternative(html, 'text/html')
+        notification.send()
+
+
+# If called directly, be sure to activate language to use for constructing URLs
 # Failed text delivery won't case this function to fail, simply log an error
 def send_reminder(reminder):
     to = [su.email for su in reminder.study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')]

@@ -15,6 +15,7 @@ from studygroups.models import send_reminder
 from studygroups.models import send_weekly_update
 from studygroups.models import send_new_studygroup_email
 from studygroups.models import send_new_facilitator_email
+from studygroups.models import send_survey_reminder
 
 import datetime
 
@@ -59,5 +60,12 @@ def send_new_studygroup_emails():
     six_days_ago = now.date() - datetime.timedelta(days=6)
     for studygroup in StudyGroup.objects.filter(created_at__gte=seven_days_ago, created_at__lt=six_days_ago):
         send_new_studygroup_email(studygroup)
+
+
+@shared_task
+def send_all_studygroup_survey_reminders():
+    for study_group in StudyGroup.objects.active():
+        translation.activate(settings.LANGUAGE_CODE)
+        send_survey_reminder(study_group)
 
 
