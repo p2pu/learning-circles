@@ -13,7 +13,7 @@ export default class MobileInput extends React.Component{
 
   cleanFormatting(phoneNumber){
     const num = phoneNumber.replace(/[()\ -]/g, '');
-    if (num.length <= 3) {
+    if (num.length <= 4) {
       return '';
     }
     return num;
