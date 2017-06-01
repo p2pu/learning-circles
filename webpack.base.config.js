@@ -26,11 +26,23 @@ const reactBuild = {
     filename: "[name]-[hash].js",
   },
   module: {
-    loaders: [
+    rules: [
       { 
-        test: /\.scss$/, 
-        loaders: ['style-loader', 'css-loader', 'sass-loader']
+        test: /\.scss$/,
+        use: [
+          { loader: 'style-loader'},
+          { loader: 'css-loader'},
+          { loader: 'sass-loader'}
+        ]
       },
+      { 
+        test: /\.css$/,
+        use: [
+          { loader: 'style-loader'},
+          { loader: 'css-loader'}
+        ]
+      },
+
       { 
         test: /\.jsx?$/,
         exclude: /node_modules/,
@@ -40,8 +52,11 @@ const reactBuild = {
   },
   plugins: [],
   resolve: {
-    modulesDirectories: ['node_modules', 'bower_components'],
-    extensions: ['', '.js', '.jsx', '.scss']
+    modules: [
+      path.join(__dirname, "assets/js"),
+      'node_modules',
+    ],
+    extensions: ['.js', '.jsx', '.scss']
   },
 };
 
@@ -51,19 +66,33 @@ const styleBuild = {
     sass: './static/sass/p2pu-custom.scss'
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.woff2?$|\.ttf$|\.eot$|\.svg$|\.png$/,
-        loader: 'file-loader?outputPath=dist/',
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              outputPath: 'dist/'
+            }
+          }
+        ]
       },
       { 
         test: /\.scss$/,
-        loader: ExtractTextPlugin.extract('style-loader', 'css-loader!sass-loader')
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: [{
+            loader: 'css-loader'
+          }, {
+            loader: 'sass-loader',
+            options: {
+              includePaths: [path.resolve("./static/")]
+            }
+          }]
+        }),
       },
     ]
-  },
-  sassLoader: {
-    includePaths: [path.resolve("./static/")]
   },
   output: {
     path: path.resolve('./static/css/'),
