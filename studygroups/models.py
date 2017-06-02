@@ -262,13 +262,14 @@ class Application(LifeTimeTrackingModel):
         return json.loads(self.signup_questions)
 
     DIGITAL_LITERACY_QUESTIONS = {
+        'use_internet': _('How comfortable are you using the internet?'),
         'send_email': _('Send an email'),
         'delete_spam': _('Delete spam email'),
         'search_online': _('Find stuff online using Google'),
         'browse_video': _('Watch a video on Youtube'),
         'online_shopping': _('Fill out an application form or buy something online'),
         'mobile_apps': _('Use a mobile app'),
-        'web_safety': _('Evaluate whether a website is safe/can be trusted'),
+        'web_safety': _('Evaluate whether a website is safe/can be trusted')
     }
 
     DIGITAL_LITERACY_CHOICES = (
@@ -281,7 +282,7 @@ class Application(LifeTimeTrackingModel):
 
     def digital_literacy_for_display(self):
         answers = json.loads(self.signup_questions)
-        return { q: {'question_text': text, 'answer': answers.get(q), 'answer_text': dict(self.DIGITAL_LITERACY_CHOICES).get(answers.get(q)) if q in answers else ''} for q, text in self.DIGITAL_LITERACY_QUESTIONS.iteritems() }
+        return { q: {'question_text': text, 'answer': answers.get(q), 'answer_text': dict(self.DIGITAL_LITERACY_CHOICES).get(answers.get(q)) if q in answers else ''} for q, text in self.DIGITAL_LITERACY_QUESTIONS.iteritems() if answers.get(q) }
 
 
 class StudyGroupMeeting(LifeTimeTrackingModel):

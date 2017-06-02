@@ -38,13 +38,7 @@ class TestFacilitatorViews(TestCase):
         'goals': 'try hard',
         'support': 'thinking how to?',
         'computer_access': 'Both', 
-        'send_email': '2', 
-        'delete_spam': '2', 
-        'search_online': '2', 
-        'browse_video': '2', 
-        'online_shopping': '2', 
-        'mobile_apps': '2', 
-        'web_safety': '2'
+        'use_internet': '2'
     }
 
     def setUp(self):

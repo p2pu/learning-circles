@@ -55,22 +55,23 @@ class ApplicationForm(forms.ModelForm):
     support = forms.CharField(
         label=_('A successful study group requires the support of all of its members. How will you help your peers achieve their goals?')
     )
-    send_email = forms.ChoiceField(label=Application.DIGITAL_LITERACY_QUESTIONS['send_email'], choices=DIGITAL_LITERACY_CHOICES)
-    delete_spam = forms.ChoiceField(label=Application.DIGITAL_LITERACY_QUESTIONS['delete_spam'], choices=DIGITAL_LITERACY_CHOICES)
-    search_online = forms.ChoiceField(label=Application.DIGITAL_LITERACY_QUESTIONS['search_online'], choices=DIGITAL_LITERACY_CHOICES)
-    browse_video = forms.ChoiceField(label=Application.DIGITAL_LITERACY_QUESTIONS['browse_video'], choices=DIGITAL_LITERACY_CHOICES)
-    online_shopping = forms.ChoiceField(label=Application.DIGITAL_LITERACY_QUESTIONS['online_shopping'], choices=DIGITAL_LITERACY_CHOICES)
-    mobile_apps = forms.ChoiceField(label=Application.DIGITAL_LITERACY_QUESTIONS['mobile_apps'], choices=DIGITAL_LITERACY_CHOICES)
-    web_safety = forms.ChoiceField(label=Application.DIGITAL_LITERACY_QUESTIONS['web_safety'], choices=DIGITAL_LITERACY_CHOICES)
+    use_internet = forms.ChoiceField(
+        label=Application.DIGITAL_LITERACY_QUESTIONS['use_internet'],
+        choices=DIGITAL_LITERACY_CHOICES
+    )
+
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.layout = Layout(
-            'study_group', 'name', 'email', 'mobile', 'goals', 'support', 'computer_access',
-            Fieldset(
-                _(u'How comfortable are you doing the following tasks?'),
-                'send_email', 'delete_spam', 'search_online', 'browse_video', 'online_shopping', 'mobile_apps', 'web_safety'
-            )
+            'study_group',
+            'name',
+            'email',
+            'mobile',
+            'goals',
+            'support',
+            'computer_access',
+            'use_internet'
         )
         self.helper.add_input(Submit('submit', 'Submit'))
         super(ApplicationForm, self).__init__(*args, **kwargs)
@@ -81,7 +82,7 @@ class ApplicationForm(forms.ModelForm):
 
     def save(self, commit=True):
         signup_questions = {}
-        questions = ['computer_access', 'goals', 'support', 'send_email', 'delete_spam', 'search_online', 'browse_video', 'online_shopping', 'mobile_apps', 'web_safety']
+        questions = ['computer_access', 'goals', 'support', 'use_internet']
         for question in questions:
             signup_questions[question] = self.cleaned_data[question]
         self.instance.signup_questions = json.dumps(signup_questions)
