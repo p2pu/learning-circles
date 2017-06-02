@@ -1,8 +1,9 @@
-1 June 2017
+2 June 2017
 ===========
 
 ## Features
 - Learners: improved mobile number field in signup form
+- Learners: Reduce number of questions for learner signup
 - Learners: email sent during last learning circle with a link to the survey
 - Facilitators: receive a link to the PDF version of the survey with the last meeting reminder notification
 - API for querying learning circles
