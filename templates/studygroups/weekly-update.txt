@@ -24,7 +24,7 @@
   
   {% trans "How many people attended?" %} {{ feedback.attendance }}
 
-  {% trans "Internal reflection" %}:
+  {% trans "Things worth sharing" %}:
   {{ feedback.reflection }}
   
   {% trans "Overall rating" %}: {{ feedback.get_rating_display }}{% endwith %}{% else %}{% trans "No feedback recorded yet" %}{% endif %}

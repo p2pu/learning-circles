@@ -68,7 +68,7 @@
           <p><strong>{% trans "Learning circle summary" %}:</strong></p>
             <p> {{ feedback.feedback }}</p>
             <p><strong>{% trans "How many people attended?" %}</strong> {{ feedback.attendance }}</p>
-            <p><strong>{% trans "Internal reflection" %}:</strong></p>
+            <p><strong>{% trans "Things worth sharing" %}:</strong></p>
             <p>{{ feedback.reflection }}</p>
             <p><strong>{% trans "Overall rating" %}:</strong> {{ feedback.get_rating_display }}</p>
           {% endwith %}
