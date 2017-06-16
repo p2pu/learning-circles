@@ -1,16 +1,19 @@
-import datetime
-import dateutil.parser
-
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django import http
-from django.views.decorators.http import require_http_methods
+from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
+
+import datetime
+import dateutil.parser
+import json
+
 
 from studygroups.models import Course
 from studygroups.models import StudyGroup
@@ -20,7 +23,8 @@ from studygroups.models import Team
 
 from uxhelpers.utils import json_response
 
-from django.views import View
+import schema
+
 
 def _map_to_json(sg):
     data = {
@@ -97,9 +101,40 @@ class LearningCircleListView(View):
  
         data['items'] = [ _map_to_json(sg) for sg in study_groups ]
         return json_response(request, data)
- 
 
+
+@method_decorator(csrf_exempt, name='dispatch')
 class SignupView(View):
+
     def post(self, request):
-        pass
+        signup_questions = {
+            "computer_skills": schema.text(required=True)
+        }
+        post_schema = { 
+            "study_group": schema.chain([
+                schema.integer(),
+                lambda x: 'No matching study group exists' if not StudyGroup.objects.filter(pk=int(x)).exists() else None,
+            ], required=True),
+            "name": schema.text(required=True), 
+            "email": schema.email(required=True),
+            "mobile": schema.mobile(),
+            "signup_questions": schema.schema(signup_questions, required=True)
+        }
+        data = json.loads(request.body)
+        errors = schema.validate(post_schema, data)
+        if errors <> {}:
+            return json_response(request, {"status": "error", "errors": errors})
+    
+        study_group = StudyGroup.objects.get(pk=data.get('study_group'))
+        application = Application.objects.create(
+            study_group=study_group,
+            name=data.get('name'),
+            email=data.get('email'),
+            signup_questions=json.dumps(data.get('signup_questions')),
+            accepted_at=timezone.now()
+        )
+        if data.get('mobile'):
+            application.mobile = data.get('mobile')
+        application.save()
+        return json_response(request, {"status": "created"});
 
