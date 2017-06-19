@@ -108,12 +108,15 @@ class SignupView(View):
 
     def post(self, request):
         signup_questions = {
-            "computer_skills": schema.text(required=True)
+            "goals": schema.text(required=True),
+            "support": schema.text(required=True),
+            "computer_access": schema.text(required=True),
+            "use_internet": schema.text(required=True)
         }
         post_schema = { 
             "study_group": schema.chain([
                 schema.integer(),
-                lambda x: 'No matching study group exists' if not StudyGroup.objects.filter(pk=int(x)).exists() else None,
+                lambda x: 'No matching learning circle exists' if not StudyGroup.objects.filter(pk=int(x)).exists() else None,
             ], required=True),
             "name": schema.text(required=True), 
             "email": schema.email(required=True),
@@ -126,15 +129,20 @@ class SignupView(View):
             return json_response(request, {"status": "error", "errors": errors})
     
         study_group = StudyGroup.objects.get(pk=data.get('study_group'))
-        application = Application.objects.create(
-            study_group=study_group,
-            name=data.get('name'),
-            email=data.get('email'),
-            signup_questions=json.dumps(data.get('signup_questions')),
-            accepted_at=timezone.now()
-        )
+
+        if Application.objects.active().filter(email__iexact=data.get('email'), study_group=study_group).exists():
+            application = Application.objects.active().get(email__iexact=data.get('email'), study_group=study_group)
+        else:
+            application = Application(
+                study_group=study_group,
+                name=data.get('name'),
+                email=data.get('email'),
+                signup_questions=json.dumps(data.get('signup_questions')),
+                accepted_at=timezone.now()
+            )
+        application.name = data.get('name')
+        application.signup_questions = json.dumps(data.get('signup_questions'))
         if data.get('mobile'):
             application.mobile = data.get('mobile')
         application.save()
         return json_response(request, {"status": "created"});
-

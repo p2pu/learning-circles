@@ -87,6 +87,7 @@ def chain(checks):
             return errors
     return _validate
 
+#TODO choice validator
 
 @_required
 def schema(schema):
@@ -115,4 +116,5 @@ def validate(schema, data):
             else:
                 errors[field] = [error]
 
+    # TODO - errors for extra fields
     return errors
