@@ -136,28 +136,6 @@ def signup(request, location, study_group_id):
             # TODO - remove accepted_at or use accepting applications flow
             application.accepted_at = timezone.now()
             application.save()
-            notification_subject = render_to_string(
-                'studygroups/notifications/application-subject.txt',
-                {'application': application}
-            ).strip('\n')
-            notification_body = render_to_string(
-                'studygroups/notifications/application.txt', 
-                {'application': application}
-            )
-            notification_html = render_to_string(
-                'studygroups/notifications/application.html', 
-                {'application': application}
-            )
-            to = [study_group.facilitator.email]
-            notification = EmailMultiAlternatives(
-                notification_subject,
-                notification_body,
-                settings.SERVER_EMAIL,
-                to
-            )
-            notification.attach_alternative(notification_html, 'text/html')
-            notification.send()
-
             url = reverse('studygroups_signup_success', args=(study_group_id,) )
             return http.HttpResponseRedirect(url)
     else:

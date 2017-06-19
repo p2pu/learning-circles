@@ -225,6 +225,7 @@ class TestSignupModels(TestCase):
         application = Application(**data)
         accept_application(application)
         application.save()
+        mail.outbox = []
         generate_all_meetings(sg)
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
@@ -255,6 +256,7 @@ class TestSignupModels(TestCase):
         application = Application(**data)
         accept_application(application)
         application.save()
+        mail.outbox = []
         generate_all_meetings(sg)
 
         reminder = Reminder(
@@ -289,6 +291,7 @@ class TestSignupModels(TestCase):
         data['study_group'] = sg
         application = Application(**data)
         application.save()
+        mail.outbox = []
         generate_all_meetings(sg)
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
@@ -434,6 +437,8 @@ class TestSignupModels(TestCase):
         application = Application(**data)
         accept_application(application)
         application.save()
+
+        mail.outbox = []
 
         last_meeting = sg.studygroupmeeting_set.active().order_by('meeting_date', 'meeting_time').last()
         self.assertEqual(last_meeting.meeting_date, datetime.date(2010, 2, 5))
