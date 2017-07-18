@@ -9,6 +9,7 @@
 <script src="{% static 'js/vendor/bootstrap/alert.js' %}"></script>
 <script src="{% static 'js/vendor/bootstrap/tooltip.js' %}"></script>
 <script src="{% static 'js/vendor/bootstrap/popover.js' %}"></script>
+<script src="{% static 'js/vendor/bootstrap/dropdown.js' %}"></script>
 
 <script src="{% static 'js/main.js' %}"></script>
 
@@ -27,3 +28,26 @@
 		}
 	}(document, "script", "twitter-wjs");
 </script>
+
+<script>
+  $(function() {
+    function openMenu() {
+      $('#full-page-menu').removeClass('collapsed');
+      $('body').addClass('freeze');
+    }
+
+    function closeMenu() {
+      $('#full-page-menu').addClass('collapsed');
+      $('body').removeClass('freeze');
+    }
+
+    $('nav .menu').on('click', function() {
+      openMenu();
+    })
+
+    $('#close-menu').on('click', function() {
+      closeMenu();
+    })
+  })
+</script>
+

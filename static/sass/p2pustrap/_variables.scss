@@ -26,6 +26,12 @@ $p2pu-green:            $brand-success;
 $p2pu-blue:             $brand-info;
 $p2pu-yellow:           $brand-warning;
 
+$p2pu-light-orange:     transparentize($p2pu-orange, 0.85);
+$p2pu-light-green:      transparentize($p2pu-green, 0.85);
+$p2pu-light-blue:       transparentize($p2pu-blue, 0.85);
+$p2pu-light-yellow:     transparentize($p2pu-yellow, 0.85);
+
+
 $white:                 #FFFFFF;
 
 
@@ -49,14 +55,18 @@ $link-hover-color:      $link-color;
 //## Font, line-height, and color for body text, headings, and more.
 
 $font-family-sans-serif:  "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$font-family-sans-serif-light: "Open Sans Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$font-family-sans-serif-bold: "Open Sans Bold", "Helvetica Neue", Helvetica, Arial, sans-serif;
 $font-family-serif:       Georgia, "Times New Roman", Times, serif;
 //** Default monospace fonts for `<code>`, `<kbd>`, and `<pre>`.
 $font-family-monospace:   Menlo, Monaco, Consolas, "Courier New", monospace;
 $font-family-base:        $font-family-sans-serif;
 
-$font-size-base:          15px;
+$font-size-base:          18px;
 $font-size-large:         ceil(($font-size-base * 1.25)); // ~18px
-$font-size-small:         ceil(($font-size-base * 0.85)); // ~12px
+$font-size-small:         ceil(($font-size-base * 0.75)); // ~12px
+
+$font-size-base-mobile:   18px;
 
 $font-size-h1:            floor(($font-size-base * 2.6)); // ~36px
 $font-size-h2:            floor(($font-size-base * 2.15)); // ~30px
@@ -108,6 +118,10 @@ $padding-small-horizontal:  9px;
 
 $padding-xs-vertical:       1px;
 $padding-xs-horizontal:     5px;
+
+$padding-sm:                20px;
+$padding-md:                40px;
+$padding-lg:                60px;
 
 $line-height-large:         1.33;
 $line-height-small:         1.5;
@@ -348,7 +362,7 @@ $container-lg:                 $container-large-desktop;
 //##
 
 // Basics of a navbar
-$navbar-height:                    60px;
+$navbar-height:                    64px;
 $navbar-margin-bottom:             $line-height-computed;
 $navbar-border-radius:             $border-radius-base;
 $navbar-padding-horizontal:        floor(($grid-gutter-width / 2));

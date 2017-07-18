@@ -1,5 +1,5 @@
 
-// Clearing misterious margin on brn group
+// Clearing mysterious margin on btn group
 .btn-toolbar {
 	margin-left: 0 !important;
 	> .btn, > .btn-group, .input-group{
@@ -7,4 +7,101 @@
 			margin-left: 0 !important;
 		}
 	}
+}
+
+.p2pu-btn {
+  border-radius: 2em;
+  text-transform: uppercase;
+  font-size: 0.8em;
+  font-family: $font-family-sans-serif-bold;
+  padding: 0.8em 2em;
+  border: none;
+
+  -webkit-transform: perspective(1px) translateZ(0);
+  transform: perspective(1px) translateZ(0);
+  box-shadow: 0 0 1px transparent;
+  position: relative;
+  -webkit-transition-property: color;
+  transition-property: color;
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+
+  &:before {
+    content: "";
+    position: absolute;
+    border-radius: 2em;
+    z-index: -1;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    -webkit-transform: scaleX(0);
+    transform: scaleX(0);
+    -webkit-transform-origin: 50%;
+    transform-origin: 50%;
+    -webkit-transition-property: transform;
+    transition-property: transform;
+    -webkit-transition-duration: 0.3s;
+    transition-duration: 0.3s;
+    -webkit-transition-timing-function: ease-out;
+    transition-timing-function: ease-out;
+  }
+
+  &:hover:before, &:focus:before, &:active:before {
+    -webkit-transform: scaleX(1);
+    transform: scaleX(1);
+  }
+
+
+  &.dark {
+    background: $gray-darker;
+    color: $white;
+
+    &:before {
+      background: lighten($gray-darker, 5%);
+    }
+  }
+
+  &.light {
+    background: $gray-lighter;
+    color: $gray-darker;
+
+    &:before {
+      background: $white;
+    }
+  }
+
+  &.arrow {
+    padding: 0.7em 1em;
+    font-size: 1em;
+    align-self: center;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:active {
+    outline: none;
+  }
+
+  @media (max-width: $screen-sm-max) {
+    &.dark {
+      background: $gray-darker;
+      color: $white;
+
+      &:before {
+        background: $gray-darker;
+      }
+    }
+
+    &.light {
+      background: $white;
+      color: $gray-darker;
+
+      &:before {
+        background: $white;
+      }
+    }
+  }
 }

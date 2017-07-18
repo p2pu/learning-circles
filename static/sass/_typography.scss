@@ -1,0 +1,110 @@
+body {
+  font-family: $font-family-sans-serif;
+  font-size: $font-size-base;
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: bold;
+  }
+
+  a {
+    color: $gray-darker;
+    &:hover, &:focus, &:active {
+      color: $p2pu-orange;
+    }
+  }
+
+  .small {
+    font-size: $font-size-small;
+  }
+
+  .large {
+    font-size: $font-size-large;
+  }
+
+  .bold {
+    font-family: $font-family-sans-serif-bold;
+  }
+
+  .italic {
+    font-style: italic;
+  }
+
+  .centered {
+    text-align: center;
+  }
+
+  .subtitle {
+    font-size: $font-size-h3;
+
+    .underline {
+      padding-left: 2em;
+      padding-right: 2em;
+      display: inline-block;
+      vertical-align: middle;
+      -webkit-transform: perspective(1px) translateZ(0);
+      transform: perspective(1px) translateZ(0);
+      box-shadow: 0 0 1px transparent;
+      position: relative;
+      overflow: hidden;
+
+      .text {
+        font-family: $headings-font-family;
+        font-weight: bold;
+        text-transform: uppercase;
+        transform: translateY(0.1em);
+      }
+
+      &:before {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        left: 0;
+        right: 100%;
+        bottom: 0;
+        background: $gray-light;
+        height: 0.8em;
+        -webkit-transition-property: right;
+        transition-property: right;
+        -webkit-transition-duration: 0.3s;
+        transition-duration: 0.3s;
+        -webkit-transition-timing-function: ease-out;
+        transition-timing-function: ease-out;
+      }
+
+      &.light {
+        &:before {
+          background: transparentize($white, 0.6);
+        }
+      }
+
+      &.dark {
+        &:before {
+          background: transparentize($gray-darker, 0.6);
+        }
+      }
+    }
+
+    &.small {
+      font-size: $font-size-h4;
+
+      .text {
+        transform: translateY(0.2em);
+      }
+    }
+
+    &.active {
+      .underline:before {
+        right: 0;
+      }
+    }
+  }
+
+  .headline {
+    font-family: $font-family-sans-serif;
+    font-weight: initial;
+    line-height: normal;
+    text-align: center;
+    padding-top: $padding-sm;
+    padding-bottom: $padding-sm;
+  }
+}

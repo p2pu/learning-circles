@@ -37,8 +37,7 @@
         <div class="text-center col-md-12">
           <div class="session" id="signup">
               <h2>{% trans "Don't see any Learning Circles near you?" %}</h2>
-              <p>{% blocktrans %}<a href="{{facilitator_signup_url}}">Create your own</a> Learning Circle!{% endblocktrans %}</p>
-            {% include 'mailchimp.html' %}
+              <p><a class="btn btn-primary" href="{{facilitator_signup_url}}">{% trans "Create your own learning circle" %}</a></p>
           </div>
         </div>
       </div>
