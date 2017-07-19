@@ -20,9 +20,6 @@ section{
 	text-transform: capitalize;
 }
 
-.page-content {
-	//padding-top: 60px;
-}
 
 //Navigation styles
 .navbar {
@@ -670,25 +667,11 @@ padding-bottom: 20px;
 	}
 }
 
-footer {
-	.logos {
-		float: none;
-	}
-	.footer-logo {
-		line-height: 3 !important;
-		border-bottom: 0;
-		&:hover, &:focus {
-			border-bottom: 0;
-		}
-	}
-}
-
 .alert {
 	margin-bottom: 0;
 }
 
 #course-selection, #location-selection {
-
 
 	@media (min-width: $screen-sm) {
 

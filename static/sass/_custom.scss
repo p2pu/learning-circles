@@ -1,12 +1,11 @@
-.card-container{
+.card-container {
     text-align: center;
 	max-width: 1400px;
 	margin: 0 auto;
 	margin-top: 60px;
 }
 
-
-.extrabold{
+.extrabold {
 	font-weight: 800;
 }
 
@@ -280,4 +279,14 @@ img.lc-about-image{
 .http-error-page, .logged-out-page {
   text-align: center;
   padding: 25vh 15px;
+}
+
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  z-index: 2; //TODO use variable
+}
+
+.page-content {
+  line-height: 2;
 }

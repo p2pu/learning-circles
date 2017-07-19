@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.views.generic import TemplateView
 from django.views.i18n import javascript_catalog
+from django.contrib.auth import views as auth_views
 
 js_info_dict = {
     'packages': ('studygroups',),
@@ -13,6 +14,7 @@ js_info_dict = {
 urlpatterns = i18n_patterns(
     url(r'^admin/', include(admin.site.urls)),
     url(r'^about/$', TemplateView.as_view(template_name="about.html"), name="about"),
+    url(r'^accounts/login/', auth_views.login, name='login', kwargs={'redirect_authenticated_user': True}),
     url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^ux/', include('uxhelpers.urls')),
     url(r'^jsi18n/$', javascript_catalog, js_info_dict, name='javascript-catalog'),

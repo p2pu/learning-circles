@@ -8,4 +8,6 @@ config[0].plugins = config[0].plugins.concat([
     new BundleTracker({filename: './webpack-stats.json'}),
 ]);
 
-module.exports = config
+config[1].devtool = 'inline-source-map';
+
+module.exports = config;
