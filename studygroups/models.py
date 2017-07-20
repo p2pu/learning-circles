@@ -14,6 +14,7 @@ from django.core.urlresolvers import reverse  # TODO ideally this shouldn't be i
 from twilio import TwilioRestException
 
 from studygroups.sms import send_message
+from studygroups.email_helper import render_email_templates
 from studygroups import rsvp
 from studygroups.utils import gen_unsubscribe_querystring
 
@@ -526,6 +527,46 @@ def send_survey_reminder(study_group):
         )
         notification.attach_alternative(html, 'text/html')
         notification.send()
+
+
+# If called directly, be sure to activate the current language
+# Should be called once a day minutes starting just after the hour
+def send_facilitator_survey(study_group):
+    """ send survey to all facilitators if their last study group meetings was a week ago """
+    now = timezone.now()
+    today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    last_week = today - datetime.timedelta(days=7);
+    last_meeting = study_group.studygroupmeeting_set.active()\
+            .order_by('-meeting_date', '-meeting_time').first()
+
+    if last_meeting and last_week <= last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < last_week + datetime.timedelta(days=1):
+        slug = '{}-{}'.format(slugify(study_group.venue_name), study_group.id)
+        learning_circle_text = "{} at {} ({})".format(study_group.course.title, study_group.venue_name, slug)
+        context = {
+            'learning_circle_slug':  urllib.quote(learning_circle_text)
+        }
+        timezone.deactivate()
+        subject, txt, html = render_email_templates(
+            'studygroups/email/facilitator-survey',
+            context
+        )
+        to = [study_group.facilitator.email]
+        applications = study_group.application_set.active()\
+            .filter(accepted_at__isnull=False).exclude(email='')
+
+        notification = EmailMultiAlternatives(
+            subject,
+            txt,
+            settings.SERVER_EMAIL,
+            to
+        )
+        notification.attach_alternative(html, 'text/html')
+        notification.send()
+
+
+
+
+
 
 
 # If called directly, be sure to activate language to use for constructing URLs

@@ -22,6 +22,7 @@ from studygroups.models import create_rsvp
 from studygroups.models import generate_all_meetings
 from studygroups.models import send_weekly_update
 from studygroups.models import send_survey_reminder
+from studygroups.models import send_facilitator_survey
 from studygroups.rsvp import gen_rsvp_querystring
 from studygroups.rsvp import check_rsvp_signature
 from studygroups.utils import gen_unsubscribe_querystring
@@ -498,4 +499,36 @@ class TestSignupModels(TestCase):
             self.assertEqual(len(mail.outbox), 1)
             self.assertIn('/static/uploads/learner_survey.pdf', mail.outbox[0].body)
 
+    def test_generate_finished_studygroup_feedback_email(self):
+        now = timezone.now()
+        sg = StudyGroup.objects.get(pk=1)
+        sg.timezone = now.strftime("%Z")
+        sg.start_date = datetime.date(2010, 1, 1)
+        sg.meeting_time = datetime.time(18,0)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
+        sg.save()
+        sg = StudyGroup.objects.get(pk=1)
+        generate_all_meetings(sg)
+    
+        last_meeting = sg.studygroupmeeting_set.active().order_by('meeting_date', 'meeting_time').last()
+        self.assertEqual(last_meeting.meeting_date, datetime.date(2010, 2, 5))
+        self.assertEqual(last_meeting.meeting_time, datetime.time(18,0))
+        self.assertEqual(sg.studygroupmeeting_set.active().count(), 6)
+        self.assertEqual(Reminder.objects.all().count(), 0)
 
+        # freeze time to 6 days after last
+        with freeze_time("2010-02-11 17:55:34"):
+            send_facilitator_survey(sg)
+            self.assertEqual(len(mail.outbox), 0)
+
+        # freeze time to 8 days after last
+        with freeze_time("2010-02-13 17:55:34"):
+            send_facilitator_survey(sg)
+            self.assertEqual(len(mail.outbox), 0)
+        
+        # freeze time to 7 days after last
+        with freeze_time("2010-02-12 17:55:34"):
+            send_facilitator_survey(sg)
+            self.assertEqual(len(mail.outbox), 1)
+            self.assertIn('https://docs.google.com/forms/d/e/1FAIpQLSdvzlyXUMZy29WetnCQLT3jnQvD9TrYqMq7KWXB-lZa8mLhJA/viewform?usp=pp_url&entry.73798480=Public%20Speaking%20at%20Harold%20Washington%20%28harold-washington-1%29', mail.outbox[0].body)
+            self.assertIn(sg.facilitator.email, mail.outbox[0].to)
