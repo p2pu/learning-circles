@@ -16,7 +16,6 @@ urlpatterns = i18n_patterns(
     url(r'^about/$', TemplateView.as_view(template_name="about.html"), name="about"),
     url(r'^accounts/login/', auth_views.login, name='login', kwargs={'redirect_authenticated_user': True}),
     url(r'^accounts/', include('django.contrib.auth.urls')),
-    url(r'^ux/', include('uxhelpers.urls')),
     url(r'^jsi18n/$', javascript_catalog, js_info_dict, name='javascript-catalog'),
     url(r'^', include('studygroups.urls'))
 )
