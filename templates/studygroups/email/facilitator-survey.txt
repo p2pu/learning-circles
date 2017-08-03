@@ -2,9 +2,7 @@
 {% trans "Your learning circle is coming to a close, but with Peer 2 Peer University, your learning never ends." %}
 
 {% blocktrans %}Let us know how we can help plan your next steps by completing this brief online survey: https://docs.google.com/forms/d/e/1FAIpQLSdvzlyXUMZy29WetnCQLT3jnQvD9TrYqMq7KWXB-lZa8mLhJA/viewform?usp=pp_url&entry.73798480={{learning_circle_slug}}.
-As this a brand new education model, we'd love to hear about what worked for you and what still needs tweaking. For your time, you'll be entered into drawing to receive a $50 Amazon gift card. Lucky you!" {% endblocktrans %}
-
-{% trans "Let us know how we can help plan your next steps by completing this brief online survey. As this a brand new education model, we'd love to hear about what worked for you and what still needs tweaking. For your time, you'll be entered into drawing to receive a $50 Amazon gift card. Lucky you!" %}
+As this a brand new education model, we'd love to hear about what worked for you and what still needs tweaking. For your time, you'll be entered into drawing to receive a $50 Amazon gift card. Lucky you!{% endblocktrans %}
 
 {% trans "Cheers" %},
 P2PU
