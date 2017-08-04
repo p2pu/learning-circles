@@ -3,8 +3,8 @@ set -e
 
 if [ "$1" = 'supervisord' ]; then
     chown -R celery:celery /var/lib/celery
-    /var/django-venv/bin/python /var/app/manage.py migrate --noinput
-    /var/django-venv/bin/python /var/app/manage.py collectstatic --noinput
+    /opt/django-venv/bin/python /opt/app/manage.py migrate --noinput
+    /opt/django-venv/bin/python /opt/app/manage.py collectstatic --noinput
     exec "$@"
 fi
 
