@@ -19,7 +19,7 @@ install:
   #- docker-compose version
 
   - docker build -t p2pu/learning-circles .
-  - docker run --name=postgres -e POSTGRES_PASSWORD=password postgres:9.3 
+  - docker run -d --name=postgres -e POSTGRES_PASSWORD=password postgres:9.3 
   - docker ps -a
 
 script: docker run --rm -it --name learningcircles --link postgres -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost p2pu/learning-circles /opt/django-venv/bin/python /opt/app/manage.py test
