@@ -6,13 +6,13 @@ var fs = require("fs");
 
 function getReactChunks(){
   // Add all jsx files in /assets/js as entries
-  var files = fs.readdirSync('./assets/js/').filter(function(f){
+  var files = fs.readdirSync('./frontend/').filter(function(f){
     return f.endsWith('.jsx');
   })
 
   var entries = {};
   files.forEach(function(f){
-    entries[f.replace(/.jsx/, '')] = './assets/js/' + f;
+    entries[f.replace(/.jsx/, '')] = './frontend/' + f;
   });
   return entries;
 }
