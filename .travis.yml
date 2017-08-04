@@ -1,26 +1,28 @@
-language: python
-python:
-  - "2.7"
-addons:
-  postgresql: "9.3"
-services:
-  - docker
-env:
-  global:
-    - SECRET_KEY=blajblajbasdf
-    - DATABASE_URL="postgres://postgres:@127.0.0.1:5432/lc"
-  matrix:
-    - POSTGRES=9.3
+sudo: required
+dist: trusty
 
-before_install:
+install:
+  # Update docker-engine using Ubuntu 'trusty' apt repo
+  - >
+    curl -sSL "https://get.docker.com/gpg" |
+     sudo -E apt-key add -
+  - >
+    echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" |
+     sudo tee -a /etc/apt/sources.list
+  - sudo apt-get update
+  - >
+    sudo apt-get -o Dpkg::Options::="--force-confdef" \
+     -o Dpkg::Options::="--force-confold" --assume-yes install docker-engine
+  - docker version
+  # Update docker-compose via pip
+  #- sudo pip install docker-compose
+  #- docker-compose version
+
   - docker build -t p2pu/learning-circles .
   - docker run --name=postgres -e POSTGRES_PASSWORD=password postgres:9.3 
   - docker ps -a
 
-install:
-  - pip install -r requirements.txt
-
-script: docker run --rm -it --name learningcircles --link postgres -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc p2pu/learning-circles /opt/django-venv/bin/python /opt/app/manage.py test
+script: docker run --rm -it --name learningcircles --link postgres -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost p2pu/learning-circles /opt/django-venv/bin/python /opt/app/manage.py test
 
 notifications:
   email:
