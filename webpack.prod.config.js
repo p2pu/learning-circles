@@ -9,7 +9,7 @@ config[0].plugins = config[0].plugins.concat([
     minimize: true,
     debug: false
   }),
-  new BundleTracker({filename: './webpack-stats-prod.json'}),
+  new BundleTracker({filename: './assets/frontend-webpack-manifest.json'}),
   new webpack.DefinePlugin({
     'process.env': {
       'NODE_ENV': JSON.stringify('production')
@@ -33,11 +33,13 @@ config[0].plugins = config[0].plugins.concat([
 config[0].output.path = path.resolve('./assets/dist');
 
 config[1].plugins = config[1].plugins.concat([
+  new BundleTracker({filename: './assets/style-webpack-manifest.json'}),
   new webpack.optimize.UglifyJsPlugin({
     compressor: {
       warnings: false
     }
   })
 ]);
+config[1].output.path = path.resolve('./assets/dist');
 
 module.exports = config;

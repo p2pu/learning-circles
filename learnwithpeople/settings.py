@@ -129,11 +129,17 @@ TEMPLATES = [
     },
 ]
 
+
+####### Django Webpack Loader config #######
 WEBPACK_LOADER = {
     'DEFAULT': {
         'BUNDLE_DIR_NAME': 'dist/',
-        'STATS_FILE': path('webpack-stats-prod.json')
-    }
+        'STATS_FILE': path('assets/frontend-webpack-manifest.json'),
+    },
+    'STYLEBUILD': {
+        'BUNDLE_DIR_NAME': 'dist/',
+        'STATS_FILE': path('assets/style-webpack-manifest.json'),
+    },
 }
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
@@ -145,8 +151,7 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
 SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'no-reply@p2pu.org') #TODO grab this from environment
 
-##### Heroku config
-
+##### Database config
 import dj_database_url
 DATABASES['default'] =  dj_database_url.config(default='sqlite:///{0}'.format(path('db.sqlite3')))
 
@@ -172,6 +177,7 @@ GA_TRACKING_ID = os.environ.get('GA_TRACKING_ID', 'UA-0000000-00')
 
 ####### Celery config #######
 BROKER_URL = os.environ.get('BROKER_URL', 'amqp://guest:guest@localhost//')
+
 
 from celery.schedules import crontab
 

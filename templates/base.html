@@ -1,6 +1,7 @@
 {% load static %}
 {% load analytics %}
 {% load i18n %}
+{% load render_bundle from webpack_loader %}
 
 <!DOCTYPE html>
 <!--[if lt IE 7]>      <html lang="{{language}}" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
@@ -20,7 +21,7 @@
       <meta property="og:image" content="https://learningcircles.p2pu.org{% static 'images/og.jpg' %}" />
       <link rel="canonical" href="">
       <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
-	    <link type="text/css" rel="stylesheet" href="{% static 'css/build.styles.css' %}" charset="utf-8">
+      {% render_bundle 'p2pu-strap' 'css' 'STYLEBUILD' %}
 
       {% block css %}{% endblock %}
       <script src="{% static 'js/vendor/modernizr-2.6.2.min.js' %}"></script>
