@@ -4,18 +4,23 @@ python:
 addons:
   postgresql: "9.3"
 services:
-  - postgresql
+  - docker
 env:
   global:
     - SECRET_KEY=blajblajbasdf
     - DATABASE_URL="postgres://postgres:@127.0.0.1:5432/lc"
   matrix:
-    - DJANGO=1.8
+    - POSTGRES=9.3
+
+before_install:
+  - docker build -t p2pu/learning-circles .
+  - docker run --name=postgres -e POSTGRES_PASSWORD=password postgres:9.3 
+  - docker ps -a
 
 install:
   - pip install -r requirements.txt
 
-script: python manage.py test
+script: docker run --rm -it --name learningcircles --link postgres -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc p2pu/learning-circles /opt/django-venv/bin/python /opt/app/manage.py test
 
 notifications:
   email:
