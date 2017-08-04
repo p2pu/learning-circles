@@ -1,6 +1,5 @@
 import React from 'react'
 import TabSelector from './tab-selector'
-import MeetingCalendar from './meeting-calendar'
 import WeeklyMeetingsList from './weekly-meetings-list'
 import ActiveLearningCirclesList from './active-learning-circles-list'
 import FacilitatorList from './facilitator-list'
