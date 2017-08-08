@@ -1,30 +1,32 @@
 sudo: required
 dist: trusty
-
-install:
-  # Update docker-engine using Ubuntu 'trusty' apt repo
-  - >
-    curl -sSL "https://get.docker.com/gpg" |
-     sudo -E apt-key add -
-  - >
-    echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" |
-     sudo tee -a /etc/apt/sources.list
-  - sudo apt-get update
-  - >
-    sudo apt-get -o Dpkg::Options::="--force-confdef" \
-     -o Dpkg::Options::="--force-confold" --assume-yes install --allow-unauthenticated docker-engine
-  - docker version
-  # Update docker-compose via pip
-  #- sudo pip install docker-compose
-  #- docker-compose version
-
-  - docker build -t p2pu/learning-circles .
-  - docker run -d --name=postgres -e POSTGRES_PASSWORD=password postgres:9.3 
-  - docker ps -a
-
-script: docker run --rm -it --name learningcircles --link postgres -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost p2pu/learning-circles /wait-for-it.sh postgres:5432 -- /opt/django-venv/bin/python /opt/app/manage.py test
-
+before_install:
+- |
+  curl -sSL "https://get.docker.com/gpg" |
+   sudo -E apt-key add -
+- |
+  echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" |
+   sudo tee -a /etc/apt/sources.list
+- sudo apt-get update
+- |
+  sudo apt-get -o Dpkg::Options::="--force-confdef" \
+   -o Dpkg::Options::="--force-confold" --assume-yes install --allow-unauthenticated docker-engine
+- docker version
+before_script:
+- docker build -t p2pu/learning-circles .
+script:
+- docker run -d --name=postgres -e POSTGRES_PASSWORD=password postgres:9.3
+- docker run --rm -it --name p2pu/learning-circles --link postgres -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost p2pu/learning-circles /wait-for-it.sh postgres:5432 -- /opt/django-venv/bin/python /opt/app/manage.py test
+after_success:
+- if [ "$TRAVIS_BRANCH" == "master" ]; then 
+  docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+  docker push p2pu/learning-circles:latest;
+  fi
 notifications:
   email:
     on_success: change
     on_failure: change
+env:
+  global:
+  - secure: apX166+XsoTTot2k6g3oTauhkM/cHFAraU6sNVgGkjzGA21c48sMvUwzy631cumZReZ8FUwgS+FtQu+gam4/NS6SpvygdM0K1Hh/id48Nfqqssy4DQXPVuUOUYR5HTeuwj6GVp20Aqu3fGCptsS/YXJ9j2HXzYbVfX6fPHWoBo4=
+  - secure: gTp4DtRycmhTo0LUVCtNbkfhf+nKP2mG67uKF8Irp2Ip3RJ1a6FREEd6ro0x6tW1gt3Mj9Yj2uvHA29HiNLmG6SqXxRVHfBKsM4KTrO8tHZLpbtpJM5JGGaIqFNB/mZXhwbJ3nuUt+044DKydFa/hxqAFyFb+whJq0rr+7wlh5M=
