@@ -12,11 +12,14 @@ before_install:
   sudo apt-get -o Dpkg::Options::="--force-confdef" \
    -o Dpkg::Options::="--force-confold" --assume-yes install --allow-unauthenticated docker-engine
 - docker version
+
 before_script:
 - docker build -t p2pu/learning-circles .
+
 script:
 - docker run -d --name=postgres -e POSTGRES_PASSWORD=password postgres:9.3
-- docker run --rm -it --name p2pu/learning-circles --link postgres -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost p2pu/learning-circles /wait-for-it.sh postgres:5432 -- /opt/django-venv/bin/python /opt/app/manage.py test
+- docker run --rm -it --link postgres -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost p2pu/learning-circles /wait-for-it.sh postgres:5432 -- /opt/django-venv/bin/python /opt/app/manage.py test
+
 after_success:
 - if [ "$TRAVIS_BRANCH" == "master" ]; then 
   docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
