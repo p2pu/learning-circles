@@ -23,7 +23,8 @@ script:
 after_success:
 - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 - docker tag p2pu/learning-circles p2pu/learning-circles:"$TRAVIS_BRANCH"
-- docker push p2pu/learning-circles:"$TRAVIS_BRANCH"
+- docker tag p2pu/learning-circles p2pu/learning-circles:$(git describe --tags)-"$TRAVIS_BRANCH"
+- docker push p2pu/learning-circles
 
 notifications:
   email:
