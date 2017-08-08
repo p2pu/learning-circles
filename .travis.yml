@@ -21,6 +21,9 @@ after_success:
 - if [ "$TRAVIS_BRANCH" == "master" ]; then 
   docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
   docker push p2pu/learning-circles:latest;
+  else
+  docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+  docker push p2pu/learning-circles:"$TRAVIS_BRANCH";
   fi
 notifications:
   email:
