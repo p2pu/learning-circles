@@ -21,11 +21,11 @@ script:
 - docker run --rm -it --link postgres -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost p2pu/learning-circles /wait-for-it.sh postgres:5432 -- /opt/django-venv/bin/python /opt/app/manage.py test
 
 after_success:
+- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
 - if [ "$TRAVIS_BRANCH" == "master" ]; then 
-  docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
   docker push p2pu/learning-circles:latest;
   else
-  docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+  docker tag p2pu/learning-circles p2pu/learning-circles:"$TRAVIS_BRANCH";
   docker push p2pu/learning-circles:"$TRAVIS_BRANCH";
   fi
 notifications:
