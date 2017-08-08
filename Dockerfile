@@ -20,10 +20,8 @@ WORKDIR /opt/app/
 COPY requirements.txt /opt/app/
 RUN virtualenv /opt/django-venv && /opt/django-venv/bin/pip install -r /opt/app/requirements.txt
 COPY . /opt/app/
-
-#Copy CSS & compiled JavaScript
+# Copy CSS & compiled JavaScript
 COPY --from=0 /opt/app/assets assets
-
 COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY config/wait-for-it.sh /wait-for-it.sh
 COPY config/docker-entry.sh /docker-entry.sh
