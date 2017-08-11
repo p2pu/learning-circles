@@ -447,15 +447,15 @@ def generate_reminder(study_group):
             timezone.activate(pytz.timezone(study_group.timezone))
             #TODO do I need to activate a locale?
             reminder.email_subject = render_to_string(
-                'studygroups/notifications/reminder-subject.txt',
+                'studygroups/email/reminder-subject.txt',
                 context
             )
             reminder.email_body = render_to_string(
-                'studygroups/notifications/reminder.txt',
+                'studygroups/email/reminder.txt',
                 context
             )
             reminder.sms_body = render_to_string(
-                'studygroups/notifications/sms.txt',
+                'studygroups/email/sms.txt',
                 context
                 )
             # TODO - handle SMS reminders that are too long
