@@ -372,9 +372,9 @@ class FacilitatorStudyGroupCreate(CreateView):
             'protocol': 'https',
             'domain': settings.DOMAIN,
         }
-        subject = render_to_string('studygroups/learning_circle_created_subject.txt', context).strip(' \n')
-        text_body = render_to_string('studygroups/learning_circle_created.txt', context)
-        html_body = render_to_string('studygroups/learning_circle_created.html', context)
+        subject = render_to_string('studygroups/email/learning_circle_created-subject.txt', context).strip(' \n')
+        text_body = render_to_string('studygroups/email/learning_circle_created.txt', context)
+        html_body = render_to_string('studygroups/email/learning_circle_created.html', context)
 
         notification = EmailMultiAlternatives(
             subject,
