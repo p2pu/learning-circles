@@ -1,18 +1,17 @@
 var path = require("path");
 var webpack = require('webpack');
-var BundleTracker = require('webpack-bundle-tracker');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var fs = require("fs");
 
 function getReactChunks(){
   // Add all jsx files in /assets/js as entries
-  var files = fs.readdirSync('./assets/js/').filter(function(f){
+  var files = fs.readdirSync('./frontend/').filter(function(f){
     return f.endsWith('.jsx');
   })
 
   var entries = {};
   files.forEach(function(f){
-    entries[f.replace(/.jsx/, '')] = './assets/js/' + f;
+    entries[f.replace(/.jsx/, '')] = './frontend/' + f;
   });
   return entries;
 }
@@ -63,7 +62,7 @@ const reactBuild = {
 const styleBuild = {
   name: 'css',
   entry: {
-    sass: './static/sass/p2pu-custom.scss'
+    'p2pu-strap': './static/sass/p2pu-custom.scss'
   },
   module: {
     rules: [
@@ -72,9 +71,6 @@ const styleBuild = {
         use: [
           {
             loader: 'file-loader',
-            options: {
-              outputPath: 'dist/'
-            }
           }
         ]
       },
@@ -99,11 +95,11 @@ const styleBuild = {
     ]
   },
   output: {
-    path: path.resolve('./static/css/'),
-    filename: "[name].css.js",
+    path: path.resolve('./assets/bundles/'),
+    filename: "[name].[hash].js",
   },
   plugins: [
-    new ExtractTextPlugin("build.styles.css")
+    new ExtractTextPlugin("[name].[hash].css")
   ]
 }
 

@@ -5,7 +5,7 @@ export default class TabSelector extends React.Component {
         super(props);
         this.state = {
             activeTab: 0
-        }
+        };
         this._handleTabSwitch = this._handleTabSwitch.bind(this); 
     }
 

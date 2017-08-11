@@ -1,5 +1,9 @@
 .git/
 docs/
 venv/
+assets/
+node_modules/
+*.pyc
 learnwithpeople/settings_local.py
 learnwithpeople/settings_local.pyc
+static_serve/

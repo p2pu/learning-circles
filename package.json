@@ -9,7 +9,7 @@
   "scripts": {
     "build": "webpack --config webpack.local.config.js",
     "watch": "webpack --config webpack.local.config.js --watch",
-    "build-production": "webpack --config webpack.prod.config.js"
+    "build:production": "webpack --config webpack.prod.config.js"
   },
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "url": "https://github.com/p2pu/learning-circles/issues"
   },
   "homepage": "https://github.com/p2pu/learning-circles#readme",
-  "devDependencies": {
+  "dependencies": {
     "babel": "^6.23.0",
     "babel-core": "^6.24.1",
     "babel-loader": "^6.4.1",
@@ -42,5 +42,5 @@
     "webpack-bundle-tracker": "0.0.93",
     "whatwg-fetch": "^2.0.3"
   },
-  "dependencies": {}
+  "devDependencies": {}
 }

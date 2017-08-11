@@ -19,7 +19,7 @@ export default class PagedTable extends React.Component {
     }
 
     render(){
-        let perPage = 10;
+        let perPage = 10; // TODO this isn't used
         let page = Math.min(this.pageCount()-1, this.state.page);
         let start = page*this.props.perPage;
         let end = start + this.props.perPage;
