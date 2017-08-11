@@ -334,9 +334,9 @@ class FacilitatorSignup(CreateView):
         if not reset_form.is_valid():
             raise Exception(reset_form.errors)
         reset_form.save(
-            subject_template_name='studygroups/facilitator_created_subject.txt',
-            email_template_name='studygroups/facilitator_created_email.txt',
-            html_email_template_name='studygroups/facilitator_created_email.html',
+            subject_template_name='studygroups/email/facilitator_created-subject.txt',
+            email_template_name='studygroups/email/facilitator_created.txt',
+            html_email_template_name='studygroups/email/facilitator_created.html',
             request=self.request,
             from_email=settings.SERVER_EMAIL,
         )
