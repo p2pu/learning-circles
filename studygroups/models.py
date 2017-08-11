@@ -466,11 +466,11 @@ def generate_reminder(study_group):
 
             facilitator_notification_subject = u'A reminder for {0} was generated'.format(study_group.course.title)
             facilitator_notification_html = render_to_string(
-                'studygroups/notifications/reminder-notification.html',
+                'studygroups/email/reminder_notification.html',
                 context
             )
             facilitator_notification_txt = render_to_string(
-                'studygroups/notifications/reminder-notification.txt',
+                'studygroups/email/reminder_notification.txt',
                 context
             )
             timezone.deactivate()
