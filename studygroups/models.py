@@ -789,9 +789,9 @@ def send_team_invitation_email(team, email, organizer):
         text_body = render_to_string('studygroups/new_facilitator_invite.txt', context)
     else:
         context['user'] = user_qs.get()
-        subject = render_to_string('studygroups/team_invite-subject.txt', context).strip('\n')
-        html_body = render_to_string('studygroups/team_invite.html', context)
-        text_body = render_to_string('studygroups/team_invite.txt', context)
+        subject = render_to_string('studygroups/email/team_invite-subject.txt', context).strip('\n')
+        html_body = render_to_string('studygroups/email/team_invite.html', context)
+        text_body = render_to_string('studygroups/email/team_invite.txt', context)
 
     to = [email]
     from_ = organizer.email
