@@ -142,7 +142,7 @@ class OptOutForm(forms.Form):
             for application in applications:
                 # This remains for old signups without email address 
                 context = { 'application': application }
-                message = render_to_string('studygroups/optout_confirm_text.txt', context)
+                message = render_to_string('studygroups/email/optout_confirm_text.txt', context)
                 try:
                     send_message(application.mobile, message)
                 except twilio.TwilioRestException as e:
