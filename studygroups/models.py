@@ -743,9 +743,9 @@ def send_new_facilitator_email(facilitator):
 
     timezone.activate(pytz.timezone(settings.TIME_ZONE))
     translation.activate(settings.LANGUAGE_CODE)
-    subject = render_to_string('studygroups/new_facilitator_update-subject.txt', context).strip('\n')
-    html_body = render_to_string('studygroups/new_facilitator_update.html', context)
-    text_body = render_to_string('studygroups/new_facilitator_update.txt', context)
+    subject = render_to_string('studygroups/email/new_facilitator_update-subject.txt', context).strip('\n')
+    html_body = render_to_string('studygroups/email/new_facilitator_update.html', context)
+    text_body = render_to_string('studygroups/email/new_facilitator_update.txt', context)
     timezone.deactivate()
     to = [facilitator.email]
  
