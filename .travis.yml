@@ -23,9 +23,9 @@ script:
 after_success:
 - echo "Push image to hub.docker.com"
 - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-- if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then PR_TAG="-pr$TRAVIS_PULL_REQUEST"; fi
-- docker tag p2pu/learning-circles p2pu/learning-circles:"$TRAVIS_BRANCH$PR_TAG"
-- docker tag p2pu/learning-circles p2pu/learning-circles:$(git describe --always --tags)-"$TRAVIS_BRANCH$PR_TAG"
+- if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then echo "Images not pushed for pull request"; exit 0; fi
+- docker tag p2pu/learning-circles p2pu/learning-circles:"$TRAVIS_BRANCH"
+- docker tag p2pu/learning-circles p2pu/learning-circles:$(git describe --always --tags)-"$TRAVIS_BRANCH"
 - docker images
 - docker push p2pu/learning-circles
 
