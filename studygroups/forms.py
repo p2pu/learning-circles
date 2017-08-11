@@ -125,9 +125,9 @@ class OptOutForm(forms.Form):
             for application in Application.objects.active().filter(email__iexact=email):
                 # send opt-out email
                 context = { 'application': application }
-                subject = render_to_string('studygroups/optout_confirm_email_subject.txt', context).strip('\n')
-                html_body = render_to_string('studygroups/optout_confirm_email.html', context)
-                text_body = render_to_string('studygroups/optout_confirm_email.txt', context)
+                subject = render_to_string('studygroups/email/optout_confirm-subject.txt', context).strip('\n')
+                html_body = render_to_string('studygroups/email/optout_confirm.html', context)
+                text_body = render_to_string('studygroups/email/optout_confirm.txt', context)
                 notification = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, [application.email])
                 notification.attach_alternative(html_body, 'text/html')
                 notification.send()
