@@ -259,8 +259,8 @@ def receive_sms(request):
             context['rsvp_yes'] = next_meeting.rsvp_yes_link(sender)
             context['rsvp_no'] = next_meeting.rsvp_no_link(sender)
 
-    text_body = render_to_string('studygroups/incoming_sms.txt', context)
-    html_body = render_to_string('studygroups/incoming_sms.html', context)
+    text_body = render_to_string('studygroups/email/incoming_sms.txt', context)
+    html_body = render_to_string('studygroups/email/incoming_sms.html', context)
     notification = EmailMultiAlternatives(
         subject,
         text_body,
