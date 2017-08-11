@@ -21,9 +21,11 @@ script:
 - docker run --rm -it --link postgres -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost p2pu/learning-circles /wait-for-it.sh postgres:5432 -- /opt/django-venv/bin/python /opt/app/manage.py test
 
 after_success:
+- echo "Push image to hub.docker.com"
 - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-- docker tag p2pu/learning-circles p2pu/learning-circles:"$TRAVIS_BRANCH"
-- docker tag p2pu/learning-circles p2pu/learning-circles:$(git describe --always --tags)-"$TRAVIS_BRANCH"
+- if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then PR_TAG="-pr$TRAVIS_PULL_REQUEST"; fi
+- docker tag p2pu/learning-circles p2pu/learning-circles:"$TRAVIS_BRANCH$PR_TAG"
+- docker tag p2pu/learning-circles p2pu/learning-circles:$(git describe --always --tags)-"$TRAVIS_BRANCH$PR_TAG"
 - docker images
 - docker push p2pu/learning-circles
 
