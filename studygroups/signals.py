@@ -15,15 +15,15 @@ def handle_new_application(sender, instance, created, **kwargs):
 
     # Send notification
     notification_subject = render_to_string(
-        'studygroups/notifications/application-subject.txt',
+        'studygroups/email/application-subject.txt',
         {'application': application}
     ).strip('\n')
     notification_body = render_to_string(
-        'studygroups/notifications/application.txt', 
+        'studygroups/email/application.txt', 
         {'application': application}
     )
     notification_html = render_to_string(
-        'studygroups/notifications/application.html', 
+        'studygroups/email/application.html', 
         {'application': application}
     )
     to = [application.study_group.facilitator.email]
