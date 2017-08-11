@@ -701,8 +701,8 @@ def send_weekly_update():
         report_context.update(context)
         timezone.activate(pytz.timezone(settings.TIME_ZONE)) #TODO not sure what this influences anymore?
         translation.activate(settings.LANGUAGE_CODE)
-        html_body = render_to_string('studygroups/weekly-update.html', report_context)
-        text_body = render_to_string('studygroups/weekly-update.txt', report_context)
+        html_body = render_to_string('studygroups/email/weekly-update.html', report_context)
+        text_body = render_to_string('studygroups/email/weekly-update.txt', report_context)
         timezone.deactivate()
  
         to = [o.user.email for o in team.teammembership_set.filter(role=TeamMembership.ORGANIZER)]
@@ -721,8 +721,8 @@ def send_weekly_update():
     report_context.update(context)
     timezone.activate(pytz.timezone(settings.TIME_ZONE)) 
     translation.activate(settings.LANGUAGE_CODE)
-    html_body = render_to_string('studygroups/weekly-update.html', report_context)
-    text_body = render_to_string('studygroups/weekly-update.txt', report_context)
+    html_body = render_to_string('studygroups/email/weekly-update.html', report_context)
+    text_body = render_to_string('studygroups/email/weekly-update.txt', report_context)
     timezone.deactivate()
  
     to = [o.email for o in User.objects.filter(is_staff=True)]

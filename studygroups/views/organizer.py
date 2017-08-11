@@ -238,5 +238,5 @@ def weekly_report(request, year=None, month=None, day=None ):
         team = membership.team
 
     context.update(report_data(start_time, end_time, team))
-    return render(request, 'studygroups/weekly-update.html', context)
+    return render(request, 'studygroups/email/weekly-update.html', context)
 
