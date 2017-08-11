@@ -503,15 +503,15 @@ def send_survey_reminder(study_group):
             'learning_circle':  urllib.quote(learning_circle_text)
         }
         subject = render_to_string(
-            'studygroups/learner_survey_reminder-subject.txt',
+            'studygroups/email/learner_survey_reminder-subject.txt',
             context
         )
         html = render_to_string(
-            'studygroups/learner_survey_reminder.html',
+            'studygroups/email/learner_survey_reminder.html',
             context
         )
         txt = render_to_string(
-            'studygroups/learner_survey_reminder.txt',
+            'studygroups/email/learner_survey_reminder.txt',
             context
         )
         timezone.deactivate()
