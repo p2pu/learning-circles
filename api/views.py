@@ -103,6 +103,48 @@ class LearningCircleListView(View):
         return json_response(request, data)
 
 
+def _course_to_json(course):
+    return {
+        "id": course.id,
+        "title": course.title,
+        "provider": course.provider,
+        "link": course.link,
+        "key": course.key,
+        "start_date": course.start_date,
+        "duration": course.duration,
+        "prerequisite": course.prerequisite,
+        "time_required": course.time_required,
+        "caption": course.caption,
+        "learning_circles": course.studygroup_set.active().count(),
+    }
+
+class CourseListView(View):
+    def get(self, request):
+        courses = Course.objects.order_by('title')
+        # TODO filter by active learning circles
+        query = request.GET.get('q', None)
+        if query:
+            courses = courses.filter(title__icontains=query)
+        data = {
+            'count': courses.count()
+        }
+        if 'offset' in request.GET or 'limit' in request.GET:
+            try:
+                offset = int(request.GET.get('offset', 0))
+            except ValueError as e:
+                offset = 0
+            try: 
+                limit = int(request.GET.get('limit', 100))
+            except ValueError as e:
+                limit = 100
+
+            data['offset'] = offset
+            data['limit'] = limit
+            courses = courses[offset:offset+limit]
+        data['items'] = [ _course_to_json(course) for course in courses ]
+        return json_response(request, data)
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 class SignupView(View):
 
