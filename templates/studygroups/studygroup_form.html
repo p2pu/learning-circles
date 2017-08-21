@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load render_bundle from webpack_loader %}
 {% load static %}
 {% load i18n %}
 
@@ -39,4 +40,6 @@
         });
     });
 </script>
+<script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+{% render_bundle 'learning-circle-create' %}
 {% endblock %}

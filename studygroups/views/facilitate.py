@@ -351,6 +351,13 @@ class FacilitatorSignupSuccess(TemplateView):
 class FacilitatorStudyGroupCreate(CreateView):
     success_url = reverse_lazy('studygroups_facilitator')
     template_name = 'studygroups/facilitator_studygroup_form.html'
+
+    def get_initial(self):
+        initial = {}
+        course_id = self.request.GET.get('course_id', None)
+        if course_id:
+            initial['course'] = get_object_or_404(Course, pk=course_id)
+        return initial
     
     def get_form_class(self):
         return modelform_factory(StudyGroup, form=StudyGroupForm, exclude=['facilitator'])
@@ -358,7 +365,8 @@ class FacilitatorStudyGroupCreate(CreateView):
     def get_form(self, form_class=None):
         form = super(FacilitatorStudyGroupCreate, self).get_form(form_class)
         # TODO - filter courses for facilitators that are part of a team (probably move the logic to models)
-        form.fields["course"].queryset = Course.objects.filter(Q(created_by=self.request.user) | Q(created_by__isnull=True)).order_by('title')
+        #form.fields["course"].queryset = Course.objects.filter(Q(created_by=self.request.user) | Q(created_by__isnull=True)).order_by('title')
+
         return form
 
     def form_valid(self, form):
