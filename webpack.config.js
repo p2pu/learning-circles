@@ -1,5 +1,6 @@
 var path = require("path");
 var webpack = require('webpack');
+var BundleTracker = require('webpack-bundle-tracker');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var fs = require("fs");
 
@@ -21,7 +22,7 @@ const reactBuild = {
   context: __dirname,
   entry: getReactChunks(),
   output: {
-    path: path.resolve('./assets/bundles/'),
+    path: path.resolve('./assets/dist/'),
     filename: "[name]-[hash].js",
   },
   module: {
@@ -49,7 +50,18 @@ const reactBuild = {
       },
     ],
   },
-  plugins: [],
+  plugins: [
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    new BundleTracker({filename: './assets/frontend-webpack-manifest.json'}),
+    new webpack.ProvidePlugin({
+      $: "jquery",
+      jQuery: "jquery"
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'common',
+    }),
+
+  ],
   resolve: {
     modules: [
       path.join(__dirname, "assets/js"),
@@ -95,11 +107,12 @@ const styleBuild = {
     ]
   },
   output: {
-    path: path.resolve('./assets/bundles/'),
+    path: path.resolve('./assets/dist/'),
     filename: "[name].[hash].js",
   },
   plugins: [
-    new ExtractTextPlugin("[name].[hash].css")
+    new ExtractTextPlugin("[name].[hash].css"),
+    new BundleTracker({filename: './assets/style-webpack-manifest.json'}),
   ]
 }
 

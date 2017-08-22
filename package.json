@@ -7,9 +7,9 @@
     "doc": "docs"
   },
   "scripts": {
-    "build": "webpack --config webpack.local.config.js",
-    "watch": "webpack --config webpack.local.config.js --watch",
-    "build:production": "webpack --config webpack.prod.config.js"
+    "build": "webpack --config webpack.config.js",
+    "watch": "webpack --config webpack.config.js --watch",
+    "build:production": "webpack -p --config webpack.config.js"
   },
   "repository": {
     "type": "git",

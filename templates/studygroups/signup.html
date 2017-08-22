@@ -44,6 +44,7 @@
 
 {% block scripts %}
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+{% render_bundle 'common' %}
 {% render_bundle 'signup' %}
 {% endblock %}
 
