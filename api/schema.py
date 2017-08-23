@@ -31,6 +31,20 @@ def integer():
 
 
 @_required
+def floating_point():
+    def _validate(value):
+        error = 'Not a valid float'
+        if value is None:
+            return error
+        try:
+            float(value)
+        except ValueError:
+            return error
+    return _validate
+
+
+
+@_required
 def text(length=None):
     def _validate(string):
         if length and len(string) > length:
@@ -118,3 +132,11 @@ def validate(schema, data):
 
     # TODO - errors for extra fields
     return errors
+
+def django_get_to_dict(get):
+    data = {}
+    for key, value in get.items():
+        data[key] = value[0] if len(value)==1 else value
+    return data
+
+
