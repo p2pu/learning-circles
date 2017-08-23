@@ -169,6 +169,8 @@ class StudyGroup(LifeTimeTrackingModel):
     venue_details = models.CharField(max_length=128)
     venue_website = models.URLField(blank=True)
     city = models.CharField(max_length=256)
+    latitude = models.DecimalField(max_digits=8, decimal_places=6, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     facilitator = models.ForeignKey(User)
     start_date = models.DateField()
     meeting_time = models.TimeField()
