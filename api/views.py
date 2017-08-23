@@ -9,6 +9,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
+from django.contrib.postgres.search import SearchVector
 
 import datetime
 import dateutil.parser
@@ -22,6 +23,7 @@ from studygroups.models import StudyGroupMeeting
 from studygroups.models import Team
 
 from uxhelpers.utils import json_response
+from geo import getLatLonDelta
 
 import schema
 
@@ -55,10 +57,39 @@ def _map_to_json(sg):
 
 class LearningCircleListView(View):
     def get(self, request):
+        query_schema = { 
+            "latitude": schema.floating_point(), 
+            "longitude": schema.floating_point(), 
+            "distance": schema.floating_point(),
+            "offset": schema.integer(),
+            "limit": schema.integer(),
+        }
+        data = schema.django_get_to_dict(request.GET)
+        errors = schema.validate(query_schema, data)
+        if errors <> {}:
+            return json_response(request, {"status": "error", "errors": errors})
+
         study_groups = StudyGroup.objects.active().order_by('id')
 
+        if 'q' in request.GET:
+            q = request.GET.get('q')
+            # TODO include course subject
+            study_groups = study_groups.annotate(
+                search=
+                    SearchVector('city') 
+                    + SearchVector('course__title') 
+                    + SearchVector('course__provider') 
+                    + SearchVector('venue_name') 
+                    + SearchVector('venue_address') 
+                    + SearchVector('venue_details') 
+                    + SearchVector('facilitator__first_name') 
+                    + SearchVector('facilitator__last_name')
+            ).filter(search=q)
+
         if 'course_id' in request.GET:
-            study_groups = study_groups.filter(course_id=request.GET.get('course_id'))
+            study_groups = study_groups.filter(
+                course_id=request.GET.get('course_id')
+            )
         city = request.GET.get('city')
         if not city is None:
             study_groups = study_groups.filter(city=city)
@@ -76,14 +107,37 @@ class LearningCircleListView(View):
 
         if 'active' in request.GET:
             active = request.GET.get('active') == 'true'
-            study_group_ids = StudyGroupMeeting.objects.active().filter(meeting_date__gte=timezone.now()).values('study_group')
+            study_group_ids = StudyGroupMeeting.objects.active().filter(
+                meeting_date__gte=timezone.now()
+            ).values('study_group')
             if active:
                 study_groups = study_groups.filter(id__in=study_group_ids)
             else:
                 study_groups = study_groups.exclude(id__in=study_group_ids)
 
+        if 'latitude' in request.GET and 'longitude' in request.GET:
+            # work with floats for ease
+            latitude = float(request.GET.get('latitude'))
+            longitude = float(request.GET.get('longitude'))
+            distance = float(request.GET.get('distance', False) or 50)
+            lat_delta, lon_delta = getLatLonDelta(latitude, longitude, distance)
+            lat_min = max(-90, latitude-lat_delta)
+            lat_max = min(90, latitude+lat_delta)
+            lon_min = max(-180, longitude-lon_delta)
+            lon_max = min(180, longitude+lon_delta)
+            # NOTE doesn't wrap around, 
+            # iow, something at lat=45, lon=-189 and distance=1000 won't match 
+            # lat=45, lon=189 even though they are only 222 km apart.
+            study_groups = study_groups.filter(
+                latitude__gte=lat_min,
+                latitude__lte=lat_max,
+                longitude__gte=lon_min, 
+                longitude__lte=lon_max
+            )
+            # NOTE could use haversine approximation to filter more accurately
+
         data = {
-            'count': study_groups.count()
+            'count': len(study_groups)
         }
         if 'offset' in request.GET or 'limit' in request.GET:
             try:
