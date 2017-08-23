@@ -1,7 +1,6 @@
 [
 {
    "fields": {
-      "key": "3",
       "provider": "MIT OCW via P2PU",
       "duration": 6,
       "start_date": "2015-05-02",
@@ -17,7 +16,6 @@
 },
 {
    "fields": {
-      "key": "4",
       "provider": "University of Reading via FutureLearn",
       "duration": 5,
       "start_date": "2015-05-12",
@@ -33,7 +31,6 @@
 },
 {
    "fields": {
-      "key": "1",
       "provider": "University of Washington via Coursera",
       "duration": 7,
       "start_date": "2015-04-30",
@@ -49,7 +46,6 @@
 },
 {
    "fields": {
-      "key": "2",
       "provider": "Khan Academy",
       "duration": 6,
       "start_date": "2015-04-29",

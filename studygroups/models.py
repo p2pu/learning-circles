@@ -83,7 +83,6 @@ class Course(models.Model):
     title = models.CharField(max_length=128, verbose_name=_('Course title'))
     provider = models.CharField(max_length=256, verbose_name=_('Course provider'), help_text=_('e.g. Khan Academy, edX, Coursera.'))
     link = models.URLField(verbose_name=_('Course website'), help_text=_('Paste full URL above.'))
-    key = models.CharField(max_length=255, default='NOT SET')
     start_date = models.DateField(verbose_name=_('Course start date'), help_text=_('If the course is always available (many are), choose today\'s date. Note that this is the start date for the course - not for your specific Learning Circle.'))
     duration = models.IntegerField(verbose_name=_('Number of weeks'), help_text=_('Check the course website, or approximate.'))
     prerequisite = models.TextField(blank=True, help_text=_('e.g. high school diploma or equivalent, pre-calculus, HTML/CSS.'))
