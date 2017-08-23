@@ -163,7 +163,6 @@ def _course_to_json(course):
         "title": course.title,
         "provider": course.provider,
         "link": course.link,
-        "key": course.key,
         "start_date": course.start_date,
         "duration": course.duration,
         "prerequisite": course.prerequisite,
