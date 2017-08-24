@@ -174,7 +174,7 @@ class StudyGroupForm(forms.ModelForm):
         self.helper.layout.insert(11, HTML("""<p>For inspiration, check out <a href="https://www.flickr.com/search/?license=2%2C3%2C4%2C5%2C6%2C9" target="_blank">openly licensed images on Flickr</a>.</p>"""))
         self.helper.layout.insert(1, HTML("""
             <p>You can read more about each course <a href="{% url 'studygroups_courses' %}">here</a>.</p>
-            <p>Or add a new course that isn't listed yet. Note that courses you add will be visible only to you.</p>
+            <p>Or add an online course that isn&quot;t already listed. This course will be visible to everyone on the <a href="{% url 'studygroups_courses' %}">courses page</a>.</p>
             <p><a class="btn btn-default" href="{% url 'studygroups_course_create' %}">Add a new course</a></p>
         """))
 
@@ -189,10 +189,13 @@ class StudyGroupForm(forms.ModelForm):
         model = StudyGroup
         fields = [
             'course',
+            'description',
             'venue_name',
             'venue_details',
             'venue_address',
             'city',
+            'latitude',
+            'longitude',
             'start_date',
             'weeks',
             'meeting_time',
@@ -204,6 +207,7 @@ class StudyGroupForm(forms.ModelForm):
         ]
         labels = {
             'course': _('Choose the course that your Learning Circle will study.'),
+            'description': _('Share a welcome message with potential learners.'),
             'venue_name': _('Where will you meet?'),
             'venue_details': _('Where is the specific meeting spot?'),
             'venue_address': _('What is the address of the venue?'),
@@ -215,6 +219,7 @@ class StudyGroupForm(forms.ModelForm):
         }
         help_texts = {
             'course': '',
+            'description': _(u'You can include a bit about yourself, why you’re facilitating this course, and anything else you want people to know before they sign up.'),
             'venue_name': _('Name of the venue, e.g. Pretoria Library or Bekka\'s house'),
             'venue_details': _('e.g. second floor kitchen or Room 409 (third floor)'),
             'venue_address': _('Write it out like you were mailing a letter.'),
@@ -224,6 +229,10 @@ class StudyGroupForm(forms.ModelForm):
             'duration': _('We recommend 90 - 120 minutes.'),
             'image': _('Make your Learning Circle stand out with a picture or .gif. It could be related to location, subject matter, or anything else you want to identify with!'),
         }
+        widgets = {
+            'latitude': forms.HiddenInput,
+            'longitude': forms.HiddenInput,
+        } 
 
 
 class FacilitatorForm(forms.ModelForm):
