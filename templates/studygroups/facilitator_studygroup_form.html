@@ -45,6 +45,11 @@
             container: document.querySelector('#id_city'),
             type: 'city'
         });
+        // update lat, lon based on city
+        placesAutocomplete.on('change', function(e){
+          $('#id_latitude').val(e.suggestion.latlng.lat);
+          $('#id_longitude').val(e.suggestion.latlng.lng);
+        });
     });
 </script>
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
