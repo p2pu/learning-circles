@@ -79,17 +79,15 @@ class LifeTimeTrackingModel(models.Model):
         abstract = True
 
 
-class Course(models.Model):
+class Course(LifeTimeTrackingModel):
     title = models.CharField(max_length=128, verbose_name=_('Course title'))
     provider = models.CharField(max_length=256, verbose_name=_('Course provider'), help_text=_('e.g. Khan Academy, edX, Coursera.'))
     link = models.URLField(verbose_name=_('Course website'), help_text=_('Paste full URL above.'))
-    start_date = models.DateField(verbose_name=_('Course start date'), help_text=_('If the course is always available (many are), choose today\'s date. Note that this is the start date for the course - not for your specific Learning Circle.'))
-    duration = models.IntegerField(verbose_name=_('Number of weeks'), help_text=_('Check the course website, or approximate.'))
-    prerequisite = models.TextField(blank=True, help_text=_('e.g. high school diploma or equivalent, pre-calculus, HTML/CSS.'))
-    time_required = models.IntegerField(verbose_name=_('Hours per week'), help_text=_('Check the course website, or approximate.'))
     caption = models.TextField(help_text=_('Short description of the course.'))
+    on_demand = models.BooleanField(help_text=_('Can this course be started at any time'))
+    topics = models.TextField(help_text=_('Pick some topics for your course.'))
+    language = models.CharField(max_length=6, verbose_name=_('Langauge of the course'))
     created_by = models.ForeignKey(User, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return self.title
@@ -163,6 +161,7 @@ class TeamInvitation(models.Model):
 class StudyGroup(LifeTimeTrackingModel):
     name = models.CharField(max_length=128, default=_study_group_name)
     course = models.ForeignKey('studygroups.Course')
+    description = models.CharField(max_length=500)
     venue_name = models.CharField(max_length=256)
     venue_address = models.CharField(max_length=256)
     venue_details = models.CharField(max_length=128)
