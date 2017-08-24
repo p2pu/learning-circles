@@ -1,15 +1,14 @@
 [
 {
    "fields": {
-      "provider": "MIT OCW via P2PU",
-      "duration": 6,
-      "start_date": "2015-05-02",
-      "caption": "Slither into computer programming with Python.",
-      "link": "http://python.p2pu.org/",
       "title": "Programming with Python",
-      "time_required": 4,
+      "provider": "MIT OCW via P2PU",
+      "link": "http://python.p2pu.org/",
+      "caption": "Slither into computer programming with Python.",
+      "on_demand": 1,
+      "topics": "math,scientce",
       "created_at": "2015-03-23T15:17:01.880Z",
-      "prerequisite": "None"
+      "updated_at": "2015-03-23T15:17:01.880Z"
    },
    "model": "studygroups.course",
    "pk": 1
@@ -17,14 +16,12 @@
 {
    "fields": {
       "provider": "University of Reading via FutureLearn",
-      "duration": 5,
-      "start_date": "2015-05-12",
       "caption": "Get on the write track for university-level writing.",
+      "on_demand": 1,
       "link": "https://www.futurelearn.com/courses/english-for-study",
       "title": "Academic Writing",
-      "time_required": 3,
       "created_at": "2015-03-23T15:18:02.190Z",
-      "prerequisite": "High school level English (TOEFL 32 or higher)"
+      "updated_at": "2015-03-23T15:17:01.880Z"
    },
    "model": "studygroups.course",
    "pk": 2
@@ -32,14 +29,12 @@
 {
    "fields": {
       "provider": "University of Washington via Coursera",
-      "duration": 7,
-      "start_date": "2015-04-30",
       "caption": "dd",
+      "on_demand": 1,
       "link": "https://www.coursera.org/learn/public-speaking",
       "title": "Public Speaking",
-      "time_required": 4,
       "created_at": "2015-04-07T20:49:10.718Z",
-      "prerequisite": "  "
+      "updated_at": "2015-03-23T15:17:01.880Z"
    },
    "model": "studygroups.course",
    "pk": 3
@@ -47,14 +42,12 @@
 {
    "fields": {
       "provider": "Khan Academy",
-      "duration": 6,
-      "start_date": "2015-04-29",
       "caption": "Looking to study for your GED Certification or a high school equivalency credential? Then you\u2019ll need to prepare for the math sections of these tests. Good news is, you don\u2019t have to do it alone!  This course will  help you build your own learning path through the content you need to master. You'll also have access to a study group of your peers, who will be there to support you through the process.",
+      "on_demand": 1,
       "link": "https://www.khanacademy.org/math",
       "title": "GED\u00ae Prep Math",
-      "time_required": 4,
       "created_at": "2015-04-07T20:50:04.287Z",
-      "prerequisite": " "
+      "updated_at": "2015-03-23T15:17:01.880Z"
    },
    "model": "studygroups.course",
    "pk": 4
