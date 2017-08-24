@@ -163,12 +163,9 @@ def _course_to_json(course):
         "title": course.title,
         "provider": course.provider,
         "link": course.link,
-        "start_date": course.start_date,
-        "duration": course.duration,
-        "prerequisite": course.prerequisite,
-        "time_required": course.time_required,
         "caption": course.caption,
         "learning_circles": course.studygroup_set.active().count(),
+        "topics": course.topics.split(','), #prevent empty topic
     }
 
 class CourseListView(View):
