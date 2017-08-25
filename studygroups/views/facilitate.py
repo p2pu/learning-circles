@@ -32,6 +32,7 @@ from studygroups.models import Application
 from studygroups.models import Feedback
 from studygroups.models import Reminder
 from studygroups.forms import MessageForm
+from studygroups.forms import CourseForm
 from studygroups.forms import ApplicationForm
 from studygroups.forms import StudyGroupForm
 from studygroups.forms import StudyGroupMeetingForm
@@ -161,20 +162,11 @@ class ApplicationDelete(FacilitatorRedirectMixin, DeleteView):
 class CourseCreate(CreateView):
     """ View used by organizers and facilitators """
     model = Course
-    fields = [    
-        'title',
-        'provider',
-        'link',
-        'caption',
-        'start_date',
-        'duration',
-        'time_required',
-        'prerequisite',
-    ]
+    form_class = CourseForm
 
     def form_valid(self, form):
         # courses created by staff will be global
-        messages.success(self.request, _('Your course has been created. You can now select it from the dropdown list.'))
+        messages.success(self.request, _('Your course has been created. You can now create a learning circle using it.'))
         if self.request.user.is_staff:
             return super(CourseCreate, self).form_valid(form)
         self.object = form.save(commit=False)
@@ -184,10 +176,11 @@ class CourseCreate(CreateView):
         return http.HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        if self.request.user.is_staff: #TeamMembership.objects.filter(user=self.request.user, role=TeamMembership.ORGANIZER).exists():
-            return reverse_lazy('studygroups_organize')
-        else:
-            return reverse('studygroups_facilitator_studygroup_create')
+        #if self.request.user.is_staff: #TeamMembership.objects.filter(user=self.request.user, role=TeamMembership.ORGANIZER).exists():
+        #    return reverse_lazy('studygroups_organize')
+        #else:
+        url = reverse('studygroups_facilitator_studygroup_create')
+        return url + "?course_id={}".format(self.object.id)
 
 
 ## This form is used by facilitators

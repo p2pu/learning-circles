@@ -1,6 +1,7 @@
 # coding=utf-8
 from django import forms
 from django.conf import settings
+from django.conf.global_settings import LANGUAGES
 from django.utils.translation import ugettext as _
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -21,6 +22,7 @@ from studygroups.models import Reminder
 from studygroups.models import StudyGroup
 from studygroups.models import StudyGroupMeeting
 from studygroups.models import Feedback
+from studygroups.models import Course
 from studygroups.sms import send_message
 
 import logging
@@ -155,6 +157,56 @@ class MessageForm(forms.ModelForm):
         model = Reminder
         exclude = ['study_group_meeting', 'created_at', 'sent_at']
         widgets = {'study_group': forms.HiddenInput} 
+
+
+class CourseForm(forms.ModelForm):
+    LANGUAGES = (
+        ('en', _('English')),
+        ('es', _('Spanish')),
+        ('fr', _('French')),
+        ('other', [ (code, name) for code, name in LANGUAGES if code not in ['en', 'es', 'fr']]),
+    )
+    language = forms.ChoiceField(choices=LANGUAGES, initial='en')
+
+    def __init__(self, *args, **kwargs):
+        super(CourseForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        if self.instance:
+            self.helper.add_input(Submit('submit', 'Create course'))
+        else:
+            self.helper.add_input(Submit('submit', 'Save'))
+        self.helper.layout.insert(4, HTML("""
+            <p><label class="from-control requiredField">
+                Availability<span class="asteriskField">*</span>
+            </label></p>
+        """))
+
+    class Meta:
+        model = Course
+        fields = [
+            'title',
+            'provider',
+            'link',
+            'caption',
+            'on_demand',
+            'topics',
+            'language',
+        ]
+        labels = {
+            'title': _('Course title'),
+            'provider': _('Course provider'),
+            'link': _('Course website'),
+            'caption': _('Course description'),
+            'topic': _('Course topics'),
+            'on_demand': _('Always available'),
+        }
+        help_texts = {
+             'provider': _('e.g. Khan Academy, edX, Coursera.'),
+             'link': _('Paste full URL above.'),
+             'caption': _('1-2 sentences describing the goals of this course.'),
+             'topics': _('Select or create a few topics that will help others find this course.'),
+             'on_demand': _('Only select always available if the course is openly licensed and is always accessible to users.')
+        }
 
 
 class StudyGroupForm(forms.ModelForm):

@@ -23,6 +23,7 @@ class TeamMembershipInline(admin.TabularInline):
     model = TeamMembership
 
 class TeamAdmin(admin.ModelAdmin):
+    list_display = ('name', 'page_slug')
     inlines = [ TeamMembershipInline ]
 
 class ApplicationAdmin(admin.ModelAdmin):
@@ -35,13 +36,23 @@ class ReminderAdmin(admin.ModelAdmin):
     list_display = (reminder_course_title, 'email_subject', 'sent_at')
 
 
-admin.site.register(Course)
+class CourseAdmin(admin.ModelAdmin):
+    def created_by(course):
+        def display_user(user):
+            return u'{} {}'.format(user.first_name, user.last_name)
+        return display_user(course.created_by) if course.created_by else 'P2PU'
+
+    def email(course):
+        return course.created_by.email if course.created_by else '-'
+
+    list_display = ('title', 'provider', 'on_demand', 'topics', created_by, email)
+
+
+admin.site.register(Course, CourseAdmin)
 admin.site.register(Activity)
 admin.site.register(StudyGroup, StudyGroupAdmin)
 admin.site.register(StudyGroupMeeting)
 admin.site.register(Application, ApplicationAdmin)
 admin.site.register(Reminder, ReminderAdmin)
-admin.site.register(Organizer)
-admin.site.register(Facilitator)
 admin.site.register(Team, TeamAdmin)
 admin.site.register(TeamInvitation)

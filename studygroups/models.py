@@ -80,13 +80,13 @@ class LifeTimeTrackingModel(models.Model):
 
 
 class Course(LifeTimeTrackingModel):
-    title = models.CharField(max_length=128, verbose_name=_('Course title'))
-    provider = models.CharField(max_length=256, verbose_name=_('Course provider'), help_text=_('e.g. Khan Academy, edX, Coursera.'))
-    link = models.URLField(verbose_name=_('Course website'), help_text=_('Paste full URL above.'))
-    caption = models.TextField(help_text=_('Short description of the course.'))
-    on_demand = models.BooleanField(help_text=_('Can this course be started at any time'))
-    topics = models.TextField(help_text=_('Pick some topics for your course.'))
-    language = models.CharField(max_length=6, verbose_name=_('Langauge of the course'))
+    title = models.CharField(max_length=128)
+    provider = models.CharField(max_length=256)
+    link = models.URLField()
+    caption = models.CharField(max_length=200)
+    on_demand = models.BooleanField()
+    topics = models.CharField(max_length=500)
+    language = models.CharField(max_length=6)
     created_by = models.ForeignKey(User, blank=True, null=True)
 
     def __unicode__(self):
