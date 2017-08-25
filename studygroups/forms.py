@@ -216,6 +216,9 @@ class StudyGroupForm(forms.ModelForm):
     weeks = forms.IntegerField(min_value=1, label=_('How many weeks will your Learning Circle run for?'), help_text=_('If you\'re not sure, six weeks is generally a good bet!'))
     timezone = forms.ChoiceField(choices=TIMEZONES, label=_('What timezone is your Learning Circle happening in?'))
 
+    latitude = forms.DecimalField(required=False, widget=forms.HiddenInput)
+    longitude = forms.DecimalField(required=False, widget=forms.HiddenInput)
+
     def __init__(self, *args, **kwargs):
         super(StudyGroupForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
@@ -226,7 +229,7 @@ class StudyGroupForm(forms.ModelForm):
         self.helper.layout.insert(11, HTML("""<p>For inspiration, check out <a href="https://www.flickr.com/search/?license=2%2C3%2C4%2C5%2C6%2C9" target="_blank">openly licensed images on Flickr</a>.</p>"""))
         self.helper.layout.insert(1, HTML("""
             <p>You can read more about each course <a href="{% url 'studygroups_courses' %}">here</a>.</p>
-            <p>Or add an online course that isn&quot;t already listed. This course will be visible to everyone on the <a href="{% url 'studygroups_courses' %}">courses page</a>.</p>
+            <p>Or add an online course that isn&#39;t already listed. This course will be visible to everyone on the <a href="{% url 'studygroups_courses' %}">courses page</a>.</p>
             <p><a class="btn btn-default" href="{% url 'studygroups_course_create' %}">Add a new course</a></p>
         """))
 
