@@ -50,7 +50,7 @@ class CourseAdmin(admin.ModelAdmin):
         return course.created_by.email if course.created_by else '-'
 
     def learning_circles(course):
-        return course.studygroup_set.count()
+        return course.studygroup_set.active().count()
 
     list_display = ('title', 'provider', 'on_demand', 'topics', learning_circles, created_by, email)
 
