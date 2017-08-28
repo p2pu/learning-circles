@@ -88,6 +88,7 @@ class Course(LifeTimeTrackingModel):
     topics = models.CharField(max_length=500)
     language = models.CharField(max_length=6)
     created_by = models.ForeignKey(User, blank=True, null=True)
+    unlisted = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.title

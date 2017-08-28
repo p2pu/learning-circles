@@ -65,6 +65,7 @@ class CourseAdmin(admin.ModelAdmin):
         return course.studygroup_set.active().count()
 
     list_display = ('title', 'provider', 'on_demand', 'topics', learning_circles, created_by, email)
+    exclude = ('deleted_at',)
     inlines = [StudyGroupInline]
  
 
