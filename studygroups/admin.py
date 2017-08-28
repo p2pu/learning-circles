@@ -36,7 +36,19 @@ class ReminderAdmin(admin.ModelAdmin):
     list_display = (reminder_course_title, 'email_subject', 'sent_at')
 
 
+class StudyGroupInline(admin.TabularInline):
+    model = StudyGroup
+    fields = ('venue_name', 'city', 'start_date', 'day')
+    readonly_fields = fields
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 class CourseAdmin(admin.ModelAdmin):
+   
     def get_queryset(self, request):
         qs = super(CourseAdmin, self).get_queryset(request)
         return qs.active()
@@ -53,7 +65,8 @@ class CourseAdmin(admin.ModelAdmin):
         return course.studygroup_set.active().count()
 
     list_display = ('title', 'provider', 'on_demand', 'topics', learning_circles, created_by, email)
-
+    inlines = [StudyGroupInline]
+ 
 
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Activity)
