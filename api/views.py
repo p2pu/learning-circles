@@ -56,7 +56,7 @@ def _map_to_json(sg):
     return data
 
 def _intCommaList(csv):
-    values = csv.split(',')
+    values = csv.split(',') if csv else []
     for value in values:
         try:
             int(value)
