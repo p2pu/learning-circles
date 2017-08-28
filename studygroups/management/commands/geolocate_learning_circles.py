@@ -20,12 +20,12 @@ class Command(BaseCommand):
             country = city_data[2].strip() if len(city_data) > 2 else None
             results = data.find_city(city, region, country)
             if len(results) == 0:
-                print(u'Could not find any cities matching: ' + study_group.city)
+                print(u'Could not find any cities matching: {}'.format(study_group.city))
                 continue
 
             if len(results) > 1:
-                print(u'Found more than one city matching: ' + study_group.city)
-                for i, opt in enumerate([', '.join(cd[:3]) for cd in results]):
+                print(u'Found more than one city matching: {}'.format(study_group.city))
+                for i, opt in enumerate([u', '.join(cd[:3]) for cd in results]):
                     print(u'{}: {}'.format(i+1, opt))
                 choice = raw_input('Please choose one: ')
                 try:
