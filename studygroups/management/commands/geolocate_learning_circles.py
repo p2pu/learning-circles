@@ -8,7 +8,7 @@ class Command(BaseCommand):
     help = 'Find lat, lon for study groups without a position defined'
 
     def handle(self, *args, **options):
-        study_groups = StudyGroup.objects.filter(
+        study_groups = StudyGroup.objects.active().filter(
             latitude__isnull=True,
             longitude__isnull=True,
         ).exclude(city='')
@@ -25,8 +25,15 @@ class Command(BaseCommand):
 
             if len(results) > 1:
                 print(u'Found more than one city matching: ' + study_group.city)
-                print(results)
-                continue
+                for i, opt in enumerate([', '.join(cd[:3]) for cd in results]):
+                    print(u'{}: {}'.format(i+1, opt))
+                choice = raw_input('Please choose one: ')
+                try:
+                    choice = int(choice)-1
+                    if choice > 0 and choice < len(results):
+                        results = [results[choice]]
+                except ValueError as e:
+                    continue
 
             if len(results) <> 1:
                 continue

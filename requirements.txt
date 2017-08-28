@@ -33,7 +33,6 @@ mock==1.0.1
 packaging==16.8
 phonenumberslite==7.7.0
 Pillow==2.8.1
-pkg-resources==0.0.0
 psycopg2==2.6
 pyparsing==2.2.0
 python-dateutil==2.4.2
