@@ -37,6 +37,10 @@ class ReminderAdmin(admin.ModelAdmin):
 
 
 class CourseAdmin(admin.ModelAdmin):
+    def get_queryset(self, request):
+        qs = super(CourseAdmin, self).get_queryset(request)
+        return qs.active()
+
     def created_by(course):
         def display_user(user):
             return u'{} {}'.format(user.first_name, user.last_name)
