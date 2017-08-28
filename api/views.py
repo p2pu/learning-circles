@@ -55,6 +55,14 @@ def _map_to_json(sg):
     #TODO else set default image URL
     return data
 
+def _intCommaList(csv):
+    values = csv.split(',')
+    for value in values:
+        try:
+            int(value)
+        except ValueError:
+            return 'Not a list of integers seperated by commas'
+    return None
 
 class LearningCircleListView(View):
     def get(self, request):
@@ -64,6 +72,7 @@ class LearningCircleListView(View):
             "distance": schema.floating_point(),
             "offset": schema.integer(),
             "limit": schema.integer(),
+            "weekdays": _intCommaList,
         }
         data = schema.django_get_to_dict(request.GET)
         errors = schema.validate(query_schema, data)
@@ -142,6 +151,16 @@ class LearningCircleListView(View):
             query = Q(course__topics__icontains=topics[0]) 
             for topic in topics[1:]:
                 query = Q(course__topics__icontains=topic) | query
+            study_groups = study_groups.filter(query)
+
+        if 'weekdays' in request.GET:
+            weekdays = request.GET.get('weekdays').split(',')
+            query = None
+            for weekday in weekdays:
+                #__week_day differst from datetime.weekday()
+                # Monday should be 0
+                weekday = int(weekday) + 2 % 7
+                query = query | Q(start_date__week_day=weekday) if query else Q(start_date__week_day=weekday)
             study_groups = study_groups.filter(query)
 
         data = {
