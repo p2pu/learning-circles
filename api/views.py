@@ -85,12 +85,12 @@ class LearningCircleListView(View):
 
         if 'q' in request.GET:
             q = request.GET.get('q')
-            # TODO include course subject
             study_groups = study_groups.annotate(
                 search=
                     SearchVector('city') 
                     + SearchVector('course__title') 
-                    + SearchVector('course__provider') 
+                    + SearchVector('course__provider')
+                    + SearchVector('course__topics')
                     + SearchVector('venue_name') 
                     + SearchVector('venue_address') 
                     + SearchVector('venue_details') 
@@ -194,16 +194,34 @@ def _course_to_json(course):
         "link": course.link,
         "caption": course.caption,
         "learning_circles": course.studygroup_set.active().count(),
-        "topics": course.topics.split(','), #prevent empty topic
+        "topics": course.topics.split(',') if course.topics else [],
+        "learning_circles": course.studygroup_set.active().count(),
     }
 
 class CourseListView(View):
     def get(self, request):
-        courses = Course.objects.order_by('title')
-        # TODO filter by active learning circles
+        courses = Course.objects.active().order_by('title')
+
         query = request.GET.get('q', None)
         if query:
             courses = courses.filter(title__icontains=query)
+            courses = courses.annotate(
+                search=
+                    SearchVector('title') 
+                    + SearchVector('provider') 
+                    + SearchVector('topics')
+                    + SearchVector('language') 
+            ).filter(search=query)
+
+
+        if 'topics' in request.GET:
+            topics = request.GET.get('topics').split(',')
+            query = Q(topics__icontains=topics[0])
+            for topic in topics[1:]:
+                query = Q(topics__icontains=topic) | query
+            courses = courses.filter(query)
+
+
         data = {
             'count': courses.count()
         }
