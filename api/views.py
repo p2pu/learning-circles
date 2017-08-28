@@ -200,6 +200,15 @@ def _course_to_json(course):
 
 class CourseListView(View):
     def get(self, request):
+        query_schema = { 
+            "offset": schema.integer(),
+            "limit": schema.integer(),
+        }
+        data = schema.django_get_to_dict(request.GET)
+        errors = schema.validate(query_schema, data)
+        if errors <> {}:
+            return json_response(request, {"status": "error", "errors": errors})
+
         courses = Course.objects.active().order_by('title')
 
         query = request.GET.get('q', None)
@@ -220,6 +229,18 @@ class CourseListView(View):
             for topic in topics[1:]:
                 query = Q(topics__icontains=topic) | query
             courses = courses.filter(query)
+
+        if 'active' in request.GET:
+            active = request.GET.get('active') == 'true'
+            study_group_ids = StudyGroupMeeting.objects.active().filter(
+                meeting_date__gte=timezone.now()
+            ).values('study_group')
+            course_ids = None
+            if active:
+                course_ids = StudyGroup.objects.active().filter(id__in=study_group_ids).values('course')
+            else:
+                course_ids = StudyGroup.objects.active().exclude(id__in=study_group_ids).values('course')
+            courses = courses.filter(id__in=course_ids)
 
 
         data = {
