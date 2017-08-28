@@ -41,6 +41,8 @@ def _map_to_json(sg):
         "venue": sg.venue_name,
         "venue_address": sg.venue_address + ", " + sg.city,
         "city": sg.city,
+        "latitude": sg.latitude,
+        "longitude": sg.longitude,
         "day": sg.day(),
         "start_date": sg.start_date,
         "meeting_time": sg.meeting_time,
