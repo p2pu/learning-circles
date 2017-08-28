@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.template.defaultfilters import slugify
+from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchVector
 
@@ -135,6 +136,13 @@ class LearningCircleListView(View):
                 longitude__lte=lon_max
             )
             # NOTE could use haversine approximation to filter more accurately
+
+        if 'topics' in request.GET:
+            topics = request.GET.get('topics').split(',')
+            query = Q(course__topics__icontains=topics[0]) 
+            for topic in topics[1:]:
+                query = Q(course__topics__icontains=topic) | query
+            study_groups = study_groups.filter(query)
 
         data = {
             'count': len(study_groups)
