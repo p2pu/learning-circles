@@ -217,6 +217,7 @@ class CourseListView(View):
             courses = courses.annotate(
                 search=
                     SearchVector('title') 
+                    + SearchVector('caption') 
                     + SearchVector('provider') 
                     + SearchVector('topics')
             ).filter(search=query)
