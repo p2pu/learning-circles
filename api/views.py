@@ -194,8 +194,9 @@ def _course_to_json(course):
         "link": course.link,
         "caption": course.caption,
         "learning_circles": course.studygroup_set.active().count(),
-        "topics": course.topics.split(',') if course.topics else [],
+        "topics": [t.strip() for t in course.topics.split(',')] if course.topics else [],
         "learning_circles": course.studygroup_set.active().count(),
+        "language": course.language,
     }
 
 class CourseListView(View):
@@ -213,13 +214,11 @@ class CourseListView(View):
 
         query = request.GET.get('q', None)
         if query:
-            courses = courses.filter(title__icontains=query)
             courses = courses.annotate(
                 search=
                     SearchVector('title') 
                     + SearchVector('provider') 
                     + SearchVector('topics')
-                    + SearchVector('language') 
             ).filter(search=query)
 
 
