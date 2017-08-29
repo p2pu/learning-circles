@@ -149,11 +149,10 @@ class CourseUpdate(UpdateView):
         'title',
         'provider',
         'link',
-        'start_date',
-        'duration',
-        'prerequisite',
-        'time_required',
         'caption',
+        'on_demand',
+        'topics',
+        'language',
     ]
     success_url = reverse_lazy('studygroups_organize')
 
