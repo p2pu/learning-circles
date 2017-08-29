@@ -64,7 +64,11 @@ class CourseAdmin(admin.ModelAdmin):
     def learning_circles(course):
         return course.studygroup_set.active().count()
 
-    list_display = ('title', 'provider', 'on_demand', 'topics', learning_circles, created_by, email)
+    def listed(course):
+        return not course.unlisted
+    listed.boolean = True
+
+    list_display = ('title', 'provider', 'on_demand', 'topics', learning_circles, created_by, email, listed)
     exclude = ('deleted_at',)
     inlines = [StudyGroupInline]
  
