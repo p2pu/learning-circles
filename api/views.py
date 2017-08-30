@@ -210,7 +210,7 @@ class CourseListView(View):
         if errors <> {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        courses = Course.objects.active().order_by('title')
+        courses = Course.objects.active().filter(unlisted=False).order_by('title')
 
         query = request.GET.get('q', None)
         if query:
