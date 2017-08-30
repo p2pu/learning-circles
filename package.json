@@ -36,6 +36,7 @@
     "react": "^15.5.4",
     "react-autocomplete": "^1.7.1",
     "react-dom": "^15.5.4",
+    "react-select": "^1.0.0-rc.5",
     "react-telephone-input": "^4.0.1",
     "sass-loader": "^4.0.2",
     "style-loader": "^0.13.2",

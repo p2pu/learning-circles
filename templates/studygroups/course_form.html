@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
 {% load crispy_forms_tags %}
 {% load static %}
 {% load i18n %}
@@ -37,4 +38,6 @@
             $('.timeinput').timepicker({ 'step': 15, 'timeFormat': 'h:i A' });
     });
 </script>
+{% render_bundle 'common' %}
+{% render_bundle 'course-form' %}
 {% endblock %}
