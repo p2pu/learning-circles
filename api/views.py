@@ -8,7 +8,8 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.template.defaultfilters import slugify
-from django.db.models import Q
+from django.db.models import Q, F, Count, Case, When, Value, Sum
+from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchVector
 
@@ -193,9 +194,8 @@ def _course_to_json(course):
         "provider": course.provider,
         "link": course.link,
         "caption": course.caption,
-        "learning_circles": course.studygroup_set.active().count(),
+        "learning_circles": course.num_learning_circles,
         "topics": [t.strip() for t in course.topics.split(',')] if course.topics else [],
-        "learning_circles": course.studygroup_set.active().count(),
         "language": course.language,
     }
 
@@ -204,13 +204,28 @@ class CourseListView(View):
         query_schema = { 
             "offset": schema.integer(),
             "limit": schema.integer(),
+            "order": lambda v: None if v in ['title', 'usage', None] else "must be 'title' or 'usage'",
         }
         data = schema.django_get_to_dict(request.GET)
         errors = schema.validate(query_schema, data)
         if errors <> {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        courses = Course.objects.active().filter(unlisted=False).order_by('title')
+        courses = Course.objects.active().filter(unlisted=False).annotate(
+            num_learning_circles=Sum(
+                Case(
+                    When(
+                        studygroup__deleted_at__isnull=True, then=Value(1),
+                        studygroup__course__id=F('id')
+                    ),
+                    default=Value(0), output_field=models.IntegerField()
+                )
+            )
+        )
+        if request.GET.get('order', None) in ['title', None]:
+            courses = courses.order_by('title')
+        else:
+            courses = courses.order_by('-num_learning_circles')
 
         query = request.GET.get('q', None)
         if query:
@@ -242,7 +257,6 @@ class CourseListView(View):
                 course_ids = StudyGroup.objects.active().exclude(id__in=study_group_ids).values('course')
             courses = courses.filter(id__in=course_ids)
 
-
         data = {
             'count': courses.count()
         }
@@ -259,7 +273,26 @@ class CourseListView(View):
             data['offset'] = offset
             data['limit'] = limit
             courses = courses[offset:offset+limit]
+
         data['items'] = [ _course_to_json(course) for course in courses ]
+        return json_response(request, data)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CourseTopicListView(View):
+    """ Return topics for listed courses """
+    def get(self, request):
+        topics = Course.objects.active()\
+                .filter(unlisted=False)\
+                .exclude(topics='')\
+                .values_list('topics')
+        topics = [
+            item.strip() for sublist in topics for item in sublist[0].split(',')
+        ]
+        from collections import Counter
+        data = {}
+        #data['items'] = list(set(topics))
+        data['topics'] = { k:v for k,v in Counter(topics).items() }
         return json_response(request, data)
 
 
