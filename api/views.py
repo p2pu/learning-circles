@@ -187,6 +187,31 @@ class LearningCircleListView(View):
         return json_response(request, data)
 
 
+@method_decorator(csrf_exempt, name='dispatch')
+class LearningCircleTopicListView(View):
+    """ Return topics for listed courses """
+    def get(self, request):
+        study_group_ids = StudyGroupMeeting.objects.active().filter(
+            meeting_date__gte=timezone.now()
+        ).values('study_group')
+        course_ids = None
+        course_ids = StudyGroup.objects.active().filter(id__in=study_group_ids).values('course')
+
+        topics = Course.objects.active()\
+                .filter(unlisted=False)\
+                .filter(id__in=course_ids)\
+                .exclude(topics='')\
+                .values_list('topics')
+        topics = [
+            item.strip() for sublist in topics for item in sublist[0].split(',')
+        ]
+        from collections import Counter
+        data = {}
+        #data['items'] = list(set(topics))
+        data['topics'] = { k:v for k,v in Counter(topics).items() }
+        return json_response(request, data)
+
+
 def _course_to_json(course):
     return {
         "id": course.id,
