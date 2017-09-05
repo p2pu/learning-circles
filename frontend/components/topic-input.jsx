@@ -26,6 +26,12 @@ export default class TopicInput extends Component {
           multi={true}
           value={this.state.topics}
           onChange={this.handleSelect}
+          options={this.props.topics.map(topic => {
+            return {
+              value: topic,
+              label: topic,
+            };
+          })}
           {...props}
         />
       </span>

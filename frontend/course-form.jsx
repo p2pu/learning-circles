@@ -12,6 +12,7 @@ let value = input.value || '';
 ReactDOM.render(
   <TopicInput 
     value={value}
+    topics={window.reactData.topics}
   />,
   element.querySelector('.controls')
 );

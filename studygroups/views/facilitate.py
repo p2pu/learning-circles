@@ -164,6 +164,19 @@ class CourseCreate(CreateView):
     model = Course
     form_class = CourseForm
 
+    def get_context_data(self, **kwargs):
+        context = super(CourseCreate, self).get_context_data(**kwargs)
+        topics = Course.objects.active()\
+                .filter(unlisted=False)\
+                .exclude(topics='')\
+                .values_list('topics')
+        topics = [
+            item.strip() for sublist in topics for item in sublist[0].split(',')
+        ]
+        context['topics'] = topics
+        return context
+
+
     def form_valid(self, form):
         # courses created by staff will be global
         messages.success(self.request, _('Your course has been created. You can now create a learning circle using it.'))
