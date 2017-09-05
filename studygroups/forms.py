@@ -205,7 +205,7 @@ class CourseForm(forms.ModelForm):
              'link': _('Paste full URL above.'),
              'caption': _('Write 1-2 sentences that describe what people will accomplish if they take this course. This description is what learners will see when signing up for learning circles, and what facilitators will see when selecting a course.'),
              'topics': _('Select or create a few topics that will help learners and future facilitators find this course.'),
-             'on_demand': _('Select “always available” if the course is openly licensed or on-demand, meaning that there are no start and end dates for course availability.')
+             'on_demand': _(u'Select “always available” if the course is openly licensed or on-demand, meaning that there are no start and end dates for course availability.')
         }
 
 
