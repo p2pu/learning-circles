@@ -194,18 +194,18 @@ class CourseForm(forms.ModelForm):
         ]
         labels = {
             'title': _('Course title'),
-            'provider': _('Course provider'),
+            'provider': _('Course creator'),
             'link': _('Course website'),
-            'caption': _('Course description'),
+            'caption': _('Course description (200 character limit)'),
             'topic': _('Course topics'),
             'on_demand': _('Always available'),
         }
         help_texts = {
-             'provider': _('e.g. Khan Academy, edX, Coursera.'),
+             'provider': _('e.g. MIT, University of Michigan, Khan Academy.'),
              'link': _('Paste full URL above.'),
-             'caption': _('1-2 sentences describing the goals of this course.'),
-             'topics': _('Select or create a few topics that will help others find this course.'),
-             'on_demand': _('Only select always available if the course is openly licensed and is always accessible to users.')
+             'caption': _('Write 1-2 sentences that describe what people will accomplish if they take this course. This description is what learners will see when signing up for learning circles, and what facilitators will see when selecting a course.'),
+             'topics': _('Select or create a few topics that will help learners and future facilitators find this course.'),
+             'on_demand': _('Select “always available” if the course is openly licensed or on-demand, meaning that there are no start and end dates for course availability.')
         }
 
 
@@ -226,10 +226,13 @@ class StudyGroupForm(forms.ModelForm):
             self.helper.add_input(Submit('submit', 'Create Learning Circle'))
         else:
             self.helper.add_input(Submit('submit', 'Save'))
-        self.helper.layout.insert(11, HTML("""<p>For inspiration, check out <a href="https://www.flickr.com/search/?license=2%2C3%2C4%2C5%2C6%2C9" target="_blank">openly licensed images on Flickr</a>.</p>"""))
+        self.helper.layout.insert(
+            len(self.helper.layout),
+            HTML("""<p>For inspiration, check out <a href="https://www.flickr.com/search/?license=2%2C3%2C4%2C5%2C6%2C9" target="_blank">openly licensed images on Flickr</a>.</p>""")
+        )
         self.helper.layout.insert(1, HTML("""
-            <p>You can read more about each course <a href="{% url 'studygroups_courses' %}">here</a>.</p>
-            <p>Or add an online course that isn&#39;t already listed. This course will be visible to everyone on the <a href="{% url 'studygroups_courses' %}">courses page</a>.</p>
+            <p>You can learn more about each course and explore what other people are facilitating on the <a href="https://www.p2pu.org/en/courses/">courses page</a>.</p>
+            <p>Or add an online course that isn&#39;t already listed.</p>
             <p><a class="btn btn-default" href="{% url 'studygroups_course_create' %}">Add a new course</a></p>
         """))
 
