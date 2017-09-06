@@ -219,6 +219,7 @@ def _course_to_json(course):
         "provider": course.provider,
         "link": course.link,
         "caption": course.caption,
+        "on_demand": course.on_demand,
         "learning_circles": course.num_learning_circles,
         "topics": [t.strip() for t in course.topics.split(',')] if course.topics else [],
         "language": course.language,

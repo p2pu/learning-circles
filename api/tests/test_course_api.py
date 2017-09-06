@@ -23,17 +23,22 @@ class TestCourseApi(TestCase):
         resp = c.get('/api/courses/')
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()["count"], 4)
-        for key in resp.json()["items"][0].keys():
-            self.assertIn(key, [
-                u'learning_circles',
-                u'language',
-                u'title',
-                u'topics',
-                u'caption',
-                u'link',
-                u'provider',
-                u'id',
-            ])
+        item_fields = [
+            u'learning_circles',
+            u'language',
+            u'title',
+            u'topics',
+            u'caption',
+            u'link',
+            u'provider',
+            u'id',
+            u'on_demand',
+        ]
+        resp_keys = resp.json()["items"][0].keys()
+        for key in resp_keys:
+            self.assertIn(key, item_fields)
+        for key in item_fields:
+            self.assertIn(key, resp_keys)
 
     def test_find_by_q(self):
         c = Client()
