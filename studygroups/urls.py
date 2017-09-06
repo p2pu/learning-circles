@@ -1,6 +1,7 @@
 from django.conf.urls import url
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
+from django.views.generic.base import RedirectView
 
 from studygroups.views import MeetingCreate
 from studygroups.views import MeetingUpdate
@@ -37,7 +38,7 @@ from . import views
 urlpatterns = [
     url(r'^$', views.landing, name='studygroups_landing'),
 
-    url(r'^courses/$', CourseListView.as_view(), name='studygroups_courses'),
+    url(r'^courses/$', RedirectView.as_view(url='https://www.p2pu.org/en/courses/'), name='studygroups_courses'),
 
     url(r'^city/(?P<city_name>[\w\W\ ,]+)/$', views.city, name='studygroups_city'),
 
