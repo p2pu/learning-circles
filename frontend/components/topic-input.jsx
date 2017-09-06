@@ -18,6 +18,8 @@ export default class TopicInput extends Component {
 
 
   render(props) {
+    const topicOptions = Array.from(this.props.topics);
+    topicOptions.sort();
     return(
       <span>
         <input type="hidden" value={this.state.topics.map(t=>t.value).join(',')} name="topics" />
@@ -26,7 +28,7 @@ export default class TopicInput extends Component {
           multi={true}
           value={this.state.topics}
           onChange={this.handleSelect}
-          options={this.props.topics.map(topic => {
+          options={topicOptions.map(topic => {
             return {
               value: topic,
               label: topic,

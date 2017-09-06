@@ -313,7 +313,7 @@ class CourseTopicListView(View):
                 .exclude(topics='')\
                 .values_list('topics')
         topics = [
-            item.strip() for sublist in topics for item in sublist[0].split(',')
+            item.strip().lower() for sublist in topics for item in sublist[0].split(',')
         ]
         from collections import Counter
         data = {}

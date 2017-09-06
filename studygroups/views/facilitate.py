@@ -171,9 +171,9 @@ class CourseCreate(CreateView):
                 .exclude(topics='')\
                 .values_list('topics')
         topics = [
-            item.strip() for sublist in topics for item in sublist[0].split(',')
+            item.strip().lower() for sublist in topics for item in sublist[0].split(',')
         ]
-        context['topics'] = topics
+        context['topics'] = list(set(topics))
         return context
 
 
