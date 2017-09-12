@@ -103,6 +103,7 @@ class LearningCircleListView(View):
             study_groups = study_groups.filter(
                 course_id=request.GET.get('course_id')
             )
+
         city = request.GET.get('city')
         if not city is None:
             study_groups = study_groups.filter(city=city)
@@ -203,7 +204,7 @@ class LearningCircleTopicListView(View):
                 .exclude(topics='')\
                 .values_list('topics')
         topics = [
-            item.strip() for sublist in topics for item in sublist[0].split(',')
+            item.strip().lower() for sublist in topics for item in sublist[0].split(',')
         ]
         from collections import Counter
         data = {}
