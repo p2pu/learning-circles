@@ -9,7 +9,7 @@ from django.template.defaultfilters import slugify
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse  # TODO ideally this shouldn't be in the model
+from django.urls import reverse  # TODO ideally this shouldn't be in the model
 
 from twilio import TwilioRestException
 
@@ -87,7 +87,7 @@ class Course(LifeTimeTrackingModel):
     on_demand = models.BooleanField()
     topics = models.CharField(max_length=500)
     language = models.CharField(max_length=6)
-    created_by = models.ForeignKey(User, blank=True, null=True)
+    created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     unlisted = models.BooleanField(default=False)
 
     def __unicode__(self):
@@ -106,7 +106,7 @@ class Activity(models.Model):
 
 # TODO rename to profile or something else
 class Facilitator(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     mailing_list_signup = models.BooleanField(default=False)
 
     def __unicode__(self):
@@ -115,7 +115,7 @@ class Facilitator(models.Model):
 
 # TODO remove organizer model - only use Facilitator model + Team Membership
 class Organizer(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return self.user.__unicode__()
@@ -137,8 +137,8 @@ class TeamMembership(models.Model):
         (ORGANIZER, _('Organizer')),
         (MEMBER, _('Member')),
     )
-    team = models.ForeignKey('studygroups.Team')
-    user = models.OneToOneField(User) # TODO should this be a OneToOneField?
+    team = models.ForeignKey('studygroups.Team', on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE) # TODO should this be a OneToOneField?
     role = models.CharField(max_length=256, choices=ROLES)
 
     def __unicode__(self):
@@ -147,8 +147,8 @@ class TeamMembership(models.Model):
 
 class TeamInvitation(models.Model):
     """ invittion for users to join a team """
-    team = models.ForeignKey('studygroups.Team')
-    organizer = models.ForeignKey(User) # organizer who invited the user
+    team = models.ForeignKey('studygroups.Team', on_delete=models.CASCADE)
+    organizer = models.ForeignKey(User, on_delete=models.CASCADE) # organizer who invited the user
     email = models.EmailField()
     role = models.CharField(max_length=256, choices=TeamMembership.ROLES)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -161,7 +161,7 @@ class TeamInvitation(models.Model):
 
 class StudyGroup(LifeTimeTrackingModel):
     name = models.CharField(max_length=128, default=_study_group_name)
-    course = models.ForeignKey('studygroups.Course')
+    course = models.ForeignKey('studygroups.Course', on_delete=models.CASCADE)
     description = models.CharField(max_length=500)
     venue_name = models.CharField(max_length=256)
     venue_address = models.CharField(max_length=256)
@@ -170,7 +170,7 @@ class StudyGroup(LifeTimeTrackingModel):
     city = models.CharField(max_length=256)
     latitude = models.DecimalField(max_digits=8, decimal_places=6, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-    facilitator = models.ForeignKey(User)
+    facilitator = models.ForeignKey(User, on_delete=models.CASCADE)
     start_date = models.DateField()
     meeting_time = models.TimeField()
     end_date = models.DateField() # TODO consider storing number of weeks/meetings instead of end_date
@@ -244,7 +244,7 @@ class StudyGroup(LifeTimeTrackingModel):
 
 
 class Application(LifeTimeTrackingModel):
-    study_group = models.ForeignKey('studygroups.StudyGroup')
+    study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE)
     name = models.CharField(max_length=128)
     email = models.EmailField(verbose_name='Email address', blank=True)
     mobile = models.CharField(max_length=20, blank=True)
@@ -288,7 +288,7 @@ class Application(LifeTimeTrackingModel):
 
 
 class StudyGroupMeeting(LifeTimeTrackingModel):
-    study_group = models.ForeignKey('studygroups.StudyGroup')
+    study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE)
     meeting_date = models.DateField()
     meeting_time = models.TimeField()
 
@@ -345,8 +345,8 @@ class StudyGroupMeeting(LifeTimeTrackingModel):
 
 
 class Reminder(models.Model):
-    study_group = models.ForeignKey('studygroups.StudyGroup') #TODO redundant field
-    study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting', blank=True, null=True)
+    study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE) #TODO redundant field
+    study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting', blank=True, null=True, on_delete=models.CASCADE) #TODO check this makes sense
     email_subject = models.CharField(max_length=256)
     email_body = models.TextField()
     sms_body = models.CharField(verbose_name=_('SMS (Text)'), max_length=160)
@@ -356,8 +356,8 @@ class Reminder(models.Model):
 
 
 class Rsvp(models.Model):
-    study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting')
-    application = models.ForeignKey('studygroups.Application')
+    study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting', on_delete=models.CASCADE)
+    application = models.ForeignKey('studygroups.Application', on_delete=models.CASCADE)
     attending = models.BooleanField()
 
     def __unicode__(self):
@@ -380,7 +380,7 @@ class Feedback(LifeTimeTrackingModel):
         (BAD, _('I need some help')),
     ]
 
-    study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting') # TODO should this be a OneToOneField?
+    study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting', on_delete=models.CASCADE) # TODO should this be a OneToOneField?
     feedback = models.TextField() # Shared with learners
     attendance = models.PositiveIntegerField()
     reflection = models.TextField() # Not shared

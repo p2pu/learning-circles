@@ -53,7 +53,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='studygroup',
             name='course',
-            field=models.ForeignKey(help_text=b'Choose one or add a new course.', to='studygroups.Course'),
+            field=models.ForeignKey(help_text=b'Choose one or add a new course.', to='studygroups.Course', on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='studygroup',

@@ -1,7 +1,7 @@
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django import http
 
 from studygroups.models import StudyGroup, Organizer
@@ -46,7 +46,7 @@ def user_is_team_organizer(func):
 
 def user_is_not_logged_in(func):
     def decorated(*args, **kwargs):
-        if args[0].user.is_authenticated():
+        if args[0].user.is_authenticated:
             url = reverse('studygroups_login_redirect')
             return http.HttpResponseRedirect(url)
         return func(*args, **kwargs)

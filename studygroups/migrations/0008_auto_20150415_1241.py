@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import s3direct.fields
 
 
 class Migration(migrations.Migration):
@@ -15,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='course',
             name='image',
-            field=s3direct.fields.S3DirectField(blank=True),
+            field=models.CharField(blank=True, max_length=32),
         ),
     ]

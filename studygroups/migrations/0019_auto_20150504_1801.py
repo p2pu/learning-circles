@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='application',
             name='study_group',
-            field=models.ForeignKey(to='studygroups.StudyGroup'),
+            field=models.ForeignKey(to='studygroups.StudyGroup', on_delete=models.CASCADE),
         ),
     ]

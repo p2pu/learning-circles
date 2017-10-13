@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('sms_body', models.CharField(max_length=160)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('sent_at', models.DateTimeField(null=True, blank=True)),
-                ('study_group', models.ForeignKey(to='studygroups.StudyGroup')),
+                ('study_group', models.ForeignKey(to='studygroups.StudyGroup', on_delete=models.CASCADE)),
             ],
         ),
     ]

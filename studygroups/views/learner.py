@@ -4,7 +4,7 @@ import dateutil.parser
 from django.shortcuts import render, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMultiAlternatives, send_mail
@@ -239,6 +239,7 @@ def receive_sms(request):
         'sender': sender,
     }
     signups = Application.objects.active().filter(mobile=sender)
+    # TODO only get signups for active learning circles
     if signups.count() > 0:
         # Send to all facilitators if user is signed up to more than 1 study group
         signup = next(s for s in signups)

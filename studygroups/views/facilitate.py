@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django import http
 from django import forms

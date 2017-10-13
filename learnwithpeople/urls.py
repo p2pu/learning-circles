@@ -12,7 +12,7 @@ js_info_dict = {
 }
 
 urlpatterns = i18n_patterns(
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
     url(r'^about/$', TemplateView.as_view(template_name="about.html"), name="about"),
     url(r'^accounts/login/', auth_views.login, name='login', kwargs={'redirect_authenticated_user': True}),
     url(r'^accounts/password_reset/$', auth_views.password_reset,
