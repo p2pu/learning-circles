@@ -10,17 +10,12 @@ from django.contrib import messages
 from django.conf import settings
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
-from django.views.decorators.http import require_http_methods
-from django.views.decorators.csrf import csrf_exempt
-from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.views.generic.base import View
 from django.views.generic import ListView
 
 
 from studygroups.models import Application
-from studygroups.decorators import user_is_organizer
-from studygroups.decorators import user_is_team_organizer
 
 def _user_is_staff(user):
     return user.is_staff
@@ -32,13 +27,7 @@ class ExportSignupsView(ListView):
         return Application.objects.all().prefetch_related('study_group', 'study_group__course')
 
 
-    def get_context_data(self, **kwargs):
-        context = super(ExportSignupsView, self).get_context_data(**kwargs)
-        return context
-
-
     def csv(self, **kwargs):
-        context = self.get_context_data(**kwargs)
         response = http.HttpResponse(content_type="text/csv")
         response['Content-Disposition'] = 'attachment; filename="signups.csv"'
         signup_questions = ['support', 'goals', 'computer_access']
@@ -69,3 +58,45 @@ class ExportSignupsView(ListView):
     def get(self, request, *args, **kwargs):
         self.object_list = self.get_queryset()
         return self.csv(**kwargs)
+
+
+@method_decorator(user_passes_test(_user_is_staff), name='dispatch')
+class ExportFacilitatorsView(ListView):
+
+    def get_queryset(self):
+        return User.objects.all().prefetch_related('studygroup_set')
+
+
+    def csv(self, **kwargs):
+        response = http.HttpResponse(content_type="text/csv")
+        response['Content-Disposition'] = 'attachment; filename="signups.csv"'
+        field_names = ['name', 'email', 'date joined', 'last login', 'learning circles run', 'last learning circle data', 'last learning circle course', 'last learning circle venue']
+        writer = csv.writer(response)
+        writer.writerow(field_names)
+        for user in self.object_list:
+            data = [
+                ' '.join([user.first_name ,user.last_name]),
+                user.email,
+                user.date_joined,
+                user.last_login,
+                user.studygroup_set.active().count()
+            ] 
+            last_study_group = user.studygroup_set.active().order_by('start_date').last()
+            if last_study_group:
+                data += [
+                    last_study_group.start_date, 
+                    last_study_group.course.title,
+                    last_study_group.venue_name
+                ]
+            else:
+                data += ['', '', '']
+            writer.writerow(data)
+        return response
+
+
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        return self.csv(**kwargs)
+
+
+

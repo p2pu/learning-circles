@@ -29,6 +29,7 @@ from studygroups.views import OptOutView
 from studygroups.views import CourseListView
 from studygroups.views import TeamPage
 from studygroups.views import ExportSignupsView
+from studygroups.views import ExportFacilitatorsView
 
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import user_is_organizer
@@ -100,6 +101,7 @@ urlpatterns = [
 
     url(r'^(?P<slug>[\w-]+)/$', TeamPage.as_view(), name='studygroups_team_page'),
 
-    url(r'^signups/export/$', ExportSignupsView.as_view(), name='studygroups_export_signups'),
+    url(r'^export/signups/$', ExportSignupsView.as_view(), name='studygroups_export_signups'),
+    url(r'^export/facilitators/$', ExportFacilitatorsView.as_view(), name='studygroups_export_facilitators'),
 ]
 
