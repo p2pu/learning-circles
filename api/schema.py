@@ -58,7 +58,7 @@ def email():
         error = 'Invalid email address'
         if email == None:
             return None
-        if email.count('@') <> 1:
+        if email.count('@') != 1:
             return error
         user, domain = email.split('@')
         # Regular expressions lifted from Django django.core.validators
@@ -124,7 +124,7 @@ def validate(schema, data):
     errors = {}
     for field, validator in schema.iteritems():
         error = validator(data.get(field))
-        if error <> None and error <> [] and error <> {}:
+        if error != None and error != [] and error != {}:
             if type(error) == type([]):
                 errors[field] = error
             else:

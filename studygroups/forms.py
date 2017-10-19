@@ -210,7 +210,7 @@ class CourseForm(forms.ModelForm):
 
 
 class StudyGroupForm(forms.ModelForm):
-    TIMEZONES = [('', _('Select one of the following')),] + zip(pytz.common_timezones, pytz.common_timezones)
+    TIMEZONES = [('', _('Select one of the following')),] + list(zip(pytz.common_timezones, pytz.common_timezones))
 
     meeting_time = forms.TimeField(input_formats=['%I:%M %p'], label=_('What time will your Learning Circle meet each week?'), help_text=_('We recommend establishing a consistent weekly meeting time. You can always change individual meeting times from your Dashboard later.'), initial=datetime.time(16))
     weeks = forms.IntegerField(min_value=1, label=_('How many weeks will your Learning Circle run for?'), help_text=_('If you\'re not sure, six weeks is generally a good bet!'))

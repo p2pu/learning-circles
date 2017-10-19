@@ -4,7 +4,7 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives, send_mail
 from django.conf import settings
 
-from models import Application
+from .models import Application
 
 @receiver(post_save, sender=Application)
 def handle_new_application(sender, instance, created, **kwargs):

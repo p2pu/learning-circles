@@ -35,7 +35,7 @@ class Command(BaseCommand):
                 except ValueError as e:
                     continue
 
-            if len(results) <> 1:
+            if len(results) != 1:
                 continue
 
             print(u'update location for {}, lat={}, lon={}'.format(study_group.city, results[0][3], results[0][4]))

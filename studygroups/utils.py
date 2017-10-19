@@ -1,7 +1,6 @@
 from django.conf import settings
 
 import urllib
-import urlparse
 import hmac
 import hashlib
 

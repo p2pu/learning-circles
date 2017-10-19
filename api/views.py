@@ -25,9 +25,9 @@ from studygroups.models import StudyGroupMeeting
 from studygroups.models import Team
 
 from uxhelpers.utils import json_response
-from geo import getLatLonDelta
+from .geo import getLatLonDelta
 
-import schema
+from . import schema
 
 
 def _map_to_json(sg):
@@ -79,7 +79,7 @@ class LearningCircleListView(View):
         }
         data = schema.django_get_to_dict(request.GET)
         errors = schema.validate(query_schema, data)
-        if errors <> {}:
+        if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
         study_groups = StudyGroup.objects.active().order_by('id')
@@ -235,7 +235,7 @@ class CourseListView(View):
         }
         data = schema.django_get_to_dict(request.GET)
         errors = schema.validate(query_schema, data)
-        if errors <> {}:
+        if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
         courses = Course.objects.active().filter(unlisted=False).annotate(
@@ -345,7 +345,7 @@ class SignupView(View):
         }
         data = json.loads(request.body)
         errors = schema.validate(post_schema, data)
-        if errors <> {}:
+        if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
     
         study_group = StudyGroup.objects.get(pk=data.get('study_group'))

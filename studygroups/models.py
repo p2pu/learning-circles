@@ -11,7 +11,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.urls import reverse  # TODO ideally this shouldn't be in the model
 
-from twilio import TwilioRestException
+from twilio.base.exceptions import TwilioRestException
 
 from studygroups.sms import send_message
 from studygroups.email_helper import render_email_templates
@@ -49,7 +49,7 @@ STUDY_GROUP_NAMES = [
 def _study_group_name():
     idx = 1 + StudyGroup.objects.count()
     num_names = len(STUDY_GROUP_NAMES)
-    return ' '.join([STUDY_GROUP_NAMES[idx % num_names], "I"*(idx/num_names)])
+    return ' '.join([STUDY_GROUP_NAMES[idx % num_names], "I"*(idx//num_names)])
 
 
 class SoftDeleteQuerySet(models.QuerySet):
