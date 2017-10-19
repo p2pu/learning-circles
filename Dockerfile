@@ -8,7 +8,7 @@ RUN apk --no-cache add --virtual native-deps \
 COPY . /opt/app/
 RUN npm run build:production
 
-FROM ubuntu:14.04
+FROM ubuntu:16.04
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     postgresql-client \
