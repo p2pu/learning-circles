@@ -51,3 +51,11 @@ def user_is_not_logged_in(func):
             return http.HttpResponseRedirect(url)
         return func(*args, **kwargs)
     return decorated
+
+
+def user_is_staff(func):
+    def decorated(*args, **kwargs):
+        if args[0].user.is_staff is False:
+            raise PermissionDenied
+        return func(*args, **kwargs)
+    return login_required(decorated)

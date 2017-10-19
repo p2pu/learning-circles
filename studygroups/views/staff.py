@@ -9,19 +9,15 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.conf import settings
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import user_passes_test
 from django.utils.translation import ugettext as _
 from django.views.generic.base import View
 from django.views.generic import ListView
 
 
 from studygroups.models import Application
+from ..decorators import user_is_staff
 
-def _user_is_staff(user):
-    return user.is_staff
-
-## Should give error, not redirect to login
-@method_decorator(user_passes_test(_user_is_staff), name='dispatch')
+@method_decorator(user_is_staff, name='dispatch')
 class ExportSignupsView(ListView):
 
     def get_queryset(self):
@@ -61,7 +57,7 @@ class ExportSignupsView(ListView):
         return self.csv(**kwargs)
 
 
-@method_decorator(user_passes_test(_user_is_staff), name='dispatch')
+@method_decorator(user_is_staff, name='dispatch')
 class ExportFacilitatorsView(ListView):
 
     def get_queryset(self):
