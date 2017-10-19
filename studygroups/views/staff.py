@@ -20,6 +20,7 @@ from studygroups.models import Application
 def _user_is_staff(user):
     return user.is_staff
 
+## Should give error, not redirect to login
 @method_decorator(user_passes_test(_user_is_staff), name='dispatch')
 class ExportSignupsView(ListView):
 
@@ -64,7 +65,7 @@ class ExportSignupsView(ListView):
 class ExportFacilitatorsView(ListView):
 
     def get_queryset(self):
-        return User.objects.all().prefetch_related('studygroup_set')
+        return User.objects.all().prefetch_related('studygroup_set', 'studygroup_set__course')
 
 
     def csv(self, **kwargs):
