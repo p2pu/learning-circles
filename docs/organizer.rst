@@ -24,6 +24,8 @@ The **facilitators** view gives you a list of all the facilitators that are curr
 
 The **invitations** view shows you a list of everyone who was invited to join your team, this is also where you will invite new facilitators.
 
+.. image:: _static/organizer-dashboard-invitations.png
+
 Adding facilitators
 -------------------
 
