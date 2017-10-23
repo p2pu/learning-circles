@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.template.defaultfilters import slugify
-from django.db.models import Q, F, Count, Case, When, Value, Sum
+from django.db.models import Q, F, Count, Case, When, Value, Sum, Min
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchVector
@@ -54,8 +54,9 @@ def _map_to_json(sg):
     }
     if sg.image:
         data["image_url"] = "https://learningcircles.p2pu.org" + sg.image.url
-
     #TODO else set default image URL
+    if hasattr(sg, 'next_meeting_date'):
+        data["next_meeting_date"] = sg.next_meeting_date
     return data
 
 def _intCommaList(csv):
@@ -66,6 +67,19 @@ def _intCommaList(csv):
         except ValueError:
             return 'Not a list of integers seperated by commas'
     return None
+
+def _limit_offset(request):
+    if 'offset' in request.GET or 'limit' in request.GET:
+        try:
+            offset = int(request.GET.get('offset', 0))
+        except ValueError as e:
+            offset = 0
+        try: 
+            limit = int(request.GET.get('limit', 100))
+        except ValueError as e:
+            limit = 100
+    return limit, offset
+
 
 class LearningCircleListView(View):
     def get(self, request):
@@ -171,15 +185,7 @@ class LearningCircleListView(View):
             'count': len(study_groups)
         }
         if 'offset' in request.GET or 'limit' in request.GET:
-            try:
-                offset = int(request.GET.get('offset', 0))
-            except ValueError as e:
-                offset = 0
-            try: 
-                limit = int(request.GET.get('limit', 100))
-            except ValueError as e:
-                limit = 100
-
+            limit, offset = _limit_offset(request)
             data['offset'] = offset
             data['limit'] = limit
             study_groups = study_groups[offset:offset+limit]
@@ -188,7 +194,6 @@ class LearningCircleListView(View):
         return json_response(request, data)
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class LearningCircleTopicListView(View):
     """ Return topics for listed courses """
     def get(self, request):
@@ -225,6 +230,7 @@ def _course_to_json(course):
         "topics": [t.strip() for t in course.topics.split(',')] if course.topics else [],
         "language": course.language,
     }
+
 
 class CourseListView(View):
     def get(self, request):
@@ -288,15 +294,7 @@ class CourseListView(View):
             'count': courses.count()
         }
         if 'offset' in request.GET or 'limit' in request.GET:
-            try:
-                offset = int(request.GET.get('offset', 0))
-            except ValueError as e:
-                offset = 0
-            try: 
-                limit = int(request.GET.get('limit', 100))
-            except ValueError as e:
-                limit = 100
-
+            limit, offset = _limit_offset(request)
             data['offset'] = offset
             data['limit'] = limit
             courses = courses[offset:offset+limit]
@@ -305,7 +303,6 @@ class CourseListView(View):
         return json_response(request, data)
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class CourseTopicListView(View):
     """ Return topics for listed courses """
     def get(self, request):
@@ -366,3 +363,49 @@ class SignupView(View):
             application.mobile = data.get('mobile')
         application.save()
         return json_response(request, {"status": "created"});
+
+
+class UpcomingLearningCirclesView(View):
+    """ return upcoming learning circles for landing page """
+    def get(self, request):
+        study_groups = StudyGroup.objects.active().filter(
+            studygroupmeeting__meeting_date__gte=timezone.now()
+        ).annotate(
+            next_meeting_date=Min('studygroupmeeting__meeting_date')
+        ).order_by('next_meeting_date')
+
+        data = {
+            'count': len(study_groups)
+        }
+        if 'offset' in request.GET or 'limit' in request.GET:
+            limit, offset = _limit_offset(request)
+            data['offset'] = offset
+            data['limit'] = limit
+            study_groups = study_groups[offset:offset+limit]
+
+        data['items'] = [ _map_to_json(sg) for sg in study_groups ]
+        return json_response(request, data)
+
+
+class LandingPageStatsView(View):
+    """ Return stats for the landing page """
+    """ 
+    - Number of active learning circles 
+    - Number of cities where learning circle happened
+    - Number of facilitators who ran at least 1 learning circle
+    """
+    def get(self, request):
+        study_groups = StudyGroup.objects.active().filter(
+            studygroupmeeting__meeting_date__gte=timezone.now()
+        ).annotate(
+            next_meeting_date=Min('studygroupmeeting__meeting_date')
+        )
+        cities = StudyGroup.objects.active().distinct('city').values('city')
+        facilitators = StudyGroup.objects.active().distinct('facilitator').values('facilitator')
+        data = {
+            "active_learning_circles": study_groups.count(),
+            #"city_list": [v['city'] for v in cities],
+            "cities": cities.count(),
+            "facilitators": facilitators.count(),
+        }
+        return json_response(request, data)
