@@ -169,6 +169,9 @@ class TestFacilitatorViews(TestCase):
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
         self.assertEquals(study_groups.first().studygroupmeeting_set.count(), 6)
+        self.assertEquals(len(mail.outbox), 1)
+        self.assertEquals(mail.outbox[0].subject, 'Your Learning Circle has been created! What next?')
+        self.assertIn('bob@example.net', mail.outbox[0].to)
 
 
     @patch('studygroups.models.send_message')
