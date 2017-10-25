@@ -380,25 +380,6 @@ class FacilitatorStudyGroupCreate(CreateView):
         study_group.facilitator = self.request.user
         study_group.save()
         generate_all_meetings(study_group)
-
-        context = {
-            'study_group': study_group,
-            'protocol': 'https',
-            'domain': settings.DOMAIN,
-        }
-        subject = render_to_string('studygroups/email/learning_circle_created-subject.txt', context).strip(' \n')
-        text_body = render_to_string('studygroups/email/learning_circle_created.txt', context)
-        html_body = render_to_string('studygroups/email/learning_circle_created.html', context)
-
-        notification = EmailMultiAlternatives(
-            subject,
-            text_body,
-            settings.DEFAULT_FROM_EMAIL,
-            [study_group.facilitator.email]
-        )
-        notification.attach_alternative(html_body, 'text/html')
-        notification.send()
-
         messages.success(self.request, _('You created a new Learning Circle! Check your email for next steps.'))
         return http.HttpResponseRedirect(self.success_url)
 
