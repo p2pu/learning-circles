@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.template.defaultfilters import slugify
-from django.db.models import Q, F, Count, Case, When, Value, Sum, Min
+from django.db.models import Q, F, Case, When, Value, Sum, Min, Max
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchVector
@@ -365,25 +365,33 @@ class SignupView(View):
         return json_response(request, {"status": "created"});
 
 
-class UpcomingLearningCirclesView(View):
+class LandingPageLearningCirclesView(View):
     """ return upcoming learning circles for landing page """
     def get(self, request):
+
+        # get learning circles with image & upcoming meetings
         study_groups = StudyGroup.objects.active().filter(
-            studygroupmeeting__meeting_date__gte=timezone.now()
+            studygroupmeeting__meeting_date__gte=timezone.now(),
+        ).exclude(
+            image='',
         ).annotate(
             next_meeting_date=Min('studygroupmeeting__meeting_date')
-        ).order_by('next_meeting_date')
-
+        ).order_by('next_meeting_date')[:3]
+        
+        # if there are less than 3 with upcoming meetings and an image
+        if study_groups.count() < 3:
+            #pad with learning circles with the most recent meetings
+            past_study_groups = StudyGroup.objects.active().filter(
+                studygroupmeeting__meeting_date__lt=timezone.now(),
+            ).exclude(
+                image='',
+            ).annotate(
+                next_meeting_date=Max('studygroupmeeting__meeting_date')
+            ).order_by('-next_meeting_date')
+            study_groups = list(study_groups) + list(past_study_groups[:3-study_groups.count()])
         data = {
-            'count': len(study_groups)
+            'items': [ _map_to_json(sg) for sg in study_groups ]
         }
-        if 'offset' in request.GET or 'limit' in request.GET:
-            limit, offset = _limit_offset(request)
-            data['offset'] = offset
-            data['limit'] = limit
-            study_groups = study_groups[offset:offset+limit]
-
-        data['items'] = [ _map_to_json(sg) for sg in study_groups ]
         return json_response(request, data)
 
 
@@ -400,12 +408,16 @@ class LandingPageStatsView(View):
         ).annotate(
             next_meeting_date=Min('studygroupmeeting__meeting_date')
         )
-        cities = StudyGroup.objects.active().distinct('city').values('city')
+        cities = StudyGroup.objects.active().filter(
+            latitude__isnull=False,
+            longitude__isnull=False,
+        ).distinct('city').values('city')
         facilitators = StudyGroup.objects.active().distinct('facilitator').values('facilitator')
+        cities_s = list(set([c['city'].split(',')[0].strip() for c in cities]))
         data = {
             "active_learning_circles": study_groups.count(),
             #"city_list": [v['city'] for v in cities],
-            "cities": cities.count(),
+            "cities": len(cities_s),
             "facilitators": facilitators.count(),
         }
         return json_response(request, data)

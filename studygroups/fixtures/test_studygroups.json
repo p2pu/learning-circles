@@ -23,7 +23,8 @@
       "venue_name": "Harold Washington",
       "venue_address": "123 Street",
       "venue_details": "3rd floor",
-      "city": "Chicago"
+      "city": "Chicago",
+      "image": "http://image-url.png"
    },
    "model": "studygroups.studygroup",
    "pk": 1
@@ -43,7 +44,8 @@
       "venue_name": "Harold Washington",
       "venue_address": "123 Street",
       "venue_details": "3rd floor",
-      "city": "Chicago"
+      "city": "Chicago",
+      "image": "http://image-url.png"
    },
    "model": "studygroups.studygroup",
    "pk": 2
@@ -63,7 +65,8 @@
       "venue_name": "Harold Washington",
       "venue_address": "123 Street",
       "venue_details": "3rd floor",
-      "city": "Chicago"
+      "city": "Chicago",
+      "image": "http://image-url.png"
    },
    "model": "studygroups.studygroup",
    "pk": 3
@@ -83,8 +86,8 @@
       "venue_name": "Harold Washington",
       "venue_address": "123 Street",
       "venue_details": "3rd floor",
-      "city": "Chicago"
-
+      "city": "Chicago",
+      "image": "http://image-url.png"
    },
    "model": "studygroups.studygroup",
    "pk": 4
