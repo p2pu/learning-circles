@@ -37,6 +37,25 @@
     {% include 'studygroups/study_group_facilitate.html' %}
   {% endfor %}
 
+  {% if courses %}
+  <h2>{% trans "Course you've added" %}</h2>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>{% trans "Title" %}</th>
+        <th></th>
+      </tr>
+    </thead>
+    {% for course in courses %}
+      <tr>
+        <td>{{course.title}}</td>
+        <td><a href="{% url 'studygroups_course_edit' course.id%}" class="btn btn-primary">{% trans 'edit' %}</a></td>
+    {% endfor %}
+  </table>
+  {% endif %}
+
+
+
 </div> <!-- /container -->
 
 {% endblock %}

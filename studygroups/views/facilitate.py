@@ -70,6 +70,7 @@ def facilitator(request):
     context = {
         'current_study_groups': current_study_groups,
         'past_study_groups': past_study_groups,
+        'courses': Course.objects.filter(created_by=request.user),
         'invitation': invitation,
         'today': timezone.now(),
         'team': team
