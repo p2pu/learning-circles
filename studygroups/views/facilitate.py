@@ -1,6 +1,5 @@
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse, reverse_lazy
-from django.contrib.auth.decorators import login_required
 from django import http
 from django import forms
 from django.forms import modelform_factory, HiddenInput
@@ -13,11 +12,14 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.edit import FormView
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic import DetailView
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.db.models import Q
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
@@ -194,6 +196,55 @@ class CourseCreate(CreateView):
         #else:
         url = reverse('studygroups_facilitator_studygroup_create')
         return url + "?course_id={}".format(self.object.id)
+
+
+@method_decorator(login_required, name='dispatch')
+class CourseUpdate(UpdateView):
+    """ View used by organizers and facilitators """
+    model = Course
+    form_class = CourseForm
+
+
+    def dispatch(self, request, *args, **kwargs):
+        course = self.get_object()
+        if not request.user.is_staff and course.created_by != request.user:
+            raise PermissionDenied
+        study_groups =  StudyGroup.objects.active().filter(course=course)
+        if study_groups.count() > 1:
+            messages.error(request, _('This course is being used by other learning circles and cannot be edited, please create a new course to make changes'))
+            url = reverse('studygroups_facilitator')
+            return http.HttpResponseRedirect(url)
+        return super(CourseUpdate, self).dispatch(request, *args, **kwargs)
+
+
+    def get_context_data(self, **kwargs):
+        context = super(CourseUpdate, self).get_context_data(**kwargs)
+        topics = Course.objects.active()\
+                .filter(unlisted=False)\
+                .exclude(topics='')\
+                .values_list('topics')
+        topics = [
+            item.strip().lower() for sublist in topics for item in sublist[0].split(',')
+        ]
+        context['topics'] = list(set(topics))
+        return context
+
+
+    def form_valid(self, form):
+        # courses created by staff will be global
+        messages.success(self.request, _('Your course has been created. You can now create a learning circle using it.'))
+        if self.request.user.is_staff:
+            return super(CourseUpdate, self).form_valid(form)
+        self.object = form.save(commit=False)
+        self.object.created_by = self.request.user
+        self.object.save()
+
+        return http.HttpResponseRedirect(self.get_success_url())
+
+
+    def get_success_url(self):
+        url = reverse('studygroups_facilitator')
+        return url
 
 
 ## This form is used by facilitators

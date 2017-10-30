@@ -143,20 +143,6 @@ class TeamMembershipDelete(DeleteView):
         return queryset.get(user_id=self.kwargs.get('user_id'), team_id=self.kwargs.get('team_id'))
 
 
-class CourseUpdate(UpdateView):
-    model = Course
-    fields = [    
-        'title',
-        'provider',
-        'link',
-        'caption',
-        'on_demand',
-        'topics',
-        'language',
-    ]
-    success_url = reverse_lazy('studygroups_organize')
-
-
 class CourseDelete(DeleteView):
     model = Course
     success_url = reverse_lazy('studygroups_organize')

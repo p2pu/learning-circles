@@ -172,9 +172,9 @@ class CourseForm(forms.ModelForm):
         super(CourseForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         if self.instance:
-            self.helper.add_input(Submit('submit', 'Create course'))
-        else:
             self.helper.add_input(Submit('submit', 'Save'))
+        else:
+            self.helper.add_input(Submit('submit', 'Create course'))
         self.helper.layout.insert(4, HTML("""
             <p><label class="from-control requiredField">
                 Availability<span class="asteriskField">*</span>

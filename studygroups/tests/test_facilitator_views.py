@@ -8,6 +8,7 @@ from django.utils.translation import get_language
 
 from mock import patch
 
+from studygroups.models import Course
 from studygroups.models import StudyGroup
 from studygroups.models import StudyGroupMeeting
 from studygroups.models import Application
@@ -302,3 +303,86 @@ class TestFacilitatorViews(TestCase):
         self.assertRedirects(resp, '/en/facilitator/')
         self.assertEquals(TeamMembership.objects.filter(team=team, role=TeamMembership.MEMBER, user=faci1).count(), 0)
         self.assertFalse(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email__iexact=faci1.email).responded_at is None)
+
+    def test_edit_course(self):
+        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
+        course_data = dict(
+            title='Course 1011',
+            provider='CourseMagick',
+            link='https://course.magick/test',
+            caption='learn by means of magic',
+            on_demand=True,
+            topics='html,test',
+            language='en',
+            created_by=user
+        )
+        course = Course.objects.create(**course_data)
+        c = Client()
+        c.login(username='bob123', password='password')
+        # make sure bob123 can edit the course
+        course_url = '/en/course/{}/edit/'.format(course.id)
+        resp = c.get(course_url)
+        course_data['topics'] = 'magic'
+        resp = c.post(course_url, course_data)
+        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertEqual(Course.objects.get(pk=course.id).topics, 'magic')
+
+
+    def test_cant_edit_other_facilitators_course(self):
+        User.objects.create_user('bob321', 'bob2@example.net', 'password')
+        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
+        course_data = dict(    
+            title='Course 1011',
+            provider='CourseMagick',
+            link='https://course.magick/test',
+            caption='learn by means of magic',
+            on_demand=True,
+            topics='html,test',
+            language='en',
+            created_by=user
+        )
+        course = Course.objects.create(**course_data)
+        c = Client()
+        c.login(username='bob321', password='password')
+        course_url = '/en/course/{}/edit/'.format(course.id)
+        resp = c.get(course_url)
+        self.assertEquals(resp.status_code, 403)
+        course_data['topics'] = 'magic'
+        resp = c.post(course_url, course_data)
+        self.assertEquals(resp.status_code, 403)
+        self.assertEqual(Course.objects.get(pk=course.id).topics, 'html,test')
+
+
+    def test_cant_edit_used_course(self):
+        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
+        user2 = User.objects.create_user('bob1234', 'bob2@example.net', 'password')
+        course_data = dict(
+            title='Course 1011',
+            provider='CourseMagick',
+            link='https://course.magick/test',
+            caption='learn by means of magic',
+            on_demand=True,
+            topics='html,test',
+            language='en',
+            created_by=user
+        )
+        course = Course.objects.create(**course_data)
+        sg = StudyGroup.objects.get(pk=1)
+        sg.course = course
+        sg.facilitator = user2
+        sg.save()
+        sg2 = StudyGroup.objects.get(pk=2)
+        sg2.course = course
+        sg2.facilitator = user
+        sg2.save()
+        c = Client()
+        c.login(username='bob123', password='password')
+        # make sure bob123 can edit the course
+        course_url = '/en/course/{}/edit/'.format(course.id)
+        resp = c.get(course_url)
+        self.assertRedirects(resp, '/en/facilitator/')
+        course_data['topics'] = 'magic'
+        resp = c.post(course_url, course_data)
+        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertEqual(Course.objects.get(pk=course.id).topics, 'html,test')
+
