@@ -209,8 +209,9 @@ class CourseUpdate(UpdateView):
         course = self.get_object()
         if not request.user.is_staff and course.created_by != request.user:
             raise PermissionDenied
-        study_groups =  StudyGroup.objects.active().filter(course=course)
-        if study_groups.count() > 1:
+        other_study_groups =  StudyGroup.objects.active().filter(course=course).exclude(facilitator=request.user)
+        study_groups = StudyGroup.objects.active().filter(course=course, facilitator=request.user)
+        if study_groups.count() > 1 or other_study_groups.count() > 0:
             messages.error(request, _('This course is being used by other learning circles and cannot be edited, please create a new course to make changes'))
             url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)

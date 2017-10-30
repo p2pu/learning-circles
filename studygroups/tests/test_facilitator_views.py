@@ -371,10 +371,6 @@ class TestFacilitatorViews(TestCase):
         sg.course = course
         sg.facilitator = user2
         sg.save()
-        sg2 = StudyGroup.objects.get(pk=2)
-        sg2.course = course
-        sg2.facilitator = user
-        sg2.save()
         c = Client()
         c.login(username='bob123', password='password')
         # make sure bob123 can edit the course
