@@ -372,8 +372,6 @@ class LandingPageLearningCirclesView(View):
         # get learning circles with image & upcoming meetings
         study_groups = StudyGroup.objects.active().filter(
             studygroupmeeting__meeting_date__gte=timezone.now(),
-        ).exclude(
-            image='',
         ).annotate(
             next_meeting_date=Min('studygroupmeeting__meeting_date')
         ).order_by('next_meeting_date')[:3]
@@ -383,8 +381,6 @@ class LandingPageLearningCirclesView(View):
             #pad with learning circles with the most recent meetings
             past_study_groups = StudyGroup.objects.active().filter(
                 studygroupmeeting__meeting_date__lt=timezone.now(),
-            ).exclude(
-                image='',
             ).annotate(
                 next_meeting_date=Max('studygroupmeeting__meeting_date')
             ).order_by('-next_meeting_date')
