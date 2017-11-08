@@ -565,11 +565,6 @@ def send_facilitator_survey(study_group):
         notification.send()
 
 
-
-
-
-
-
 # If called directly, be sure to activate language to use for constructing URLs
 # Failed text delivery won't case this function to fail, simply log an error
 def send_reminder(reminder):
@@ -585,35 +580,45 @@ def send_reminder(reminder):
             email_body = re.sub(r'\(<!--RSVP:YES-->.*\)', yes_link, email_body)
             email_body = re.sub(r'\(<!--RSVP:NO-->.*\)', no_link, email_body)
             email_body = re.sub(r'\(<!--UNSUBSCRIBE-->.*\)', unsubscribe_link, email_body)
+            # TODO is fail silently good enough or should we log a message?
+            try:
+                send_mail(
+                    reminder.email_subject.strip('\n'),
+                    email_body,
+                    reminder.study_group.facilitator.email,
+                    [email],
+                    fail_silently=False
+                )
+            except Exception as e:
+                logger.exception(u'Could not send email to ', email, exc_info=e)
+        # Send to organizer without RSVP & unsubscribe links
+        try:
             send_mail(
                 reminder.email_subject.strip('\n'),
-                email_body,
+                reminder.email_body,
                 reminder.study_group.facilitator.email,
-                [email],
+                [reminder.study_group.facilitator.email],
                 fail_silently=False
             )
-        # Send to organizer without RSVP & unsubscribe links
-        send_mail(
-            reminder.email_subject.strip('\n'),
-            reminder.email_body,
-            reminder.study_group.facilitator.email,
-            [reminder.study_group.facilitator.email],
-            fail_silently=False
-        )
+        except Exception as e:
+            logger.exception(u'Could not send email to ', reminder.study_group.facilitator.email, exc_info=e)
     else:
         email_body = reminder.email_body
         # TODO i18n
         email_body = u'{0}\n\nTo leave this Learning Circle you can visit https://{1}{2}'.format(email_body, settings.DOMAIN, reverse('studygroups_optout'))
         # TODO - all emails should contain the unsubscribe link
         to += [reminder.study_group.facilitator.email]
-        reminder_email = EmailMultiAlternatives(
-            reminder.email_subject.strip('\n'),
-            email_body,
-            reminder.study_group.facilitator.email,
-            [],
-            bcc=to,
-        )
-        reminder_email.send()
+        try:
+            reminder_email = EmailMultiAlternatives(
+                reminder.email_subject.strip('\n'),
+                email_body,
+                reminder.study_group.facilitator.email,
+                [],
+                bcc=to,
+            )
+            reminder_email.send()
+        except Exception as e:
+            logger.exception('Could not send reminder to whole study group', exc_info=e)
 
     # send SMS
     tos = [su.mobile for su in reminder.study_group.application_set.active().filter(accepted_at__isnull=False).exclude(mobile='')]
