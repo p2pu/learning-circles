@@ -20,14 +20,22 @@ from studygroups.models import send_facilitator_survey
 
 import datetime
 
+
 @shared_task
 def send_reminders():
     now = timezone.now()
     translation.activate(settings.LANGUAGE_CODE)
     # TODO - should this be set here or closer to where the language matters?
     # TODO - make sure both the StudyGroup and StudyGroupMeeting is still available
-    for reminder in Reminder.objects.filter(sent_at__isnull=True, study_group__in=StudyGroup.objects.active(), study_group_meeting__in=StudyGroupMeeting.objects.active()):
-        if reminder.study_group_meeting and reminder.study_group_meeting.meeting_datetime() - now < datetime.timedelta(days=2):
+    reminders = Reminder.objects.filter(
+        sent_at__isnull=True,
+        study_group__in=StudyGroup.objects.active(),
+        study_group_meeting__in=StudyGroupMeeting.objects.active()
+    )
+    for reminder in reminders:
+        # TODO don't send reminders older than the meeting
+        meeting_datetime = reminder.study_group_meeting.meeting_datetime()
+        if reminder.study_group_meeting and meeting_datetime - now < datetime.timedelta(days=2) and meeting_datetime > now:
             send_reminder(reminder)
 
 
@@ -52,6 +60,7 @@ def send_new_facilitator_emails():
     six_days_ago = now.date() - datetime.timedelta(days=6)
     for facilitator in User.objects.filter(date_joined__gte=seven_days_ago, date_joined__lt=six_days_ago):
         send_new_facilitator_email(facilitator)
+
 
 @shared_task
 def send_new_studygroup_emails():

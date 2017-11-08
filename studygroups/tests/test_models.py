@@ -240,6 +240,58 @@ class TestSignupModels(TestCase):
         self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=no&sig='.format(get_language(), urllib.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].body)
         self.assertIn('https://example.net/{0}/optout/confirm/?user='.format(get_language()), mail.outbox[1].body)
 
+
+    @patch('studygroups.models.send_message')
+    def test_dont_send_automatic_reminder_for_old_message(self, send_message):
+        now = timezone.now()
+        sg = StudyGroup.objects.get(pk=1)
+        sg.timezone = now.strftime("%Z")
+        sg.start_date = datetime.date(2010, 3, 10)
+        sg.meeting_time = datetime.time(18,0)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
+        sg.save()
+        sg = StudyGroup.objects.get(pk=1)
+        generate_all_meetings(sg)
+
+        data = self.APPLICATION_DATA
+        data['study_group'] = sg
+        application = Application(**data)
+        application.save()
+        accept_application(application)
+
+        mail.outbox = []
+        with freeze_time("2010-03-06 18:55:34"):
+            generate_reminder(sg)
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(Reminder.objects.all().count(), 1)
+
+        mail.outbox = []
+        with freeze_time("2010-03-08 18:55:34"):
+            tasks.send_reminders()
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(mail.outbox[0].to[0], data['email'])
+        self.assertEqual(mail.outbox[1].to[0], 'facilitator@example.net')
+        self.assertFalse(send_message.called)
+        self.assertEqual(Reminder.objects.filter(sent_at__isnull=True).count(), 0)
+
+        mail.outbox = []
+        with freeze_time("2010-03-13 18:55:34"):
+            generate_reminder(sg)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(Reminder.objects.all().count(), 2)
+        self.assertEqual(Reminder.objects.filter(sent_at__isnull=True).count(), 1)
+
+        reminder = Reminder.objects.filter(sent_at__isnull=True).first()
+        self.assertEqual(reminder.study_group_meeting.meeting_date, datetime.date(2010, 3, 17))
+
+        mail.outbox = []
+        with freeze_time("2010-03-18 18:55:34"):
+            tasks.send_reminders()
+        self.assertEqual(len(mail.outbox), 0)
+        self.assertEqual(Reminder.objects.filter(sent_at__isnull=True).count(), 1)
+
+
     
     @patch('studygroups.models.send_message')
     def test_send_custom_reminder_email(self, send_message):
