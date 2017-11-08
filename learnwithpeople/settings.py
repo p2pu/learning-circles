@@ -190,7 +190,7 @@ CELERYBEAT_SCHEDULE = {
     },
     'send_reminders': {
         'task': 'studygroups.tasks.send_reminders',
-        'schedule': crontab(minute='*/10'),
+        'schedule': crontab(minute='5'),
     },
     'send_new_facilitator_email': {
         'task': 'studygroups.tasks.send_new_facilitator_emails',

@@ -1,20 +1,14 @@
-from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
-from django.conf import settings
-from django import http
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.utils.translation import ugettext as _
 from django.template.defaultfilters import slugify
 from django.db.models import Q, F, Case, When, Value, Sum, Min, Max
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchVector
 
-import datetime
-import dateutil.parser
 import json
 
 
@@ -54,10 +48,11 @@ def _map_to_json(sg):
     }
     if sg.image:
         data["image_url"] = "https://learningcircles.p2pu.org" + sg.image.url
-    #TODO else set default image URL
+    # TODO else set default image URL
     if hasattr(sg, 'next_meeting_date'):
         data["next_meeting_date"] = sg.next_meeting_date
     return data
+
 
 def _intCommaList(csv):
     values = csv.split(',') if csv else []
@@ -68,13 +63,14 @@ def _intCommaList(csv):
             return 'Not a list of integers seperated by commas'
     return None
 
+
 def _limit_offset(request):
     if 'offset' in request.GET or 'limit' in request.GET:
         try:
             offset = int(request.GET.get('offset', 0))
         except ValueError as e:
             offset = 0
-        try: 
+        try:
             limit = int(request.GET.get('limit', 100))
         except ValueError as e:
             limit = 100
@@ -83,9 +79,9 @@ def _limit_offset(request):
 
 class LearningCircleListView(View):
     def get(self, request):
-        query_schema = { 
-            "latitude": schema.floating_point(), 
-            "longitude": schema.floating_point(), 
+        query_schema = {
+            "latitude": schema.floating_point(),
+            "longitude": schema.floating_point(),
             "distance": schema.floating_point(),
             "offset": schema.integer(),
             "limit": schema.integer(),
@@ -101,15 +97,15 @@ class LearningCircleListView(View):
         if 'q' in request.GET:
             q = request.GET.get('q')
             study_groups = study_groups.annotate(
-                search=
-                    SearchVector('city') 
-                    + SearchVector('course__title') 
+                search =
+                    SearchVector('city')
+                    + SearchVector('course__title')
                     + SearchVector('course__provider')
                     + SearchVector('course__topics')
-                    + SearchVector('venue_name') 
-                    + SearchVector('venue_address') 
-                    + SearchVector('venue_details') 
-                    + SearchVector('facilitator__first_name') 
+                    + SearchVector('venue_name')
+                    + SearchVector('venue_address')
+                    + SearchVector('venue_details')
+                    + SearchVector('facilitator__first_name')
                     + SearchVector('facilitator__last_name')
             ).filter(search=q)
 
@@ -119,11 +115,11 @@ class LearningCircleListView(View):
             )
 
         city = request.GET.get('city')
-        if not city is None:
+        if city is not None:
             study_groups = study_groups.filter(city=city)
 
         team_id = request.GET.get('team_id')
-        if not team_id is None:
+        if team_id is not None:
             team = Team.objects.get(pk=team_id)
             members = team.teammembership_set.values('user')
             team_users = User.objects.filter(pk__in=members)
@@ -149,24 +145,24 @@ class LearningCircleListView(View):
             longitude = float(request.GET.get('longitude'))
             distance = float(request.GET.get('distance', False) or 50)
             lat_delta, lon_delta = getLatLonDelta(latitude, longitude, distance)
-            lat_min = max(-90, latitude-lat_delta)
-            lat_max = min(90, latitude+lat_delta)
-            lon_min = max(-180, longitude-lon_delta)
-            lon_max = min(180, longitude+lon_delta)
-            # NOTE doesn't wrap around, 
-            # iow, something at lat=45, lon=-189 and distance=1000 won't match 
+            lat_min = max(-90, latitude - lat_delta)
+            lat_max = min(90, latitude + lat_delta)
+            lon_min = max(-180, longitude - lon_delta)
+            lon_max = min(180, longitude + lon_delta)
+            # NOTE doesn't wrap around,
+            # iow, something at lat=45, lon=-189 and distance=1000 won't match
             # lat=45, lon=189 even though they are only 222 km apart.
             study_groups = study_groups.filter(
                 latitude__gte=lat_min,
                 latitude__lte=lat_max,
-                longitude__gte=lon_min, 
+                longitude__gte=lon_min,
                 longitude__lte=lon_max
             )
             # NOTE could use haversine approximation to filter more accurately
 
         if 'topics' in request.GET:
             topics = request.GET.get('topics').split(',')
-            query = Q(course__topics__icontains=topics[0]) 
+            query = Q(course__topics__icontains=topics[0])
             for topic in topics[1:]:
                 query = Q(course__topics__icontains=topic) | query
             study_groups = study_groups.filter(query)
@@ -175,7 +171,7 @@ class LearningCircleListView(View):
             weekdays = request.GET.get('weekdays').split(',')
             query = None
             for weekday in weekdays:
-                #__week_day differst from datetime.weekday()
+                # __week_day differst from datetime.weekday()
                 # Monday should be 0
                 weekday = int(weekday) + 2 % 7
                 query = query | Q(start_date__week_day=weekday) if query else Q(start_date__week_day=weekday)
@@ -189,7 +185,7 @@ class LearningCircleListView(View):
             data['offset'] = offset
             data['limit'] = limit
             study_groups = study_groups[offset:offset+limit]
- 
+
         data['items'] = [ _map_to_json(sg) for sg in study_groups ]
         return json_response(request, data)
 
@@ -204,10 +200,10 @@ class LearningCircleTopicListView(View):
         course_ids = StudyGroup.objects.active().filter(id__in=study_group_ids).values('course')
 
         topics = Course.objects.active()\
-                .filter(unlisted=False)\
-                .filter(id__in=course_ids)\
-                .exclude(topics='')\
-                .values_list('topics')
+            .filter(unlisted=False)\
+            .filter(id__in=course_ids)\
+            .exclude(topics='')\
+            .values_list('topics')
         topics = [
             item.strip().lower() for sublist in topics for item in sublist[0].split(',')
         ]
@@ -234,7 +230,7 @@ def _course_to_json(course):
 
 class CourseListView(View):
     def get(self, request):
-        query_schema = { 
+        query_schema = {
             "offset": schema.integer(),
             "limit": schema.integer(),
             "order": lambda v: None if v in ['title', 'usage', None] else "must be 'title' or 'usage'",
@@ -264,12 +260,11 @@ class CourseListView(View):
         if query:
             courses = courses.annotate(
                 search=
-                    SearchVector('title') 
-                    + SearchVector('caption') 
-                    + SearchVector('provider') 
+                    SearchVector('title')
+                    + SearchVector('caption')
+                    + SearchVector('provider')
                     + SearchVector('topics')
             ).filter(search=query)
-
 
         if 'topics' in request.GET:
             topics = request.GET.get('topics').split(',')
@@ -330,12 +325,12 @@ class SignupView(View):
             "computer_access": schema.text(required=True),
             "use_internet": schema.text(required=True)
         }
-        post_schema = { 
+        post_schema = {
             "study_group": schema.chain([
                 schema.integer(),
                 lambda x: 'No matching learning circle exists' if not StudyGroup.objects.filter(pk=int(x)).exists() else None,
             ], required=True),
-            "name": schema.text(required=True), 
+            "name": schema.text(required=True),
             "email": schema.email(required=True),
             "mobile": schema.mobile(),
             "signup_questions": schema.schema(signup_questions, required=True)
@@ -344,7 +339,7 @@ class SignupView(View):
         errors = schema.validate(post_schema, data)
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
-    
+
         study_group = StudyGroup.objects.get(pk=data.get('study_group'))
 
         if Application.objects.active().filter(email__iexact=data.get('email'), study_group=study_group).exists():
@@ -375,7 +370,7 @@ class LandingPageLearningCirclesView(View):
         ).annotate(
             next_meeting_date=Min('studygroupmeeting__meeting_date')
         ).order_by('next_meeting_date')[:3]
-        
+
         # if there are less than 3 with upcoming meetings and an image
         if study_groups.count() < 3:
             #pad with learning circles with the most recent meetings
@@ -393,8 +388,8 @@ class LandingPageLearningCirclesView(View):
 
 class LandingPageStatsView(View):
     """ Return stats for the landing page """
-    """ 
-    - Number of active learning circles 
+    """
+    - Number of active learning circles
     - Number of cities where learning circle happened
     - Number of facilitators who ran at least 1 learning circle
     """
