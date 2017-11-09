@@ -186,11 +186,11 @@ CELERYBEAT_SCHEDULE = {
     # Executes every Monday morning at 7:30 A.M
     'gen_reminders': {
         'task': 'studygroups.tasks.gen_reminders',
-        'schedule': crontab(minute='*/10'),
+        'schedule': crontab(hour='12', minute='5'),
     },
     'send_reminders': {
         'task': 'studygroups.tasks.send_reminders',
-        'schedule': crontab(minute='5'),
+        'schedule': crontab(hour='12', minute='5'),
     },
     'send_new_facilitator_email': {
         'task': 'studygroups.tasks.send_new_facilitator_emails',
