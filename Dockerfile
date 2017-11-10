@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     python \
     python-dev \
     python-virtualenv \
+    bzip2 \
     supervisor
 WORKDIR /opt/app/
 COPY requirements.txt /opt/app/
