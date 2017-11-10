@@ -568,6 +568,10 @@ def send_facilitator_survey(study_group):
 # If called directly, be sure to activate language to use for constructing URLs
 # Failed text delivery won't case this function to fail, simply log an error
 def send_reminder(reminder):
+    # mark it as sent, we don't retry any failures
+    reminder.sent_at = timezone.now()
+    reminder.save()
+
     to = [su.email for su in reminder.study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')]
     if reminder.study_group_meeting:
         # this is a reminder and we need RSVP links
@@ -580,7 +584,6 @@ def send_reminder(reminder):
             email_body = re.sub(r'\(<!--RSVP:YES-->.*\)', yes_link, email_body)
             email_body = re.sub(r'\(<!--RSVP:NO-->.*\)', no_link, email_body)
             email_body = re.sub(r'\(<!--UNSUBSCRIBE-->.*\)', unsubscribe_link, email_body)
-            # TODO is fail silently good enough or should we log a message?
             try:
                 send_mail(
                     reminder.email_subject.strip('\n'),
@@ -630,9 +633,7 @@ def send_reminder(reminder):
         except TwilioRestException as e:
             logger.exception(u"Could not send text message to %s", to, exc_info=e)
 
-    reminder.sent_at = timezone.now()
-    reminder.save()
-
+    
 
 def create_rsvp(contact, study_group, meeting_datetime, attending):
     # expect meeting_date as python datetime
