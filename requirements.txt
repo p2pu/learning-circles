@@ -39,7 +39,7 @@ pyparsing==2.2.0
 python-dateutil==2.4.2
 pytz==2017.2
 requests==2.18.4
-s3-backup-rotate==0.3.0
+s3-backup-rotate==0.3.2
 six==1.11.0
 static3==0.7.0
 transifex-client==0.12.4
