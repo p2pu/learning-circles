@@ -32,10 +32,25 @@
   <a class="btn btn-primary" href="{% url 'studygroups_facilitator_studygroup_create' %}">{% trans "Create a Learning Circle" %}</a>
   </p>
 
-  {% if past_study_groups %}<h2>{% trans "Past Learning Circles" %}</h2>{% endif %}
-  {% for lc in past_study_groups %}
-    {% include 'studygroups/study_group_facilitate.html' %}
-  {% endfor %}
+  {% if past_study_groups %}
+  <h2>{% trans "Past Learning Circles" %}</h2>{% endif %}
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>{% trans "Title" %}</th>
+        <th></th>
+      </tr>
+    </thead>
+    {% for lc in past_study_groups %}
+      <tr>
+        <td>
+            {{ lc.course }}<br>
+            {{ lc.start_date|date:"l" }}s, {{ lc.meeting_time|date:"f A" }} {% trans "at" %} {{ lc.venue_name }}
+        </td>
+
+        <td><a href="{% url 'studygroups_view_study_group' lc.id %}" class="btn btn-primary">{% trans 'view' %}</a></td>
+    {% endfor %}
+  </table>
 
   {% if courses %}
   <h2>{% trans "Course you've added" %}</h2>
