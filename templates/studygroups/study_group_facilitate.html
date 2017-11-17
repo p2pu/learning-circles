@@ -38,6 +38,9 @@
         {% endif %}
     </div>
       <div class="col-md-12 well">
+        <h3>{% trans "Activities" %}</h3>
+        <div id="activity-tabs">{% include 'studygroups/activity_tabs.html' %}</div>
+        {% comment %}
         <p><strong>{% trans "Next meeting" %}:</strong>{% if lc.next_meeting %} {{ lc.next_meeting.meeting_date|date:"D d M Y" }} {% trans "at" %} {{ lc.next_meeting.meeting_time|time:"f A" }}{% else %} {% trans "No meeting scheduled" %}.{% endif %}</p>
       {% if lc.next_meeting.meeting_activity %}
         <p><strong>{% trans "Upcoming recipe card" %}:</strong> <a href="{{ lc.next_meeting.meeting_activity.card.url }}" target="_blank">{{ lc.next_meeting.meeting_activity.description }}</a></p>
@@ -56,6 +59,7 @@
           {% if not forloop.last %}, {% endif %}
         {% endfor %} 
       </p>
+      {% endcomment %}
     </div>
     <div class="col-md-12">
         <h3>{% trans "Meetings" %} ({{lc.studygroupmeeting_set.active.count}})</h3>
