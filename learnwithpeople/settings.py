@@ -171,6 +171,7 @@ TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
 TWILIO_NUMBER = os.environ.get('TWILIO_NUMBER')
 
 LOGIN_REDIRECT_URL = '/login_redirect/'
+LOGOUT_REDIRECT_URL = 'https://www.p2pu.org/en/facilitate/'
 DOMAIN = os.environ.get('DOMAIN', 'example.net')
 
 ####### Google analytics tracking info ####### 
