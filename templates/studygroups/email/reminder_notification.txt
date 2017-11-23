@@ -2,6 +2,10 @@
 
 {% blocktrans with meeting_date=next_meeting.meeting_datetime|date:"l, j N, fA" %}We've generated a reminder for the Learning Circle meeting this {{meeting_date}}. The reminder will be sent automatically in 2 days from now.{% endblocktrans %}
 
+{% if reminder.study_group_meeting.meeting_activity %}{% blocktrans with activity_description=reminder.study_group_meeting.meeting_activity.description activity_url=reminder.study_group_meeting.meeting_activity.card.url %}You can find the recommended activity for this week in the recipe card: {{ activity_description }} ({{ protocol }}://{{ domain }}{{ activity_url }}){% endblocktrans %}{% endif %}
+
+{% if is_last_meeting %}{% blocktrans %}This is the last learning circle meeting. Please print a few copies of this learner survey (https://learningcircles.p2pu.org/static/uploads/learner_survey.pdf) for learners who can't complete the online survey.{% endblocktrans %}{% endif %}
+
 {% trans "This is what the reminder will look like." %}
 
 # {% trans "Email to Learning Circle participants" %}
@@ -13,10 +17,6 @@
 {{ reminder.sms_body | safe }}
 
 {% url 'studygroups_message_edit' reminder.study_group.id reminder.id as message_edit_url %}{% blocktrans %}If you wish to edit the reminder, you can follow this link: {{protocol}}://{{domain}}{{message_edit_url}}.{% endblocktrans %}
-
-{% if reminder.study_group_meeting.meeting_activity %}{% trans "Recommended recipe card for this week" %}: {{reminder.study_group_meeting.meeting_activity.description}} ({{protocol}}://{{domain}}{{reminder.study_group_meeting.meeting_activity.card.url}}){% endif %}
-
-{% if is_last_meeting %}{% blocktrans %}This is the last learning circle meeting. Please print a few copies of this learner survey (https://learningcircles.p2pu.org/static/uploads/learner_survey.pdf) for learners who can't complete the online survey.{% endblocktrans %}{% endif %}
 
 {% trans "Regards" %}
 P2PU
