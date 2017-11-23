@@ -53,12 +53,16 @@ def handle_new_study_group_creation(sender, instance, created, **kwargs):
     text_body = render_to_string('studygroups/email/learning_circle_created.txt', context)
     html_body = render_to_string('studygroups/email/learning_circle_created.html', context)
 
+    
+    # bcc/cc community manager
+    bcc = [settings.COMMUNITY_MANAGER]
     notification = EmailMultiAlternatives(
         subject,
         text_body,
         settings.DEFAULT_FROM_EMAIL,
-        [study_group.facilitator.email]
+        [study_group.facilitator.email],
+        bcc
     )
-    # TODO bcc/cc community manager
+
     notification.attach_alternative(html_body, 'text/html')
     notification.send()

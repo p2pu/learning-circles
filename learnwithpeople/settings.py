@@ -21,6 +21,9 @@ ADMINS = (
     ('Admin', os.environ.get('ADMIN_EMAIL', 'admin@localhost') ),
 )
 
+COMMUNITY_MANAGER = os.environ.get('COMMUNITY_MANAGER_EMAIL', 'community@localhost')
+
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', 'youshouldchangethis')
 
