@@ -1,42 +1,18 @@
-Learning circles are study groups that meet weekly to work through an online course.
+# Learning circles [![Build Status](https://travis-ci.org/p2pu/learning-circles.svg?branch=master)](https://travis-ci.org/p2pu/learning-circles)
 
-This application is intended to help learners and facilitators to run learning circles. It also offers an overview of all learning circles.
+Learning circles are study groups that meet weekly at a physical location to work together through an online course.
 
-[![Build Status](https://travis-ci.org/p2pu/learning-circles.svg?branch=master)](https://travis-ci.org/p2pu/learning-circles)
+This is the source code for the online dashboard that helps facilitators organize and run their learning circles. You can find the dashboard at [learningcircles.p2pu.org](https://learningcircles.p2pu.org/) or see the [online user documentation](http://learning-circles.readthedocs.org/en/latest/) for a guide on how to use the dashboard and a description on the functionality provided.
 
-Learners can
+# What are the future plans
 
-- learn more about what a learning circle is
-- see a list of learning circles 
-- sign up for a learning circle using either email of or a mobile number
-- RSVP for weekly learning circle meetings
+We maintain a [feature roadmap](https://github.com/p2pu/learning-circles/wiki/Roadmap) where you can see what we are currently working on and what we are planning to do.
 
-Facilitators can
-
-- See who signed up for a learning circle.
-- Send messages to learners
-- Customize automatic weekly reminders
-- Update details for a learning circle meeting
-- See who is coming to a learning circle meeting
-- Capture feedback for a learning circle meeting
-
-Organizers can
-
-- see feedback from facilitators
-- see what meetings are happening each week
-- receive weekly updates on what happened in learning circles the previous week
-- manage courses
-- manage study groups
-- manage facilitators
-
-
-## Documentation
-
-For complete documentation on installing and using this software, see our [online documentation here](http://learning-circles.readthedocs.org/en/latest/).
+# Get involved with development
 
 ## Setup for development
 
-The following commands will setup a local django environment that you can use for development. It assumes that you have python 2.7 available and set as the default python version.
+The following commands will setup a local Django environment that you can use for development. It assumes that you have python 2.7 available and set as the default python version.
 
 ```
 virtualenv venv
