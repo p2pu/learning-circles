@@ -3,7 +3,10 @@ from django.contrib.auth.forms import PasswordResetForm
 from django.utils.translation import ugettext as _
 from django.forms import ValidationError
 
+
 class CustomPasswordResetForm(PasswordResetForm):
+    """ Use case insensitive email address when searching for users """
+
     def clean_email(self):
         email = self.cleaned_data['email']
         if not User.objects.filter(email__iexact=email, is_active=True).exists():
