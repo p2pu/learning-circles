@@ -21,6 +21,9 @@ ADMINS = (
     ('Admin', os.environ.get('ADMIN_EMAIL', 'admin@localhost') ),
 )
 
+COMMUNITY_MANAGER = os.environ.get('COMMUNITY_MANAGER_EMAIL', 'community@localhost')
+
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', 'youshouldchangethis')
 
@@ -184,14 +187,13 @@ BROKER_URL = os.environ.get('BROKER_URL', 'amqp://guest:guest@localhost//')
 from celery.schedules import crontab
 
 CELERYBEAT_SCHEDULE = {
-    # Executes every Monday morning at 7:30 A.M
     'gen_reminders': {
         'task': 'studygroups.tasks.gen_reminders',
-        'schedule': crontab(hour='12', minute='5'),
+        'schedule': crontab(minute='5'),
     },
     'send_reminders': {
         'task': 'studygroups.tasks.send_reminders',
-        'schedule': crontab(hour='12', minute='5'),
+        'schedule': crontab(minute='5'),
     },
     'send_new_facilitator_email': {
         'task': 'studygroups.tasks.send_new_facilitator_emails',

@@ -173,6 +173,7 @@ class TestFacilitatorViews(TestCase):
         self.assertEquals(len(mail.outbox), 1)
         self.assertEquals(mail.outbox[0].subject, 'Your Learning Circle has been created! What next?')
         self.assertIn('bob@example.net', mail.outbox[0].to)
+        self.assertIn('community@localhost', mail.outbox[0].bcc)
 
 
     @patch('studygroups.models.send_message')
