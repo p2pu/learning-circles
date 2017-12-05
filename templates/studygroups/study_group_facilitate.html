@@ -34,20 +34,21 @@
         <a class="btn btn-primary" href="{% url 'studygroups_signup' location=lc.venue_name|slugify study_group_id=lc.pk %}">{% trans "view webpage" %}</a>
         </p>
         {% if not lc.signup_open %}
-        <div class="alert alert-info" role="alert"><p>{% trans "Signup is currently closed and your Learning Circle will not be listed on the landing page." %}</div></p>
-          {% endif %}
+          <div class="alert alert-info" role="alert">
+            <p>{% trans "Signup is currently closed and your Learning Circle will not be listed on the landing page." %}</p>
+          </div>
+        {% endif %}
       </div>
       <div class="col-md-12 well">
         <h3>{% trans "Recipe Cards" %}</h3>
         <p>{% trans "Use these recipe cards to foster community, build learner confidence, and help to bridge the course content and real life. Each recipe card includes a 15 minute group activity that you can do during the learning circle." %}</p>
         <p class="recipe-card-links">
         {% for activity in activities %}
-        <a class="btn btn-primary" href="{{activity.card.url}}">{{activity.description}}</a>
+          <a class="btn btn-primary" href="{{activity.card.url}}" target="_blank">{{activity.description}}</a>
         {% endfor %}
         </p>
 
         {% comment %}
-        <div id="activity-tabs">{% include 'studygroups/activity_tabs.html' %}</div>
         <p><strong>{% trans "Next meeting" %}:</strong>{% if lc.next_meeting %} {{ lc.next_meeting.meeting_date|date:"D d M Y" }} {% trans "at" %} {{ lc.next_meeting.meeting_time|time:"f A" }}{% else %} {% trans "No meeting scheduled" %}.{% endif %}</p>
         {% if lc.next_meeting.meeting_activity %}
         <p><strong>{% trans "Upcoming recipe card" %}:</strong> <a href="{{ lc.next_meeting.meeting_activity.card.url }}" target="_blank">{{ lc.next_meeting.meeting_activity.description }}</a></p>
