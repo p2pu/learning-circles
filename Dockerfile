@@ -1,4 +1,4 @@
-FROM node:boron-alpine AS frontend
+FROM node:carbon-alpine AS frontend
 WORKDIR /opt/app/
 COPY package.json /opt/app/
 RUN apk --no-cache add --virtual native-deps \

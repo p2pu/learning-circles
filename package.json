@@ -22,10 +22,9 @@
   },
   "homepage": "https://github.com/p2pu/learning-circles#readme",
   "dependencies": {
-    "babel": "^6.23.0",
     "babel-core": "^6.24.1",
     "babel-loader": "^6.4.1",
-    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
     "css-loader": "^0.26.4",
     "extract-text-webpack-plugin": "^2.1.0",
