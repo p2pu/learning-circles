@@ -33,7 +33,7 @@
   </p>
 
   {% if past_study_groups %}
-  <h2>{% trans "Past Learning Circles" %}</h2>{% endif %}
+  <h2>{% trans "Past Learning Circles" %}</h2>
   <table class="table table-bordered">
     <thead>
       <tr>
@@ -51,6 +51,7 @@
         <td><a href="{% url 'studygroups_view_study_group' lc.id %}" class="btn btn-primary">{% trans 'view' %}</a></td>
     {% endfor %}
   </table>
+  {% endif %}
 
   {% if courses %}
   <h2>{% trans "Course you've added" %}</h2>
@@ -76,8 +77,8 @@
 {% endblock %}
 {% block scripts %}
 <script>
-    $(document).ready(function () {
-        $('[data-toggle="popover"]').popover();
-    });
+  $(document).ready(function () {
+    $('[data-toggle="popover"]').popover();
+  });
 </script>
 {% endblock %}

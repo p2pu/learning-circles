@@ -24,6 +24,7 @@ from django.db.models import Q
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 
+from studygroups.models import Activity
 from studygroups.models import Facilitator
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
@@ -70,6 +71,7 @@ def facilitator(request):
     context = {
         'current_study_groups': current_study_groups,
         'past_study_groups': past_study_groups,
+        'activities': Activity.objects.all().order_by('index'),
         'courses': Course.objects.filter(created_by=request.user),
         'invitation': invitation,
         'today': timezone.now(),
