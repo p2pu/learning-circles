@@ -1,5 +1,6 @@
 venv
 .sass-cache/
+.envrc
 *.pyc
 db.sqlite3
 static_serve/

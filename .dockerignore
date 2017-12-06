@@ -1,4 +1,5 @@
 .git/
+db/
 docs/
 venv/
 assets/
@@ -7,3 +8,4 @@ node_modules/
 learnwithpeople/settings_local.py
 learnwithpeople/settings_local.pyc
 static_serve/
+.envrc

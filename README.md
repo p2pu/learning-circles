@@ -8,30 +8,59 @@ This is the source code for the online dashboard that helps facilitators organiz
 
 We maintain a [feature roadmap](https://github.com/p2pu/learning-circles/wiki/Roadmap) where you can see what we are currently working on and what we are planning to do.
 
-# Get involved with development
+# Development
 
-## Setup for development
+## Development environment
 
-The following commands will setup a local Django environment that you can use for development. It assumes that you have python 2.7 available and set as the default python version.
+You will need python 2.7 with virtualenv and node v8 available for development.
+
+This section assumes that you have python 2.7 available and set as the default python version and Node.js v8. If that is not the case, please see https://python.org and https://nodejs.org respectively for instruction on how to set it up. If you are running other versions of node on your computer, it is recommended that you use a tool like nvm to manage the different versions.
+
+
+The shortest path to a running environment is:
 
 ```
 virtualenv venv
 source venv/bin/activate
 pip install -r requirements.txt
 python manage.py syncdb
+python manage.py collectstatic
 python manage.py runserver
 ```
 
-## Compile JavaScript files
+To compile JavaScript resources, run
 
 ```
 npm install
-./node_modules/.bin/webpack --config webpack.config.js --watch
+npm run build
 ```
 
-## Generate strings for translation
+To generate strings for translation
 
     python manage.py makemessages -l es -l fr -i venv
     python manage.py makemessages -l es -l fr -i venv -i node_modules -i assets/dist/* -i docs -d djangojs -e jsx,js
 
 Translation is done using [Transifex](https://www.transifex.com/p2pu/learning-circles/)
+
+
+## Using Docker compose
+
+See http://docker.com/ for instructions on installing Docker.
+
+Once you have docker and docker-compose set up, run the following commands in the project directory:
+
+```
+docker-compose up
+```
+
+In a new shell:
+
+```
+docker-compose exec postgres psql -U postgres -c "create user lc WITH PASSWORD 'password'";
+docker-compose exec postgres psql -U postgres -c "create database lc with owner lc;"
+docker-compose restart learning-circles
+docker-compose exec learning-circles /opt/django-venv/bin/python manage.py migrate
+docker-compose exec learning-circles /opt/django-venv/bin/python manage.py collectstatic
+```
+
+You should now be able to open the dashboard on http://localhost:8000/. Any changes you make to local Python files will be reflected
