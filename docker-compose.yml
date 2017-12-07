@@ -19,6 +19,7 @@ services:
     - DATABASE_URL=postgres://lc:password@postgres:5432/lc
     - SECRET_KEY=321
     - BROKER_URL=amqp://guest:guest@rabbitmq//
+    - DEBUG=true
   frontend:
     image: p2pu/js-build:carbon-alpine
     volumes: 
