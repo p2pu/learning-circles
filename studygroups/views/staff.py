@@ -66,7 +66,7 @@ class ExportFacilitatorsView(ListView):
 
     def csv(self, **kwargs):
         response = http.HttpResponse(content_type="text/csv")
-        response['Content-Disposition'] = 'attachment; filename="signups.csv"'
+        response['Content-Disposition'] = 'attachment; filename="facilitators.csv"'
         field_names = ['name', 'email', 'date joined', 'last login', 'learning circles run', 'last learning circle data', 'last learning circle course', 'last learning circle venue']
         writer = csv.writer(response)
         writer.writerow(field_names)
