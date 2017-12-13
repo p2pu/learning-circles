@@ -28,7 +28,7 @@ COMMUNITY_MANAGER = os.environ.get('COMMUNITY_MANAGER_EMAIL', 'community@localho
 SECRET_KEY = os.environ.get('SECRET_KEY', 'youshouldchangethis')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DEBUG', False) == 'true'
 CRISPY_FAIL_SILENTLY = not DEBUG
 
 # Application definition
@@ -151,6 +151,11 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+
+if DEBUG is True:
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = path('mailbox')
+
 
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
 SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'no-reply@p2pu.org') #TODO grab this from environment
