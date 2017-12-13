@@ -19,6 +19,8 @@ class ApplicationInline(admin.TabularInline):
 class StudyGroupAdmin(admin.ModelAdmin):
     inlines = [ ApplicationInline ]
 
+    list_display = ['course', 'city', 'facilitator', 'start_date', 'day', 'signup_open']
+
 class TeamMembershipInline(admin.TabularInline):
     model = TeamMembership
 
