@@ -13,6 +13,8 @@ from __future__ import absolute_import
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 path = lambda *a: os.path.join(BASE_DIR, *a)
+env = lambda key, default: os.environ.get(key, default)
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
@@ -258,9 +260,7 @@ BACKUP_AWS_SECRET_ACCESS_KEY = os.environ.get('BACKUP_AWS_SECRET_ACCESS_KEY') # 
 BACKUP_AWS_STORAGE_BUCKET_NAME = os.environ.get('BACKUP_AWS_STORAGE_BUCKET_NAME') # Name of the bucket where backups should be stored
 BACKUP_AWS_KEY_PREFIX = os.environ.get('BACKUP_AWS_KEY_PREFIX') # Prefix for generated key on AWS s3
 
-
-##### Support for settings_local.py
-try:
-    from .settings_local import *
-except ImportError:
-    pass
+#### Mailchimp API key ###
+MAILCHIMP_API_KEY = env('MAILCHIMP_API_KEY', '')
+MAILCHIMP_LIST_ID = env('MAILCHIMP_LIST_ID', '')
+MAILCHIMP_API_ROOT = env('MAILCHIMP_API_ROOT', 'https://??.api.mailchimp.com/3.0/')

@@ -295,7 +295,7 @@ class StudyGroupForm(forms.ModelForm):
 
 class FacilitatorForm(forms.ModelForm):
     username = forms.EmailField(required=True, label=_('Email'))
-    mailing_list_signup = forms.BooleanField(required=False, label=_('Subscribe to facilitator mailing list?'))
+    mailing_list_signup = forms.BooleanField(required=False, label=_('Subscribe to newsletter?'))
 
     def clean(self):
         cleaned_data = super(FacilitatorForm, self).clean()

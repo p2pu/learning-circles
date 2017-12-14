@@ -46,6 +46,8 @@ from studygroups.models import send_reminder
 from studygroups.models import get_study_group_organizers
 from studygroups.decorators import user_is_group_facilitator
 
+from ..mailchimp import add_member_to_list
+
 import string, random
 
 
@@ -391,6 +393,7 @@ class FacilitatorSignup(CreateView):
 
         # send password reset email to facilitator
         # TODO - who does this email come from?
+        # TODO - do this async
         reset_form = PasswordResetForm({'email': self.object.email})
         if not reset_form.is_valid():
             raise Exception(reset_form.errors)
@@ -401,6 +404,11 @@ class FacilitatorSignup(CreateView):
             request=self.request,
             from_email=settings.SERVER_EMAIL,
         )
+
+        # Add facilitator to Mailchimp newsletter
+        if facilitator.mailing_list_signup:
+            # TODO - do this async
+            add_member_to_list(facilitator.user)
 
         return http.HttpResponseRedirect(self.get_success_url())
 
