@@ -12,10 +12,17 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.generic.base import View
 from django.views.generic import ListView
+from django.views.generic import TemplateView
 
 
 from studygroups.models import Application
 from ..decorators import user_is_staff
+
+@method_decorator(user_is_staff, name='dispatch')
+class StaffDashView(TemplateView):
+    template_name = 'studygroups/staff_dash.html'
+
+
 
 @method_decorator(user_is_staff, name='dispatch')
 class ExportSignupsView(ListView):
