@@ -4,15 +4,16 @@
 {% block content %}
 
 <div class="container">
-  <h2>Nico's dash</h2>
+  <h2>{% trans "Nico's dash" %}</h2>
 
-  <h3>Export<h3>
+  <h3>{% trans "Export" %}<h3>
   <ul>
     <li><a class="btn btn-primary" href="{% url 'studygroups_export_facilitators' %}">{% trans "Facilitators" %}</a></li>
     <li><a class="btn btn-primary" href="{% url 'studygroups_export_signups' %}">{% trans "Signups" %}</a></li>
+    <li><a class="btn btn-primary" href="{% url 'studygroups_export_studygroups' %}">{% trans "Learning circles" %}</a></li>
   </ul>
 
-  <h3>Links</h3>
+  <h3>{% trans "Links" %}</h3>
   <ul>
     <li><a href="{% url 'admin:studygroups_course_changelist' %}">{% trans "Courses" %}</a></li>
     <li><a href="{% url 'admin:studygroups_studygroup_changelist' %}">{% trans "Learning circles" %}</a></li>

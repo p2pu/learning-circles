@@ -16,6 +16,7 @@ from django.views.generic import TemplateView
 
 
 from studygroups.models import Application
+from studygroups.models import StudyGroup
 from ..decorators import user_is_staff
 
 @method_decorator(user_is_staff, name='dispatch')
@@ -74,7 +75,7 @@ class ExportFacilitatorsView(ListView):
     def csv(self, **kwargs):
         response = http.HttpResponse(content_type="text/csv")
         response['Content-Disposition'] = 'attachment; filename="facilitators.csv"'
-        field_names = ['name', 'email', 'date joined', 'last login', 'learning circles run', 'last learning circle data', 'last learning circle course', 'last learning circle venue']
+        field_names = ['name', 'email', 'date joined', 'last login', 'learning circles run', 'last learning circle date', 'last learning circle course', 'last learning circle venue']
         writer = csv.writer(response)
         writer.writerow(field_names)
         for user in self.object_list:
@@ -94,6 +95,55 @@ class ExportFacilitatorsView(ListView):
                 ]
             else:
                 data += ['', '', '']
+            writer.writerow(data)
+        return response
+
+
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        return self.csv(**kwargs)
+
+
+@method_decorator(user_is_staff, name='dispatch')
+class ExportStudyGroupsView(ListView):
+
+    def get_queryset(self):
+        return StudyGroup.objects.active().prefetch_related('course', 'facilitator', 'studygroupmeeting_set')
+
+    def csv(self, **kwargs):
+        response = http.HttpResponse(content_type="text/csv")
+        response['Content-Disposition'] = 'attachment; filename="learning-circles.csv"'
+        field_names = [
+            'date created',
+            'course id',
+            'course title',
+            'facilitator',
+            'faciltator email',
+            'location',
+            'city',
+            'time',
+            'day',
+            'last meeting',
+        ]
+        writer = csv.writer(response)
+        writer.writerow(field_names)
+        for sg in self.object_list:
+            data = [
+                sg.created_at,
+                sg.course.id,
+                sg.course.title,
+                ' '.join([sg.facilitator.first_name, sg.facilitator.last_name]),
+                sg.facilitator.email,
+                ' ' .join([sg.venue_name, sg.venue_address]),
+                sg.city,
+                sg.meeting_time,
+                sg.day(),
+            ] 
+            if sg.studygroupmeeting_set.active().last():
+                data += [sg.studygroupmeeting_set.active().order_by('meeting_date', 'meeting_time').last().meeting_date]
+            else:
+                data += ['']
+                
             writer.writerow(data)
         return response
 

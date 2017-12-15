@@ -30,6 +30,7 @@ from studygroups.views import CourseListView
 from studygroups.views import TeamPage
 from studygroups.views import ExportSignupsView
 from studygroups.views import ExportFacilitatorsView
+from studygroups.views import ExportStudyGroupsView
 from studygroups.views import StaffDashView
 
 from studygroups.decorators import user_is_group_facilitator
@@ -105,5 +106,6 @@ urlpatterns = [
     url(r'^staff/dash/$', StaffDashView.as_view(), name='studygroups_staff_dash'),
     url(r'^export/signups/$', ExportSignupsView.as_view(), name='studygroups_export_signups'),
     url(r'^export/facilitators/$', ExportFacilitatorsView.as_view(), name='studygroups_export_facilitators'),
+    url(r'^export/studygroups/$', ExportStudyGroupsView.as_view(), name='studygroups_export_studygroups'),
 ]
 
