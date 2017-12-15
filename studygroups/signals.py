@@ -6,6 +6,7 @@ from django.conf import settings
 
 from .models import Application
 from .models import StudyGroup
+from .models import Course
 
 @receiver(post_save, sender=Application)
 def handle_new_application(sender, instance, created, **kwargs):
@@ -62,6 +63,35 @@ def handle_new_study_group_creation(sender, instance, created, **kwargs):
         settings.DEFAULT_FROM_EMAIL,
         [study_group.facilitator.email],
         bcc
+    )
+
+    notification.attach_alternative(html_body, 'text/html')
+    notification.send()
+
+
+@receiver(post_save, sender=Course)
+def handle_new_course_creation(sender, instance, created, **kwargs):
+    if not created:
+        return
+    #TODO emails should be sent async
+
+    course = instance
+    context = {
+        'course': course,
+        'protocol': 'https',
+        'domain': settings.DOMAIN,
+    }
+
+    subject = render_to_string('studygroups/email/course_created-subject.txt', context).strip(' \n')
+    text_body = render_to_string('studygroups/email/course_created.txt', context)
+    html_body = render_to_string('studygroups/email/course_created.html', context)
+
+    to = [settings.COMMUNITY_MANAGER]
+    notification = EmailMultiAlternatives(
+        subject,
+        text_body,
+        settings.DEFAULT_FROM_EMAIL,
+        to,
     )
 
     notification.attach_alternative(html_body, 'text/html')

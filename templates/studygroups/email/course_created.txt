@@ -1,0 +1,15 @@
+{% load i18n %}{% trans "Hi there" %},
+
+{% blocktrans with first_name=course.created_by.first_name last_name=course.created_by.last_name email=course.created_by.email %}A new course has been added by {{first_name}} {{last_name}} <{{email}}>.{% endblocktrans %}
+
+    {% trans "Title" %}: {{course.title}}
+    {% trans "Creator" %}: {{course.provider}}
+    {% trans "Website" %}: {{course.link}}
+    {% trans "Description" %}: {{course.caption}}
+    {% trans "Availability" %}: {% if course.on_demand %}{% trans "On demand" %}{% else %}{% trans "Check website" %}{% endif %}
+    {% trans "Topics" %}: {{course.topics}}
+
+{% url 'admin:studygroups_course_change' course.id as course_url %}{% blocktrans with course_title=course.title %}You can update or unlist the course here: {{protocol}}://{{domain}}{{course_url}}{% endblocktrans %}
+
+{% trans "Cheers" %},
+P2PU
