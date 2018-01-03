@@ -1,28 +1,59 @@
 .page-container {
   display: flex;
   font-size: 16px;
-  height: 90vh;
+  height: 100vh;
   height: -moz-available;
   height: -webkit-fill-available;
 }
 
 .form-container, .help-container {
-  flex: 1 1 50%;
-  margin-bottom: 40px;
+  overflow-y: scroll;
+  position: fixed;
+  width: 50vw;
+  top: 0;
+  bottom: 0;
+  height: 100vh;
 }
 
 .form-container {
   box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
   z-index: 1;
-  position: relative;
+  position: absolute;
+  left: 0;
+  overflow: visible;
+  background: white;
+  transition: width 0.4s linear;
+  padding-top: 64px;
 
   &.full-screen {
-    width: 90vw;
+    width: 95vw;
+  }
+
+  .tabs-list {
+    font-size: 12px;
+    text-transform: uppercase;
+    display: flex;
+    border-bottom: none;
+  }
+
+  .tabs-item {
+    background: #f3f4f8;
+    flex-grow: 1;
+    border-right: 1px solid #AAB0BF;
+
+    &:first-of-type {
+      border-left: none;
+    }
+
+    &:last-of-type {
+      border-right: none;
+    }
   }
 
   .tab-content {
     &.react-tabs__tab-panel--selected {
       padding: 20px;
+      overflow-y: scroll;
     }
   }
 
@@ -33,29 +64,22 @@
     transform: translateX(20px) translateY(-10px);
 
     button {
-      font-size: 24px;
       height: 40px;
       width: 40px;
       padding: 0;
       margin: 0;
-      background-color: #FFBC1A;
-      color: white;
       box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
-
-      i {
-        font-size: 40px;
-        height: 40px;
-        width: 40px;
-        margin-left: 3px;
-      }
     }
   }
 }
 
 .help-container {
   background-color: #F3F4F8;
-  padding: 40px;
-  overflow-y: scroll;
+  right: 0;
+  padding-top: 104px;
+  padding-bottom: 90px;
+  padding-left: 40px;
+  padding-right: 40px;
 }
 
 .action-bar {
