@@ -30,7 +30,7 @@
     <body>
 
     {% include 'nav.html' %}
-    {% include 'profile.html' %}
+<!--     {% include 'profile.html' %} -->
 
     {% for message in messages %}
       <div class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %}" role="alert">
@@ -44,7 +44,7 @@
       </div>
     </div>
 
-    {% include 'footer.html' %}
+
 
 		{% include 'scripts.html' %}
     {% block scripts %}{% endblock %}
