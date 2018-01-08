@@ -392,6 +392,7 @@ class LandingPageStatsView(View):
     - Number of active learning circles
     - Number of cities where learning circle happened
     - Number of facilitators who ran at least 1 learning circle
+    - Number of learning circles to date
     """
     def get(self, request):
         study_groups = StudyGroup.objects.active().filter(
@@ -403,6 +404,7 @@ class LandingPageStatsView(View):
             latitude__isnull=False,
             longitude__isnull=False,
         ).distinct('city').values('city')
+        learning_circle_count = StudyGroup.objects.active().count()
         facilitators = StudyGroup.objects.active().distinct('facilitator').values('facilitator')
         cities_s = list(set([c['city'].split(',')[0].strip() for c in cities]))
         data = {
@@ -410,5 +412,6 @@ class LandingPageStatsView(View):
             #"city_list": [v['city'] for v in cities],
             "cities": len(cities_s),
             "facilitators": facilitators.count(),
+            "learning_circle_count": learning_circle_count
         }
         return json_response(request, data)
