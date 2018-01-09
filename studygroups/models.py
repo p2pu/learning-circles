@@ -349,7 +349,7 @@ class Reminder(models.Model):
     study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting', blank=True, null=True, on_delete=models.CASCADE) #TODO check this makes sense
     email_subject = models.CharField(max_length=256)
     email_body = models.TextField()
-    sms_body = models.CharField(verbose_name=_('SMS (Text)'), max_length=160)
+    sms_body = models.CharField(verbose_name=_('SMS (Text)'), max_length=160, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     sent_at = models.DateTimeField(blank=True, null=True)
@@ -624,16 +624,16 @@ def send_reminder(reminder):
             logger.exception('Could not send reminder to whole study group', exc_info=e)
 
     # send SMS
-    tos = [su.mobile for su in reminder.study_group.application_set.active().filter(accepted_at__isnull=False).exclude(mobile='')]
-    for to in tos:
-        try:
-            #TODO - insert opt out link
-            #if reminder.study_group_meeting:
-            send_message(to, reminder.sms_body)
-        except TwilioRestException as e:
-            logger.exception(u"Could not send text message to %s", to, exc_info=e)
+    if reminder.sms_body != '':
+        tos = [su.mobile for su in reminder.study_group.application_set.active().filter(accepted_at__isnull=False).exclude(mobile='')]
+        for to in tos:
+            try:
+                #TODO - insert opt out link
+                #if reminder.study_group_meeting:
+                send_message(to, reminder.sms_body)
+            except TwilioRestException as e:
+                logger.exception(u"Could not send text message to %s", to, exc_info=e)
 
-    
 
 def create_rsvp(contact, study_group, meeting_datetime, attending):
     # expect meeting_date as python datetime
