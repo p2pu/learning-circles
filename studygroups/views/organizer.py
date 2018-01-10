@@ -141,17 +141,6 @@ class CourseDelete(DeleteView):
     template_name = 'studygroups/confirm_delete.html'
 
 
-class StudyGroupCreate(CreateView):
-    model = StudyGroup
-    form_class = StudyGroupForm
-    success_url = reverse_lazy('studygroups_organize')
-
-    def form_valid(self, form):
-        self.object = form.save()
-        generate_all_meetings(self.object)
-        return http.HttpResponseRedirect(self.get_success_url())
-
-
 class TeamInvitationCreate(View):
 
     @method_decorator(csrf_exempt)
