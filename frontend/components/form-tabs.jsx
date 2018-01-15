@@ -1,5 +1,6 @@
 import React from 'react'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import CourseSection from './learning_circle_form/CourseSection';
 import 'react-tabs/style/react-tabs.css';
 
 export default class FormTabs extends React.Component{
@@ -19,7 +20,7 @@ export default class FormTabs extends React.Component{
     return (
       <div className={`form-container ${containerClass}`}>
         <div className='toggleHelp'>
-          <button className='p2pu-btn arrow yellow' onClick={this.props.toggleHelp}>
+          <button className='p2pu-btn arrow' onClick={this.props.toggleHelp}>
             <i className={buttonIcon} aria-hidden="true"></i>
           </button>
         </div>
@@ -33,6 +34,7 @@ export default class FormTabs extends React.Component{
 
           <TabPanel className='tab-content'>
             <h4>Step 1: Select a Course</h4>
+            <CourseSection />
           </TabPanel>
           <TabPanel className='tab-content'>
             <h4>Step 2: Find a Location</h4>

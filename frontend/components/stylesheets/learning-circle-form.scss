@@ -34,12 +34,16 @@
     text-transform: uppercase;
     display: flex;
     border-bottom: none;
+    list-style: none;
+    padding: 0;
   }
 
   .tabs-item {
     background: #f3f4f8;
     flex-grow: 1;
     border-right: 1px solid #AAB0BF;
+    padding: 2px 10px;
+    cursor: pointer;
 
     &:first-of-type {
       border-left: none;
@@ -47,6 +51,11 @@
 
     &:last-of-type {
       border-right: none;
+    }
+
+    &.react-tabs__tab--selected {
+      border-radius: 0;
+      background-color: white;
     }
   }
 
