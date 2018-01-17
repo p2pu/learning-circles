@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchVector
 
 import json
+import datetime
 
 
 from studygroups.models import Course
@@ -88,7 +89,7 @@ class LearningCircleListView(View):
             "weekdays": _intCommaList,
         }
         data = schema.django_get_to_dict(request.GET)
-        errors = schema.validate(query_schema, data)
+        clean_data, errors = schema.validate(query_schema, data)
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
@@ -233,10 +234,10 @@ class CourseListView(View):
         query_schema = {
             "offset": schema.integer(),
             "limit": schema.integer(),
-            "order": lambda v: None if v in ['title', 'usage', None] else "must be 'title' or 'usage'",
+            "order": lambda v: (v, None) if v in ['title', 'usage', None] else (None, "must be 'title' or 'usage'")
         }
         data = schema.django_get_to_dict(request.GET)
-        errors = schema.validate(query_schema, data)
+        clean_data, errors = schema.validate(query_schema, data)
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
@@ -314,6 +315,65 @@ class CourseTopicListView(View):
         data['topics'] = { k:v for k,v in Counter(topics).items() }
         return json_response(request, data)
 
+def _course_check(course_id):
+    if not Course.objects.filter(pk=int(course_id)).exists():
+        return None, 'Course matching ID not found'
+    else:
+        return Course.objects.get(pk=int(course_id)), None
+
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class LearningCircleCreateView(View):
+    def post(self, request):
+        post_schema = {
+            "course": schema.chain([
+                schema.integer(),
+                _course_check,
+            ], required=True),
+            "description": schema.text(required=True),
+            "venue_name": schema.text(required=True),
+            "venue_details": schema.text(required=True),
+            "venue_address": schema.text(required=True),
+            "city": schema.text(required=True),
+            "latitude": schema.floating_point(required=True),
+            "longitude": schema.floating_point(required=True),
+            "start_date": schema.date(required=True),
+            "weeks": schema.integer(required=True),
+            "meeting_time": schema.time(required=True),
+            "duration": schema.text(required=True),
+            "timezone": schema.text(required=True),
+            "venue_website": schema.text(),
+            "image": schema.text()
+        }
+        data = json.loads(request.body)
+        data, errors = schema.validate(post_schema, data)
+        if errors != {}:
+            return json_response(request, {"status": "error", "errors": errors})
+
+        # create learning circle
+        end_date = data.get('start_date') + datetime.timedelta(weeks=data.get('weeks') - 1)
+        study_group = StudyGroup(
+            course=data.get('course'),
+            facilitator=request.user,
+            description=data.get('description'),
+            venue_name=data.get('venue_name'),
+            venue_address=data.get('venue_address'),
+            venue_details=data.get('venue_details'),
+            venue_website=data.get('venue_website') or '',
+            city=data.get('city'),
+            latitude=data.get('latitude'),
+            longitude=data.get('longitude'),
+            start_date=data.get('start_date'),
+            end_date=end_date,
+            meeting_time=data.get('meeting_time'),
+            duration=data.get('duration'),
+            timezone=data.get('timezone'),
+            image=data.get('image'),
+        )
+        study_group.save()
+        return json_response(request, {"status": "created"});
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class SignupView(View):
@@ -328,7 +388,7 @@ class SignupView(View):
         post_schema = {
             "study_group": schema.chain([
                 schema.integer(),
-                lambda x: 'No matching learning circle exists' if not StudyGroup.objects.filter(pk=int(x)).exists() else None,
+                lambda x: (None, 'No matching learning circle exists') if not StudyGroup.objects.filter(pk=int(x)).exists() else (StudyGroup.objects.get(pk=int(x)), None),
             ], required=True),
             "name": schema.text(required=True),
             "email": schema.email(required=True),
@@ -336,7 +396,7 @@ class SignupView(View):
             "signup_questions": schema.schema(signup_questions, required=True)
         }
         data = json.loads(request.body)
-        errors = schema.validate(post_schema, data)
+        clean_data, errors = schema.validate(post_schema, data)
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 

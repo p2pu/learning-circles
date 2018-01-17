@@ -1,5 +1,7 @@
 import phonenumbers
 import re
+from datetime import datetime
+from decimal import Decimal
 
 def _required(func):
     def decorator(*args, **kwargs):
@@ -8,9 +10,9 @@ def _required(func):
             del kwargs['required']
         def required_validator(data):
             if required and data is None:
-                return 'Field is required'
+                return None, 'Field is required'
             if not required and data is None:
-                return None
+                return None, None
             # actual validator is now only created during validation
             return func(*args, **kwargs)(data)
         return required_validator
@@ -22,11 +24,12 @@ def integer():
     def _validate(value):
         error = 'Not a valid integer'
         if value is None:
-            return error
+            return None, error
         try:
-            int(value)
+            n = int(value)
+            return n, None
         except ValueError:
-            return error
+            return None, error
     return _validate
 
 
@@ -35,20 +38,45 @@ def floating_point():
     def _validate(value):
         error = 'Not a valid float'
         if value is None:
-            return error
+            return None, error
         try:
-            float(value)
+            f = float(value)
+            return f, None
         except ValueError:
-            return error
+            return None, error
     return _validate
-
 
 
 @_required
 def text(length=None):
     def _validate(string):
         if length and len(string) > length:
-            return 'String too long'
+            return None, 'String too long'
+        return string, None
+    return _validate
+
+
+@_required
+def date(format='%Y-%m-%d'):
+    error = 'Not a valid date'
+    def _validate(data):
+        try:
+            date = datetime.strptime(data, format).date()
+            return date, None
+        except ValueError:
+            return None, error
+    return _validate
+
+
+@_required
+def time(format='%H:%M'):
+    error = 'Not a valid time'
+    def _validate(data):
+        try:
+            time = datetime.strptime(data, format).time()
+            return time, None
+        except ValueError:
+            return None, error
     return _validate
 
 
@@ -57,9 +85,9 @@ def email():
     def _validate(email):
         error = 'Invalid email address'
         if email == None:
-            return None
+            return None, None # Not sure if this is correct?
         if email.count('@') != 1:
-            return error
+            return None, error
         user, domain = email.split('@')
         # Regular expressions lifted from Django django.core.validators
         user_re = re.compile(
@@ -68,7 +96,8 @@ def email():
             re.IGNORECASE)
         domain_re = re.compile(r'((?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+)(?:[A-Z0-9-]{2,63}(?<!-))\Z', re.IGNORECASE)
         if user_re.match(user) is None or domain_re.match(domain) is None:
-            return error
+            return None, error
+        return email, None
 
     return _validate
 
@@ -82,26 +111,30 @@ def mobile():
             nr = phonenumbers.parse(mobile, None)
             if phonenumbers.is_valid_number(nr) is False:
                 return 'Not a valid phone number'
+            return rn, None
         except phonenumbers.phonenumberutil.NumberParseException:
-            return 'Not a valid phone number'
-        return None
+            return None, 'Not a valid phone number'
     return _validate
 
 
 @_required
 def chain(checks):
-    """ Chain multiple checks """
+    """ Chain multiple checks. Result from last check is returned as data """
     def _validate(data):
         errors = []
+        parsed = None
         for check in checks:
-            error = check(data)
-            if not error is None:
+            parsed, error = check(data)
+            if error != None:
                 errors += [error]
-        if not errors is []:
-            return errors
+        if errors != []:
+            return None, errors
+        return parsed, None
     return _validate
 
+
 #TODO choice validator
+
 
 @_required
 def schema(schema):
@@ -121,17 +154,21 @@ def validate(schema, data):
         'example email field', email
     }
     """
+    cleaned_data = {}
     errors = {}
     for field, validator in schema.iteritems():
-        error = validator(data.get(field))
+        parsed, error = validator(data.get(field))
         if error != None and error != [] and error != {}:
             if type(error) == type([]):
                 errors[field] = error
             else:
                 errors[field] = [error]
+        else:
+            cleaned_data[field] = parsed
 
     # TODO - errors for extra fields
-    return errors
+    return cleaned_data, errors
+
 
 def django_get_to_dict(get):
     data = {}
