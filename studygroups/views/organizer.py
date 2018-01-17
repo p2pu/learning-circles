@@ -28,7 +28,6 @@ from studygroups.models import Team
 from studygroups.models import get_team_users
 from studygroups.models import get_user_team
 from studygroups.models import send_team_invitation_email
-from studygroups.forms import StudyGroupForm
 from studygroups.decorators import user_is_organizer
 from studygroups.decorators import user_is_team_organizer
 

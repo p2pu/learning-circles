@@ -253,8 +253,7 @@ class StudyGroupForm(forms.ModelForm):
             'duration',
             'timezone',
             'venue_website',
-            'image',
-            'facilitator',
+            'image'
         ]
         labels = {
             'course': _('Choose the course that your Learning Circle will study.'),
