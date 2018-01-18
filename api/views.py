@@ -18,6 +18,7 @@ from studygroups.models import StudyGroup
 from studygroups.models import Application
 from studygroups.models import StudyGroupMeeting
 from studygroups.models import Team
+from studygroups.models import generate_all_meetings
 
 from uxhelpers.utils import json_response
 from .geo import getLatLonDelta
@@ -372,6 +373,7 @@ class LearningCircleCreateView(View):
             image=data.get('image'),
         )
         study_group.save()
+        generate_all_meetings(study_group)
         return json_response(request, {"status": "created"});
 
 
