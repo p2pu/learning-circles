@@ -9,15 +9,23 @@ export default class CreateLearningCircleForm extends React.Component{
 
   constructor(props){
     super(props);
-    this.state = { currentTab: 0, showHelp: true };
+    this.state = { currentTab: 0, showHelp: true, learningCircle: {} };
     this.changeTab = (tab) => this._changeTab(tab);
+    this.onSubmitForm = () => this._onSubmitForm();
+    this.onCancel = () => this._onCancel();
+    this.onSaveDraft = () => this._onSaveDraft();
     this.toggleHelp = () => this._toggleHelp();
+    this.updateFormData = (data) => this._updateFormData(data);
     this.allTabs = {
       0: '1. Course',
       1: '2. Location',
       2: '3. Day & Time',
       3: '4. Finalize'
     };
+  }
+
+  _updateFormData(data) {
+    this.setState({ learningCircle: data })
   }
 
   _toggleHelp() {
@@ -32,12 +40,47 @@ export default class CreateLearningCircleForm extends React.Component{
     }
   }
 
+  _onSubmitForm() {
+    if (this.state.loggedIn) {
+      console.log(this.state.learningCircle)
+    } else {
+      this.setState({ showModal: true })
+    }
+  }
+
+  _onCancel() {
+    this.setState({ learningCircle: null })
+    window.location.href = '/en/facilitator'
+  }
+
+  _onSaveDraft() {
+    if (this.state.loggedIn) {
+      console.log(this.state.learningCircle)
+    } else {
+      this.setState({ showModal: true })
+    }
+  }
+
   render() {
     return (
       <div className='page-container'>
-        <FormTabs showHelp={this.state.showHelp} toggleHelp={this.toggleHelp} currentTab={this.state.currentTab} allTabs={this.allTabs} changeTab={this.changeTab} />
+        <FormTabs
+          updateFormData={this.updateFormData}
+          showHelp={this.state.showHelp}
+          toggleHelp={this.toggleHelp}
+          currentTab={this.state.currentTab}
+          allTabs={this.allTabs}
+          changeTab={this.changeTab}
+          learningCircle={this.state.learningCircle}
+        />
         <HelpSection currentTab={this.state.currentTab} open={this.state.openHelp} />
-        <ActionBar currentTab={this.state.currentTab} changeTab={this.changeTab} />
+        <ActionBar
+          currentTab={this.state.currentTab}
+          changeTab={this.changeTab}
+          onSaveDraft={this.onSaveDraft}
+          onCancel={this.onCancel}
+          onSubmitForm={this.onSubmitForm}
+        />
       </div>
     );
   }

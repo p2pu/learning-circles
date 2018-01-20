@@ -1,6 +1,9 @@
 import React from 'react'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import CourseSection from './learning_circle_form/CourseSection';
+import LocationSection from './learning_circle_form/LocationSection';
+import DayTimeSection from './learning_circle_form/DayTimeSection';
+import FinalizeSection from './learning_circle_form/FinalizeSection';
 import 'react-tabs/style/react-tabs.css';
 
 export default class FormTabs extends React.Component{
@@ -8,6 +11,7 @@ export default class FormTabs extends React.Component{
     super(props);
     this.state = {};
     this.switchTab = (tab) => this._switchTab(tab);
+    this.updateFormData = (data) => this._updateFormData(data);
   }
 
   _switchTab(tab) {
@@ -33,17 +37,28 @@ export default class FormTabs extends React.Component{
           </TabList>
 
           <TabPanel className='tab-content'>
-            <h4>Step 1: Select a Course</h4>
-            <CourseSection />
+            <div className='content-container'>
+              <h4>Step 1: Select a Course</h4>
+              <CourseSection updateFormData={this.props.updateFormData} {...this.props} />
+            </div>
           </TabPanel>
           <TabPanel className='tab-content'>
-            <h4>Step 2: Find a Location</h4>
+            <div className='content-container'>
+              <h4>Step 2: Find a Location</h4>
+              <LocationSection updateFormData={this.props.updateFormData} {...this.props} />
+            </div>
           </TabPanel>
           <TabPanel className='tab-content'>
-            <h4>Step 3: Select the Day and Time</h4>
+            <div className='content-container'>
+              <h4>Step 3: Select the Day and Time</h4>
+              <DayTimeSection updateFormData={this.props.updateFormData} {...this.props} />
+            </div>
           </TabPanel>
           <TabPanel className='tab-content'>
-            <h4>Step 4: Finalize and Publish</h4>
+            <div className='content-container'>
+              <h4>Step 4: Finalize and Publish</h4>
+              <FinalizeSection updateFormData={this.props.updateFormData} {...this.props} />
+            </div>
           </TabPanel>
         </Tabs>
       </div>

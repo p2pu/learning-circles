@@ -1,15 +1,16 @@
 import React from 'react'
 import Search from './form_fields/Search'
 
-export default class CourseSection extends React.Component{
-  constructor(props){
-    super(props);
-    this.state = {};
-  }
+import '../stylesheets/search.scss'
 
-  render() {
-    return (
-      <Search />
-    );
-  }
+const CourseSection = (props) => {
+  return (
+    <div>
+      <p>Select a course below or <a href='#'>add a course</a></p>
+      <Search searchSubject={'courses'} updateFormData={props.updateFormData} />
+    </div>
+  );
 }
+
+
+export default CourseSection

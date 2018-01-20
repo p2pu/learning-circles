@@ -1,7 +1,7 @@
 .page-container {
   display: flex;
   font-size: 16px;
-  height: 100vh;
+  height: 100%;
   height: -moz-available;
   height: -webkit-fill-available;
 }
@@ -31,6 +31,7 @@
 
   .tabs-list {
     font-size: 12px;
+    font-weight: bold;
     text-transform: uppercase;
     display: flex;
     border-bottom: none;
@@ -42,7 +43,7 @@
     background: #f3f4f8;
     flex-grow: 1;
     border-right: 1px solid #AAB0BF;
-    padding: 2px 10px;
+    padding: 6px 10px 3px;
     cursor: pointer;
 
     &:first-of-type {
@@ -62,7 +63,11 @@
   .tab-content {
     &.react-tabs__tab-panel--selected {
       padding: 20px;
+    }
+
+    .content-container {
       overflow-y: scroll;
+      width: 100%;
     }
   }
 
@@ -154,4 +159,9 @@
       align-self: center;
     }
   }
+}
+
+.input-with-label {
+  display: flex;
+  flex-direction: column;
 }

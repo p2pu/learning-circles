@@ -1,5 +1,5 @@
 import React from 'react'
-import BrowseLearningCircles from './BrowseLearningCircles'
+import BrowseCourses from './BrowseCourses'
 import SearchTags from './SearchTags'
 
 const ResultsDisplay = (props) => {
@@ -8,7 +8,7 @@ const ResultsDisplay = (props) => {
   return(
     <div className="search-results col-sm-12">
       <SearchTags {...props} />
-      <BrowseLearningCircles learningCircles={props.searchResults} />
+      <BrowseCourses courses={props.searchResults} updateFormData={props.updateFormData} />
     </div>
   )
 }

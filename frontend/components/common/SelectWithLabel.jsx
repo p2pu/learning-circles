@@ -3,7 +3,7 @@ import Select from 'react-select'
 
 const SelectWithLabel = (props) => {
   return(
-    <div className={`select-with-label ${props.classes}`} >
+    <div className={`${props.classes}`} >
       <label htmlFor={props.name}>{props.label}</label>
       <Select
         name={ props.name }
