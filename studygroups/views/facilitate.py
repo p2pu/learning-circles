@@ -45,7 +45,6 @@ from studygroups.models import send_reminder
 from studygroups.models import get_study_group_organizers
 from studygroups.decorators import user_is_group_facilitator
 
-from ..mailchimp import add_member_to_list
 
 import string, random
 
@@ -398,28 +397,9 @@ class FacilitatorSignup(CreateView):
         self.object.first_name = user.first_name
         self.object.last_name = user.last_name
         self.object.save()
-        facilitator = Facilitator(user=self.object) #TODO are we still using Facilitator?
+        facilitator = Facilitator(user=self.object) 
         facilitator.mailing_list_signup = form.cleaned_data['mailing_list_signup']
         facilitator.save()
-
-        # send password reset email to facilitator
-        # TODO - who does this email come from?
-        # TODO - do this async
-        reset_form = PasswordResetForm({'email': self.object.email})
-        if not reset_form.is_valid():
-            raise Exception(reset_form.errors)
-        reset_form.save(
-            subject_template_name='studygroups/email/facilitator_created-subject.txt',
-            email_template_name='studygroups/email/facilitator_created.txt',
-            html_email_template_name='studygroups/email/facilitator_created.html',
-            request=self.request,
-            from_email=settings.SERVER_EMAIL,
-        )
-
-        # Add facilitator to Mailchimp newsletter
-        if facilitator.mailing_list_signup:
-            # TODO - do this async
-            add_member_to_list(facilitator.user)
 
         return http.HttpResponseRedirect(self.get_success_url())
 
@@ -431,6 +411,7 @@ class FacilitatorSignupSuccess(TemplateView):
 class FacilitatorStudyGroupCreate(CreateView):
     success_url = reverse_lazy('studygroups_facilitator')
     template_name = 'studygroups/facilitator_studygroup_form.html'
+    form_class = StudyGroupForm
 
     def get_initial(self):
         initial = {}
@@ -439,15 +420,6 @@ class FacilitatorStudyGroupCreate(CreateView):
             initial['course'] = get_object_or_404(Course, pk=course_id)
         return initial
     
-    def get_form_class(self):
-        return StudyGroupForm
-
-    def get_form(self, form_class=None):
-        form = super(FacilitatorStudyGroupCreate, self).get_form(form_class)
-        # TODO - filter courses for facilitators that are part of a team (probably move the logic to models)
-        #form.fields["course"].queryset = Course.objects.filter(Q(created_by=self.request.user) | Q(created_by__isnull=True)).order_by('title')
-
-        return form
 
     def form_valid(self, form):
         study_group = form.save(commit=False)

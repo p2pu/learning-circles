@@ -48,7 +48,7 @@ class TestFacilitatorViews(TestCase):
         user.is_staff = True
         user.save()
 
-    @patch('studygroups.views.facilitate.add_member_to_list')
+    @patch('custom_registration.signals.add_member_to_list')
     def test_facilitator_signup(self, add_member_to_list):
         c = Client()
         data = {
@@ -68,7 +68,7 @@ class TestFacilitatorViews(TestCase):
         self.assertIn('New facilitator account created on', mail.outbox[0].subject)
 
 
-    @patch('studygroups.views.facilitate.add_member_to_list')
+    @patch('custom_registration.signals.add_member_to_list')
     def test_facilitator_signup_with_mixed_case(self, add_member_to_list):
         c = Client()
         data = {
