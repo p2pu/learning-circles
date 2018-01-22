@@ -4,6 +4,7 @@ import HelpSection from './help-section';
 import ActionBar from './action-bar';
 import Modal from 'react-responsive-modal';
 import InputWithLabel from './common/InputWithLabel'
+import RegistrationModal from './registration-modal'
 
 
 import './stylesheets/learning-circle-form.scss'
@@ -37,11 +38,19 @@ export default class CreateLearningCircleForm extends React.Component {
   }
 
   _updateFormData(data) {
-    this.setState({ learningCircle: data })
+    const newLearningCircle = {
+      ...this.state.learningCirlce,
+      ...data
+    }
+    this.setState({ learningCircle: newLearningCircle }, () => console.log(this.state.learningCirlce))
   }
 
   _updateUserData(data) {
-    this.setState({ user: data })
+    const newUser = {
+      ...this.state.user,
+      ...data
+    }
+    this.setState({ user: newUser }, () => console.log(this.state.user))
   }
 
   _toggleHelp() {
@@ -105,35 +114,12 @@ export default class CreateLearningCircleForm extends React.Component {
           onCancel={this.onCancel}
           onSubmitForm={this.onSubmitForm}
         />
-        <Modal open={this.state.showModal} onClose={this.closeModal} classNames={{modal: 'registration-modal', overlay: 'modal-overlay'}} little>
-          <div className='registration-modal-content'>
-            <h4>Create an account</h4>
-            <p>In order to save your learning circle, you need to register or <a href='/en/accounts/login/'>log in</a>.</p>
-            <InputWithLabel
-              label={'Email address:'}
-              value={this.state.user.email || ''}
-              handleChange={this.updateUserData}
-              name={'email'}
-              id={'id_email'}
-              type={'email'}
-            />
-            <InputWithLabel
-              label={'Password:'}
-              value={this.state.user.password || ''}
-              handleChange={this.updateUserData}
-              name={'password'}
-              id={'id_password'}
-              type={'password'}
-            />
-            <div className="modal-actions">
-              <a href='/en/accounts/login/'>Already have an account? Log in here.</a>
-              <div className="buttons">
-                <button className="p2pu-btn dark">Cancel</button>
-                <button className="p2pu-btn blue">Register</button>
-              </div>
-            </div>
-          </div>
-        </Modal>
+        <RegistrationModal
+          updateUserData={this.updateUserData}
+          open={this.state.showModal}
+          closeModal={this.closeModal}
+          user={this.state.user}
+        />
       </div>
     );
   }

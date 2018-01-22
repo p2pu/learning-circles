@@ -13,7 +13,7 @@ const CourseCard = (props) => {
   const topicsList = take(props.course.topics, 5).map((topic) => {
     return <a className='tag' onClick={handleFilterClick(topic)}>{topic}</a>
   });
-  const onSelect = () => { props.updateFormData({ course: props.course.id })}
+  const onSelect = () => { props.updateFormData({ course: props.course.id, courseTitle: props.course.title })}
 
   return (
     <div className="result-item grid-item col-xs-12">

@@ -26,6 +26,7 @@
     "babel-loader": "^6.4.1",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
     "css-loader": "^0.26.4",
     "extract-text-webpack-plugin": "^2.1.0",
     "file-loader": "^0.11.1",
@@ -34,6 +35,7 @@
     "moment": "^2.18.1",
     "moment-timezone": "^0.5.14",
     "node-sass": "^3.13.0",
+    "places.js": "^1.4.18",
     "promise-polyfill": "^6.0.2",
     "react": "^15.5.4",
     "react-autocomplete": "^1.7.1",
@@ -53,5 +55,7 @@
     "webpack-bundle-tracker": "0.0.93",
     "whatwg-fetch": "^2.0.3"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "babel-plugin-transform-object-rest-spread": "^6.26.0"
+  }
 }

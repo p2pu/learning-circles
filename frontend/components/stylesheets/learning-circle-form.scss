@@ -20,10 +20,11 @@
   z-index: 1;
   position: absolute;
   left: 0;
-  overflow: visible;
+  overflow: scroll;
   background: white;
   transition: width 0.4s linear;
   padding-top: 64px;
+  padding-bottom: 60px;
 
   &.full-screen {
     width: 95vw;
