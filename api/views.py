@@ -58,12 +58,14 @@ def _map_to_json(sg):
 
 def _intCommaList(csv):
     values = csv.split(',') if csv else []
+    cleaned = []
     for value in values:
         try:
-            int(value)
+            v = int(value)
+            cleaned += [v]
         except ValueError:
-            return 'Not a list of integers seperated by commas'
-    return None
+            return None, 'Not a list of integers seperated by commas'
+    return cleaned, None
 
 
 def _limit_offset(request):
@@ -173,7 +175,7 @@ class LearningCircleListView(View):
             weekdays = request.GET.get('weekdays').split(',')
             query = None
             for weekday in weekdays:
-                # __week_day differst from datetime.weekday()
+                # __week_day differs from datetime.weekday()
                 # Monday should be 0
                 weekday = int(weekday) + 2 % 7
                 query = query | Q(start_date__week_day=weekday) if query else Q(start_date__week_day=weekday)

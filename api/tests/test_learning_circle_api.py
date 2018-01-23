@@ -1,10 +1,8 @@
 # coding: utf-8
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from django.test import Client
 from django.core import mail
 from django.contrib.auth.models import User
-from django.utils import timezone
-from django.utils.translation import get_language
 
 from mock import patch
 
@@ -27,7 +25,6 @@ class TestLearningCircleApi(TestCase):
     def test_create_learning_circle(self):
         c = Client()
         c.login(username='faci@example.net', password='password')
-        resp = c.get('/api/courses/')
         data = {
             "course": 3,
             "description": "Lets learn something",
@@ -55,6 +52,29 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(lc.start_date, datetime.date(2018,2,12))
         self.assertEqual(lc.meeting_time, datetime.time(17,1))
         self.assertEqual(lc.studygroupmeeting_set.all().count(), 2)
+        self.assertEquals(len(mail.outbox), 1)
+        self.assertEquals(mail.outbox[0].subject, 'Your Learning Circle has been created! What next?')
+        self.assertIn('faci@example.net', mail.outbox[0].to)
+        self.assertIn('community@localhost', mail.outbox[0].bcc)
 
 
+    def test_get_learning_circles(self):
+        c = Client()
+        resp = c.get('/api/learningcircles/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["count"], 4)
+
+
+    def test_get_learning_circles_by_weekday(self):
+        sg = StudyGroup.objects.get(pk=1)
+        sg.start_date = datetime.date(2018,01,26)
+        sg.save()
+        sg = StudyGroup.objects.get(pk=2)
+        sg.start_date = datetime.date(2018,01,27)
+        sg.save()
+        c = Client()
+        # Friday and Saturday   
+        resp = c.get('/api/learningcircles/?weekdays=4,5')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["count"], 2)
 
