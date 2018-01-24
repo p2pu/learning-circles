@@ -24,6 +24,8 @@ from studygroups.views import TeamInvitationCreate
 from studygroups.views import FacilitatorSignup
 from studygroups.views import FacilitatorSignupSuccess
 from studygroups.views import FacilitatorStudyGroupCreate
+from studygroups.views import FacilitatorStudyGroupPublished
+from studygroups.views import FacilitatorStudyGroupSaved
 from studygroups.views import InvitationConfirm
 from studygroups.views import OptOutView
 from studygroups.views import CourseListView
@@ -79,6 +81,8 @@ urlpatterns = [
 
     url(r'^facilitator/$', views.facilitator, name='studygroups_facilitator'),
     url(r'^facilitator/study_group/create/$', FacilitatorStudyGroupCreate.as_view(), name='studygroups_facilitator_studygroup_create'),
+    url(r'^facilitator/study_group/published$', FacilitatorStudyGroupPublished.as_view(), name='studygroups_facilitator_studygroup_published'),
+    url(r'^facilitator/study_group/saved$', FacilitatorStudyGroupSaved.as_view(), name='studygroups_facilitator_studygroup_saved'),
     url(r'^facilitator/signup/$', user_is_not_logged_in(FacilitatorSignup.as_view()), name='studygroups_facilitator_signup'),
     url(r'^facilitator/signup/success/$', FacilitatorSignupSuccess.as_view(), name='studygroups_facilitator_signup_success'),
     url(r'^facilitator/team-invitation/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm'),

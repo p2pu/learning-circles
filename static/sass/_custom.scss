@@ -102,7 +102,7 @@
     }
 
     a.link-overlay{
-	    position:absolute; 
+	    position:absolute;
  	    width:100%;
  	    height:100%;
  	    left: 0;
@@ -293,4 +293,25 @@ img.lc-about-image{
 
 .recipe-card-links .btn.btn-primary {
   margin-top: 5px;
+}
+
+.confirmation-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    &.saved {
+        i.material-icons {
+            font-size: 200px;
+            color: $p2pu-blue;
+        }
+    }
+
+    &.published {
+        i.material-icons {
+            font-size: 200px;
+            color: $p2pu-yellow;
+        }
+    }
 }

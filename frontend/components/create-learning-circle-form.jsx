@@ -38,19 +38,21 @@ export default class CreateLearningCircleForm extends React.Component {
   }
 
   _updateFormData(data) {
-    const newLearningCircle = {
-      ...this.state.learningCirlce,
-      ...data
-    }
-    this.setState({ learningCircle: newLearningCircle }, () => console.log(this.state.learningCirlce))
+    this.setState({
+      learningCircle: {
+        ...this.state.learningCircle,
+        ...data
+      }
+    }, () => console.log(this.state.learningCircle))
   }
 
   _updateUserData(data) {
-    const newUser = {
-      ...this.state.user,
-      ...data
-    }
-    this.setState({ user: newUser }, () => console.log(this.state.user))
+    this.setState({
+      user: {
+        ...this.state.user,
+        ...data
+      }
+    }, () => console.log(this.state.user))
   }
 
   _toggleHelp() {
