@@ -13,4 +13,5 @@ urlpatterns = [
     url(r'^learning-circle/$', views.LearningCircleCreateView.as_view(), name='api_learningcircles_create'),
     url(r'^landing-page-learning-circles/$', views.LandingPageLearningCirclesView.as_view(), name='api_learningcircles_meetings'),
     url(r'^landing-page-stats/$', views.LandingPageStatsView.as_view(), name='api_landing_page_stats'),
+    url(r'^upload_image/$', views.ImageUploadView.as_view(), name='api_image_upload'),
 ]

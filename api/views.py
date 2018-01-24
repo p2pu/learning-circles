@@ -1,5 +1,6 @@
 from django.core.urlresolvers import reverse
 from django.views import View
+from django.views.generic.edit import FormView
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -8,6 +9,8 @@ from django.db.models import Q, F, Case, When, Value, Sum, Min, Max
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchVector
+from django.core.files.storage import get_storage_class
+from django.conf import settings
 
 import json
 import datetime
@@ -21,9 +24,10 @@ from studygroups.models import Team
 from studygroups.models import generate_all_meetings
 
 from uxhelpers.utils import json_response
-from .geo import getLatLonDelta
 
+from .geo import getLatLonDelta
 from . import schema
+from .forms import ImageForm
 
 
 def _map_to_json(sg):
@@ -479,3 +483,20 @@ class LandingPageStatsView(View):
             "learning_circle_count": learning_circle_count
         }
         return json_response(request, data)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ImageUploadView(View):
+
+    def post(self, request):
+        form = ImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = form.cleaned_data['image']
+            storage = get_storage_class()()
+            filename = storage.save(image.name, image)
+            # TODO - get full URL
+            image_url = ''.join([settings.MEDIA_URL, filename])
+            return json_response(request, {"image_url": image_url})
+        else:
+            return json_response(request, {'error': 'not a valid image'})
+
