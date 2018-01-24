@@ -31,10 +31,10 @@ const RegistrationModal = (props) => {
           />
           <InputWithLabel
             label={'Email address:'}
-            value={props.user.email || ''}
+            value={props.user.username || ''}
             handleChange={props.updateUserData}
-            name={'email'}
-            id={'id_email'}
+            name={'username'}
+            id={'id_username'}
             type={'email'}
           />
           <InputWithLabel
@@ -49,7 +49,7 @@ const RegistrationModal = (props) => {
             <a href='/en/accounts/login/'>Already have an account? Log in here.</a>
             <div className="buttons">
               <button className="p2pu-btn dark">Cancel</button>
-              <button className="p2pu-btn blue">Register</button>
+              <button className="p2pu-btn blue" onClick={props.registerUser}>Register</button>
             </div>
           </div>
         </div>

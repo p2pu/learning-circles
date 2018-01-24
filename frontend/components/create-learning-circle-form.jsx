@@ -29,6 +29,7 @@ export default class CreateLearningCircleForm extends React.Component {
     this.closeModal = () => this._closeModal();
     this.updateFormData = (data) => this._updateFormData(data);
     this.updateUserData = (data) => this._updateUserData(data);
+    this.registerUser = () => this._registerUser();
     this.allTabs = {
       0: '1. Course',
       1: '2. Location',
@@ -76,8 +77,9 @@ export default class CreateLearningCircleForm extends React.Component {
   }
 
   _onSubmitForm() {
-    if (this.state.loggedIn) {
+    if (this.props.user) {
       console.log(this.state.learningCircle)
+      // save learning circle
     } else {
       this.showModal()
     }
@@ -89,11 +91,27 @@ export default class CreateLearningCircleForm extends React.Component {
   }
 
   _onSaveDraft() {
-    if (this.state.loggedIn) {
+    if (this.props.user) {
       console.log(this.state.learningCircle)
+      // save learning circle
     } else {
       this.showModal()
     }
+  }
+
+  _registerUser() {
+    let userFormData = new FormData();
+    userFormData.append('username', this.state.user.username)
+    userFormData.append('first_name', this.state.user.first_name)
+    userFormData.append('last_name', this.state.user.last_name)
+    userFormData.append('password', this.state.user.password)
+    userFormData.append('csrfmiddlewaretoken', this.props.token)
+
+    const url = '/en/facilitator/signup/'
+
+    const request = new XMLHttpRequest();
+    request.open("POST", url);
+    request.send(userFormData);
   }
 
   render() {
@@ -121,6 +139,7 @@ export default class CreateLearningCircleForm extends React.Component {
           open={this.state.showModal}
           closeModal={this.closeModal}
           user={this.state.user}
+          registerUser={this.registerUser}
         />
       </div>
     );

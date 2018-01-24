@@ -24,6 +24,8 @@ from django.db.models import Q
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 
+from django.views.decorators.csrf import csrf_exempt, requires_csrf_token
+
 from studygroups.models import Activity
 from studygroups.models import Facilitator
 from studygroups.models import TeamMembership
@@ -370,7 +372,7 @@ def add_member(request, study_group_id):
     }
     return render(request, 'studygroups/add_member.html', context)
 
-
+@csrf_exempt
 class FacilitatorSignup(CreateView):
     model = User
     form_class = FacilitatorForm

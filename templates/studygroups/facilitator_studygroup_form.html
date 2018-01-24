@@ -5,7 +5,7 @@
 {% load i18n %}
 
 {% block content %}
-<div id='create-learning-circle-form'>
+<div id='create-learning-circle-form' data-user="{{ request.user }}" data-crsfToken="{{ crsf_token }}">
   <div class="container learning-circle-signup">
     <div class="row">
 
@@ -18,7 +18,7 @@
         {% crispy form %}
       </div>
     </div>
-  </div>
+  </div>g
 </div>
 {% endblock %}
 
