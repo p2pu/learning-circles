@@ -17,7 +17,6 @@ export default class CreateLearningCircleForm extends React.Component {
       currentTab: 0,
       showHelp: true,
       learningCircle: {},
-      user: {},
       showModal: false
     };
     this.changeTab = (tab) => this._changeTab(tab);
@@ -44,16 +43,7 @@ export default class CreateLearningCircleForm extends React.Component {
         ...this.state.learningCircle,
         ...data
       }
-    }, () => console.log(this.state.learningCircle))
-  }
-
-  _updateUserData(data) {
-    this.setState({
-      user: {
-        ...this.state.user,
-        ...data
-      }
-    }, () => console.log(this.state.user))
+    })
   }
 
   _toggleHelp() {
@@ -99,21 +89,6 @@ export default class CreateLearningCircleForm extends React.Component {
     }
   }
 
-  _registerUser() {
-    let userFormData = new FormData();
-    userFormData.append('username', this.state.user.username)
-    userFormData.append('first_name', this.state.user.first_name)
-    userFormData.append('last_name', this.state.user.last_name)
-    userFormData.append('password', this.state.user.password)
-    userFormData.append('csrfmiddlewaretoken', this.props.token)
-
-    const url = '/en/facilitator/signup/'
-
-    const request = new XMLHttpRequest();
-    request.open("POST", url);
-    request.send(userFormData);
-  }
-
   render() {
     return (
       <div className='page-container'>
@@ -135,11 +110,9 @@ export default class CreateLearningCircleForm extends React.Component {
           onSubmitForm={this.onSubmitForm}
         />
         <RegistrationModal
-          updateUserData={this.updateUserData}
           open={this.state.showModal}
           closeModal={this.closeModal}
-          user={this.state.user}
-          registerUser={this.registerUser}
+          user={this.props.user}
         />
       </div>
     );

@@ -372,7 +372,7 @@ def add_member(request, study_group_id):
     }
     return render(request, 'studygroups/add_member.html', context)
 
-@csrf_exempt
+
 class FacilitatorSignup(CreateView):
     model = User
     form_class = FacilitatorForm
