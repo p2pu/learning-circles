@@ -83,7 +83,7 @@ export default class CreateLearningCircleForm extends React.Component {
   _onSaveDraft() {
     if (this.props.user) {
       console.log(this.state.learningCircle)
-      // save learning circle
+
     } else {
       this.showModal()
     }
