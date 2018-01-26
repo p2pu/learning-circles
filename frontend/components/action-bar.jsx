@@ -19,7 +19,7 @@ export default class CreateLearningCircleForm extends React.Component{
     if (this.props.currentTab === 3) {
       return(
         <button className="p2pu-btn orange" onClick={this.props.onSubmitForm}>
-          Save and Publish
+          Publish
         </button>
       )
     }

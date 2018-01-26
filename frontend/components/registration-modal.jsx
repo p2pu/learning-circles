@@ -48,7 +48,7 @@ export default class RegistrationModal extends React.Component {
 
   render() {
     return (
-      <Modal open={this.props.open} onClose={this.props.closeModal} classNames={{modal: 'registration-modal', overlay: 'modal-overlay'}} little>
+      <Modal open={this.props.open} onClose={this.props.closeModal} classNames={{modal: 'registration-modal', overlay: 'modal-overlay'}}>
         <div className='registration-modal-content'>
           <h4>Create an account</h4>
           <p>In order to save your learning circle, you need to register or <a href='/en/accounts/login/'>log in</a>.</p>

@@ -17,7 +17,8 @@ export default class CreateLearningCircleForm extends React.Component {
       currentTab: 0,
       showHelp: true,
       learningCircle: {},
-      showModal: false
+      showModal: false,
+      showHelp: false,
     };
     this.changeTab = (tab) => this._changeTab(tab);
     this.onSubmitForm = () => this._onSubmitForm();
@@ -92,6 +93,10 @@ export default class CreateLearningCircleForm extends React.Component {
   render() {
     return (
       <div className='page-container'>
+        <div className='show-help' onClick={this.toggleHelp}>
+          <i className="material-icons">{ this.state.showHelp ? 'close' : 'info_outline' }</i>
+          <small className='minicaps'>{ this.state.showHelp ? 'back' : 'info' }</small>
+        </div>
         <FormTabs
           updateFormData={this.updateFormData}
           showHelp={this.state.showHelp}
@@ -101,7 +106,7 @@ export default class CreateLearningCircleForm extends React.Component {
           changeTab={this.changeTab}
           learningCircle={this.state.learningCircle}
         />
-        <HelpSection currentTab={this.state.currentTab} open={this.state.openHelp} />
+        <HelpSection currentTab={this.state.currentTab} />
         <ActionBar
           currentTab={this.state.currentTab}
           changeTab={this.changeTab}

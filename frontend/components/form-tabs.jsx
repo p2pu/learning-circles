@@ -19,10 +19,10 @@ export default class FormTabs extends React.Component{
   }
 
   render() {
-    const buttonIcon = this.props.showHelp ? 'fa fa-arrow-right' : 'fa fa-arrow-left'
-    const containerClass = this.props.showHelp ? 'half-screen' : 'full-screen'
+    const hide = this.props.showHelp ? 'hide' : '';
+
     return (
-      <div className={`form-container ${containerClass}`}>
+      <div className={`form-container ${hide}`}>
         <Tabs selectedIndex={this.props.currentTab} onSelect={this.switchTab} >
           <TabList className='tabs-list'>
             <Tab className='tabs-item'>{this.props.allTabs[0]}</Tab>
