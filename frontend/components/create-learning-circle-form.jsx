@@ -69,8 +69,22 @@ export default class CreateLearningCircleForm extends React.Component {
 
   _onSubmitForm() {
     if (this.props.user) {
-      console.log(this.state.learningCircle)
-      // save learning circle
+      const data = this.state.learningCircle
+      const url = '/api/learning-circle/'
+      console.log(data)
+
+      axios({
+        url,
+        data,
+        method: 'post',
+        responseType: 'json',
+        config: { headers: {'Content-Type': 'multipart/form-data' }}
+      }).then(res => {
+        console.log(res)
+      }).catch(err => {
+        console.log(err)
+      })
+
     } else {
       this.showModal()
     }
