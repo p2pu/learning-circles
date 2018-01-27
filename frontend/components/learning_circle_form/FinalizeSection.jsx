@@ -26,11 +26,9 @@ const FinalizeSection = (props) => {
       />
       <ImageUploader
         label={'Care to add an image?'}
-        value={props.learningCircle.image || ''}
         handleChange={props.updateFormData}
         name={'image'}
         id={'id_image'}
-        type={'file'}
       />
     </div>
   )

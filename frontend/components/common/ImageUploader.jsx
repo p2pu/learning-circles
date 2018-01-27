@@ -7,12 +7,12 @@ export default class ImageUploader extends Component {
     super(props);
     this.state = {};
     this.onChange = (e) => this._onChange(e);
-    this.onUploadFinished = (id) => this.onUploadFinished(id);
+    this.onUploadFinished = (url) => this._onUploadFinished(url);
   }
 
   _onChange(e) {
     const file = e.currentTarget.files[0];
-    const url = '/en/upload_image/';
+    const url = '/api/upload_image/';
     const data = new FormData();
 
     data.append('image', file)
@@ -25,13 +25,15 @@ export default class ImageUploader extends Component {
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     }).then(res => {
       console.log(res)
+      this.setState({ image: res.data.image_url })
+      this.onUploadFinished(res.data.image_url)
     }).catch(err => {
       console.log(err)
     })
   }
 
-  _onUploadFinished(id) {
-    this.props.handleChange({ [this.props.name]: id })
+  _onUploadFinished(url) {
+    this.props.handleChange({ [this.props.name]: url })
   }
 
   render() {
@@ -44,8 +46,13 @@ export default class ImageUploader extends Component {
           name={this.props.name}
           id={this.props.id}
           onChange={this.onChange}
-          value={this.props.value}
         />
+        {
+          this.state.image &&
+          <div className='image-preview' style={{ width: '250px'}}>
+            <img src={this.state.image} alt='Image preview' style={{ width: '100%', height: '100%'}} />
+          </div>
+        }
       </div>
     )
   }
