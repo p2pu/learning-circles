@@ -1,5 +1,6 @@
 from django.core.urlresolvers import reverse
 from django.views import View
+from django.views.generic.edit import FormView
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -8,8 +9,11 @@ from django.db.models import Q, F, Case, When, Value, Sum, Min, Max
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchVector
+from django.core.files.storage import get_storage_class
+from django.conf import settings
 
 import json
+import datetime
 
 
 from studygroups.models import Course
@@ -17,11 +21,13 @@ from studygroups.models import StudyGroup
 from studygroups.models import Application
 from studygroups.models import StudyGroupMeeting
 from studygroups.models import Team
+from studygroups.models import generate_all_meetings
 
 from uxhelpers.utils import json_response
-from .geo import getLatLonDelta
 
+from .geo import getLatLonDelta
 from . import schema
+from .forms import ImageForm
 
 
 def _map_to_json(sg):
@@ -56,12 +62,14 @@ def _map_to_json(sg):
 
 def _intCommaList(csv):
     values = csv.split(',') if csv else []
+    cleaned = []
     for value in values:
         try:
-            int(value)
+            v = int(value)
+            cleaned += [v]
         except ValueError:
-            return 'Not a list of integers seperated by commas'
-    return None
+            return None, 'Not a list of integers seperated by commas'
+    return cleaned, None
 
 
 def _limit_offset(request):
@@ -88,7 +96,7 @@ class LearningCircleListView(View):
             "weekdays": _intCommaList,
         }
         data = schema.django_get_to_dict(request.GET)
-        errors = schema.validate(query_schema, data)
+        clean_data, errors = schema.validate(query_schema, data)
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
@@ -171,7 +179,7 @@ class LearningCircleListView(View):
             weekdays = request.GET.get('weekdays').split(',')
             query = None
             for weekday in weekdays:
-                # __week_day differst from datetime.weekday()
+                # __week_day differs from datetime.weekday()
                 # Monday should be 0
                 weekday = int(weekday) + 2 % 7
                 query = query | Q(start_date__week_day=weekday) if query else Q(start_date__week_day=weekday)
@@ -233,10 +241,10 @@ class CourseListView(View):
         query_schema = {
             "offset": schema.integer(),
             "limit": schema.integer(),
-            "order": lambda v: None if v in ['title', 'usage', None] else "must be 'title' or 'usage'",
+            "order": lambda v: (v, None) if v in ['title', 'usage', None] else (None, "must be 'title' or 'usage'")
         }
         data = schema.django_get_to_dict(request.GET)
-        errors = schema.validate(query_schema, data)
+        clean_data, errors = schema.validate(query_schema, data)
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
@@ -314,6 +322,66 @@ class CourseTopicListView(View):
         data['topics'] = { k:v for k,v in Counter(topics).items() }
         return json_response(request, data)
 
+def _course_check(course_id):
+    if not Course.objects.filter(pk=int(course_id)).exists():
+        return None, 'Course matching ID not found'
+    else:
+        return Course.objects.get(pk=int(course_id)), None
+
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class LearningCircleCreateView(View):
+    def post(self, request):
+        post_schema = {
+            "course": schema.chain([
+                schema.integer(),
+                _course_check,
+            ], required=True),
+            "description": schema.text(required=True),
+            "venue_name": schema.text(required=True),
+            "venue_details": schema.text(required=True),
+            "venue_address": schema.text(required=True),
+            "city": schema.text(required=True),
+            "latitude": schema.floating_point(required=True),
+            "longitude": schema.floating_point(required=True),
+            "start_date": schema.date(required=True),
+            "weeks": schema.integer(required=True),
+            "meeting_time": schema.time(required=True),
+            "duration": schema.text(required=True),
+            "timezone": schema.text(required=True),
+            "venue_website": schema.text(),
+            "image": schema.text()
+        }
+        data = json.loads(request.body)
+        data, errors = schema.validate(post_schema, data)
+        if errors != {}:
+            return json_response(request, {"status": "error", "errors": errors})
+
+        # create learning circle
+        end_date = data.get('start_date') + datetime.timedelta(weeks=data.get('weeks') - 1)
+        study_group = StudyGroup(
+            course=data.get('course'),
+            facilitator=request.user,
+            description=data.get('description'),
+            venue_name=data.get('venue_name'),
+            venue_address=data.get('venue_address'),
+            venue_details=data.get('venue_details'),
+            venue_website=data.get('venue_website') or '',
+            city=data.get('city'),
+            latitude=data.get('latitude'),
+            longitude=data.get('longitude'),
+            start_date=data.get('start_date'),
+            end_date=end_date,
+            meeting_time=data.get('meeting_time'),
+            duration=data.get('duration'),
+            timezone=data.get('timezone'),
+            image=data.get('image'),
+        )
+        study_group.save()
+        generate_all_meetings(study_group)
+        return json_response(request, {"status": "created"});
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class SignupView(View):
@@ -328,7 +396,7 @@ class SignupView(View):
         post_schema = {
             "study_group": schema.chain([
                 schema.integer(),
-                lambda x: 'No matching learning circle exists' if not StudyGroup.objects.filter(pk=int(x)).exists() else None,
+                lambda x: (None, 'No matching learning circle exists') if not StudyGroup.objects.filter(pk=int(x)).exists() else (StudyGroup.objects.get(pk=int(x)), None),
             ], required=True),
             "name": schema.text(required=True),
             "email": schema.email(required=True),
@@ -336,7 +404,7 @@ class SignupView(View):
             "signup_questions": schema.schema(signup_questions, required=True)
         }
         data = json.loads(request.body)
-        errors = schema.validate(post_schema, data)
+        clean_data, errors = schema.validate(post_schema, data)
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
@@ -392,6 +460,7 @@ class LandingPageStatsView(View):
     - Number of active learning circles
     - Number of cities where learning circle happened
     - Number of facilitators who ran at least 1 learning circle
+    - Number of learning circles to date
     """
     def get(self, request):
         study_groups = StudyGroup.objects.active().filter(
@@ -403,6 +472,7 @@ class LandingPageStatsView(View):
             latitude__isnull=False,
             longitude__isnull=False,
         ).distinct('city').values('city')
+        learning_circle_count = StudyGroup.objects.active().count()
         facilitators = StudyGroup.objects.active().distinct('facilitator').values('facilitator')
         cities_s = list(set([c['city'].split(',')[0].strip() for c in cities]))
         data = {
@@ -410,5 +480,23 @@ class LandingPageStatsView(View):
             #"city_list": [v['city'] for v in cities],
             "cities": len(cities_s),
             "facilitators": facilitators.count(),
+            "learning_circle_count": learning_circle_count
         }
         return json_response(request, data)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ImageUploadView(View):
+
+    def post(self, request):
+        form = ImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = form.cleaned_data['image']
+            storage = get_storage_class()()
+            filename = storage.save(image.name, image)
+            # TODO - get full URL
+            image_url = ''.join([settings.MEDIA_URL, filename])
+            return json_response(request, {"image_url": image_url})
+        else:
+            return json_response(request, {'error': 'not a valid image'})
+

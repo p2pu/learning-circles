@@ -152,13 +152,6 @@ class OptOutForm(forms.Form):
                 application.delete()
 
 
-class MessageForm(forms.ModelForm):
-    class Meta:
-        model = Reminder
-        exclude = ['study_group_meeting', 'created_at', 'sent_at']
-        widgets = {'study_group': forms.HiddenInput} 
-
-
 class CourseForm(forms.ModelForm):
     LANGUAGES = (
         ('en', _('English')),
@@ -260,8 +253,7 @@ class StudyGroupForm(forms.ModelForm):
             'duration',
             'timezone',
             'venue_website',
-            'image',
-            'facilitator',
+            'image'
         ]
         labels = {
             'course': _('Choose the course that your Learning Circle will study.'),

@@ -34,7 +34,6 @@ from studygroups.models import Course
 from studygroups.models import Application
 from studygroups.models import Feedback
 from studygroups.models import Reminder
-from studygroups.forms import MessageForm
 from studygroups.forms import CourseForm
 from studygroups.forms import ApplicationForm
 from studygroups.forms import StudyGroupForm
@@ -46,7 +45,6 @@ from studygroups.models import send_reminder
 from studygroups.models import get_study_group_organizers
 from studygroups.decorators import user_is_group_facilitator
 
-from ..mailchimp import add_member_to_list
 
 import string, random
 
@@ -256,7 +254,7 @@ class CourseUpdate(UpdateView):
 ## This form is used by facilitators
 class StudyGroupUpdate(FacilitatorRedirectMixin, UpdateView):
     model = StudyGroup
-    form_class =  modelform_factory(StudyGroup, StudyGroupForm, exclude=['facilitator'])
+    form_class =  StudyGroupForm
     pk_url_kwarg = 'study_group_id'
 
 
@@ -291,8 +289,14 @@ class StudyGroupToggleSignup(RedirectView, SingleObjectMixin):
 def message_send(request, study_group_id):
     # TODO - this piggy backs of Reminder, won't work of Reminder is coupled to StudyGroupMeeting
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+    form_class =  modelform_factory(Reminder, exclude=['study_group_meeting', 'created_at', 'sent_at', 'sms_body'], widgets={'study_group': HiddenInput})
+
+    needs_mobile = study_group.application_set.active().exclude(mobile='').count() > 0
+    if needs_mobile:
+        form_class = modelform_factory(Reminder, exclude=['study_group_meeting', 'created_at', 'sent_at'], widgets={'study_group': HiddenInput})
+
     if request.method == 'POST':
-        form = MessageForm(request.POST)
+        form = form_class(request.POST)
         if form.is_valid():
             reminder = form.save()
             send_reminder(reminder)
@@ -300,7 +304,7 @@ def message_send(request, study_group_id):
             url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
     else:
-        form = MessageForm(initial={'study_group': study_group})
+        form = form_class(initial={'study_group': study_group})
 
     context = {
         'study_group': study_group,
@@ -318,8 +322,14 @@ def message_edit(request, study_group_id, message_id):
         url = reverse('studygroups_facilitator')
         messages.info(request, 'Message has already been sent and cannot be edited.')
         return http.HttpResponseRedirect(url)
+
+    form_class =  modelform_factory(Reminder, exclude=['study_group_meeting', 'created_at', 'sent_at', 'sms_body'], widgets={'study_group': HiddenInput})
+    needs_mobile = study_group.application_set.active().exclude(mobile='').count() > 0
+    if needs_mobile:
+        form_class = modelform_factory(Reminder, exclude=['study_group_meeting', 'created_at', 'sent_at'], widgets={'study_group': HiddenInput})
+
     if request.method == 'POST':
-        form = MessageForm(request.POST, instance=reminder)
+        form = form_class(request.POST, instance=reminder)
         if form.is_valid():
             reminder = form.save()
             messages.success(request, 'Message successfully edited')
@@ -328,7 +338,7 @@ def message_edit(request, study_group_id, message_id):
                 url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
     else:
-        form = MessageForm(instance=reminder)
+        form = form_class(instance=reminder)
 
     context = {
         'study_group': study_group,
@@ -387,28 +397,9 @@ class FacilitatorSignup(CreateView):
         self.object.first_name = user.first_name
         self.object.last_name = user.last_name
         self.object.save()
-        facilitator = Facilitator(user=self.object) #TODO are we still using Facilitator?
+        facilitator = Facilitator(user=self.object)
         facilitator.mailing_list_signup = form.cleaned_data['mailing_list_signup']
         facilitator.save()
-
-        # send password reset email to facilitator
-        # TODO - who does this email come from?
-        # TODO - do this async
-        reset_form = PasswordResetForm({'email': self.object.email})
-        if not reset_form.is_valid():
-            raise Exception(reset_form.errors)
-        reset_form.save(
-            subject_template_name='studygroups/email/facilitator_created-subject.txt',
-            email_template_name='studygroups/email/facilitator_created.txt',
-            html_email_template_name='studygroups/email/facilitator_created.html',
-            request=self.request,
-            from_email=settings.SERVER_EMAIL,
-        )
-
-        # Add facilitator to Mailchimp newsletter
-        if facilitator.mailing_list_signup:
-            # TODO - do this async
-            add_member_to_list(facilitator.user)
 
         return http.HttpResponseRedirect(self.get_success_url())
 
@@ -420,6 +411,7 @@ class FacilitatorSignupSuccess(TemplateView):
 class FacilitatorStudyGroupCreate(CreateView):
     success_url = reverse_lazy('studygroups_facilitator')
     template_name = 'studygroups/facilitator_studygroup_form.html'
+    form_class = StudyGroupForm
 
     def get_initial(self):
         initial = {}
@@ -427,16 +419,6 @@ class FacilitatorStudyGroupCreate(CreateView):
         if course_id:
             initial['course'] = get_object_or_404(Course, pk=course_id)
         return initial
-
-    def get_form_class(self):
-        return modelform_factory(StudyGroup, form=StudyGroupForm, exclude=['facilitator'])
-
-    def get_form(self, form_class=None):
-        form = super(FacilitatorStudyGroupCreate, self).get_form(form_class)
-        # TODO - filter courses for facilitators that are part of a team (probably move the logic to models)
-        #form.fields["course"].queryset = Course.objects.filter(Q(created_by=self.request.user) | Q(created_by__isnull=True)).order_by('title')
-
-        return form
 
     def form_valid(self, form):
         study_group = form.save(commit=False)

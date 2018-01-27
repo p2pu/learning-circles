@@ -48,7 +48,7 @@ class TestFacilitatorViews(TestCase):
         user.is_staff = True
         user.save()
 
-    @patch('studygroups.views.facilitate.add_member_to_list')
+    @patch('custom_registration.signals.add_member_to_list')
     def test_facilitator_signup(self, add_member_to_list):
         c = Client()
         data = {
@@ -68,7 +68,7 @@ class TestFacilitatorViews(TestCase):
         self.assertIn('New facilitator account created on', mail.outbox[0].subject)
 
 
-    @patch('studygroups.views.facilitate.add_member_to_list')
+    @patch('custom_registration.signals.add_member_to_list')
     def test_facilitator_signup_with_mixed_case(self, add_member_to_list):
         c = Client()
         data = {
@@ -228,6 +228,29 @@ class TestFacilitatorViews(TestCase):
         self.assertRedirects(resp, '/en/facilitator/')
         self.assertEqual(len(mail.outbox), 1)  # Send both email and text message
         self.assertTrue(send_message.called)
+
+
+    @patch('studygroups.models.send_message')
+    def test_dont_send_blank_sms(self, send_message):
+        c = Client()
+        c.login(username='admin', password='password')
+        signup_data = self.APPLICATION_DATA.copy()
+        signup_data['mobile'] = '+12812345678'
+        resp = c.post('/en/signup/foo-bob-1/', signup_data)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEquals(Application.objects.active().count(), 1)
+        mail.outbox = []
+
+        url = '/en/studygroup/{0}/message/compose/'.format(signup_data['study_group'])
+        mail_data = {
+            'study_group': signup_data['study_group'],
+            'email_subject': 'test', 
+            'email_body': 'Email body'
+        }
+        resp = c.post(url, mail_data)
+        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertEqual(len(mail.outbox), 1)  # Still send email
+        self.assertFalse(send_message.called) # dont send sms
 
 
     def test_feedback_submit(self):
