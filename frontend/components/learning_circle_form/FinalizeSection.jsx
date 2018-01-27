@@ -1,6 +1,7 @@
 import React from 'react'
 import TextareaWithLabel from '../common/TextareaWithLabel'
 import InputWithLabel from '../common/InputWithLabel'
+import ImageUploader from '../common/ImageUploader'
 
 const FinalizeSection = (props) => {
   const handleImageUpload = (pictures) => {
@@ -23,7 +24,7 @@ const FinalizeSection = (props) => {
         name={'venue_website'}
         id={'id_venue_website'}
       />
-      <InputWithLabel
+      <ImageUploader
         label={'Care to add an image?'}
         value={props.learningCircle.image || ''}
         handleChange={props.updateFormData}
