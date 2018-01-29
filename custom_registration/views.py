@@ -7,6 +7,7 @@ from django.template.defaultfilters import slugify
 from django.db.models import Q, F, Case, When, Value, Sum, Min, Max
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth import login
 from django.contrib.postgres.search import SearchVector
 
 import json
@@ -32,6 +33,7 @@ class SignupApiView(View):
             "email": schema.email(required=True),
             "first_name": schema.text(required=True),
             "last_name": schema.text(required=True),
+            "password": schema.text(required=True),
             #"mailing_list_signups": schema.boolean(),
         }
         data = json.loads(request.body)
@@ -40,7 +42,11 @@ class SignupApiView(View):
             return json_response(request, {"status": "error", "errors": errors})
 
         # TODO add mailing list signup
+        # TODO add password
         ## create user
-        create_user(data['email'], data['first_name'], data['last_name'], False)
+        user = create_user(data['email'], data['first_name'], data['last_name'], False)
+        # Sign user in
+        login(request, user)
+
         return json_response(request, {"status": "created"});
 
