@@ -3,6 +3,10 @@ import re
 from datetime import datetime
 from decimal import Decimal
 
+# Validators should return a function that takes the value as argument
+# and return a tuple (value, error) with error being None if the user 
+# supplied data is correct
+
 def _required(func):
     def decorator(*args, **kwargs):
         required = kwargs.get('required', False)
@@ -44,6 +48,16 @@ def floating_point():
             return f, None
         except ValueError:
             return None, error
+    return _validate
+
+
+@_required
+def boolean():
+    def _validate(value):
+        error = 'Not a boolean value'
+        if type(value) != type(True):
+            return None, error
+        return value, None
     return _validate
 
 
