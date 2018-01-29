@@ -13,7 +13,6 @@ from django.contrib.postgres.search import SearchVector
 import json
 import datetime
 
-
 from studygroups.models import Course
 from studygroups.models import StudyGroup
 from studygroups.models import Application
@@ -34,19 +33,16 @@ class SignupApiView(View):
             "first_name": schema.text(required=True),
             "last_name": schema.text(required=True),
             "password": schema.text(required=True),
-            #"mailing_list_signups": schema.boolean(),
+            "newsletter": schema.boolean(required=True),
         }
         data = json.loads(request.body)
         data, errors = schema.validate(post_schema, data)
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        # TODO add mailing list signup
-        # TODO add password
         ## create user
-        user = create_user(data['email'], data['first_name'], data['last_name'], False)
+        user = create_user(data['email'], data['first_name'], data['last_name'], data['password'], data['newsletter'])
         # Sign user in
         login(request, user)
 
         return json_response(request, {"status": "created"});
-
