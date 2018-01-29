@@ -14,7 +14,7 @@ export const SEARCH_PROPS = {
 export const SEARCH_SUBJECTS = {
   learningCircles: 'learning circles',
   courses: 'courses'
-}
+};
 
 export const MEETING_DAYS = [
   'Monday',
@@ -24,9 +24,10 @@ export const MEETING_DAYS = [
   'Friday',
   'Saturday',
   'Sunday'
-]
+];
 
 export const API_ENDPOINTS = {
+  learningCircle: '/api/learning-circle/',
   learningCircles: {
     baseUrl: 'https://learningcircles.p2pu.org/api/learningcircles/?',
     searchParams: ['q', 'topics', 'weekdays', 'latitude', 'longitude', 'distance', 'active', 'limit', 'offset', 'city', 'signup', 'team_id']
@@ -51,4 +52,8 @@ export const API_ENDPOINTS = {
     baseUrl: 'https://learningcircles.p2pu.org/api/landing-page-learning-circles/?',
     searchParams: []
   }
-}
+};
+
+export const LC_PUBLISHED_PAGE = '/facilitator/studygroup/published';
+export const LC_SAVED_DRAFT_PAGE = '/facilitator/study_group/saved';
+export const FACILITATOR_PAGE = '/en/facilitator';

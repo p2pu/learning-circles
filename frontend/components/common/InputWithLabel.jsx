@@ -14,7 +14,7 @@ const InputWithLabel = ({ name, id, classes, label, handleChange, value, placeho
         name={name}
         id={id}
         onChange={onChange}
-        value={value}
+        value={value || ''}
         placeholder={placeholder}
       />
     </div>

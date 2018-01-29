@@ -60,6 +60,11 @@ section.page-title {
   }
 }
 
+span.course-title {
+  font-weight: bolder;
+  color: $p2pu-blue;
+}
+
 .page {
   display: flex;
   flex-direction: column;

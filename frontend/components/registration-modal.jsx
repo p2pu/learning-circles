@@ -3,6 +3,7 @@ import axios from 'axios';
 
 import Modal from 'react-responsive-modal';
 import InputWithLabel from './common/InputWithLabel'
+import CheckboxWithLabel from './common/CheckboxWithLabel'
 
 
 import './stylesheets/learning-circle-form.scss'
@@ -30,17 +31,22 @@ export default class RegistrationModal extends React.Component {
 
   _submitForm(e) {
     e.preventDefault()
-    const data = new FormData(e.currentTarget);
-    const url = '/en/facilitator/signup/'
+    const data = this.state.user;
+    const url = '/en/accounts/register/'
 
     axios({
       url,
       data,
       method: 'post',
       responseType: 'json',
-      config: { headers: {'Content-Type': 'multipart/form-data' }}
+      config: { headers: {'Content-Type': 'application/json' }}
     }).then(res => {
-      console.log(res)
+      if (res.data.status === 'created') {
+        this.props.closeModal();
+        this.props.onLogin(res.data.user, this.onSaveDraft);
+      } else if (!!res.data.errors) {
+        console.log('Errors!', res.data.errors)
+      }
     }).catch(err => {
       console.log(err)
     })
@@ -71,10 +77,10 @@ export default class RegistrationModal extends React.Component {
             />
             <InputWithLabel
               label={'Email address:'}
-              value={this.state.user.username || ''}
+              value={this.state.user.email || ''}
               handleChange={this.updateUserData}
-              name={'username'}
-              id={'id_username'}
+              name={'email'}
+              id={'id_email'}
               type={'email'}
             />
             <InputWithLabel
@@ -84,6 +90,13 @@ export default class RegistrationModal extends React.Component {
               name={'password'}
               id={'id_password'}
               type={'password'}
+            />
+            <CheckboxWithLabel
+              label='Would you like to receive the P2PU newsletter?'
+              checked={this.state.user.newsletter || false}
+              handleChange={this.updateUserData}
+              name={'newsletter'}
+              id={'id_newsletter'}
             />
             <div className="modal-actions">
               <a href='/en/accounts/login/'>Already have an account? Log in here.</a>

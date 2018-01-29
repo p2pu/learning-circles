@@ -8,8 +8,8 @@ const CourseSection = (props) => {
     <div>
       {
         props.learningCircle.course ?
-        <p>{`Selected course: ${props.learningCircle.courseTitle}`}</p> :
-        <p>Select a course below or <a href='#'>add a course</a></p>
+        <p>Selected course: <span className='course-title'>{props.learningCircle.courseTitle}</span></p> :
+        <p>Select a course below or <a href='/en/course/create/'>add a course</a></p>
       }
       <Search searchSubject={'courses'} updateFormData={props.updateFormData} />
     </div>

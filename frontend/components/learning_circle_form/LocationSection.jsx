@@ -1,6 +1,6 @@
 import React from 'react'
 import InputWithLabel from '../common/InputWithLabel'
-import CitySelect from './form_fields/CitySelect'
+import PlaceSelect from './form_fields/PlaceSelect'
 
 const LocationSection = (props) => {
   return (
@@ -15,11 +15,11 @@ const LocationSection = (props) => {
       />
       <InputWithLabel
         label={'What is the specific meeting spot?'}
-        value={props.learningCircle.venue_detail || ''}
+        value={props.learningCircle.venue_details || ''}
         placeholder={'Eg. Room 409, fourth floor'}
         handleChange={props.updateFormData}
-        name={'venue_detail'}
-        id={'id_venue_detail'}
+        name={'venue_details'}
+        id={'id_venue_details'}
       />
       <InputWithLabel
         label={'What is the address of the venue?'}
@@ -31,12 +31,12 @@ const LocationSection = (props) => {
       />
       <div className={`input-with-label form-group`} >
         <label htmlFor={props.city}>In which city is this happening?</label>
-        <CitySelect
+        <PlaceSelect
           name={'city'}
           id={'id_city'}
           label='Start typing any city name'
           value={props.learningCircle.city}
-          handleSelect={(city) => props.updateFormData({ city }) }
+          handleSelect={props.updateFormData}
         />
       </div>
     </div>

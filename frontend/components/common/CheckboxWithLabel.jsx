@@ -1,8 +1,8 @@
 import React from 'react'
 
-const CheckboxWithLabel = ({ name, classes, label, handleChange, checked }) => {
+const CheckboxWithLabel = ({ name, id, classes, label, handleChange, checked }) => {
   const onChange = (e) => {
-    handleChange(e.currentTarget.checked)
+    handleChange({ [name]: e.currentTarget.checked })
   }
 
   return(
@@ -10,9 +10,10 @@ const CheckboxWithLabel = ({ name, classes, label, handleChange, checked }) => {
       <input
         type="checkbox"
         name={name}
-        id={name}
+        id={id || name}
         onChange={onChange}
         checked={checked}
+        style={{marginRight: '10px'}}
       />
       <label htmlFor={name}>{label}</label>
     </div>
