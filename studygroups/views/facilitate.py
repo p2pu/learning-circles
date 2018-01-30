@@ -45,7 +45,6 @@ from studygroups.models import send_reminder
 from studygroups.models import get_study_group_organizers
 from studygroups.decorators import user_is_group_facilitator
 
-from ..mailchimp import add_member_to_list
 
 import string, random
 
@@ -138,7 +137,7 @@ class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
         }
 
     def form_valid(self, form):
-        # send notification to organizers about feedback 
+        # send notification to organizers about feedback
         to = [] #TODO should we send this to someone if the facilitators is not part of a team? - for now, don't worry, this notification is likely to be removed.
         meeting = get_object_or_404(StudyGroupMeeting, pk=self.kwargs.get('study_group_meeting_id'))
         organizers = get_study_group_organizers(meeting.study_group)
@@ -155,7 +154,7 @@ class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
         notification = EmailMultiAlternatives(subject, text_body, settings.SERVER_EMAIL, to)
         notification.attach_alternative(html_body, 'text/html')
         notification.send()
-        
+
         return super(FeedbackCreate, self).form_valid(form)
 
 
@@ -260,7 +259,7 @@ class StudyGroupUpdate(FacilitatorRedirectMixin, UpdateView):
 
 
 class StudyGroupDelete(FacilitatorRedirectMixin, DeleteView):
-    # TODO Need to fix back link for confirmation page 
+    # TODO Need to fix back link for confirmation page
     model = StudyGroup
     template_name = 'studygroups/confirm_delete.html'
     pk_url_kwarg = 'study_group_id'
@@ -291,7 +290,7 @@ def message_send(request, study_group_id):
     # TODO - this piggy backs of Reminder, won't work of Reminder is coupled to StudyGroupMeeting
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
     form_class =  modelform_factory(Reminder, exclude=['study_group_meeting', 'created_at', 'sent_at', 'sms_body'], widgets={'study_group': HiddenInput})
- 
+
     needs_mobile = study_group.application_set.active().exclude(mobile='').count() > 0
     if needs_mobile:
         form_class = modelform_factory(Reminder, exclude=['study_group_meeting', 'created_at', 'sent_at'], widgets={'study_group': HiddenInput})
@@ -355,7 +354,7 @@ def add_member(request, study_group_id):
 
     # only require name, email and/or mobile
     form_class =  modelform_factory(Application, fields=['study_group', 'name', 'email', 'mobile'], widgets={'study_group': HiddenInput})
-    
+
     if request.method == 'POST':
         form = form_class(request.POST, initial={'study_group': study_group})
         if form.is_valid():
@@ -398,28 +397,9 @@ class FacilitatorSignup(CreateView):
         self.object.first_name = user.first_name
         self.object.last_name = user.last_name
         self.object.save()
-        facilitator = Facilitator(user=self.object) #TODO are we still using Facilitator?
+        facilitator = Facilitator(user=self.object)
         facilitator.mailing_list_signup = form.cleaned_data['mailing_list_signup']
         facilitator.save()
-
-        # send password reset email to facilitator
-        # TODO - who does this email come from?
-        # TODO - do this async
-        reset_form = PasswordResetForm({'email': self.object.email})
-        if not reset_form.is_valid():
-            raise Exception(reset_form.errors)
-        reset_form.save(
-            subject_template_name='studygroups/email/facilitator_created-subject.txt',
-            email_template_name='studygroups/email/facilitator_created.txt',
-            html_email_template_name='studygroups/email/facilitator_created.html',
-            request=self.request,
-            from_email=settings.SERVER_EMAIL,
-        )
-
-        # Add facilitator to Mailchimp newsletter
-        if facilitator.mailing_list_signup:
-            # TODO - do this async
-            add_member_to_list(facilitator.user)
 
         return http.HttpResponseRedirect(self.get_success_url())
 
@@ -431,6 +411,7 @@ class FacilitatorSignupSuccess(TemplateView):
 class FacilitatorStudyGroupCreate(CreateView):
     success_url = reverse_lazy('studygroups_facilitator')
     template_name = 'studygroups/facilitator_studygroup_form.html'
+    form_class = StudyGroupForm
 
     def get_initial(self):
         initial = {}
@@ -438,16 +419,6 @@ class FacilitatorStudyGroupCreate(CreateView):
         if course_id:
             initial['course'] = get_object_or_404(Course, pk=course_id)
         return initial
-    
-    def get_form_class(self):
-        return StudyGroupForm
-
-    def get_form(self, form_class=None):
-        form = super(FacilitatorStudyGroupCreate, self).get_form(form_class)
-        # TODO - filter courses for facilitators that are part of a team (probably move the logic to models)
-        #form.fields["course"].queryset = Course.objects.filter(Q(created_by=self.request.user) | Q(created_by__isnull=True)).order_by('title')
-
-        return form
 
     def form_valid(self, form):
         study_group = form.save(commit=False)
@@ -456,6 +427,12 @@ class FacilitatorStudyGroupCreate(CreateView):
         generate_all_meetings(study_group)
         messages.success(self.request, _('You created a new Learning Circle! Check your email for next steps.'))
         return http.HttpResponseRedirect(self.success_url)
+
+class FacilitatorStudyGroupPublished(TemplateView):
+    template_name = 'studygroups/facilitator_studygroup_published.html'
+
+class FacilitatorStudyGroupSaved(TemplateView):
+    template_name = 'studygroups/facilitator_studygroup_saved.html'
 
 
 class InvitationConfirm(FormView):
