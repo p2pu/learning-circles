@@ -2,7 +2,7 @@ import React from 'react'
 
 const InputWithLabel = (props) => {
   const onChange = (e) => {
-    handleChange({ [props.name]: e.currentTarget.value })
+    props.handleChange({ [props.name]: e.currentTarget.value })
   }
 
   return(
@@ -13,7 +13,7 @@ const InputWithLabel = (props) => {
         type={props.type || 'text'}
         name={props.name}
         id={props.id}
-        onChange={props.onChange}
+        onChange={onChange}
         value={props.value || ''}
         placeholder={props.placeholder}
       />

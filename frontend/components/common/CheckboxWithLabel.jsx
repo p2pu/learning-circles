@@ -2,7 +2,7 @@ import React from 'react'
 
 const CheckboxWithLabel = (props) => {
   const onChange = (e) => {
-    handleChange({ [props.name]: e.currentTarget.checked })
+    props.handleChange({ [props.name]: e.currentTarget.checked })
   }
 
   return(
@@ -11,7 +11,7 @@ const CheckboxWithLabel = (props) => {
         type="checkbox"
         name={props.name}
         id={props.id || props.name}
-        onChange={props.onChange}
+        onChange={onChange}
         checked={props.checked}
         style={{marginRight: '10px'}}
       />
