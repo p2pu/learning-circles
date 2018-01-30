@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'analytics',
     'uxhelpers',
     'webpack_loader',
+    'custom_registration',
 ]
 
 MIDDLEWARE = [

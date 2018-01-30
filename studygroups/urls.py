@@ -23,6 +23,8 @@ from studygroups.views import TeamInvitationCreate
 from studygroups.views import FacilitatorSignup
 from studygroups.views import FacilitatorSignupSuccess
 from studygroups.views import FacilitatorStudyGroupCreate
+from studygroups.views import FacilitatorStudyGroupPublished
+from studygroups.views import FacilitatorStudyGroupSaved
 from studygroups.views import InvitationConfirm
 from studygroups.views import OptOutView
 from studygroups.views import CourseListView
@@ -66,8 +68,8 @@ urlpatterns = [
     # views regarding study group meetings
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[\d]+)/edit/$', user_is_group_facilitator(MeetingUpdate.as_view()), name='studygroups_edit_study_group_meeting'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/create/$', user_is_group_facilitator(MeetingCreate.as_view()), name='studygroups_create_study_group_meeting'),
-    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[0-9]+)/delete/$', user_is_group_facilitator(MeetingDelete.as_view()), name='studygroups_meeting_delete'),           
-   
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[0-9]+)/delete/$', user_is_group_facilitator(MeetingDelete.as_view()), name='studygroups_meeting_delete'),
+
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/(?P<pk>[\d]+)/$', user_is_group_facilitator(FeedbackDetail.as_view()), name='studygroups_feedback_detail'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/create/$', user_is_group_facilitator(FeedbackCreate.as_view()), name='studygroups_feedback'),
 
@@ -76,7 +78,9 @@ urlpatterns = [
     url(r'^course/(?P<pk>[\d]+)/delete/$', user_is_organizer(CourseDelete.as_view()), name='studygroups_course_delete'),
 
     url(r'^facilitator/$', views.facilitator, name='studygroups_facilitator'),
-    url(r'^facilitator/study_group/create/$', login_required(FacilitatorStudyGroupCreate.as_view()), name='studygroups_facilitator_studygroup_create'),
+    url(r'^facilitator/study_group/create/$', FacilitatorStudyGroupCreate.as_view(), name='studygroups_facilitator_studygroup_create'),
+    url(r'^facilitator/study_group/published$', FacilitatorStudyGroupPublished.as_view(), name='studygroups_facilitator_studygroup_published'),
+    url(r'^facilitator/study_group/saved$', FacilitatorStudyGroupSaved.as_view(), name='studygroups_facilitator_studygroup_saved'),
     url(r'^facilitator/signup/$', user_is_not_logged_in(FacilitatorSignup.as_view()), name='studygroups_facilitator_signup'),
     url(r'^facilitator/signup/success/$', FacilitatorSignupSuccess.as_view(), name='studygroups_facilitator_signup_success'),
     url(r'^facilitator/team-invitation/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm'),
