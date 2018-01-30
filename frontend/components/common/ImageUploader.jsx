@@ -37,8 +37,6 @@ export default class ImageUploader extends Component {
   }
 
   render() {
-    console.log('image uploader props', this.props)
-
     return(
       <div className={`input-with-label form-group ${this.props.classes}`}>
         <label htmlFor={this.props.name}>{this.props.label}</label>

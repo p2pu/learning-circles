@@ -3,6 +3,7 @@ import InputWithLabel from '../common/InputWithLabel'
 import PlaceSelect from './form_fields/PlaceSelect'
 
 const LocationSection = (props) => {
+  console.log(props)
   return (
     <div>
       <div className={`input-with-label form-group`} >
