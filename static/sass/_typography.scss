@@ -107,4 +107,10 @@ body {
     padding-top: $padding-sm;
     padding-bottom: $padding-sm;
   }
+
+  .minicaps {
+    font-size: $font-size-small;
+    text-transform: uppercase;
+    text-align: center;
+  }
 }

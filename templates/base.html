@@ -24,6 +24,7 @@
       {% render_bundle 'p2pu-strap' 'css' 'STYLEBUILD' %}
 
       {% block css %}{% endblock %}
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
       <script src="{% static 'js/vendor/modernizr-2.6.2.min.js' %}"></script>
   </head>
 
@@ -44,7 +45,7 @@
       </div>
     </div>
 
-    {% include 'footer.html' %}
+
 
 		{% include 'scripts.html' %}
     {% block scripts %}{% endblock %}

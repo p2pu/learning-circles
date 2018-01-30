@@ -45,4 +45,4 @@ class SignupApiView(View):
         # Sign user in
         login(request, user)
 
-        return json_response(request, {"status": "created"});
+        return json_response(request, { "status": "created", "user": user.username });

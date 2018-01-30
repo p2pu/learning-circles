@@ -53,14 +53,14 @@ nav {
   }
 
   &.collapsed {
-    left: 100%;
+    left: 105%;
   }
 
   #close-menu {
     height: 40px;
     width: 40px;
     border-radius: 50%;
-    background-color: $p2pu-light-blue;
+    background-color: $p2pu-blue;
     color: white;
     font-size: 28px;
     position: absolute;
@@ -108,16 +108,18 @@ nav {
 
   .menu-section {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
 
     &.full-column {
       height: 100%;
-      flex: 1 0 20%;
+      flex: 1 0 25%;
       border-right: 1px solid $p2pu-light-blue;
 
       .nav-container {
         height: 40vh;
+        margin-left: 20px;
+        margin-right: 20px;
       }
     }
 
