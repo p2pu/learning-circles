@@ -5,7 +5,7 @@ export default class ImageUploader extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { image: this.props.image };
     this.onChange = (e) => this._onChange(e);
     this.onUploadFinished = (url) => this._onUploadFinished(url);
   }
@@ -37,6 +37,8 @@ export default class ImageUploader extends Component {
   }
 
   render() {
+    console.log('image uploader props', this.props)
+
     return(
       <div className={`input-with-label form-group ${this.props.classes}`}>
         <label htmlFor={this.props.name}>{this.props.label}</label>

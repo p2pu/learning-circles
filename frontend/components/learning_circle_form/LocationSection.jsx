@@ -5,6 +5,16 @@ import PlaceSelect from './form_fields/PlaceSelect'
 const LocationSection = (props) => {
   return (
     <div>
+      <div className={`input-with-label form-group`} >
+        <label htmlFor={props.city}>In which city is this happening?</label>
+        <PlaceSelect
+          name={'city'}
+          id={'id_city'}
+          label='Start typing any city name'
+          placeObjectId={props.learningCircle.placeObjectId}
+          handleSelect={props.updateFormData}
+        />
+      </div>
       <InputWithLabel
         label={'Where will you meet?'}
         value={props.learningCircle.venue_name || ''}
@@ -29,16 +39,6 @@ const LocationSection = (props) => {
         name={'venue_address'}
         id={'id_venue_address'}
       />
-      <div className={`input-with-label form-group`} >
-        <label htmlFor={props.city}>In which city is this happening?</label>
-        <PlaceSelect
-          name={'city'}
-          id={'id_city'}
-          label='Start typing any city name'
-          value={props.learningCircle.city}
-          handleSelect={props.updateFormData}
-        />
-      </div>
     </div>
   );
 }

@@ -9,16 +9,25 @@ import css from 'react-select/dist/react-select.css';
 export default class PlaceSelect extends Component {
   constructor(props) {
     super(props);
-    this.state = { hits: [] };
+    this.state = { hits: [], value: null };
     this.handleChange = (s) => this._handleChange(s);
     this.searchPlaces = (query) => this._searchPlaces(query);
+    this.fetchPlaceById = () => this._fetchPlaceById();
+    this.generateCityOption = (place) => this._generateCityOption(place);
+  }
+
+  componentWillMount() {
+    if (!!this.props.placeObjectId) {
+      this.fetchPlaceById();
+    }
   }
 
   _handleChange(selected) {
     const cityData = {
       city: selected.value.locale_names.default,
       latitude: selected.value._geoloc.lat,
-      longitude: selected.value._geoloc.lng
+      longitude: selected.value._geoloc.lng,
+      placeObjectId: selected.value.objectID,
     }
 
     this.props.handleSelect(cityData)
@@ -44,12 +53,30 @@ export default class PlaceSelect extends Component {
     })
   }
 
+  _fetchPlaceById() {
+    const url = `https://places-dsn.algolia.net/1/places/${this.props.placeObjectId}`;
+
+    axios.get(url)
+      .then(res => {
+        const value = this.generateCityOption(res.data)
+        this.setState({ value })
+      })
+      .catch(err => {
+        console.log(err)
+      })
+
+  }
+
+  _generateCityOption(place) {
+    return {
+      label: `${place.locale_names.default}, ${place.administrative[0]}, ${place.country.default}`,
+      value: place
+    }
+  }
+
   render() {
-    const options = this.state.hits.map((place, index) => {
-      return {
-        label: `${place.locale_names.default}, ${place.administrative[0]}, ${place.country.default}`,
-        value: place
-      }
+    const options = this.state.hits.map((place) => {
+      return this.generateCityOption(place)
     })
 
     return(
