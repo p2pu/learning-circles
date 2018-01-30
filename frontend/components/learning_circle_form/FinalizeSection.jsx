@@ -7,6 +7,7 @@ const FinalizeSection = (props) => {
   const handleImageUpload = (pictures) => {
     props.updateFormData({ image: pictures })
   }
+
   return (
     <div>
       <TextareaWithLabel
