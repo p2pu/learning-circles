@@ -13,6 +13,7 @@ const LocationSection = (props) => {
           label='Start typing any city name'
           placeObjectId={props.learningCircle.placeObjectId}
           handleSelect={props.updateFormData}
+          errorMessage={props.errors.city}
         />
       </div>
       <InputWithLabel
@@ -22,6 +23,7 @@ const LocationSection = (props) => {
         handleChange={props.updateFormData}
         name={'venue_name'}
         id={'id_venue_name'}
+        errorMessage={props.errors.venue_name}
       />
       <InputWithLabel
         label={'What is the specific meeting spot?'}
@@ -30,6 +32,7 @@ const LocationSection = (props) => {
         handleChange={props.updateFormData}
         name={'venue_details'}
         id={'id_venue_details'}
+        errorMessage={props.errors.venue_details}
       />
       <InputWithLabel
         label={'What is the address of the venue?'}
@@ -38,6 +41,7 @@ const LocationSection = (props) => {
         handleChange={props.updateFormData}
         name={'venue_address'}
         id={'id_venue_address'}
+        errorMessage={props.errors.venue_address}
       />
     </div>
   );

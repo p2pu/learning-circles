@@ -34,25 +34,41 @@ export default class FormTabs extends React.Component{
           <TabPanel className='tab-content'>
             <div className='content-container'>
               <h4>Step 1: Select a Course</h4>
-              <CourseSection updateFormData={this.props.updateFormData} learningCircle={this.props.learningCircle} />
+              <CourseSection
+                updateFormData={this.props.updateFormData}
+                learningCircle={this.props.learningCircle}
+                errors={this.props.errors}
+              />
             </div>
           </TabPanel>
           <TabPanel className='tab-content'>
             <div className='content-container'>
               <h4>Step 2: Find a Location</h4>
-              <LocationSection updateFormData={this.props.updateFormData} learningCircle={this.props.learningCircle} />
+              <LocationSection
+                updateFormData={this.props.updateFormData}
+                learningCircle={this.props.learningCircle}
+                errors={this.props.errors}
+              />
             </div>
           </TabPanel>
           <TabPanel className='tab-content'>
             <div className='content-container'>
               <h4>Step 3: Select the Day and Time</h4>
-              <DayTimeSection updateFormData={this.props.updateFormData} learningCircle={this.props.learningCircle} />
+              <DayTimeSection
+                updateFormData={this.props.updateFormData}
+                learningCircle={this.props.learningCircle}
+                errors={this.props.errors}
+              />
             </div>
           </TabPanel>
           <TabPanel className='tab-content'>
             <div className='content-container'>
               <h4>Step 4: Finalize and Publish</h4>
-              <FinalizeSection updateFormData={this.props.updateFormData} learningCircle={this.props.learningCircle} />
+              <FinalizeSection
+                updateFormData={this.props.updateFormData}
+                learningCircle={this.props.learningCircle}
+                errors={this.props.errors}
+              />
             </div>
           </TabPanel>
         </Tabs>

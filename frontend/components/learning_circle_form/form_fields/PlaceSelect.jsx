@@ -80,16 +80,22 @@ export default class PlaceSelect extends Component {
     })
 
     return(
-      <Select
-        name={ this.props.name }
-        className={ `city-select ${this.props.classes}` }
-        value={ this.state.value }
-        options={ options }
-        onChange={ this.handleChange }
-        onInputChange={ this.searchPlaces }
-        noResultsText='No results for this city'
-        placeholder='Start typing a city name...'
-      />
+      <div>
+        <Select
+          name={ this.props.name }
+          className={ `city-select ${this.props.classes}` }
+          value={ this.state.value }
+          options={ options }
+          onChange={ this.handleChange }
+          onInputChange={ this.searchPlaces }
+          noResultsText='No results for this city'
+          placeholder='Start typing a city name...'
+        />
+        {
+          this.props.errorMessage &&
+          <div className="error-message minicaps">{this.props.errorMessage}</div>
+        }
+      </div>
     )
   }
 }

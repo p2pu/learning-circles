@@ -50,6 +50,12 @@ export default class ImageUploader extends Component {
           onChange={this.onChange}
         />
         {
+          this.props.errorMessage &&
+          <div className='error-message'>
+            { this.props.errorMessage }
+          </div>
+        }
+        {
           this.state.image &&
           <div className='image-preview' style={{ width: '250px'}}>
             <img src={this.state.image} alt='Image preview' style={{ width: '100%', height: '100%'}} />

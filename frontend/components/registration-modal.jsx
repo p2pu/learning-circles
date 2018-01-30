@@ -5,6 +5,7 @@ import Modal from 'react-responsive-modal';
 import InputWithLabel from './common/InputWithLabel'
 import CheckboxWithLabel from './common/CheckboxWithLabel'
 
+import { API_ENDPOINTS } from '../constants'
 
 import './stylesheets/learning-circle-form.scss'
 
@@ -32,7 +33,7 @@ export default class RegistrationModal extends React.Component {
   _submitForm(e) {
     e.preventDefault()
     const data = this.state.user;
-    const url = '/en/accounts/register/'
+    const url = API_ENDPOINTS.registration;
 
     axios({
       url,

@@ -16,6 +16,12 @@ const SelectWithLabel = (props) => {
         placeholder={ props.placeholder }
         multi={ props.multi || false }
       />
+      {
+        props.errorMessage &&
+        <div className='error-message minicaps'>
+          { props.errorMessage }
+        </div>
+      }
     </div>
   )
 }

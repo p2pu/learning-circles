@@ -15,6 +15,7 @@ const FinalizeSection = (props) => {
         handleChange={props.updateFormData}
         name={'description'}
         id={'id_description'}
+        errorMessage={props.errors.description}
       />
       <InputWithLabel
         label={'Do you have a website you want to link to?'}
@@ -23,6 +24,7 @@ const FinalizeSection = (props) => {
         handleChange={props.updateFormData}
         name={'venue_website'}
         id={'id_venue_website'}
+        errorMessage={props.errors.venue_website}
       />
       <ImageUploader
         label={'Care to add an image?'}
@@ -30,6 +32,7 @@ const FinalizeSection = (props) => {
         name={'image'}
         id={'id_image'}
         image={props.learningCircle.image}
+        errorMessage={props.errors.image}
       />
     </div>
   )

@@ -28,6 +28,7 @@ export const MEETING_DAYS = [
 
 export const API_ENDPOINTS = {
   learningCircle: '/api/learning-circle/',
+  registration: '/en/accounts/register/',
   learningCircles: {
     baseUrl: 'https://learningcircles.p2pu.org/api/learningcircles/?',
     searchParams: ['q', 'topics', 'weekdays', 'latitude', 'longitude', 'distance', 'active', 'limit', 'offset', 'city', 'signup', 'team_id']

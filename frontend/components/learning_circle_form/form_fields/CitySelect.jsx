@@ -74,6 +74,7 @@ export default class CitySelect extends Component {
         noResultsText='No results for this city'
         placeholder='Start typing a city name...'
       />
+
     )
   }
 }

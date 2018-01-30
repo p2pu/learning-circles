@@ -15,6 +15,7 @@ const DayTimeSection = (props) => {
         name={'start_date'}
         id={'id_start_date'}
         type={'date'}
+        errorMessage={props.errors.start_date}
       />
       <InputWithLabel
         label={'How many weeks will the learning circle run for?'}
@@ -24,6 +25,7 @@ const DayTimeSection = (props) => {
         name={'weeks'}
         id={'id_weeks'}
         type={'number'}
+        errorMessage={props.errors.weeks}
       />
       <InputWithLabel
         label={'What time will your learning circle meet each week?'}
@@ -32,15 +34,7 @@ const DayTimeSection = (props) => {
         name={'meeting_time'}
         id={'id_meeting_time'}
         type={'time'}
-      />
-      <InputWithLabel
-        label={'How long will each session last (in minutes)?'}
-        value={props.learningCircle.duration}
-        placeholder={90}
-        handleChange={props.updateFormData}
-        name={'duration'}
-        id={'id_duration'}
-        type={'number'}
+        errorMessage={props.errors.meeting_time}
       />
       <SelectWithLabel
         label={'What time zone is your learning circle happening in?'}
@@ -50,6 +44,17 @@ const DayTimeSection = (props) => {
         id={'id_timezone'}
         classes={'form-group input-with-label'}
         onChange={(selected) => { props.updateFormData({ timezone: selected.value })}}
+        errorMessage={props.errors.timezone}
+      />
+      <InputWithLabel
+        label={'How long will each session last (in minutes)?'}
+        value={props.learningCircle.duration}
+        placeholder={90}
+        handleChange={props.updateFormData}
+        name={'duration'}
+        id={'id_duration'}
+        type={'number'}
+        errorMessage={props.errors.duration}
       />
     </div>
   );

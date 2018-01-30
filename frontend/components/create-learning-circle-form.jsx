@@ -22,7 +22,8 @@ export default class CreateLearningCircleForm extends React.Component {
       learningCircle: {},
       showModal: false,
       showHelp: false,
-      user: this.props.user
+      user: this.props.user,
+      errors: {},
     };
     this.changeTab = (tab) => this._changeTab(tab);
     this.onSubmitForm = () => this._onSubmitForm();
@@ -84,7 +85,11 @@ export default class CreateLearningCircleForm extends React.Component {
         responseType: 'json',
         config: { headers: {'Content-Type': 'application/json' }}
       }).then(res => {
-        window.location.href = LC_PUBLISHED_PAGE;
+        if (res.data.status === 'created') {
+          window.location.href = LC_PUBLISHED_PAGE;
+        } else if (res.data.errors) {
+          this.setState({ errors: res.data.errors, currentTab: 0 })
+        }
       }).catch(err => {
         console.log(err)
       })
@@ -112,7 +117,12 @@ export default class CreateLearningCircleForm extends React.Component {
         config: { headers: {'Content-Type': 'application/json' }}
       }).then(res => {
         console.log(res)
-        window.location.href = LC_SAVED_DRAFT_PAGE;
+        debugger;
+        if (res.data.status === 'created') {
+          window.location.href = LC_SAVED_DRAFT_PAGE;
+        } else if (res.data.status === 'error') {
+          this.setState({ errors: res.data.errors })
+        }
       }).catch(err => {
         console.log(err)
       })
@@ -141,6 +151,7 @@ export default class CreateLearningCircleForm extends React.Component {
           allTabs={this.allTabs}
           changeTab={this.changeTab}
           learningCircle={this.state.learningCircle}
+          errors={this.state.errors}
         />
         <HelpSection currentTab={this.state.currentTab} />
         <ActionBar
