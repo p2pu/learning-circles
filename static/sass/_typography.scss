@@ -7,7 +7,7 @@ body {
   }
 
   a {
-    color: #5F9EA0; //TODO
+    color: $p2pu-dark-blue;
     &:hover, &:focus, &:active {
       color: $p2pu-orange;
     }
@@ -112,5 +112,8 @@ body {
     font-size: $font-size-small;
     text-transform: uppercase;
     text-align: center;
+
+  .uppercase {
+    text-transform: uppercase;
   }
 }
