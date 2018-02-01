@@ -34,7 +34,6 @@ from studygroups.models import Course
 from studygroups.models import Application
 from studygroups.models import Feedback
 from studygroups.models import Reminder
-from studygroups.forms import MessageForm
 from studygroups.forms import CourseForm
 from studygroups.forms import ApplicationForm
 from studygroups.forms import StudyGroupForm
@@ -291,8 +290,14 @@ class StudyGroupToggleSignup(RedirectView, SingleObjectMixin):
 def message_send(request, study_group_id):
     # TODO - this piggy backs of Reminder, won't work of Reminder is coupled to StudyGroupMeeting
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+    form_class =  modelform_factory(Reminder, exclude=['study_group_meeting', 'created_at', 'sent_at', 'sms_body'], widgets={'study_group': HiddenInput})
+ 
+    needs_mobile = study_group.application_set.active().exclude(mobile='').count() > 0
+    if needs_mobile:
+        form_class = modelform_factory(Reminder, exclude=['study_group_meeting', 'created_at', 'sent_at'], widgets={'study_group': HiddenInput})
+
     if request.method == 'POST':
-        form = MessageForm(request.POST)
+        form = form_class(request.POST)
         if form.is_valid():
             reminder = form.save()
             send_reminder(reminder)
@@ -300,7 +305,7 @@ def message_send(request, study_group_id):
             url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
     else:
-        form = MessageForm(initial={'study_group': study_group})
+        form = form_class(initial={'study_group': study_group})
 
     context = {
         'study_group': study_group,
@@ -318,8 +323,14 @@ def message_edit(request, study_group_id, message_id):
         url = reverse('studygroups_facilitator')
         messages.info(request, 'Message has already been sent and cannot be edited.')
         return http.HttpResponseRedirect(url)
+
+    form_class =  modelform_factory(Reminder, exclude=['study_group_meeting', 'created_at', 'sent_at', 'sms_body'], widgets={'study_group': HiddenInput})
+    needs_mobile = study_group.application_set.active().exclude(mobile='').count() > 0
+    if needs_mobile:
+        form_class = modelform_factory(Reminder, exclude=['study_group_meeting', 'created_at', 'sent_at'], widgets={'study_group': HiddenInput})
+
     if request.method == 'POST':
-        form = MessageForm(request.POST, instance=reminder)
+        form = form_class(request.POST, instance=reminder)
         if form.is_valid():
             reminder = form.save()
             messages.success(request, 'Message successfully edited')
@@ -328,7 +339,7 @@ def message_edit(request, study_group_id, message_id):
                 url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
     else:
-        form = MessageForm(instance=reminder)
+        form = form_class(instance=reminder)
 
     context = {
         'study_group': study_group,
