@@ -16,7 +16,7 @@ export default class RegistrationModal extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { user: this.props.user || {} };
+    this.state = { user: this.props.user || {}, errors: {} };
     this.updateUserData = (data) => this._updateUserData(data);
     this.submitForm = (e) => this._submitForm(e);
   }
@@ -46,7 +46,7 @@ export default class RegistrationModal extends React.Component {
         this.props.closeModal();
         this.props.onLogin(res.data.user, this.onSaveDraft);
       } else if (!!res.data.errors) {
-        console.log('Errors!', res.data.errors)
+        this.setState({ errors: res.data.errors })
       }
     }).catch(err => {
       console.log(err)
@@ -58,7 +58,7 @@ export default class RegistrationModal extends React.Component {
       <Modal open={this.props.open} onClose={this.props.closeModal} classNames={{modal: 'registration-modal', overlay: 'modal-overlay'}}>
         <div className='registration-modal-content'>
           <h4>Create an account</h4>
-          <p>In order to save your learning circle, you need to register or <a href='/en/accounts/login/'>log in</a>.</p>
+          <p>In order to save your learning circle, you need to register or <a href='/accounts/login/?next=/en/facilitator/study_group/create/'>log in</a>.</p>
           <form id='registration-form' onSubmit={this.submitForm}>
             <InputWithLabel
               label={'First name:'}
@@ -67,6 +67,7 @@ export default class RegistrationModal extends React.Component {
               name={'first_name'}
               id={'id_first_name'}
               type={'text'}
+              errorMessage={this.state.errors.first_name}
             />
             <InputWithLabel
               label={'Last name:'}
@@ -75,6 +76,7 @@ export default class RegistrationModal extends React.Component {
               name={'last_name'}
               id={'id_last_name'}
               type={'text'}
+              errorMessage={this.state.errors.last_name}
             />
             <InputWithLabel
               label={'Email address:'}
@@ -83,6 +85,7 @@ export default class RegistrationModal extends React.Component {
               name={'email'}
               id={'id_email'}
               type={'email'}
+              errorMessage={this.state.errors.email}
             />
             <InputWithLabel
               label={'Password:'}
@@ -91,6 +94,7 @@ export default class RegistrationModal extends React.Component {
               name={'password'}
               id={'id_password'}
               type={'password'}
+              errorMessage={this.state.errors.password}
             />
             <CheckboxWithLabel
               label='Would you like to receive the P2PU newsletter?'
@@ -98,9 +102,10 @@ export default class RegistrationModal extends React.Component {
               handleChange={this.updateUserData}
               name={'newsletter'}
               id={'id_newsletter'}
+              errorMessage={this.state.errors.newsletter}
             />
             <div className="modal-actions">
-              <a href='/en/accounts/login/'>Already have an account? Log in here.</a>
+              <a href='/accounts/login/?next=/en/facilitator/study_group/create/'>Already have an account? Log in here.</a>
               <div className="buttons">
                 <button className="p2pu-btn dark" onClick={(e) => {e.preventDefault(); this.props.closeModal()}}>Cancel</button>
                 <button type='submit' className="p2pu-btn blue">Register</button>
