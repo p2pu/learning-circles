@@ -255,7 +255,7 @@ class CourseUpdate(UpdateView):
 ## This form is used by facilitators
 class StudyGroupUpdate(FacilitatorRedirectMixin, UpdateView):
     model = StudyGroup
-    form_class =  modelform_factory(StudyGroup, StudyGroupForm, exclude=['facilitator'])
+    form_class =  StudyGroupForm
     pk_url_kwarg = 'study_group_id'
 
 
@@ -440,7 +440,7 @@ class FacilitatorStudyGroupCreate(CreateView):
         return initial
     
     def get_form_class(self):
-        return modelform_factory(StudyGroup, form=StudyGroupForm, exclude=['facilitator'])
+        return StudyGroupForm
 
     def get_form(self, form_class=None):
         form = super(FacilitatorStudyGroupCreate, self).get_form(form_class)
