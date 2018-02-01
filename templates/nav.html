@@ -36,7 +36,8 @@
         </ul>
       </div>
       {% else %}
-        <a class="btn btn-default" href="{% url 'studygroups_login_redirect' %}">{% trans "Log in" %}</a>
+        <i class="fa fa-user" aria-hidden="true"></i>
+        <a class="uppercase" href="{% url 'studygroups_login_redirect' %}">{% trans "Log in" %}</a>
       {% endif %}
     </div>
 
