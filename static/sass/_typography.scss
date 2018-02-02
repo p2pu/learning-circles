@@ -22,7 +22,7 @@ body {
   }
 
   .bold {
-    font-family: $font-family-sans-serif-bold;
+    font-weight: bold;
   }
 
   .italic {
@@ -116,9 +116,5 @@ body {
 
   .uppercase {
     text-transform: uppercase;
-  }
-
-  .monospace {
-    font-family: monospace;
   }
 }

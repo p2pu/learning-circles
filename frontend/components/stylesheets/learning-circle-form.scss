@@ -65,6 +65,14 @@
       overflow-y: scroll;
       width: 100%;
     }
+
+    .rc-time-picker {
+      .rc-time-picker-input {
+        font-size: 16px;
+        color: #515665;
+        height: auto;
+      }
+    }
   }
 
   .toggleHelp {

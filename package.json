@@ -38,6 +38,7 @@
     "node-sass": "^3.13.0",
     "places.js": "^1.4.18",
     "promise-polyfill": "^6.0.2",
+    "rc-time-picker": "^3.2.1",
     "react": "^15.5.4",
     "react-autocomplete": "^1.7.1",
     "react-dom": "^15.5.4",

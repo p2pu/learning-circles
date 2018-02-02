@@ -1,10 +1,12 @@
 import React from 'react';
 import InputWithLabel from '../common/InputWithLabel';
 import SelectWithLabel from '../common/SelectWithLabel';
+import TimePickerWithLabel from '../common/TimePickerWithLabel';
 import moment from 'moment-timezone';
 
 const DayTimeSection = (props) => {
   const timezoneOptions = moment.tz.names().map((tz) => ({value: tz, label: tz }))
+
   return (
     <div>
       <InputWithLabel
@@ -21,19 +23,19 @@ const DayTimeSection = (props) => {
         label={'How many weeks will the learning circle run for?'}
         value={props.learningCircle.weeks}
         handleChange={props.updateFormData}
-        placeholder={6}
+        defaultValue={6}
         name={'weeks'}
         id={'id_weeks'}
         type={'number'}
         errorMessage={props.errors.weeks}
       />
-      <InputWithLabel
+      <TimePickerWithLabel
         label={'What time will your learning circle meet each week?'}
-        value={props.learningCircle.meeting_time}
+        open={true}
         handleChange={props.updateFormData}
         name={'meeting_time'}
         id={'id_meeting_time'}
-        type={'time'}
+        value={props.learningCircle.meeting_time}
         errorMessage={props.errors.meeting_time}
       />
       <SelectWithLabel
@@ -49,7 +51,7 @@ const DayTimeSection = (props) => {
       <InputWithLabel
         label={'How long will each session last (in minutes)?'}
         value={props.learningCircle.duration}
-        placeholder={90}
+        defaultValue={90}
         handleChange={props.updateFormData}
         name={'duration'}
         id={'id_duration'}
