@@ -123,6 +123,11 @@
 
   i {
     margin-left: 6px;
+
+    &.fa-arrow-left {
+      margin-left: 0;
+      margin-right: 6px;
+    }
   }
 
   button.p2pu-btn {

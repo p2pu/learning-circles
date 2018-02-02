@@ -8,14 +8,20 @@ export default class CreateLearningCircleForm extends React.Component{
     super(props);
     this.state = {};
     this.nextTab = () => this._nextTab();
-    this.generateAction = () => this._generateAction()
+    this.prevTab = () => this._prevTab();
+    this.generateNextAction = () => this._generateNextAction()
+    this.generatePreviousAction = () => this._generatePreviousAction()
   }
 
   _nextTab() {
     this.props.changeTab(this.props.currentTab + 1)
   }
 
-  _generateAction() {
+  _prevTab() {
+    this.props.changeTab(this.props.currentTab - 1)
+  }
+
+  _generateNextAction() {
     if (this.props.currentTab === 3) {
       return(
         <button className="p2pu-btn orange" onClick={this.props.onSubmitForm}>
@@ -31,12 +37,25 @@ export default class CreateLearningCircleForm extends React.Component{
     )
   }
 
+  _generatePreviousAction() {
+    if (this.props.currentTab === 0) {
+      return null
+    }
+
+    return(
+      <button className="p2pu-btn blue" onClick={this.prevTab}>
+        <i className="fa fa-arrow-left" aria-hidden="true"></i>Previous Step
+      </button>
+    )
+  }
+
   render() {
     return (
       <div className='action-bar'>
+        { this.generatePreviousAction() }
         <button onClick={this.props.onCancel} className="p2pu-btn transparent">Cancel</button>
         <button onClick={this.props.onSaveDraft} className="p2pu-btn dark">Save Draft</button>
-        { this.generateAction() }
+        { this.generateNextAction() }
       </div>
     );
   }
