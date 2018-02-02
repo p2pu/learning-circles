@@ -23,7 +23,6 @@
   overflow: scroll;
   background: white;
   padding-top: 64px;
-  padding-bottom: 60px;
 
   .tabs-list {
     font-size: 12px;
@@ -64,6 +63,7 @@
     .content-container {
       overflow-y: scroll;
       width: 100%;
+      padding-bottom: 60px;
     }
 
     .rc-time-picker {
@@ -72,6 +72,14 @@
         color: #515665;
         height: auto;
       }
+    }
+
+    input[type="date"].form-control {
+      line-height: 1.428571429;
+    }
+
+    input[type="file"].image-upload {
+      display: flex;
     }
   }
 
