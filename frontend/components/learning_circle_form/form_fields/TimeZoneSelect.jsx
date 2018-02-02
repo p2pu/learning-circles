@@ -20,8 +20,9 @@ export default class TimeZoneSelect extends Component {
   }
 
   _onChange(selected) {
-    this.props.handleChange({ timezone: selected.value })
-    this.setState({ value: selected })
+    const timezone = !!selected ? selected.value : null;
+    this.props.handleChange({ timezone });
+    this.setState({ value: selected });
   }
 
   _detectTimeZone() {
@@ -35,6 +36,10 @@ export default class TimeZoneSelect extends Component {
         this.props.handleChange({ timezone })
         this.setState({ value: { value: timezone, label: timezone } })
       }).catch(err => console.log(err))
+    } else {
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      this.props.handleChange({ timezone })
+      this.setState({ value: { value: timezone, label: timezone } })
     }
   }
 
