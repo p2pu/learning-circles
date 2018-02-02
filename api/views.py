@@ -380,7 +380,9 @@ class LearningCircleCreateView(View):
         )
         study_group.save()
         generate_all_meetings(study_group)
-        return json_response(request, {"status": "created"});
+
+        study_group_url = "https://learningcircles.p2pu.org" + reverse('studygroups_signup', args=(slugify(study_group.venue_name), study_group.id,))
+        return json_response(request, { "status": "created", "study_group_url": study_group_url });
 
 
 @method_decorator(csrf_exempt, name='dispatch')

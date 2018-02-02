@@ -86,7 +86,7 @@ export default class CreateLearningCircleForm extends React.Component {
         config: { headers: {'Content-Type': 'application/json' }}
       }).then(res => {
         if (res.data.status === 'created') {
-          window.location.href = LC_PUBLISHED_PAGE;
+          window.location.href = `${LC_PUBLISHED_PAGE}?url=${res.data.study_group_url}`;
         } else if (res.data.errors) {
           this.setState({ errors: res.data.errors, currentTab: 0 })
         }
