@@ -44,6 +44,16 @@ export default class CreateLearningCircleForm extends React.Component {
     };
   }
 
+  componentDidMount() {
+    window.addEventListener('beforeunload', (e) => {
+      if (!!Object.keys(this.state.learningCircle).length) {
+        const dialogText = 'You have unsaved data on this page. Are you sure you want to leave?'
+        e.returnValue = dialogText;
+        return dialogText;
+      }
+    })
+  }
+
   _updateFormData(data) {
     this.setState({
       learningCircle: {
