@@ -104,10 +104,11 @@ class Activity(models.Model):
         return self.description
 
 
-# TODO rename to profile or something else
+# TODO rename to Profile and move to custom_registration/models.py
 class Facilitator(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     mailing_list_signup = models.BooleanField(default=False)
+    email_confirmed_at = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
         return self.user.__unicode__()
@@ -177,6 +178,7 @@ class StudyGroup(LifeTimeTrackingModel):
     duration = models.IntegerField(default=90) # meeting duration in minutes
     timezone = models.CharField(max_length=128)
     signup_open = models.BooleanField(default=True)
+    draft = models.BooleanField(default=True)
     image = models.ImageField(blank=True)
 
     def day(self):

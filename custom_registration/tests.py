@@ -5,6 +5,7 @@ from django.core import mail
 from django.contrib.auth.models import User
 
 import re
+import json
 
 
 """
@@ -62,3 +63,58 @@ class TestCustomRegistrationViews(TestCase):
             'new_password2': 'newpass'
         }, follow=True)
         self.assertRedirects(res, '/en/facilitator/')
+
+
+    def test_api_account_create(self):
+        c = Client()
+        url = '/en/accounts/register/'
+        data = {
+            "email": "bobtest@mail.com",
+            "first_name": "Bob",
+            "last_name": "Test",
+            "password": "12345",
+            "newsletter": False
+        }
+        resp = c.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json(), 
+            {"status": "created", "user": data['email']}
+        )
+        bob = User.objects.get(email=data['email'])
+        self.assertEqual(bob.first_name, 'Bob')
+        self.assertEqual(bob.facilitator.mailing_list_signup, False)
+        # make sure email confirmation email was sent
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn(data['email'], mail.outbox[0].to)
+        self.assertEqual(mail.outbox[0].subject, 'Please confirm your email address')
+
+
+    def test_email_address_confirm(self):
+        c = Client()
+        url = '/en/accounts/register/'
+        data = {
+            "email": "bobtest@mail.com",
+            "first_name": "Bob",
+            "last_name": "Test",
+            "password": "12345",
+            "newsletter": False
+        }
+        resp = c.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json(), 
+            {"status": "created", "user": data['email']}
+        )
+        self.assertEqual(len(mail.outbox), 1)
+        bob = User.objects.get(email=data['email'])
+        self.assertEquals(bob.facilitator.email_confirmed_at, None)
+
+        # get email confirmation URL
+        match = re.search(r'/en/accounts/email_confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/', mail.outbox[0].body)
+        confirm_url = match.group(0)
+        c.logout()
+        res = c.get(confirm_url)
+        self.assertRedirects(res, '/en/facilitator/')
+        bob = User.objects.get(email=data['email'])
+        self.assertNotEquals(bob.facilitator.email_confirmed_at, None)
+
+
