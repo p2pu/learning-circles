@@ -2,10 +2,9 @@ import React from 'react';
 import InputWithLabel from '../common/InputWithLabel';
 import SelectWithLabel from '../common/SelectWithLabel';
 import TimePickerWithLabel from '../common/TimePickerWithLabel';
-import moment from 'moment-timezone';
+import TimeZoneSelect from './form_fields/TimeZoneSelect';
 
 const DayTimeSection = (props) => {
-  const timezoneOptions = moment.tz.names().map((tz) => ({value: tz, label: tz }))
 
   return (
     <div>
@@ -38,16 +37,18 @@ const DayTimeSection = (props) => {
         value={props.learningCircle.meeting_time}
         errorMessage={props.errors.meeting_time}
       />
-      <SelectWithLabel
-        label={'What time zone is your learning circle happening in?'}
-        value={props.learningCircle.timezone}
-        options={timezoneOptions}
-        name={'timezone'}
-        id={'id_timezone'}
-        classes={'form-group input-with-label'}
-        onChange={(selected) => { props.updateFormData({ timezone: selected.value })}}
-        errorMessage={props.errors.timezone}
-      />
+      <div className={`input-with-label form-group`} >
+        <label htmlFor={props.timezone}>What time zone are you in?</label>
+        <TimeZoneSelect
+          value={props.learningCircle.timezone}
+          latitude={props.learningCircle.latitude}
+          longitude={props.learningCircle.longitude}
+          handleChange={props.updateFormData}
+          name={'timezone'}
+          id={'id_timezone'}
+          errorMessage={props.errors.timezone}
+        />
+      </div>
       <InputWithLabel
         label={'How long will each session last (in minutes)?'}
         value={props.learningCircle.duration}
