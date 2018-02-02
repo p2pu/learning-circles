@@ -63,7 +63,7 @@ export default class Search extends Component {
       searchResults: results,
       currentQuery: opts.params,
       totalResults: response.count
-    })
+    }, this.props.scrollToTop)
   }
 
   render() {

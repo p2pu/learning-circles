@@ -8,7 +8,11 @@ const ResultsDisplay = (props) => {
   return(
     <div className="search-results col-sm-12">
       <SearchTags {...props} />
-      <BrowseCourses courses={props.searchResults} updateFormData={props.updateFormData} />
+      <BrowseCourses
+        courses={props.searchResults}
+        updateFormData={props.updateFormData}
+        updateQueryParams={props.updateQueryParams}
+      />
     </div>
   )
 }

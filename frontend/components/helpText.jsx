@@ -13,6 +13,7 @@ export const Step1 = () => (
         <li>What do I want to learn? If you choose something that you are passionate about, your enthusiasm will resonate with the whole group.</li>
       </ul>
       <p>Check out the <a href="https://www.p2pu.org/en/handbook/">facilitator handbook</a> for more tips on selecting a good course, or pose any questions you have to the P2PU community forum.</p>
+      <p>You can also <a href="/en/course/create/">add a course</a> if you have one in mind that's not in our library.</p>
     </div>
   </div>
 )

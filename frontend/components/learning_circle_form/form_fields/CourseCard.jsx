@@ -13,7 +13,10 @@ const CourseCard = (props) => {
   const topicsList = take(props.course.topics, 5).map((topic) => {
     return <a className='tag' onClick={handleFilterClick(topic)}>{topic}</a>
   });
-  const onSelect = () => { props.updateFormData({ course: props.course.id, courseTitle: props.course.title })}
+  const onSelect = () => {
+    props.updateQueryParams({ q: props.course.title })
+    props.updateFormData({ course: props.course.id, courseTitle: props.course.title })
+  }
 
   return (
     <div className="result-item grid-item col-xs-12">
@@ -52,7 +55,7 @@ const CourseCard = (props) => {
               </a>
             </div>
             <div className="primary-cta">
-              <button onClick={onSelect} className="btn p2pu-btn transparent">Start a learning circle</button>
+              <button onClick={onSelect} className="btn p2pu-btn transparent">Use this course</button>
             </div>
           </div>
         </div>
