@@ -41,17 +41,14 @@ class SignupView(FormView):
 @method_decorator(csrf_exempt, name='dispatch')
 class SignupApiView(View):
 
-
-    def _user_check():
-        def _validate(value):
-            error = _('A user with that email address already exists.')
-            if User.objects.filter(username__iexact=value).exists():
-                return None, error
-            return value, None
-        return _validate
-
-
     def post(self, request):
+        def _user_check():
+            def _validate(value):
+                error = _('A user with that email address already exists.')
+                if User.objects.filter(username__iexact=value).exists():
+                    return None, error
+                return value, None
+            return _validate
         post_schema = {
             "email": schema.chain([
                 schema.email(required=True),

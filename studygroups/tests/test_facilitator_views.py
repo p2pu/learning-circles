@@ -48,54 +48,6 @@ class TestFacilitatorViews(TestCase):
         user.is_staff = True
         user.save()
 
-    @patch('custom_registration.signals.add_member_to_list')
-    def test_facilitator_signup(self, add_member_to_list):
-        c = Client()
-        data = {
-            "username": "test@example.net",
-            "first_name": "firstname",
-            "last_name": "lastname",
-            "mailing_list_signup": "on",
-        }
-        resp = c.post('/en/facilitator/signup/', data)
-        self.assertRedirects(resp, '/en/facilitator/signup/success/')
-        users = User.objects.filter(email__iexact=data['username'])
-        self.assertEquals(users.count(), 1)
-        facilitator = Facilitator.objects.get(user=users.first())
-        self.assertEquals(facilitator.mailing_list_signup, True)
-        self.assertTrue(add_member_to_list.called)
-        self.assertEquals(len(mail.outbox), 1) ##
-        self.assertIn('New facilitator account created on', mail.outbox[0].subject)
-
-
-    @patch('custom_registration.signals.add_member_to_list')
-    def test_facilitator_signup_with_mixed_case(self, add_member_to_list):
-        c = Client()
-        data = {
-            "username": "ThIsNoTaGoOd@EmAil.CoM",
-            "first_name": "firstname",
-            "last_name": "lastname"
-        }
-        resp = c.post('/en/facilitator/signup/', data)
-        self.assertRedirects(resp, '/en/facilitator/signup/success/')
-        data['username'] = data['username'].upper()
-        resp = c.post('/en/facilitator/signup/', data)
-        users = User.objects.filter(username__iexact=data['username'])
-        self.assertEquals(users.count(), 1)
-        facilitator = Facilitator.objects.get(user=users.first())
-        self.assertFalse(facilitator.mailing_list_signup)
-        self.assertFalse(add_member_to_list.called)
-        self.assertEquals(len(mail.outbox), 1)
-        self.assertIn('New facilitator account created on', mail.outbox[0].subject)
-
-
-    def test_facilitator_login_redirect(self):
-        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
-        c = Client()
-        c.login(username='bob123', password='password')
-        resp = c.get('/en/login_redirect/')
-        self.assertRedirects(resp, '/en/facilitator/')
-
 
     def test_user_forbidden(self):
         user = User.objects.create_user('bob', 'bob@example.net', 'password')

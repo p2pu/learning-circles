@@ -44,15 +44,6 @@ def user_is_team_organizer(func):
     return login_required(decorated)
 
 
-def user_is_not_logged_in(func):
-    def decorated(*args, **kwargs):
-        if args[0].user.is_authenticated:
-            url = reverse('studygroups_login_redirect')
-            return http.HttpResponseRedirect(url)
-        return func(*args, **kwargs)
-    return decorated
-
-
 def user_is_staff(func):
     def decorated(*args, **kwargs):
         if args[0].user.is_staff is False:

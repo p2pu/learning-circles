@@ -4,14 +4,64 @@ from django.test import Client
 from django.core import mail
 from django.contrib.auth.models import User
 
+from mock import patch
+
 import re
 import json
+
+from studygroups.models import Facilitator
 
 
 """
 Tests for when facilitators interact with the system
 """
 class TestCustomRegistrationViews(TestCase):
+
+    @patch('custom_registration.signals.add_member_to_list')
+    def test_account_create(self, add_member_to_list):
+        c = Client()
+        data = {
+            "email": "test@example.net",
+            "first_name": "firstname",
+            "last_name": "lastname",
+            "newsletter": "on",
+            "password1": "password",
+            "password2": "password",
+        }
+        resp = c.post('/en/accounts/register/', data)
+        self.assertRedirects(resp, '/en/facilitator/')
+        users = User.objects.filter(email__iexact=data['email'])
+        self.assertEquals(users.count(), 1)
+        facilitator = Facilitator.objects.get(user=users.first())
+        self.assertEquals(facilitator.mailing_list_signup, True)
+        self.assertTrue(add_member_to_list.called)
+        self.assertEquals(len(mail.outbox), 1) ##
+        self.assertIn('Please confirm your email address', mail.outbox[0].subject)
+
+
+    @patch('custom_registration.signals.add_member_to_list')
+    def test_facilitator_signup_with_mixed_case(self, add_member_to_list):
+        c = Client()
+        data = {
+            "email": "ThIsNoTaGoOd@EmAil.CoM",
+            "first_name": "firstname",
+            "last_name": "lastname",
+            "password1": "password",
+            "password2": "password",
+        }
+        resp = c.post('/en/accounts/register/', data)
+        self.assertRedirects(resp, '/en/facilitator/')
+        data['email'] = data['email'].upper()
+        resp = c.post('/en/accounts/register/', data)
+        users = User.objects.filter(username__iexact=data['email'])
+        self.assertEquals(users.count(), 1)
+        facilitator = Facilitator.objects.get(user=users.first())
+        self.assertFalse(facilitator.mailing_list_signup)
+        self.assertFalse(add_member_to_list.called)
+        self.assertEquals(len(mail.outbox), 1)
+        self.assertIn('Please confirm your email', mail.outbox[0].subject)
+
+
 
     def test_login_redirect(self):
         user = User.objects.create_user('bob123', 'bob@example.net', 'password')
@@ -67,7 +117,7 @@ class TestCustomRegistrationViews(TestCase):
 
     def test_api_account_create(self):
         c = Client()
-        url = '/en/accounts/register/'
+        url = '/en/accounts/fe/register/'
         data = {
             "email": "bobtest@mail.com",
             "first_name": "Bob",
@@ -91,7 +141,7 @@ class TestCustomRegistrationViews(TestCase):
 
     def test_email_address_confirm(self):
         c = Client()
-        url = '/en/accounts/register/'
+        url = '/en/accounts/fe/register/'
         data = {
             "email": "bobtest@mail.com",
             "first_name": "Bob",

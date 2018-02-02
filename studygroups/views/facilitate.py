@@ -38,7 +38,6 @@ from studygroups.forms import CourseForm
 from studygroups.forms import ApplicationForm
 from studygroups.forms import StudyGroupForm
 from studygroups.forms import StudyGroupMeetingForm
-from studygroups.forms import FacilitatorForm
 from studygroups.forms import FeedbackForm
 from studygroups.models import generate_all_meetings
 from studygroups.models import send_reminder
@@ -379,33 +378,6 @@ def add_member(request, study_group_id):
         'study_group': study_group,
     }
     return render(request, 'studygroups/add_member.html', context)
-
-
-class FacilitatorSignup(CreateView):
-    model = User
-    form_class = FacilitatorForm
-    success_url = reverse_lazy('studygroups_facilitator_signup_success')
-    template_name = 'studygroups/facilitator_signup.html'
-
-    def form_valid(self, form):
-        user = form.save(commit=False)
-        self.object = User.objects.create_user(
-            user.username.lower(),
-            user.username,
-            "".join([random.choice(string.letters) for i in range(64)])
-        )
-        self.object.first_name = user.first_name
-        self.object.last_name = user.last_name
-        self.object.save()
-        facilitator = Facilitator(user=self.object)
-        facilitator.mailing_list_signup = form.cleaned_data['mailing_list_signup']
-        facilitator.save()
-
-        return http.HttpResponseRedirect(self.get_success_url())
-
-
-class FacilitatorSignupSuccess(TemplateView):
-    template_name = 'studygroups/facilitator_signup_success.html'
 
 
 class FacilitatorStudyGroupCreate(CreateView):
