@@ -11,6 +11,7 @@ from django.views.decorators.cache import never_cache
 from django.views.generic.edit import FormView
 from django.contrib.auth.models import User
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 
@@ -21,6 +22,7 @@ from api import schema
 from .models import create_user
 from .models import check_user_token
 from .models import confirm_user_email
+from .models import send_email_confirm_email
 from .forms import SignupForm
 from .decorators import user_is_not_logged_in
 
@@ -69,7 +71,18 @@ class SignupApiView(View):
         return json_response(request, { "status": "created", "user": user.username });
 
 
+@method_decorator(login_required, name='dispatch')
+class EmailConfirmRequestView(View):
+
+    def post(self, request, *args, **kwargs):
+        send_email_confirm_email(request.user)
+        messages.success(self.request, _('Verification email sent. Please check your inbox and follow instructions.'))
+        url = reverse('studygroups_facilitator')
+        return HttpResponseRedirect(url)
+
+
 class EmailConfirmView(View):
+    """ View mostly copied from Django password reset confirm view """
 
     @method_decorator(sensitive_post_parameters())
     @method_decorator(never_cache)
@@ -80,7 +93,7 @@ class EmailConfirmView(View):
             token = kwargs['token']
             if self.request.user.is_authenticated() and user.pk != self.request.user.pk:
                 # make sure logged in user and user confirming emails are the same people
-                messages.error(self.request, _('There is a problem with your password confirmation ULR. Please try logging out and then click the link in the email we sent you.'))
+                messages.warning(self.request, _('There is a problem with your password confirmation ULR. Please try logging out and then click the link in the email we sent you.'))
                 url = reverse('studygroups_login_redirect')
                 return HttpResponseRedirect(url)
 
@@ -90,18 +103,18 @@ class EmailConfirmView(View):
                 if user.facilitator.email_confirmed_at != None:
                     # redirect user to login page
                     # NB! Don't log user in, since link could have leaked and hash isn't gauranteed to change after the user confirms their email address
-                    messages.success(self.request, _('Your email address have been already been confirmed.'))
+                    messages.success(self.request, _('Your email address has been already been confirmed.'))
                     url = reverse('studygroups_login_redirect')
                     return HttpResponseRedirect(url)
                 else:
                     confirm_user_email(user)
                     login(self.request, user)
-                    messages.success(self.request, _('Your email address have been confirmed!.'))
+                    messages.success(self.request, _('Your email address has been confirmed!.'))
                     # redirect them to dashboard
                     url = reverse('studygroups_facilitator')
                     return HttpResponseRedirect(url)
 
-        messages.error(self.request, _('Invalid email confirmation URL.'))
+        messages.warning(self.request, _('Invalid email confirmation URL.'))
         url = reverse('login')
         return HttpResponseRedirect(url)
 

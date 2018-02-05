@@ -131,6 +131,7 @@ class TestFacilitatorViews(TestCase):
         self.assertIn('bob@example.net', mail.outbox[0].to)
         self.assertIn('community@localhost', mail.outbox[0].bcc)
 
+
     @patch('custom_registration.signals.handle_new_facilitator')
     def test_publish_study_group(self, handle_new_facilitator):
         user = create_user('bob@example.net', 'bob', 'test', 'password', False)

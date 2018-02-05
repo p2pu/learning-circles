@@ -2,6 +2,12 @@ from django.contrib.auth.models import User
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils import six
 from django.utils import timezone
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives, send_mail
+
 
 import random
 import string
@@ -52,3 +58,32 @@ def check_user_token(user, token):
 def confirm_user_email(user):
     user.facilitator.email_confirmed_at = timezone.now()
     user.facilitator.save()
+
+
+def send_email_confirm_email(user):
+    context = {
+        "user": user,
+        "profile": user.facilitator,
+        "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+        "token": generate_user_token(user),
+        "protocol": "https",
+        "domain": settings.DOMAIN
+    }
+
+    subject_template = 'custom_registration/email_confirm-subject.txt'
+    email_template = 'custom_registration/email_confirm.txt'
+    html_email_template = 'custom_registration/email_confirm.html'
+
+    subject = render_to_string(subject_template, context).strip(' \n')
+    text_body = render_to_string(email_template, context)
+    html_body = render_to_string(html_email_template, context)
+
+    to = [user.email]
+    email = EmailMultiAlternatives(
+        subject,
+        text_body,
+        settings.DEFAULT_FROM_EMAIL,
+        to,
+    )
+    email.attach_alternative(html_body, 'text/html')
+    email.send()

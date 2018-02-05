@@ -6,12 +6,14 @@ from django.urls import reverse, reverse_lazy
 from .forms import CustomPasswordResetForm
 from .views import SignupView
 from .views import SignupApiView
+from .views import EmailConfirmRequestView
 from .views import EmailConfirmView
 
 
 urlpatterns = [
     url(r'^fe/register/', SignupApiView.as_view(), name='register_api'),
     url(r'^register/', SignupView.as_view(), name='register'),
+    url(r'^email_confirm/$', EmailConfirmRequestView.as_view(), name="email_confirm_request"),
     url(r'^email_confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', EmailConfirmView.as_view(), name="email_confirm"),
     url(r'^login/', LoginView.as_view(redirect_authenticated_user=True), name='login'),
     url(r'^password_reset/$', PasswordResetView.as_view(form_class=CustomPasswordResetForm), name="password_reset"),
