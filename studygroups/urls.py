@@ -16,6 +16,7 @@ from studygroups.views import CourseDelete
 from studygroups.views import StudyGroupUpdate
 from studygroups.views import StudyGroupDelete
 from studygroups.views import StudyGroupToggleSignup
+from studygroups.views import StudyGroupPublish
 from studygroups.views import StudyGroupList
 from studygroups.views import StudyGroupMeetingList
 from studygroups.views import TeamMembershipDelete
@@ -55,6 +56,8 @@ urlpatterns = [
     url(r'^studygroup/(?P<study_group_id>[\d]+)/edit/$', user_is_group_facilitator(StudyGroupUpdate.as_view()), name='studygroups_edit_study_group'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/delete/$', user_is_group_facilitator(StudyGroupDelete.as_view()), name='studygroups_studygroup_delete'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/toggle_signup/$', user_is_group_facilitator(StudyGroupToggleSignup.as_view()), name='studygroups_studygroup_toggle_signup'),
+
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/publish/$', StudyGroupPublish.as_view(), name='studygroups_studygroup_publish'),
 
     url(r'^studygroup/(?P<study_group_id>[\d]+)/message/compose/$', views.message_send, name='studygroups_message_send'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/message/edit/(?P<message_id>[\d]+)/$', views.message_edit, name='studygroups_message_edit'),

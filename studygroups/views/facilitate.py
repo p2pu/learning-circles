@@ -214,7 +214,7 @@ class CourseUpdate(UpdateView):
         other_study_groups =  StudyGroup.objects.active().filter(course=course).exclude(facilitator=request.user)
         study_groups = StudyGroup.objects.active().filter(course=course, facilitator=request.user)
         if study_groups.count() > 1 or other_study_groups.count() > 0:
-            messages.error(request, _('This course is being used by other learning circles and cannot be edited, please create a new course to make changes'))
+            messages.warning(request, _('This course is being used by other learning circles and cannot be edited, please create a new course to make changes'))
             url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
         return super(CourseUpdate, self).dispatch(request, *args, **kwargs)
@@ -282,6 +282,26 @@ class StudyGroupToggleSignup(RedirectView, SingleObjectMixin):
         if self.get_object().facilitator == self.request.user:
             return reverse_lazy('studygroups_facilitator')
         return reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
+
+
+@method_decorator(user_is_group_facilitator, name='dispatch')
+class StudyGroupPublish(SingleObjectMixin, View):
+    model = StudyGroup
+    pk_url_kwarg = 'study_group_id'
+
+    def post(self, request, *args, **kwargs):
+        study_group = self.get_object()
+        profile = study_group.facilitator.facilitator
+        if profile.email_confirmed_at is None:
+            messages.warning(self.request, _("You need to confirm your email address before you can publish a learning circle."));
+        else:
+            study_group.draft = False
+            study_group.save()
+        
+        url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
+        if self.get_object().facilitator == self.request.user:
+            url = reverse_lazy('studygroups_facilitator')
+        return http.HttpResponseRedirect(url)
 
 
 @user_is_group_facilitator
