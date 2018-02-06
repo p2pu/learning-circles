@@ -42,7 +42,7 @@ def organize(request):
     today = datetime.datetime.now().date()
     two_weeks_ago = today - datetime.timedelta(weeks=2, days=today.weekday())
     two_weeks = today - datetime.timedelta(days=today.weekday()) + datetime.timedelta(weeks=3)
-    study_groups = StudyGroup.objects.active()
+    study_groups = StudyGroup.objects.published()
     facilitators = Facilitator.objects.all()  # TODO rather use User model
     courses = []  # TODO Remove courses until we implement course selection for teams
     team = None
@@ -77,7 +77,7 @@ def organize_team(request, team_id):
 
     members = team.teammembership_set.values('user')
     team_users = User.objects.filter(pk__in=members)
-    study_groups = StudyGroup.objects.active().filter(facilitator__in=team_users)
+    study_groups = StudyGroup.objects.published().filter(facilitator__in=team_users)
     facilitators = Facilitator.objects.filter(user__in=team_users)
     invitations = TeamInvitation.objects.filter(team=team, responded_at__isnull=True)
     active_study_groups = study_groups.filter(
@@ -103,7 +103,7 @@ class StudyGroupList(ListView):
     model = StudyGroup
 
     def get_queryset(self):
-        study_groups = StudyGroup.objects.active()
+        study_groups = StudyGroup.objects.published()
         if not self.request.user.is_staff:
             team_users = get_team_users(self.request.user)
             study_groups = study_groups.filter(facilitator__in=team_users)
@@ -114,7 +114,7 @@ class StudyGroupMeetingList(ListView):
     model = StudyGroupMeeting
 
     def get_queryset(self):
-        study_groups = StudyGroup.objects.active()
+        study_groups = StudyGroup.objects.published()
         if not self.request.user.is_staff:
             team_users = get_team_users(self.request.user)
             study_groups = study_groups.filter(facilitator__in=team_users)

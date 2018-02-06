@@ -69,6 +69,16 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(resp.json()["count"], 4)
 
 
+    def test_get_learning_circles_exclude_drafts(self):
+        c = Client()
+        sg = StudyGroup.objects.get(pk=1)
+        sg.draft = True
+        sg.save()
+        resp = c.get('/api/learningcircles/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["count"], 3)
+
+
     def test_get_learning_circles_by_weekday(self):
         sg = StudyGroup.objects.get(pk=1)
         sg.start_date = datetime.date(2018,01,26)

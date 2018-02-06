@@ -100,7 +100,7 @@ class LearningCircleListView(View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        study_groups = StudyGroup.objects.active().order_by('id')
+        study_groups = StudyGroup.objects.published().order_by('id')
 
         if 'q' in request.GET:
             q = request.GET.get('q')
@@ -205,7 +205,7 @@ class LearningCircleTopicListView(View):
             meeting_date__gte=timezone.now()
         ).values('study_group')
         course_ids = None
-        course_ids = StudyGroup.objects.active().filter(id__in=study_group_ids).values('course')
+        course_ids = StudyGroup.objects.published().filter(id__in=study_group_ids).values('course')
 
         topics = Course.objects.active()\
             .filter(unlisted=False)\
@@ -288,9 +288,9 @@ class CourseListView(View):
             ).values('study_group')
             course_ids = None
             if active:
-                course_ids = StudyGroup.objects.active().filter(id__in=study_group_ids).values('course')
+                course_ids = StudyGroup.objects.published().filter(id__in=study_group_ids).values('course')
             else:
-                course_ids = StudyGroup.objects.active().exclude(id__in=study_group_ids).values('course')
+                course_ids = StudyGroup.objects.published().exclude(id__in=study_group_ids).values('course')
             courses = courses.filter(id__in=course_ids)
 
         data = {
@@ -449,7 +449,7 @@ class LandingPageLearningCirclesView(View):
     def get(self, request):
 
         # get learning circles with image & upcoming meetings
-        study_groups = StudyGroup.objects.active().filter(
+        study_groups = StudyGroup.objects.published().filter(
             studygroupmeeting__meeting_date__gte=timezone.now(),
         ).annotate(
             next_meeting_date=Min('studygroupmeeting__meeting_date')
@@ -458,7 +458,7 @@ class LandingPageLearningCirclesView(View):
         # if there are less than 3 with upcoming meetings and an image
         if study_groups.count() < 3:
             #pad with learning circles with the most recent meetings
-            past_study_groups = StudyGroup.objects.active().filter(
+            past_study_groups = StudyGroup.objects.published().filter(
                 studygroupmeeting__meeting_date__lt=timezone.now(),
             ).annotate(
                 next_meeting_date=Max('studygroupmeeting__meeting_date')
@@ -479,16 +479,16 @@ class LandingPageStatsView(View):
     - Number of learning circles to date
     """
     def get(self, request):
-        study_groups = StudyGroup.objects.active().filter(
+        study_groups = StudyGroup.objects.published().filter(
             studygroupmeeting__meeting_date__gte=timezone.now()
         ).annotate(
             next_meeting_date=Min('studygroupmeeting__meeting_date')
         )
-        cities = StudyGroup.objects.active().filter(
+        cities = StudyGroup.objects.published().filter(
             latitude__isnull=False,
             longitude__isnull=False,
         ).distinct('city').values('city')
-        learning_circle_count = StudyGroup.objects.active().count()
+        learning_circle_count = StudyGroup.objects.published().count()
         facilitators = StudyGroup.objects.active().distinct('facilitator').values('facilitator')
         cities_s = list(set([c['city'].split(',')[0].strip() for c in cities]))
         data = {

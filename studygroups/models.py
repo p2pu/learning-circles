@@ -90,6 +90,7 @@ class Course(LifeTimeTrackingModel):
     created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     unlisted = models.BooleanField(default=False)
 
+
     def __unicode__(self):
         return self.title
 
@@ -160,6 +161,13 @@ class TeamInvitation(models.Model):
         return u'Invatation <{} to join {}>'.format(self.email, self.team.name)
 
 
+class StudyGroupQuerySet(SoftDeleteQuerySet):
+
+    def published(self):
+        """ exclude drafts from public learning circles """
+        return self.active().filter(draft=False)
+
+
 class StudyGroup(LifeTimeTrackingModel):
     name = models.CharField(max_length=128, default=_study_group_name)
     course = models.ForeignKey('studygroups.Course', on_delete=models.CASCADE)
@@ -180,6 +188,8 @@ class StudyGroup(LifeTimeTrackingModel):
     signup_open = models.BooleanField(default=True)
     draft = models.BooleanField(default=True)
     image = models.ImageField(blank=True)
+
+    objects = StudyGroupQuerySet.as_manager()
 
     def day(self):
         return calendar.day_name[self.start_date.weekday()]
@@ -661,12 +671,12 @@ def report_data(start_time, end_time, team=None):
 
     If team is given, study groups will be filtered by team
     """
-    study_groups = StudyGroup.objects.active()
+    study_groups = StudyGroup.objects.published()
     meetings = StudyGroupMeeting.objects.active()\
             .filter(meeting_date__gte=start_time, meeting_date__lt=end_time)\
             .filter(study_group__in=study_groups)
 
-    new_study_groups = StudyGroup.objects.active()\
+    new_study_groups = StudyGroup.objects.published()\
             .filter(created_at__gte=start_time, created_at__lt=end_time)
     new_facilitators = User.objects.filter(date_joined__gte=start_time, date_joined__lt=end_time)
     logins = User.objects.filter(last_login__gte=start_time, last_login__lt=end_time)
