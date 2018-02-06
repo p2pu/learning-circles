@@ -35,7 +35,7 @@ export const API_ENDPOINTS = {
   },
   courses: {
     baseUrl: 'https://learningcircles.p2pu.org/api/courses/?',
-    searchParams: ['q', 'topics', 'order']
+    searchParams: ['q', 'topics', 'order', 'course']
   },
   learningCirclesTopics: {
     baseUrl: 'https://learningcircles.p2pu.org/api/learningcircles/topics/?',

@@ -11,6 +11,7 @@ const SearchAndFilter = (props) => {
       <SearchBar
         placeholder={props.placeholder}
         updateQueryParams={props.updateQueryParams}
+        q={props.q}
       />
       <FiltersSection
         filterCollection={props.filterCollection}

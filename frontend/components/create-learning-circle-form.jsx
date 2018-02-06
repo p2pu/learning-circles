@@ -53,7 +53,10 @@ export default class CreateLearningCircleForm extends React.Component {
         e.returnValue = dialogText;
         return dialogText;
       }
-    })
+    });
+
+    const urlParams = new URL(window.location.href).searchParams;
+    this.setState({ learningCircle: { course: urlParas.get('course_id')}})
   }
 
   _updateFormData(data) {

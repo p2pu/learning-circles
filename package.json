@@ -55,7 +55,8 @@
     "style-loader": "^0.13.2",
     "webpack": "^2.6.1",
     "webpack-bundle-tracker": "0.0.93",
-    "whatwg-fetch": "^2.0.3"
+    "whatwg-fetch": "^2.0.3",
+    "whatwg-url": "^6.4.0"
   },
   "devDependencies": {
     "babel-plugin-transform-object-rest-spread": "^6.26.0"

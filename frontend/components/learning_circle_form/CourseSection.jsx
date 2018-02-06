@@ -22,6 +22,7 @@ const CourseSection = (props) => {
         </p>
       }
       <Search
+        learningCircle={props.learningCircle}
         searchSubject={'courses'}
         updateFormData={props.updateFormData}
         scrollToTop={scrollToTop}
