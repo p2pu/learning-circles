@@ -19,6 +19,14 @@ const FinalizeSection = (props) => {
         errorMessage={props.errors.description}
       />
       <InputWithLabel
+        label={'Is there a question that you want people to answer when they sign up for your learning circle? If so, write that here:'}
+        value={props.learningCircle.custom_question || ''}
+        handleChange={props.updateFormData}
+        name={'custom_question'}
+        id={'id_custom_question'}
+        errorMessage={props.errors.custom_question}
+      />
+      <InputWithLabel
         label={'Do you have a website you want to link to?'}
         value={props.learningCircle.venue_website || ''}
         placeholder={'E.g. www.pretorialibrary.com'}
@@ -34,6 +42,22 @@ const FinalizeSection = (props) => {
         id={'id_image'}
         image={props.learningCircle.image}
         errorMessage={props.errors.image}
+      />
+      <InputWithLabel
+        label={'What is your personal goal in facilitating this learning circle?'}
+        value={props.learningCircle.personal_goal || ''}
+        handleChange={props.updateFormData}
+        name={'personal_goal'}
+        id={'id_personal_goal'}
+        errorMessage={props.errors.personal_goal}
+      />
+      <InputWithLabel
+        label={'What concerns do you have about the learning circle? Is there anything specific that you want feedback on before you get started?'}
+        value={props.learningCircle.concerns || ''}
+        handleChange={props.updateFormData}
+        name={'concerns'}
+        id={'id_concerns'}
+        errorMessage={props.errors.concerns}
       />
     </div>
   )
