@@ -14,7 +14,7 @@ const InputWithLabel = (props) => {
         name={props.name}
         id={props.id}
         onChange={onChange}
-        value={props.value || ''}
+        value={props.value || props.defaultValue}
         placeholder={props.placeholder}
       />
       {

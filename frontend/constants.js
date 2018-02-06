@@ -30,12 +30,12 @@ export const API_ENDPOINTS = {
   learningCircle: '/api/learning-circle/',
   registration: '/en/accounts/register/',
   learningCircles: {
-    baseUrl: 'https://learningcircles.p2pu.org/api/learningcircles/?',
+    baseUrl: '/api/learningcircles/?',
     searchParams: ['q', 'topics', 'weekdays', 'latitude', 'longitude', 'distance', 'active', 'limit', 'offset', 'city', 'signup', 'team_id']
   },
   courses: {
     baseUrl: 'https://learningcircles.p2pu.org/api/courses/?',
-    searchParams: ['q', 'topics', 'order']
+    searchParams: ['q', 'topics', 'order', 'course']
   },
   learningCirclesTopics: {
     baseUrl: 'https://learningcircles.p2pu.org/api/learningcircles/topics/?',
@@ -55,6 +55,6 @@ export const API_ENDPOINTS = {
   }
 };
 
-export const LC_PUBLISHED_PAGE = '/facilitator/studygroup/published';
-export const LC_SAVED_DRAFT_PAGE = '/facilitator/study_group/saved';
+export const LC_PUBLISHED_PAGE = '/en/facilitator/study_group/published';
+export const LC_SAVED_DRAFT_PAGE = '/en/facilitator/study_group/saved';
 export const FACILITATOR_PAGE = '/en/facilitator';

@@ -24,7 +24,7 @@ export default class PlaceSelect extends Component {
 
   _handleChange(selected) {
     const cityData = {
-      city: selected.value.locale_names.default,
+      city: selected.value.locale_names.default[0],
       latitude: selected.value._geoloc.lat,
       longitude: selected.value._geoloc.lng,
       placeObjectId: selected.value.objectID,

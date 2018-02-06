@@ -2,17 +2,15 @@ import React from 'react'
 
 export const Step1 = () => (
   <div className='help-text'>
-    <header>
-      <h4>Help with Selecting a Course</h4>
-    </header>
+    <h4>Course selection tips</h4>
     <div className='content'>
       <p>Struggling to choose a course? Ask yourself these three questions:</p>
       <ul>
-        <li>What topics are of interest in my community? If you’re not sure what people want to learn, the Q Method is a great way to solicit feedback from your community. Be mindful about what knowledge you are assuming people already have when you choose a topic.</li>
-        <li>What knowledge gaps exist? Is there a lack of high school equivalency programming in your neighborhood? No good way to get an introduction to web design? Learning circles can be a great way to plug gaps between existing educational institutions.</li>
-        <li>What do I want to learn? If you choose something that you are passionate about, your enthusiasm will resonate with the whole group.</li>
+        <li><span className="bold">What topics are of interest in my community?</span> If you’re not sure what people want to learn, the <a href="http://info.p2pu.org/2017/06/02/will-people-show-up/">Q Method</a> is a great way to solicit feedback from your community. Be mindful about what knowledge you are assuming people already have when you choose a topic.</li>
+        <li><span className="bold">What knowledge gaps exist?</span> Is there a lack of high school equivalency programming in your neighborhood? No good way to get an introduction to web design? Learning circles can be a great way to plug gaps between existing educational institutions.</li>
+        <li><span className="bold">What do I want to learn?</span> If you choose something that you are passionate about, your enthusiasm will resonate with the whole group.</li>
       </ul>
-      <p>Check out the <a href="https://www.p2pu.org/en/handbook/">facilitator handbook</a> for more tips on selecting a good course, or pose any questions you have to the P2PU community forum.</p>
+      <p>You can also <a href="/en/course/create/">add a course</a> if you have one in mind that's not in our library.</p>
     </div>
   </div>
 )
@@ -20,9 +18,7 @@ export const Step1 = () => (
 
 export const Step2 = () => (
   <div className='help-text'>
-    <header>
-      <h4>Help with Finding a Location</h4>
-    </header>
+    <h4>How to choose a good location</h4>
     <div className='content'>
       <p>Learning circle location checklist:</p>
       <ul>
@@ -50,9 +46,7 @@ export const Step2 = () => (
 
 export const Step3 = () => (
   <div className='help-text'>
-    <header>
-      <h4>Help with Selecting the Day and Time</h4>
-    </header>
+    <h4>When should we meet?</h4>
     <div className='content'>
       <ul>
         <li>Six weeks for 90-120 minutes each week is a good default learning circle length. It’s long enough that folks will get to know each other and have time to make noticeable improvements in their skills, but not so long that it is an overwhelming commitment.</li>
@@ -66,9 +60,7 @@ export const Step3 = () => (
 
 export const Step4 = () => (
   <div className='help-text'>
-    <header>
-      <h4>Help with Finalizing and Publishing</h4>
-    </header>
+    <h4>A few final notes</h4>
     <div className='content'>
       <ul>
         <li>The welcome message will appear on the learning circle sign up page. You can include a bit about yourself, explain why you’re facilitating a learning circle, or tell participants anything else you think they should know before they sign up.</li>

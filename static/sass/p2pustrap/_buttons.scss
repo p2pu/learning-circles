@@ -126,8 +126,6 @@
   }
 
   @media (max-width: $screen-xs-max) {
-    padding: 0.4em 1em;
-
     &.dark {
       background: $gray-darker;
       color: $white;

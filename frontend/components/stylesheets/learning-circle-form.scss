@@ -23,7 +23,6 @@
   overflow: scroll;
   background: white;
   padding-top: 64px;
-  padding-bottom: 60px;
 
   .tabs-list {
     font-size: 12px;
@@ -64,6 +63,23 @@
     .content-container {
       overflow-y: scroll;
       width: 100%;
+      padding-bottom: 60px;
+    }
+
+    .rc-time-picker {
+      .rc-time-picker-input {
+        font-size: 16px;
+        color: #515665;
+        height: auto;
+      }
+    }
+
+    input[type="date"].form-control {
+      line-height: 1.428571429;
+    }
+
+    input[type="file"].image-upload {
+      display: flex;
     }
   }
 
@@ -107,6 +123,11 @@
 
   i {
     margin-left: 6px;
+
+    &.fa-arrow-left {
+      margin-left: 0;
+      margin-right: 6px;
+    }
   }
 
   button.p2pu-btn {
@@ -224,7 +245,7 @@ div.modal-overlay {
     padding-right: 15px;
     padding-left: 15px;
 
-    header {
+    h4 {
       margin: 0 60px 20px 0px;
       align-items: left;
     }

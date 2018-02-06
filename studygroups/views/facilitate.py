@@ -297,7 +297,7 @@ class StudyGroupPublish(SingleObjectMixin, View):
         else:
             study_group.draft = False
             study_group.save()
-        
+
         url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
         if self.get_object().facilitator == self.request.user:
             url = reverse_lazy('studygroups_facilitator')
@@ -399,7 +399,6 @@ def add_member(request, study_group_id):
     }
     return render(request, 'studygroups/add_member.html', context)
 
-
 class FacilitatorStudyGroupCreate(CreateView):
     success_url = reverse_lazy('studygroups_facilitator')
     template_name = 'studygroups/facilitator_studygroup_form.html'
@@ -419,6 +418,11 @@ class FacilitatorStudyGroupCreate(CreateView):
         generate_all_meetings(study_group)
         messages.success(self.request, _('You created a new Learning Circle! Check your email for next steps.'))
         return http.HttpResponseRedirect(self.success_url)
+
+    def get_context_data(self, **kwargs):
+        context = super(FacilitatorStudyGroupCreate, self).get_context_data(**kwargs)
+        context['hide_footer'] = True
+        return context
 
 class FacilitatorStudyGroupPublished(TemplateView):
     template_name = 'studygroups/facilitator_studygroup_published.html'

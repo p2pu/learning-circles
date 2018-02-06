@@ -300,6 +300,7 @@ img.lc-about-image{
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: $padding-md;
 
     &.saved {
         i.material-icons {
@@ -312,6 +313,31 @@ img.lc-about-image{
         i.material-icons {
             font-size: 200px;
             color: $p2pu-yellow;
+        }
+    }
+}
+
+.alert-container {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    position: absolute;
+    padding: 20px 40px;
+    top: 0;
+
+    .alert {
+        position: relative;
+        z-index: 1050;
+        box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+        display: flex;
+
+        .alert-content {
+            margin-right: 20px;
+        }
+
+        button.close {
+            color: white;
+            opacity: 0.7;
         }
     }
 }

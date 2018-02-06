@@ -6,6 +6,7 @@ import ActionBar from './action-bar';
 import Modal from 'react-responsive-modal';
 import InputWithLabel from './common/InputWithLabel'
 import RegistrationModal from './registration-modal'
+import Alert from './Alert';
 
 import { LC_PUBLISHED_PAGE, LC_SAVED_DRAFT_PAGE, API_ENDPOINTS, FACILITATOR_PAGE } from '../constants';
 
@@ -24,6 +25,7 @@ export default class CreateLearningCircleForm extends React.Component {
       showHelp: false,
       user: this.props.user,
       errors: {},
+      alert: { show: false }
     };
     this.changeTab = (tab) => this._changeTab(tab);
     this.onSubmitForm = () => this._onSubmitForm();
@@ -42,6 +44,19 @@ export default class CreateLearningCircleForm extends React.Component {
       2: '3. Day & Time',
       3: '4. Finalize'
     };
+  }
+
+  componentDidMount() {
+    window.addEventListener('beforeunload', (e) => {
+      if (!!Object.keys(this.state.learningCircle).length) {
+        const dialogText = 'You have unsaved data on this page. Are you sure you want to leave?'
+        e.returnValue = dialogText;
+        return dialogText;
+      }
+    });
+
+    const urlParams = new URL(window.location.href).searchParams;
+    this.setState({ learningCircle: { course: urlParas.get('course_id')}})
   }
 
   _updateFormData(data) {
@@ -86,7 +101,7 @@ export default class CreateLearningCircleForm extends React.Component {
         config: { headers: {'Content-Type': 'application/json' }}
       }).then(res => {
         if (res.data.status === 'created') {
-          window.location.href = LC_PUBLISHED_PAGE;
+          window.location.href = `${LC_PUBLISHED_PAGE}?url=${res.data.study_group_url}`;
         } else if (res.data.errors) {
           this.setState({ errors: res.data.errors, currentTab: 0 })
         }
@@ -120,10 +135,24 @@ export default class CreateLearningCircleForm extends React.Component {
         if (res.data.status === 'created') {
           window.location.href = LC_SAVED_DRAFT_PAGE;
         } else if (res.data.status === 'error') {
-          this.setState({ errors: res.data.errors })
+          this.setState({
+            errors: res.data.errors,
+            alert: {
+              show: true,
+              type: 'danger',
+              message: 'There was a problem saving your learning circle. Please check the error messages in the form and make the necessary changes.'
+            }
+          })
         }
       }).catch(err => {
         console.log(err)
+        this.setState({
+          alert: {
+            show: true,
+            type: 'danger',
+            message: 'There was an error saving your learning circle. Please try again.'
+          }
+        })
       })
 
     } else {
@@ -138,6 +167,9 @@ export default class CreateLearningCircleForm extends React.Component {
   render() {
     return (
       <div className='page-container'>
+        <Alert show={this.state.alert.show} type={this.state.alert.type}>
+          {this.state.alert.message}
+        </Alert>
         <div className='show-help' onClick={this.toggleHelp}>
           <i className="material-icons">{ this.state.showHelp ? 'close' : 'info_outline' }</i>
           <small className='minicaps'>{ this.state.showHelp ? 'back' : 'info' }</small>
