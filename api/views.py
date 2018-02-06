@@ -50,10 +50,10 @@ def _map_to_json(sg):
         "time_zone": sg.timezone_display(),
         "end_time": sg.end_time(),
         "weeks": sg.studygroupmeeting_set.active().count(),
-        "url": "https://learningcircles.p2pu.org" + reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
+        "url": settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
     }
     if sg.image:
-        data["image_url"] = "https://learningcircles.p2pu.org" + sg.image.url
+        data["image_url"] = settings.DOMAIN + sg.image.url
     # TODO else set default image URL
     if hasattr(sg, 'next_meeting_date'):
         data["next_meeting_date"] = sg.next_meeting_date
@@ -395,8 +395,8 @@ class LearningCircleCreateView(View):
         study_group.save()
         generate_all_meetings(study_group)
 
-        study_group_url = "https://learningcircles.p2pu.org" + reverse('studygroups_signup', args=(slugify(study_group.venue_name), study_group.id,))
-        return json_response(request, { "status": "created", "study_group_url": study_group_url });
+        study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name), study_group.id,))
+        return json_response(request, { "status": "created", "url": study_group_url });
 
 
 @method_decorator(csrf_exempt, name='dispatch')
