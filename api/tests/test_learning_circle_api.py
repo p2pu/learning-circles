@@ -38,7 +38,8 @@ class TestLearningCircleApi(TestCase):
             "weeks": 2,
             "meeting_time": "17:01",
             "duration": 50,
-            "timezone": "UTC"
+            "timezone": "UTC",
+            "image": "/media/image.png"
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)

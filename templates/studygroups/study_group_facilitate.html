@@ -38,6 +38,12 @@
             <p>{% trans "Signup is currently closed and your Learning Circle will not be listed on the landing page." %}</p>
           </div>
         {% endif %}
+        {% if lc.draft %}
+          <div class="alert alert-info" role="alert">
+            <p>{% trans "This learning circle is currently a draft and users won't be able to find it on www.p2pu.org or sign up." %}</p>
+            <form action="{% url 'studygroups_studygroup_publish' study_group_id=lc.pk %}" method="POST">{% csrf_token %}<button type="submit" class="btn btn-primary" href="">{% trans "publish" %}</button></form>
+          </div>
+        {% endif %}
       </div>
       <div class="col-md-12 well">
         <h3>{% trans "Recipe Cards" %}</h3>

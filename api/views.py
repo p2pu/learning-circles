@@ -333,6 +333,15 @@ def _course_check(course_id):
 @method_decorator(csrf_exempt, name='dispatch')
 class LearningCircleCreateView(View):
     def post(self, request):
+
+        def image_check():
+            def _validate(value):
+                if value.startswith(settings.MEDIA_URL):
+                    return value.replace(settings.MEDIA_URL, '', 1), None
+                else:
+                    return None, 'Image must be a valid URL for an existing file'
+            return _validate
+
         post_schema = {
             "course": schema.chain([
                 schema.integer(),
@@ -351,12 +360,17 @@ class LearningCircleCreateView(View):
             "duration": schema.text(required=True),
             "timezone": schema.text(required=True),
             "venue_website": schema.text(),
-            "image": schema.text()
+            "image": schema.chain([
+                schema.text(),
+                image_check(),
+            ], required=False)
         }
         data = json.loads(request.body)
         data, errors = schema.validate(post_schema, data)
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
+
+        # check if image is a full URL
 
         # create learning circle
         end_date = data.get('start_date') + datetime.timedelta(weeks=data.get('weeks') - 1)

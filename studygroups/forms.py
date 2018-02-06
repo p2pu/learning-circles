@@ -285,22 +285,6 @@ class StudyGroupForm(forms.ModelForm):
         } 
 
 
-class FacilitatorForm(forms.ModelForm):
-    username = forms.EmailField(required=True, label=_('Email'))
-    mailing_list_signup = forms.BooleanField(required=False, label=_('Subscribe to newsletter?'))
-
-    def clean(self):
-        cleaned_data = super(FacilitatorForm, self).clean()
-        username = cleaned_data.get('username')
-        if User.objects.filter(username__iexact=username).exists():
-            self.add_error('username', _('A user with that username already exists.'))
-        return cleaned_data
-
-    class Meta:
-        model = User
-        fields = ['username', 'first_name', 'last_name', 'mailing_list_signup']
-
-
 class StudyGroupMeetingForm(forms.ModelForm):
     meeting_time = forms.TimeField(input_formats=['%I:%M %p'], initial=datetime.time(16))
     class Meta:
