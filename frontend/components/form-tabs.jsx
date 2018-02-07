@@ -3,6 +3,7 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import CourseSection from './learning_circle_form/CourseSection';
 import LocationSection from './learning_circle_form/LocationSection';
 import DayTimeSection from './learning_circle_form/DayTimeSection';
+import CustomizeSection from './learning_circle_form/CustomizeSection';
 import FinalizeSection from './learning_circle_form/FinalizeSection';
 import 'react-tabs/style/react-tabs.css';
 
@@ -29,6 +30,7 @@ export default class FormTabs extends React.Component{
             <Tab className='tabs-item'>{this.props.allTabs[1]}</Tab>
             <Tab className='tabs-item'>{this.props.allTabs[2]}</Tab>
             <Tab className='tabs-item'>{this.props.allTabs[3]}</Tab>
+            <Tab className='tabs-item'>{this.props.allTabs[4]}</Tab>
           </TabList>
 
           <TabPanel className='tab-content'>
@@ -63,7 +65,17 @@ export default class FormTabs extends React.Component{
           </TabPanel>
           <TabPanel className='tab-content'>
             <div className='content-container'>
-              <h4>Step 4: Finalize and Publish</h4>
+              <h4>Step 4: Customize</h4>
+              <CustomizeSection
+                updateFormData={this.props.updateFormData}
+                learningCircle={this.props.learningCircle}
+                errors={this.props.errors}
+              />
+            </div>
+          </TabPanel>
+          <TabPanel className='tab-content'>
+            <div className='content-container'>
+              <h4>Step 5: Finalize</h4>
               <FinalizeSection
                 updateFormData={this.props.updateFormData}
                 learningCircle={this.props.learningCircle}

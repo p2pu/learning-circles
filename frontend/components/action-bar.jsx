@@ -22,7 +22,7 @@ export default class CreateLearningCircleForm extends React.Component{
   }
 
   _generateNextAction() {
-    if (this.props.currentTab === 3) {
+    if (this.props.currentTab === 4) {
       return(
         <button className="p2pu-btn orange" onClick={this.props.onSubmitForm}>
           Publish

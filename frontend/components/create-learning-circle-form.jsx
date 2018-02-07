@@ -42,7 +42,8 @@ export default class CreateLearningCircleForm extends React.Component {
       0: '1. Course',
       1: '2. Location',
       2: '3. Day & Time',
-      3: '4. Finalize'
+      3: '4. Customize',
+      4: '5. Finalize'
     };
   }
 
