@@ -19,7 +19,7 @@ const CourseCard = (props) => {
   }
 
   return (
-    <div className="result-item grid-item col-xs-12">
+    <div className="result-item grid-item">
       <div className="course-card">
         <UsageBadge number={props.course.learning_circles} id={props.id} />
         <div className="card-title">

@@ -1,11 +1,8 @@
 import React from 'react';
 import axios from 'axios';
-import FormTabs from './form-tabs';
-import HelpSection from './help-section';
-import ActionBar from './action-bar';
-import Modal from 'react-responsive-modal';
-import InputWithLabel from './common/InputWithLabel'
-import RegistrationModal from './registration-modal'
+import FormContainer from './learning_circle_form/FormContainer';
+import HelpContainer from './learning_circle_form/HelpContainer';
+import RegistrationModal from './registration-modal';
 import Alert from './Alert';
 
 import { LC_PUBLISHED_PAGE, LC_SAVED_DRAFT_PAGE, API_ENDPOINTS, FACILITATOR_PAGE } from '../constants';
@@ -13,13 +10,12 @@ import { LC_PUBLISHED_PAGE, LC_SAVED_DRAFT_PAGE, API_ENDPOINTS, FACILITATOR_PAGE
 
 import './stylesheets/learning-circle-form.scss'
 
-export default class CreateLearningCircleForm extends React.Component {
+export default class CreateLearningCirclePage extends React.Component {
 
   constructor(props){
     super(props);
     this.state = {
       currentTab: 0,
-      showHelp: true,
       learningCircle: {},
       showModal: false,
       showHelp: false,
@@ -57,7 +53,7 @@ export default class CreateLearningCircleForm extends React.Component {
     });
 
     const urlParams = new URL(window.location.href).searchParams;
-    this.setState({ learningCircle: { course: urlParas.get('course_id')}})
+    this.setState({ learningCircle: { course: urlParams.get('course_id')}})
   }
 
   _updateFormData(data) {
@@ -171,11 +167,11 @@ export default class CreateLearningCircleForm extends React.Component {
         <Alert show={this.state.alert.show} type={this.state.alert.type}>
           {this.state.alert.message}
         </Alert>
-        <div className='show-help' onClick={this.toggleHelp}>
+        <div className='help-toggle' onClick={this.toggleHelp}>
           <i className="material-icons">{ this.state.showHelp ? 'close' : 'info_outline' }</i>
-          <small className='minicaps'>{ this.state.showHelp ? 'back' : 'info' }</small>
+          <small className='minicaps'>{ this.state.showHelp ? 'hide' : 'info' }</small>
         </div>
-        <FormTabs
+        <FormContainer
           updateFormData={this.updateFormData}
           showHelp={this.state.showHelp}
           toggleHelp={this.toggleHelp}
@@ -184,15 +180,13 @@ export default class CreateLearningCircleForm extends React.Component {
           changeTab={this.changeTab}
           learningCircle={this.state.learningCircle}
           errors={this.state.errors}
-        />
-        <HelpSection currentTab={this.state.currentTab} />
-        <ActionBar
           currentTab={this.state.currentTab}
           changeTab={this.changeTab}
           onSaveDraft={this.onSaveDraft}
           onCancel={this.onCancel}
           onSubmitForm={this.onSubmitForm}
         />
+        <HelpContainer currentTab={this.state.currentTab} />
         <RegistrationModal
           open={this.state.showModal}
           closeModal={this.closeModal}

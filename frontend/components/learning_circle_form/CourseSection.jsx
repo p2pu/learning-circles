@@ -26,6 +26,7 @@ const CourseSection = (props) => {
         searchSubject={'courses'}
         updateFormData={props.updateFormData}
         scrollToTop={scrollToTop}
+        showHelp={props.showHelp}
       />
     </div>
   );

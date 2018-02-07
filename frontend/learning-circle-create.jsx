@@ -1,10 +1,10 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import CreateLearningCircleForm from './components/create-learning-circle-form'
+import CreateLearningCirclePage from './components/create-learning-circle-page'
 
 
 const element = document.getElementById('create-learning-circle-form')
 
 const user = element.dataset.user === "AnonymousUser" ? null : element.dataset.user;
 
-ReactDOM.render(<CreateLearningCircleForm user={user} />, element)
+ReactDOM.render(<CreateLearningCirclePage user={user} />, element)

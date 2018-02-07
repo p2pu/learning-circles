@@ -1,10 +1,10 @@
 import React from 'react'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import CourseSection from './learning_circle_form/CourseSection';
-import LocationSection from './learning_circle_form/LocationSection';
-import DayTimeSection from './learning_circle_form/DayTimeSection';
-import CustomizeSection from './learning_circle_form/CustomizeSection';
-import FinalizeSection from './learning_circle_form/FinalizeSection';
+import CourseSection from './CourseSection';
+import LocationSection from './LocationSection';
+import DayTimeSection from './DayTimeSection';
+import CustomizeSection from './CustomizeSection';
+import FinalizeSection from './FinalizeSection';
 import 'react-tabs/style/react-tabs.css';
 
 export default class FormTabs extends React.Component{
@@ -23,7 +23,7 @@ export default class FormTabs extends React.Component{
     const hide = this.props.showHelp ? 'hide' : '';
 
     return (
-      <div className={`form-container ${hide}`}>
+      <div className='tabs-container'>
         <Tabs selectedIndex={this.props.currentTab} onSelect={this.switchTab} >
           <TabList className='tabs-list'>
             <Tab className='tabs-item'>{this.props.allTabs[0]}</Tab>
@@ -40,6 +40,7 @@ export default class FormTabs extends React.Component{
                 updateFormData={this.props.updateFormData}
                 learningCircle={this.props.learningCircle}
                 errors={this.props.errors}
+                showHelp={this.props.showHelp}
               />
             </div>
           </TabPanel>

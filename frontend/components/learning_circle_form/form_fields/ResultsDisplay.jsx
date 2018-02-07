@@ -12,6 +12,7 @@ const ResultsDisplay = (props) => {
         courses={props.searchResults}
         updateFormData={props.updateFormData}
         updateQueryParams={props.updateQueryParams}
+        showHelp={props.showHelp}
       />
     </div>
   )
