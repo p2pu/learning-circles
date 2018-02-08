@@ -12,7 +12,6 @@ export default class BrowseCourses extends Component {
 
   componentWillReceiveProps(newProps) {
     if (newProps != this.props) {
-      console.log('masonry layout')
       this.masonry.layout();
     }
   }
@@ -22,13 +21,18 @@ export default class BrowseCourses extends Component {
       <Masonry className={"search-results row grid"} ref={(c) => {this.masonry = this.masonry || c.masonry;}}>
         {
           this.props.courses.map((course, index) => {
+            const handleSelect = () => {
+              this.props.updateFormData({ course });
+              this.props.scrollToTop;
+            };
+
             return(
               <CourseCard
                 key={index}
                 id={`course-card-${index}`}
                 course={course}
-                updateQueryParams={this.props.updateQueryParams}
-                updateFormData={this.props.updateFormData}
+                handleSelect={handleSelect}
+                buttonText='Use this course'
               />
             )
           })

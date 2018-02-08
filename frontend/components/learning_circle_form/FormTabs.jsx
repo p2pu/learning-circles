@@ -41,6 +41,7 @@ export default class FormTabs extends React.Component{
                 learningCircle={this.props.learningCircle}
                 errors={this.props.errors}
                 showHelp={this.props.showHelp}
+                changeTab={this.props.changeTab}
               />
             </div>
           </TabPanel>

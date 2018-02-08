@@ -4,6 +4,7 @@ import FormContainer from './learning_circle_form/FormContainer';
 import HelpContainer from './learning_circle_form/HelpContainer';
 import RegistrationModal from './registration-modal';
 import Alert from './Alert';
+import ApiHelper from '../helpers/ApiHelper'
 
 import { LC_PUBLISHED_PAGE, LC_SAVED_DRAFT_PAGE, API_ENDPOINTS, FACILITATOR_PAGE } from '../constants';
 
@@ -14,11 +15,12 @@ export default class CreateLearningCirclePage extends React.Component {
 
   constructor(props){
     super(props);
+    const desktop = window.screen.width > 768;
     this.state = {
       currentTab: 0,
       learningCircle: {},
       showModal: false,
-      showHelp: false,
+      showHelp: desktop,
       user: this.props.user,
       errors: {},
       alert: { show: false }
@@ -53,7 +55,18 @@ export default class CreateLearningCirclePage extends React.Component {
     });
 
     const urlParams = new URL(window.location.href).searchParams;
-    this.setState({ learningCircle: { course: urlParams.get('course_id')}})
+    const courseId = urlParams.get('course_id');
+    if (!!courseId) {
+      const api = new ApiHelper('courses');
+      const params = { course_id: courseId }
+      const callback = (response, _opts) => {
+        this.setState({ learningCircle: { course: response.items[0] } })
+      }
+      const opts = { params, callback }
+
+      api.fetchResource(opts)
+    }
+    this.setState({ learningCircle: { course: { id: urlParams.get('course_id') }}})
   }
 
   _updateFormData(data) {
@@ -180,8 +193,6 @@ export default class CreateLearningCirclePage extends React.Component {
           changeTab={this.changeTab}
           learningCircle={this.state.learningCircle}
           errors={this.state.errors}
-          currentTab={this.state.currentTab}
-          changeTab={this.changeTab}
           onSaveDraft={this.onSaveDraft}
           onCancel={this.onCancel}
           onSubmitForm={this.onSubmitForm}

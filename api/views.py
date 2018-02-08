@@ -221,6 +221,12 @@ class LearningCircleTopicListView(View):
         data['topics'] = { k:v for k,v in Counter(topics).items() }
         return json_response(request, data)
 
+def _course_check(course_id):
+    if not Course.objects.filter(pk=int(course_id)).exists():
+        return None, 'Course matching ID not found'
+    else:
+        return Course.objects.get(pk=int(course_id)), None
+
 
 def _course_to_json(course):
     return {
@@ -234,7 +240,6 @@ def _course_to_json(course):
         "topics": [t.strip() for t in course.topics.split(',')] if course.topics else [],
         "language": course.language,
     }
-
 
 class CourseListView(View):
     def get(self, request):
@@ -259,6 +264,11 @@ class CourseListView(View):
                 )
             )
         )
+
+        if 'course_id' in request.GET:
+            course_id = request.GET.get('course_id')
+            courses = courses.filter(pk=int(course_id))
+
         if request.GET.get('order', None) in ['title', None]:
             courses = courses.order_by('title')
         else:
@@ -321,14 +331,6 @@ class CourseTopicListView(View):
         #data['items'] = list(set(topics))
         data['topics'] = { k:v for k,v in Counter(topics).items() }
         return json_response(request, data)
-
-def _course_check(course_id):
-    if not Course.objects.filter(pk=int(course_id)).exists():
-        return None, 'Course matching ID not found'
-    else:
-        return Course.objects.get(pk=int(course_id)), None
-
-
 
 @method_decorator(csrf_exempt, name='dispatch')
 class LearningCircleCreateView(View):
