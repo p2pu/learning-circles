@@ -18,7 +18,7 @@ export default class CreateLearningCirclePage extends React.Component {
     const desktop = window.screen.width > 768;
     this.state = {
       currentTab: 0,
-      learningCircle: {},
+      learningCircle: { duration: 90, weeks: 6 },
       showModal: false,
       showHelp: desktop,
       user: this.props.user,
@@ -32,6 +32,7 @@ export default class CreateLearningCirclePage extends React.Component {
     this.toggleHelp = () => this._toggleHelp();
     this.showModal = () => this._showModal();
     this.closeModal = () => this._closeModal();
+    this.closeAlert = () => this._closeAlert();
     this.updateFormData = (data) => this._updateFormData(data);
     this.updateUserData = (data) => this._updateUserData(data);
     this.registerUser = () => this._registerUser();
@@ -97,9 +98,16 @@ export default class CreateLearningCirclePage extends React.Component {
     this.setState({ showModal: false })
   }
 
+  _closeAlert() {
+    this.setState({ alert: { show: false }})
+  }
+
   _onSubmitForm() {
     if (this.state.user) {
-      const data = this.state.learningCircle;
+      const data = {
+        ...this.state.learningCircle,
+        course: this.state.learningCircle.course.id
+      }
       const url = API_ENDPOINTS.learningCircle;
 
       axios({
@@ -110,12 +118,29 @@ export default class CreateLearningCirclePage extends React.Component {
         config: { headers: {'Content-Type': 'application/json' }}
       }).then(res => {
         if (res.data.status === 'created') {
-          window.location.href = `${LC_PUBLISHED_PAGE}?url=${res.data.study_group_url}`;
+          this.setState({ learningCircle: {} }, () => {
+            window.location.href = `${LC_PUBLISHED_PAGE}?url=${res.data.study_group_url}`;
+          })
         } else if (res.data.errors) {
-          this.setState({ errors: res.data.errors, currentTab: 0 })
+          this.setState({
+            currentTab: 0,
+            errors: res.data.errors,
+            alert: {
+              show: true,
+              type: 'danger',
+              message: 'There was a problem saving your learning circle. Please check the error messages in the form and make the necessary changes.'
+            }
+          })
         }
       }).catch(err => {
         console.log(err)
+        this.setState({
+          alert: {
+            show: true,
+            type: 'danger',
+            message: 'There was an error saving your learning circle. Please try again.'
+          }
+        })
       })
 
     } else {
@@ -124,7 +149,6 @@ export default class CreateLearningCirclePage extends React.Component {
   }
 
   _onCancel() {
-    this.setState({ learningCircle: null })
     window.location.href = FACILITATOR_PAGE;
   }
 
@@ -176,7 +200,10 @@ export default class CreateLearningCirclePage extends React.Component {
   render() {
     return (
       <div className='page-container'>
-        <Alert show={this.state.alert.show} type={this.state.alert.type}>
+        <Alert
+          show={this.state.alert.show}
+          type={this.state.alert.type}
+          closeAlert={this.closeAlert}>
           {this.state.alert.message}
         </Alert>
         <div className='help-toggle' onClick={this.toggleHelp}>

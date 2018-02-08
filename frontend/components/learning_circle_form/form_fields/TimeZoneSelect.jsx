@@ -29,7 +29,7 @@ export default class TimeZoneSelect extends Component {
     if (!!this.props.timezone) {
       this.setState({ value: { value: this.props.timezone, label: this.props.timezone } })
     } else if (!!this.props.latitude && !!this.props.longitude) {
-      const url = `http://api.geonames.org/timezoneJSON?lat=${this.props.latitude}&lng=${this.props.longitude}&username=p2pu`
+      const url = `https://secure.geonames.org/timezoneJSON?lat=${this.props.latitude}&lng=${this.props.longitude}&username=p2pu`
 
       axios.get(url).then(res => {
         const timezone = res.data.timezoneId;

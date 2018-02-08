@@ -2,15 +2,16 @@ import React from 'react';
 import InputWithLabel from '../common/InputWithLabel';
 import SelectWithLabel from '../common/SelectWithLabel';
 import TimePickerWithLabel from '../common/TimePickerWithLabel';
+import DatePickerWithLabel from '../common/DatePickerWithLabel';
 import TimeZoneSelect from './form_fields/TimeZoneSelect';
 
 const DayTimeSection = (props) => {
 
   return (
     <div>
-      <InputWithLabel
+      <DatePickerWithLabel
         label={'What is the date of the first learning circle?'}
-        value={props.learningCircle.start_date || ''}
+        value={props.learningCircle.start_date}
         placeholder={'Eg. 6 January, 2018'}
         handleChange={props.updateFormData}
         name={'start_date'}
@@ -23,7 +24,6 @@ const DayTimeSection = (props) => {
         label={'How many weeks will the learning circle run for?'}
         value={props.learningCircle.weeks}
         handleChange={props.updateFormData}
-        defaultValue={6}
         name={'weeks'}
         id={'id_weeks'}
         type={'number'}
@@ -55,7 +55,6 @@ const DayTimeSection = (props) => {
       <InputWithLabel
         label={'How long will each session last (in minutes)?'}
         value={props.learningCircle.duration}
-        defaultValue={90}
         handleChange={props.updateFormData}
         name={'duration'}
         id={'id_duration'}
