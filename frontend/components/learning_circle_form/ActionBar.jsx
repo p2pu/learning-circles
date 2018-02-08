@@ -1,59 +1,69 @@
 import React from 'react'
 
+const NextButton = (props) => (
+  <button className="p2pu-btn blue" onClick={props.onClick}>
+    Next<i className="fa fa-arrow-right" aria-hidden="true"></i>
+  </button>
+)
 
-export default class ActionBar extends React.Component{
-  constructor(props){
-    super(props);
-    this.state = {};
-    this.nextTab = () => this._nextTab();
-    this.prevTab = () => this._prevTab();
-    this.generateNextAction = () => this._generateNextAction()
-    this.generatePreviousAction = () => this._generatePreviousAction()
+const BackButton = (props) => (
+  <button className="p2pu-btn blue" onClick={props.onClick}>
+    <i className="fa fa-arrow-left" aria-hidden="true"></i>Back
+  </button>
+)
+
+const PublishButton = (props) => (
+  <button className="p2pu-btn orange" onClick={props.onClick}>
+    Publish
+  </button>
+)
+
+const SaveButton = (props) => (
+  <button className="p2pu-btn yellow" onClick={props.onClick}>
+    Save
+  </button>
+)
+
+const CancelButton = (props) => (
+  <button onClick={props.onClick} className="p2pu-btn transparent">Cancel</button>
+)
+
+const ActionBar = (props) => {
+  const nextTab = () => {
+    props.changeTab(props.currentTab + 1)
   }
 
-  _nextTab() {
-    this.props.changeTab(this.props.currentTab + 1)
+  const prevTab = () => {
+    props.changeTab(props.currentTab - 1)
   }
 
-  _prevTab() {
-    this.props.changeTab(this.props.currentTab - 1)
-  }
-
-  _generateNextAction() {
-    if (this.props.currentTab === 4) {
-      return(
-        <button className="p2pu-btn orange" onClick={this.props.onSubmitForm}>
-          Publish
-        </button>
-      )
-    }
-
-    return(
-      <button className="p2pu-btn blue" onClick={this.nextTab}>
-        Next<i className="fa fa-arrow-right" aria-hidden="true"></i>
-      </button>
-    )
-  }
-
-  _generatePreviousAction() {
-    if (this.props.currentTab === 0) {
-      return null
-    }
-
-    return(
-      <button className="p2pu-btn blue" onClick={this.prevTab}>
-        <i className="fa fa-arrow-left" aria-hidden="true"></i>Back
-      </button>
-    )
-  }
-
-  render() {
+  if (props.currentTab === 4) {
     return (
       <div className='action-bar'>
-        { this.generatePreviousAction() }
-        <button onClick={this.props.onCancel} className="p2pu-btn transparent">Cancel</button>
-        { this.generateNextAction() }
+        <BackButton onClick={prevTab} />
+        <CancelButton onClick={props.onCancel} />
+        <SaveButton onClick={props.onSubmitForm} />
+        <PublishButton onClick={() => props.onSubmitForm(true)} />
       </div>
-    );
+    )
   }
+
+  if (props.currentTab === 0) {
+    return (
+      <div className='action-bar'>
+        <CancelButton onClick={props.onCancel} />
+        <NextButton onClick={nextTab} />
+      </div>
+    )
+  }
+
+  return (
+    <div className='action-bar'>
+      <BackButton onClick={prevTab} />
+      <CancelButton onClick={props.onCancel} />
+      <NextButton onClick={nextTab} />
+    </div>
+  );
 }
+
+export default ActionBar;

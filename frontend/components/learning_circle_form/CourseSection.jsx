@@ -11,7 +11,7 @@ const CourseSection = (props) => {
   }
 
   const removeCourseSelection = () => {
-    props.updateFormData({ course: null });
+    props.updateFormData({ course: {} });
     const cleanUrl = window.location.origin + window.location.pathname;
     window.history.replaceState({}, document.title, cleanUrl)
   }
@@ -23,7 +23,7 @@ const CourseSection = (props) => {
         <div className="error-message minicaps">{props.errors.course}</div>
       }
       {
-          props.learningCircle.course &&
+          props.learningCircle.course.id &&
           <div className="search-results">
             <p className="bold">Selected course:</p>
             <CourseCard
@@ -33,7 +33,7 @@ const CourseSection = (props) => {
           </div>
         }
         {
-          !props.learningCircle.course &&
+          !props.learningCircle.course.id &&
           <Search
             learningCircle={props.learningCircle}
             searchSubject={'courses'}

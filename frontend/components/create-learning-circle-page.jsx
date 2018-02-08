@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+
 import FormContainer from './learning_circle_form/FormContainer';
 import HelpContainer from './learning_circle_form/HelpContainer';
 import RegistrationModal from './learning_circle_form/RegistrationModal';
@@ -10,22 +11,23 @@ import {
   LC_PUBLISHED_PAGE,
   LC_SAVED_DRAFT_PAGE,
   API_ENDPOINTS,
-  FACILITATOR_PAGE
+  FACILITATOR_PAGE,
+  LC_DEFAULTS,
+  DESKTOP_BREAKPOINT
 } from '../constants';
 
-
 import './stylesheets/learning-circle-form.scss'
+
 
 export default class CreateLearningCirclePage extends React.Component {
 
   constructor(props){
     super(props);
-    const desktop = window.screen.width > 768;
     this.state = {
       currentTab: 0,
-      learningCircle: { duration: 90, weeks: 6 },
+      learningCircle: LC_DEFAULTS,
       showModal: false,
-      showHelp: desktop,
+      showHelp: window.screen.width > DESKTOP_BREAKPOINT,
       user: this.props.user,
       errors: {},
       alert: { show: false }
@@ -39,7 +41,6 @@ export default class CreateLearningCirclePage extends React.Component {
     this.closeModal = () => this._closeModal();
     this.closeAlert = () => this._closeAlert();
     this.updateFormData = (data) => this._updateFormData(data);
-    this.updateUserData = (data) => this._updateUserData(data);
     this.registerUser = () => this._registerUser();
     this.onLogin = (user) => this._onLogin(user);
     this.allTabs = {
@@ -62,6 +63,7 @@ export default class CreateLearningCirclePage extends React.Component {
 
     const urlParams = new URL(window.location.href).searchParams;
     const courseId = urlParams.get('course_id');
+
     if (!!courseId) {
       const api = new ApiHelper('courses');
       const params = { course_id: courseId }
@@ -88,11 +90,8 @@ export default class CreateLearningCirclePage extends React.Component {
   }
 
   _changeTab(tab) {
-    if (!!this.allTabs[tab]) {
-      this.setState({ currentTab: tab })
-    } else {
-      this.setState({ currentTab: 0 })
-    }
+    const newTab = !!this.allTabs[tab] ? tab : 0;
+    this.setState({ currentTab: newTab });
   }
 
   _showModal() {
@@ -107,37 +106,38 @@ export default class CreateLearningCirclePage extends React.Component {
     this.setState({ alert: { show: false }})
   }
 
-  _onSubmitForm() {
+  _onSubmitForm(published=false) {
     if (this.state.user) {
+      const course = this.state.learningCircle.course
       const data = {
         ...this.state.learningCircle,
-        course: this.state.learningCircle.course.id
+        course: this.state.learningCircle.course.id,
+        ...published
       }
-      const url = API_ENDPOINTS.learningCircle;
 
-      axios({
-        url,
-        data,
-        method: 'post',
-        responseType: 'json',
-        config: { headers: {'Content-Type': 'application/json' }}
-      }).then(res => {
-        if (res.data.status === 'created') {
-          this.setState({ learningCircle: {} }, () => {
-            window.location.href = `${LC_PUBLISHED_PAGE}?url=${res.data.study_group_url}`;
-          })
-        } else if (res.data.errors) {
-          this.setState({
-            currentTab: 0,
-            errors: res.data.errors,
-            alert: {
-              show: true,
-              type: 'danger',
-              message: 'There was a problem saving your learning circle. Please check the error messages in the form and make the necessary changes.'
-            }
-          })
-        }
-      }).catch(err => {
+      const onSuccess = (data) => {
+        this.setState({ learningCircle: {} }, () => {
+          if (data.published) {
+            window.location.href = `${LC_PUBLISHED_PAGE}?url=${data.study_group_url}`;
+          } else {
+            window.location.href = FACILITATOR_PAGE;
+          }
+        })
+      }
+
+      const onError = (data) => {
+        this.setState({
+          currentTab: 0,
+          errors: data.errors,
+          alert: {
+            show: true,
+            type: 'danger',
+            message: 'There was a problem saving your learning circle. Please check the error messages in the form and make the necessary changes.'
+          }
+        })
+      }
+
+      const onFail = (err) => {
         console.log(err)
         this.setState({
           alert: {
@@ -146,8 +146,11 @@ export default class CreateLearningCirclePage extends React.Component {
             message: 'There was an error saving your learning circle. Please try again.'
           }
         })
-      })
+      }
 
+      const opts = { data, onSuccess, onError, onFail };
+      const api = new ApiHelper('learningCircles');
+      api.createResource(opts);
     } else {
       this.showModal()
     }
@@ -155,47 +158,6 @@ export default class CreateLearningCirclePage extends React.Component {
 
   _onCancel() {
     window.location.href = FACILITATOR_PAGE;
-  }
-
-  _onSaveDraft() {
-    if (this.state.user) {
-      const data = this.state.learningCircle
-      const url = API_ENDPOINTS.learningCircle;
-
-      axios({
-        url,
-        data,
-        method: 'post',
-        responseType: 'json',
-        config: { headers: {'Content-Type': 'application/json' }}
-      }).then(res => {
-        console.log(res)
-        if (res.data.status === 'created') {
-          window.location.href = LC_SAVED_DRAFT_PAGE;
-        } else if (res.data.status === 'error') {
-          this.setState({
-            errors: res.data.errors,
-            alert: {
-              show: true,
-              type: 'danger',
-              message: 'There was a problem saving your learning circle. Please check the error messages in the form and make the necessary changes.'
-            }
-          })
-        }
-      }).catch(err => {
-        console.log(err)
-        this.setState({
-          alert: {
-            show: true,
-            type: 'danger',
-            message: 'There was an error saving your learning circle. Please try again.'
-          }
-        })
-      })
-
-    } else {
-      this.showModal()
-    }
   }
 
   _onLogin(user, callback=null) {
@@ -224,7 +186,6 @@ export default class CreateLearningCirclePage extends React.Component {
           changeTab={this.changeTab}
           learningCircle={this.state.learningCircle}
           errors={this.state.errors}
-          onSaveDraft={this.onSaveDraft}
           onCancel={this.onCancel}
           onSubmitForm={this.onSubmitForm}
         />
@@ -234,7 +195,7 @@ export default class CreateLearningCirclePage extends React.Component {
           closeModal={this.closeModal}
           user={this.props.user}
           onLogin={this.onLogin}
-          onSaveDraft={this.onSaveDraft}
+          onSubmitForm={this.onSubmitForm}
         />
       </div>
     );

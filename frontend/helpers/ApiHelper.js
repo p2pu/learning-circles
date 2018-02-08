@@ -1,6 +1,7 @@
-import { API_ENDPOINTS } from '../constants'
-import { compact } from 'lodash'
-import jsonp from 'jsonp'
+import { API_ENDPOINTS } from '../constants';
+import { compact } from 'lodash';
+import jsonp from 'jsonp';
+import axios from 'axios';
 
 export default class ApiHelper {
   constructor(resourceType) {
@@ -33,6 +34,28 @@ export default class ApiHelper {
         console.log(data)
         opts.callback(data, opts)
       }
+    })
+  }
+
+  createResource(opts) {
+    const url = API_ENDPOINTS[this.resourceType].postUrl;
+    const data = opts.data;
+
+    axios({
+      url,
+      data,
+      method: 'post',
+      responseType: 'json',
+      config: { headers: {'Content-Type': 'application/json' }}
+    }).then(res => {
+      if (res.data.status === 'created') {
+        opts.onSuccess(res.data)
+      } else if (res.data.errors) {
+        opts.onError(res.data)
+      }
+    }).catch(err => {
+      console.log(err)
+      opts.onFail(err)
     })
   }
 }
