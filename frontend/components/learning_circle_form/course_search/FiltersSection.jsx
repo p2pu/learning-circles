@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Filter from './Filter'
 import FilterForm from './FilterForm'
 
+
 export default class FilterSection extends Component {
   constructor(props) {
     super(props)

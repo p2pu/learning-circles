@@ -5,7 +5,6 @@ import CourseCard from './CourseCard.jsx'
 
 
 export default class BrowseCourses extends Component {
-
   constructor(props) {
     super(props);
   }

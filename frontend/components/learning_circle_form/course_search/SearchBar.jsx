@@ -1,5 +1,6 @@
 import React from 'react'
 
+
 const SearchBar = ({ placeholder, updateQueryParams, q }) => {
   const onChange = (e) => {
     const value = e.currentTarget.value;

@@ -2,6 +2,7 @@ import React from 'react'
 import SearchBar from './SearchBar'
 import FiltersSection from './FiltersSection'
 
+
 const SearchAndFilter = (props) => {
   const noResults = props.searchResults.length === 0;
 

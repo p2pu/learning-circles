@@ -2,12 +2,13 @@ import React from 'react';
 import axios from 'axios';
 
 import Modal from 'react-responsive-modal';
-import InputWithLabel from './common/InputWithLabel'
-import CheckboxWithLabel from './common/CheckboxWithLabel'
+import InputWithLabel from '../form_fields/InputWithLabel'
+import CheckboxWithLabel from '../form_fields/CheckboxWithLabel'
 
-import { API_ENDPOINTS } from '../constants'
+import { API_ENDPOINTS } from '../../constants'
 
-import './stylesheets/learning-circle-form.scss'
+import '../stylesheets/learning-circle-form.scss'
+
 
 axios.defaults.xsrfCookieName = 'csrftoken'
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'

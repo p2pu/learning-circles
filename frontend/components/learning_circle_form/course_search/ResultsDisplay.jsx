@@ -2,6 +2,7 @@ import React from 'react'
 import BrowseCourses from './BrowseCourses'
 import SearchTags from './SearchTags'
 
+
 const ResultsDisplay = (props) => {
   return(
     <div className="search-results col-sm-12">

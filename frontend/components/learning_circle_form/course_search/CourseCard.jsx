@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom'
 import UsageBadge from './UsageBadge'
 import { take } from 'lodash'
 
-const CourseCard = (props) => {
 
+const CourseCard = (props) => {
   const feedbackPage = `https://etherpad.p2pu.org/p/course-feedback-${props.course.id}`;
   const availability = props.course.on_demand ? 'Course available on demand' : 'Check course availability';
   const handleFilterClick = (topic) => {

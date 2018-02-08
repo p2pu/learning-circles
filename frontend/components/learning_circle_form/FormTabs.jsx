@@ -5,7 +5,9 @@ import LocationSection from './LocationSection';
 import DayTimeSection from './DayTimeSection';
 import CustomizeSection from './CustomizeSection';
 import FinalizeSection from './FinalizeSection';
+
 import 'react-tabs/style/react-tabs.css';
+
 
 export default class FormTabs extends React.Component{
   constructor(props){

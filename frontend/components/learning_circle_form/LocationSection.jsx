@@ -1,6 +1,7 @@
 import React from 'react'
-import InputWithLabel from '../common/InputWithLabel'
-import PlaceSelect from './form_fields/PlaceSelect'
+import InputWithLabel from '../form_fields/InputWithLabel'
+import PlaceSelect from '../form_fields/PlaceSelect'
+
 
 const LocationSection = (props) => {
   return (

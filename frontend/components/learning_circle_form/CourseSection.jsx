@@ -1,8 +1,9 @@
 import React from 'react'
-import Search from './form_fields/Search'
-import CourseCard from './form_fields/CourseCard'
+import Search from './course_search/Search'
+import CourseCard from './course_search/CourseCard'
 
 import '../stylesheets/search.scss'
+
 
 const CourseSection = (props) => {
   const scrollToTop = () => {

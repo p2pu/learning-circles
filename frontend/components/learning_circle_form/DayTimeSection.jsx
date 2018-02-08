@@ -1,9 +1,9 @@
 import React from 'react';
-import InputWithLabel from '../common/InputWithLabel';
-import SelectWithLabel from '../common/SelectWithLabel';
-import TimePickerWithLabel from '../common/TimePickerWithLabel';
-import DatePickerWithLabel from '../common/DatePickerWithLabel';
-import TimeZoneSelect from './form_fields/TimeZoneSelect';
+import InputWithLabel from '../form_fields/InputWithLabel';
+import SelectWithLabel from '../form_fields/SelectWithLabel';
+import TimePickerWithLabel from '../form_fields/TimePickerWithLabel';
+import DatePickerWithLabel from '../form_fields/DatePickerWithLabel';
+import TimeZoneSelect from '../form_fields/TimeZoneSelect';
 
 const DayTimeSection = (props) => {
 

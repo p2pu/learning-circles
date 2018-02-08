@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
-import CheckboxWithLabel from '../../common/CheckboxWithLabel'
-import SelectWithLabel from '../../common/SelectWithLabel'
-import css from 'react-select/dist/react-select.css'
-import { COURSE_CATEGORIES } from '../../../constants'
-import ApiHelper from '../../../helpers/ApiHelper'
 import { keys } from 'lodash'
+
+import CheckboxWithLabel from '../../form_fields/CheckboxWithLabel'
+import SelectWithLabel from '../../form_fields/SelectWithLabel'
+import ApiHelper from '../../../helpers/ApiHelper'
+import { COURSE_CATEGORIES } from '../../../constants'
+
+import 'react-select/dist/react-select.css'
 
 export default class TopicsFilterForm extends Component {
   constructor(props) {

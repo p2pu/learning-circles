@@ -1,7 +1,7 @@
 import React from 'react'
-import TextareaWithLabel from '../common/TextareaWithLabel'
-import InputWithLabel from '../common/InputWithLabel'
-import ImageUploader from '../common/ImageUploader'
+import TextareaWithLabel from '../form_fields/TextareaWithLabel'
+import InputWithLabel from '../form_fields/InputWithLabel'
+import ImageUploader from '../form_fields/ImageUploader'
 
 const CustomizeSection = (props) => {
   const handleImageUpload = (pictures) => {

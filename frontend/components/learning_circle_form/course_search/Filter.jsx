@@ -1,5 +1,6 @@
 import React from 'react'
 
+
 const Filter = ({filter, active, updateActiveFilter}) => {
   const filterNames = {
     'location': 'Location',

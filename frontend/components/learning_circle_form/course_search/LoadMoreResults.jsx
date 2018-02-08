@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 
+
 const LoadMoreResults = (props) => {
   if (props.visibleSearchResults < props.totalSearchResults) {
     return (

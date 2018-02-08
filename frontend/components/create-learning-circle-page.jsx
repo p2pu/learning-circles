@@ -2,11 +2,16 @@ import React from 'react';
 import axios from 'axios';
 import FormContainer from './learning_circle_form/FormContainer';
 import HelpContainer from './learning_circle_form/HelpContainer';
-import RegistrationModal from './registration-modal';
-import Alert from './Alert';
+import RegistrationModal from './learning_circle_form/RegistrationModal';
+import Alert from './learning_circle_form/Alert';
 import ApiHelper from '../helpers/ApiHelper'
 
-import { LC_PUBLISHED_PAGE, LC_SAVED_DRAFT_PAGE, API_ENDPOINTS, FACILITATOR_PAGE } from '../constants';
+import {
+  LC_PUBLISHED_PAGE,
+  LC_SAVED_DRAFT_PAGE,
+  API_ENDPOINTS,
+  FACILITATOR_PAGE
+} from '../constants';
 
 
 import './stylesheets/learning-circle-form.scss'

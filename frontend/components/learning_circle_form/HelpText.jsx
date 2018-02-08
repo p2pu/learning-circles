@@ -1,5 +1,6 @@
 import React from 'react'
 
+
 export const Step1 = () => (
   <div className='help-text'>
     <h4>Course selection tips</h4>
