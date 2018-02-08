@@ -33,7 +33,11 @@
     </div>
     <div class="col-md-8 col-sm-12">
       {% if study_group.signup_open %}
-      {% crispy form %}
+        {% if study_group.draft %}
+          <p>{% trans "Signup for this learning circle is not open yet." %}</p>
+        {% else %}
+          {% crispy form %}
+        {% endif %}
       {% else %}
       <p>{% trans "Unfortunately this learning circle is now closed for signup." %}</p>
       {% endif %}

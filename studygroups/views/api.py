@@ -23,8 +23,9 @@ from uxhelpers.utils import json_response
 
 
 def studygroups(request):
-    #TODO only accept GET requests 
-    study_groups = StudyGroup.objects.active()
+    #TODO only accept GET requests
+    # TODO remove this API endpoint, where is it currently being used??
+    study_groups = StudyGroup.objects.published()
     if 'course_id' in request.GET:
         study_groups = study_groups.filter(course_id=request.GET.get('course_id'))
     

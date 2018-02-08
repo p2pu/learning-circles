@@ -45,9 +45,12 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(StudyGroup.objects.all().count(), 4)
         resp = c.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json(), {"status": "created"})
-        self.assertEqual(StudyGroup.objects.all().count(), 5)
         lc = StudyGroup.objects.all().last()
+        self.assertEqual(resp.json(), {
+            "status": "created",
+            "url": "example.net/en/signup/75-harrington-{}/".format(lc.pk)
+        })
+        self.assertEqual(StudyGroup.objects.all().count(), 5)
         self.assertEqual(lc.course.id, 3)
         self.assertEqual(lc.description, 'Lets learn something')
         self.assertEqual(lc.start_date, datetime.date(2018,2,12))
@@ -64,6 +67,16 @@ class TestLearningCircleApi(TestCase):
         resp = c.get('/api/learningcircles/')
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()["count"], 4)
+
+
+    def test_get_learning_circles_exclude_drafts(self):
+        c = Client()
+        sg = StudyGroup.objects.get(pk=1)
+        sg.draft = True
+        sg.save()
+        resp = c.get('/api/learningcircles/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["count"], 3)
 
 
     def test_get_learning_circles_by_weekday(self):

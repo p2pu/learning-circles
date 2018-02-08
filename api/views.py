@@ -50,10 +50,10 @@ def _map_to_json(sg):
         "time_zone": sg.timezone_display(),
         "end_time": sg.end_time(),
         "weeks": sg.studygroupmeeting_set.active().count(),
-        "url": "https://learningcircles.p2pu.org" + reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
+        "url": settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
     }
     if sg.image:
-        data["image_url"] = "https://learningcircles.p2pu.org" + sg.image.url
+        data["image_url"] = settings.DOMAIN + sg.image.url
     # TODO else set default image URL
     if hasattr(sg, 'next_meeting_date'):
         data["next_meeting_date"] = sg.next_meeting_date
@@ -100,7 +100,7 @@ class LearningCircleListView(View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        study_groups = StudyGroup.objects.active().order_by('id')
+        study_groups = StudyGroup.objects.published().order_by('id')
 
         if 'q' in request.GET:
             q = request.GET.get('q')
@@ -205,7 +205,7 @@ class LearningCircleTopicListView(View):
             meeting_date__gte=timezone.now()
         ).values('study_group')
         course_ids = None
-        course_ids = StudyGroup.objects.active().filter(id__in=study_group_ids).values('course')
+        course_ids = StudyGroup.objects.published().filter(id__in=study_group_ids).values('course')
 
         topics = Course.objects.active()\
             .filter(unlisted=False)\
@@ -298,9 +298,9 @@ class CourseListView(View):
             ).values('study_group')
             course_ids = None
             if active:
-                course_ids = StudyGroup.objects.active().filter(id__in=study_group_ids).values('course')
+                course_ids = StudyGroup.objects.published().filter(id__in=study_group_ids).values('course')
             else:
-                course_ids = StudyGroup.objects.active().exclude(id__in=study_group_ids).values('course')
+                course_ids = StudyGroup.objects.published().exclude(id__in=study_group_ids).values('course')
             courses = courses.filter(id__in=course_ids)
 
         data = {
@@ -397,8 +397,8 @@ class LearningCircleCreateView(View):
         study_group.save()
         generate_all_meetings(study_group)
 
-        study_group_url = "https://learningcircles.p2pu.org" + reverse('studygroups_signup', args=(slugify(study_group.venue_name), study_group.id,))
-        return json_response(request, { "status": "created", "study_group_url": study_group_url });
+        study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name), study_group.id,))
+        return json_response(request, { "status": "created", "url": study_group_url });
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -451,7 +451,7 @@ class LandingPageLearningCirclesView(View):
     def get(self, request):
 
         # get learning circles with image & upcoming meetings
-        study_groups = StudyGroup.objects.active().filter(
+        study_groups = StudyGroup.objects.published().filter(
             studygroupmeeting__meeting_date__gte=timezone.now(),
         ).annotate(
             next_meeting_date=Min('studygroupmeeting__meeting_date')
@@ -460,7 +460,7 @@ class LandingPageLearningCirclesView(View):
         # if there are less than 3 with upcoming meetings and an image
         if study_groups.count() < 3:
             #pad with learning circles with the most recent meetings
-            past_study_groups = StudyGroup.objects.active().filter(
+            past_study_groups = StudyGroup.objects.published().filter(
                 studygroupmeeting__meeting_date__lt=timezone.now(),
             ).annotate(
                 next_meeting_date=Max('studygroupmeeting__meeting_date')
@@ -481,16 +481,16 @@ class LandingPageStatsView(View):
     - Number of learning circles to date
     """
     def get(self, request):
-        study_groups = StudyGroup.objects.active().filter(
+        study_groups = StudyGroup.objects.published().filter(
             studygroupmeeting__meeting_date__gte=timezone.now()
         ).annotate(
             next_meeting_date=Min('studygroupmeeting__meeting_date')
         )
-        cities = StudyGroup.objects.active().filter(
+        cities = StudyGroup.objects.published().filter(
             latitude__isnull=False,
             longitude__isnull=False,
         ).distinct('city').values('city')
-        learning_circle_count = StudyGroup.objects.active().count()
+        learning_circle_count = StudyGroup.objects.published().count()
         facilitators = StudyGroup.objects.active().distinct('facilitator').values('facilitator')
         cities_s = list(set([c['city'].split(',')[0].strip() for c in cities]))
         data = {

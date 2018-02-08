@@ -29,7 +29,7 @@ def send_reminders():
     # TODO - make sure both the StudyGroup and StudyGroupMeeting is still available
     reminders = Reminder.objects.filter(
         sent_at__isnull=True,
-        study_group__in=StudyGroup.objects.active(),
+        study_group__in=StudyGroup.objects.published(),
         study_group_meeting__in=StudyGroupMeeting.objects.active()
     )
     for reminder in reminders:
@@ -41,7 +41,7 @@ def send_reminders():
 
 @shared_task
 def gen_reminders():
-    for study_group in StudyGroup.objects.active():
+    for study_group in StudyGroup.objects.published():
         translation.activate(settings.LANGUAGE_CODE)
         generate_reminder(study_group)
 
@@ -74,13 +74,13 @@ def send_new_studygroup_emails():
 
 @shared_task
 def send_all_studygroup_survey_reminders():
-    for study_group in StudyGroup.objects.active():
+    for study_group in StudyGroup.objects.published():
         translation.activate(settings.LANGUAGE_CODE)
         send_survey_reminder(study_group)
 
 
 @shared_task
 def send_all_facilitator_surveys():
-    for study_group in StudyGroup.objects.active():
+    for study_group in StudyGroup.objects.published():
         translation.activate(settings.LANGUAGE_CODE)
         send_facilitator_survey(study_group)

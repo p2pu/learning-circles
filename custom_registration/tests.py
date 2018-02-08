@@ -4,6 +4,8 @@ from django.test import Client
 from django.core import mail
 from django.contrib.auth.models import User
 
+from .models import create_user
+
 from mock import patch
 
 import re
@@ -137,6 +139,21 @@ class TestCustomRegistrationViews(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn(data['email'], mail.outbox[0].to)
         self.assertEqual(mail.outbox[0].subject, 'Please confirm your email address')
+
+    @patch('custom_registration.signals.handle_new_facilitator')
+    def test_email_address_confirm_request(self, handle_new_facilitator):
+        user = create_user('bob@example.net', 'bob', 'test', 'password', False)
+        c = Client()
+        c.login(username='bob@example.net', password='password')
+
+        mail.outbox = []
+        resp = c.post('/en/accounts/email_confirm/')
+        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn(user.email, mail.outbox[0].to)
+        self.assertEqual(mail.outbox[0].subject, 'Please confirm your email address')
+        bob = User.objects.get(email=user.email)
+        self.assertEquals(bob.facilitator.email_confirmed_at, None)
 
 
     def test_email_address_confirm(self):
