@@ -1,8 +1,9 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import axios from 'axios';
-
-import { compact, uniqBy, sortBy } from 'lodash';
 import Select from 'react-select';
+import { compact, uniqBy, sortBy } from 'lodash';
+import { EXTERNAL_APIS } from '../../constants';
+
 import css from 'react-select/dist/react-select.css';
 
 
@@ -35,7 +36,7 @@ export default class PlaceSelect extends Component {
   }
 
   _searchPlaces(query) {
-    const url = 'https://places-dsn.algolia.net/1/places/query/';
+    const url = `${EXTERNAL_APIS.algolia}/query/`;
     const data = {
       'type': 'city',
       'hitsPerPage': '10',
@@ -54,7 +55,7 @@ export default class PlaceSelect extends Component {
   }
 
   _fetchPlaceById() {
-    const url = `https://places-dsn.algolia.net/1/places/${this.props.placeObjectId}`;
+    const url = `${EXTERNAL_APIS.algolia}/${this.props.placeObjectId}`;
 
     axios.get(url)
       .then(res => {
@@ -64,7 +65,6 @@ export default class PlaceSelect extends Component {
       .catch(err => {
         console.log(err)
       })
-
   }
 
   _generateCityOption(place) {

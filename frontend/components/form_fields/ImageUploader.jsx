@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import axios from 'axios';
+import ApiHelper from '../../helpers/ApiHelper';
 
 export default class ImageUploader extends Component {
 
@@ -7,33 +7,32 @@ export default class ImageUploader extends Component {
     super(props);
     this.state = { image: this.props.image };
     this.onChange = (e) => this._onChange(e);
-    this.onUploadFinished = (url) => this._onUploadFinished(url);
   }
 
   _onChange(e) {
     const file = e.currentTarget.files[0];
-    const url = '/api/upload_image/';
     const data = new FormData();
-
     data.append('image', file)
 
-    axios({
-      url,
-      data,
-      method: 'post',
-      responseType: 'json',
-      config: { headers: {'Content-Type': 'multipart/form-data' }}
-    }).then(res => {
-      console.log(res)
-      this.setState({ image: res.data.image_url })
-      this.onUploadFinished(res.data.image_url)
-    }).catch(err => {
-      console.log(err)
-    })
-  }
+    const onSuccess = (data) => {
+      this.setState({ image: data.image_url });
+      this.props.handleChange({ [this.props.name]: data.image_url })
+    }
 
-  _onUploadFinished(url) {
-    this.props.handleChange({ [this.props.name]: url })
+    const onError = (data) => {
+      console.log(data.errors)
+      this.props.handleChange({ [this.props.name]: null })
+    }
+
+    const onFail = (err) => {
+      console.log(err)
+    }
+
+    const config = { headers: {'Content-Type': 'multipart/form-data' }}
+    const opts = { data, config, onSuccess, onError, onFail };
+    const api = new ApiHelper('images');
+
+    api.createResource(opts);
   }
 
   render() {

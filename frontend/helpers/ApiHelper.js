@@ -40,19 +40,19 @@ export default class ApiHelper {
   createResource(opts) {
     const url = API_ENDPOINTS[this.resourceType].postUrl;
     const data = opts.data;
+    const config = opts.config;
 
     axios({
       url,
       data,
+      config,
       method: 'post',
       responseType: 'json',
-      config: { headers: {'Content-Type': 'application/json' }}
     }).then(res => {
-      if (res.data.status === 'created') {
-        opts.onSuccess(res.data)
-      } else if (res.data.errors) {
-        opts.onError(res.data)
+      if (res.data.errors) {
+        return opts.onError(res.data)
       }
+      opts.onSuccess(res.data)
     }).catch(err => {
       console.log(err)
       opts.onFail(err)

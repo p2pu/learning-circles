@@ -54,6 +54,9 @@ export const API_ENDPOINTS = {
   landingPage: {
     baseUrl: 'https://learningcircles.p2pu.org/api/landing-page-learning-circles/?',
     searchParams: []
+  },
+  images: {
+    postUrl: '/api/upload_image/'
   }
 };
 
@@ -66,3 +69,8 @@ export const LC_DEFAULTS = {
   weeks: 6,
   course: {}
 };
+
+export const EXTERNAL_APIS = {
+  algolia: 'https://places-dsn.algolia.net/1/places',
+  geonames: 'https://secure.geonames.org'
+}

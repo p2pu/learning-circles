@@ -108,7 +108,6 @@ export default class CreateLearningCirclePage extends React.Component {
 
   _onSubmitForm(published=false) {
     if (this.state.user) {
-      const course = this.state.learningCircle.course
       const data = {
         ...this.state.learningCircle,
         course: this.state.learningCircle.course.id,
