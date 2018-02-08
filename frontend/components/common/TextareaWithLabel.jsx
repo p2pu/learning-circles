@@ -7,7 +7,7 @@ const TextareaWithLabel = (props) => {
 
   return(
     <div className={`input-with-label form-group ${props.classes}`}>
-      <label htmlFor={props.name}>{props.label}</label>
+      <label htmlFor={props.name}>{`${props.label} ${props.required ? '*' : ''}`}</label>
       <textarea
         className='form-control'
         type={props.type || 'text'}

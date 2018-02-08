@@ -14,7 +14,7 @@ const TimePickerWithLabel = (props) => {
 
   return(
     <div className={`input-with-label form-group ${props.classes}`}>
-      <label htmlFor={props.name}>{props.label}</label>
+      <label htmlFor={props.name}>{`${props.label} ${props.required ? '*' : ''}`}</label>
       <TimePicker
         showSecond={false}
         use12Hours={true}

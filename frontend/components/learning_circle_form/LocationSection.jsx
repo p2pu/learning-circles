@@ -6,7 +6,7 @@ const LocationSection = (props) => {
   return (
     <div>
       <div className={`input-with-label form-group`} >
-        <label htmlFor={props.city}>In which city is this happening?</label>
+        <label htmlFor={props.city}>In which city is this happening? *</label>
         <PlaceSelect
           name={'city'}
           id={'id_city'}
@@ -24,6 +24,7 @@ const LocationSection = (props) => {
         name={'venue_name'}
         id={'id_venue_name'}
         errorMessage={props.errors.venue_name}
+        required={true}
       />
       <InputWithLabel
         label={'What is the specific meeting spot?'}
@@ -33,6 +34,7 @@ const LocationSection = (props) => {
         name={'venue_details'}
         id={'id_venue_details'}
         errorMessage={props.errors.venue_details}
+        required={true}
       />
       <InputWithLabel
         label={'What is the address of the venue?'}
@@ -42,6 +44,7 @@ const LocationSection = (props) => {
         name={'venue_address'}
         id={'id_venue_address'}
         errorMessage={props.errors.venue_address}
+        required={true}
       />
     </div>
   );

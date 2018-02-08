@@ -4,7 +4,7 @@ import Select from 'react-select'
 const SelectWithLabel = (props) => {
   return(
     <div className={`${props.classes}`} >
-      <label htmlFor={props.name}>{props.label}</label>
+      <label htmlFor={props.name}>{`${props.label} ${props.required ? '*' : ''}`}</label>
       <Select
         name={ props.name }
         className={ props.selectClasses }

@@ -66,7 +66,6 @@ export default class CreateLearningCirclePage extends React.Component {
 
       api.fetchResource(opts)
     }
-    this.setState({ learningCircle: { course: { id: urlParams.get('course_id') }}})
   }
 
   _updateFormData(data) {

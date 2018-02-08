@@ -7,7 +7,7 @@ const InputWithLabel = (props) => {
 
   return(
     <div className={`input-with-label form-group ${props.classes}`}>
-      <label htmlFor={props.name}>{props.label}</label>
+      <label htmlFor={props.name}>{`${props.label} ${props.required ? '*' : ''}`}</label>
       <input
         className='form-control'
         type={props.type || 'text'}
@@ -16,6 +16,7 @@ const InputWithLabel = (props) => {
         onChange={onChange}
         value={props.value || props.defaultValue}
         placeholder={props.placeholder}
+        required={props.required || false}
       />
       {
         props.errorMessage &&

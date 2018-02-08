@@ -17,6 +17,7 @@ const DayTimeSection = (props) => {
         id={'id_start_date'}
         type={'date'}
         errorMessage={props.errors.start_date}
+        required={true}
       />
       <InputWithLabel
         label={'How many weeks will the learning circle run for?'}
@@ -27,6 +28,7 @@ const DayTimeSection = (props) => {
         id={'id_weeks'}
         type={'number'}
         errorMessage={props.errors.weeks}
+        required={true}
       />
       <TimePickerWithLabel
         label={'What time will your learning circle meet each week?'}
@@ -36,9 +38,10 @@ const DayTimeSection = (props) => {
         id={'id_meeting_time'}
         value={props.learningCircle.meeting_time}
         errorMessage={props.errors.meeting_time}
+        required={true}
       />
       <div className={`input-with-label form-group`} >
-        <label htmlFor={props.timezone}>What time zone are you in?</label>
+        <label htmlFor={props.timezone}>What time zone are you in? *</label>
         <TimeZoneSelect
           value={props.learningCircle.timezone}
           latitude={props.learningCircle.latitude}
@@ -58,6 +61,7 @@ const DayTimeSection = (props) => {
         id={'id_duration'}
         type={'number'}
         errorMessage={props.errors.duration}
+        required={true}
       />
     </div>
   );

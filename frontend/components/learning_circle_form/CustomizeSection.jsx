@@ -17,6 +17,7 @@ const CustomizeSection = (props) => {
         name={'description'}
         id={'id_description'}
         errorMessage={props.errors.description}
+        required={true}
       />
       <InputWithLabel
         label={'Is there a question that you want people to answer when they sign up for your learning circle? If so, write that here:'}

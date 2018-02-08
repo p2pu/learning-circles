@@ -35,7 +35,7 @@ export default class FormTabs extends React.Component{
 
           <TabPanel className='tab-content'>
             <div className='content-container'>
-              <h4>Step 1: Select a Course</h4>
+              <h4>Step 1: Select a Course *</h4>
               <CourseSection
                 updateFormData={this.props.updateFormData}
                 learningCircle={this.props.learningCircle}
