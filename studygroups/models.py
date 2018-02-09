@@ -188,6 +188,10 @@ class StudyGroup(LifeTimeTrackingModel):
     signup_open = models.BooleanField(default=True)
     draft = models.BooleanField(default=True)
     image = models.ImageField(blank=True)
+    signup_question = models.CharField(max_length=256, blank=True)
+    facilitator_goal = models.CharField(max_length=256, blank=True)
+    facilitator_concerns = models.CharField(max_length=256, blank=True)
+
 
     objects = StudyGroupQuerySet.as_manager()
 

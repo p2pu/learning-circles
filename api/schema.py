@@ -147,9 +147,6 @@ def chain(checks):
     return _validate
 
 
-#TODO choice validator
-
-
 @_required
 def schema(schema):
     def _validate(data):
@@ -178,7 +175,11 @@ def validate(schema, data):
             else:
                 errors[field] = [error]
         else:
-            cleaned_data[field] = parsed
+            # don't set keys for None values
+            # it would lead to confusion when using the data in a way
+            # that is typical: value = data.get('field', 'default value')
+            if parsed is not None:
+                cleaned_data[field] = parsed
 
     # TODO - errors for extra fields
     return cleaned_data, errors

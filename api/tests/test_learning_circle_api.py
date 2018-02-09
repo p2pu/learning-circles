@@ -2,11 +2,12 @@
 from django.test import TestCase
 from django.test import Client
 from django.core import mail
-from django.contrib.auth.models import User
+from django.utils import timezone
 
 from mock import patch
 
 from studygroups.models import StudyGroup
+from custom_registration.models import create_user
 
 import datetime
 import json
@@ -16,10 +17,10 @@ class TestLearningCircleApi(TestCase):
     fixtures = ['test_courses.json', 'test_studygroups.json']
 
     def setUp(self):
-        user = User.objects.create_user('faci@example.net', 'faci@example.net', 'password')
-        user.is_superuser = True
-        user.is_staff = True
-        user.save()
+        with patch('custom_registration.signals.send_email_confirm_email'):
+            user = create_user('faci@example.net', 'b', 't', 'password', False)
+            user.save()
+            self.facilitator = user
 
 
     def test_create_learning_circle(self):
@@ -60,6 +61,80 @@ class TestLearningCircleApi(TestCase):
         self.assertEquals(mail.outbox[0].subject, 'Your Learning Circle has been created! What next?')
         self.assertIn('faci@example.net', mail.outbox[0].to)
         self.assertIn('community@localhost', mail.outbox[0].bcc)
+
+
+    def test_create_learning_circle_and_publish(self):
+        c = Client()
+        c.login(username='faci@example.net', password='password')
+        self.facilitator.facilitator.email_confirmed_at = timezone.now()
+        self.facilitator.facilitator.save()
+        data = {
+            "course": 3,
+            "description": "Lets learn something",
+            "venue_name": "75 Harrington",
+            "venue_details": "top floor",
+            "venue_address": "75 Harrington",
+            "city": "Cape Town",
+            "latitude": 3.1,
+            "longitude": "1.3",
+            "start_date": "2018-02-12",
+            "weeks": 2,
+            "meeting_time": "17:01",
+            "duration": 50,
+            "timezone": "UTC",
+            "image": "/media/image.png",
+            "publish": True,
+        }
+        url = '/api/learning-circle/'
+        self.assertEqual(StudyGroup.objects.all().count(), 4)
+        resp = c.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        lc = StudyGroup.objects.all().last()
+        self.assertEqual(resp.json(), {
+            "status": "created",
+            "url": "example.net/en/signup/75-harrington-{}/".format(lc.pk)
+        })
+        self.assertEqual(StudyGroup.objects.all().count(), 5)
+        self.assertEqual(lc.course.id, 3)
+        self.assertEqual(lc.draft, False)
+        self.assertEqual(lc.description, 'Lets learn something')
+        self.assertEqual(lc.start_date, datetime.date(2018,2,12))
+        self.assertEqual(lc.meeting_time, datetime.time(17,1))
+        self.assertEqual(lc.studygroupmeeting_set.all().count(), 2)
+        self.assertEquals(len(mail.outbox), 1)
+        self.assertEquals(mail.outbox[0].subject, 'Your Learning Circle has been created! What next?')
+        self.assertIn('faci@example.net', mail.outbox[0].to)
+        self.assertIn('community@localhost', mail.outbox[0].bcc)
+
+
+    def test_create_learning_circle_and_publish_user_unconfirmed(self):
+        c = Client()
+        c.login(username='faci@example.net', password='password')
+        data = {
+            "course": 3,
+            "description": "Lets learn something",
+            "venue_name": "75 Harrington",
+            "venue_details": "top floor",
+            "venue_address": "75 Harrington",
+            "city": "Cape Town",
+            "latitude": 3.1,
+            "longitude": "1.3",
+            "start_date": "2018-02-12",
+            "weeks": 2,
+            "meeting_time": "17:01",
+            "duration": 50,
+            "timezone": "UTC",
+            "image": "/media/image.png",
+            "publish": True,
+        }
+        url = '/api/learning-circle/'
+        self.assertEqual(StudyGroup.objects.all().count(), 4)
+        resp = c.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        lc = StudyGroup.objects.all().last()
+        self.assertEqual(resp.json().get('status'), 'error')
+        self.assertEqual(StudyGroup.objects.all().count(), 4)
+        self.assertEquals(len(mail.outbox), 0)
 
 
     def test_get_learning_circles(self):

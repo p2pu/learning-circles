@@ -221,6 +221,7 @@ class LearningCircleTopicListView(View):
         data['topics'] = { k:v for k,v in Counter(topics).items() }
         return json_response(request, data)
 
+
 def _course_check(course_id):
     if not Course.objects.filter(pk=int(course_id)).exists():
         return None, 'Course matching ID not found'
@@ -332,6 +333,7 @@ class CourseTopicListView(View):
         data['topics'] = { k:v for k,v in Counter(topics).items() }
         return json_response(request, data)
 
+
 @method_decorator(csrf_exempt, name='dispatch')
 class LearningCircleCreateView(View):
     def post(self, request):
@@ -342,6 +344,14 @@ class LearningCircleCreateView(View):
                     return value.replace(settings.MEDIA_URL, '', 1), None
                 else:
                     return None, 'Image must be a valid URL for an existing file'
+            return _validate
+
+        def user_check():
+            def _validate(value):
+                if value == True:
+                    if request.user.facilitator.email_confirmed_at == None:
+                        return None, 'Users with unconfirmed email addresses cannot publish courses'
+                return value, None
             return _validate
 
         post_schema = {
@@ -362,17 +372,22 @@ class LearningCircleCreateView(View):
             "duration": schema.text(required=True),
             "timezone": schema.text(required=True),
             "venue_website": schema.text(),
+            "signup_question": schema.text(),
+            "facilitator_goal": schema.text(),
+            "facilitator_concerns": schema.text(),
             "image": schema.chain([
                 schema.text(),
                 image_check(),
-            ], required=False)
+            ], required=False),
+            "publish": schema.chain([
+                schema.boolean(),
+                user_check(),
+            ])
         }
         data = json.loads(request.body)
         data, errors = schema.validate(post_schema, data)
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
-
-        # check if image is a full URL
 
         # create learning circle
         end_date = data.get('start_date') + datetime.timedelta(weeks=data.get('weeks') - 1)
@@ -393,9 +408,17 @@ class LearningCircleCreateView(View):
             duration=data.get('duration'),
             timezone=data.get('timezone'),
             image=data.get('image'),
+            signup_question=data.get('signup_question', ''),
+            facilitator_goal=data.get('facilitator_goal', ''),
+            facilitator_concerns=data.get('facilitator_concerns', ''),
         )
         study_group.save()
         generate_all_meetings(study_group)
+
+        # publish learning circle if needed
+        if data.get('publish') and data.get('publish') == True:
+            study_group.draft = False
+            study_group.save()
 
         study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name), study_group.id,))
         return json_response(request, { "status": "created", "url": study_group_url });
