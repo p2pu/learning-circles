@@ -9,8 +9,10 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.cache import never_cache
 from django.views.generic.edit import FormView
-from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 from django.contrib.auth import login
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import HttpResponseRedirect
@@ -41,7 +43,7 @@ class SignupView(FormView):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class SignupApiView(View):
+class AjaxSignupView(View):
 
     def post(self, request):
         def _user_check():
@@ -69,6 +71,37 @@ class SignupApiView(View):
         user = create_user(data['email'], data['first_name'], data['last_name'], data['password'], data['newsletter'])
         login(request, user)
         return json_response(request, { "status": "created", "user": user.username });
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class AjaxLoginView(View):
+    def post(self, request):
+        post_schema = {
+            "email": schema.email(required=True),
+            "password": schema.text(required=True),
+        }
+        data = json.loads(request.body)
+        data, errors = schema.validate(post_schema, data)
+        if errors != {}:
+            return json_response(request, {"status": "error", "errors": errors})
+
+        username = data.get('email').lower()
+        password = data.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is None:
+            return json_response(request, {
+                "status": "error",
+                "errors": AuthenticationForm.error_messages.get('invalid_login')
+            })
+
+        if not user.is_active:
+            return json_response(request, {
+                "status": "error",
+                "errors": AuthenticationForm.error_messages.get('inactive')
+            })
+
+        return json_response(request, { "status": "success", "user": user.username });
+
 
 
 @method_decorator(login_required, name='dispatch')

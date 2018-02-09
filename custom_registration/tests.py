@@ -64,7 +64,6 @@ class TestCustomRegistrationViews(TestCase):
         self.assertIn('Please confirm your email', mail.outbox[0].subject)
 
 
-
     def test_login_redirect(self):
         user = User.objects.create_user('bob123', 'bob@example.net', 'password')
         c = Client()
@@ -139,6 +138,23 @@ class TestCustomRegistrationViews(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn(data['email'], mail.outbox[0].to)
         self.assertEqual(mail.outbox[0].subject, 'Please confirm your email address')
+
+
+    @patch('custom_registration.signals.send_email_confirm_email')
+    def test_ajax_login(self, send_email_confirm_email):
+        user = create_user('bob@example.net', 'bob', 'test', 'password', False)
+        c = Client()
+        data = {
+            "email": "bob@example.net",
+            "password": "password",
+        }
+        url = '/en/accounts/fe/login/'
+        resp = c.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json(), 
+            {"status": "success", "user": data['email']}
+        )
+
 
     @patch('custom_registration.signals.handle_new_facilitator')
     def test_email_address_confirm_request(self, handle_new_facilitator):
