@@ -17,8 +17,9 @@ export default class RegistrationModal extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { user: this.props.user || {}, errors: {} };
+    this.state = { user: this.props.user || {}, errors: {}, registration: true };
     this.updateUserData = (data) => this._updateUserData(data);
+    this.toggleModalType = () => this._toggleModalType();
     this.submitForm = (e) => this._submitForm(e);
   }
 
@@ -31,10 +32,14 @@ export default class RegistrationModal extends React.Component {
     })
   }
 
+  _toggleModalType() {
+    this.setState({ registration: !this.state.registration });
+  }
+
   _submitForm(e) {
     e.preventDefault()
     const data = this.state.user;
-    const url = API_ENDPOINTS.registration;
+    const url = this.state.registration ? API_ENDPOINTS.registration : API_ENDPOINTS.login;
 
     axios({
       url,
@@ -43,6 +48,7 @@ export default class RegistrationModal extends React.Component {
       responseType: 'json',
       config: { headers: {'Content-Type': 'application/json' }}
     }).then(res => {
+      debugger;
       if (res.data.status === 'created') {
         this.props.closeModal();
         this.props.onLogin(res.data.user, this.onSaveDraft);
@@ -58,27 +64,45 @@ export default class RegistrationModal extends React.Component {
     return (
       <Modal open={this.props.open} onClose={this.props.closeModal} classNames={{modal: 'registration-modal', overlay: 'modal-overlay'}}>
         <div className='registration-modal-content'>
-          <h4>Create an account</h4>
-          <p>In order to save your learning circle, you need to register or <a href='/accounts/login/?next=/en/facilitator/study_group/create/'>log in</a>.</p>
+          {
+            this.state.registration &&
+            <h4>Create an account</h4>
+          }
+          {
+            !this.state.registration &&
+            <h4>Log in</h4>
+          }
+          {
+            this.state.registration &&
+            <p>In order to save your learning circle, you need to register or <a onClick={this.toggleModalType}>log in.</a></p>
+          }
+          {
+            !this.state.registration &&
+            <p>In order to save your learning circle, you need to log in or <a onClick={this.toggleModalType}>register.</a></p>
+          }
           <form id='registration-form' onSubmit={this.submitForm}>
-            <InputWithLabel
-              label={'First name:'}
-              value={this.state.user.first_name || ''}
-              handleChange={this.updateUserData}
-              name={'first_name'}
-              id={'id_first_name'}
-              type={'text'}
-              errorMessage={this.state.errors.first_name}
-            />
-            <InputWithLabel
-              label={'Last name:'}
-              value={this.state.user.last_name || ''}
-              handleChange={this.updateUserData}
-              name={'last_name'}
-              id={'id_last_name'}
-              type={'text'}
-              errorMessage={this.state.errors.last_name}
-            />
+            { this.state.registration &&
+              <InputWithLabel
+                label={'First name:'}
+                value={this.state.user.first_name || ''}
+                handleChange={this.updateUserData}
+                name={'first_name'}
+                id={'id_first_name'}
+                type={'text'}
+                errorMessage={this.state.errors.first_name}
+              />
+            }
+            { this.state.registration &&
+              <InputWithLabel
+                label={'Last name:'}
+                value={this.state.user.last_name || ''}
+                handleChange={this.updateUserData}
+                name={'last_name'}
+                id={'id_last_name'}
+                type={'text'}
+                errorMessage={this.state.errors.last_name}
+              />
+            }
             <InputWithLabel
               label={'Email address:'}
               value={this.state.user.email || ''}
@@ -97,19 +121,23 @@ export default class RegistrationModal extends React.Component {
               type={'password'}
               errorMessage={this.state.errors.password}
             />
-            <CheckboxWithLabel
-              label='Would you like to receive the P2PU newsletter?'
-              checked={this.state.user.newsletter || false}
-              handleChange={this.updateUserData}
-              name={'newsletter'}
-              id={'id_newsletter'}
-              errorMessage={this.state.errors.newsletter}
-            />
+            { this.state.registration &&
+              <CheckboxWithLabel
+                label='Would you like to receive the P2PU newsletter?'
+                checked={this.state.user.newsletter || false}
+                handleChange={this.updateUserData}
+                name={'newsletter'}
+                id={'id_newsletter'}
+                errorMessage={this.state.errors.newsletter}
+              />
+            }
             <div className="modal-actions">
-              <a href='/accounts/login/?next=/en/facilitator/study_group/create/'>Already have an account? Log in here.</a>
+              <a onClick={this.toggleModalType}>
+                { this.state.registration ? 'Already have an account? Log in here.' : 'Don\'t have an account? Register here.' }
+              </a>
               <div className="buttons">
                 <button className="p2pu-btn dark" onClick={(e) => {e.preventDefault(); this.props.closeModal()}}>Cancel</button>
-                <button type='submit' className="p2pu-btn blue">Register</button>
+                <button type='submit' className="p2pu-btn blue">{ this.state.registration ? 'Register' : 'Log in' }</button>
               </div>
             </div>
           </form>
