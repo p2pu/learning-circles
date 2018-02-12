@@ -48,7 +48,6 @@ export default class RegistrationModal extends React.Component {
       responseType: 'json',
       config: { headers: {'Content-Type': 'application/json' }}
     }).then(res => {
-      debugger;
       if (res.data.status === 'created') {
         this.props.closeModal();
         this.props.onLogin(res.data.user, this.onSaveDraft);
