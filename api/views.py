@@ -8,9 +8,10 @@ from django.db.models import Q, F, Case, When, Value, Sum, Min, Max
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchVector
+from django.contrib.postgres.search import SearchQuery
 
 import json
-
+import re
 
 from studygroups.models import Course
 from studygroups.models import StudyGroup
@@ -22,6 +23,24 @@ from uxhelpers.utils import json_response
 from .geo import getLatLonDelta
 
 from . import schema
+
+class CustomSearchQuery(SearchQuery):
+    """ use to_tsquery to support partial matches """
+    """ NOTE: This is potentially unsafe!!"""
+    def as_sql(self, compiler, connection):
+        query = re.sub(r'[!\'()|&\:=,\.\ \-\<\>@]+', ' ', self.value).strip()
+        tsquery = ":* & ".join(query.split(' '))
+        tsquery += ":*"
+        params = [tsquery]
+        if self.config:
+            config_sql, config_params = compiler.compile(self.config)
+            template = 'to_tsquery({}::regconfig, %s)'.format(config_sql)
+            params = config_params + [tsquery]
+        else:
+            template = 'to_tsquery(%s)'
+        if self.invert:
+            template = '!!({})'.format(template)
+        return template, params
 
 
 def _map_to_json(sg):
@@ -258,13 +277,10 @@ class CourseListView(View):
 
         query = request.GET.get('q', None)
         if query:
+            tsquery = CustomSearchQuery(query, config='simple')
             courses = courses.annotate(
-                search=
-                    SearchVector('title')
-                    + SearchVector('caption')
-                    + SearchVector('provider')
-                    + SearchVector('topics')
-            ).filter(search=query)
+                search=SearchVector('topics', 'title', 'caption', 'provider', config='simple')
+            ).filter(search=tsquery)
 
         if 'topics' in request.GET:
             topics = request.GET.get('topics').split(',')

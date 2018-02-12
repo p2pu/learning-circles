@@ -40,6 +40,7 @@ class TestCourseApi(TestCase):
         for key in item_fields:
             self.assertIn(key, resp_keys)
 
+
     def test_find_by_q(self):
         c = Client()
 
@@ -82,6 +83,17 @@ class TestCourseApi(TestCase):
         resp = c.get('/api/courses/', {'topics': 'uniquetopic1,uniquetopic2'})
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()["count"], 2)
+
+
+    def test_find_by_q_incremental(self):
+        c = Client()
+
+        # search for a title
+        resp = c.get('/api/courses/', {'q': 'Pro'})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["count"], 1)
+        self.assertEqual(resp.json()["items"][0]["title"], "Programming with Python")
+
 
 
     def test_search_by_active(self):
