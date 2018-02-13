@@ -55,27 +55,31 @@
     </li>
   </ul>
 
+  <h2>{% trans "Feedback from this week" %}</h2>
+  {% for feedback_response in feedback %}
+    {% with study_group=feedback_response.study_group_meeting.study_group %}
+    <h3>{% blocktrans with course=study_group.course.title venue=study_group.venue_name first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name email=study_group.facilitator.email %}
+      <strong><i>&quot;{{course}}&quot;</i></strong> at {{venue}} facilitated by <a href="mailto:{{email}}">{{first_name}} {{last_name}}</a>.{% endblocktrans %}</h3>
+    {% endwith %}
+    <p>{% trans "Summary" %}:</p>
+    <p style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9; font-style: italic;">&quot;{{ feedback_response.feedback }}&quot;</p>
+    <p><strong>{% trans "Things worth sharing" %}:</strong></p>
+    <p style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9; font-style: italic;">&quot;{{ feedback_response.reflection }}&quot;</p>
+    <p><strong>{% trans "How many people attended?" %}</strong> {{ feedback_response.attendance }}</p>
+    <p><strong>{% trans "Overall rating" %}:</strong> {{ feedback_response.get_rating_display }}</p>
+    <hr/>
+  {% endfor %}
+
+  <h2>{% trans "Meetings this week" %}</h2>
+  <ol>
   {% for meeting in meetings|dictsort:"meeting_datetime" %}
     {% with study_group=meeting.study_group %}
-      <h2>{{study_group.course.title}} {% trans "at" %} {{study_group.venue_name}}</h2>
-      <p>{% blocktrans with meeting_date=meeting.meeting_datetime|date:"fA, l, j F" meeting_number=meeting.meeting_number|ordinal %}Met {{meeting_date}} for the {{meeting_number}} time.{% endblocktrans %}</p>
-      <p><strong>{% trans "Facilitator" %}:</strong> {{study_group.facilitator.first_name}} {{study_group.facilitator.last_name}} &lt;{{study_group.facilitator.email}}&gt;<p>
-      <p><strong>{% trans "Circle size" %}:</strong> {{study_group.application_set.active.count}}</p>
-      <h3>{% trans "Feedback from meeting" %}</h3>
-      <div style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9;">
-        {% if meeting.feedback_set.first %}
-          {% with feedback=meeting.feedback_set.first %}
-          <p><strong>{% trans "Learning circle summary" %}:</strong></p>
-            <p> {{ feedback.feedback }}</p>
-            <p><strong>{% trans "How many people attended?" %}</strong> {{ feedback.attendance }}</p>
-            <p><strong>{% trans "Things worth sharing" %}:</strong></p>
-            <p>{{ feedback.reflection }}</p>
-            <p><strong>{% trans "Overall rating" %}:</strong> {{ feedback.get_rating_display }}</p>
-          {% endwith %}
-        {% else %}
-          <p>{% trans "No feedback recorded yet" %}</p>
-        {% endif %}
-      </div>
+    <li>
+      {% blocktrans with meeting_date=meeting.meeting_datetime|date:"fA, l, j F" meeting_number=meeting.meeting_number|ordinal course=study_group.course.title venue=study_group.venue_name first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name email=study_group.facilitator.email%}
+        <strong><i>&quot;{{course}}&quot;</i></strong> at {{venue}} facilitated by <a href="mailto:{{email}}">{{first_name}} {{last_name}}</a> met {{meeting_date}} for the {{meeting_number}} time.
+      {% endblocktrans %}
+    </li>
     {% endwith %}
   {% endfor %}
+  </ol>
 {% endblock %}
