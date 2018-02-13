@@ -29,8 +29,8 @@ export const MEETING_DAYS = [
 
 export const API_ENDPOINTS = {
   learningCircle: '/api/learning-circle/',
-  registration: '/en/accounts/register/', // TODO: what is the right url?
-  login: '/en/accounts/login/', // TODO: what is the right url?
+  registration: '/en/accounts/fe/register/',
+  login: '/en/accounts/fe/login/',
   learningCircles: {
     postUrl: '/api/learning-circle/',
     baseUrl: '/api/learningcircles/?',
