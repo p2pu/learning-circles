@@ -61,14 +61,14 @@ class AjaxSignupView(View):
             "first_name": schema.text(required=True),
             "last_name": schema.text(required=True),
             "password": schema.text(required=True),
-            "newsletter": schema.boolean(required=True),
+            "newsletter": schema.boolean(),
         }
         data = json.loads(request.body)
         data, errors = schema.validate(post_schema, data)
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        user = create_user(data['email'], data['first_name'], data['last_name'], data['password'], data['newsletter'])
+        user = create_user(data['email'], data['first_name'], data['last_name'], data['password'], data.get('newsletter', False))
         login(request, user)
         return json_response(request, { "status": "created", "user": user.username });
 
@@ -100,6 +100,7 @@ class AjaxLoginView(View):
                 "errors": AuthenticationForm.error_messages.get('inactive')
             })
 
+        login(request, user)
         return json_response(request, { "status": "success", "user": user.username });
 
 
