@@ -6,11 +6,11 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 const DatePickerWithLabel = (props) => {
   const onChange = (value) => {
-    const date = value.format('YYYY-MM-DD') || null;
+    const date = !!value ? value.format('YYYY-MM-DD') : null;
     props.handleChange({ [props.name]: date })
   }
 
-  const date = moment(props.value) || moment();
+  const date = !!props.value ? moment(props.value) : null;
 
   return(
     <div className={`input-with-label form-group ${props.classes}`}>

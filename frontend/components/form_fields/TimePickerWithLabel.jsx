@@ -12,7 +12,7 @@ const TimePickerWithLabel = (props) => {
     props.handleChange({ [props.name]: time })
   }
 
-  const time = !!props.value ? moment(props.value, saveFormat) : moment();
+  const time = !!props.value ? moment(props.value, saveFormat) : null;
 
   return(
     <div className={`input-with-label form-group ${props.classes}`}>
@@ -25,6 +25,8 @@ const TimePickerWithLabel = (props) => {
         name={props.name}
         id={props.id}
         onChange={onChange}
+        minuteStep={15}
+        allowEmpty={true}
       />
       {
         props.errorMessage &&

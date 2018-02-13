@@ -501,11 +501,10 @@ span.course-title {
 
           .p2pu-btn {
             position: absolute;
-
-            button {
-              box-shadow: -2px 2px 6px 1px rgba(0, 0, 0, 0.1);
-              font-size: 1em;
-            }
+            box-shadow: -2px 2px 6px 1px rgba(0, 0, 0, 0.1);
+            font-size: 1em;
+            padding: 10px 20px;
+            font-weight: bold;
           }
         }
       }

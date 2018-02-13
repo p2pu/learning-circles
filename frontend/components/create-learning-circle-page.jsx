@@ -33,7 +33,7 @@ export default class CreateLearningCirclePage extends React.Component {
       alert: { show: false }
     };
     this.changeTab = (tab) => this._changeTab(tab);
-    this.onSubmitForm = () => this._onSubmitForm();
+    this.onSubmitForm = (val) => this._onSubmitForm(val);
     this.onCancel = () => this._onCancel();
     this.onSaveDraft = () => this._onSaveDraft();
     this.toggleHelp = () => this._toggleHelp();
@@ -53,14 +53,6 @@ export default class CreateLearningCirclePage extends React.Component {
   }
 
   componentDidMount() {
-    window.addEventListener('beforeunload', (e) => {
-      if (!!Object.keys(this.state.learningCircle).length) {
-        const dialogText = 'You have unsaved data on this page. Are you sure you want to leave?'
-        e.returnValue = dialogText;
-        return dialogText;
-      }
-    });
-
     const urlParams = new URL(window.location.href).searchParams;
     const courseId = urlParams.get('course_id');
 
@@ -106,12 +98,12 @@ export default class CreateLearningCirclePage extends React.Component {
     this.setState({ alert: { show: false }})
   }
 
-  _onSubmitForm(published=false) {
+  _onSubmitForm(published) {
     if (this.state.user) {
       const data = {
         ...this.state.learningCircle,
         course: this.state.learningCircle.course.id,
-        ...published
+        published: published
       }
 
       const onSuccess = (data) => {
@@ -173,7 +165,7 @@ export default class CreateLearningCirclePage extends React.Component {
           {this.state.alert.message}
         </Alert>
         <div className='help-toggle' onClick={this.toggleHelp}>
-          <i className="material-icons">{ this.state.showHelp ? 'close' : 'info_outline' }</i>
+          <i className="material-icons">{ this.state.showHelp ? window.screen.width < DESKTOP_BREAKPOINT ? 'close' : 'exit_to_app' : 'info_outline' }</i>
           <small className='minicaps'>{ this.state.showHelp ? 'hide' : 'info' }</small>
         </div>
         <FormContainer

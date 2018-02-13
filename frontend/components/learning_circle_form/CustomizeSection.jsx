@@ -20,7 +20,7 @@ const CustomizeSection = (props) => {
         required={true}
       />
       <InputWithLabel
-        label={'Is there a question that you want people to answer when they sign up for your learning circle? If so, write that here:'}
+        label={'Is there another question that you want people to answer when they sign up for your learning circle? If so, write that here:'}
         value={props.learningCircle.signup_question || ''}
         handleChange={props.updateFormData}
         placeholder={'How did you hear about this learning circle?'}
