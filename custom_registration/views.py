@@ -42,9 +42,8 @@ class SignupView(FormView):
         return http.HttpResponseRedirect(self.get_success_url())
 
 
-@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(user_is_not_logged_in, name='dispatch')
 class AjaxSignupView(View):
-
     def post(self, request):
         def _user_check():
             def _validate(value):
@@ -73,7 +72,6 @@ class AjaxSignupView(View):
         return json_response(request, { "status": "created", "user": user.username });
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class AjaxLoginView(View):
     def post(self, request):
         post_schema = {

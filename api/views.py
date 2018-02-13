@@ -334,7 +334,6 @@ class CourseTopicListView(View):
         return json_response(request, data)
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class LearningCircleCreateView(View):
     def post(self, request):
 
@@ -424,9 +423,7 @@ class LearningCircleCreateView(View):
         return json_response(request, { "status": "created", "url": study_group_url });
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class SignupView(View):
-
     def post(self, request):
         signup_questions = {
             "goals": schema.text(required=True),
@@ -526,9 +523,7 @@ class LandingPageStatsView(View):
         return json_response(request, data)
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class ImageUploadView(View):
-
     def post(self, request):
         form = ImageForm(request.POST, request.FILES)
         if form.is_valid():
@@ -540,4 +535,3 @@ class ImageUploadView(View):
             return json_response(request, {"image_url": image_url})
         else:
             return json_response(request, {'error': 'not a valid image'})
-
