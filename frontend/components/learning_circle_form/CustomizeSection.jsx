@@ -21,12 +21,12 @@ const CustomizeSection = (props) => {
       />
       <InputWithLabel
         label={'Is there a question that you want people to answer when they sign up for your learning circle? If so, write that here:'}
-        value={props.learningCircle.custom_question || ''}
+        value={props.learningCircle.signup_question || ''}
         handleChange={props.updateFormData}
         placeholder={'How did you hear about this learning circle?'}
-        name={'custom_question'}
-        id={'id_custom_question'}
-        errorMessage={props.errors.custom_question}
+        name={'signup_question'}
+        id={'id_signup_question'}
+        errorMessage={props.errors.signup_question}
       />
       <InputWithLabel
         label={'Do you have a website you want to link to?'}

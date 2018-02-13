@@ -4,13 +4,15 @@ import 'rc-time-picker/assets/index.css';
 import moment from 'moment';
 
 const TimePickerWithLabel = (props) => {
+  const saveFormat = 'HH:mm';
+  const displayFormat = 'h:mm a';
+
   const onChange = (value) => {
-    const time = !!value ? value.format('h:mm a') : null;
+    const time = !!value ? value.format(saveFormat) : null;
     props.handleChange({ [props.name]: time })
   }
 
-  const format = 'h:mm a';
-  const time = !!props.value ? moment(props.value, 'h:mm a') : moment().hour(0).minute(0);
+  const time = !!props.value ? moment(props.value, saveFormat) : moment();
 
   return(
     <div className={`input-with-label form-group ${props.classes}`}>
@@ -19,7 +21,7 @@ const TimePickerWithLabel = (props) => {
         showSecond={false}
         use12Hours={true}
         value={time}
-        format={format}
+        format={displayFormat}
         name={props.name}
         id={props.id}
         onChange={onChange}

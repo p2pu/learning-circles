@@ -12,19 +12,19 @@ const FinalizeSection = (props) => {
     <div>
       <InputWithLabel
         label={'What is your personal goal in facilitating this learning circle?'}
-        value={props.learningCircle.personal_goal || ''}
+        value={props.learningCircle.facilitator_goal || ''}
         handleChange={props.updateFormData}
-        name={'personal_goal'}
-        id={'id_personal_goal'}
-        errorMessage={props.errors.personal_goal}
+        name={'facilitator_goal'}
+        id={'id_facilitator_goal'}
+        errorMessage={props.errors.facilitator_goal}
       />
       <InputWithLabel
         label={'What concerns do you have about the learning circle? Is there anything specific that you want feedback on before you get started?'}
-        value={props.learningCircle.concerns || ''}
+        value={props.learningCircle.facilitator_concerns || ''}
         handleChange={props.updateFormData}
-        name={'concerns'}
-        id={'id_concerns'}
-        errorMessage={props.errors.concerns}
+        name={'facilitator_concerns'}
+        id={'id_facilitator_concerns'}
+        errorMessage={props.errors.facilitator_concerns}
       />
     </div>
   )
