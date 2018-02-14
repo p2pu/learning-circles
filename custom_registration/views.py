@@ -19,6 +19,7 @@ from django.http import HttpResponseRedirect
 
 import json
 
+from studygroups.models import TeamMembership
 from uxhelpers.utils import json_response
 from api import schema
 from .models import create_user
@@ -101,6 +102,28 @@ class AjaxLoginView(View):
         login(request, user)
         return json_response(request, { "status": "success", "user": user.username });
 
+
+class WhoAmIView(View):
+    def get(self, request):
+        user_data = {
+            "user": "anonymous", 
+        }
+        if request.user.is_authenticated():
+            user_data["user"] = request.user.first_name + ' ' + request.user.last_name
+            user_data["links"] = [
+                {"text": "My learning circles", "url": reverse('studygroups_facilitator')},
+                {"text": "Log out", "url": reverse('logout')},
+            ]
+            if request.user.is_staff or TeamMembership.objects.filter(user=request.user, role=TeamMembership.ORGANIZER):
+                user_data["links"][:0] = [
+                    {"text": "My Team", "url": reverse('studygroups_organize')},
+                ]
+
+            if request.user.is_staff:
+                user_data["links"][:0] = [
+                    {"text": "Staff dash", "url": reverse('studygroups_staff_dash')},
+                ]
+        return json_response(request, user_data);
 
 
 @method_decorator(login_required, name='dispatch')
