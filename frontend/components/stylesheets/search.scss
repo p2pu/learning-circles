@@ -162,12 +162,11 @@ span.course-title {
               position: absolute;
               width: 0;
               height: 0;
-              top: 40px;
               right: 50%;
-              transform: translateX(20px);
-              border-left: 20px solid transparent;
-              border-right: 20px solid transparent;
-              border-top: 20px solid $gray-lighter;
+              transform: translateX(12px) translateY(4px);
+              border-left: 12px solid transparent;
+              border-right: 12px solid transparent;
+              border-top: 12px solid $gray-lighter;
             }
           }
         }
@@ -186,7 +185,7 @@ span.course-title {
     box-shadow: -2px 2px 6px 1px rgba(0, 0, 0, 0.1);
     width: 48%;
     right: 2%;
-    transform: translateY(20px);
+    transform: translateY(10px);
 
     &.open {
       padding: $padding-sm;
