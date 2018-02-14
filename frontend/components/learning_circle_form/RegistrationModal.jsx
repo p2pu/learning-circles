@@ -41,6 +41,9 @@ export default class RegistrationModal extends React.Component {
     const data = this.state.user;
     const url = this.state.registration ? API_ENDPOINTS.registration : API_ENDPOINTS.login;
 
+    console.log('login url', url)
+    console.log('login data', data)
+
     axios({
       url,
       data,
@@ -48,12 +51,12 @@ export default class RegistrationModal extends React.Component {
       responseType: 'json',
       config: { headers: {'Content-Type': 'application/json' }}
     }).then(res => {
-      if (res.data.status === 'created') {
-        this.props.closeModal();
-        this.props.onLogin(res.data.user, this.onSaveDraft);
-      } else if (!!res.data.errors) {
-        this.setState({ errors: res.data.errors })
+      debugger;
+      if (!!res.data.errors) {
+        return this.setState({ errors: res.data.errors });
       }
+      this.props.closeModal();
+      this.props.onLogin(res.data.user);
     }).catch(err => {
       console.log(err)
     })

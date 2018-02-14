@@ -35,12 +35,11 @@ export default class CreateLearningCirclePage extends React.Component {
     this.changeTab = (tab) => this._changeTab(tab);
     this.onSubmitForm = (val) => this._onSubmitForm(val);
     this.onCancel = () => this._onCancel();
-    this.onSaveDraft = () => this._onSaveDraft();
     this.toggleHelp = () => this._toggleHelp();
     this.showModal = () => this._showModal();
     this.closeModal = () => this._closeModal();
     this.closeAlert = () => this._closeAlert();
-    this.updateFormData = (data) => this._updateFormData(data);
+    this.updateFormData = (data, cb) => this._updateFormData(data, cb);
     this.registerUser = () => this._registerUser();
     this.onLogin = (user) => this._onLogin(user);
     this.allTabs = {
@@ -68,13 +67,13 @@ export default class CreateLearningCirclePage extends React.Component {
     }
   }
 
-  _updateFormData(data) {
+  _updateFormData(data, callback=null) {
     this.setState({
       learningCircle: {
         ...this.state.learningCircle,
         ...data
       }
-    })
+    }, callback)
   }
 
   _toggleHelp() {
@@ -98,12 +97,11 @@ export default class CreateLearningCirclePage extends React.Component {
     this.setState({ alert: { show: false }})
   }
 
-  _onSubmitForm(published) {
+  _onSubmitForm() {
     if (this.state.user) {
       const data = {
         ...this.state.learningCircle,
-        course: this.state.learningCircle.course.id,
-        published: published
+        course: this.state.learningCircle.course.id
       }
 
       const onSuccess = (data) => {
@@ -151,8 +149,8 @@ export default class CreateLearningCirclePage extends React.Component {
     window.location.href = FACILITATOR_PAGE;
   }
 
-  _onLogin(user, callback=null) {
-    this.setState({ user }, callback)
+  _onLogin(user) {
+    this.setState({ user }, this.onSubmitForm)
   }
 
   render() {
@@ -186,7 +184,6 @@ export default class CreateLearningCirclePage extends React.Component {
           closeModal={this.closeModal}
           user={this.props.user}
           onLogin={this.onLogin}
-          onSubmitForm={this.onSubmitForm}
         />
       </div>
     );
