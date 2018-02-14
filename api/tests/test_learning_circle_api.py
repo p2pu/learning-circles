@@ -137,6 +137,50 @@ class TestLearningCircleApi(TestCase):
         self.assertEquals(len(mail.outbox), 0)
 
 
+    def test_update_learning_circle(self):
+        c = Client()
+        c.login(username='faci@example.net', password='password')
+        data = {
+            "course": 3,
+            "description": "Lets learn something",
+            "venue_name": "75 Harrington",
+            "venue_details": "top floor",
+            "venue_address": "75 Harrington",
+            "city": "Cape Town",
+            "latitude": 3.1,
+            "longitude": "1.3",
+            "start_date": "2018-02-12",
+            "weeks": 2,
+            "meeting_time": "17:01",
+            "duration": 50,
+            "timezone": "UTC",
+            "image": "/media/image.png"
+        }
+        url = '/api/learning-circle/'
+        self.assertEqual(StudyGroup.objects.all().count(), 4)
+        resp = c.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        lc = StudyGroup.objects.all().last()
+        self.assertEqual(resp.json(), {
+            "status": "created",
+            "url": "example.net/en/signup/75-harrington-{}/".format(lc.pk)
+        })
+        self.assertEqual(StudyGroup.objects.all().count(), 5)
+        data['start_date'] = '2018-01-01'
+        data['course'] = 1
+        # Update learning circle
+        url = '/api/learning-circle/{}/'.format(lc.pk)
+        resp = c.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        lc = StudyGroup.objects.all().last()
+        self.assertEqual(resp.json()['status'], 'updated')
+        self.assertEqual(StudyGroup.objects.all().count(), 5)
+        self.assertEqual(lc.start_date, datetime.date(2018, 1, 1))
+        self.assertEqual(lc.course.id, 1)
+
+
+
+
     def test_get_learning_circles(self):
         c = Client()
         resp = c.get('/api/learningcircles/')

@@ -8,14 +8,18 @@ from django.template.defaultfilters import slugify
 from django.db.models import Q, F, Case, When, Value, Sum, Min, Max
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.contrib.postgres.search import SearchVector
 from django.core.files.storage import get_storage_class
 from django.conf import settings
+from django.views.generic.detail import SingleObjectMixin
 
 import json
 import datetime
 
 
+
+from studygroups.decorators import user_is_group_facilitator
 from studygroups.models import Course
 from studygroups.models import StudyGroup
 from studygroups.models import Application
@@ -334,55 +338,68 @@ class CourseTopicListView(View):
         return json_response(request, data)
 
 
+def _image_check():
+    def _validate(value):
+        if value.startswith(settings.MEDIA_URL):
+            return value.replace(settings.MEDIA_URL, '', 1), None
+        else:
+            return None, 'Image must be a valid URL for an existing file'
+    return _validate
+
+
+def _user_check(user):
+    def _validate(value):
+        if value == True:
+            if user.facilitator.email_confirmed_at == None:
+                return None, 'Users with unconfirmed email addresses cannot publish courses'
+        return value, None
+    return _validate
+
+
+def _studygroup_check(studygroup_id):
+    if not StudyGroup.objects.filter(pk=int(studygroup_id)).exists():
+        return None, 'Learning circle matching ID not found'
+    else:
+        return StudyGroup.objects.get(pk=int(studygroup_id)), None
+
+def _make_learning_circle_schema(request):
+    post_schema = {
+        "course": schema.chain([
+            schema.integer(),
+            _course_check,
+        ], required=True),
+        "description": schema.text(required=True),
+        "venue_name": schema.text(required=True),
+        "venue_details": schema.text(required=True),
+        "venue_address": schema.text(required=True),
+        "city": schema.text(required=True),
+        "latitude": schema.floating_point(required=True),
+        "longitude": schema.floating_point(required=True),
+        "start_date": schema.date(required=True),
+        "weeks": schema.integer(required=True),
+        "meeting_time": schema.time(required=True),
+        "duration": schema.text(required=True),
+        "timezone": schema.text(required=True),
+        "venue_website": schema.text(),
+        "signup_question": schema.text(),
+        "facilitator_goal": schema.text(),
+        "facilitator_concerns": schema.text(),
+        "image": schema.chain([
+            schema.text(),
+            _image_check(),
+        ], required=False),
+        "publish": schema.chain([
+            schema.boolean(),
+            _user_check(request.user),
+        ])
+    }
+    return post_schema
+
+
+@method_decorator(login_required, name='dispatch')
 class LearningCircleCreateView(View):
     def post(self, request):
-
-        def image_check():
-            def _validate(value):
-                if value.startswith(settings.MEDIA_URL):
-                    return value.replace(settings.MEDIA_URL, '', 1), None
-                else:
-                    return None, 'Image must be a valid URL for an existing file'
-            return _validate
-
-        def user_check():
-            def _validate(value):
-                if value == True:
-                    if request.user.facilitator.email_confirmed_at == None:
-                        return None, 'Users with unconfirmed email addresses cannot publish courses'
-                return value, None
-            return _validate
-
-        post_schema = {
-            "course": schema.chain([
-                schema.integer(),
-                _course_check,
-            ], required=True),
-            "description": schema.text(required=True),
-            "venue_name": schema.text(required=True),
-            "venue_details": schema.text(required=True),
-            "venue_address": schema.text(required=True),
-            "city": schema.text(required=True),
-            "latitude": schema.floating_point(required=True),
-            "longitude": schema.floating_point(required=True),
-            "start_date": schema.date(required=True),
-            "weeks": schema.integer(required=True),
-            "meeting_time": schema.time(required=True),
-            "duration": schema.text(required=True),
-            "timezone": schema.text(required=True),
-            "venue_website": schema.text(),
-            "signup_question": schema.text(),
-            "facilitator_goal": schema.text(),
-            "facilitator_concerns": schema.text(),
-            "image": schema.chain([
-                schema.text(),
-                image_check(),
-            ], required=False),
-            "publish": schema.chain([
-                schema.boolean(),
-                user_check(),
-            ])
-        }
+        post_schema = _make_learning_circle_schema(request)
         data = json.loads(request.body)
         data, errors = schema.validate(post_schema, data)
         if errors != {}:
@@ -397,7 +414,7 @@ class LearningCircleCreateView(View):
             venue_name=data.get('venue_name'),
             venue_address=data.get('venue_address'),
             venue_details=data.get('venue_details'),
-            venue_website=data.get('venue_website') or '',
+            venue_website=data.get('venue_website', ''),
             city=data.get('city'),
             latitude=data.get('latitude'),
             longitude=data.get('longitude'),
@@ -421,6 +438,48 @@ class LearningCircleCreateView(View):
 
         study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name), study_group.id,))
         return json_response(request, { "status": "created", "url": study_group_url });
+
+
+@method_decorator(user_is_group_facilitator, name='dispatch')
+@method_decorator(login_required, name='dispatch')
+class LearningCircleUpdateView(SingleObjectMixin, View):
+    model = StudyGroup
+    pk_url_kwarg = 'study_group_id'
+
+    def post(self, request, *args, **kwargs):
+        study_group = self.get_object()
+        post_schema = _make_learning_circle_schema(request)
+        data = json.loads(request.body)
+        data, errors = schema.validate(post_schema, data)
+        if errors != {}:
+            return json_response(request, {"status": "error", "errors": errors})
+
+        # update learning circle
+        end_date = data.get('start_date') + datetime.timedelta(weeks=data.get('weeks') - 1)
+        study_group.course=data.get('course')
+        study_group.facilitator=request.user
+        study_group.description=data.get('description')
+        study_group.venue_name=data.get('venue_name')
+        study_group.venue_address=data.get('venue_address')
+        study_group.venue_details=data.get('venue_details')
+        study_group.venue_website=data.get('venue_website', '')
+        study_group.city=data.get('city')
+        study_group.latitude=data.get('latitude')
+        study_group.longitude=data.get('longitude')
+        study_group.start_date=data.get('start_date')
+        study_group.end_date=end_date
+        study_group.meeting_time=data.get('meeting_time')
+        study_group.duration=data.get('duration')
+        study_group.timezone=data.get('timezone')
+        study_group.image=data.get('image')
+        study_group.signup_question=data.get('signup_question', '')
+        study_group.facilitator_goal=data.get('facilitator_goal', '')
+        study_group.facilitator_concerns=data.get('facilitator_concerns', '')
+        if data.get('publish') and data.get('publish') == True:
+            study_group.draft = False
+        study_group.save()
+        study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name), study_group.id,))
+        return json_response(request, { "status": "updated", "url": study_group_url });
 
 
 class SignupView(View):
