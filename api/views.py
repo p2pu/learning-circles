@@ -40,10 +40,13 @@ def _map_to_json(sg):
             "id": sg.course.pk,
             "title": sg.course.title,
             "provider": sg.course.provider,
-            "link": sg.course.link
+            "link": sg.course.link,
+            "caption": sg.course.caption
         },
         "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
         "venue": sg.venue_name,
+        "venue_name": sg.venue_name,
+        "venue_details": sg.venue_details,
         "venue_address": sg.venue_address + ", " + sg.city,
         "city": sg.city,
         "latitude": sg.latitude,
@@ -51,6 +54,12 @@ def _map_to_json(sg):
         "day": sg.day(),
         "start_date": sg.start_date,
         "meeting_time": sg.meeting_time,
+        "duration": sg.duration,
+        "description": sg.description,
+        "signup_question": sg.signup_question,
+        "venue_website": sg.venue_website,
+        "facilitator_goal": sg.facilitator_goal,
+        "facilitator_concerns": sg.facilitator_concerns,
         "time_zone": sg.timezone_display(),
         "end_time": sg.end_time(),
         "weeks": sg.studygroupmeeting_set.active().count(),
@@ -105,6 +114,10 @@ class LearningCircleListView(View):
             return json_response(request, {"status": "error", "errors": errors})
 
         study_groups = StudyGroup.objects.published().order_by('id')
+
+        if 'id' in request.GET:
+            id = request.GET.get('id')
+            study_groups = StudyGroup.objects.filter(pk=int(id))
 
         if 'q' in request.GET:
             q = request.GET.get('q')

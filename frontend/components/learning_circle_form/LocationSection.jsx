@@ -13,6 +13,7 @@ const LocationSection = (props) => {
           id={'id_city'}
           label='Start typing any city name'
           placeObjectId={props.learningCircle.placeObjectId}
+          city={props.learningCircle.city}
           handleSelect={props.updateFormData}
           errorMessage={props.errors.city}
         />

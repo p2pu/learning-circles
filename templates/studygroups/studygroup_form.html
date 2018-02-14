@@ -1,51 +1,16 @@
 {% extends 'base.html' %}
-{% load crispy_forms_tags %}
 {% load render_bundle from webpack_loader %}
 {% load static %}
 {% load i18n %}
 
 {% block content %}
-<div class="container learning-circle-signup">
-<div class="row">
-  <div class="col-md-8 col-sm-12">
-	  <form action="" method="POST" enctype="multipart/form-data">
-	    {% csrf_token %}
-	    {{ form|crispy }}
-        <p><button type="submit" class="btn btn-primary">{% trans "Save" %}</button></p>
-	  </form>
-  </div>
+<div id='create-learning-circle-form' data-user="{{ request.user }}" data-studygroup="{{ studygroup }}">
+  <div class="loader"></div>
 </div>
-</div>
-{% endblock %}
-
-{% block css %}
-  <link type="text/css" rel="stylesheet" href="{% static 'css/datepicker.css' %}" charset="utf-8">
-  <link type="text/css" rel="stylesheet" href="{% static 'css/jquery.timepicker.css' %}" charset="utf-8">
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 {% endblock %}
 
 
 {% block scripts %}
-<script src="{% static 'js/vendor/bootstrap-datepicker.js' %}"></script>
-<script src="{% static 'js/vendor/jquery.timepicker.js' %}"></script>
-<script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-<script src="https://cdn.jsdelivr.net/places.js/1/places.min.js"></script>
-<script>
-    $(document).ready(function(){
-        $('.dateinput').datepicker({'format':'yyyy-mm-dd'});
-        $('.timeinput').timepicker({ 'step': 15, 'timeFormat': 'h:i A' });
-        var placesAutocomplete = places({
-            container: document.querySelector('#id_city'),
-            type: 'city'
-        });
-        // update latitude and longitude when selecting a city
-        placesAutocomplete.on('change', function(e){
-          $('#id_latitude').val(e.suggestion.latlng.lat);
-          $('#id_longitude').val(e.suggestion.latlng.lng);
-        });
-
-    });
-</script>
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 {% render_bundle 'common' %}
 {% render_bundle 'learning-circle-create' %}

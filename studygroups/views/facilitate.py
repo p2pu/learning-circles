@@ -23,6 +23,11 @@ from django.utils.decorators import method_decorator
 from django.db.models import Q
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
+from django.core import serializers
+from django.template.defaultfilters import slugify
+
+import json
+
 
 from studygroups.models import Activity
 from studygroups.models import Facilitator
@@ -46,6 +51,35 @@ from studygroups.decorators import user_is_group_facilitator
 
 
 import string, random
+
+def _map_to_json(sg):
+    data = {
+        "course": {
+            "id": sg.course.pk,
+            "title": sg.course.title,
+            "provider": sg.course.provider,
+            "link": sg.course.link
+        },
+        "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
+        "venue": sg.venue_name,
+        "venue_address": sg.venue_address + ", " + sg.city,
+        "city": sg.city,
+        "latitude": sg.latitude,
+        "longitude": sg.longitude,
+        "day": sg.day(),
+        "start_date": sg.start_date,
+        "meeting_time": sg.meeting_time,
+        "time_zone": sg.timezone_display(),
+        "end_time": sg.end_time(),
+        "weeks": sg.studygroupmeeting_set.active().count(),
+        "url": settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
+    }
+    if sg.image:
+        data["image_url"] = settings.DOMAIN + sg.image.url
+    # TODO else set default image URL
+    if hasattr(sg, 'next_meeting_date'):
+        data["next_meeting_date"] = sg.next_meeting_date
+    return data
 
 
 @login_required
@@ -255,6 +289,13 @@ class StudyGroupUpdate(FacilitatorRedirectMixin, UpdateView):
     model = StudyGroup
     form_class =  StudyGroupForm
     pk_url_kwarg = 'study_group_id'
+
+    def get_context_data(self, **kwargs):
+        study_group = self.get_object()
+        context = super(StudyGroupUpdate, self).get_context_data(**kwargs)
+        context['hide_footer'] = True
+        context['studygroup'] = study_group.id
+        return context
 
 
 class StudyGroupDelete(FacilitatorRedirectMixin, DeleteView):

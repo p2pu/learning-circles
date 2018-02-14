@@ -51,7 +51,6 @@ export default class RegistrationModal extends React.Component {
       responseType: 'json',
       config: { headers: {'Content-Type': 'application/json' }}
     }).then(res => {
-      debugger;
       if (!!res.data.errors) {
         return this.setState({ errors: res.data.errors });
       }

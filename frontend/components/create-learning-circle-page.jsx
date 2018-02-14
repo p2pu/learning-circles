@@ -54,12 +54,46 @@ export default class CreateLearningCirclePage extends React.Component {
   componentDidMount() {
     const urlParams = new URL(window.location.href).searchParams;
     const courseId = urlParams.get('course_id');
+    const learningCircleId = this.props.studygroup;
+
+    if (!!learningCircleId) {
+      const api = new ApiHelper('learningCircles');
+      const params = { id: learningCircleId }
+      const callback = (response, _opts) => {
+        const learningCircle = response.items[0];
+        if (!learningCircle) {
+          this.setState({
+            alert: {
+              show: true,
+              type: 'danger',
+              message: `There is no learning circle with the ID ${learningCircleId}.`
+            }
+          })
+        } else {
+          this.setState({ learningCircle })
+        }
+      }
+      const opts = { params, callback }
+
+      api.fetchResource(opts)
+    }
 
     if (!!courseId) {
       const api = new ApiHelper('courses');
       const params = { course_id: courseId }
       const callback = (response, _opts) => {
-        this.setState({ learningCircle: { course: response.items[0] } })
+        const course = response.items[0];
+        if (!course) {
+          this.setState({
+            alert: {
+              show: true,
+              type: 'danger',
+              message: `There is no course with the ID ${courseId}.`
+            }
+          })
+        } else {
+          this.setState({ learningCircle: { course } })
+        }
       }
       const opts = { params, callback }
 

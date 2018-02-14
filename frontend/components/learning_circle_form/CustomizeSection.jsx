@@ -42,7 +42,7 @@ const CustomizeSection = (props) => {
         handleChange={props.updateFormData}
         name={'image'}
         id={'id_image'}
-        image={props.learningCircle.image}
+        image={props.learningCircle.image || props.learningCircle.image_url}
         errorMessage={props.errors.image}
       />
     </div>
