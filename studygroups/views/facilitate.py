@@ -85,7 +85,8 @@ def view_study_group(request, study_group_id):
 
     context = {
         'study_group': study_group,
-        'today': timezone.now()
+        'activities': Activity.objects.all().order_by('index'),
+        'today': timezone.now(),
     }
     return render(request, 'studygroups/view_study_group.html', context)
 
