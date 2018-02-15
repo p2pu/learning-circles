@@ -186,8 +186,6 @@ class CourseCreate(CreateView):
     def form_valid(self, form):
         # courses created by staff will be global
         messages.success(self.request, _('Your course has been created. You can now create a learning circle using it.'))
-        if self.request.user.is_staff:
-            return super(CourseCreate, self).form_valid(form)
         self.object = form.save(commit=False)
         self.object.created_by = self.request.user
         self.object.save()
