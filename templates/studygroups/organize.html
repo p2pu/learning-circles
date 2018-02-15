@@ -43,7 +43,7 @@
     window.organizerDash.meetings = meetings;
 
     var facilitators = [
-        {% for facilitator in facilitators %}{ name: "{{facilitator.user.first_name}} {{ facilitator.user.last_name }}", email: "{{facilitator.user.email}}"},
+        {% for facilitator in facilitators %}{ name: "{{facilitator.first_name}} {{ facilitator.last_name }}", email: "{{facilitator.email}}"},
         {% endfor %}
     ];
     window.organizerDash.facilitators = facilitators;

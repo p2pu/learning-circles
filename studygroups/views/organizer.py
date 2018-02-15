@@ -20,7 +20,6 @@ from studygroups.models import Course
 from studygroups.models import StudyGroup
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
-from studygroups.models import Facilitator
 from studygroups.models import StudyGroupMeeting
 from studygroups.models import report_data
 from studygroups.models import generate_all_meetings
@@ -43,7 +42,7 @@ def organize(request):
     two_weeks_ago = today - datetime.timedelta(weeks=2, days=today.weekday())
     two_weeks = today - datetime.timedelta(days=today.weekday()) + datetime.timedelta(weeks=3)
     study_groups = StudyGroup.objects.published()
-    facilitators = Facilitator.objects.all()  # TODO rather use User model
+    facilitators = User.objects.all()
     courses = []  # TODO Remove courses until we implement course selection for teams
     team = None
     invitations = []
@@ -78,7 +77,7 @@ def organize_team(request, team_id):
     members = team.teammembership_set.values('user')
     team_users = User.objects.filter(pk__in=members)
     study_groups = StudyGroup.objects.published().filter(facilitator__in=team_users)
-    facilitators = Facilitator.objects.filter(user__in=team_users)
+    facilitators = team_users
     invitations = TeamInvitation.objects.filter(team=team, responded_at__isnull=True)
     active_study_groups = study_groups.filter(
         id__in=StudyGroupMeeting.objects.active().filter(meeting_date__gte=two_weeks_ago).values('study_group')

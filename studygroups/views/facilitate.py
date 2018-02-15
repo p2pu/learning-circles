@@ -25,7 +25,6 @@ from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 
 from studygroups.models import Activity
-from studygroups.models import Facilitator
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 from studygroups.models import StudyGroup
@@ -291,7 +290,7 @@ class StudyGroupPublish(SingleObjectMixin, View):
 
     def post(self, request, *args, **kwargs):
         study_group = self.get_object()
-        profile = study_group.facilitator.facilitator
+        profile = study_group.facilitator.profile
         if profile.email_confirmed_at is None:
             messages.warning(self.request, _("You need to confirm your email address before you can publish a learning circle."));
         else:

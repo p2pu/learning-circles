@@ -350,7 +350,7 @@ def _image_check():
 def _user_check(user):
     def _validate(value):
         if value == True:
-            if user.facilitator.email_confirmed_at == None:
+            if user.profile.email_confirmed_at == None:
                 return None, 'Users with unconfirmed email addresses cannot publish courses'
         return value, None
     return _validate

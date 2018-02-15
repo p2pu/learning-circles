@@ -106,7 +106,7 @@ class Activity(models.Model):
 
 
 # TODO rename to Profile and move to custom_registration/models.py
-class Facilitator(models.Model):
+class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     mailing_list_signup = models.BooleanField(default=False)
     email_confirmed_at = models.DateTimeField(null=True, blank=True)

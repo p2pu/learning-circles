@@ -8,7 +8,6 @@ from studygroups.models import Application
 from studygroups.models import Reminder 
 from studygroups.models import Activity
 from studygroups.models import Organizer
-from studygroups.models import Facilitator
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
