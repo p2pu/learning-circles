@@ -19,7 +19,7 @@ export default class ActiveLearningCircleList extends React.Component {
             <tr>
                 <td>
                     { lc.course_title }<br/>
-                    { lc.day }s, { lc.meeting_time } {gettext("at")} { lc.venue }
+                    { lc.day }s, { lc.meeting_time } {gettext("at")} { lc.venue_name }
                 </td>
                 <td>
                     { lc.signup_count }
