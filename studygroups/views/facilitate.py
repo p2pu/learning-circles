@@ -101,30 +101,36 @@ class FacilitatorRedirectMixin(object):
         return reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
 
 
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class MeetingCreate(FacilitatorRedirectMixin, CreateView):
     model = StudyGroupMeeting
     form_class = StudyGroupMeetingForm
 
     def get_initial(self):
-        study_group = get_object_or_404(StudyGroup, pk=self.kwargs.get('study_group_id'))
+        study_group_id = self.kwargs.get('study_group_id')
+        study_group = get_object_or_404(StudyGroup, pk=study_group_id)
         return {
             'study_group': study_group,
         }
 
 
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class MeetingUpdate(FacilitatorRedirectMixin, UpdateView):
     model = StudyGroupMeeting
     form_class = StudyGroupMeetingForm
 
 
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class MeetingDelete(FacilitatorRedirectMixin, DeleteView):
     model = StudyGroupMeeting
 
 
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class FeedbackDetail(FacilitatorRedirectMixin, DetailView):
     model = Feedback
 
 
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
     model = Feedback
     form_class = FeedbackForm
@@ -157,12 +163,14 @@ class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
         return super(FeedbackCreate, self).form_valid(form)
 
 
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class ApplicationDelete(FacilitatorRedirectMixin, DeleteView):
     model = Application
     success_url = reverse_lazy('studygroups_facilitator')
     template_name = 'studygroups/confirm_delete.html'
 
 
+@method_decorator(login_required, name="dispatch")
 class CourseCreate(CreateView):
     """ View used by organizers and facilitators """
     model = Course
@@ -251,12 +259,14 @@ class CourseUpdate(UpdateView):
 
 
 ## This form is used by facilitators
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class StudyGroupUpdate(FacilitatorRedirectMixin, UpdateView):
     model = StudyGroup
     form_class =  StudyGroupForm
     pk_url_kwarg = 'study_group_id'
 
 
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class StudyGroupDelete(FacilitatorRedirectMixin, DeleteView):
     # TODO Need to fix back link for confirmation page
     model = StudyGroup
@@ -264,6 +274,7 @@ class StudyGroupDelete(FacilitatorRedirectMixin, DeleteView):
     pk_url_kwarg = 'study_group_id'
 
 
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class StudyGroupToggleSignup(RedirectView, SingleObjectMixin):
     model = StudyGroup
     pk_url_kwarg = 'study_group_id'

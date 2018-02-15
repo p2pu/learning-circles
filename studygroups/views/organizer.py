@@ -98,6 +98,7 @@ def organize_team(request, team_id):
     return render(request, 'studygroups/organize.html', context)
 
 
+@method_decorator(user_is_organizer, name='dispatch')
 class StudyGroupList(ListView):
     model = StudyGroup
 
@@ -109,6 +110,7 @@ class StudyGroupList(ListView):
         return study_groups
 
 
+@method_decorator(user_is_organizer, name='dispatch')
 class StudyGroupMeetingList(ListView):
     model = StudyGroupMeeting
 
@@ -122,6 +124,7 @@ class StudyGroupMeetingList(ListView):
         return meetings
 
 
+@method_decorator(user_is_organizer, name='dispatch')
 class TeamMembershipDelete(DeleteView):
     model = TeamMembership
     success_url = reverse_lazy('studygroups_organize')
@@ -133,18 +136,16 @@ class TeamMembershipDelete(DeleteView):
         return queryset.get(user_id=self.kwargs.get('user_id'), team_id=self.kwargs.get('team_id'))
 
 
+@method_decorator(user_is_organizer, name='dispatch')
 class CourseDelete(DeleteView):
     model = Course
     success_url = reverse_lazy('studygroups_organize')
     template_name = 'studygroups/confirm_delete.html'
 
 
+@method_decorator(csrf_exempt, name='dispatch') #TODO need to send CSRF token in header
+@method_decorator(user_is_team_organizer, name='dispatch')
 class TeamInvitationCreate(View):
-
-    @method_decorator(csrf_exempt)
-    @method_decorator(user_is_team_organizer)
-    def dispatch(self, *args, **kwargs):
-        return super(TeamInvitationCreate, self).dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         team = Team.objects.get(pk=self.kwargs.get('team_id'))
