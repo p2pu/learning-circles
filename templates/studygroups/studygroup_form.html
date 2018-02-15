@@ -16,6 +16,12 @@
   </div>
 </div>
 </div>
+
+<script>
+    window.lc = window.lc || {};
+    var learningCircle = {{ object.to_json|safe }};
+    window.lc = learningCircle;
+</script>
 {% endblock %}
 
 {% block css %}
