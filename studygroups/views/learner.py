@@ -2,12 +2,9 @@ import datetime
 import dateutil.parser
 
 from django.shortcuts import render, get_object_or_404
-from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
-from django.core.mail import EmailMultiAlternatives, send_mail
+from django.core.mail import EmailMultiAlternatives
 from django.contrib import messages
 from django.conf import settings
 from django import http
@@ -18,28 +15,22 @@ from django.utils.translation import ugettext as _
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import FormView
 from django.views.generic import TemplateView
-from django.contrib.auth.models import User
 from django.db.models import Count
-from django.template.defaultfilters import slugify
 
 from studygroups.models import Course
 from studygroups.models import StudyGroup
 from studygroups.models import Application
-from studygroups.models import Reminder
-from studygroups.models import Feedback
 from studygroups.models import StudyGroupMeeting
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import create_rsvp
-from studygroups.models import get_team_users
 from studygroups.forms import ApplicationForm
 from studygroups.forms import OptOutForm
 from studygroups.rsvp import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
 
-from uxhelpers.utils import json_response
-
 import cities
+
 
 def landing(request):
     two_weeks = (datetime.datetime.now() - datetime.timedelta(weeks=2)).date()
@@ -65,7 +56,6 @@ class TeamPage(DetailView):
     template_name = 'studygroups/team_page.html'
     slug_field = 'page_slug'
     context_object_name = 'team'
-
 
     def get_context_data(self, **kwargs):
         context = super(TeamPage, self).get_context_data(**kwargs)
