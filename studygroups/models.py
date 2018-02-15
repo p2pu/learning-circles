@@ -248,7 +248,7 @@ class StudyGroup(LifeTimeTrackingModel):
         if next_meeting:
             data['next_meeting_date'] = next_meeting.meeting_date
         if sg.image:
-            data["image_url"] = "https://learningcircles.p2pu.org" + sg.image.url
+            data["image_url"] = settings.DOMAIN + sg.image.url
         return data
 
     def to_json(self):
