@@ -86,6 +86,7 @@ export const KANSAS_CITY_OPTION = {
     locale_names: {
       default: ['Kansas City']
     },
+    // from https://tools.wmflabs.org
     _geoloc: {
       lat: 39.099722,
       lng: -94.578333

@@ -21,8 +21,7 @@ export default class PlaceSelect extends Component {
     if (!!this.props.place_id) {
       this.fetchPlaceById();
     } else if (this.props.city === 'Kansas City') {
-      const value = KANSAS_CITY_OPTION;
-      this.setState({ value });
+      this.setState({ value: KANSAS_CITY_OPTION });
     } else if (this.props.city) {
       const value = { label: this.props.city, value: this.props.city }
       this.setState({ value });
