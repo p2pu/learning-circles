@@ -15,7 +15,7 @@
         <p class="lc-venueX"><span class="extrabold lc-card-teal"><i class="fa fa-map-marker"></i> {{lc.venue_name}}</span><br/>
         {{lc.venue_address}}, {{lc.city}}</p>
         <p class="lc-daysX">{% blocktrans with day=lc.day meeting_time=lc.meeting_time|time:"f A" end_time=lc.end_time|time:"f A" timezone=lc.timezone %}<span class="extrabold">{{day}}s</span>, {{meeting_time}} - {{end_time}}, {{timezone}}{% endblocktrans %}</p>
-        <p class="lc-startX">{% blocktrans with start_date=lc.start_date|date:"j N Y" count weeks=lc.studygroupmeeting_set.active.count %}<span class="extrabold">One week</span> beginning <span class="extrabold">{{start_date}}</span>{% plural %}<span class="extrabold">{{weeks}} weeks</span> beginning <span class="extrabold">{{start_date}}</span>{% endblocktrans %}</p>
+        <p class="lc-startX">{% blocktrans with start_date=lc.start_date|date:"j N Y" count weeks=lc.meeting_set.active.count %}<span class="extrabold">One week</span> beginning <span class="extrabold">{{start_date}}</span>{% plural %}<span class="extrabold">{{weeks}} weeks</span> beginning <span class="extrabold">{{start_date}}</span>{% endblocktrans %}</p>
       </div>
     </div>
   </div>

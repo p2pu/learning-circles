@@ -20,7 +20,7 @@ import twilio
 from studygroups.models import Application
 from studygroups.models import Reminder
 from studygroups.models import StudyGroup
-from studygroups.models import StudyGroupMeeting
+from studygroups.models import Meeting
 from studygroups.models import Feedback
 from studygroups.models import Course
 from studygroups.sms import send_message
@@ -239,7 +239,7 @@ class StudyGroupForm(forms.ModelForm):
         """))
 
         if self.instance.pk:
-            self.fields['weeks'].initial = self.instance.studygroupmeeting_set.active().count()
+            self.fields['weeks'].initial = self.instance.meeting_set.active().count()
 
     def save(self, commit=True):
         self.instance.end_date = self.cleaned_data['start_date'] + datetime.timedelta(weeks=self.cleaned_data['weeks'] - 1)
@@ -294,10 +294,10 @@ class StudyGroupForm(forms.ModelForm):
         } 
 
 
-class StudyGroupMeetingForm(forms.ModelForm):
+class MeetingForm(forms.ModelForm):
     meeting_time = forms.TimeField(input_formats=['%I:%M %p'], initial=datetime.time(16))
     class Meta:
-        model = StudyGroupMeeting
+        model = Meeting
         fields = ['meeting_date', 'meeting_time', 'study_group']
         widgets = {'study_group': forms.HiddenInput} 
 

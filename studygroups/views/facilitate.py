@@ -3,9 +3,8 @@ from django.urls import reverse, reverse_lazy
 from django import http
 from django import forms
 from django.forms import modelform_factory, HiddenInput
-from django.template import RequestContext
 from django.template.loader import render_to_string
-from django.views.generic.base import View, TemplateResponseMixin, ContextMixin
+from django.views.generic.base import View
 from django.views.generic.base import RedirectView
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -13,14 +12,11 @@ from django.views.generic.edit import FormView
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic import DetailView
 from django.core.exceptions import PermissionDenied
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import PasswordResetForm
 from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.db.models import Q
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.core import serializers
@@ -33,22 +29,20 @@ from studygroups.models import Activity
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 from studygroups.models import StudyGroup
-from studygroups.models import StudyGroupMeeting
+from studygroups.models import Meeting
 from studygroups.models import Course
 from studygroups.models import Application
 from studygroups.models import Feedback
 from studygroups.models import Reminder
 from studygroups.forms import CourseForm
-from studygroups.forms import ApplicationForm
 from studygroups.forms import StudyGroupForm
-from studygroups.forms import StudyGroupMeetingForm
+from studygroups.forms import MeetingForm
 from studygroups.forms import FeedbackForm
 from studygroups.models import generate_all_meetings
 from studygroups.models import send_reminder
 from studygroups.models import get_study_group_organizers
 from studygroups.decorators import user_is_group_facilitator
 
-import string, random
 
 @login_required
 def login_redirect(request):
@@ -106,8 +100,8 @@ class FacilitatorRedirectMixin(object):
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
 class MeetingCreate(FacilitatorRedirectMixin, CreateView):
-    model = StudyGroupMeeting
-    form_class = StudyGroupMeetingForm
+    model = Meeting
+    form_class = MeetingForm
 
     def get_initial(self):
         study_group_id = self.kwargs.get('study_group_id')
@@ -119,13 +113,13 @@ class MeetingCreate(FacilitatorRedirectMixin, CreateView):
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
 class MeetingUpdate(FacilitatorRedirectMixin, UpdateView):
-    model = StudyGroupMeeting
-    form_class = StudyGroupMeetingForm
+    model = Meeting
+    form_class = MeetingForm
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
 class MeetingDelete(FacilitatorRedirectMixin, DeleteView):
-    model = StudyGroupMeeting
+    model = Meeting
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
@@ -139,7 +133,7 @@ class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
     form_class = FeedbackForm
 
     def get_initial(self):
-        meeting = get_object_or_404(StudyGroupMeeting, pk=self.kwargs.get('study_group_meeting_id'))
+        meeting = get_object_or_404(Meeting, pk=self.kwargs.get('study_group_meeting_id'))
         return {
             'study_group_meeting': meeting,
         }
@@ -147,7 +141,7 @@ class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
     def form_valid(self, form):
         # send notification to organizers about feedback
         to = [] #TODO should we send this to someone if the facilitators is not part of a team? - for now, don't worry, this notification is likely to be removed.
-        meeting = get_object_or_404(StudyGroupMeeting, pk=self.kwargs.get('study_group_meeting_id'))
+        meeting = get_object_or_404(Meeting, pk=self.kwargs.get('study_group_meeting_id'))
         organizers = get_study_group_organizers(meeting.study_group)
         if organizers:
             to = [o.email for o in organizers]
@@ -326,7 +320,7 @@ class StudyGroupPublish(SingleObjectMixin, View):
 
 @user_is_group_facilitator
 def message_send(request, study_group_id):
-    # TODO - this piggy backs of Reminder, won't work of Reminder is coupled to StudyGroupMeeting
+    # TODO - this piggy backs of Reminder, won't work of Reminder is coupled to Meeting
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
     form_class =  modelform_factory(Reminder, exclude=['study_group_meeting', 'created_at', 'sent_at', 'sms_body'], widgets={'study_group': HiddenInput})
 

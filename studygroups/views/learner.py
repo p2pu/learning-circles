@@ -20,7 +20,7 @@ from django.db.models import Count
 from studygroups.models import Course
 from studygroups.models import StudyGroup
 from studygroups.models import Application
-from studygroups.models import StudyGroupMeeting
+from studygroups.models import Meeting
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import create_rsvp
@@ -35,7 +35,7 @@ import cities
 def landing(request):
     two_weeks = (datetime.datetime.now() - datetime.timedelta(weeks=2)).date()
 
-    study_group_ids = StudyGroupMeeting.objects.active().filter(meeting_date__gte=timezone.now()).values('study_group')
+    study_group_ids = Meeting.objects.active().filter(meeting_date__gte=timezone.now()).values('study_group')
     study_groups = StudyGroup.objects.published().filter(id__in=study_group_ids, signup_open=True).order_by('start_date')
 
     city_list = study_groups.values('city').exclude(city='').annotate(total=Count('city')).order_by('-total')
@@ -62,7 +62,7 @@ class TeamPage(DetailView):
         two_weeks = (datetime.datetime.now() - datetime.timedelta(weeks=2)).date()
 
         team_users = TeamMembership.objects.filter(team=self.object).values('user')
-        study_group_ids = StudyGroupMeeting.objects.active()\
+        study_group_ids = Meeting.objects.active()\
                 .filter(meeting_date__gte=timezone.now())\
                 .values('study_group')
         study_groups = StudyGroup.objects.published()\
@@ -89,7 +89,7 @@ def city(request, city_name):
     #two_weeks = (datetime.datetime.now() - datetime.timedelta(weeks=2)).date()
     #learning_circles = StudyGroup.objects.published().filter(city__istartswith=city_name)
 
-    study_group_ids = StudyGroupMeeting.objects.active().filter(meeting_date__gte=timezone.now()).values('study_group')
+    study_group_ids = Meeting.objects.active().filter(meeting_date__gte=timezone.now()).values('study_group')
     study_group_ids = study_group_ids.filter(study_group__city__istartswith=city_name)
     learning_circles = StudyGroup.objects.published().filter(id__in=study_group_ids, signup_open=True).order_by('start_date')
 

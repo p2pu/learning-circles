@@ -10,7 +10,7 @@ from mock import patch
 from freezegun import freeze_time
 
 from studygroups.models import StudyGroup
-from studygroups.models import StudyGroupMeeting
+from studygroups.models import Meeting
 from studygroups.models import Application
 from studygroups.models import Organizer
 from studygroups.models import Rsvp
@@ -195,20 +195,20 @@ class TestOrganizerViews(TestCase):
         TeamMembership.objects.create(team=team, user=faci1, role=TeamMembership.MEMBER)
 
         study_group = StudyGroup.objects.get(pk=1)
-        active_meeting = StudyGroupMeeting.objects.create(
+        active_meeting = Meeting.objects.create(
             study_group = study_group,
             meeting_time = datetime.time(16, 0),
             meeting_date = datetime.date(2016, 11, 24)  # Thursday
         )
 
         study_group = StudyGroup.objects.get(pk=2)
-        meeting = StudyGroupMeeting()
+        meeting = Meeting()
         meeting.study_group = study_group
         meeting.meeting_time = datetime.time(16, 0)
         meeting.meeting_date = datetime.date(2016, 11, 25)  # Thursday
         meeting.save()
 
-        StudyGroupMeeting.objects.create(
+        Meeting.objects.create(
             study_group = StudyGroup.objects.get(pk=3),
             meeting_time = datetime.time(16, 0),
             meeting_date = datetime.date(2016, 11, 21)  # Monday

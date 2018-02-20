@@ -9,7 +9,7 @@ from django.utils.translation import get_language
 from mock import patch
 
 from studygroups.models import StudyGroup
-from studygroups.models import StudyGroupMeeting
+from studygroups.models import Meeting
 from studygroups.models import Application
 from studygroups.models import Organizer
 from studygroups.models import Rsvp
@@ -160,7 +160,7 @@ class TestLearnerViews(TestCase):
         self.assertEquals(Application.objects.active().count(), 1)
         mail.outbox = []
 
-        next_meeting = StudyGroupMeeting()
+        next_meeting = Meeting()
         next_meeting.study_group = StudyGroup.objects.get(pk=signup_data['study_group'])
         next_meeting.meeting_time = (timezone.now() + datetime.timedelta(days=1)).time()
         next_meeting.meeting_date = timezone.now().date() + datetime.timedelta(days=1)
@@ -200,7 +200,7 @@ class TestLearnerViews(TestCase):
         c = Client()
         study_group = StudyGroup.objects.get(pk=1)
         meeting_time = timezone.now() + datetime.timedelta(days=2)
-        study_group_meeting = StudyGroupMeeting(
+        study_group_meeting = Meeting(
             study_group=study_group,
             meeting_time=meeting_time.time(),
             meeting_date=meeting_time.date()

@@ -78,7 +78,7 @@
         {% endcomment %}
       </div>
       <div class="col-md-12">
-        <h3>{% trans "Meetings" %} ({{lc.studygroupmeeting_set.active.count}})</h3>
+        <h3>{% trans "Meetings" %} ({{lc.meeting_set.active.count}})</h3>
         <table class="table table-bordered">
           <thead>
             <tr>
@@ -89,7 +89,7 @@
             </tr>
           </thead>
           <tbody>
-            {% for meeting in lc.studygroupmeeting_set.active|dictsort:"meeting_datetime" %}
+            {% for meeting in lc.meeting_set.active|dictsort:"meeting_datetime" %}
             <tr>
               <td>{{ meeting.meeting_date|date:"D, d M Y" }}, {{ meeting.meeting_time|time:"f A" }}
 

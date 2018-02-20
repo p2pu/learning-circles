@@ -16,7 +16,7 @@ from studygroups.models import StudyGroup
 from studygroups.models import Application
 from studygroups.models import Reminder
 from studygroups.models import Feedback
-from studygroups.models import StudyGroupMeeting
+from studygroups.models import Meeting
 from studygroups.models import Team
 
 from uxhelpers.utils import json_response
@@ -41,7 +41,7 @@ def studygroups(request):
             "meeting_time": sg.meeting_time,
             "time_zone": sg.timezone_display(),
             "end_time": sg.end_time(),
-            "weeks": sg.studygroupmeeting_set.active().count(),
+            "weeks": sg.meeting_set.active().count(),
             "url": "https://learningcircles.p2pu.org" + reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
         }
         if sg.image:

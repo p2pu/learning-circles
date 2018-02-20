@@ -20,7 +20,7 @@ from studygroups.models import Course
 from studygroups.models import StudyGroup
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
-from studygroups.models import StudyGroupMeeting
+from studygroups.models import Meeting
 from studygroups.models import report_data
 from studygroups.models import generate_all_meetings
 from studygroups.models import Team
@@ -48,9 +48,9 @@ def organize(request):
     invitations = []
 
     active_study_groups = study_groups.filter(
-        id__in=StudyGroupMeeting.objects.active().filter(meeting_date__gte=two_weeks_ago).values('study_group')
+        id__in=Meeting.objects.active().filter(meeting_date__gte=two_weeks_ago).values('study_group')
     )
-    meetings = StudyGroupMeeting.objects.active()\
+    meetings = Meeting.objects.active()\
         .filter(study_group__in=study_groups, meeting_date__gte=two_weeks_ago)\
         .exclude(meeting_date__gte=two_weeks)
 
@@ -80,9 +80,9 @@ def organize_team(request, team_id):
     facilitators = team_users
     invitations = TeamInvitation.objects.filter(team=team, responded_at__isnull=True)
     active_study_groups = study_groups.filter(
-        id__in=StudyGroupMeeting.objects.active().filter(meeting_date__gte=two_weeks_ago).values('study_group')
+        id__in=Meeting.objects.active().filter(meeting_date__gte=two_weeks_ago).values('study_group')
     )
-    meetings = StudyGroupMeeting.objects.active()\
+    meetings = Meeting.objects.active()\
         .filter(study_group__in=study_groups, meeting_date__gte=two_weeks_ago)\
         .exclude(meeting_date__gte=two_weeks)
 
@@ -111,8 +111,8 @@ class StudyGroupList(ListView):
 
 
 @method_decorator(user_is_organizer, name='dispatch')
-class StudyGroupMeetingList(ListView):
-    model = StudyGroupMeeting
+class MeetingList(ListView):
+    model = Meeting
 
     def get_queryset(self):
         study_groups = StudyGroup.objects.published()
@@ -120,7 +120,7 @@ class StudyGroupMeetingList(ListView):
             team_users = get_team_users(self.request.user)
             study_groups = study_groups.filter(facilitator__in=team_users)
 
-        meetings = StudyGroupMeeting.objects.active().filter(study_group__in=study_groups)
+        meetings = Meeting.objects.active().filter(study_group__in=study_groups)
         return meetings
 
 

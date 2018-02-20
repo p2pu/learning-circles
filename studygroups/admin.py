@@ -3,7 +3,7 @@ from django.contrib import admin
 # Register your models here.
 from studygroups.models import Course
 from studygroups.models import StudyGroup 
-from studygroups.models import StudyGroupMeeting 
+from studygroups.models import Meeting 
 from studygroups.models import Application 
 from studygroups.models import Reminder 
 from studygroups.models import Activity
@@ -77,7 +77,7 @@ class CourseAdmin(admin.ModelAdmin):
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Activity)
 admin.site.register(StudyGroup, StudyGroupAdmin)
-admin.site.register(StudyGroupMeeting)
+admin.site.register(Meeting)
 admin.site.register(Application, ApplicationAdmin)
 admin.site.register(Reminder, ReminderAdmin)
 admin.site.register(Team, TeamAdmin)

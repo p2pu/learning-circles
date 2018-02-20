@@ -10,7 +10,7 @@ from mock import patch
 from freezegun import freeze_time
 
 from studygroups.models import StudyGroup
-from studygroups.models import StudyGroupMeeting
+from studygroups.models import Meeting
 
 import datetime
 import json
@@ -21,22 +21,22 @@ class TestCourseApi(TestCase):
 
     def test_landing_page_learning_circles(self):
         c = Client()
-        meeting_1 = StudyGroupMeeting.objects.create(
+        meeting_1 = Meeting.objects.create(
             study_group_id=1,
             meeting_date=datetime.date(2017,10,25),
             meeting_time=datetime.time(17,30),
         )
-        meeting_2 = StudyGroupMeeting.objects.create(
+        meeting_2 = Meeting.objects.create(
             study_group_id=2,
             meeting_date=datetime.date(2017,10,26),
             meeting_time=datetime.time(17,30),
         )
-        meeting_3 = StudyGroupMeeting.objects.create(
+        meeting_3 = Meeting.objects.create(
             study_group_id=3,
             meeting_date=datetime.date(2017,10,27),
             meeting_time=datetime.time(17,30),
         )
-        meeting_4 = StudyGroupMeeting.objects.create(
+        meeting_4 = Meeting.objects.create(
             study_group_id=4,
             meeting_date=datetime.date(2017,10,31),
             meeting_time=datetime.time(17,30),

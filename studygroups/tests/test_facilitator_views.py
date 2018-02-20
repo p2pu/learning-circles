@@ -10,7 +10,7 @@ from mock import patch
 
 from studygroups.models import Course
 from studygroups.models import StudyGroup
-from studygroups.models import StudyGroupMeeting
+from studygroups.models import Meeting
 from studygroups.models import Application
 from studygroups.models import Rsvp
 from studygroups.models import Team
@@ -124,7 +124,7 @@ class TestFacilitatorViews(TestCase):
         self.assertRedirects(resp, '/en/facilitator/')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
-        self.assertEquals(study_groups.first().studygroupmeeting_set.count(), 6)
+        self.assertEquals(study_groups.first().meeting_set.count(), 6)
         self.assertEquals(len(mail.outbox), 1)
         self.assertEquals(mail.outbox[0].subject, 'Your Learning Circle has been created! What next?')
         self.assertIn('bob@example.net', mail.outbox[0].to)
@@ -255,7 +255,7 @@ class TestFacilitatorViews(TestCase):
         c = Client()
         c.login(username='faci1@team.com', password='1234')
         study_group = StudyGroup.objects.get(pk=1)
-        meeting = StudyGroupMeeting()
+        meeting = Meeting()
         meeting.study_group = study_group
         meeting.meeting_time = timezone.now().time()
         meeting.meeting_date = timezone.now().date() - datetime.timedelta(days=1)

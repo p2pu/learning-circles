@@ -22,7 +22,7 @@ from studygroups.decorators import user_is_group_facilitator
 from studygroups.models import Course
 from studygroups.models import StudyGroup
 from studygroups.models import Application
-from studygroups.models import StudyGroupMeeting
+from studygroups.models import Meeting
 from studygroups.models import Team
 from studygroups.models import generate_all_meetings
 
@@ -52,7 +52,7 @@ def _map_to_json(sg):
         "meeting_time": sg.meeting_time,
         "time_zone": sg.timezone_display(),
         "end_time": sg.end_time(),
-        "weeks": sg.studygroupmeeting_set.active().count(),
+        "weeks": sg.meeting_set.active().count(),
         "url": settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
     }
     if sg.image:
@@ -146,7 +146,7 @@ class LearningCircleListView(View):
 
         if 'active' in request.GET:
             active = request.GET.get('active') == 'true'
-            study_group_ids = StudyGroupMeeting.objects.active().filter(
+            study_group_ids = Meeting.objects.active().filter(
                 meeting_date__gte=timezone.now()
             ).values('study_group')
             if active:
@@ -208,7 +208,7 @@ class LearningCircleListView(View):
 class LearningCircleTopicListView(View):
     """ Return topics for listed courses """
     def get(self, request):
-        study_group_ids = StudyGroupMeeting.objects.active().filter(
+        study_group_ids = Meeting.objects.active().filter(
             meeting_date__gte=timezone.now()
         ).values('study_group')
         course_ids = None
@@ -301,7 +301,7 @@ class CourseListView(View):
 
         if 'active' in request.GET:
             active = request.GET.get('active') == 'true'
-            study_group_ids = StudyGroupMeeting.objects.active().filter(
+            study_group_ids = Meeting.objects.active().filter(
                 meeting_date__gte=timezone.now()
             ).values('study_group')
             course_ids = None
@@ -537,18 +537,18 @@ class LandingPageLearningCirclesView(View):
 
         # get learning circles with image & upcoming meetings
         study_groups = StudyGroup.objects.published().filter(
-            studygroupmeeting__meeting_date__gte=timezone.now(),
+            meeting__meeting_date__gte=timezone.now(),
         ).annotate(
-            next_meeting_date=Min('studygroupmeeting__meeting_date')
+            next_meeting_date=Min('meeting__meeting_date')
         ).order_by('next_meeting_date')[:3]
 
         # if there are less than 3 with upcoming meetings and an image
         if study_groups.count() < 3:
             #pad with learning circles with the most recent meetings
             past_study_groups = StudyGroup.objects.published().filter(
-                studygroupmeeting__meeting_date__lt=timezone.now(),
+                meeting__meeting_date__lt=timezone.now(),
             ).annotate(
-                next_meeting_date=Max('studygroupmeeting__meeting_date')
+                next_meeting_date=Max('meeting__meeting_date')
             ).order_by('-next_meeting_date')
             study_groups = list(study_groups) + list(past_study_groups[:3-study_groups.count()])
         data = {
@@ -567,9 +567,9 @@ class LandingPageStatsView(View):
     """
     def get(self, request):
         study_groups = StudyGroup.objects.published().filter(
-            studygroupmeeting__meeting_date__gte=timezone.now()
+            meeting__meeting_date__gte=timezone.now()
         ).annotate(
-            next_meeting_date=Min('studygroupmeeting__meeting_date')
+            next_meeting_date=Min('meeting__meeting_date')
         )
         cities = StudyGroup.objects.published().filter(
             latitude__isnull=False,

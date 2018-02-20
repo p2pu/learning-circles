@@ -9,7 +9,7 @@ from mock import patch
 from freezegun import freeze_time
 
 from studygroups.models import StudyGroup
-from studygroups.models import StudyGroupMeeting
+from studygroups.models import Meeting
 from studygroups.models import Application
 from studygroups.models import Reminder
 from studygroups.models import Rsvp
@@ -105,11 +105,11 @@ class TestSignupModels(TestCase):
         sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
         sg.save()
         sg = StudyGroup.objects.get(pk=1)
-        self.assertEqual(StudyGroupMeeting.objects.all().count(),0)
+        self.assertEqual(Meeting.objects.all().count(),0)
         generate_all_meetings(sg)
-        self.assertEqual(StudyGroupMeeting.objects.all().count(),6)
+        self.assertEqual(Meeting.objects.all().count(),6)
         self.assertEqual(sg.next_meeting().meeting_datetime().tzinfo.zone, 'US/Central')
-        for meeting in StudyGroupMeeting.objects.all():
+        for meeting in Meeting.objects.all():
             self.assertEqual(meeting.meeting_datetime().time(), datetime.time(16,0))
 
 
@@ -140,7 +140,7 @@ class TestSignupModels(TestCase):
         sg.save()
         sg = StudyGroup.objects.get(pk=1)
         generate_all_meetings(sg)
-        self.assertEqual(sg.studygroupmeeting_set.active().count(), 6)
+        self.assertEqual(sg.meeting_set.active().count(), 6)
         self.assertTrue(sg.next_meeting().meeting_datetime() - now < datetime.timedelta(days=4))
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
@@ -198,7 +198,7 @@ class TestSignupModels(TestCase):
         sg.save()
         sg = StudyGroup.objects.get(pk=1)
         generate_all_meetings(sg)
-        self.assertEqual(sg.studygroupmeeting_set.active().count(), 6)
+        self.assertEqual(sg.meeting_set.active().count(), 6)
         self.assertTrue(sg.next_meeting().meeting_datetime() - now < datetime.timedelta(days=4))
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
@@ -386,13 +386,13 @@ class TestSignupModels(TestCase):
         application.save()
         sg = StudyGroup.objects.get(pk=1)
         meeting_date = timezone.now()
-        sgm = StudyGroupMeeting(
+        sgm = Meeting(
             study_group=sg,
             meeting_time=meeting_date.time(),
             meeting_date=meeting_date.date()
         )
         sgm.save()
-        sgm = StudyGroupMeeting(
+        sgm = Meeting(
             study_group=sg,
             meeting_time=meeting_date.time(),
             meeting_date=meeting_date.date() + datetime.timedelta(weeks=1)
@@ -446,14 +446,14 @@ class TestSignupModels(TestCase):
         TeamMembership.objects.create(team=team, user=faci1, role=TeamMembership.MEMBER)
 
         study_group = StudyGroup.objects.get(pk=1)
-        meeting = StudyGroupMeeting()
+        meeting = Meeting()
         meeting.study_group = study_group
         meeting.meeting_time = timezone.now().time()
         meeting.meeting_date = timezone.now().date() - datetime.timedelta(days=1)
         meeting.save()
 
         study_group = StudyGroup.objects.get(pk=2)
-        meeting = StudyGroupMeeting()
+        meeting = Meeting()
         meeting.study_group = study_group
         meeting.meeting_time = timezone.now().time()
         meeting.meeting_date = timezone.now().date() - datetime.timedelta(days=1)
@@ -493,10 +493,10 @@ class TestSignupModels(TestCase):
 
         mail.outbox = []
 
-        last_meeting = sg.studygroupmeeting_set.active().order_by('meeting_date', 'meeting_time').last()
+        last_meeting = sg.meeting_set.active().order_by('meeting_date', 'meeting_time').last()
         self.assertEqual(last_meeting.meeting_date, datetime.date(2010, 2, 5))
         self.assertEqual(last_meeting.meeting_time, datetime.time(18,0))
-        self.assertEqual(sg.studygroupmeeting_set.active().count(), 6)
+        self.assertEqual(sg.meeting_set.active().count(), 6)
         self.assertEqual(sg.application_set.active().count(), 2)
 
         # freeze time to 5 minutes before
@@ -536,10 +536,10 @@ class TestSignupModels(TestCase):
         sg = StudyGroup.objects.get(pk=1)
         generate_all_meetings(sg)
     
-        last_meeting = sg.studygroupmeeting_set.active().order_by('meeting_date', 'meeting_time').last()
+        last_meeting = sg.meeting_set.active().order_by('meeting_date', 'meeting_time').last()
         self.assertEqual(last_meeting.meeting_date, datetime.date(2010, 2, 5))
         self.assertEqual(last_meeting.meeting_time, datetime.time(18,0))
-        self.assertEqual(sg.studygroupmeeting_set.active().count(), 6)
+        self.assertEqual(sg.meeting_set.active().count(), 6)
         self.assertEqual(Reminder.objects.all().count(), 0)
 
         # freeze time to 2 days before last meeting
@@ -562,10 +562,10 @@ class TestSignupModels(TestCase):
         sg = StudyGroup.objects.get(pk=1)
         generate_all_meetings(sg)
     
-        last_meeting = sg.studygroupmeeting_set.active().order_by('meeting_date', 'meeting_time').last()
+        last_meeting = sg.meeting_set.active().order_by('meeting_date', 'meeting_time').last()
         self.assertEqual(last_meeting.meeting_date, datetime.date(2010, 2, 5))
         self.assertEqual(last_meeting.meeting_time, datetime.time(18,0))
-        self.assertEqual(sg.studygroupmeeting_set.active().count(), 6)
+        self.assertEqual(sg.meeting_set.active().count(), 6)
         self.assertEqual(Reminder.objects.all().count(), 0)
 
         # freeze time to 6 days after last

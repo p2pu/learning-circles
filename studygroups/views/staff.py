@@ -108,7 +108,7 @@ class ExportFacilitatorsView(ListView):
 class ExportStudyGroupsView(ListView):
 
     def get_queryset(self):
-        return StudyGroup.objects.active().prefetch_related('course', 'facilitator', 'studygroupmeeting_set')
+        return StudyGroup.objects.active().prefetch_related('course', 'facilitator', 'meeting_set')
 
     def csv(self, **kwargs):
         response = http.HttpResponse(content_type="text/csv")
@@ -139,8 +139,8 @@ class ExportStudyGroupsView(ListView):
                 sg.meeting_time,
                 sg.day(),
             ] 
-            if sg.studygroupmeeting_set.active().last():
-                data += [sg.studygroupmeeting_set.active().order_by('meeting_date', 'meeting_time').last().meeting_date]
+            if sg.meeting_set.active().last():
+                data += [sg.meeting_set.active().order_by('meeting_date', 'meeting_time').last().meeting_date]
             else:
                 data += ['']
                 
