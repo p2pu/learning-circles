@@ -74,4 +74,22 @@ export const LC_DEFAULTS = {
 export const EXTERNAL_APIS = {
   algolia: 'https://places-dsn.algolia.net/1/places',
   geonames: 'https://secure.geonames.org'
-}
+};
+
+export const KANSAS_CITY_OPTION = {
+  label: 'Kansas City, Missouri, United States of America',
+  value: {
+    administrative: ['Missouri'],
+    country: {
+      default: 'United States of America'
+    },
+    locale_names: {
+      default: ['Kansas City']
+    },
+    _geoloc: {
+      lat: 39.099722,
+      lng: -94.578333
+    }
+  }
+};
+

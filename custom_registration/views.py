@@ -106,10 +106,10 @@ class AjaxLoginView(View):
 class WhoAmIView(View):
     def get(self, request):
         user_data = {
-            "user": "anonymous", 
+            "user": "anonymous",
         }
         if request.user.is_authenticated():
-            user_data["user"] = request.user.first_name + ' ' + request.user.last_name
+            user_data["user"] = request.user.first_name
             user_data["links"] = [
                 {"text": "My learning circles", "url": reverse('studygroups_facilitator')},
                 {"text": "Log out", "url": reverse('logout')},
@@ -152,7 +152,7 @@ class EmailConfirmView(View):
                 url = reverse('studygroups_login_redirect')
                 return HttpResponseRedirect(url)
 
-                
+
             if check_user_token(user, token):
                 # Set email address to confirmed in profile
                 if user.profile.email_confirmed_at != None:
