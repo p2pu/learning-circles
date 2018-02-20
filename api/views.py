@@ -1,7 +1,6 @@
 from django.core.urlresolvers import reverse
 from django.views import View
 from django.views.generic.edit import FormView
-from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.template.defaultfilters import slugify

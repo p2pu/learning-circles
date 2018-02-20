@@ -1,7 +1,6 @@
 from django import http
 from django.views import View
 from django.urls import reverse, reverse_lazy
-from django.views.decorators.csrf import csrf_exempt
 from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_text
