@@ -9,8 +9,6 @@ import ApiHelper from '../helpers/ApiHelper'
 
 import {
   LC_PUBLISHED_PAGE,
-  LC_SAVED_DRAFT_PAGE,
-  API_ENDPOINTS,
   FACILITATOR_PAGE,
   LC_DEFAULTS,
   DESKTOP_BREAKPOINT
@@ -25,7 +23,7 @@ export default class CreateLearningCirclePage extends React.Component {
     super(props);
     this.state = {
       currentTab: 0,
-      learningCircle: LC_DEFAULTS,
+      learningCircle: !!this.props.learningCircle ? this.props.learningCircle : LC_DEFAULTS,
       showModal: false,
       showHelp: window.screen.width > DESKTOP_BREAKPOINT,
       user: this.props.user,
@@ -53,30 +51,7 @@ export default class CreateLearningCirclePage extends React.Component {
 
   componentDidMount() {
     const urlParams = new URL(window.location.href).searchParams;
-    const courseId = urlParams.get('course_id');
-    const learningCircleId = this.props.studygroup;
-
-    if (!!learningCircleId) {
-      const api = new ApiHelper('learningCircles');
-      const params = { id: learningCircleId }
-      const callback = (response, _opts) => {
-        const learningCircle = response.items[0];
-        if (!learningCircle) {
-          this.setState({
-            alert: {
-              show: true,
-              type: 'danger',
-              message: `There is no learning circle with the ID ${learningCircleId}.`
-            }
-          })
-        } else {
-          this.setState({ learningCircle })
-        }
-      }
-      const opts = { params, callback }
-
-      api.fetchResource(opts)
-    }
+    const courseId = !!this.props.learningCircle ? this.props.learningCircle.course : urlParams.get('course_id');
 
     if (!!courseId) {
       const api = new ApiHelper('courses');
@@ -92,7 +67,12 @@ export default class CreateLearningCirclePage extends React.Component {
             }
           })
         } else {
-          this.setState({ learningCircle: { course } })
+          this.setState({
+            learningCircle: {
+              ...this.state.learningCircle,
+              course
+            }
+          })
         }
       }
       const opts = { params, callback }

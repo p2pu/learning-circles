@@ -12,7 +12,7 @@ from django.core.mail import EmailMultiAlternatives, send_mail
 import random
 import string
 
-from studygroups.models import Facilitator
+from studygroups.models import Profile
 
 def create_user(email, first_name, last_name, password, mailing_list_signup):
     """ Create a new user using the email as the username  """
@@ -29,9 +29,9 @@ def create_user(email, first_name, last_name, password, mailing_list_signup):
     user.last_name = last_name
     user.save()
 
-    facilitator = Facilitator(user=user) 
-    facilitator.mailing_list_signup = mailing_list_signup
-    facilitator.save()
+    profile = Profile(user=user) 
+    profile.mailing_list_signup = mailing_list_signup
+    profile.save()
     return user
 
 
@@ -39,7 +39,7 @@ class EmailConfirmTokenGenerator(PasswordResetTokenGenerator):
     def _make_hash_value(self, user, timestamp):
         # Remove last login timestamp from hash and replace with date
         # that email address was confirmed 
-        confirm_timestamp = '' if user.facilitator.email_confirmed_at is None else user.facilitator.email_confirmed_at.replace(microsecond=0, tzinfo=None)
+        confirm_timestamp = '' if user.profile.email_confirmed_at is None else user.profile.email_confirmed_at.replace(microsecond=0, tzinfo=None)
         return (
             six.text_type(user.pk) + user.password + six.text_type(timestamp) +
             six.text_type(confirm_timestamp)
@@ -56,14 +56,14 @@ def check_user_token(user, token):
 
 
 def confirm_user_email(user):
-    user.facilitator.email_confirmed_at = timezone.now()
-    user.facilitator.save()
+    user.profile.email_confirmed_at = timezone.now()
+    user.profile.save()
 
 
 def send_email_confirm_email(user):
     context = {
         "user": user,
-        "profile": user.facilitator,
+        "profile": user.profile,
         "uid": urlsafe_base64_encode(force_bytes(user.pk)),
         "token": generate_user_token(user),
         "protocol": "https",

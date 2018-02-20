@@ -40,13 +40,10 @@ def _map_to_json(sg):
             "id": sg.course.pk,
             "title": sg.course.title,
             "provider": sg.course.provider,
-            "link": sg.course.link,
-            "caption": sg.course.caption
+            "link": sg.course.link
         },
         "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
         "venue": sg.venue_name,
-        "venue_name": sg.venue_name,
-        "venue_details": sg.venue_details,
         "venue_address": sg.venue_address + ", " + sg.city,
         "city": sg.city,
         "latitude": sg.latitude,
@@ -54,12 +51,6 @@ def _map_to_json(sg):
         "day": sg.day(),
         "start_date": sg.start_date,
         "meeting_time": sg.meeting_time,
-        "duration": sg.duration,
-        "description": sg.description,
-        "signup_question": sg.signup_question,
-        "venue_website": sg.venue_website,
-        "facilitator_goal": sg.facilitator_goal,
-        "facilitator_concerns": sg.facilitator_concerns,
         "time_zone": sg.timezone_display(),
         "end_time": sg.end_time(),
         "weeks": sg.studygroupmeeting_set.active().count(),
@@ -363,7 +354,7 @@ def _image_check():
 def _user_check(user):
     def _validate(value):
         if value == True:
-            if user.facilitator.email_confirmed_at == None:
+            if user.profile.email_confirmed_at == None:
                 return None, 'Users with unconfirmed email addresses cannot publish courses'
         return value, None
     return _validate
@@ -388,6 +379,7 @@ def _make_learning_circle_schema(request):
         "city": schema.text(required=True),
         "latitude": schema.floating_point(required=True),
         "longitude": schema.floating_point(required=True),
+        "place_id": schema.text(required=True),
         "start_date": schema.date(required=True),
         "weeks": schema.integer(required=True),
         "meeting_time": schema.time(required=True),
@@ -431,6 +423,7 @@ class LearningCircleCreateView(View):
             city=data.get('city'),
             latitude=data.get('latitude'),
             longitude=data.get('longitude'),
+            place_id=data.get('place_id'),
             start_date=data.get('start_date'),
             end_date=end_date,
             meeting_time=data.get('meeting_time'),
@@ -479,6 +472,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         study_group.city=data.get('city')
         study_group.latitude=data.get('latitude')
         study_group.longitude=data.get('longitude')
+        study_group.place_id=data.get('place_id')
         study_group.start_date=data.get('start_date')
         study_group.end_date=end_date
         study_group.meeting_time=data.get('meeting_time')

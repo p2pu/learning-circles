@@ -66,8 +66,8 @@ class TestLearningCircleApi(TestCase):
     def test_create_learning_circle_and_publish(self):
         c = Client()
         c.login(username='faci@example.net', password='password')
-        self.facilitator.facilitator.email_confirmed_at = timezone.now()
-        self.facilitator.facilitator.save()
+        self.facilitator.profile.email_confirmed_at = timezone.now()
+        self.facilitator.profile.save()
         data = {
             "course": 3,
             "description": "Lets learn something",

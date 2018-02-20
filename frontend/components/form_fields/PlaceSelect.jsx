@@ -18,7 +18,7 @@ export default class PlaceSelect extends Component {
   }
 
   componentWillMount() {
-    if (!!this.props.placeObjectId) {
+    if (!!this.props.place_id) {
       this.fetchPlaceById();
     }
   }
@@ -28,7 +28,7 @@ export default class PlaceSelect extends Component {
       city: selected.value.locale_names.default[0],
       latitude: selected.value._geoloc.lat,
       longitude: selected.value._geoloc.lng,
-      placeObjectId: selected.value.objectID,
+      place_id: selected.value.objectID,
     }
 
     this.props.handleSelect(cityData)
@@ -55,7 +55,7 @@ export default class PlaceSelect extends Component {
   }
 
   _fetchPlaceById() {
-    const url = `${EXTERNAL_APIS.algolia}/${this.props.placeObjectId}`;
+    const url = `${EXTERNAL_APIS.algolia}/${this.props.place_id}`;
 
     axios.get(url)
       .then(res => {

@@ -6,7 +6,6 @@ import DatePickerWithLabel from '../form_fields/DatePickerWithLabel';
 import TimeZoneSelect from '../form_fields/TimeZoneSelect';
 
 const DayTimeSection = (props) => {
-
   return (
     <div>
       <DatePickerWithLabel

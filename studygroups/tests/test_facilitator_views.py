@@ -12,7 +12,6 @@ from studygroups.models import Course
 from studygroups.models import StudyGroup
 from studygroups.models import StudyGroupMeeting
 from studygroups.models import Application
-from studygroups.models import Facilitator
 from studygroups.models import Rsvp
 from studygroups.models import Team
 from studygroups.models import TeamMembership

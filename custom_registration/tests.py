@@ -11,7 +11,7 @@ from mock import patch
 import re
 import json
 
-from studygroups.models import Facilitator
+from studygroups.models import Profile
 
 
 """
@@ -34,8 +34,8 @@ class TestCustomRegistrationViews(TestCase):
         self.assertRedirects(resp, '/en/facilitator/')
         users = User.objects.filter(email__iexact=data['email'])
         self.assertEquals(users.count(), 1)
-        facilitator = Facilitator.objects.get(user=users.first())
-        self.assertEquals(facilitator.mailing_list_signup, True)
+        profile = Profile.objects.get(user=users.first())
+        self.assertEquals(profile.mailing_list_signup, True)
         self.assertTrue(add_member_to_list.called)
         self.assertEquals(len(mail.outbox), 1) ##
         self.assertIn('Please confirm your email address', mail.outbox[0].subject)
@@ -57,8 +57,8 @@ class TestCustomRegistrationViews(TestCase):
         resp = c.post('/en/accounts/register/', data)
         users = User.objects.filter(username__iexact=data['email'])
         self.assertEquals(users.count(), 1)
-        facilitator = Facilitator.objects.get(user=users.first())
-        self.assertFalse(facilitator.mailing_list_signup)
+        profile = Profile.objects.get(user=users.first())
+        self.assertFalse(profile.mailing_list_signup)
         self.assertFalse(add_member_to_list.called)
         self.assertEquals(len(mail.outbox), 1)
         self.assertIn('Please confirm your email', mail.outbox[0].subject)
@@ -133,7 +133,7 @@ class TestCustomRegistrationViews(TestCase):
         )
         bob = User.objects.get(email=data['email'])
         self.assertEqual(bob.first_name, 'Bob')
-        self.assertEqual(bob.facilitator.mailing_list_signup, False)
+        self.assertEqual(bob.profile.mailing_list_signup, False)
         # make sure email confirmation email was sent
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn(data['email'], mail.outbox[0].to)
@@ -169,7 +169,7 @@ class TestCustomRegistrationViews(TestCase):
         self.assertIn(user.email, mail.outbox[0].to)
         self.assertEqual(mail.outbox[0].subject, 'Please confirm your email address')
         bob = User.objects.get(email=user.email)
-        self.assertEquals(bob.facilitator.email_confirmed_at, None)
+        self.assertEquals(bob.profile.email_confirmed_at, None)
 
 
     def test_email_address_confirm(self):
@@ -189,7 +189,7 @@ class TestCustomRegistrationViews(TestCase):
         )
         self.assertEqual(len(mail.outbox), 1)
         bob = User.objects.get(email=data['email'])
-        self.assertEquals(bob.facilitator.email_confirmed_at, None)
+        self.assertEquals(bob.profile.email_confirmed_at, None)
 
         # get email confirmation URL
         match = re.search(r'/en/accounts/email_confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/', mail.outbox[0].body)
@@ -198,6 +198,6 @@ class TestCustomRegistrationViews(TestCase):
         res = c.get(confirm_url)
         self.assertRedirects(res, '/en/facilitator/')
         bob = User.objects.get(email=data['email'])
-        self.assertNotEquals(bob.facilitator.email_confirmed_at, None)
+        self.assertNotEquals(bob.profile.email_confirmed_at, None)
 
 

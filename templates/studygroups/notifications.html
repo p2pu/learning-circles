@@ -1,6 +1,6 @@
 {% load i18n %}
 
-{% if user.facilitator.email_confirmed_at %}{% else %}
+{% if user.profile.email_confirmed_at %}{% else %}
   <div class="alert alert-warning">
     <p>{% blocktrans %}You need to confirm your email address before you will be able to publish learning circles. If you haven't received an email, click the button below to request a new confirmation email.{% endblocktrans %}</p>
     <p><form action="{% url 'email_confirm_request' %}" method="POST">

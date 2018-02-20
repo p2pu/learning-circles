@@ -30,7 +30,6 @@ import json
 
 
 from studygroups.models import Activity
-from studygroups.models import Facilitator
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 from studygroups.models import StudyGroup
@@ -49,38 +48,7 @@ from studygroups.models import send_reminder
 from studygroups.models import get_study_group_organizers
 from studygroups.decorators import user_is_group_facilitator
 
-
 import string, random
-
-def _map_to_json(sg):
-    data = {
-        "course": {
-            "id": sg.course.pk,
-            "title": sg.course.title,
-            "provider": sg.course.provider,
-            "link": sg.course.link
-        },
-        "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
-        "venue": sg.venue_name,
-        "venue_address": sg.venue_address + ", " + sg.city,
-        "city": sg.city,
-        "latitude": sg.latitude,
-        "longitude": sg.longitude,
-        "day": sg.day(),
-        "start_date": sg.start_date,
-        "meeting_time": sg.meeting_time,
-        "time_zone": sg.timezone_display(),
-        "end_time": sg.end_time(),
-        "weeks": sg.studygroupmeeting_set.active().count(),
-        "url": settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
-    }
-    if sg.image:
-        data["image_url"] = settings.DOMAIN + sg.image.url
-    # TODO else set default image URL
-    if hasattr(sg, 'next_meeting_date'):
-        data["next_meeting_date"] = sg.next_meeting_date
-    return data
-
 
 @login_required
 def login_redirect(request):
@@ -120,7 +88,8 @@ def view_study_group(request, study_group_id):
 
     context = {
         'study_group': study_group,
-        'today': timezone.now()
+        'activities': Activity.objects.all().order_by('index'),
+        'today': timezone.now(),
     }
     return render(request, 'studygroups/view_study_group.html', context)
 
@@ -135,30 +104,36 @@ class FacilitatorRedirectMixin(object):
         return reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
 
 
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class MeetingCreate(FacilitatorRedirectMixin, CreateView):
     model = StudyGroupMeeting
     form_class = StudyGroupMeetingForm
 
     def get_initial(self):
-        study_group = get_object_or_404(StudyGroup, pk=self.kwargs.get('study_group_id'))
+        study_group_id = self.kwargs.get('study_group_id')
+        study_group = get_object_or_404(StudyGroup, pk=study_group_id)
         return {
             'study_group': study_group,
         }
 
 
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class MeetingUpdate(FacilitatorRedirectMixin, UpdateView):
     model = StudyGroupMeeting
     form_class = StudyGroupMeetingForm
 
 
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class MeetingDelete(FacilitatorRedirectMixin, DeleteView):
     model = StudyGroupMeeting
 
 
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class FeedbackDetail(FacilitatorRedirectMixin, DetailView):
     model = Feedback
 
 
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
     model = Feedback
     form_class = FeedbackForm
@@ -191,12 +166,14 @@ class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
         return super(FeedbackCreate, self).form_valid(form)
 
 
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class ApplicationDelete(FacilitatorRedirectMixin, DeleteView):
     model = Application
     success_url = reverse_lazy('studygroups_facilitator')
     template_name = 'studygroups/confirm_delete.html'
 
 
+@method_decorator(login_required, name="dispatch")
 class CourseCreate(CreateView):
     """ View used by organizers and facilitators """
     model = Course
@@ -285,6 +262,7 @@ class CourseUpdate(UpdateView):
 
 
 ## This form is used by facilitators
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class StudyGroupUpdate(FacilitatorRedirectMixin, UpdateView):
     model = StudyGroup
     form_class =  StudyGroupForm
@@ -294,10 +272,10 @@ class StudyGroupUpdate(FacilitatorRedirectMixin, UpdateView):
         study_group = self.get_object()
         context = super(StudyGroupUpdate, self).get_context_data(**kwargs)
         context['hide_footer'] = True
-        context['studygroup'] = study_group.id
         return context
 
 
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class StudyGroupDelete(FacilitatorRedirectMixin, DeleteView):
     # TODO Need to fix back link for confirmation page
     model = StudyGroup
@@ -305,6 +283,7 @@ class StudyGroupDelete(FacilitatorRedirectMixin, DeleteView):
     pk_url_kwarg = 'study_group_id'
 
 
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class StudyGroupToggleSignup(RedirectView, SingleObjectMixin):
     model = StudyGroup
     pk_url_kwarg = 'study_group_id'
@@ -332,7 +311,7 @@ class StudyGroupPublish(SingleObjectMixin, View):
 
     def post(self, request, *args, **kwargs):
         study_group = self.get_object()
-        profile = study_group.facilitator.facilitator
+        profile = study_group.facilitator.profile
         if profile.email_confirmed_at is None:
             messages.warning(self.request, _("You need to confirm your email address before you can publish a learning circle."));
         else:

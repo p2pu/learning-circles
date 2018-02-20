@@ -106,7 +106,7 @@ class Activity(models.Model):
 
 
 # TODO rename to Profile and move to custom_registration/models.py
-class Facilitator(models.Model):
+class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     mailing_list_signup = models.BooleanField(default=False)
     email_confirmed_at = models.DateTimeField(null=True, blank=True)
@@ -179,6 +179,7 @@ class StudyGroup(LifeTimeTrackingModel):
     city = models.CharField(max_length=256)
     latitude = models.DecimalField(max_digits=8, decimal_places=6, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    place_id = models.CharField(max_length=256)
     facilitator = models.ForeignKey(User, on_delete=models.CASCADE)
     start_date = models.DateField()
     meeting_time = models.TimeField()
@@ -230,17 +231,31 @@ class StudyGroup(LifeTimeTrackingModel):
     def to_dict(self):
         sg = self  # TODO
         data = {
+            "course": sg.course.id,
             "course_title": sg.course.title,
+            "description": sg.description,
+            "venue_name": sg.venue_name,
+            "venue_details": sg.venue_details,
+            "venue_address": sg.venue_address,
+            "venue_website": sg.venue_website,
+            "city": sg.city,
+            "latitude": sg.latitude,
+            "longitude": sg.longitude,
+            "place_id": sg.place_id,
+            "start_date": sg.start_date,
+            "weeks": sg.studygroupmeeting_set.active().count(),
+            "meeting_time": sg.meeting_time.strftime('%H:%M'),
+            "duration": sg.duration,
+            "timezone": sg.timezone,
+            "timezone_display": sg.timezone_display(),
+            "signup_question": sg.signup_question,
+            "facilitator_goal": sg.facilitator_goal,
+            "facilitator_concerns": sg.facilitator_concerns,
+            "day": sg.day(),
+            "end_time": sg.end_time(),
             "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
             "signup_count": sg.application_set.count(),
-            "venue": sg.venue_name,
-            "venue_address": sg.venue_address + ", " + sg.city,
-            "day": sg.day(),
-            "start_date": sg.start_date,
-            "meeting_time": sg.meeting_time,
-            "time_zone": sg.timezone_display(),
-            "end_time": sg.end_time(),
-            "weeks": sg.studygroupmeeting_set.active().count(),
+
             "url": reverse('studygroups_view_study_group', args=(sg.id,)),
             "signup_url": reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
         }
@@ -248,7 +263,7 @@ class StudyGroup(LifeTimeTrackingModel):
         if next_meeting:
             data['next_meeting_date'] = next_meeting.meeting_date
         if sg.image:
-            data["image_url"] = "https://learningcircles.p2pu.org" + sg.image.url
+            data["image_url"] = sg.image.url
         return data
 
     def to_json(self):
@@ -291,9 +306,9 @@ class Application(LifeTimeTrackingModel):
     }
 
     DIGITAL_LITERACY_CHOICES = (
-        ('0', _(u'Can\'t do')), 
+        ('0', _(u'Can\'t do')),
         ('1', _(u'Need help doing')),
-        ('2', _(u'Can do with difficulty')), 
+        ('2', _(u'Can do with difficulty')),
         ('3', _(u'Can do')),
         ('4', _(u'Expert (can teach others)')),
     )
@@ -448,7 +463,7 @@ def generate_reminder(study_group):
             reminder = Reminder()
             reminder.study_group = study_group
             reminder.study_group_meeting = next_meeting
-            context = { 
+            context = {
                 'study_group': study_group,
                 'next_meeting': next_meeting,
                 'reminder': reminder,
@@ -727,7 +742,7 @@ def send_weekly_update():
         html_body = render_to_string('studygroups/email/weekly-update.html', report_context)
         text_body = render_to_string('studygroups/email/weekly-update.txt', report_context)
         timezone.deactivate()
- 
+
         to = [o.user.email for o in team.teammembership_set.filter(role=TeamMembership.ORGANIZER)]
         # TODO, extract this to make delegating to celery in the future easier
         update = EmailMultiAlternatives(
@@ -742,12 +757,12 @@ def send_weekly_update():
     # send weekly update to staff
     report_context = report_data(start_time, end_time)
     report_context.update(context)
-    timezone.activate(pytz.timezone(settings.TIME_ZONE)) 
+    timezone.activate(pytz.timezone(settings.TIME_ZONE))
     translation.activate(settings.LANGUAGE_CODE)
     html_body = render_to_string('studygroups/email/weekly-update.html', report_context)
     text_body = render_to_string('studygroups/email/weekly-update.txt', report_context)
     timezone.deactivate()
- 
+
     to = [o.email for o in User.objects.filter(is_staff=True)]
     update = EmailMultiAlternatives(
         _('Weekly Learning Circles update'),
@@ -771,7 +786,7 @@ def send_new_facilitator_email(facilitator):
     text_body = render_to_string('studygroups/email/new_facilitator_update.txt', context)
     timezone.deactivate()
     to = [facilitator.email]
- 
+
     msg = EmailMultiAlternatives(subject, text_body, settings.SERVER_EMAIL, to)
     msg.attach_alternative(html_body, 'text/html')
     msg.send()
@@ -789,7 +804,7 @@ def send_new_studygroup_email(studygroup):
     text_body = render_to_string('studygroups/email/new_studygroup_update.txt', context)
     timezone.deactivate()
     to = [studygroup.facilitator.email]
- 
+
     msg = EmailMultiAlternatives(subject, text_body, settings.SERVER_EMAIL, to)
     msg.attach_alternative(html_body, 'text/html')
     msg.send()
@@ -806,7 +821,7 @@ def send_team_invitation_email(team, email, organizer):
     }
 
     if user_qs.count() == 0:
-        # invite user to join 
+        # invite user to join
         subject = render_to_string('studygroups/email/new_facilitator_invite-subject.txt', context).strip('\n')
         html_body = render_to_string('studygroups/email/new_facilitator_invite.html', context)
         text_body = render_to_string('studygroups/email/new_facilitator_invite.txt', context)
@@ -818,7 +833,7 @@ def send_team_invitation_email(team, email, organizer):
 
     to = [email]
     from_ = organizer.email
- 
+
     msg = EmailMultiAlternatives(subject, text_body, from_, to)
     msg.attach_alternative(html_body, 'text/html')
     msg.send()

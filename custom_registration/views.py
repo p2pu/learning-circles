@@ -155,7 +155,7 @@ class EmailConfirmView(View):
                 
             if check_user_token(user, token):
                 # Set email address to confirmed in profile
-                if user.facilitator.email_confirmed_at != None:
+                if user.profile.email_confirmed_at != None:
                     # redirect user to login page
                     # NB! Don't log user in, since link could have leaked and hash isn't gauranteed to change after the user confirms their email address
                     messages.success(self.request, _('Your email address has been already been confirmed.'))

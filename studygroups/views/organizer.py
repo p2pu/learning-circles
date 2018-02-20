@@ -20,7 +20,6 @@ from studygroups.models import Course
 from studygroups.models import StudyGroup
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
-from studygroups.models import Facilitator
 from studygroups.models import StudyGroupMeeting
 from studygroups.models import report_data
 from studygroups.models import generate_all_meetings
@@ -43,7 +42,7 @@ def organize(request):
     two_weeks_ago = today - datetime.timedelta(weeks=2, days=today.weekday())
     two_weeks = today - datetime.timedelta(days=today.weekday()) + datetime.timedelta(weeks=3)
     study_groups = StudyGroup.objects.published()
-    facilitators = Facilitator.objects.all()  # TODO rather use User model
+    facilitators = User.objects.all()
     courses = []  # TODO Remove courses until we implement course selection for teams
     team = None
     invitations = []
@@ -78,7 +77,7 @@ def organize_team(request, team_id):
     members = team.teammembership_set.values('user')
     team_users = User.objects.filter(pk__in=members)
     study_groups = StudyGroup.objects.published().filter(facilitator__in=team_users)
-    facilitators = Facilitator.objects.filter(user__in=team_users)
+    facilitators = team_users
     invitations = TeamInvitation.objects.filter(team=team, responded_at__isnull=True)
     active_study_groups = study_groups.filter(
         id__in=StudyGroupMeeting.objects.active().filter(meeting_date__gte=two_weeks_ago).values('study_group')
@@ -99,6 +98,7 @@ def organize_team(request, team_id):
     return render(request, 'studygroups/organize.html', context)
 
 
+@method_decorator(user_is_organizer, name='dispatch')
 class StudyGroupList(ListView):
     model = StudyGroup
 
@@ -110,6 +110,7 @@ class StudyGroupList(ListView):
         return study_groups
 
 
+@method_decorator(user_is_organizer, name='dispatch')
 class StudyGroupMeetingList(ListView):
     model = StudyGroupMeeting
 
@@ -123,6 +124,7 @@ class StudyGroupMeetingList(ListView):
         return meetings
 
 
+@method_decorator(user_is_organizer, name='dispatch')
 class TeamMembershipDelete(DeleteView):
     model = TeamMembership
     success_url = reverse_lazy('studygroups_organize')
@@ -134,18 +136,16 @@ class TeamMembershipDelete(DeleteView):
         return queryset.get(user_id=self.kwargs.get('user_id'), team_id=self.kwargs.get('team_id'))
 
 
+@method_decorator(user_is_organizer, name='dispatch')
 class CourseDelete(DeleteView):
     model = Course
     success_url = reverse_lazy('studygroups_organize')
     template_name = 'studygroups/confirm_delete.html'
 
 
+@method_decorator(csrf_exempt, name='dispatch') #TODO need to send CSRF token in header
+@method_decorator(user_is_team_organizer, name='dispatch')
 class TeamInvitationCreate(View):
-
-    @method_decorator(csrf_exempt)
-    @method_decorator(user_is_team_organizer)
-    def dispatch(self, *args, **kwargs):
-        return super(TeamInvitationCreate, self).dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         team = Team.objects.get(pk=self.kwargs.get('team_id'))
