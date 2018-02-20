@@ -20,6 +20,7 @@ from studygroups.rsvp import gen_rsvp_querystring
 
 import datetime
 import urllib
+import json
 
 """
 Tests for when a learner interacts with the system. IOW:
@@ -55,6 +56,27 @@ class TestLearnerViews(TestCase):
         self.assertEquals(Application.objects.active().count(), 1)
         # Make sure notification was sent 
         self.assertEqual(len(mail.outbox), 1)
+
+
+    def test_submit_application_sg_with_custom_q(self):
+        study_group = StudyGroup.objects.get(pk=1)
+        study_group.signup_question = 'how do you do?'
+        study_group.save()
+        c = Client()
+        data = self.APPLICATION_DATA.copy()
+        resp = c.post('/en/signup/foo-bob-1/', data)
+        self.assertEquals(resp.status_code, 200)
+        self.assertEquals(Application.objects.active().count(), 0)
+        self.assertEqual(len(mail.outbox), 0)
+        
+        data['custom_question'] = 'an actual answer'
+        resp = c.post('/en/signup/foo-bob-1/', data)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEquals(Application.objects.active().count(), 1)
+        # Make sure notification was sent 
+        self.assertEqual(len(mail.outbox), 1)
+        signup_questions = json.loads(Application.objects.last().signup_questions)
+        self.assertEqual(signup_questions['custom_question'], 'an actual answer')
 
 
     def test_update_application(self):

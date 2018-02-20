@@ -82,11 +82,20 @@ class ApplicationForm(forms.ModelForm):
         if study_group and study_group.country == 'United States of America':
             self.fields['mobile'].help_text += ' Ex. +1 281-234-5678'
 
+        # add custom signup question if the facilitator specified one
+        if study_group.signup_question:
+            self.fields['custom_question'] = forms.CharField(label=study_group.signup_question)
+            self.helper.layout.insert(len(self.helper.layout),'custom_question')
+
     def save(self, commit=True):
         signup_questions = {}
         questions = ['computer_access', 'goals', 'support', 'use_internet']
         for question in questions:
             signup_questions[question] = self.cleaned_data[question]
+
+        # add custom signup question to signup_questions if the facilitator specified one
+        if self.instance.study_group.signup_question:
+            signup_questions['custom_question'] = self.cleaned_data['custom_question']
         self.instance.signup_questions = json.dumps(signup_questions)
         return super(ApplicationForm, self).save(commit)
 
