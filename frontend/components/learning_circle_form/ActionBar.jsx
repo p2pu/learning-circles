@@ -13,14 +13,14 @@ const BackButton = (props) => (
 )
 
 const PublishButton = (props) => (
-  <button className="p2pu-btn orange" onClick={props.onClick}>
+  <button className="p2pu-btn orange publish" onClick={props.onClick}>
     Publish
   </button>
 )
 
 const SaveButton = (props) => (
-  <button className="p2pu-btn yellow" onClick={props.onClick}>
-    Save
+  <button className="p2pu-btn yellow save" onClick={props.onClick}>
+    Save & publish later
   </button>
 )
 
@@ -43,7 +43,7 @@ const ActionBar = (props) => {
         <BackButton onClick={prevTab} />
         <CancelButton onClick={props.onCancel} />
         <SaveButton onClick={props.onSubmitForm} />
-        <PublishButton onClick={() => props.onSubmitForm(true)} />
+        <PublishButton onClick={() => props.updateFormData({ published: true}, props.onSubmitForm)} />
       </div>
     )
   }

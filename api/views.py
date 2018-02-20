@@ -106,6 +106,10 @@ class LearningCircleListView(View):
 
         study_groups = StudyGroup.objects.published().order_by('id')
 
+        if 'id' in request.GET:
+            id = request.GET.get('id')
+            study_groups = StudyGroup.objects.filter(pk=int(id))
+
         if 'q' in request.GET:
             q = request.GET.get('q')
             study_groups = study_groups.annotate(
@@ -375,6 +379,7 @@ def _make_learning_circle_schema(request):
         "city": schema.text(required=True),
         "latitude": schema.floating_point(required=True),
         "longitude": schema.floating_point(required=True),
+        "place_id": schema.text(required=True),
         "start_date": schema.date(required=True),
         "weeks": schema.integer(required=True),
         "meeting_time": schema.time(required=True),
@@ -418,6 +423,7 @@ class LearningCircleCreateView(View):
             city=data.get('city'),
             latitude=data.get('latitude'),
             longitude=data.get('longitude'),
+            place_id=data.get('place_id'),
             start_date=data.get('start_date'),
             end_date=end_date,
             meeting_time=data.get('meeting_time'),
@@ -466,6 +472,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         study_group.city=data.get('city')
         study_group.latitude=data.get('latitude')
         study_group.longitude=data.get('longitude')
+        study_group.place_id=data.get('place_id')
         study_group.start_date=data.get('start_date')
         study_group.end_date=end_date
         study_group.meeting_time=data.get('meeting_time')

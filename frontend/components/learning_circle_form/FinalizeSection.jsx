@@ -1,7 +1,5 @@
 import React from 'react'
 import TextareaWithLabel from '../form_fields/TextareaWithLabel'
-import InputWithLabel from '../form_fields/InputWithLabel'
-import ImageUploader from '../form_fields/ImageUploader'
 
 const FinalizeSection = (props) => {
   const handleImageUpload = (pictures) => {
@@ -10,16 +8,16 @@ const FinalizeSection = (props) => {
 
   return (
     <div>
-      <InputWithLabel
-        label={'What is your personal goal in facilitating this learning circle?'}
+      <TextareaWithLabel
+        label={'What are your personal goals as you facilitate this learning circle?'}
         value={props.learningCircle.facilitator_goal || ''}
         handleChange={props.updateFormData}
         name={'facilitator_goal'}
         id={'id_facilitator_goal'}
         errorMessage={props.errors.facilitator_goal}
       />
-      <InputWithLabel
-        label={'What concerns do you have about the learning circle? Is there anything specific that you want feedback on before you get started?'}
+      <TextareaWithLabel
+        label={'What questions or concerns do you have about the learning circle? Is there anything that you want feedback on before you get started?'}
         value={props.learningCircle.facilitator_concerns || ''}
         handleChange={props.updateFormData}
         name={'facilitator_concerns'}

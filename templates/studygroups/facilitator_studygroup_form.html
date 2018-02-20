@@ -1,19 +1,12 @@
 {% extends 'base.html' %}
 {% load render_bundle from webpack_loader %}
-{% load crispy_forms_tags %}
 {% load static %}
 {% load i18n %}
 
 {% block content %}
-<div id='create-learning-circle-form' data-user="{{ request.user }}" data-crsfToken="{{ crsf_token }}">
+<div id='create-learning-circle-form' data-user="{{ request.user }}">
   <div class="loader"></div>
 </div>
-{% endblock %}
-
-{% block css %}
-  <link type="text/css" rel="stylesheet" href="{% static 'css/datepicker.css' %}" charset="utf-8">
-  <link type="text/css" rel="stylesheet" href="{% static 'css/jquery.timepicker.css' %}" charset="utf-8">
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
 {% endblock %}
 
 

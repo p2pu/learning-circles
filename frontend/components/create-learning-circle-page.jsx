@@ -9,8 +9,6 @@ import ApiHelper from '../helpers/ApiHelper'
 
 import {
   LC_PUBLISHED_PAGE,
-  LC_SAVED_DRAFT_PAGE,
-  API_ENDPOINTS,
   FACILITATOR_PAGE,
   LC_DEFAULTS,
   DESKTOP_BREAKPOINT
@@ -25,7 +23,7 @@ export default class CreateLearningCirclePage extends React.Component {
     super(props);
     this.state = {
       currentTab: 0,
-      learningCircle: LC_DEFAULTS,
+      learningCircle: !!this.props.learningCircle ? this.props.learningCircle : LC_DEFAULTS,
       showModal: false,
       showHelp: window.screen.width > DESKTOP_BREAKPOINT,
       user: this.props.user,
@@ -33,14 +31,13 @@ export default class CreateLearningCirclePage extends React.Component {
       alert: { show: false }
     };
     this.changeTab = (tab) => this._changeTab(tab);
-    this.onSubmitForm = () => this._onSubmitForm();
+    this.onSubmitForm = (val) => this._onSubmitForm(val);
     this.onCancel = () => this._onCancel();
-    this.onSaveDraft = () => this._onSaveDraft();
     this.toggleHelp = () => this._toggleHelp();
     this.showModal = () => this._showModal();
     this.closeModal = () => this._closeModal();
     this.closeAlert = () => this._closeAlert();
-    this.updateFormData = (data) => this._updateFormData(data);
+    this.updateFormData = (data, cb) => this._updateFormData(data, cb);
     this.registerUser = () => this._registerUser();
     this.onLogin = (user) => this._onLogin(user);
     this.allTabs = {
@@ -53,22 +50,30 @@ export default class CreateLearningCirclePage extends React.Component {
   }
 
   componentDidMount() {
-    window.addEventListener('beforeunload', (e) => {
-      if (!!Object.keys(this.state.learningCircle).length) {
-        const dialogText = 'You have unsaved data on this page. Are you sure you want to leave?'
-        e.returnValue = dialogText;
-        return dialogText;
-      }
-    });
-
     const urlParams = new URL(window.location.href).searchParams;
-    const courseId = urlParams.get('course_id');
+    const courseId = !!this.props.learningCircle ? this.props.learningCircle.course : urlParams.get('course_id');
 
     if (!!courseId) {
       const api = new ApiHelper('courses');
       const params = { course_id: courseId }
       const callback = (response, _opts) => {
-        this.setState({ learningCircle: { course: response.items[0] } })
+        const course = response.items[0];
+        if (!course) {
+          this.setState({
+            alert: {
+              show: true,
+              type: 'danger',
+              message: `There is no course with the ID ${courseId}.`
+            }
+          })
+        } else {
+          this.setState({
+            learningCircle: {
+              ...this.state.learningCircle,
+              course
+            }
+          })
+        }
       }
       const opts = { params, callback }
 
@@ -76,13 +81,13 @@ export default class CreateLearningCirclePage extends React.Component {
     }
   }
 
-  _updateFormData(data) {
+  _updateFormData(data, callback=null) {
     this.setState({
       learningCircle: {
         ...this.state.learningCircle,
         ...data
       }
-    })
+    }, callback)
   }
 
   _toggleHelp() {
@@ -106,12 +111,11 @@ export default class CreateLearningCirclePage extends React.Component {
     this.setState({ alert: { show: false }})
   }
 
-  _onSubmitForm(published=false) {
+  _onSubmitForm() {
     if (this.state.user) {
       const data = {
         ...this.state.learningCircle,
-        course: this.state.learningCircle.course.id,
-        ...published
+        course: this.state.learningCircle.course.id
       }
 
       const onSuccess = (data) => {
@@ -159,8 +163,8 @@ export default class CreateLearningCirclePage extends React.Component {
     window.location.href = FACILITATOR_PAGE;
   }
 
-  _onLogin(user, callback=null) {
-    this.setState({ user }, callback)
+  _onLogin(user) {
+    this.setState({ user }, this.onSubmitForm)
   }
 
   render() {
@@ -173,7 +177,7 @@ export default class CreateLearningCirclePage extends React.Component {
           {this.state.alert.message}
         </Alert>
         <div className='help-toggle' onClick={this.toggleHelp}>
-          <i className="material-icons">{ this.state.showHelp ? 'close' : 'info_outline' }</i>
+          <i className="material-icons">{ this.state.showHelp ? window.screen.width < DESKTOP_BREAKPOINT ? 'close' : 'exit_to_app' : 'info_outline' }</i>
           <small className='minicaps'>{ this.state.showHelp ? 'hide' : 'info' }</small>
         </div>
         <FormContainer
@@ -194,7 +198,6 @@ export default class CreateLearningCirclePage extends React.Component {
           closeModal={this.closeModal}
           user={this.props.user}
           onLogin={this.onLogin}
-          onSubmitForm={this.onSubmitForm}
         />
       </div>
     );

@@ -2,6 +2,15 @@ html {
   font-size: 100%;
 }
 
+button.p2pu-btn {
+  margin: 4px;
+  padding: 0.2em 1em;
+}
+
+.close {
+  color: #515665; /*gray-darker*/
+}
+
 .page-container {
   display: flex;
   font-size: 16px;
@@ -123,6 +132,7 @@ html {
     padding: 10px;
     background-color: #DAF7F4;
     box-shadow: 0px -2px 6px rgba(0,0,0,0.1);
+    flex-wrap: wrap;
 
     i {
       margin-left: 6px;
@@ -134,7 +144,7 @@ html {
     }
 
     button.p2pu-btn {
-      margin: 0 4px;
+      margin: 4px;
       padding: 0.2em 1em;
 
       &.transparent {

@@ -11,7 +11,8 @@ export const Step1 = () => (
         <li><span className="bold">What knowledge gaps exist?</span> Is there a lack of high school equivalency programming in your neighborhood? No good way to get an introduction to web design? Learning circles can be a great way to plug gaps between existing educational institutions.</li>
         <li><span className="bold">What do I want to learn?</span> If you choose something that you are passionate about, your enthusiasm will resonate with the whole group.</li>
       </ul>
-      <p>You can also <a href="/en/course/create/">add a course</a> if you have one in mind that's not in our library.</p>
+      <p>You can use a free course from anywhere on the web for your learning circle. If you don’t see one you like here, add a new one.</p>
+      <a href="/en/course/create/"><button className="p2pu-btn blue">add a course</button></a>
     </div>
   </div>
 )
@@ -64,8 +65,9 @@ export const Step4 = () => (
     <h4>Add the finishing touches</h4>
     <div className='content'>
       <ul>
-        <li>The welcome message will appear on the learning circle sign up page. You can include a bit about yourself, explain why you’re facilitating a learning circle, or tell participants anything else you think they should know before they sign up.</li>
-        <li>If there is any website you want to show learners, such as the homepage for the venue you are hosting the learning circle at, you can also add that here.</li>
+        <li>This is what your registration page will look like:</li>
+        <li>In the welcome message, include something about yourself, why you’re facilitating this learning circle, or anything else you want people to know when they sign up.</li>
+        <li>We’ll ask people for their contact information, goals for the learning circle, and whether they can bring their own laptop and headphones. If there is another question you want people to answer, you can include that. All of this information will be stored in your dashboard.</li>
         <li>Finally, make your learning circle stand out by uploading a picture or a .gif. It could be related to the location, subject matter, or anything else you want to identify your learning circle with!</li>
       </ul>
     </div>
@@ -76,7 +78,7 @@ export const Step5 = () => (
   <div className='help-text'>
     <h4>This is between us</h4>
     <div className='content'>
-      <p>This information won’t be visible to learning circle participants. We will share it with P2PU staff and other facilitators so that we can help you prepare for your learning circle.</p>
+      <p>This information won’t be visible to learning circle participants. We will share it with a group of P2PU staff and veteran facilitators who can give you feedback and help you prepare for your learning circle.</p>
     </div>
   </div>
 )

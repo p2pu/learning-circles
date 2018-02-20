@@ -23,6 +23,11 @@ from django.utils.decorators import method_decorator
 from django.db.models import Q
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
+from django.core import serializers
+from django.template.defaultfilters import slugify
+
+import json
+
 
 from studygroups.models import Activity
 from studygroups.models import TeamMembership
@@ -43,9 +48,7 @@ from studygroups.models import send_reminder
 from studygroups.models import get_study_group_organizers
 from studygroups.decorators import user_is_group_facilitator
 
-
 import string, random
-
 
 @login_required
 def login_redirect(request):
@@ -264,6 +267,12 @@ class StudyGroupUpdate(FacilitatorRedirectMixin, UpdateView):
     model = StudyGroup
     form_class =  StudyGroupForm
     pk_url_kwarg = 'study_group_id'
+
+    def get_context_data(self, **kwargs):
+        study_group = self.get_object()
+        context = super(StudyGroupUpdate, self).get_context_data(**kwargs)
+        context['hide_footer'] = True
+        return context
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
