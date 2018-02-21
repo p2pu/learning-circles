@@ -16,6 +16,7 @@ from django.contrib.postgres.search import SearchQuery
 
 import json
 import datetime
+import re
 
 
 from studygroups.decorators import user_is_group_facilitator

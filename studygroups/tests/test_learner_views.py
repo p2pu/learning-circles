@@ -36,7 +36,7 @@ class TestLearnerViews(TestCase):
         'name': 'Test User',
         'email': 'test@mail.com',
         'mobile': '',
-        'goals': 'try hard',
+        'goals': 'Personal interest',
         'support': 'thinking how to?',
         'computer_access': 'Both', 
         'use_internet': '2'
@@ -78,6 +78,19 @@ class TestLearnerViews(TestCase):
         signup_questions = json.loads(Application.objects.last().signup_questions)
         self.assertEqual(signup_questions['custom_question'], 'an actual answer')
 
+
+    def test_submit_application_with_other_goal(self):
+        c = Client()
+        data = self.APPLICATION_DATA.copy()
+        data['goals'] = 'Other'
+        data['goals_other'] = 'some goal'
+        resp = c.post('/en/signup/foo-bob-1/', data)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEquals(Application.objects.active().count(), 1)
+        # Make sure notification was sent 
+        self.assertEqual(len(mail.outbox), 1)
+        signup_questions = json.loads(Application.objects.last().signup_questions)
+        self.assertEqual(signup_questions['goals'], 'Other: some goal')
 
     def test_update_application(self):
         c = Client()
