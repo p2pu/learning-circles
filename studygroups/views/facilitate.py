@@ -309,6 +309,7 @@ class StudyGroupPublish(SingleObjectMixin, View):
         if profile.email_confirmed_at is None:
             messages.warning(self.request, _("You need to confirm your email address before you can publish a learning circle."));
         else:
+            messages.success(self.request, _("Your learning circle has been published."));
             study_group.draft = False
             study_group.save()
 
