@@ -231,6 +231,7 @@ class StudyGroup(LifeTimeTrackingModel):
     def to_dict(self):
         sg = self  # TODO
         data = {
+            "id": sg.pk,
             "course": sg.course.id,
             "course_title": sg.course.title,
             "description": sg.description,
@@ -255,7 +256,7 @@ class StudyGroup(LifeTimeTrackingModel):
             "end_time": sg.end_time(),
             "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
             "signup_count": sg.application_set.count(),
-
+            "draft": sg.draft,
             "url": reverse('studygroups_view_study_group', args=(sg.id,)),
             "signup_url": reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
         }

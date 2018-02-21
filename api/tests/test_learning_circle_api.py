@@ -85,7 +85,7 @@ class TestLearningCircleApi(TestCase):
             "duration": 50,
             "timezone": "UTC",
             "image": "/media/image.png",
-            "publish": True,
+            "draft": False,
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
@@ -127,7 +127,7 @@ class TestLearningCircleApi(TestCase):
             "duration": 50,
             "timezone": "UTC",
             "image": "/media/image.png",
-            "publish": True,
+            "draft": False,
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)

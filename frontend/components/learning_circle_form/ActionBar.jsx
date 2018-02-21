@@ -38,7 +38,7 @@ const ActionBar = (props) => {
   }
 
   if (props.currentTab === 4) {
-    if (props.learningCircle.published) {
+    if (!props.learningCircle.draft) {
       return (
         <div className='action-bar'>
           <BackButton onClick={prevTab} />
@@ -53,7 +53,7 @@ const ActionBar = (props) => {
         <BackButton onClick={prevTab} />
         <CancelButton onClick={props.onCancel} />
         <SaveButton onClick={props.onSubmitForm} text={'Save & publish later'} />
-        <PublishButton onClick={() => props.updateFormData({ published: true}, props.onSubmitForm)} />
+        <PublishButton onClick={() => props.updateFormData({ draft: false}, props.onSubmitForm)} />
       </div>
     )
   }

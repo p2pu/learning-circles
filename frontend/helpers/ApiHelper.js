@@ -60,7 +60,7 @@ export default class ApiHelper {
   }
 
   updateResource(opts, id) {
-    const url = `${API_ENDPOINTS[this.resourceType].postUrl}${id}`;
+    const url = `${API_ENDPOINTS[this.resourceType].postUrl}${id}/`;
     const data = opts.data;
     const config = opts.config;
 
@@ -68,7 +68,7 @@ export default class ApiHelper {
       url,
       data,
       config,
-      method: 'put',
+      method: 'post',
       responseType: 'json',
     }).then(res => {
       if (res.data.errors) {

@@ -352,7 +352,7 @@ def _image_check():
 
 def _user_check(user):
     def _validate(value):
-        if value == True:
+        if value == False:
             if user.profile.email_confirmed_at == None:
                 return None, 'Users with unconfirmed email addresses cannot publish courses'
         return value, None
@@ -377,9 +377,9 @@ def _make_learning_circle_schema(request):
         "venue_address": schema.text(required=True),
         "venue_website": schema.text(),
         "city": schema.text(required=True),
-        "latitude": schema.floating_point(required=True),
-        "longitude": schema.floating_point(required=True),
-        "place_id": schema.text(required=True),
+        "latitude": schema.floating_point(),
+        "longitude": schema.floating_point(),
+        "place_id": schema.text(),
         "start_date": schema.date(required=True),
         "weeks": schema.integer(required=True),
         "meeting_time": schema.time(required=True),
@@ -392,7 +392,7 @@ def _make_learning_circle_schema(request):
             schema.text(),
             _image_check(),
         ], required=False),
-        "publish": schema.chain([
+        "draft": schema.chain([
             schema.boolean(),
             _user_check(request.user),
         ])
@@ -422,7 +422,7 @@ class LearningCircleCreateView(View):
             city=data.get('city'),
             latitude=data.get('latitude'),
             longitude=data.get('longitude'),
-            place_id=data.get('place_id'),
+            place_id=data.get('place_id', ''),
             start_date=data.get('start_date'),
             end_date=end_date,
             meeting_time=data.get('meeting_time'),
@@ -432,14 +432,10 @@ class LearningCircleCreateView(View):
             signup_question=data.get('signup_question', ''),
             facilitator_goal=data.get('facilitator_goal', ''),
             facilitator_concerns=data.get('facilitator_concerns', ''),
+            draft=data.get('draft', True),
         )
         study_group.save()
         generate_all_meetings(study_group)
-
-        # publish learning circle if needed
-        if data.get('publish') and data.get('publish') == True:
-            study_group.draft = False
-            study_group.save()
 
         study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name), study_group.id,))
         return json_response(request, { "status": "created", "url": study_group_url });
@@ -461,29 +457,29 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
 
         # update learning circle
         end_date = data.get('start_date') + datetime.timedelta(weeks=data.get('weeks') - 1)
-        study_group.course=data.get('course')
-        study_group.facilitator=request.user
-        study_group.description=data.get('description')
-        study_group.venue_name=data.get('venue_name')
-        study_group.venue_address=data.get('venue_address')
-        study_group.venue_details=data.get('venue_details')
-        study_group.venue_website=data.get('venue_website', '')
-        study_group.city=data.get('city')
-        study_group.latitude=data.get('latitude')
-        study_group.longitude=data.get('longitude')
-        study_group.place_id=data.get('place_id')
-        study_group.start_date=data.get('start_date')
-        study_group.end_date=end_date
-        study_group.meeting_time=data.get('meeting_time')
-        study_group.duration=data.get('duration')
-        study_group.timezone=data.get('timezone')
-        study_group.image=data.get('image')
-        study_group.signup_question=data.get('signup_question', '')
-        study_group.facilitator_goal=data.get('facilitator_goal', '')
-        study_group.facilitator_concerns=data.get('facilitator_concerns', '')
-        if data.get('publish') and data.get('publish') == True:
-            study_group.draft = False
+        study_group.course = data.get('course')
+        study_group.facilitator = request.user
+        study_group.description = data.get('description')
+        study_group.venue_name = data.get('venue_name')
+        study_group.venue_address = data.get('venue_address')
+        study_group.venue_details = data.get('venue_details')
+        study_group.venue_website = data.get('venue_website', '')
+        study_group.city = data.get('city')
+        study_group.latitude = data.get('latitude')
+        study_group.longitude = data.get('longitude')
+        study_group.place_id = data.get('place_id', '')
+        study_group.start_date = data.get('start_date')
+        study_group.end_date = end_date
+        study_group.meeting_time = data.get('meeting_time')
+        study_group.duration = data.get('duration')
+        study_group.timezone = data.get('timezone')
+        study_group.image = data.get('image')
+        study_group.signup_question = data.get('signup_question', '')
+        study_group.facilitator_goal = data.get('facilitator_goal', '')
+        study_group.facilitator_concerns = data.get('facilitator_concerns', '')
+        study_group.draft = data.get('draft', True)
         study_group.save()
+
         study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name), study_group.id,))
         return json_response(request, { "status": "updated", "url": study_group_url });
 

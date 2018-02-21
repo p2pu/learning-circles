@@ -68,7 +68,8 @@ export const FACILITATOR_PAGE = '/en/facilitator';
 export const LC_DEFAULTS = {
   duration: 90,
   weeks: 6,
-  course: {}
+  course: {},
+  draft: true,
 };
 
 export const EXTERNAL_APIS = {
