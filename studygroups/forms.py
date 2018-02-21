@@ -34,25 +34,42 @@ class ApplicationForm(forms.ModelForm):
 
     COMPUTER_ACCESS = (
         ('', _('Select one of the following')),
-        ('Both', 'Both'),
-        ('Just a laptop', 'Just a laptop'),
-        ('Just headphones', 'Just headphones'),
-        ('Neither', 'Neither'),
+        ('Both', _('Both')),
+        ('Just a laptop', _('Just a laptop')),
+        ('Just headphones', _('Just headphones')),
+        ('Neither', _('Neither')),
     )
+
     DIGITAL_LITERACY_CHOICES = (
         ('', _('Select one of the following')),
     ) + Application.DIGITAL_LITERACY_CHOICES
+
+    GOAL_CHOICES = [
+        ('', _('Select one of the following')),
+        ('To increase my employability', _('To increase my employability')),
+        ('Professional development for my current job', _('Professional development for my current job')),
+        ('To accompany other educational programs', _('To accompany other educational programs')),
+        ('Personal interest', _('Personal interest')),
+        ('Social reasons', _('Social reasons')),
+        ('For fun / to try something new', _('For fun / to try something new')),
+        ('Other', _('Other')),
+    ]
     mobile = PhoneNumberField(
         required=False,
-        label=_('Phone Number for SMS'),
-        help_text=_('if you want to receive meeting reminders via text message.')
+        label=_(u'If you’d like to receive weekly text messages reminding you of upcoming learning circle meetings, put your phone number here:'),
+        help_text=_('your number won\'t be shared with other participants.')
     )
     computer_access = forms.ChoiceField(
         choices=COMPUTER_ACCESS,
         label=_('Can you bring a laptop and headphones to the Learning Circle each week?')
     )
-    goals = forms.CharField(
-        label=_('In one sentence, please explain your goals for taking this course.')
+    goals = forms.ChoiceField(
+        label=_('In one sentence, please explain your goals for taking this course.'),
+        choices=GOAL_CHOICES
+    )
+    goals_other = forms.CharField(
+        label=_('If you selected other, could you specify?'),
+        required=False
     )
     support = forms.CharField(
         label=_('A successful study group requires the support of all of its members. How will you help your peers achieve their goals?')
@@ -69,11 +86,12 @@ class ApplicationForm(forms.ModelForm):
             'study_group',
             'name',
             'email',
-            'mobile',
             'goals',
+            'goals_other',
             'support',
             'computer_access',
-            'use_internet'
+            'use_internet',
+            'mobile',
         )
         self.helper.add_input(Submit('submit', 'Submit'))
         super(ApplicationForm, self).__init__(*args, **kwargs)
@@ -92,6 +110,9 @@ class ApplicationForm(forms.ModelForm):
         questions = ['computer_access', 'goals', 'support', 'use_internet']
         for question in questions:
             signup_questions[question] = self.cleaned_data[question]
+
+        if self.cleaned_data.get('goals') == 'Other':
+            signup_questions['goals'] = u'Other: {}'.format(self.cleaned_data.get('goals_other'))
 
         # add custom signup question to signup_questions if the facilitator specified one
         if self.instance.study_group.signup_question:
