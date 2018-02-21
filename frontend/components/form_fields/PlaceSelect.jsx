@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
 import { compact, uniqBy, sortBy } from 'lodash';
-import { EXTERNAL_APIS } from '../../constants';
+import { EXTERNAL_APIS, KANSAS_CITY_OPTION } from '../../constants';
 
 import css from 'react-select/dist/react-select.css';
 
@@ -20,15 +20,24 @@ export default class PlaceSelect extends Component {
   componentWillMount() {
     if (!!this.props.place_id) {
       this.fetchPlaceById();
+    } else if (this.props.city === 'Kansas City') {
+      this.setState({ value: KANSAS_CITY_OPTION });
+    } else if (this.props.city) {
+      const value = { label: this.props.city, value: this.props.city }
+      this.setState({ value });
     }
   }
 
   _handleChange(selected) {
-    const cityData = {
-      city: selected.value.locale_names.default[0],
-      latitude: selected.value._geoloc.lat,
-      longitude: selected.value._geoloc.lng,
-      place_id: selected.value.objectID,
+    let cityData = {};
+
+    if (selected) {
+      cityData = {
+        city: selected.value.locale_names ? selected.value.locale_names.default[0] : selected.value,
+        latitude: selected.value._geoloc ? selected.value._geoloc.lat : null,
+        longitude: selected.value._geoloc ? selected.value._geoloc.lng : null,
+        place_id: selected.value.objectID ? selected.value.objectID : null,
+      }
     }
 
     this.props.handleSelect(cityData)
@@ -43,12 +52,20 @@ export default class PlaceSelect extends Component {
       'query': query
     };
     const method = 'post';
-    axios({
+
+    return axios({
       data,
       url,
       method
     }).then(res => {
-      this.setState({ hits: res.data.hits })
+      let options = res.data.hits.map(place => this.generateCityOption(place));
+      // Kansas City, MO is missing from the Algolia places API
+      // so we're manually adding it in
+      // TODO: don't do this
+      if (query.toLowerCase().includes('kansas')) {
+        options.unshift(KANSAS_CITY_OPTION)
+      }
+      return { options }
     }).catch(err => {
       console.log(err)
     })
@@ -69,7 +86,7 @@ export default class PlaceSelect extends Component {
 
   _generateCityOption(place) {
     return {
-      label: `${place.locale_names.default}, ${place.administrative[0]}, ${place.country.default}`,
+      label: `${place.locale_names.default[0]}, ${place.administrative[0]}, ${place.country.default}`,
       value: place
     }
   }
@@ -81,15 +98,15 @@ export default class PlaceSelect extends Component {
 
     return(
       <div>
-        <Select
+        <Select.AsyncCreatable
           name={ this.props.name }
           className={ `city-select ${this.props.classes}` }
           value={ this.state.value }
           options={ options }
           onChange={ this.handleChange }
-          onInputChange={ this.searchPlaces }
           noResultsText='No results for this city'
           placeholder='Start typing a city name...'
+          loadOptions={this.searchPlaces}
         />
         {
           this.props.errorMessage &&

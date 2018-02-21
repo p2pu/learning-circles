@@ -58,4 +58,26 @@ export default class ApiHelper {
       opts.onFail(err)
     })
   }
+
+  updateResource(opts, id) {
+    const url = `${API_ENDPOINTS[this.resourceType].postUrl}${id}`;
+    const data = opts.data;
+    const config = opts.config;
+
+    axios({
+      url,
+      data,
+      config,
+      method: 'put',
+      responseType: 'json',
+    }).then(res => {
+      if (res.data.errors) {
+        return opts.onError(res.data)
+      }
+      opts.onSuccess(res.data)
+    }).catch(err => {
+      console.log(err)
+      opts.onFail(err)
+    })
+  }
 }

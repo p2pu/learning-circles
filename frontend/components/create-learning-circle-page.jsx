@@ -153,7 +153,12 @@ export default class CreateLearningCirclePage extends React.Component {
 
       const opts = { data, onSuccess, onError, onFail };
       const api = new ApiHelper('learningCircles');
-      api.createResource(opts);
+
+      if (this.state.learningCircle.id) {
+        api.updateResource(opts, this.state.learningCircle.id)
+      } else {
+        api.createResource(opts);
+      }
     } else {
       this.showModal()
     }

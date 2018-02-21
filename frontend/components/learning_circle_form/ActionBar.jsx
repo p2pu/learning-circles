@@ -20,7 +20,7 @@ const PublishButton = (props) => (
 
 const SaveButton = (props) => (
   <button className="p2pu-btn yellow save" onClick={props.onClick}>
-    Save & publish later
+    {props.text}
   </button>
 )
 
@@ -38,11 +38,21 @@ const ActionBar = (props) => {
   }
 
   if (props.currentTab === 4) {
+    if (props.learningCircle.published) {
+      return (
+        <div className='action-bar'>
+          <BackButton onClick={prevTab} />
+          <CancelButton onClick={props.onCancel} />
+          <SaveButton onClick={props.onSubmitForm} text={'Save'} />
+        </div>
+      )
+    }
+
     return (
       <div className='action-bar'>
         <BackButton onClick={prevTab} />
         <CancelButton onClick={props.onCancel} />
-        <SaveButton onClick={props.onSubmitForm} />
+        <SaveButton onClick={props.onSubmitForm} text={'Save & publish later'} />
         <PublishButton onClick={() => props.updateFormData({ published: true}, props.onSubmitForm)} />
       </div>
     )
