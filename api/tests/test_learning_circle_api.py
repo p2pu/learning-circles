@@ -203,10 +203,10 @@ class TestLearningCircleApi(TestCase):
 
     def test_get_learning_circles_by_weekday(self):
         sg = StudyGroup.objects.get(pk=1)
-        sg.start_date = datetime.date(2018,01,26)
+        sg.start_date = datetime.date(2018,1,26)
         sg.save()
         sg = StudyGroup.objects.get(pk=2)
-        sg.start_date = datetime.date(2018,01,27)
+        sg.start_date = datetime.date(2018,1,27)
         sg.save()
         c = Client()
         # Friday and Saturday   
