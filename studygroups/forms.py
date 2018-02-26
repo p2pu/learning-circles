@@ -61,10 +61,10 @@ class ApplicationForm(forms.ModelForm):
     )
     computer_access = forms.ChoiceField(
         choices=COMPUTER_ACCESS,
-        label=_('Can you bring a laptop and headphones to the Learning Circle each week?')
+        label=_('Can you bring a laptop and headphones to the learning circle each week?')
     )
     goals = forms.ChoiceField(
-        label=_('In one sentence, please explain your goals for taking this course.'),
+        label=_('What is your goal for taking this learning circle?'),
         choices=GOAL_CHOICES
     )
     goals_other = forms.CharField(
