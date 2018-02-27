@@ -120,7 +120,7 @@ export default class CreateLearningCirclePage extends React.Component {
 
       const onSuccess = (data) => {
         this.setState({ learningCircle: {} }, () => {
-          if (data.published) {
+          if (data.draft == false) {
             window.location.href = `${LC_PUBLISHED_PAGE}?url=${data.study_group_url}`;
           } else {
             window.location.href = FACILITATOR_PAGE;
@@ -139,7 +139,7 @@ export default class CreateLearningCirclePage extends React.Component {
           },
           learningCircle: {
             ...this.state.learningCircle,
-            published: false
+            draft: true
           }
         })
       }

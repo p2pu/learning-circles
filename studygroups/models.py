@@ -244,7 +244,7 @@ class StudyGroup(LifeTimeTrackingModel):
             "longitude": sg.longitude,
             "place_id": sg.place_id,
             "start_date": sg.start_date,
-            "weeks": sg.meeting_set.active().count(),
+            "weeks": (sg.end_date - sg.start_date).days/7 + 1,
             "meeting_time": sg.meeting_time.strftime('%H:%M'),
             "duration": sg.duration,
             "timezone": sg.timezone,
