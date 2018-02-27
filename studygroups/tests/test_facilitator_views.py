@@ -124,7 +124,7 @@ class TestFacilitatorViews(TestCase):
         self.assertRedirects(resp, '/en/facilitator/')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
-        self.assertEquals(study_groups.first().meeting_set.count(), 6)
+        self.assertEquals(study_groups.first().meeting_set.count(), 0)
         self.assertEquals(len(mail.outbox), 1)
         self.assertEquals(mail.outbox[0].subject, 'Your Learning Circle has been created! What next?')
         self.assertIn('bob@example.net', mail.outbox[0].to)
@@ -142,11 +142,13 @@ class TestFacilitatorViews(TestCase):
         self.assertRedirects(resp, '/en/facilitator/')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
+        self.assertEquals(study_groups.first().meeting_set.count(), 0)
 
         resp = c.post('/en/studygroup/{0}/publish/'.format(study_groups.first().pk))
         self.assertRedirects(resp, '/en/facilitator/')
         study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
         self.assertEquals(study_group.draft, False)
+        self.assertEquals(study_group.meeting_set.count(), 6)
 
 
     @patch('custom_registration.signals.handle_new_facilitator')

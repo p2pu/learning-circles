@@ -451,7 +451,10 @@ class LearningCircleCreateView(View):
             draft=data.get('draft', True),
         )
         study_group.save()
-        generate_all_meetings(study_group)
+
+        # generate all meetings if the learning circle has been published
+        if study_group.draft == False:
+            generate_all_meetings(study_group)
 
         study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name), study_group.id,))
         return json_response(request, { "status": "created", "url": study_group_url });
@@ -473,6 +476,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
 
         # update learning circle
         end_date = data.get('start_date') + datetime.timedelta(weeks=data.get('weeks') - 1)
+        published = study_group.draft == True and data.get('draft', True) == False
         study_group.course = data.get('course')
         study_group.facilitator = request.user
         study_group.description = data.get('description')
@@ -495,6 +499,10 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         study_group.facilitator_concerns = data.get('facilitator_concerns', '')
         study_group.draft = data.get('draft', True)
         study_group.save()
+
+        # generate all meetings if the learning circle has been published
+        if published:
+            generate_all_meetings(study_group)
 
         study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name), study_group.id,))
         return json_response(request, { "status": "updated", "url": study_group_url });
