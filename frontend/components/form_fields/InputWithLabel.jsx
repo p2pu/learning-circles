@@ -17,6 +17,8 @@ const InputWithLabel = (props) => {
         value={props.value || props.defaultValue}
         placeholder={props.placeholder}
         required={props.required || false}
+        min={props.min}
+        max={props.max}
       />
       {
         props.errorMessage &&

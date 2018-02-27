@@ -136,6 +136,10 @@ export default class CreateLearningCirclePage extends React.Component {
             show: true,
             type: 'danger',
             message: 'There was a problem saving your learning circle. Please check the error messages in the form and make the necessary changes.'
+          },
+          learningCircle: {
+            ...this.state.learningCircle,
+            published: false
           }
         })
       }
