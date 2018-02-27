@@ -57,7 +57,7 @@ class ApplicationForm(forms.ModelForm):
     mobile = PhoneNumberField(
         required=False,
         label=_(u'If you’d like to receive weekly text messages reminding you of upcoming learning circle meetings, put your phone number here:'),
-        help_text=_('your number won\'t be shared with other participants.')
+        help_text=_('Your number won\'t be shared with other participants.')
     )
     computer_access = forms.ChoiceField(
         choices=COMPUTER_ACCESS,
