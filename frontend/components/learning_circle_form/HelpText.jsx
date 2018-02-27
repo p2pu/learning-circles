@@ -7,8 +7,8 @@ export const Step1 = () => (
     <div className='content'>
       <p>Struggling to choose a course? Ask yourself these three questions:</p>
       <ul>
-        <li><span className="bold">What topics are of interest in my community?</span> If you’re not sure what people want to learn, the <a href="http://info.p2pu.org/2017/06/02/will-people-show-up/" target="_blank">Q Method</a> is a great way to solicit feedback from your community. Be mindful about what knowledge you are assuming people already have when you choose a topic.</li>
-        <li><span className="bold">What knowledge gaps exist?</span> Is there a lack of high school equivalency programming in your neighborhood? No good way to get an introduction to web design? Learning circles can be a great way to plug gaps between existing educational institutions.</li>
+        <li><span className="bold">What topics are of interest in my community?</span> If you’re not sure what people want to learn, the <a href="http://info.p2pu.org/2017/06/02/will-people-show-up/" target="_blank">Q Method</a> is a great way to solicit feedback from your community.</li>
+        <li><span className="bold">What gaps exist?</span> Is there a lack of high school equivalency programming in your neighborhood? No good way to get an introduction to web design? Learning circles can be a great way to plug gaps between existing educational institutions.</li>
         <li><span className="bold">What do I want to learn?</span> If you choose something that you are passionate about, your enthusiasm will resonate with the whole group.</li>
       </ul>
       <p>You can use a free course from anywhere on the web for your learning circle. If you don’t see one you like here, add a new one.</p>
@@ -65,7 +65,9 @@ export const Step4 = () => (
     <h4>Add the finishing touches</h4>
     <div className='content'>
       <ul>
-        <li>This is what your registration page will look like:</li>
+        <li>This is what your registration page will look like: <br />
+          <img src='/static/images/signup-form-screenshot.png' alt='Learning circle sign up form'/>
+        </li>
         <li>In the welcome message, include something about yourself, why you’re facilitating this learning circle, or anything else you want people to know when they sign up.</li>
         <li>We’ll ask people for their contact information, goals for the learning circle, and whether they can bring their own laptop and headphones. If there is another question you want people to answer, you can include that. All of this information will be stored in your dashboard.</li>
         <li>Finally, make your learning circle stand out by uploading a picture or a .gif. It could be related to the location, subject matter, or anything else you want to identify your learning circle with!</li>

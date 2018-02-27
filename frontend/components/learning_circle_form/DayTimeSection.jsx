@@ -26,6 +26,7 @@ const DayTimeSection = (props) => {
         name={'weeks'}
         id={'id_weeks'}
         type={'number'}
+        min={1}
         errorMessage={props.errors.weeks}
         required={true}
       />
