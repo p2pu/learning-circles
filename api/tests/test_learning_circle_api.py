@@ -134,9 +134,10 @@ class TestLearningCircleApi(TestCase):
         resp = c.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 200)
         lc = StudyGroup.objects.all().last()
-        self.assertEqual(resp.json().get('status'), 'error')
-        self.assertEqual(StudyGroup.objects.all().count(), 4)
-        self.assertEquals(len(mail.outbox), 0)
+        self.assertEqual(resp.json().get('status'), 'created')
+        self.assertEqual(StudyGroup.objects.all().count(), 5)
+        self.assertEqual(StudyGroup.objects.last().draft, True)
+        self.assertEquals(len(mail.outbox), 1)
 
 
     def test_update_learning_circle(self):

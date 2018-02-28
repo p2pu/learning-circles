@@ -411,10 +411,7 @@ def _make_learning_circle_schema(request):
             schema.text(),
             _image_check(),
         ], required=False),
-        "draft": schema.chain([
-            schema.boolean(),
-            _user_check(request.user),
-        ])
+        "draft": schema.boolean()
     }
     return post_schema
 
@@ -450,9 +447,11 @@ class LearningCircleCreateView(View):
             image=data.get('image'),
             signup_question=data.get('signup_question', ''),
             facilitator_goal=data.get('facilitator_goal', ''),
-            facilitator_concerns=data.get('facilitator_concerns', ''),
-            draft=data.get('draft', True),
+            facilitator_concerns=data.get('facilitator_concerns', '')
         )
+        # only update value for draft if the use verified their email address
+        if request.user.profile.email_confirmed_at != None:
+            study_group.draft = data.get('draft', True)
         study_group.save()
 
         # generate all meetings if the learning circle has been published
@@ -479,7 +478,14 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
 
         # update learning circle
         end_date = data.get('start_date') + datetime.timedelta(weeks=data.get('weeks') - 1)
-        published = study_group.draft == True and data.get('draft', True) == False
+
+        published = False
+        # only publish a learning circle for a user with a verified email address
+        draft = data.get('draft', True)
+        if draft == False and request.user.profile.email_confirmed_at != None:
+            published = study_group.draft == True
+            study_group.draft = False
+
         study_group.course = data.get('course')
         study_group.facilitator = request.user
         study_group.description = data.get('description')
@@ -500,7 +506,6 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         study_group.signup_question = data.get('signup_question', '')
         study_group.facilitator_goal = data.get('facilitator_goal', '')
         study_group.facilitator_concerns = data.get('facilitator_concerns', '')
-        study_group.draft = data.get('draft', True)
         study_group.save()
 
         # generate all meetings if the learning circle has been published
