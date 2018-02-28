@@ -136,9 +136,9 @@ def chain(checks):
     """ Chain multiple checks. Result from last check is returned as data """
     def _validate(data):
         errors = []
-        parsed = None
+        parsed = data
         for check in checks:
-            parsed, error = check(data)
+            parsed, error = check(parsed)
             if error != None:
                 errors += [error]
         if errors != []:

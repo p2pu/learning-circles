@@ -397,7 +397,10 @@ def _make_learning_circle_schema(request):
         "longitude": schema.floating_point(),
         "place_id": schema.text(),
         "start_date": schema.date(required=True),
-        "weeks": schema.integer(required=True),
+        "weeks": schema.chain([
+            schema.integer(required=True),
+            lambda v: (None, 'Need to be at least 1') if v < 1 else (v, None),
+        ]),
         "meeting_time": schema.time(required=True),
         "duration": schema.text(required=True),
         "timezone": schema.text(required=True),
