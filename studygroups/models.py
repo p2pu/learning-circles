@@ -228,6 +228,11 @@ class StudyGroup(LifeTimeTrackingModel):
             return country
         return None
 
+    @property
+    def weeks(self):
+        return (self.end_date - self.start_date).days/7 + 1
+
+
     def to_dict(self):
         sg = self  # TODO
         data = {
@@ -244,7 +249,7 @@ class StudyGroup(LifeTimeTrackingModel):
             "longitude": sg.longitude,
             "place_id": sg.place_id,
             "start_date": sg.start_date,
-            "weeks": (sg.end_date - sg.start_date).days/7 + 1,
+            "weeks": sg.weeks,
             "meeting_time": sg.meeting_time.strftime('%H:%M'),
             "duration": sg.duration,
             "timezone": sg.timezone,
