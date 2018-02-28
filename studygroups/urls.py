@@ -22,8 +22,6 @@ from studygroups.views import MeetingList
 from studygroups.views import TeamMembershipDelete
 from studygroups.views import TeamInvitationCreate
 from studygroups.views import FacilitatorStudyGroupCreate
-from studygroups.views import FacilitatorStudyGroupPublished
-from studygroups.views import FacilitatorStudyGroupSaved
 from studygroups.views import InvitationConfirm
 from studygroups.views import OptOutView
 from studygroups.views import CourseListView
@@ -49,6 +47,7 @@ urlpatterns = [
     url(r'^signup/(?P<location>[\w-]+)-(?P<study_group_id>[\d]+)/$', views.signup, name='studygroups_signup'),
     url(r'^signup/(?P<study_group_id>[\d]+)/success/$', SignupSuccess.as_view(), name='studygroups_signup_success'),
 
+    url(r'^studygroup/create/$', FacilitatorStudyGroupCreate.as_view(), name='studygroups_facilitator_studygroup_create'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/$', views.view_study_group, name='studygroups_view_study_group'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/edit/$', StudyGroupUpdate.as_view(), name='studygroups_edit_study_group'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/delete/$', StudyGroupDelete.as_view(), name='studygroups_studygroup_delete'),
@@ -75,8 +74,6 @@ urlpatterns = [
     url(r'^course/(?P<pk>[\d]+)/delete/$', CourseDelete.as_view(), name='studygroups_course_delete'),
 
     url(r'^facilitator/$', views.facilitator, name='studygroups_facilitator'),
-    url(r'^facilitator/study_group/create/$', FacilitatorStudyGroupCreate.as_view(), name='studygroups_facilitator_studygroup_create'),
-    url(r'^facilitator/study_group/published$', FacilitatorStudyGroupPublished.as_view(), name='studygroups_facilitator_studygroup_published'),
     url(r'^facilitator/team-invitation/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm'),
 
     url(r'^optout/$', OptOutView.as_view(), name='studygroups_optout'),

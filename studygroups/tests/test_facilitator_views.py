@@ -120,7 +120,7 @@ class TestFacilitatorViews(TestCase):
         user = User.objects.create_user('bob123', 'bob@example.net', 'password')
         c = Client()
         c.login(username='bob123', password='password')
-        resp = c.post('/en/facilitator/study_group/create/', self.STUDY_GROUP_DATA)
+        resp = c.post('/en/studygroup/create/', self.STUDY_GROUP_DATA)
         self.assertRedirects(resp, '/en/facilitator/')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
@@ -138,7 +138,7 @@ class TestFacilitatorViews(TestCase):
         c = Client()
         c.login(username='bob@example.net', password='password')
 
-        resp = c.post('/en/facilitator/study_group/create/', self.STUDY_GROUP_DATA)
+        resp = c.post('/en/studygroup/create/', self.STUDY_GROUP_DATA)
         self.assertRedirects(resp, '/en/facilitator/')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
@@ -157,7 +157,7 @@ class TestFacilitatorViews(TestCase):
         c = Client()
         c.login(username='bob@example.net', password='password')
 
-        resp = c.post('/en/facilitator/study_group/create/', self.STUDY_GROUP_DATA)
+        resp = c.post('/en/studygroup/create/', self.STUDY_GROUP_DATA)
         self.assertRedirects(resp, '/en/facilitator/')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)

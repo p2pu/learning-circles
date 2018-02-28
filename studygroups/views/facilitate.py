@@ -415,40 +415,13 @@ def add_member(request, study_group_id):
     return render(request, 'studygroups/add_member.html', context)
 
 
-class FacilitatorStudyGroupCreate(CreateView):
-    # TODO this view should be removed
-    success_url = reverse_lazy('studygroups_facilitator')
+class FacilitatorStudyGroupCreate(TemplateView):
     template_name = 'studygroups/facilitator_studygroup_form.html'
-    form_class = StudyGroupForm
-
-    def get_initial(self):
-        initial = {}
-        course_id = self.request.GET.get('course_id', None)
-        if course_id:
-            initial['course'] = get_object_or_404(Course, pk=course_id)
-        return initial
-
-    def form_valid(self, form):
-        study_group = form.save(commit=False)
-        study_group.facilitator = self.request.user
-        study_group.save()
-        if study_group.draft == False:
-            generate_all_meetings(study_group)
-        messages.success(self.request, _('You created a new Learning Circle! Check your email for next steps.'))
-        return http.HttpResponseRedirect(self.success_url)
 
     def get_context_data(self, **kwargs):
         context = super(FacilitatorStudyGroupCreate, self).get_context_data(**kwargs)
         context['hide_footer'] = True
         return context
-
-
-class FacilitatorStudyGroupPublished(TemplateView):
-    template_name = 'studygroups/facilitator_studygroup_published.html'
-
-
-class FacilitatorStudyGroupSaved(TemplateView):
-    template_name = 'studygroups/facilitator_studygroup_saved.html'
 
 
 class InvitationConfirm(FormView):
