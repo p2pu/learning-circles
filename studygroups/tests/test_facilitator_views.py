@@ -37,7 +37,7 @@ class TestFacilitatorViews(TestCase):
         'name': 'Test User',
         'email': 'test@mail.com',
         'mobile': '',
-        'goals': 'Other',
+        'goals': 'Social reasons',
         'support': 'thinking how to?',
         'computer_access': 'Both', 
         'use_internet': '2'
