@@ -23,6 +23,7 @@ from custom_registration.models import confirm_user_email
 
 import datetime
 import urllib
+import json
 
 
 """
@@ -52,9 +53,9 @@ class TestFacilitatorViews(TestCase):
         'latitude': -26.205, 
         'longitude': 28.0497,
         'description': 'We will complete the course about motorcycle maintenance together',
-        'start_date': '07/25/2016',
+        'start_date': '2016-07-25',
         'weeks': '6',
-        'meeting_time': '07:00 PM',
+        'meeting_time': '19:00',
         'duration': '90',
         'timezone': 'Africa/Johannesburg',
         'venue_website': 'http://venue.com',
@@ -116,21 +117,6 @@ class TestFacilitatorViews(TestCase):
         assertStatus('/en/studygroup/1/meeting/2/feedback/create/', 404)
 
 
-    def test_create_study_group(self):
-        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
-        c = Client()
-        c.login(username='bob123', password='password')
-        resp = c.post('/en/studygroup/create/', self.STUDY_GROUP_DATA)
-        self.assertRedirects(resp, '/en/facilitator/')
-        study_groups = StudyGroup.objects.filter(facilitator=user)
-        self.assertEquals(study_groups.count(), 1)
-        self.assertEquals(study_groups.first().meeting_set.count(), 0)
-        self.assertEquals(len(mail.outbox), 1)
-        self.assertEquals(mail.outbox[0].subject, 'Your Learning Circle has been created! What next?')
-        self.assertIn('bob@example.net', mail.outbox[0].to)
-        self.assertIn('community@localhost', mail.outbox[0].bcc)
-
-
     @patch('custom_registration.signals.handle_new_facilitator')
     def test_publish_study_group(self, handle_new_facilitator):
         user = create_user('bob@example.net', 'bob', 'test', 'password', False)
@@ -138,8 +124,8 @@ class TestFacilitatorViews(TestCase):
         c = Client()
         c.login(username='bob@example.net', password='password')
 
-        resp = c.post('/en/studygroup/create/', self.STUDY_GROUP_DATA)
-        self.assertRedirects(resp, '/en/facilitator/')
+        resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
+        self.assertEquals(resp.json()['status'], 'created')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
         self.assertEquals(study_groups.first().meeting_set.count(), 0)
@@ -157,8 +143,8 @@ class TestFacilitatorViews(TestCase):
         c = Client()
         c.login(username='bob@example.net', password='password')
 
-        resp = c.post('/en/studygroup/create/', self.STUDY_GROUP_DATA)
-        self.assertRedirects(resp, '/en/facilitator/')
+        resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
+        self.assertEquals(resp.json()['status'], 'created')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
 
