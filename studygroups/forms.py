@@ -105,6 +105,15 @@ class ApplicationForm(forms.ModelForm):
             self.fields['custom_question'] = forms.CharField(label=study_group.signup_question)
             self.helper.layout.insert(len(self.helper.layout),'custom_question')
 
+
+    def clean(self):
+        cleaned_data = super(ApplicationForm, self).clean()
+        # TODO - if mobile format is wrong, show error with example format for region
+        if self.cleaned_data['goals'] == 'Other':
+            if not self.cleaned_data.get('goals_other'):
+                msg = _('This field is required.')
+                self.add_error('goals_other', msg)
+
     def save(self, commit=True):
         signup_questions = {}
         questions = ['computer_access', 'goals', 'support', 'use_internet']
@@ -120,9 +129,6 @@ class ApplicationForm(forms.ModelForm):
         self.instance.signup_questions = json.dumps(signup_questions)
         return super(ApplicationForm, self).save(commit)
 
-    def clean(self):
-        cleaned_data = super(ApplicationForm, self).clean()
-        # TODO - if mobile format is wrong, show error with example format for region
 
     class Meta:
         model = Application
