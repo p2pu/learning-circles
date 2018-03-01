@@ -11,8 +11,8 @@
           <span class="lc-jumbo-title">{% trans "Learning Circles" %}	</span> </br>
         <span class="lc-jumbo-rule"></span></br>
         <span class="lc-jumbo-body">{% trans "Study groups for people who want to take online courses together, in-person." %}</span> </br>
-        {% url 'studygroups_facilitator_signup' as facilitator_signup_url %}
-        <span class="lc-jumbo-call">{% blocktrans %}Sign up below for a Learning Circle in your area, or <a class="lc-jumbo-link" href="{{facilitator_signup_url}}">create your own!</a>{% endblocktrans %}</span> 
+        {% url 'studygroups_facilitator_studygroup_create' as create_url %}
+        <span class="lc-jumbo-call">{% blocktrans %}Sign up below for a learning circle in your area, or <a class="lc-jumbo-link" href="{{create_url}}">create your own!</a>{% endblocktrans %}</span> 
       </div>	
     </div>
 
