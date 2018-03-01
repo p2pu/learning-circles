@@ -8,7 +8,7 @@ from django.utils import translation
 from django.contrib.auth.models import User
 
 from studygroups.models import StudyGroup
-from studygroups.models import StudyGroupMeeting
+from studygroups.models import Meeting
 from studygroups.models import Reminder
 from studygroups.models import generate_reminder
 from studygroups.models import send_reminder
@@ -26,11 +26,11 @@ def send_reminders():
     now = timezone.now()
     translation.activate(settings.LANGUAGE_CODE)
     # TODO - should this be set here or closer to where the language matters?
-    # TODO - make sure both the StudyGroup and StudyGroupMeeting is still available
+    # TODO - make sure both the StudyGroup and Meeting is still available
     reminders = Reminder.objects.filter(
         sent_at__isnull=True,
-        study_group__in=StudyGroup.objects.active(),
-        study_group_meeting__in=StudyGroupMeeting.objects.active()
+        study_group__in=StudyGroup.objects.published(),
+        study_group_meeting__in=Meeting.objects.active()
     )
     for reminder in reminders:
         # TODO don't send reminders older than the meeting
@@ -41,7 +41,7 @@ def send_reminders():
 
 @shared_task
 def gen_reminders():
-    for study_group in StudyGroup.objects.active():
+    for study_group in StudyGroup.objects.published():
         translation.activate(settings.LANGUAGE_CODE)
         generate_reminder(study_group)
 
@@ -74,13 +74,13 @@ def send_new_studygroup_emails():
 
 @shared_task
 def send_all_studygroup_survey_reminders():
-    for study_group in StudyGroup.objects.active():
+    for study_group in StudyGroup.objects.published():
         translation.activate(settings.LANGUAGE_CODE)
         send_survey_reminder(study_group)
 
 
 @shared_task
 def send_all_facilitator_surveys():
-    for study_group in StudyGroup.objects.active():
+    for study_group in StudyGroup.objects.published():
         translation.activate(settings.LANGUAGE_CODE)
         send_facilitator_survey(study_group)

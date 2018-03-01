@@ -16,7 +16,7 @@ class MeetingRow extends React.Component {
             <tr>
                 <td>{meeting.study_group.course_title} - {gettext("week")} {meeting.meeting_number}</td>
                 <td>{meeting.study_group.facilitator}</td>
-                <td>{moment(meeting.meeting_date + ' ' + meeting.meeting_time).format('H:mm') + ' ' + meeting.study_group.time_zone}</td>
+                <td>{moment(meeting.meeting_date + ' ' + meeting.meeting_time).format('H:mm') + ' ' + meeting.study_group.timezone_display}</td>
                 <td>{rsvp}</td>
                 <td>{feedback}</td>
             </tr>

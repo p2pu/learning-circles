@@ -7,8 +7,8 @@ static_serve/
 learnwithpeople/settings_local.py
 mailbox/
 *.swp
-fixtures/
 upload/
 docs/_build/
 node_modules/
 assets/
+.DS_Store

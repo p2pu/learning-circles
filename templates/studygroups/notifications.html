@@ -1,0 +1,20 @@
+{% load i18n %}
+
+{% if user.profile.email_confirmed_at %}{% else %}
+  <div class="alert alert-warning">
+    <p>{% blocktrans %}You need to confirm your email address before you will be able to publish learning circles. If you haven't received an email, click the button below to request a new confirmation email.{% endblocktrans %}</p>
+    <p><form action="{% url 'email_confirm_request' %}" method="POST">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-primary">{% trans 'Verify account' %}</button>
+    </form>
+    </p>
+  </div>
+{% endif %}
+
+{% if team %}
+<p>{% blocktrans with team_name=team.name %}You are currently part of <strong>{{team_name}}</strong>{% endblocktrans %}</p>
+{% endif %}
+{% url 'studygroups_facilitator_invitation_confirm' as invite_confirm_url %}
+{% if invitation %}
+  <p class"alert alert-info">{% blocktrans with team_name=invitation.team.name %}You've been invited to join {{team_name}}. <a href="{{invite_confirm_url}}">Respond to this invitation</a>{% endblocktrans %}</p>
+{% endif %}

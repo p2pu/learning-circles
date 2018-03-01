@@ -90,6 +90,7 @@ class Course(LifeTimeTrackingModel):
     created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     unlisted = models.BooleanField(default=False)
 
+
     def __unicode__(self):
         return self.title
 
@@ -104,10 +105,11 @@ class Activity(models.Model):
         return self.description
 
 
-# TODO rename to profile or something else
-class Facilitator(models.Model):
+# TODO rename to Profile and move to custom_registration/models.py
+class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     mailing_list_signup = models.BooleanField(default=False)
+    email_confirmed_at = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
         return self.user.__unicode__()
@@ -159,6 +161,13 @@ class TeamInvitation(models.Model):
         return u'Invatation <{} to join {}>'.format(self.email, self.team.name)
 
 
+class StudyGroupQuerySet(SoftDeleteQuerySet):
+
+    def published(self):
+        """ exclude drafts from public learning circles """
+        return self.active().filter(draft=False)
+
+
 class StudyGroup(LifeTimeTrackingModel):
     name = models.CharField(max_length=128, default=_study_group_name)
     course = models.ForeignKey('studygroups.Course', on_delete=models.CASCADE)
@@ -168,8 +177,9 @@ class StudyGroup(LifeTimeTrackingModel):
     venue_details = models.CharField(max_length=128)
     venue_website = models.URLField(blank=True)
     city = models.CharField(max_length=256)
-    latitude = models.DecimalField(max_digits=8, decimal_places=6, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    latitude = models.DecimalField(max_digits=8, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    place_id = models.CharField(max_length=256, blank=True)
     facilitator = models.ForeignKey(User, on_delete=models.CASCADE)
     start_date = models.DateField()
     meeting_time = models.TimeField()
@@ -177,7 +187,14 @@ class StudyGroup(LifeTimeTrackingModel):
     duration = models.IntegerField(default=90) # meeting duration in minutes
     timezone = models.CharField(max_length=128)
     signup_open = models.BooleanField(default=True)
+    draft = models.BooleanField(default=True)
     image = models.ImageField(blank=True)
+    signup_question = models.CharField(max_length=256, blank=True)
+    facilitator_goal = models.CharField(max_length=256, blank=True)
+    facilitator_concerns = models.CharField(max_length=256, blank=True)
+
+
+    objects = StudyGroupQuerySet.as_manager()
 
     def day(self):
         return calendar.day_name[self.start_date.weekday()]
@@ -188,7 +205,7 @@ class StudyGroup(LifeTimeTrackingModel):
 
     def next_meeting(self):
         now = timezone.now()
-        meeting_list = self.studygroupmeeting_set.active().order_by('meeting_date', 'meeting_time')
+        meeting_list = self.meeting_set.active().order_by('meeting_date', 'meeting_time')
         return next((m for m in meeting_list if m.meeting_datetime() > now), None)
 
     def local_start_date(self):
@@ -211,20 +228,40 @@ class StudyGroup(LifeTimeTrackingModel):
             return country
         return None
 
+    @property
+    def weeks(self):
+        return (self.end_date - self.start_date).days/7 + 1
+
+
     def to_dict(self):
         sg = self  # TODO
         data = {
+            "id": sg.pk,
+            "course": sg.course.id,
             "course_title": sg.course.title,
+            "description": sg.description,
+            "venue_name": sg.venue_name,
+            "venue_details": sg.venue_details,
+            "venue_address": sg.venue_address,
+            "venue_website": sg.venue_website,
+            "city": sg.city,
+            "latitude": sg.latitude,
+            "longitude": sg.longitude,
+            "place_id": sg.place_id,
+            "start_date": sg.start_date,
+            "weeks": sg.weeks,
+            "meeting_time": sg.meeting_time.strftime('%H:%M'),
+            "duration": sg.duration,
+            "timezone": sg.timezone,
+            "timezone_display": sg.timezone_display(),
+            "signup_question": sg.signup_question,
+            "facilitator_goal": sg.facilitator_goal,
+            "facilitator_concerns": sg.facilitator_concerns,
+            "day": sg.day(),
+            "end_time": sg.end_time(),
             "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
             "signup_count": sg.application_set.count(),
-            "venue": sg.venue_name,
-            "venue_address": sg.venue_address + ", " + sg.city,
-            "day": sg.day(),
-            "start_date": sg.start_date,
-            "meeting_time": sg.meeting_time,
-            "time_zone": sg.timezone_display(),
-            "end_time": sg.end_time(),
-            "weeks": sg.studygroupmeeting_set.active().count(),
+            "draft": sg.draft,
             "url": reverse('studygroups_view_study_group', args=(sg.id,)),
             "signup_url": reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
         }
@@ -232,7 +269,7 @@ class StudyGroup(LifeTimeTrackingModel):
         if next_meeting:
             data['next_meeting_date'] = next_meeting.meeting_date
         if sg.image:
-            data["image_url"] = "https://learningcircles.p2pu.org" + sg.image.url
+            data["image_url"] = sg.image.url
         return data
 
     def to_json(self):
@@ -275,9 +312,9 @@ class Application(LifeTimeTrackingModel):
     }
 
     DIGITAL_LITERACY_CHOICES = (
-        ('0', _(u'Can\'t do')), 
+        ('0', _(u'Can\'t do')),
         ('1', _(u'Need help doing')),
-        ('2', _(u'Can do with difficulty')), 
+        ('2', _(u'Can do with difficulty')),
         ('3', _(u'Can do')),
         ('4', _(u'Expert (can teach others)')),
     )
@@ -287,14 +324,14 @@ class Application(LifeTimeTrackingModel):
         return { q: {'question_text': text, 'answer': answers.get(q), 'answer_text': dict(self.DIGITAL_LITERACY_CHOICES).get(answers.get(q)) if q in answers else ''} for q, text in self.DIGITAL_LITERACY_QUESTIONS.iteritems() if answers.get(q) }
 
 
-class StudyGroupMeeting(LifeTimeTrackingModel):
+class Meeting(LifeTimeTrackingModel):
     study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE)
     meeting_date = models.DateField()
     meeting_time = models.TimeField()
 
     def meeting_number(self):
         # TODO this will break for two meetings on the same day
-        return StudyGroupMeeting.objects.active().filter(meeting_date__lte=self.meeting_date, study_group=self.study_group).count()
+        return Meeting.objects.active().filter(meeting_date__lte=self.meeting_date, study_group=self.study_group).count()
 
     def meeting_activity(self):
         return next((a for a in Activity.objects.filter(index=self.meeting_number())), None)
@@ -346,7 +383,7 @@ class StudyGroupMeeting(LifeTimeTrackingModel):
 
 class Reminder(models.Model):
     study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE) #TODO redundant field
-    study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting', blank=True, null=True, on_delete=models.CASCADE) #TODO check this makes sense
+    study_group_meeting = models.ForeignKey('studygroups.Meeting', blank=True, null=True, on_delete=models.CASCADE) #TODO check this makes sense
     email_subject = models.CharField(max_length=256)
     email_body = models.TextField()
     sms_body = models.CharField(verbose_name=_('SMS (Text)'), max_length=160, blank=True)
@@ -356,7 +393,7 @@ class Reminder(models.Model):
 
 
 class Rsvp(models.Model):
-    study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting', on_delete=models.CASCADE)
+    study_group_meeting = models.ForeignKey('studygroups.Meeting', on_delete=models.CASCADE)
     application = models.ForeignKey('studygroups.Application', on_delete=models.CASCADE)
     attending = models.BooleanField()
 
@@ -380,7 +417,7 @@ class Feedback(LifeTimeTrackingModel):
         (BAD, _('I need some help')),
     ]
 
-    study_group_meeting = models.ForeignKey('studygroups.StudyGroupMeeting', on_delete=models.CASCADE) # TODO should this be a OneToOneField?
+    study_group_meeting = models.ForeignKey('studygroups.Meeting', on_delete=models.CASCADE) # TODO should this be a OneToOneField?
     feedback = models.TextField() # Shared with learners
     attendance = models.PositiveIntegerField()
     reflection = models.TextField() # Not shared
@@ -408,12 +445,12 @@ def get_all_meeting_times(study_group):
 
 
 def generate_all_meetings(study_group):
-    if StudyGroupMeeting.objects.filter(study_group=study_group).exists():
+    if Meeting.objects.filter(study_group=study_group).exists():
         raise Exception(_('Meetings already exist for this study group'))
 
     meeting_date = study_group.start_date
     while meeting_date <= study_group.end_date:
-        meeting = StudyGroupMeeting(
+        meeting = Meeting(
             study_group=study_group,
             meeting_date=meeting_date,
             meeting_time=study_group.meeting_time
@@ -432,18 +469,18 @@ def generate_reminder(study_group):
             reminder = Reminder()
             reminder.study_group = study_group
             reminder.study_group_meeting = next_meeting
-            context = { 
+            context = {
                 'study_group': study_group,
                 'next_meeting': next_meeting,
                 'reminder': reminder,
                 'protocol': 'https',
                 'domain': settings.DOMAIN,
             }
-            previous_meeting = study_group.studygroupmeeting_set.filter(meeting_date__lt=next_meeting.meeting_date).order_by('meeting_date').last()
+            previous_meeting = study_group.meeting_set.filter(meeting_date__lt=next_meeting.meeting_date).order_by('meeting_date').last()
             if previous_meeting and previous_meeting.feedback_set.first():
                 context['feedback'] = previous_meeting.feedback_set.first()
             # send PDF survey if this is the final weeks meeting
-            last_meeting = study_group.studygroupmeeting_set.active().order_by('-meeting_date', '-meeting_time').first()
+            last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
             context['is_last_meeting'] = last_meeting.pk == next_meeting.pk
             timezone.activate(pytz.timezone(study_group.timezone))
             #TODO do I need to activate a locale?
@@ -495,7 +532,7 @@ def send_survey_reminder(study_group):
     now = timezone.now()
     ## last :00, :15, :30 or :45
     last_15 = now.replace(minute=now.minute//15*15, second=0)
-    last_meeting = study_group.studygroupmeeting_set.active().order_by('-meeting_date', '-meeting_time').first()
+    last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
 
     if last_meeting and last_15 - datetime.timedelta(minutes=15) <= last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < last_15:
         slug = '{}-{}'.format(slugify(study_group.venue_name), study_group.id)
@@ -537,7 +574,7 @@ def send_facilitator_survey(study_group):
     now = timezone.now()
     today = now.replace(hour=0, minute=0, second=0, microsecond=0)
     last_week = today - datetime.timedelta(days=7);
-    last_meeting = study_group.studygroupmeeting_set.active()\
+    last_meeting = study_group.meeting_set.active()\
             .order_by('-meeting_date', '-meeting_time').first()
 
     if last_meeting and last_week <= last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < last_week + datetime.timedelta(days=1):
@@ -639,7 +676,7 @@ def create_rsvp(contact, study_group, meeting_datetime, attending):
     # expect meeting_date as python datetime
     # contact is an email address of mobile number
     # study_group is the study group id
-    study_group_meeting = StudyGroupMeeting.objects.get(study_group__id=study_group, meeting_date=meeting_datetime.date(), meeting_time=meeting_datetime.time())
+    study_group_meeting = Meeting.objects.get(study_group__id=study_group, meeting_date=meeting_datetime.date(), meeting_time=meeting_datetime.time())
     application = None
     if '@' in contact:
         application = Application.objects.active().get(study_group__id=study_group, email__iexact=contact)
@@ -659,12 +696,12 @@ def report_data(start_time, end_time, team=None):
 
     If team is given, study groups will be filtered by team
     """
-    study_groups = StudyGroup.objects.active()
-    meetings = StudyGroupMeeting.objects.active()\
+    study_groups = StudyGroup.objects.published()
+    meetings = Meeting.objects.active()\
             .filter(meeting_date__gte=start_time, meeting_date__lt=end_time)\
             .filter(study_group__in=study_groups)
 
-    new_study_groups = StudyGroup.objects.active()\
+    new_study_groups = StudyGroup.objects.published()\
             .filter(created_at__gte=start_time, created_at__lt=end_time)
     new_facilitators = User.objects.filter(date_joined__gte=start_time, date_joined__lt=end_time)
     logins = User.objects.filter(last_login__gte=start_time, last_login__lt=end_time)
@@ -711,7 +748,7 @@ def send_weekly_update():
         html_body = render_to_string('studygroups/email/weekly-update.html', report_context)
         text_body = render_to_string('studygroups/email/weekly-update.txt', report_context)
         timezone.deactivate()
- 
+
         to = [o.user.email for o in team.teammembership_set.filter(role=TeamMembership.ORGANIZER)]
         # TODO, extract this to make delegating to celery in the future easier
         update = EmailMultiAlternatives(
@@ -726,12 +763,12 @@ def send_weekly_update():
     # send weekly update to staff
     report_context = report_data(start_time, end_time)
     report_context.update(context)
-    timezone.activate(pytz.timezone(settings.TIME_ZONE)) 
+    timezone.activate(pytz.timezone(settings.TIME_ZONE))
     translation.activate(settings.LANGUAGE_CODE)
     html_body = render_to_string('studygroups/email/weekly-update.html', report_context)
     text_body = render_to_string('studygroups/email/weekly-update.txt', report_context)
     timezone.deactivate()
- 
+
     to = [o.email for o in User.objects.filter(is_staff=True)]
     update = EmailMultiAlternatives(
         _('Weekly Learning Circles update'),
@@ -755,7 +792,7 @@ def send_new_facilitator_email(facilitator):
     text_body = render_to_string('studygroups/email/new_facilitator_update.txt', context)
     timezone.deactivate()
     to = [facilitator.email]
- 
+
     msg = EmailMultiAlternatives(subject, text_body, settings.SERVER_EMAIL, to)
     msg.attach_alternative(html_body, 'text/html')
     msg.send()
@@ -773,7 +810,7 @@ def send_new_studygroup_email(studygroup):
     text_body = render_to_string('studygroups/email/new_studygroup_update.txt', context)
     timezone.deactivate()
     to = [studygroup.facilitator.email]
- 
+
     msg = EmailMultiAlternatives(subject, text_body, settings.SERVER_EMAIL, to)
     msg.attach_alternative(html_body, 'text/html')
     msg.send()
@@ -790,7 +827,7 @@ def send_team_invitation_email(team, email, organizer):
     }
 
     if user_qs.count() == 0:
-        # invite user to join 
+        # invite user to join
         subject = render_to_string('studygroups/email/new_facilitator_invite-subject.txt', context).strip('\n')
         html_body = render_to_string('studygroups/email/new_facilitator_invite.html', context)
         text_body = render_to_string('studygroups/email/new_facilitator_invite.txt', context)
@@ -802,7 +839,7 @@ def send_team_invitation_email(team, email, organizer):
 
     to = [email]
     from_ = organizer.email
- 
+
     msg = EmailMultiAlternatives(subject, text_body, from_, to)
     msg.attach_alternative(html_body, 'text/html')
     msg.send()

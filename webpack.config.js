@@ -27,7 +27,7 @@ const reactBuild = {
   },
   module: {
     rules: [
-      { 
+      {
         test: /\.scss$/,
         use: [
           { loader: 'style-loader'},
@@ -35,7 +35,7 @@ const reactBuild = {
           { loader: 'sass-loader'}
         ]
       },
-      { 
+      {
         test: /\.css$/,
         use: [
           { loader: 'style-loader'},
@@ -43,10 +43,10 @@ const reactBuild = {
         ]
       },
 
-      { 
+      {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        loader: 'babel-loader?presets[]=env&presets[]=react'
+        loader: 'babel-loader?presets[]=env&presets[]=react&presets[]=stage-2'
       },
     ],
   },
@@ -59,8 +59,7 @@ const reactBuild = {
     }),
     new webpack.optimize.CommonsChunkPlugin({
       name: 'common',
-    }),
-
+    })
   ],
   resolve: {
     modules: [
@@ -86,7 +85,7 @@ const styleBuild = {
           }
         ]
       },
-      { 
+      {
         test: /\.scss$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',

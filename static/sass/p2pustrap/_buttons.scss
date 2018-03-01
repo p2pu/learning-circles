@@ -1,12 +1,12 @@
 
 // Clearing mysterious margin on btn group
 .btn-toolbar {
-	margin-left: 0 !important;
-	> .btn, > .btn-group, .input-group{
-		&:first-child{
-			margin-left: 0 !important;
-		}
-	}
+  margin-left: 0 !important;
+  > .btn, > .btn-group, .input-group{
+    &:first-child{
+      margin-left: 0 !important;
+    }
+  }
 }
 
 .p2pu-btn {
@@ -14,7 +14,7 @@
   text-transform: uppercase;
   font-size: 0.8em;
   font-family: $font-family-sans-serif-bold;
-  padding: 0.8em 2em;
+  padding: 10px 20px;
   border: none;
 
   -webkit-transform: perspective(1px) translateZ(0);
@@ -77,6 +77,42 @@
     align-self: center;
   }
 
+  &.transparent {
+    background: transparent;
+    color: $white;
+    border: 2px solid $white;
+    &:before {
+      background: transparentize($white, 0.9);
+    }
+  }
+
+  &.blue {
+    background: $p2pu-blue;
+    color: $white;
+
+    &:before {
+      background: lighten($p2pu-blue, 1%);
+    }
+  }
+
+  &.yellow {
+    background: $p2pu-yellow;
+    color: $white;
+
+    &:before {
+      background: lighten($p2pu-yellow, 3%);
+    }
+  }
+
+  &.green {
+    background: $p2pu-green;
+    color: $white;
+
+    &:before {
+      background: lighten($p2pu-green, 1%);
+    }
+  }
+
   &:focus {
     outline: none;
   }
@@ -85,7 +121,11 @@
     outline: none;
   }
 
-  @media (max-width: $screen-sm-max) {
+  &.with-outline {
+    border: 2px solid $gray-lighter;;
+  }
+
+  @media (max-width: $screen-xs-max) {
     &.dark {
       background: $gray-darker;
       color: $white;

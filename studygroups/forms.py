@@ -20,7 +20,7 @@ import twilio
 from studygroups.models import Application
 from studygroups.models import Reminder
 from studygroups.models import StudyGroup
-from studygroups.models import StudyGroupMeeting
+from studygroups.models import Meeting
 from studygroups.models import Feedback
 from studygroups.models import Course
 from studygroups.sms import send_message
@@ -34,25 +34,42 @@ class ApplicationForm(forms.ModelForm):
 
     COMPUTER_ACCESS = (
         ('', _('Select one of the following')),
-        ('Both', 'Both'),
-        ('Just a laptop', 'Just a laptop'),
-        ('Just headphones', 'Just headphones'),
-        ('Neither', 'Neither'),
+        ('Both', _('Both')),
+        ('Just a laptop', _('Just a laptop')),
+        ('Just headphones', _('Just headphones')),
+        ('Neither', _('Neither')),
     )
+
     DIGITAL_LITERACY_CHOICES = (
         ('', _('Select one of the following')),
     ) + Application.DIGITAL_LITERACY_CHOICES
+
+    GOAL_CHOICES = [
+        ('', _('Select one of the following')),
+        ('To increase my employability', _('To increase my employability')),
+        ('Professional development for my current job', _('Professional development for my current job')),
+        ('To accompany other educational programs', _('To accompany other educational programs')),
+        ('Personal interest', _('Personal interest')),
+        ('Social reasons', _('Social reasons')),
+        ('For fun / to try something new', _('For fun / to try something new')),
+        ('Other', _('Other')),
+    ]
     mobile = PhoneNumberField(
         required=False,
-        label=_('Phone Number for SMS'),
-        help_text=_('if you want to receive meeting reminders via text message.')
+        label=_(u'If you’d like to receive weekly text messages reminding you of upcoming learning circle meetings, put your phone number here:'),
+        help_text=_('Your number won\'t be shared with other participants.')
     )
     computer_access = forms.ChoiceField(
         choices=COMPUTER_ACCESS,
-        label=_('Can you bring a laptop and headphones to the Learning Circle each week?')
+        label=_('Can you bring a laptop and headphones to the learning circle each week?')
     )
-    goals = forms.CharField(
-        label=_('In one sentence, please explain your goals for taking this course.')
+    goals = forms.ChoiceField(
+        label=_('What is your goal for taking this learning circle?'),
+        choices=GOAL_CHOICES
+    )
+    goals_other = forms.CharField(
+        label=_('If you selected other, could you specify?'),
+        required=False
     )
     support = forms.CharField(
         label=_('A successful study group requires the support of all of its members. How will you help your peers achieve their goals?')
@@ -69,11 +86,12 @@ class ApplicationForm(forms.ModelForm):
             'study_group',
             'name',
             'email',
-            'mobile',
             'goals',
+            'goals_other',
             'support',
             'computer_access',
-            'use_internet'
+            'use_internet',
+            'mobile',
         )
         self.helper.add_input(Submit('submit', 'Submit'))
         super(ApplicationForm, self).__init__(*args, **kwargs)
@@ -82,17 +100,35 @@ class ApplicationForm(forms.ModelForm):
         if study_group and study_group.country == 'United States of America':
             self.fields['mobile'].help_text += ' Ex. +1 281-234-5678'
 
+        # add custom signup question if the facilitator specified one
+        if study_group.signup_question:
+            self.fields['custom_question'] = forms.CharField(label=study_group.signup_question)
+            self.helper.layout.insert(len(self.helper.layout),'custom_question')
+
+
+    def clean(self):
+        cleaned_data = super(ApplicationForm, self).clean()
+        # TODO - if mobile format is wrong, show error with example format for region
+        if self.cleaned_data['goals'] == 'Other':
+            if not self.cleaned_data.get('goals_other'):
+                msg = _('This field is required.')
+                self.add_error('goals_other', msg)
+
     def save(self, commit=True):
         signup_questions = {}
         questions = ['computer_access', 'goals', 'support', 'use_internet']
         for question in questions:
             signup_questions[question] = self.cleaned_data[question]
+
+        if self.cleaned_data.get('goals') == 'Other':
+            signup_questions['goals'] = u'Other: {}'.format(self.cleaned_data.get('goals_other'))
+
+        # add custom signup question to signup_questions if the facilitator specified one
+        if self.instance.study_group.signup_question:
+            signup_questions['custom_question'] = self.cleaned_data['custom_question']
         self.instance.signup_questions = json.dumps(signup_questions)
         return super(ApplicationForm, self).save(commit)
 
-    def clean(self):
-        cleaned_data = super(ApplicationForm, self).clean()
-        # TODO - if mobile format is wrong, show error with example format for region
 
     class Meta:
         model = Application
@@ -230,7 +266,7 @@ class StudyGroupForm(forms.ModelForm):
         """))
 
         if self.instance.pk:
-            self.fields['weeks'].initial = self.instance.studygroupmeeting_set.active().count()
+            self.fields['weeks'].initial = self.instance.meeting_set.active().count()
 
     def save(self, commit=True):
         self.instance.end_date = self.cleaned_data['start_date'] + datetime.timedelta(weeks=self.cleaned_data['weeks'] - 1)
@@ -285,26 +321,10 @@ class StudyGroupForm(forms.ModelForm):
         } 
 
 
-class FacilitatorForm(forms.ModelForm):
-    username = forms.EmailField(required=True, label=_('Email'))
-    mailing_list_signup = forms.BooleanField(required=False, label=_('Subscribe to newsletter?'))
-
-    def clean(self):
-        cleaned_data = super(FacilitatorForm, self).clean()
-        username = cleaned_data.get('username')
-        if User.objects.filter(username__iexact=username).exists():
-            self.add_error('username', _('A user with that username already exists.'))
-        return cleaned_data
-
-    class Meta:
-        model = User
-        fields = ['username', 'first_name', 'last_name', 'mailing_list_signup']
-
-
-class StudyGroupMeetingForm(forms.ModelForm):
+class MeetingForm(forms.ModelForm):
     meeting_time = forms.TimeField(input_formats=['%I:%M %p'], initial=datetime.time(16))
     class Meta:
-        model = StudyGroupMeeting
+        model = Meeting
         fields = ['meeting_date', 'meeting_time', 'study_group']
         widgets = {'study_group': forms.HiddenInput} 
 

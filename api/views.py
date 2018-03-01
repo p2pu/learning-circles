@@ -1,28 +1,37 @@
 from django.core.urlresolvers import reverse
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
+from django.views.generic.edit import FormView
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.template.defaultfilters import slugify
 from django.db.models import Q, F, Case, When, Value, Sum, Min, Max
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.contrib.postgres.search import SearchVector
+from django.core.files.storage import get_storage_class
+from django.conf import settings
+from django.views.generic.detail import SingleObjectMixin
 from django.contrib.postgres.search import SearchQuery
 
 import json
+import datetime
 import re
 
+
+from studygroups.decorators import user_is_group_facilitator
 from studygroups.models import Course
 from studygroups.models import StudyGroup
 from studygroups.models import Application
-from studygroups.models import StudyGroupMeeting
+from studygroups.models import Meeting
 from studygroups.models import Team
+from studygroups.models import generate_all_meetings
 
 from uxhelpers.utils import json_response
-from .geo import getLatLonDelta
 
+from .geo import getLatLonDelta
 from . import schema
+from .forms import ImageForm
 
 class CustomSearchQuery(SearchQuery):
     """ use to_tsquery to support partial matches """
@@ -62,11 +71,11 @@ def _map_to_json(sg):
         "meeting_time": sg.meeting_time,
         "time_zone": sg.timezone_display(),
         "end_time": sg.end_time(),
-        "weeks": sg.studygroupmeeting_set.active().count(),
-        "url": "https://learningcircles.p2pu.org" + reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
+        "weeks": sg.meeting_set.active().count(),
+        "url": settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
     }
     if sg.image:
-        data["image_url"] = "https://learningcircles.p2pu.org" + sg.image.url
+        data["image_url"] = settings.DOMAIN + sg.image.url
     # TODO else set default image URL
     if hasattr(sg, 'next_meeting_date'):
         data["next_meeting_date"] = sg.next_meeting_date
@@ -75,12 +84,14 @@ def _map_to_json(sg):
 
 def _intCommaList(csv):
     values = csv.split(',') if csv else []
+    cleaned = []
     for value in values:
         try:
-            int(value)
+            v = int(value)
+            cleaned += [v]
         except ValueError:
-            return 'Not a list of integers seperated by commas'
-    return None
+            return None, 'Not a list of integers seperated by commas'
+    return cleaned, None
 
 
 def _limit_offset(request):
@@ -107,11 +118,15 @@ class LearningCircleListView(View):
             "weekdays": _intCommaList,
         }
         data = schema.django_get_to_dict(request.GET)
-        errors = schema.validate(query_schema, data)
+        clean_data, errors = schema.validate(query_schema, data)
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        study_groups = StudyGroup.objects.active().order_by('id')
+        study_groups = StudyGroup.objects.published().order_by('id')
+
+        if 'id' in request.GET:
+            id = request.GET.get('id')
+            study_groups = StudyGroup.objects.filter(pk=int(id))
 
         if 'q' in request.GET:
             q = request.GET.get('q')
@@ -150,7 +165,7 @@ class LearningCircleListView(View):
 
         if 'active' in request.GET:
             active = request.GET.get('active') == 'true'
-            study_group_ids = StudyGroupMeeting.objects.active().filter(
+            study_group_ids = Meeting.objects.active().filter(
                 meeting_date__gte=timezone.now()
             ).values('study_group')
             if active:
@@ -190,7 +205,7 @@ class LearningCircleListView(View):
             weekdays = request.GET.get('weekdays').split(',')
             query = None
             for weekday in weekdays:
-                # __week_day differst from datetime.weekday()
+                # __week_day differs from datetime.weekday()
                 # Monday should be 0
                 weekday = int(weekday) + 2 % 7
                 query = query | Q(start_date__week_day=weekday) if query else Q(start_date__week_day=weekday)
@@ -212,11 +227,11 @@ class LearningCircleListView(View):
 class LearningCircleTopicListView(View):
     """ Return topics for listed courses """
     def get(self, request):
-        study_group_ids = StudyGroupMeeting.objects.active().filter(
+        study_group_ids = Meeting.objects.active().filter(
             meeting_date__gte=timezone.now()
         ).values('study_group')
         course_ids = None
-        course_ids = StudyGroup.objects.active().filter(id__in=study_group_ids).values('course')
+        course_ids = StudyGroup.objects.published().filter(id__in=study_group_ids).values('course')
 
         topics = Course.objects.active()\
             .filter(unlisted=False)\
@@ -233,6 +248,13 @@ class LearningCircleTopicListView(View):
         return json_response(request, data)
 
 
+def _course_check(course_id):
+    if not Course.objects.filter(pk=int(course_id)).exists():
+        return None, 'Course matching ID not found'
+    else:
+        return Course.objects.get(pk=int(course_id)), None
+
+
 def _course_to_json(course):
     return {
         "id": course.id,
@@ -246,16 +268,15 @@ def _course_to_json(course):
         "language": course.language,
     }
 
-
 class CourseListView(View):
     def get(self, request):
         query_schema = {
             "offset": schema.integer(),
             "limit": schema.integer(),
-            "order": lambda v: None if v in ['title', 'usage', None] else "must be 'title' or 'usage'",
+            "order": lambda v: (v, None) if v in ['title', 'usage', None] else (None, "must be 'title' or 'usage'")
         }
         data = schema.django_get_to_dict(request.GET)
-        errors = schema.validate(query_schema, data)
+        clean_data, errors = schema.validate(query_schema, data)
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
@@ -270,6 +291,11 @@ class CourseListView(View):
                 )
             )
         )
+
+        if 'course_id' in request.GET:
+            course_id = request.GET.get('course_id')
+            courses = courses.filter(pk=int(course_id))
+
         if request.GET.get('order', None) in ['title', None]:
             courses = courses.order_by('title')
         else:
@@ -291,14 +317,14 @@ class CourseListView(View):
 
         if 'active' in request.GET:
             active = request.GET.get('active') == 'true'
-            study_group_ids = StudyGroupMeeting.objects.active().filter(
+            study_group_ids = Meeting.objects.active().filter(
                 meeting_date__gte=timezone.now()
             ).values('study_group')
             course_ids = None
             if active:
-                course_ids = StudyGroup.objects.active().filter(id__in=study_group_ids).values('course')
+                course_ids = StudyGroup.objects.published().filter(id__in=study_group_ids).values('course')
             else:
-                course_ids = StudyGroup.objects.active().exclude(id__in=study_group_ids).values('course')
+                course_ids = StudyGroup.objects.published().exclude(id__in=study_group_ids).values('course')
             courses = courses.filter(id__in=course_ids)
 
         data = {
@@ -331,9 +357,166 @@ class CourseTopicListView(View):
         return json_response(request, data)
 
 
-@method_decorator(csrf_exempt, name='dispatch')
-class SignupView(View):
+def _image_check():
+    def _validate(value):
+        if value.startswith(settings.MEDIA_URL):
+            return value.replace(settings.MEDIA_URL, '', 1), None
+        else:
+            return None, 'Image must be a valid URL for an existing file'
+    return _validate
 
+
+def _user_check(user):
+    def _validate(value):
+        if value == False:
+            if user.profile.email_confirmed_at == None:
+                return None, 'Users with unconfirmed email addresses cannot publish courses'
+        return value, None
+    return _validate
+
+
+def _studygroup_check(studygroup_id):
+    if not StudyGroup.objects.filter(pk=int(studygroup_id)).exists():
+        return None, 'Learning circle matching ID not found'
+    else:
+        return StudyGroup.objects.get(pk=int(studygroup_id)), None
+
+def _make_learning_circle_schema(request):
+    post_schema = {
+        "course": schema.chain([
+            schema.integer(),
+            _course_check,
+        ], required=True),
+        "description": schema.text(required=True),
+        "venue_name": schema.text(required=True),
+        "venue_details": schema.text(required=True),
+        "venue_address": schema.text(required=True),
+        "venue_website": schema.text(),
+        "city": schema.text(required=True),
+        "latitude": schema.floating_point(),
+        "longitude": schema.floating_point(),
+        "place_id": schema.text(),
+        "start_date": schema.date(required=True),
+        "weeks": schema.chain([
+            schema.integer(required=True),
+            lambda v: (None, 'Need to be at least 1') if v < 1 else (v, None),
+        ]),
+        "meeting_time": schema.time(required=True),
+        "duration": schema.text(required=True),
+        "timezone": schema.text(required=True),
+        "signup_question": schema.text(),
+        "facilitator_goal": schema.text(),
+        "facilitator_concerns": schema.text(),
+        "image": schema.chain([
+            schema.text(),
+            _image_check(),
+        ], required=False),
+        "draft": schema.boolean()
+    }
+    return post_schema
+
+
+@method_decorator(login_required, name='dispatch')
+class LearningCircleCreateView(View):
+    def post(self, request):
+        post_schema = _make_learning_circle_schema(request)
+        data = json.loads(request.body)
+        data, errors = schema.validate(post_schema, data)
+        if errors != {}:
+            return json_response(request, {"status": "error", "errors": errors})
+
+        # create learning circle
+        end_date = data.get('start_date') + datetime.timedelta(weeks=data.get('weeks') - 1)
+        study_group = StudyGroup(
+            course=data.get('course'),
+            facilitator=request.user,
+            description=data.get('description'),
+            venue_name=data.get('venue_name'),
+            venue_address=data.get('venue_address'),
+            venue_details=data.get('venue_details'),
+            venue_website=data.get('venue_website', ''),
+            city=data.get('city'),
+            latitude=data.get('latitude'),
+            longitude=data.get('longitude'),
+            place_id=data.get('place_id', ''),
+            start_date=data.get('start_date'),
+            end_date=end_date,
+            meeting_time=data.get('meeting_time'),
+            duration=data.get('duration'),
+            timezone=data.get('timezone'),
+            image=data.get('image'),
+            signup_question=data.get('signup_question', ''),
+            facilitator_goal=data.get('facilitator_goal', ''),
+            facilitator_concerns=data.get('facilitator_concerns', '')
+        )
+        # only update value for draft if the use verified their email address
+        if request.user.profile.email_confirmed_at != None:
+            study_group.draft = data.get('draft', True)
+        study_group.save()
+
+        # generate all meetings if the learning circle has been published
+        if study_group.draft == False:
+            generate_all_meetings(study_group)
+
+        study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name), study_group.id,))
+        return json_response(request, { "status": "created", "url": study_group_url });
+
+
+@method_decorator(user_is_group_facilitator, name='dispatch')
+@method_decorator(login_required, name='dispatch')
+class LearningCircleUpdateView(SingleObjectMixin, View):
+    model = StudyGroup
+    pk_url_kwarg = 'study_group_id'
+
+    def post(self, request, *args, **kwargs):
+        study_group = self.get_object()
+        post_schema = _make_learning_circle_schema(request)
+        data = json.loads(request.body)
+        data, errors = schema.validate(post_schema, data)
+        if errors != {}:
+            return json_response(request, {"status": "error", "errors": errors})
+
+        # update learning circle
+        end_date = data.get('start_date') + datetime.timedelta(weeks=data.get('weeks') - 1)
+
+        published = False
+        # only publish a learning circle for a user with a verified email address
+        draft = data.get('draft', True)
+        if draft == False and request.user.profile.email_confirmed_at != None:
+            published = study_group.draft == True
+            study_group.draft = False
+
+        study_group.course = data.get('course')
+        study_group.facilitator = request.user
+        study_group.description = data.get('description')
+        study_group.venue_name = data.get('venue_name')
+        study_group.venue_address = data.get('venue_address')
+        study_group.venue_details = data.get('venue_details')
+        study_group.venue_website = data.get('venue_website', '')
+        study_group.city = data.get('city')
+        study_group.latitude = data.get('latitude')
+        study_group.longitude = data.get('longitude')
+        study_group.place_id = data.get('place_id', '')
+        study_group.start_date = data.get('start_date')
+        study_group.end_date = end_date
+        study_group.meeting_time = data.get('meeting_time')
+        study_group.duration = data.get('duration')
+        study_group.timezone = data.get('timezone')
+        study_group.image = data.get('image')
+        study_group.signup_question = data.get('signup_question', '')
+        study_group.facilitator_goal = data.get('facilitator_goal', '')
+        study_group.facilitator_concerns = data.get('facilitator_concerns', '')
+        study_group.save()
+
+        # generate all meetings if the learning circle has been published
+        if published:
+            generate_all_meetings(study_group)
+
+        study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name), study_group.id,))
+        return json_response(request, { "status": "updated", "url": study_group_url });
+
+
+class SignupView(View):
     def post(self, request):
         signup_questions = {
             "goals": schema.text(required=True),
@@ -344,7 +527,7 @@ class SignupView(View):
         post_schema = {
             "study_group": schema.chain([
                 schema.integer(),
-                lambda x: 'No matching learning circle exists' if not StudyGroup.objects.filter(pk=int(x)).exists() else None,
+                lambda x: (None, 'No matching learning circle exists') if not StudyGroup.objects.filter(pk=int(x)).exists() else (StudyGroup.objects.get(pk=int(x)), None),
             ], required=True),
             "name": schema.text(required=True),
             "email": schema.email(required=True),
@@ -352,7 +535,7 @@ class SignupView(View):
             "signup_questions": schema.schema(signup_questions, required=True)
         }
         data = json.loads(request.body)
-        errors = schema.validate(post_schema, data)
+        clean_data, errors = schema.validate(post_schema, data)
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
@@ -381,19 +564,19 @@ class LandingPageLearningCirclesView(View):
     def get(self, request):
 
         # get learning circles with image & upcoming meetings
-        study_groups = StudyGroup.objects.active().filter(
-            studygroupmeeting__meeting_date__gte=timezone.now(),
+        study_groups = StudyGroup.objects.published().filter(
+            meeting__meeting_date__gte=timezone.now(),
         ).annotate(
-            next_meeting_date=Min('studygroupmeeting__meeting_date')
+            next_meeting_date=Min('meeting__meeting_date')
         ).order_by('next_meeting_date')[:3]
 
         # if there are less than 3 with upcoming meetings and an image
         if study_groups.count() < 3:
             #pad with learning circles with the most recent meetings
-            past_study_groups = StudyGroup.objects.active().filter(
-                studygroupmeeting__meeting_date__lt=timezone.now(),
+            past_study_groups = StudyGroup.objects.published().filter(
+                meeting__meeting_date__lt=timezone.now(),
             ).annotate(
-                next_meeting_date=Max('studygroupmeeting__meeting_date')
+                next_meeting_date=Max('meeting__meeting_date')
             ).order_by('-next_meeting_date')
             study_groups = list(study_groups) + list(past_study_groups[:3-study_groups.count()])
         data = {
@@ -411,16 +594,16 @@ class LandingPageStatsView(View):
     - Number of learning circles to date
     """
     def get(self, request):
-        study_groups = StudyGroup.objects.active().filter(
-            studygroupmeeting__meeting_date__gte=timezone.now()
+        study_groups = StudyGroup.objects.published().filter(
+            meeting__meeting_date__gte=timezone.now()
         ).annotate(
-            next_meeting_date=Min('studygroupmeeting__meeting_date')
+            next_meeting_date=Min('meeting__meeting_date')
         )
-        cities = StudyGroup.objects.active().filter(
+        cities = StudyGroup.objects.published().filter(
             latitude__isnull=False,
             longitude__isnull=False,
         ).distinct('city').values('city')
-        learning_circle_count = StudyGroup.objects.active().count()
+        learning_circle_count = StudyGroup.objects.published().count()
         facilitators = StudyGroup.objects.active().distinct('facilitator').values('facilitator')
         cities_s = list(set([c['city'].split(',')[0].strip() for c in cities]))
         data = {
@@ -431,3 +614,17 @@ class LandingPageStatsView(View):
             "learning_circle_count": learning_circle_count
         }
         return json_response(request, data)
+
+
+class ImageUploadView(View):
+    def post(self, request):
+        form = ImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = form.cleaned_data['image']
+            storage = get_storage_class()()
+            filename = storage.save(image.name, image)
+            # TODO - get full URL
+            image_url = ''.join([settings.MEDIA_URL, filename])
+            return json_response(request, {"image_url": image_url})
+        else:
+            return json_response(request, {'error': 'not a valid image'})

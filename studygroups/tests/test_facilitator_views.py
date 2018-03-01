@@ -10,18 +10,20 @@ from mock import patch
 
 from studygroups.models import Course
 from studygroups.models import StudyGroup
-from studygroups.models import StudyGroupMeeting
+from studygroups.models import Meeting
 from studygroups.models import Application
-from studygroups.models import Facilitator
 from studygroups.models import Rsvp
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 from studygroups.models import Feedback
 from studygroups.rsvp import gen_rsvp_querystring
+from custom_registration.models import create_user
+from custom_registration.models import confirm_user_email
 
 import datetime
 import urllib
+import json
 
 
 """
@@ -36,10 +38,27 @@ class TestFacilitatorViews(TestCase):
         'name': 'Test User',
         'email': 'test@mail.com',
         'mobile': '',
-        'goals': 'try hard',
+        'goals': 'Social reasons',
         'support': 'thinking how to?',
         'computer_access': 'Both', 
         'use_internet': '2'
+    }
+
+    STUDY_GROUP_DATA = {
+        'course': '1',
+        'venue_name': 'My house',
+        'venue_details': 'Garrage at my house',
+        'venue_address': 'Rosemary Street 6',
+        'city': 'Johannesburg',
+        'latitude': -26.205, 
+        'longitude': 28.0497,
+        'description': 'We will complete the course about motorcycle maintenance together',
+        'start_date': '2016-07-25',
+        'weeks': '6',
+        'meeting_time': '19:00',
+        'duration': '90',
+        'timezone': 'Africa/Johannesburg',
+        'venue_website': 'http://venue.com',
     }
 
     def setUp(self):
@@ -47,54 +66,6 @@ class TestFacilitatorViews(TestCase):
         user.is_superuser = True
         user.is_staff = True
         user.save()
-
-    @patch('studygroups.views.facilitate.add_member_to_list')
-    def test_facilitator_signup(self, add_member_to_list):
-        c = Client()
-        data = {
-            "username": "test@example.net",
-            "first_name": "firstname",
-            "last_name": "lastname",
-            "mailing_list_signup": "on",
-        }
-        resp = c.post('/en/facilitator/signup/', data)
-        self.assertRedirects(resp, '/en/facilitator/signup/success/')
-        users = User.objects.filter(email__iexact=data['username'])
-        self.assertEquals(users.count(), 1)
-        facilitator = Facilitator.objects.get(user=users.first())
-        self.assertEquals(facilitator.mailing_list_signup, True)
-        self.assertTrue(add_member_to_list.called)
-        self.assertEquals(len(mail.outbox), 1) ##
-        self.assertIn('New facilitator account created on', mail.outbox[0].subject)
-
-
-    @patch('studygroups.views.facilitate.add_member_to_list')
-    def test_facilitator_signup_with_mixed_case(self, add_member_to_list):
-        c = Client()
-        data = {
-            "username": "ThIsNoTaGoOd@EmAil.CoM",
-            "first_name": "firstname",
-            "last_name": "lastname"
-        }
-        resp = c.post('/en/facilitator/signup/', data)
-        self.assertRedirects(resp, '/en/facilitator/signup/success/')
-        data['username'] = data['username'].upper()
-        resp = c.post('/en/facilitator/signup/', data)
-        users = User.objects.filter(username__iexact=data['username'])
-        self.assertEquals(users.count(), 1)
-        facilitator = Facilitator.objects.get(user=users.first())
-        self.assertFalse(facilitator.mailing_list_signup)
-        self.assertFalse(add_member_to_list.called)
-        self.assertEquals(len(mail.outbox), 1)
-        self.assertIn('New facilitator account created on', mail.outbox[0].subject)
-
-
-    def test_facilitator_login_redirect(self):
-        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
-        c = Client()
-        c.login(username='bob123', password='password')
-        resp = c.get('/en/login_redirect/')
-        self.assertRedirects(resp, '/en/facilitator/')
 
 
     def test_user_forbidden(self):
@@ -146,36 +117,41 @@ class TestFacilitatorViews(TestCase):
         assertStatus('/en/studygroup/1/meeting/2/feedback/create/', 404)
 
 
-    def test_create_study_group(self):
-        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
+    @patch('custom_registration.signals.handle_new_facilitator')
+    def test_publish_study_group(self, handle_new_facilitator):
+        user = create_user('bob@example.net', 'bob', 'test', 'password', False)
+        confirm_user_email(user)
         c = Client()
-        c.login(username='bob123', password='password')
-        study_group_data = {
-            'course': '1',
-            'venue_name': 'My house',
-            'venue_details': 'Garrage at my house',
-            'venue_address': 'Rosemary Street 6',
-            'city': 'Johannesburg',
-            'latitude': -26.205, 
-            'longitude': 28.0497,
-            'description': 'We will complete the course about motorcycle maintenance together',
-            'start_date': '07/25/2016',
-            'weeks': '6',
-            'meeting_time': '07:00 PM',
-            'duration': '90',
-            'timezone': 'Africa/Johannesburg',
-            'venue_website': 'http://venue.com'
-            #'image':
-        }
-        resp = c.post('/en/facilitator/study_group/create/', study_group_data)
-        self.assertRedirects(resp, '/en/facilitator/')
+        c.login(username='bob@example.net', password='password')
+
+        resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
+        self.assertEquals(resp.json()['status'], 'created')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
-        self.assertEquals(study_groups.first().studygroupmeeting_set.count(), 6)
-        self.assertEquals(len(mail.outbox), 1)
-        self.assertEquals(mail.outbox[0].subject, 'Your Learning Circle has been created! What next?')
-        self.assertIn('bob@example.net', mail.outbox[0].to)
-        self.assertIn('community@localhost', mail.outbox[0].bcc)
+        self.assertEquals(study_groups.first().meeting_set.count(), 0)
+
+        resp = c.post('/en/studygroup/{0}/publish/'.format(study_groups.first().pk))
+        self.assertRedirects(resp, '/en/facilitator/')
+        study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
+        self.assertEquals(study_group.draft, False)
+        self.assertEquals(study_group.meeting_set.count(), 6)
+
+
+    @patch('custom_registration.signals.handle_new_facilitator')
+    def test_publish_study_group_email_unconfirmed(self, handle_new_facilitator):
+        user = create_user('bob@example.net', 'bob', 'test', 'password', False)
+        c = Client()
+        c.login(username='bob@example.net', password='password')
+
+        resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
+        self.assertEquals(resp.json()['status'], 'created')
+        study_groups = StudyGroup.objects.filter(facilitator=user)
+        self.assertEquals(study_groups.count(), 1)
+
+        resp = c.post('/en/studygroup/{0}/publish/'.format(study_groups.first().pk))
+        self.assertRedirects(resp, '/en/facilitator/')
+        study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
+        self.assertEquals(study_group.draft, True)
 
 
     @patch('studygroups.models.send_message')
@@ -267,7 +243,7 @@ class TestFacilitatorViews(TestCase):
         c = Client()
         c.login(username='faci1@team.com', password='1234')
         study_group = StudyGroup.objects.get(pk=1)
-        meeting = StudyGroupMeeting()
+        meeting = Meeting()
         meeting.study_group = study_group
         meeting.meeting_time = timezone.now().time()
         meeting.meeting_date = timezone.now().date() - datetime.timedelta(days=1)
@@ -329,6 +305,7 @@ class TestFacilitatorViews(TestCase):
         self.assertRedirects(resp, '/en/facilitator/')
         self.assertEquals(TeamMembership.objects.filter(team=team, role=TeamMembership.MEMBER, user=faci1).count(), 0)
         self.assertFalse(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email__iexact=faci1.email).responded_at is None)
+
 
     def test_edit_course(self):
         user = User.objects.create_user('bob123', 'bob@example.net', 'password')
