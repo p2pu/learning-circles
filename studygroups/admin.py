@@ -7,7 +7,7 @@ from studygroups.models import Meeting
 from studygroups.models import Application 
 from studygroups.models import Reminder 
 from studygroups.models import Activity
-from studygroups.models import Organizer
+from studygroups.models import Profile
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
@@ -82,3 +82,4 @@ admin.site.register(Application, ApplicationAdmin)
 admin.site.register(Reminder, ReminderAdmin)
 admin.site.register(Team, TeamAdmin)
 admin.site.register(TeamInvitation)
+admin.site.register(Profile)
