@@ -5,9 +5,15 @@
 <p>{% blocktrans with name=study_group.facilitator.first_name %}Hi {{name}}{% endblocktrans %},</p>
 
 {% url 'studygroups_signup' location=study_group.venue_name|slugify study_group_id=study_group.pk as study_group_url%}
+{% if study_group.draft %}
+{% blocktrans %}
+<p>Congratulations! Your Learning Circle has been created.</p>
+{% endblocktrans %}
+{% else %}
 {% blocktrans %}
     <p>Congratulations! Your Learning Circle is now live at: <a href="{{protocol}}://{{domain}}{{study_group_url}}">{{protocol}}://{{domain}}{{study_group_url}}</a></p>
 {% endblocktrans %}
+{% endif %}
 
 <p>{% trans "What next?" %}
 <ul>
