@@ -55,27 +55,6 @@
           <a class="btn btn-primary" href="{{activity.card.url}}" target="_blank">{{activity.description}}</a>
         {% endfor %}
         </p>
-
-        {% comment %}
-        <p><strong>{% trans "Next meeting" %}:</strong>{% if lc.next_meeting %} {{ lc.next_meeting.meeting_date|date:"D d M Y" }} {% trans "at" %} {{ lc.next_meeting.meeting_time|time:"f A" }}{% else %} {% trans "No meeting scheduled" %}.{% endif %}</p>
-        {% if lc.next_meeting.meeting_activity %}
-        <p><strong>{% trans "Upcoming recipe card" %}:</strong> <a href="{{ lc.next_meeting.meeting_activity.card.url }}" target="_blank">{{ lc.next_meeting.meeting_activity.description }}</a></p>
-        {% endif %}
-        <p>
-        <strong>{% trans "Attending" %} ({{ lc.next_meeting.rsvps.yes|length }}):</strong>
-        {% for rsvp in lc.next_meeting.rsvps.yes %}
-        {{ rsvp.application.name }}
-        {% if not forloop.last %}, {% endif %}
-        {% endfor %}
-        </p>
-        <p>
-        <strong>{% trans "Not attending" %} ({{ lc.next_meeting.rsvps.no|length }}):</strong>
-        {% for rsvp in lc.next_meeting.rsvps.no %}
-        {{ rsvp.application.name }}
-        {% if not forloop.last %}, {% endif %}
-        {% endfor %} 
-        </p>
-        {% endcomment %}
       </div>
       <div class="col-md-12">
         <h3>{% trans "Meetings" %} ({{lc.meeting_set.active.count}})</h3>
@@ -164,6 +143,7 @@
               <th>{% trans "Goal" %}</th>
               <th>{% trans "Support" %}</th>
               <th>{% trans "Laptop & headphones" %}</th>
+              {% if lc.signup_question %}<th>{{ lc.signup_question }}</th>{% endif %}
               <th>{% trans "Digital literacy" %}</th>
               <th></th>
             </tr>
@@ -173,15 +153,15 @@
             <tr>
               <td>{{ learner.name }}
                 <br/>
-                {% if learner.email %}
                 &lt;{{learner.email}}&gt;
-                {% else %}
-                &lt;{{learner.mobile}}&gt;
+                {% if learner.email %}
+                  <br/>{{learner.mobile}}
                 {% endif %}
               </td>
               <td>{{ learner.get_signup_questions.goals }}</td>
               <td>{{ learner.get_signup_questions.support }}</td>
               <td>{{ learner.get_signup_questions.computer_access }}</td>
+              {% if lc.signup_question %}<td>{{ learner.get_signup_questions.custom_question }}</td>{% endif %}
               <td class="digital-literacy">
                 {% with dl=learner.digital_literacy_for_display %}
                 {% if dl.use_internet %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.use_internet.question_text}}: {{dl.use_internet.answer_text}}"><i class="fa fa-globe level-{{dl.use_internet.answer}}"></i></button>{% endif %}
