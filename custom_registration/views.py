@@ -147,7 +147,7 @@ class EmailConfirmView(View):
             token = kwargs['token']
             if self.request.user.is_authenticated() and user.pk != self.request.user.pk:
                 # make sure logged in user and user confirming emails are the same people
-                messages.warning(self.request, _('There is a problem with your password confirmation ULR. Please try logging out and then click the link in the email we sent you.'))
+                messages.warning(self.request, _('There is a problem with your password confirmation URL. Please try logging out and then click the link in the email we sent you.'))
                 url = reverse('studygroups_login_redirect')
                 return HttpResponseRedirect(url)
 
@@ -163,7 +163,7 @@ class EmailConfirmView(View):
                 else:
                     confirm_user_email(user)
                     login(self.request, user)
-                    messages.success(self.request, _('Your email address has been confirmed!.'))
+                    messages.success(self.request, _('Your email address has been confirmed!'))
                     # redirect them to dashboard
                     url = reverse('studygroups_facilitator')
                     return HttpResponseRedirect(url)
