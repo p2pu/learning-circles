@@ -22,7 +22,7 @@ from custom_registration.models import create_user
 from custom_registration.models import confirm_user_email
 
 import datetime
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import json
 
 
@@ -104,7 +104,7 @@ class TestFacilitatorViews(TestCase):
 
         def assertStatus(url, status):
             resp = c.get(url)
-            self.assertEquals(resp.status_code, status)
+            self.assertEqual(resp.status_code, status)
         assertAllowed('/en/studygroup/1/')
         assertAllowed('/en/studygroup/1/edit/')
         assertAllowed('/en/studygroup/1/message/compose/')
@@ -125,16 +125,16 @@ class TestFacilitatorViews(TestCase):
         c.login(username='bob@example.net', password='password')
 
         resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
-        self.assertEquals(resp.json()['status'], 'created')
+        self.assertEqual(resp.json()['status'], 'created')
         study_groups = StudyGroup.objects.filter(facilitator=user)
-        self.assertEquals(study_groups.count(), 1)
-        self.assertEquals(study_groups.first().meeting_set.count(), 0)
+        self.assertEqual(study_groups.count(), 1)
+        self.assertEqual(study_groups.first().meeting_set.count(), 0)
 
         resp = c.post('/en/studygroup/{0}/publish/'.format(study_groups.first().pk))
         self.assertRedirects(resp, '/en/facilitator/')
         study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
-        self.assertEquals(study_group.draft, False)
-        self.assertEquals(study_group.meeting_set.count(), 6)
+        self.assertEqual(study_group.draft, False)
+        self.assertEqual(study_group.meeting_set.count(), 6)
 
 
     @patch('custom_registration.signals.handle_new_facilitator')
@@ -144,14 +144,14 @@ class TestFacilitatorViews(TestCase):
         c.login(username='bob@example.net', password='password')
 
         resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
-        self.assertEquals(resp.json()['status'], 'created')
+        self.assertEqual(resp.json()['status'], 'created')
         study_groups = StudyGroup.objects.filter(facilitator=user)
-        self.assertEquals(study_groups.count(), 1)
+        self.assertEqual(study_groups.count(), 1)
 
         resp = c.post('/en/studygroup/{0}/publish/'.format(study_groups.first().pk))
         self.assertRedirects(resp, '/en/facilitator/')
         study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
-        self.assertEquals(study_group.draft, True)
+        self.assertEqual(study_group.draft, True)
 
 
     @patch('studygroups.models.send_message')
@@ -162,16 +162,16 @@ class TestFacilitatorViews(TestCase):
         signup_data = self.APPLICATION_DATA.copy()
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.active().count(), 1)
+        self.assertEqual(Application.objects.active().count(), 1)
         mail.outbox = []
 
         url = '/en/studygroup/{0}/message/compose/'.format(signup_data['study_group'])
-        email_body = u'Hi there!\n\nThe first study group for GED® Prep Math will meet this Thursday, May 7th, from 6:00 pm - 7:45 pm at Edgewater on the 2nd floor. Feel free to bring a study buddy!\nFor any questions you can contact Emily at emily@p2pu.org.\n\nSee you soon'
+        email_body = 'Hi there!\n\nThe first study group for GED® Prep Math will meet this Thursday, May 7th, from 6:00 pm - 7:45 pm at Edgewater on the 2nd floor. Feel free to bring a study buddy!\nFor any questions you can contact Emily at emily@p2pu.org.\n\nSee you soon'
         mail_data = {
-            u'study_group': signup_data['study_group'],
-            u'email_subject': u'GED® Prep Math study group meeting Thursday 7 May 6:00 PM at Edgewater', 
-            u'email_body': email_body, 
-            u'sms_body': 'The first study group for GED® Prep Math will meet next Thursday, May 7th, from 6:00 pm-7:45 pm at Edgewater on the 2nd floor. Feel free to bring a study buddy!'
+            'study_group': signup_data['study_group'],
+            'email_subject': 'GED® Prep Math study group meeting Thursday 7 May 6:00 PM at Edgewater', 
+            'email_body': email_body, 
+            'sms_body': 'The first study group for GED® Prep Math will meet next Thursday, May 7th, from 6:00 pm-7:45 pm at Edgewater on the 2nd floor. Feel free to bring a study buddy!'
         }
         resp = c.post(url, mail_data)
         self.assertRedirects(resp, '/en/facilitator/')
@@ -190,7 +190,7 @@ class TestFacilitatorViews(TestCase):
         signup_data['mobile'] = '+12812345678'
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.active().count(), 1)
+        self.assertEqual(Application.objects.active().count(), 1)
         mail.outbox = []
 
         url = '/en/studygroup/{0}/message/compose/'.format(signup_data['study_group'])
@@ -214,7 +214,7 @@ class TestFacilitatorViews(TestCase):
         signup_data['mobile'] = '+12812345678'
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.active().count(), 1)
+        self.assertEqual(Application.objects.active().count(), 1)
         mail.outbox = []
 
         url = '/en/studygroup/{0}/message/compose/'.format(signup_data['study_group'])
@@ -259,10 +259,10 @@ class TestFacilitatorViews(TestCase):
         feedback_url = '/en/studygroup/1/meeting/{0}/feedback/create/'.format(meeting.id)
         self.assertEqual(len(mail.outbox), 0)
         resp = c.post(feedback_url, feedback_data)
-        self.assertEquals(resp.status_code, 302)
+        self.assertEqual(resp.status_code, 302)
         # make sure email was sent to organizers
-        self.assertEquals(len(mail.outbox), 1)
-        self.assertEquals(Feedback.objects.filter(study_group_meeting=meeting).count(), 1)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(Feedback.objects.filter(study_group_meeting=meeting).count(), 1)
     
 
     def test_user_accept_invitation(self):
@@ -283,7 +283,7 @@ class TestFacilitatorViews(TestCase):
         self.assertTrue(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email__iexact=faci1.email).responded_at is None)
         resp = c.post('/en/facilitator/team-invitation/', {'response': 'yes'})
         self.assertRedirects(resp, '/en/facilitator/')
-        self.assertEquals(TeamMembership.objects.filter(team=team, role=TeamMembership.MEMBER, user=faci1).count(), 1)
+        self.assertEqual(TeamMembership.objects.filter(team=team, role=TeamMembership.MEMBER, user=faci1).count(), 1)
         self.assertFalse(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email__iexact=faci1.email).responded_at is None)
 
 
@@ -303,7 +303,7 @@ class TestFacilitatorViews(TestCase):
         self.assertTrue(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email__iexact=faci1.email).responded_at is None)
         resp = c.post('/en/facilitator/team-invitation/', {'response': 'no'})
         self.assertRedirects(resp, '/en/facilitator/')
-        self.assertEquals(TeamMembership.objects.filter(team=team, role=TeamMembership.MEMBER, user=faci1).count(), 0)
+        self.assertEqual(TeamMembership.objects.filter(team=team, role=TeamMembership.MEMBER, user=faci1).count(), 0)
         self.assertFalse(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email__iexact=faci1.email).responded_at is None)
 
 
@@ -349,10 +349,10 @@ class TestFacilitatorViews(TestCase):
         c.login(username='bob321', password='password')
         course_url = '/en/course/{}/edit/'.format(course.id)
         resp = c.get(course_url)
-        self.assertEquals(resp.status_code, 403)
+        self.assertEqual(resp.status_code, 403)
         course_data['topics'] = 'magic'
         resp = c.post(course_url, course_data)
-        self.assertEquals(resp.status_code, 403)
+        self.assertEqual(resp.status_code, 403)
         self.assertEqual(Course.objects.get(pk=course.id).topics, 'html,test')
 
 

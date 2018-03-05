@@ -23,7 +23,7 @@ import datetime
 import pytz
 import re
 import json
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import logging
 
 logger = logging.getLogger(__name__)
@@ -158,7 +158,7 @@ class TeamInvitation(models.Model):
     joined = models.NullBooleanField(null=True)
 
     def __unicode__(self):
-        return u'Invatation <{} to join {}>'.format(self.email, self.team.name)
+        return 'Invatation <{} to join {}>'.format(self.email, self.team.name)
 
 
 class StudyGroupQuerySet(SoftDeleteQuerySet):
@@ -277,7 +277,7 @@ class StudyGroup(LifeTimeTrackingModel):
 
 
     def __unicode__(self):
-        return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day(), self.meeting_time, self.venue_name)
+        return '{0} - {1}s {2} at the {3}'.format(self.course.title, self.day(), self.meeting_time, self.venue_name)
 
 
 class Application(LifeTimeTrackingModel):
@@ -289,7 +289,7 @@ class Application(LifeTimeTrackingModel):
     accepted_at = models.DateTimeField(blank=True, null=True)
 
     def __unicode__(self):
-        return u"{0} <{1}>".format(self.name, self.email if self.email else self.mobile)
+        return "{0} <{1}>".format(self.name, self.email if self.email else self.mobile)
 
     def unapply_link(self):
         domain = 'https://{0}'.format(settings.DOMAIN)
@@ -312,16 +312,16 @@ class Application(LifeTimeTrackingModel):
     }
 
     DIGITAL_LITERACY_CHOICES = (
-        ('0', _(u'Can\'t do')),
-        ('1', _(u'Need help doing')),
-        ('2', _(u'Can do with difficulty')),
-        ('3', _(u'Can do')),
-        ('4', _(u'Expert (can teach others)')),
+        ('0', _('Can\'t do')),
+        ('1', _('Need help doing')),
+        ('2', _('Can do with difficulty')),
+        ('3', _('Can do')),
+        ('4', _('Expert (can teach others)')),
     )
 
     def digital_literacy_for_display(self):
         answers = json.loads(self.signup_questions)
-        return { q: {'question_text': text, 'answer': answers.get(q), 'answer_text': dict(self.DIGITAL_LITERACY_CHOICES).get(answers.get(q)) if q in answers else ''} for q, text in self.DIGITAL_LITERACY_QUESTIONS.iteritems() if answers.get(q) }
+        return { q: {'question_text': text, 'answer': answers.get(q), 'answer_text': dict(self.DIGITAL_LITERACY_CHOICES).get(answers.get(q)) if q in answers else ''} for q, text in list(self.DIGITAL_LITERACY_QUESTIONS.items()) if answers.get(q) }
 
 
 class Meeting(LifeTimeTrackingModel):
@@ -370,7 +370,7 @@ class Meeting(LifeTimeTrackingModel):
 
     def __unicode__(self):
         tz = pytz.timezone(self.study_group.timezone)
-        return u'{0}, {1} at {2}'.format(self.study_group.course.title, self.meeting_datetime(), self.study_group.venue_name)
+        return '{0}, {1} at {2}'.format(self.study_group.course.title, self.meeting_datetime(), self.study_group.venue_name)
 
     def to_json(self):
         data = {
@@ -398,7 +398,7 @@ class Rsvp(models.Model):
     attending = models.BooleanField()
 
     def __unicode__(self):
-        return u'{0} ({1})'.format(self.application, 'yes' if self.attending else 'no')
+        return '{0} ({1})'.format(self.application, 'yes' if self.attending else 'no')
 
 
 class Feedback(LifeTimeTrackingModel):
@@ -502,7 +502,7 @@ def generate_reminder(study_group):
             reminder.sms_body = reminder.sms_body[:160]
             reminder.save()
 
-            facilitator_notification_subject = u'A reminder for {0} was generated'.format(study_group.course.title)
+            facilitator_notification_subject = 'A reminder for {0} was generated'.format(study_group.course.title)
             facilitator_notification_html = render_to_string(
                 'studygroups/email/reminder_notification.html',
                 context
@@ -538,7 +538,7 @@ def send_survey_reminder(study_group):
         slug = '{}-{}'.format(slugify(study_group.venue_name), study_group.id)
         learning_circle_text = "{} at {} ({})".format(study_group.course.title, study_group.venue_name, slug)
         context = {
-            'learning_circle':  urllib.quote(learning_circle_text)
+            'learning_circle':  urllib.parse.quote(learning_circle_text)
         }
         subject = render_to_string(
             'studygroups/email/learner_survey_reminder-subject.txt',
@@ -581,7 +581,7 @@ def send_facilitator_survey(study_group):
         slug = '{}-{}'.format(slugify(study_group.venue_name), study_group.id)
         learning_circle_text = "{} at {} ({})".format(study_group.course.title, study_group.venue_name, slug)
         context = {
-            'learning_circle_slug':  urllib.quote(learning_circle_text)
+            'learning_circle_slug':  urllib.parse.quote(learning_circle_text)
         }
         timezone.deactivate()
         subject, txt, html = render_email_templates(
@@ -630,7 +630,7 @@ def send_reminder(reminder):
                     fail_silently=False
                 )
             except Exception as e:
-                logger.exception(u'Could not send email to ', email, exc_info=e)
+                logger.exception('Could not send email to ', email, exc_info=e)
         # Send to organizer without RSVP & unsubscribe links
         try:
             send_mail(
@@ -641,11 +641,11 @@ def send_reminder(reminder):
                 fail_silently=False
             )
         except Exception as e:
-            logger.exception(u'Could not send email to ', reminder.study_group.facilitator.email, exc_info=e)
+            logger.exception('Could not send email to ', reminder.study_group.facilitator.email, exc_info=e)
     else:
         email_body = reminder.email_body
         # TODO i18n
-        email_body = u'{0}\n\nTo leave this Learning Circle you can visit https://{1}{2}'.format(email_body, settings.DOMAIN, reverse('studygroups_optout'))
+        email_body = '{0}\n\nTo leave this Learning Circle you can visit https://{1}{2}'.format(email_body, settings.DOMAIN, reverse('studygroups_optout'))
         # TODO - all emails should contain the unsubscribe link
         to += [reminder.study_group.facilitator.email]
         try:
@@ -669,7 +669,7 @@ def send_reminder(reminder):
                 #if reminder.study_group_meeting:
                 send_message(to, reminder.sms_body)
             except TwilioRestException as e:
-                logger.exception(u"Could not send text message to %s", to, exc_info=e)
+                logger.exception("Could not send text message to %s", to, exc_info=e)
 
 
 def create_rsvp(contact, study_group, meeting_datetime, attending):

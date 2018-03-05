@@ -34,8 +34,8 @@ import calendar
 import datetime
 import pytz
 import re
-import urlparse
-import urllib
+import urllib.parse
+import urllib.request, urllib.parse, urllib.error
 import json
 
 # Create your tests here.
@@ -236,8 +236,8 @@ class TestSignupModels(TestCase):
         self.assertEqual(len(mail.outbox), 3) # should be sent to facilitator & application
         self.assertEqual(mail.outbox[1].to[0], data['email'])
         self.assertFalse(send_message.called)
-        self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=yes&sig='.format(get_language(), urllib.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].body)
-        self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=no&sig='.format(get_language(), urllib.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].body)
+        self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=yes&sig='.format(get_language(), urllib.parse.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].body)
+        self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=no&sig='.format(get_language(), urllib.parse.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].body)
         self.assertIn('https://example.net/{0}/optout/confirm/?user='.format(get_language()), mail.outbox[1].body)
 
 
@@ -362,7 +362,7 @@ class TestSignupModels(TestCase):
         application.save()
         qs = application.unapply_link()
         qs = qs[qs.index('?')+1:]
-        sig = urlparse.parse_qs(qs).get('sig')[0]
+        sig = urllib.parse.parse_qs(qs).get('sig')[0]
         self.assertTrue(check_unsubscribe_signature(application.pk, sig))
         self.assertFalse(check_unsubscribe_signature(application.pk+1, sig))
 
@@ -370,7 +370,7 @@ class TestSignupModels(TestCase):
     def test_rsvp_signing(self):
         meeting_date = timezone.datetime(2015,9,17,17,0, tzinfo=timezone.utc)
         qs = gen_rsvp_querystring('test@mail.com', '1', meeting_date, 'yes')
-        sig = urlparse.parse_qs(qs).get('sig')[0]
+        sig = urllib.parse.parse_qs(qs).get('sig')[0]
         self.assertTrue(check_rsvp_signature('test@mail.com', '1', meeting_date, 'yes', sig))
         self.assertFalse(check_rsvp_signature('tes@mail.com', '1', meeting_date, 'yes', sig))
         self.assertFalse(check_rsvp_signature('test@mail.com', '2', meeting_date, 'yes', sig))

@@ -33,11 +33,11 @@ class TestCustomRegistrationViews(TestCase):
         resp = c.post('/en/accounts/register/', data)
         self.assertRedirects(resp, '/en/facilitator/')
         users = User.objects.filter(email__iexact=data['email'])
-        self.assertEquals(users.count(), 1)
+        self.assertEqual(users.count(), 1)
         profile = Profile.objects.get(user=users.first())
-        self.assertEquals(profile.mailing_list_signup, True)
+        self.assertEqual(profile.mailing_list_signup, True)
         self.assertTrue(add_member_to_list.called)
-        self.assertEquals(len(mail.outbox), 1) ##
+        self.assertEqual(len(mail.outbox), 1) ##
         self.assertIn('Please confirm your email address', mail.outbox[0].subject)
 
 
@@ -56,11 +56,11 @@ class TestCustomRegistrationViews(TestCase):
         data['email'] = data['email'].upper()
         resp = c.post('/en/accounts/register/', data)
         users = User.objects.filter(username__iexact=data['email'])
-        self.assertEquals(users.count(), 1)
+        self.assertEqual(users.count(), 1)
         profile = Profile.objects.get(user=users.first())
         self.assertFalse(profile.mailing_list_signup)
         self.assertFalse(add_member_to_list.called)
-        self.assertEquals(len(mail.outbox), 1)
+        self.assertEqual(len(mail.outbox), 1)
         self.assertIn('Please confirm your email', mail.outbox[0].subject)
 
 
@@ -69,7 +69,7 @@ class TestCustomRegistrationViews(TestCase):
         c = Client()
         c.login(username='bob123', password='password')
         resp = c.get('/en/accounts/login/', follow=True)
-        self.assertEquals(resp.redirect_chain, [
+        self.assertEqual(resp.redirect_chain, [
             ('/login_redirect/', 302),
             ('/en/login_redirect/', 302),
             ('/en/facilitator/', 302)
@@ -83,15 +83,15 @@ class TestCustomRegistrationViews(TestCase):
         resp = c.post('/en/accounts/password_reset/', {
             'email': 'bob@example.net'
         })
-        self.assertEquals(len(mail.outbox), 1)
-        self.assertEquals(mail.outbox[0].to[0], 'bob@example.net')
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to[0], 'bob@example.net')
 
         mail.outbox = []
         resp = c.post('/en/accounts/password_reset/', {
             'email': 'BOB@example.net'
         })
-        self.assertEquals(len(mail.outbox), 1)
-        self.assertEquals(mail.outbox[0].to[0], 'BOB@example.net')
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to[0], 'BOB@example.net')
 
 
     # Test /reset/uuidb64/token/ to verify url and test automatic login
@@ -101,7 +101,7 @@ class TestCustomRegistrationViews(TestCase):
         resp = c.post('/en/accounts/password_reset/', {
             'email': 'bob@example.net'
         })
-        self.assertEquals(len(mail.outbox), 1)
+        self.assertEqual(len(mail.outbox), 1)
 
         match = re.search(r'/en/accounts/reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/', mail.outbox[0].body)
         reset_url = match.group(0)
@@ -169,7 +169,7 @@ class TestCustomRegistrationViews(TestCase):
         self.assertIn(user.email, mail.outbox[0].to)
         self.assertEqual(mail.outbox[0].subject, 'Please confirm your email address')
         bob = User.objects.get(email=user.email)
-        self.assertEquals(bob.profile.email_confirmed_at, None)
+        self.assertEqual(bob.profile.email_confirmed_at, None)
 
 
     def test_email_address_confirm(self):
@@ -189,7 +189,7 @@ class TestCustomRegistrationViews(TestCase):
         )
         self.assertEqual(len(mail.outbox), 1)
         bob = User.objects.get(email=data['email'])
-        self.assertEquals(bob.profile.email_confirmed_at, None)
+        self.assertEqual(bob.profile.email_confirmed_at, None)
 
         # get email confirmation URL
         match = re.search(r'/en/accounts/email_confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/', mail.outbox[0].body)
@@ -198,6 +198,6 @@ class TestCustomRegistrationViews(TestCase):
         res = c.get(confirm_url)
         self.assertRedirects(res, '/en/facilitator/')
         bob = User.objects.get(email=data['email'])
-        self.assertNotEquals(bob.profile.email_confirmed_at, None)
+        self.assertNotEqual(bob.profile.email_confirmed_at, None)
 
 

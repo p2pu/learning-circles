@@ -1,6 +1,6 @@
 from django.conf import settings
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import hmac
 import hashlib
 
@@ -8,13 +8,17 @@ def gen_unsubscribe_querystring(user):
     qs = [
         ('user', user),
     ]
-    sig = hmac.new(settings.SECRET_KEY, urllib.urlencode(qs), hashlib.sha256).hexdigest()
+    key = bytes(settings.SECRET_KEY, 'latin-1')
+    data = bytes(urllib.parse.urlencode(qs), 'latin-1')
+    sig = hmac.new(key, data, hashlib.sha256).hexdigest()
     qs.append( ('sig', sig) )
-    return urllib.urlencode(qs)
+    return urllib.parse.urlencode(qs)
 
 
 def check_unsubscribe_signature(user, sig):
     qs = [
         ('user', user),
     ]
-    return sig == hmac.new(settings.SECRET_KEY, urllib.urlencode(qs), hashlib.sha256).hexdigest()
+    key = bytes(settings.SECRET_KEY, 'latin-1')
+    data = bytes(urllib.parse.urlencode(qs), 'latin-1')
+    return sig == hmac.new(key, data, hashlib.sha256).hexdigest()
