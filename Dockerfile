@@ -8,23 +8,29 @@ RUN apk --no-cache add --virtual native-deps \
 COPY . /opt/app/
 RUN npm run build:production
 
-FROM ubuntu:16.04
-RUN apt-get update && apt-get install -y \
-    libpq-dev \
-    postgresql-client \
-    python \
-    python-dev \
-    python-virtualenv \
-    bzip2
+FROM python:3.6-alpine
+RUN apk --no-cache add --virtual build-deps \
+    gcc \
+    make \
+    libc-dev \
+    musl-dev \
+    linux-headers \
+    pcre-dev \
+    postgresql-dev \
+    jpeg-dev \
+    zlib-dev
 WORKDIR /opt/app/
 COPY requirements.txt /opt/app/
-RUN virtualenv /opt/django-venv && /opt/django-venv/bin/pip install -r /opt/app/requirements.txt
+RUN python3 -m venv /opt/django-venv && /opt/django-venv/bin/pip install -r /opt/app/requirements.txt
 COPY . /opt/app/
 # Copy CSS & compiled JavaScript
 COPY --from=frontend /opt/app/assets assets
 COPY config/wait-for-it.sh /wait-for-it.sh
 COPY config/docker-entry.sh /docker-entry.sh
-RUN mkdir -p /var/lib/celery && useradd celery && chown celery:celery /var/lib/celery/
+RUN mkdir -p /var/lib/celery && \
+    addgroup -g 1000 -S celery && \
+    adduser -u 1000 -S celery -G celery && \
+    chown celery:celery /var/lib/celery/
 ENV DATABASE_URL="sqlite:////var/app/db.sqlite3" \
     ADMIN_EMAIL="" \
     SECRET_KEY="" \
