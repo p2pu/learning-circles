@@ -8,32 +8,37 @@ RUN apk --no-cache add --virtual native-deps \
 COPY . /opt/app/
 RUN npm run build:production
 
-FROM python:3.6
-RUN apt-get update && apt-get install -y \
-    libpq-dev \
-    postgresql-client \
-    bzip2
-#RUN apk --no-cache add --virtual build-deps \
-#    gcc \
-#    make \
-#    libc-dev \
-#    musl-dev \
-#    linux-headers \
-#    pcre-dev \
-#    postgresql-dev \
-#    jpeg-dev \
-#    zlib-dev
+FROM python:3.6-alpine
 WORKDIR /opt/app/
 COPY requirements.txt /opt/app/
-RUN python3 -m venv /opt/django-venv && /opt/django-venv/bin/pip install -r /opt/app/requirements.txt
+RUN apk --no-cache add --virtual .python-rundeps \
+        libpq \
+        libjpeg \
+        zlib \
+    && apk --no-cache add --virtual .build-deps \
+        gcc \
+        make \
+        musl-dev \
+        linux-headers \
+        postgresql-dev \
+        jpeg-dev \
+        zlib-dev \
+    && python3 -m venv /opt/django-venv \
+    && /opt/django-venv/bin/pip install -r /opt/app/requirements.txt \
+    && apk del .build-deps
 COPY . /opt/app/
 # Copy CSS & compiled JavaScript
 COPY --from=frontend /opt/app/assets assets
-COPY config/wait-for-it.sh /wait-for-it.sh
 COPY config/docker-entry.sh /docker-entry.sh
 RUN mkdir -p /var/lib/celery && \
-    useradd celery && \
+    addgroup -g 1000 -S celery && \
+    adduser -u 1000 -S celery -G celery && \
     chown celery:celery /var/lib/celery/
+RUN apk add --no-cache openssl
+ENV DOCKERIZE_VERSION v0.6.0
+RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 ENV DATABASE_URL="sqlite:////var/app/db.sqlite3" \
     ADMIN_EMAIL="" \
     SECRET_KEY="" \
