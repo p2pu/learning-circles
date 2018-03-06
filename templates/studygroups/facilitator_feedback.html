@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+    <form id="facilitator-feedback-form" cf-form style="opacity: 0">
+      <cf-robot-message cf-questions="Thanks for taking the time to fill out this survey."></cf-robot-message>
+      <cf-robot-message cf-questions="Everything you write will be kept anonymous."></cf-robot-message>
+      <label for="radio">
+        <input cf-questions="Ready to start?" cf-label="Yes!" type="radio" value="0">
+          Start
+      </label>
+
+      <fieldset cf-questions="Have you heard or seen evidence that the learners:">
+        <input type="checkbox" name="evidence" cf-label="Discuss the learning circle subject matter more confidently" />
+        <input type="checkbox" name="evidence" cf-label="Improve technology skills (e.g. using the internet, navigating online courses)" />
+        <input type="checkbox" name="evidence" cf-label="Set learning goals" />
+        <input type="checkbox" name="evidence" cf-label="Develop interpersonal skills (e.g. speaking in public, giving feedback, making friends)" />
+        <input type="checkbox" name="evidence" cf-label="Use the library outside of the learning circle" />
+      </fieldset>
+
+      <label for="rewarding_activities">
+        Were there particular activities, events or occurrences that you found rewarding for learners?
+        <textarea name="rewarding_activities" id="rewarding_activities" cols="30" rows="10"></textarea>
+      </label>
+
+      <label for="challenges">
+        What challenges did you face as a facilitator? How can we make this more rewarding for you?
+        <textarea name="challenges" id="challenges" cols="30" rows="10"></textarea>
+      </label>
+
+      <label for="manual_tasks">
+        What is taking a lot of time manually that we might be able to automate or help with?
+        <textarea name="manual_tasks" id="manual_tasks" cols="30" rows="10"></textarea>
+      </label>
+
+      <label for="skills_learned">
+        What skills have you learned as a facilitator?
+        <textarea name="skills_learned" id="skills_learned" cols="30" rows="10"></textarea>
+      </label>
+
+      <label for="tip">
+        What is a tip you'd give to future learning circle facilitators?
+        <textarea name="tip" id="tip" cols="30" rows="10"></textarea>
+      </label>
+
+      <fieldset cf-questions="Did your learning circle meet at a library?">
+        <input type="radio" name="met_at_library" cf-label="Yes" />
+        <input type="radio" name="met_at_library" cf-label="No" />
+      </fieldset>
+
+      <fieldset cf-questions="Did meeting at the library (as opposed to somewhere else) contribute to your learning goals and overall experience?">
+        <input type="radio" name="library_positive_effect" cf-label="Yes" />
+        <input type="radio" name="library_positive_effect" cf-label="No" />
+      </fieldset>
+
+      <label for="library_goals">
+        Do you think learning circles reinforce the goals of the library? If yes, in which ways? If no, why not?
+        <textarea name="library_goals" id="library_goals" cols="30" rows="10"></textarea>
+      </label>
+
+      <fieldset cf-questions="What do you want from learning circles in the future?">
+        <input type="checkbox" name="future" cf-label="I want to run another learning circle" />
+        <input type="checkbox" name="future" cf-label="I want to promote learning circles within my organization or community" />
+        <input type="checkbox" name="future" cf-label="I want to help create more open education courses" />
+        <input type="checkbox" name="future" cf-label="I want to promote learning circles and P2PU in new spaces and I've got some great ideas how." />
+        <input type="checkbox" name="future" cf-label="I want to help onboard new facilitators" />
+        <input type="checkbox" name="future" cf-label="People who facilitate this online course can contact me" />
+      </fieldset>
+
+      <fieldset cf-questions="Should we follow up with you about next steps?">
+        <input type="radio" name="follow_up" cf-label="Yes" />
+        <input type="radio" name="follow_up" cf-label="No" />
+      </fieldset>
+
+      <label for="comments">
+        Anything else you want to say?
+        <textarea name="comments" id="comments" cols="30" rows="10"></textarea>
+      </label>
+
+      <cf-robot-message cf-questions="Thant's it, thanks for your feedback!"></cf-robot-message>
+    </form>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/space10-community/conversational-form@0.9.80/dist/conversational-form.min.js" crossorigin></script>
+{% endblock %}
