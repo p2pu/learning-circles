@@ -41,9 +41,6 @@ export default class RegistrationModal extends React.Component {
     const data = this.state.user;
     const url = this.state.registration ? API_ENDPOINTS.registration : API_ENDPOINTS.login;
 
-    console.log('login url', url)
-    console.log('login data', data)
-
     axios({
       url,
       data,
