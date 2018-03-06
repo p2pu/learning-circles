@@ -46,7 +46,6 @@ class TestSignupModels(TestCase):
     APPLICATION_DATA = {
         'name': 'Test User',
         'email': 'test@mail.com',
-
         'signup_questions': json.dumps({
             'computer_access': 'Yes',
             'goals': 'try hard',
@@ -239,6 +238,38 @@ class TestSignupModels(TestCase):
         self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=yes&sig='.format(get_language(), urllib.parse.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].body)
         self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=no&sig='.format(get_language(), urllib.parse.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].body)
         self.assertIn('https://example.net/{0}/optout/confirm/?user='.format(get_language()), mail.outbox[1].body)
+
+
+    @patch('studygroups.models.send_message')
+    def test_facilitator_reminder_email_links(self, send_message):
+        now = timezone.now()
+        sg = StudyGroup.objects.get(pk=1)
+        sg.timezone = now.strftime("%Z")
+        sg.start_date = now - datetime.timedelta(days=5)
+        sg.meeting_time = sg.start_date.time()
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
+        sg.save()
+        sg = StudyGroup.objects.get(pk=1)
+        data = self.APPLICATION_DATA
+        data['study_group'] = sg
+        application = Application(**data)
+        accept_application(application)
+        application.save()
+        mail.outbox = []
+        generate_all_meetings(sg)
+        generate_reminder(sg)
+        self.assertEqual(Reminder.objects.all().count(), 1)
+        reminder = Reminder.objects.all()[0]
+        self.assertEqual(len(mail.outbox), 1)
+        mail.outbox = []
+        send_reminder(reminder)
+        self.assertEqual(len(mail.outbox), 2) # should be sent to facilitator & application
+        self.assertEqual(mail.outbox[0].to[0], data['email'])
+        self.assertEqual(mail.outbox[1].to[0], sg.facilitator.email)
+        self.assertFalse(send_message.called)
+        self.assertNotIn('https://example.net/{0}/rsvp/'.format(get_language()), mail.outbox[1].body)
+        self.assertIn('https://example.net/{0}/facilitator/'.format(get_language()), mail.outbox[1].body)
+        self.assertNotIn('https://example.net/{0}/optout/confirm/?user='.format(get_language()), mail.outbox[1].body)
 
 
     @patch('studygroups.models.send_message')

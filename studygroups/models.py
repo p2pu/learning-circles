@@ -633,9 +633,16 @@ def send_reminder(reminder):
                 logger.exception('Could not send email to ', email, exc_info=e)
         # Send to organizer without RSVP & unsubscribe links
         try:
+            url = reverse('studygroups_facilitator')
+            dash_link = 'https://{}{}'.format(settings.DOMAIN, url)
+            email_body = reminder.email_body
+            email_body = re.sub(r'\(<!--RSVP:YES-->.*\)', dash_link, email_body)
+            email_body = re.sub(r'\(<!--RSVP:NO-->.*\)', dash_link, email_body)
+            email_body = re.sub(r'\(<!--UNSUBSCRIBE-->.*\)', dash_link, email_body)
+
             send_mail(
                 reminder.email_subject.strip('\n'),
-                reminder.email_body,
+                email_body,
                 reminder.study_group.facilitator.email,
                 [reminder.study_group.facilitator.email],
                 fail_silently=False
