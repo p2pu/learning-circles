@@ -230,7 +230,7 @@ class StudyGroup(LifeTimeTrackingModel):
 
     @property
     def weeks(self):
-        return (self.end_date - self.start_date).days/7 + 1
+        return (self.end_date - self.start_date).days//7 + 1
 
 
     def to_dict(self):
