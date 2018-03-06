@@ -53,7 +53,7 @@ const ActionBar = (props) => {
         <BackButton onClick={prevTab} />
         <CancelButton onClick={props.onCancel} />
         <SaveButton onClick={props.onSubmitForm} text={'Save & publish later'} />
-        <PublishButton onClick={() => props.updateFormData({ draft: false}, props.onSubmitForm)} />
+        <PublishButton onClick={() => props.onSubmitForm(false)} />
       </div>
     )
   }
