@@ -91,7 +91,7 @@ class Course(LifeTimeTrackingModel):
     unlisted = models.BooleanField(default=False)
 
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 
@@ -101,7 +101,7 @@ class Activity(models.Model):
     index = models.PositiveIntegerField(help_text=_('meeting index this activity corresponds to'))
     card = models.FileField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.description
 
 
@@ -111,16 +111,16 @@ class Profile(models.Model):
     mailing_list_signup = models.BooleanField(default=False)
     email_confirmed_at = models.DateTimeField(null=True, blank=True)
 
-    def __unicode__(self):
-        return self.user.__unicode__()
+    def __str__(self):
+        return self.user.__str__()
 
 
 # TODO remove organizer model - only use Facilitator model + Team Membership
 class Organizer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    def __unicode__(self):
-        return self.user.__unicode__()
+    def __str__(self):
+        return self.user.__str__()
 
 
 class Team(models.Model):
@@ -128,7 +128,7 @@ class Team(models.Model):
     page_slug = models.SlugField(max_length=256, blank=True)
     page_image = models.ImageField(blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -143,8 +143,8 @@ class TeamMembership(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE) # TODO should this be a OneToOneField?
     role = models.CharField(max_length=256, choices=ROLES)
 
-    def __unicode__(self):
-        return 'Team membership: {}'.format(self.user.__unicode__())
+    def __str__(self):
+        return 'Team membership: {}'.format(self.user.__str__())
 
 
 class TeamInvitation(models.Model):
@@ -157,7 +157,7 @@ class TeamInvitation(models.Model):
     responded_at = models.DateTimeField(null=True, blank=True)
     joined = models.NullBooleanField(null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Invatation <{} to join {}>'.format(self.email, self.team.name)
 
 
@@ -276,7 +276,7 @@ class StudyGroup(LifeTimeTrackingModel):
         return json.dumps(self.to_dict(), cls=DjangoJSONEncoder)
 
 
-    def __unicode__(self):
+    def __str__(self):
         return '{0} - {1}s {2} at the {3}'.format(self.course.title, self.day(), self.meeting_time, self.venue_name)
 
 
@@ -288,7 +288,7 @@ class Application(LifeTimeTrackingModel):
     signup_questions = models.TextField(default='{}')
     accepted_at = models.DateTimeField(blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "{0} <{1}>".format(self.name, self.email if self.email else self.mobile)
 
     def unapply_link(self):
@@ -368,7 +368,7 @@ class Meeting(LifeTimeTrackingModel):
         )
         return '{0}{1}?{2}'.format(domain,url,no_qs)
 
-    def __unicode__(self):
+    def __str__(self):
         tz = pytz.timezone(self.study_group.timezone)
         return '{0}, {1} at {2}'.format(self.study_group.course.title, self.meeting_datetime(), self.study_group.venue_name)
 
@@ -397,7 +397,7 @@ class Rsvp(models.Model):
     application = models.ForeignKey('studygroups.Application', on_delete=models.CASCADE)
     attending = models.BooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return '{0} ({1})'.format(self.application, 'yes' if self.attending else 'no')
 
 
