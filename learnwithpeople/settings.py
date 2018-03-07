@@ -161,7 +161,7 @@ if DEBUG is True:
 
 
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
-SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'no-reply@p2pu.org') #TODO grab this from environment
+SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'no-reply@p2pu.org')
 
 ##### Database config
 import dj_database_url
