@@ -175,6 +175,10 @@ export default class CreateLearningCirclePage extends React.Component {
 
   _onLogin(user) {
     this.setState({ user }, this.onSubmitForm)
+    // TODO: remove this when we switch to the React component for the account in the navbar
+    const accountLink = document.querySelector('nav .nav-items .account a');
+    accountLink.setAttribute('href', '/en/accounts/logout');
+    accountLink.innerText = 'Log out';
   }
 
   render() {
