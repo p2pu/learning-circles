@@ -79,7 +79,10 @@ export const Step5 = () => (
   <div className='help-text'>
     <h4>This is between us</h4>
     <div className='content'>
-      <p>This information won’t be visible to learning circle participants. We will share it with a group of P2PU staff and veteran facilitators who can give you feedback and help you prepare for your learning circle.</p>
+      <ul>
+        <li>This information won’t be visible to learning circle participants. We will share it with a group of P2PU staff and veteran facilitators who can give you feedback and help you prepare for your learning circle.</li>
+        <li>When you are finished, click 'PUBLISH'. If you don’t want your learning circle to go live yet, click 'SAVE & PUBLISH LATER'. You can then publish your learning circle from your dashboard whenever you are ready to start promoting.</li>
+      </ul>
     </div>
   </div>
 )
