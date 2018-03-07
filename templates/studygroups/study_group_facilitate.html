@@ -32,8 +32,8 @@
         {% else %}
         <a class="btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' lc.id %}">{% trans "open signup" %}</a>
         {% endif %}
-        <a class="btn btn-primary" href="{% url 'studygroups_signup' location=lc.venue_name|slugify study_group_id=lc.pk %}">{% trans "view webpage" %}</a>
         {% endif %}
+        <a class="btn btn-primary" href="{% url 'studygroups_signup' location=lc.venue_name|slugify study_group_id=lc.pk %}">{% trans "view webpage" %}</a>
         </p>
         {% if lc.draft %}
           <div class="alert alert-info" role="alert">
