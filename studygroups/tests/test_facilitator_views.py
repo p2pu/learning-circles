@@ -154,6 +154,60 @@ class TestFacilitatorViews(TestCase):
         self.assertEquals(study_group.draft, True)
 
 
+    @patch('custom_registration.signals.handle_new_facilitator')
+    def test_draf_study_group_actions_disabled(self, handle_new_facilitator):
+        user = create_user('bob@example.net', 'bob', 'test', 'password', False)
+        confirm_user_email(user)
+        c = Client()
+        c.login(username='bob@example.net', password='password')
+
+        resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
+        self.assertEquals(resp.json()['status'], 'created')
+        study_groups = StudyGroup.objects.filter(facilitator=user)
+        self.assertEquals(study_groups.count(), 1)
+        self.assertEquals(study_groups.first().meeting_set.count(), 0)
+
+        # try to add a meeting
+        self.assertEqual(study_groups.first().pk, StudyGroup.objects.last().pk)
+        url_base = '/en/studygroup/{0}'.format(study_groups.first().pk)
+        resp = c.get(url_base + '/meeting/create/')
+        self.assertRedirects(resp, '/en/facilitator/')
+        meeting_data = {
+            "meeting_date": "2018-03-17",
+            "meeting_time": "04:00+PM",
+            "study_group": "515",
+        }
+        resp = c.post(url_base + '/meeting/create/', data=meeting_data)
+        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertEqual(StudyGroup.objects.last().meeting_set.count(), 0)
+
+        # try to send a message
+        resp = c.get('/en/studygroup/{0}/message/compose/'.format(study_groups.first().pk))
+        self.assertRedirects(resp, '/en/facilitator/')
+        mail_data = {
+            u'study_group': study_groups.first().pk,
+            u'email_subject': 'does not matter', 
+            u'email_body': 'does not matter', 
+        }
+        mail.outbox = []
+        resp = c.post(url_base + '/message/compose/', mail_data)
+        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertEqual(len(mail.outbox), 0)
+
+        # try to add a learner
+        resp = c.get('/en/studygroup/{0}/member/add/'.format(study_groups.first().pk))
+        self.assertRedirects(resp, '/en/facilitator/')
+        learner_data = {
+            "email": "learn@example.net",
+            "name": "no name",
+            "study_group": "515",
+        }
+        resp = c.post(url_base + '/member/add/', data=learner_data)
+        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertEqual(StudyGroup.objects.last().application_set.count(), 0)
+
+
+
     @patch('studygroups.models.send_message')
     def test_send_email(self, send_message):
         # Test sending a message
