@@ -111,11 +111,14 @@ export default class CreateLearningCirclePage extends React.Component {
     this.setState({ alert: { show: false }})
   }
 
-  _onSubmitForm() {
-    if (this.state.user) {
+  _onSubmitForm(draft=true) {
+    if (!this.state.user) {
+      this.showModal();
+    } else {
       const data = {
         ...this.state.learningCircle,
-        course: this.state.learningCircle.course.id
+        course: this.state.learningCircle.course.id,
+        draft: draft
       }
 
       const onSuccess = (data) => {
@@ -163,8 +166,6 @@ export default class CreateLearningCirclePage extends React.Component {
       } else {
         api.createResource(opts);
       }
-    } else {
-      this.showModal()
     }
   }
 

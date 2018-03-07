@@ -75,6 +75,7 @@ urlpatterns = [
 
     url(r'^facilitator/$', views.facilitator, name='studygroups_facilitator'),
     url(r'^facilitator/team-invitation/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm'),
+    url(r'^facilitator/feedback/$', login_required(TemplateView.as_view(template_name='studygroups/facilitator_feedback.html')), name='studygroups_facilitator_feedback'),
 
     url(r'^optout/$', OptOutView.as_view(), name='studygroups_optout'),
     url(r'^optout/confirm/$', views.optout_confirm, name='studygroups_leave'),
