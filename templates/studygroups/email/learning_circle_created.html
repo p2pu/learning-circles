@@ -15,6 +15,12 @@
 {% endblocktrans %}
 {% endif %}
 
+<p>{% trans "A handful of P2PU community members are copied on this email. So that they can better assist you, we are including your goals, questions, and concerns below." %}</p>
+
+<p><strong>{% trans "Goals" %}</strong>: {{study_group.facilitator_goal}}</p>
+
+<p><strong>{% trans "Questions or concerns" %}</strong>: {{study_group.facilitator_concerns}}</p>
+
 <p>{% trans "What next?" %}
 <ul>
     <li>{% blocktrans %}<a href="https://www.p2pu.org/en/facilitate/"><b>Review the Facilitator Guide</b></a>. It contains 40 pages of great tips, tricks, checklists, and templates to help you advertise, prepare for, and run your Learning Circle.{% endblocktrans %}</li>
