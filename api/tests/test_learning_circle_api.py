@@ -61,7 +61,7 @@ class TestLearningCircleApi(TestCase):
         self.assertEquals(len(mail.outbox), 1)
         self.assertEquals(mail.outbox[0].subject, 'Your Learning Circle has been created! What next?')
         self.assertIn('faci@example.net', mail.outbox[0].to)
-        self.assertIn('community@localhost', mail.outbox[0].bcc)
+        self.assertIn('community@localhost', mail.outbox[0].cc)
 
 
     def test_create_learning_circle_and_publish(self):
@@ -106,7 +106,7 @@ class TestLearningCircleApi(TestCase):
         self.assertEquals(len(mail.outbox), 1)
         self.assertEquals(mail.outbox[0].subject, 'Your Learning Circle has been created! What next?')
         self.assertIn('faci@example.net', mail.outbox[0].to)
-        self.assertIn('community@localhost', mail.outbox[0].bcc)
+        self.assertIn('community@localhost', mail.outbox[0].cc)
 
 
     def test_create_learning_circle_and_publish_user_unconfirmed(self):
