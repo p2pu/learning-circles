@@ -67,32 +67,3 @@ def handle_new_study_group_creation(sender, instance, created, **kwargs):
 
     notification.attach_alternative(html_body, 'text/html')
     notification.send()
-
-
-#@receiver(post_save, sender=Course)
-def handle_new_course_creation(sender, instance, created, **kwargs):
-    # TODO - remove this signal since it is not used
-    if not created:
-        return
-
-    course = instance
-    context = {
-        'course': course,
-        'protocol': 'https',
-        'domain': settings.DOMAIN,
-    }
-
-    subject = render_to_string('studygroups/email/course_created-subject.txt', context).strip(' \n')
-    text_body = render_to_string('studygroups/email/course_created.txt', context)
-    html_body = render_to_string('studygroups/email/course_created.html', context)
-
-    to = [settings.COMMUNITY_MANAGER]
-    notification = EmailMultiAlternatives(
-        subject,
-        text_body,
-        settings.DEFAULT_FROM_EMAIL,
-        to,
-    )
-
-    notification.attach_alternative(html_body, 'text/html')
-    notification.send()
