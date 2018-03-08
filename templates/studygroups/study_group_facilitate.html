@@ -152,11 +152,8 @@
             {% for learner in lc.application_set.active %}
             <tr>
               <td>{{ learner.name }}
-                <br/>
-                &lt;{{learner.email}}&gt;
-                {% if learner.email %}
-                  <br/>{{learner.mobile}}
-                {% endif %}
+                {% if learner.email %}<br/>&lt;{{learner.email}}&gt;{% endif %}
+                {% if learner.mobile %}<br/>{{learner.mobile}}{% endif %}
               </td>
               <td>{{ learner.get_signup_questions.goals }}</td>
               <td>{{ learner.get_signup_questions.support }}</td>
