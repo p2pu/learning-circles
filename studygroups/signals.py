@@ -69,11 +69,11 @@ def handle_new_study_group_creation(sender, instance, created, **kwargs):
     notification.send()
 
 
-@receiver(post_save, sender=Course)
+#@receiver(post_save, sender=Course)
 def handle_new_course_creation(sender, instance, created, **kwargs):
+    # TODO - remove this signal since it is not used
     if not created:
         return
-    #TODO emails should be sent async
 
     course = instance
     context = {
