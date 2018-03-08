@@ -64,6 +64,8 @@ urlpatterns = [
     url(r'^studygroup/(?P<study_group_id>[\d]+)/member/(?P<pk>[0-9]+)/delete/$', ApplicationDelete.as_view(), name='studygroups_application_delete'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/feedback/$', StudyGroupLearnerFeedback.as_view(), name='studygroups_learner_feedback'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/facilitator_feedback/$', login_required(StudyGroupFacilitatorFeedback.as_view()), name='studygroups_facilitator_feedback'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/feedback/done$', TemplateView.as_view(template_name='studygroups/learner_feedback_done.html'), name='studygroups_learner_feedback_done'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/facilitator_feedback/done$', TemplateView.as_view(template_name='studygroups/facilitator_feedback_done.html'), name='studygroups_facilitator_feedback_done'),
 
     # views regarding study group meetings
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[\d]+)/edit/$', MeetingUpdate.as_view(), name='studygroups_edit_study_group_meeting'),

@@ -9,7 +9,7 @@ const url = `https://p2pu.typeform.com/to/wPg50i?studygroup=${studygroup}&course
 
 const options = {
   onSubmit: () => {
-    window.location.href = '/'
+    window.location.href = 'done'
   }
 }
 
