@@ -18,6 +18,8 @@ from studygroups.views import StudyGroupDelete
 from studygroups.views import StudyGroupToggleSignup
 from studygroups.views import StudyGroupPublish
 from studygroups.views import StudyGroupList
+from studygroups.views import StudyGroupLearnerFeedback
+from studygroups.views import StudyGroupFacilitatorFeedback
 from studygroups.views import MeetingList
 from studygroups.views import TeamMembershipDelete
 from studygroups.views import TeamInvitationCreate
@@ -60,6 +62,8 @@ urlpatterns = [
 
     url(r'^studygroup/(?P<study_group_id>[\d]+)/member/add/$', views.add_member, name='studygroups_add_member'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/member/(?P<pk>[0-9]+)/delete/$', ApplicationDelete.as_view(), name='studygroups_application_delete'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/feedback/$', StudyGroupLearnerFeedback.as_view(), name='studygroups_learner_feedback'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/facilitator_feedback/$', login_required(StudyGroupFacilitatorFeedback.as_view()), name='studygroups_facilitator_feedback'),
 
     # views regarding study group meetings
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[\d]+)/edit/$', MeetingUpdate.as_view(), name='studygroups_edit_study_group_meeting'),
@@ -75,7 +79,6 @@ urlpatterns = [
 
     url(r'^facilitator/$', views.facilitator, name='studygroups_facilitator'),
     url(r'^facilitator/team-invitation/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm'),
-    url(r'^facilitator/feedback/$', login_required(TemplateView.as_view(template_name='studygroups/facilitator_feedback.html')), name='studygroups_facilitator_feedback'),
 
     url(r'^optout/$', OptOutView.as_view(), name='studygroups_optout'),
     url(r'^optout/confirm/$', views.optout_confirm, name='studygroups_leave'),

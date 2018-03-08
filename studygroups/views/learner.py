@@ -264,3 +264,13 @@ def receive_sms(request):
     notification.attach_alternative(html_body, 'text/html')
     notification.send()
     return http.HttpResponse(status=200)
+
+class StudyGroupLearnerFeedback(TemplateView):
+    template_name = 'studygroups/learner_feedback.html'
+
+    def get_context_data(self, **kwargs):
+        study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
+        context = super(StudyGroupLearnerFeedback, self).get_context_data(**kwargs)
+        context['study_group_id'] = study_group.id
+        context['study_group_name'] = study_group.course.title
+        return context
