@@ -43,7 +43,7 @@ const ActionBar = (props) => {
         <div className='action-bar'>
           <BackButton onClick={prevTab} />
           <CancelButton onClick={props.onCancel} />
-          <SaveButton onClick={props.onSubmitForm} text={'Save'} />
+          <SaveButton onClick={() => props.onSubmitForm()} text={'Save'} />
         </div>
       )
     }

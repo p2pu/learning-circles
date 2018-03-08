@@ -8,6 +8,7 @@ body {
 
   a {
     color: $p2pu-dark-blue;
+    cursor: pointer;
     &:hover, &:focus, &:active {
       color: $p2pu-orange;
     }

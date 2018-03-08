@@ -49,6 +49,9 @@ export default class RegistrationModal extends React.Component {
       config: { headers: {'Content-Type': 'application/json' }}
     }).then(res => {
       if (!!res.data.errors) {
+        if (typeof(res.data.errors) == "string") {
+          return this.props.showAlert(res.data.errors, 'danger')
+        }
         return this.setState({ errors: res.data.errors });
       }
       this.props.closeModal();
