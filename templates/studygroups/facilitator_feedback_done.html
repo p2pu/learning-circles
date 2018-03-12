@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+  <div class="container feedback-done">
+    <section class="inner-container">
+      <h2>{% trans "Thanks for your feedback!" %}</h2>
+      <p class="large bold">{% trans "What do you want to do next?" %}</p>
+      <div class="option">
+        <p class="large">
+          <i class="material-icons">mail_outline</i>
+          <a href="http://p2pu.us2.list-manage.com/subscribe/post?u=f080ec78070523d59ef613eda&id=06e9c4ece8">Join the P2PU mailing list</a>
+        </p>
+      </div>
+      <div class="option">
+        <p class="large">
+          <i class="material-icons">record_voice_over</i>
+          <a href="#">Promote learning circles in my community</a>
+        </p>
+      </div>
+      <div class="option">
+        <p class="large">
+          <i class="material-icons">group_work</i>
+          <a href="https://www.p2pu.org/en/facilitate/">Facilitate a learning circle</a>
+        </p>
+      </div>
+    </section>
+  </div>
+{% endblock %}

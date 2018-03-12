@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+{% load i18n %}
+
+{% block content %}
+<div class="typeform-container" style="height: 90vh">
+  <div id='studygroup-facilitator-feedback' style="height: 100%"
+    data-studygroup={{study_group_id}}
+    data-studygroup-name="{{study_group_name}}"
+    data-facilitator="{{facilitator}}"
+    data-facilitator-name="{{facilitator_name}}">
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+{% render_bundle 'common' %}
+{% render_bundle 'facilitator-feedback' %}
+{% endblock %}
