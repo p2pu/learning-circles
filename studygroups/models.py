@@ -535,36 +535,48 @@ def send_survey_reminder(study_group):
     last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
 
     if last_meeting and last_15 - datetime.timedelta(minutes=15) <= last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < last_15:
-        slug = '{}-{}'.format(slugify(study_group.venue_name), study_group.id)
-        learning_circle_text = "{} at {} ({})".format(study_group.course.title, study_group.venue_name, slug)
-        context = {
-            'learning_circle':  urllib.parse.quote(learning_circle_text)
-        }
-        subject = render_to_string(
-            'studygroups/email/learner_survey_reminder-subject.txt',
-            context
-        )
-        html = render_to_string(
-            'studygroups/email/learner_survey_reminder.html',
-            context
-        )
-        txt = render_to_string(
-            'studygroups/email/learner_survey_reminder.txt',
-            context
-        )
-        timezone.deactivate()
-        to = []
+
         applications = study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')
-        bcc = [su.email for su in applications]
-        notification = EmailMultiAlternatives(
-            subject.strip(),
-            txt,
-            settings.SERVER_EMAIL,
-            to,
-            bcc
-        )
-        notification.attach_alternative(html, 'text/html')
-        notification.send()
+
+        timezone.deactivate()
+
+        for application in applications:
+
+            course_title = study_group.course.title
+            learner_name = application.name
+            learner_email = application.email
+            path = reverse('studygroups_learner_feedback')
+            domain = 'https://{}'.format(settings.DOMAIN)
+            querystring = '?email={}'.format(learner_email)
+            survey_url = domain + path + querystring
+
+            context = {
+                'course_title': course_title,
+                'learner_name': learner_name,
+                'survey_url': survey_url
+            }
+            subject = render_to_string(
+                'studygroups/email/learner_survey_reminder-subject.txt',
+                context
+            )
+            html = render_to_string(
+                'studygroups/email/learner_survey_reminder.html',
+                context
+            )
+            txt = render_to_string(
+                'studygroups/email/learner_survey_reminder.txt',
+                context
+            )
+
+            to = [learner_email]
+            notification = EmailMultiAlternatives(
+                subject.strip(),
+                txt,
+                settings.SERVER_EMAIL,
+                to
+            )
+            notification.attach_alternative(html, 'text/html')
+            notification.send()
 
 
 # If called directly, be sure to activate the current language
