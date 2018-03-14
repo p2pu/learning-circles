@@ -56,8 +56,8 @@ class TestApiSignupView(TestCase):
         self.assertEqual(resp.json(), {"status": "created"})
         self.assertEqual(Application.objects.all().count(), 1)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertTrue(mail.outbox[0].body.find('user@mail.com') > 0)
-        self.assertIn('facilitator@example.net', mail.outbox[0].to)
+        self.assertIn('facilitator@example.net', mail.outbox[0].cc)
+        self.assertEqual(mail.outbox[0].to[0], 'user@mail.com')
 
 
     def test_duplicate_signup(self):
