@@ -8,6 +8,10 @@ from .models import Application
 from .models import StudyGroup
 from .models import Course
 
+from .utils import html_body_to_text
+
+from advice.models import Advice
+
 @receiver(post_save, sender=Application)
 def handle_new_application(sender, instance, created, **kwargs):
     if not created:
@@ -15,28 +19,36 @@ def handle_new_application(sender, instance, created, **kwargs):
 
     application = instance
 
-    # Send notification
-    notification_subject = render_to_string(
-        'studygroups/email/application-subject.txt',
-        {'application': application}
+    # get a random piece of advice
+    advice = Advice.objects.order_by('?').first()
+
+    # Send welcome message to learner 
+    learner_signup_subject = render_to_string(
+        'studygroups/email/learner_signup-subject.txt', {
+            'application': application,
+            'advice': advice,
+        }
     ).strip('\n')
-    notification_body = render_to_string(
-        'studygroups/email/application.txt', 
-        {'application': application}
+
+    learner_signup_html = render_to_string(
+        'studygroups/email/learner_signup.html', {
+            'application': application,
+            'advice': advice,
+        }
     )
-    notification_html = render_to_string(
-        'studygroups/email/application.html', 
-        {'application': application}
+    learner_signup_body = html_body_to_text(learner_signup_html)
+    to = [application.email]
+    # CC facilitator and put in reply-to
+    welcome_message = EmailMultiAlternatives(
+        learner_signup_subject,
+        learner_signup_body,
+        settings.DEFAULT_FROM_EMAIL,
+        to,
+        cc=[application.study_group.facilitator.email],
+        reply_to=[application.study_group.facilitator.email]
     )
-    to = [application.study_group.facilitator.email]
-    notification = EmailMultiAlternatives(
-        notification_subject,
-        notification_body,
-        settings.SERVER_EMAIL,
-        to
-    )
-    notification.attach_alternative(notification_html, 'text/html')
-    notification.send()
+    welcome_message.attach_alternative(learner_signup_html, 'text/html')
+    welcome_message.send()
 
 
 @receiver(post_save, sender=StudyGroup)
