@@ -5,6 +5,16 @@
 
 <p>{% blocktrans with meeting_date=next_meeting.meeting_datetime|date:"l, j N, fA" %}We've generated a reminder for the Learning Circle meeting this {{meeting_date}}. The reminder will be sent automatically in 2 days from now.{% endblocktrans %}</p>
 
+{% if reminder.study_group_meeting.meeting_activity %}
+<p>{% blocktrans with activity_description=reminder.study_group_meeting.meeting_activity.description activity_url=reminder.study_group_meeting.meeting_activity.card.url %}
+  You can find the recommended activity for this week in the recipe card: <a href="{{ protocol }}://{{ domain }}{{ activity_url }}">{{ activity_description }}</a>
+{% endblocktrans %}</p>
+{% endif %}
+
+{% if is_last_meeting %}
+<p>{% blocktrans %}This is the last learning circle meeting. Please print a few copies of this <a href="https://learningcircles.p2pu.org/static/uploads/learner_survey.pdf">learner survey</a> for learners who can't complete the online survey.{% endblocktrans %}
+{% endif %}
+
 <p>{% trans "This is what the reminder will look like." %}</p>
 
 <p><strong>{% trans "Email to Learning Circle participants" %}</strong></p>
@@ -20,14 +30,6 @@
 </div>
 {% url 'studygroups_message_edit' reminder.study_group.id reminder.id as message_edit_url %}
 <p>{% blocktrans %}If you wish to edit the reminder, you can follow <a href="{{protocol}}://{{domain}}{{message_edit_url}}">this link</a>.{% endblocktrans %}</p>
-
-{% if reminder.study_group_meeting.meeting_activity %}
-<p><strong>{% trans "Recommended recipe card for this week" %}:</strong> <a href="{{ protocol }}://{{ domain }}{{ reminder.study_group_meeting.meeting_activity.card.url }}" target="_blank">{{ reminder.study_group_meeting.meeting_activity.description }}</a></p>
-{% endif %}
-
-{% if is_last_meeting %}
-<p>{% blocktrans %}This is the last learning circle meeting. Please print a few copies of this <a href="https://learningcircles.p2pu.org/static/uploads/learner_survey.pdf">learner survey</a> for learners who can't complete the online survey.{% endblocktrans %}
-{% endif %}
 
 <p>{% trans "Regards" %}</p>
 <p>P2PU</p>

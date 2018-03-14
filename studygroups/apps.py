@@ -5,4 +5,4 @@ class StudyGroupConfig(AppConfig):
 
     def ready(self):
         # importing model classes
-        import signals
+        import studygroups.signals

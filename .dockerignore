@@ -1,9 +1,13 @@
 .git/
+db/
 docs/
 venv/
+venv3/
 assets/
 node_modules/
 *.pyc
 learnwithpeople/settings_local.py
 learnwithpeople/settings_local.pyc
 static_serve/
+.envrc
+upload

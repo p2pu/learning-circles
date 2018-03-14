@@ -5,9 +5,21 @@
 <p>{% blocktrans with name=study_group.facilitator.first_name %}Hi {{name}}{% endblocktrans %},</p>
 
 {% url 'studygroups_signup' location=study_group.venue_name|slugify study_group_id=study_group.pk as study_group_url%}
+{% if study_group.draft %}
+{% blocktrans %}
+<p>Congratulations! Your Learning Circle has been created.</p>
+{% endblocktrans %}
+{% else %}
 {% blocktrans %}
     <p>Congratulations! Your Learning Circle is now live at: <a href="{{protocol}}://{{domain}}{{study_group_url}}">{{protocol}}://{{domain}}{{study_group_url}}</a></p>
 {% endblocktrans %}
+{% endif %}
+
+<p>{% trans "A handful of P2PU community members are copied on this email. So that they can better assist you, we are including your goals, questions, and concerns below." %}</p>
+
+<p><strong>{% trans "Goals" %}</strong>: {{study_group.facilitator_goal}}</p>
+
+<p><strong>{% trans "Questions or concerns" %}</strong>: {{study_group.facilitator_concerns}}</p>
 
 <p>{% trans "What next?" %}
 <ul>

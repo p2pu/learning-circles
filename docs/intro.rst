@@ -4,42 +4,43 @@ Introduction
 What is a learning circle?
 --------------------------
 
-A Learning Circle is a study group of about 8 people that meets weekly in a physical location to complete an online course together. A facilitator is present to help with logistics and seed peer learning. Content expertise come from the online course and associated community.
+A learning circle is a study group of about 8 people that meets weekly at a physical location to complete an online course together. A facilitator is present to help with logistics and seed peer learning. Content expertise come from the online course and associated online community.
 
-For a complete guide on organizing and facilitation Learning Circles you can download the `Learning Circles facilitator handbook <https://www.p2pu.org/en/>`_.
+For a complete guide on organizing and facilitation learning circles you can download the `Learning Circles facilitator handbook <https://www.p2pu.org/en/>`_.
 
 Tools for learning circles
 --------------------------
 
-To help organize and run Learning Circles, we've developed a set of online tools. These tools are built with the assumption that you are an organization that wish to run several learnig circles.
-
-We assume three different roles:
+To help organize and run Learning Circles, we've developed a set of online tools. The tools address the needs for three different roles:
 
 #. Learners. The people taking the learning circles.
 #. Facilitators. People facilitating individual learnig circles.
 #. Organizers. People organizing several learning circles.
 
-For learners:
-^^^^^^^^^^^^^
+Learners can:
+^^^^^^^^^
 
-* A home page listing active learning circles
-* A signup form gathering basic info
-* Reminders for study group meetings with an option to RSVP
+* Browse learning circles available in their aread
+* Sign up for a learning circle
+* RSVP for weekly learning circle meetings
 
-For facilitators:
+Facilitators can:
 ^^^^^^^^^^^^^^^^^
 
-* A dashboard showing who signed up, when meetings are scheduled, who can come, etc.
-* A messaging tool to customize weekly reminders and send extra messages
-* A feedback tool to gather reflections from meetings
+* See who signed up, when meetings are scheduled, who can come, etc.
+* Send messages to learners
+* Customize the weekly reminders
+* See whi is coming to the learning circle meeting
+* Capture feedback after a meeting to gather and share reflections.
 
-For organizers:
+Organizers can:
 ^^^^^^^^^^^^^^^
 
-* receive feedback from facilitators on weekly meetings
-* see what meetings are happening each week
-* receive weekly updates on what happened in learning circles the previous week
-* manage learning circles and facilitators
+* See feedback from facilitators on weekly meetings
+* See what meetings are happening each week
+* Receive weekly updates on what happened in learning circles the previous week
+* Manage learning circles and facilitators
+
 
 Using the tools
 ---------------

@@ -2,7 +2,7 @@ import datetime
 import dateutil.parser
 
 from django.shortcuts import get_object_or_404
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 from django import http
 from django.views.decorators.http import require_http_methods
@@ -16,15 +16,16 @@ from studygroups.models import StudyGroup
 from studygroups.models import Application
 from studygroups.models import Reminder
 from studygroups.models import Feedback
-from studygroups.models import StudyGroupMeeting
+from studygroups.models import Meeting
 from studygroups.models import Team
 
 from uxhelpers.utils import json_response
 
 
 def studygroups(request):
-    #TODO only accept GET requests 
-    study_groups = StudyGroup.objects.active()
+    #TODO only accept GET requests
+    # TODO remove this API endpoint, where is it currently being used??
+    study_groups = StudyGroup.objects.published()
     if 'course_id' in request.GET:
         study_groups = study_groups.filter(course_id=request.GET.get('course_id'))
     
@@ -40,7 +41,7 @@ def studygroups(request):
             "meeting_time": sg.meeting_time,
             "time_zone": sg.timezone_display(),
             "end_time": sg.end_time(),
-            "weeks": sg.studygroupmeeting_set.active().count(),
+            "weeks": sg.meeting_set.active().count(),
             "url": "https://learningcircles.p2pu.org" + reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
         }
         if sg.image:

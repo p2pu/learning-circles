@@ -1,6 +1,12 @@
 {% load i18n %}{% blocktrans with name=study_group.facilitator.first_name %}Hi {{name}}{% endblocktrans %},
-{% url 'studygroups_signup' location=study_group.venue_name|slugify study_group_id=study_group.pk as study_group_url%}{% blocktrans %}
-Congratulations! Your Learning Circle is now live at: {{protocol}}://{{domain}}{{study_group_url}}{% endblocktrans %}
+{% url 'studygroups_signup' location=study_group.venue_name|slugify study_group_id=study_group.pk as study_group_url%}{% if study_group.draft %}{% trans 'Congratulations! Your Learning Circle has been created.' %}{% else %}{% blocktrans %}
+Congratulations! Your Learning Circle is now live at: {{protocol}}://{{domain}}{{study_group_url}}{% endblocktrans %}{% endif %}
+
+{% trans "A handful of P2PU community members are copied on this email. So that they can better assist you, we are including your goals, questions, and concerns below." %}
+
+{% trans "Goals" %}: {{study_group.facilitator_goal|safe}}
+
+{% trans "Questions or concerns" %}: {{study_group.facilitator_concerns|safe}}
 
 {% trans "What next?" %}
 - {% blocktrans %}Review the Facilitator Guide: https://www.p2pu.org/en/facilitate/. It contains 40 pages of great tips, tricks, checklists, and templates to help you advertise, prepare for, and run your Learning Circle.{% endblocktrans %}

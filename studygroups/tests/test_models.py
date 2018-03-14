@@ -9,7 +9,7 @@ from mock import patch
 from freezegun import freeze_time
 
 from studygroups.models import StudyGroup
-from studygroups.models import StudyGroupMeeting
+from studygroups.models import Meeting
 from studygroups.models import Application
 from studygroups.models import Reminder
 from studygroups.models import Rsvp
@@ -105,11 +105,11 @@ class TestSignupModels(TestCase):
         sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
         sg.save()
         sg = StudyGroup.objects.get(pk=1)
-        self.assertEqual(StudyGroupMeeting.objects.all().count(),0)
+        self.assertEqual(Meeting.objects.all().count(),0)
         generate_all_meetings(sg)
-        self.assertEqual(StudyGroupMeeting.objects.all().count(),6)
+        self.assertEqual(Meeting.objects.all().count(),6)
         self.assertEqual(sg.next_meeting().meeting_datetime().tzinfo.zone, 'US/Central')
-        for meeting in StudyGroupMeeting.objects.all():
+        for meeting in Meeting.objects.all():
             self.assertEqual(meeting.meeting_datetime().time(), datetime.time(16,0))
 
 
@@ -140,7 +140,7 @@ class TestSignupModels(TestCase):
         sg.save()
         sg = StudyGroup.objects.get(pk=1)
         generate_all_meetings(sg)
-        self.assertEqual(sg.studygroupmeeting_set.active().count(), 6)
+        self.assertEqual(sg.meeting_set.active().count(), 6)
         self.assertTrue(sg.next_meeting().meeting_datetime() - now < datetime.timedelta(days=4))
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
@@ -198,7 +198,7 @@ class TestSignupModels(TestCase):
         sg.save()
         sg = StudyGroup.objects.get(pk=1)
         generate_all_meetings(sg)
-        self.assertEqual(sg.studygroupmeeting_set.active().count(), 6)
+        self.assertEqual(sg.meeting_set.active().count(), 6)
         self.assertTrue(sg.next_meeting().meeting_datetime() - now < datetime.timedelta(days=4))
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
@@ -239,6 +239,58 @@ class TestSignupModels(TestCase):
         self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=yes&sig='.format(get_language(), urllib.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].body)
         self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=no&sig='.format(get_language(), urllib.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].body)
         self.assertIn('https://example.net/{0}/optout/confirm/?user='.format(get_language()), mail.outbox[1].body)
+
+
+    @patch('studygroups.models.send_message')
+    def test_dont_send_automatic_reminder_for_old_message(self, send_message):
+        now = timezone.now()
+        sg = StudyGroup.objects.get(pk=1)
+        sg.timezone = now.strftime("%Z")
+        sg.start_date = datetime.date(2010, 3, 10)
+        sg.meeting_time = datetime.time(18,0)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
+        sg.save()
+        sg = StudyGroup.objects.get(pk=1)
+        generate_all_meetings(sg)
+
+        data = self.APPLICATION_DATA
+        data['study_group'] = sg
+        application = Application(**data)
+        application.save()
+        accept_application(application)
+
+        mail.outbox = []
+        with freeze_time("2010-03-06 18:55:34"):
+            generate_reminder(sg)
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(Reminder.objects.all().count(), 1)
+
+        mail.outbox = []
+        with freeze_time("2010-03-08 18:55:34"):
+            tasks.send_reminders()
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(mail.outbox[0].to[0], data['email'])
+        self.assertEqual(mail.outbox[1].to[0], 'facilitator@example.net')
+        self.assertFalse(send_message.called)
+        self.assertEqual(Reminder.objects.filter(sent_at__isnull=True).count(), 0)
+
+        mail.outbox = []
+        with freeze_time("2010-03-13 18:55:34"):
+            generate_reminder(sg)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(Reminder.objects.all().count(), 2)
+        self.assertEqual(Reminder.objects.filter(sent_at__isnull=True).count(), 1)
+
+        reminder = Reminder.objects.filter(sent_at__isnull=True).first()
+        self.assertEqual(reminder.study_group_meeting.meeting_date, datetime.date(2010, 3, 17))
+
+        mail.outbox = []
+        with freeze_time("2010-03-18 18:55:34"):
+            tasks.send_reminders()
+        self.assertEqual(len(mail.outbox), 0)
+        self.assertEqual(Reminder.objects.filter(sent_at__isnull=True).count(), 1)
+
 
     
     @patch('studygroups.models.send_message')
@@ -334,13 +386,13 @@ class TestSignupModels(TestCase):
         application.save()
         sg = StudyGroup.objects.get(pk=1)
         meeting_date = timezone.now()
-        sgm = StudyGroupMeeting(
+        sgm = Meeting(
             study_group=sg,
             meeting_time=meeting_date.time(),
             meeting_date=meeting_date.date()
         )
         sgm.save()
-        sgm = StudyGroupMeeting(
+        sgm = Meeting(
             study_group=sg,
             meeting_time=meeting_date.time(),
             meeting_date=meeting_date.date() + datetime.timedelta(weeks=1)
@@ -394,14 +446,14 @@ class TestSignupModels(TestCase):
         TeamMembership.objects.create(team=team, user=faci1, role=TeamMembership.MEMBER)
 
         study_group = StudyGroup.objects.get(pk=1)
-        meeting = StudyGroupMeeting()
+        meeting = Meeting()
         meeting.study_group = study_group
         meeting.meeting_time = timezone.now().time()
         meeting.meeting_date = timezone.now().date() - datetime.timedelta(days=1)
         meeting.save()
 
         study_group = StudyGroup.objects.get(pk=2)
-        meeting = StudyGroupMeeting()
+        meeting = Meeting()
         meeting.study_group = study_group
         meeting.meeting_time = timezone.now().time()
         meeting.meeting_date = timezone.now().date() - datetime.timedelta(days=1)
@@ -441,10 +493,10 @@ class TestSignupModels(TestCase):
 
         mail.outbox = []
 
-        last_meeting = sg.studygroupmeeting_set.active().order_by('meeting_date', 'meeting_time').last()
+        last_meeting = sg.meeting_set.active().order_by('meeting_date', 'meeting_time').last()
         self.assertEqual(last_meeting.meeting_date, datetime.date(2010, 2, 5))
         self.assertEqual(last_meeting.meeting_time, datetime.time(18,0))
-        self.assertEqual(sg.studygroupmeeting_set.active().count(), 6)
+        self.assertEqual(sg.meeting_set.active().count(), 6)
         self.assertEqual(sg.application_set.active().count(), 2)
 
         # freeze time to 5 minutes before
@@ -484,10 +536,10 @@ class TestSignupModels(TestCase):
         sg = StudyGroup.objects.get(pk=1)
         generate_all_meetings(sg)
     
-        last_meeting = sg.studygroupmeeting_set.active().order_by('meeting_date', 'meeting_time').last()
+        last_meeting = sg.meeting_set.active().order_by('meeting_date', 'meeting_time').last()
         self.assertEqual(last_meeting.meeting_date, datetime.date(2010, 2, 5))
         self.assertEqual(last_meeting.meeting_time, datetime.time(18,0))
-        self.assertEqual(sg.studygroupmeeting_set.active().count(), 6)
+        self.assertEqual(sg.meeting_set.active().count(), 6)
         self.assertEqual(Reminder.objects.all().count(), 0)
 
         # freeze time to 2 days before last meeting
@@ -510,10 +562,10 @@ class TestSignupModels(TestCase):
         sg = StudyGroup.objects.get(pk=1)
         generate_all_meetings(sg)
     
-        last_meeting = sg.studygroupmeeting_set.active().order_by('meeting_date', 'meeting_time').last()
+        last_meeting = sg.meeting_set.active().order_by('meeting_date', 'meeting_time').last()
         self.assertEqual(last_meeting.meeting_date, datetime.date(2010, 2, 5))
         self.assertEqual(last_meeting.meeting_time, datetime.time(18,0))
-        self.assertEqual(sg.studygroupmeeting_set.active().count(), 6)
+        self.assertEqual(sg.meeting_set.active().count(), 6)
         self.assertEqual(Reminder.objects.all().count(), 0)
 
         # freeze time to 6 days after last

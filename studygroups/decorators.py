@@ -1,13 +1,27 @@
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django import http
+from django.utils.translation import ugettext as _
 
 from studygroups.models import StudyGroup, Organizer
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import get_study_group_organizers
+
+
+def study_group_is_published(func):
+    def decorated(*args, **kwargs):
+        study_group_id = kwargs.get('study_group_id')
+        study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+        if study_group.draft == True:
+            messages.warning(args[0], _("Your learning circle is still a draft and should be published first."));
+            url = reverse('studygroups_facilitator')
+            return http.HttpResponseRedirect(url)
+        return func(*args, **kwargs)
+    return decorated
 
 
 def user_is_group_facilitator(func):
@@ -44,10 +58,9 @@ def user_is_team_organizer(func):
     return login_required(decorated)
 
 
-def user_is_not_logged_in(func):
+def user_is_staff(func):
     def decorated(*args, **kwargs):
-        if args[0].user.is_authenticated():
-            url = reverse('studygroups_login_redirect')
-            return http.HttpResponseRedirect(url)
+        if args[0].user.is_staff is False:
+            raise PermissionDenied
         return func(*args, **kwargs)
-    return decorated
+    return login_required(decorated)

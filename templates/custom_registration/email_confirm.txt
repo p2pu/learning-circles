@@ -1,0 +1,10 @@
+{% load i18n %}{% trans "Hi there" %}{% url 'email_confirm' uidb64=uid token=token as email_confirm_url %}
+
+{% blocktrans with email=user.email %}Welcome to the P2PU learning circle community! To use your account, please confirm your email by following this link:
+
+{{ protocol}}://{{ domain }}{{ email_confirm_url }}
+
+Your username is {{ email }}.{% endblocktrans %}</p>
+
+{% trans "Cheers" %}
+P2PU

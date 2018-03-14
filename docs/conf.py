@@ -47,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Learning Circles Dashboard'
-copyright = u'2015, Dirk'
+copyright = u'Peer 2 Peer University'
 author = u'Dirk'
 
 # The version info for the project you're documenting, acts as replacement for

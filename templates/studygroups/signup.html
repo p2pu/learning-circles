@@ -9,6 +9,7 @@
   <div class="row">
     <div class="col-md-12">
       <h1>{% blocktrans with course_title=study_group.course.title %}Sign up for {{course_title}}{% endblocktrans %}</h1>
+      <p>{{study_group.course.caption}}</p>
     </div>
   </div>
   <div class="row">
@@ -18,22 +19,25 @@
       {% else %}
       <img src="{% static 'images/learning-circle-default.jpg' %}">
       {% endif %}
-      <p>{{study_group.course.caption}}</p>
-      <p>{% trans "at" %} {% if study_group.venue_website %}<a href="{{study_group.venue_website}}">{{ study_group.venue_name }}</a>{% else %}<strong>{{study_group.venue_name}}</strong>{% endif %}, {{study_group.venue_details}}, {{study_group.city}}</p>
+      <p>{{study_group.description}}</p>
       <p>{% blocktrans with first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name %}Facilitated by {{first_name}} {{last_name}}{% endblocktrans %}</p>
-      <p>{% blocktrans with link=study_group.course.link provider=study_group.course.provider %}Course content from <a href="{{ link }}" target="_blank">{{ provider }}</a>{% endblocktrans %}</p>
-
+      <p>{% blocktrans with link=study_group.course.link provider=study_group.course.provider %}Course materials provided by <a href="{{ link }}" target="_blank">{{ provider }}</a>{% endblocktrans %}</p>
       <p>
-      {% blocktrans with day=study_group.day meeting_time=study_group.meeting_time|time:"fA" end_time=study_group.end_time|time:"fA" timezone=study_group.timezone_display start_date=study_group.start_date|date:"j N" count meeting_count=study_group.studygroupmeeting_set.active.count %}
-      <strong>This Learning Circle meets every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} week.</strong>
+      {% blocktrans with day=study_group.day meeting_time=study_group.meeting_time|time:"fA" end_time=study_group.end_time|time:"fA" timezone=study_group.timezone_display start_date=study_group.start_date|date:"j N" count meeting_count=study_group.meeting_set.active.count %}
+      This Learning Circle meets every <strong>{{day}}</strong> from <strong>{{meeting_time}} to {{end_time}}</strong> {{timezone}} starting <strong>{{start_date}}</strong> for {{meeting_count}} week.
       {% plural %}
-      <strong>This Learning Circle meets every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} weeks.</strong>
+      This Learning Circle meets every<strong> {{day}}</strong> from <strong>{{meeting_time}} to {{end_time}}</strong> {{timezone}} starting <strong>{{start_date}}</strong> for {{meeting_count}} weeks.</strong>
       {% endblocktrans %}
       </p>
+      <p>{% trans "At" %} {% if study_group.venue_website %}<a href="{{study_group.venue_website}}">{{ study_group.venue_name }}</a>{% else %}<strong>{{study_group.venue_name}}</strong>{% endif %}, {{study_group.venue_details}}, {{study_group.city}}</p>
     </div>
     <div class="col-md-8 col-sm-12">
       {% if study_group.signup_open %}
-      {% crispy form %}
+        {% if study_group.draft %}
+          <p>{% trans "Signup for this learning circle is not open yet." %}</p>
+        {% else %}
+          {% crispy form %}
+        {% endif %}
       {% else %}
       <p>{% trans "Unfortunately this learning circle is now closed for signup." %}</p>
       {% endif %}
@@ -44,6 +48,7 @@
 
 {% block scripts %}
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+{% render_bundle 'common' %}
 {% render_bundle 'signup' %}
 {% endblock %}
 

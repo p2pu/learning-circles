@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
                 ('max_size', models.IntegerField()),
                 ('description', models.TextField()),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('course', models.ForeignKey(to='studygroups.Course')),
+                ('course', models.ForeignKey(to='studygroups.Course', on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
                 ('username', models.CharField(max_length=128)),
                 ('email', models.EmailField(max_length=75)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('study_group', models.ForeignKey(to='studygroups.StudyGroup')),
+                ('study_group', models.ForeignKey(to='studygroups.StudyGroup', on_delete=models.CASCADE)),
             ],
             options={
             },

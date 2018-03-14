@@ -39,6 +39,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='studygroup',
             name='location',
-            field=models.ForeignKey(to='studygroups.Location'),
+            field=models.ForeignKey(to='studygroups.Location', on_delete=models.CASCADE),
         ),
     ]

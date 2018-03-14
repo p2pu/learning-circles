@@ -18,6 +18,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='reminder',
             name='study_group_meeting',
-            field=models.ForeignKey(blank=True, to='studygroups.StudyGroupMeeting', null=True),
+            field=models.ForeignKey(blank=True, to='studygroups.StudyGroupMeeting', null=True, on_delete=models.CASCADE),
         ),
     ]

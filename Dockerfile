@@ -1,4 +1,4 @@
-FROM node:boron-alpine AS frontend
+FROM node:carbon-alpine AS frontend
 WORKDIR /opt/app/
 COPY package.json /opt/app/
 RUN apk --no-cache add --virtual native-deps \
@@ -8,21 +8,20 @@ RUN apk --no-cache add --virtual native-deps \
 COPY . /opt/app/
 RUN npm run build:production
 
-FROM ubuntu:14.04
+FROM ubuntu:16.04
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     postgresql-client \
     python \
     python-dev \
     python-virtualenv \
-    supervisor
+    bzip2
 WORKDIR /opt/app/
 COPY requirements.txt /opt/app/
 RUN virtualenv /opt/django-venv && /opt/django-venv/bin/pip install -r /opt/app/requirements.txt
 COPY . /opt/app/
 # Copy CSS & compiled JavaScript
 COPY --from=frontend /opt/app/assets assets
-COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY config/wait-for-it.sh /wait-for-it.sh
 COPY config/docker-entry.sh /docker-entry.sh
 RUN mkdir -p /var/lib/celery && useradd celery && chown celery:celery /var/lib/celery/
@@ -47,4 +46,4 @@ VOLUME /var/app/static_serve
 VOLUME /var/app/upload
 VOLUME /var/lib/celery/
 ENTRYPOINT ["/docker-entry.sh"]
-CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/opt/django-venv/bin/gunicorn", "learnwithpeople.wsgi:application", "--bind", "0.0.0.0:80", "--workers=3"]

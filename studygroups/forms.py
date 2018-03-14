@@ -1,6 +1,7 @@
 # coding=utf-8
 from django import forms
 from django.conf import settings
+from django.conf.global_settings import LANGUAGES
 from django.utils.translation import ugettext as _
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -19,8 +20,9 @@ import twilio
 from studygroups.models import Application
 from studygroups.models import Reminder
 from studygroups.models import StudyGroup
-from studygroups.models import StudyGroupMeeting
+from studygroups.models import Meeting
 from studygroups.models import Feedback
+from studygroups.models import Course
 from studygroups.sms import send_message
 
 import logging
@@ -32,25 +34,42 @@ class ApplicationForm(forms.ModelForm):
 
     COMPUTER_ACCESS = (
         ('', _('Select one of the following')),
-        ('Both', 'Both'),
-        ('Just a laptop', 'Just a laptop'),
-        ('Just headphones', 'Just headphones'),
-        ('Neither', 'Neither'),
+        ('Both', _('Both')),
+        ('Just a laptop', _('Just a laptop')),
+        ('Just headphones', _('Just headphones')),
+        ('Neither', _('Neither')),
     )
+
     DIGITAL_LITERACY_CHOICES = (
         ('', _('Select one of the following')),
     ) + Application.DIGITAL_LITERACY_CHOICES
+
+    GOAL_CHOICES = [
+        ('', _('Select one of the following')),
+        ('To increase my employability', _('To increase my employability')),
+        ('Professional development for my current job', _('Professional development for my current job')),
+        ('To accompany other educational programs', _('To accompany other educational programs')),
+        ('Personal interest', _('Personal interest')),
+        ('Social reasons', _('Social reasons')),
+        ('For fun / to try something new', _('For fun / to try something new')),
+        ('Other', _('Other')),
+    ]
     mobile = PhoneNumberField(
         required=False,
-        label=_('Phone Number for SMS'),
-        help_text=_('if you want to receive meeting reminders via text message.')
+        label=_(u'If you’d like to receive weekly text messages reminding you of upcoming learning circle meetings, put your phone number here:'),
+        help_text=_('Your number won\'t be shared with other participants.')
     )
     computer_access = forms.ChoiceField(
         choices=COMPUTER_ACCESS,
-        label=_('Can you bring a laptop and headphones to the Learning Circle each week?')
+        label=_('Can you bring a laptop and headphones to the learning circle each week?')
     )
-    goals = forms.CharField(
-        label=_('In one sentence, please explain your goals for taking this course.')
+    goals = forms.ChoiceField(
+        label=_('What is your goal for taking this learning circle?'),
+        choices=GOAL_CHOICES
+    )
+    goals_other = forms.CharField(
+        label=_('If you selected other, could you specify?'),
+        required=False
     )
     support = forms.CharField(
         label=_('A successful study group requires the support of all of its members. How will you help your peers achieve their goals?')
@@ -67,11 +86,12 @@ class ApplicationForm(forms.ModelForm):
             'study_group',
             'name',
             'email',
-            'mobile',
             'goals',
+            'goals_other',
             'support',
             'computer_access',
-            'use_internet'
+            'use_internet',
+            'mobile',
         )
         self.helper.add_input(Submit('submit', 'Submit'))
         super(ApplicationForm, self).__init__(*args, **kwargs)
@@ -80,17 +100,35 @@ class ApplicationForm(forms.ModelForm):
         if study_group and study_group.country == 'United States of America':
             self.fields['mobile'].help_text += ' Ex. +1 281-234-5678'
 
+        # add custom signup question if the facilitator specified one
+        if study_group.signup_question:
+            self.fields['custom_question'] = forms.CharField(label=study_group.signup_question)
+            self.helper.layout.insert(len(self.helper.layout),'custom_question')
+
+
+    def clean(self):
+        cleaned_data = super(ApplicationForm, self).clean()
+        # TODO - if mobile format is wrong, show error with example format for region
+        if self.cleaned_data['goals'] == 'Other':
+            if not self.cleaned_data.get('goals_other'):
+                msg = _('This field is required.')
+                self.add_error('goals_other', msg)
+
     def save(self, commit=True):
         signup_questions = {}
         questions = ['computer_access', 'goals', 'support', 'use_internet']
         for question in questions:
             signup_questions[question] = self.cleaned_data[question]
+
+        if self.cleaned_data.get('goals') == 'Other':
+            signup_questions['goals'] = u'Other: {}'.format(self.cleaned_data.get('goals_other'))
+
+        # add custom signup question to signup_questions if the facilitator specified one
+        if self.instance.study_group.signup_question:
+            signup_questions['custom_question'] = self.cleaned_data['custom_question']
         self.instance.signup_questions = json.dumps(signup_questions)
         return super(ApplicationForm, self).save(commit)
 
-    def clean(self):
-        cleaned_data = super(ApplicationForm, self).clean()
-        # TODO - if mobile format is wrong, show error with example format for region
 
     class Meta:
         model = Application
@@ -150,19 +188,65 @@ class OptOutForm(forms.Form):
                 application.delete()
 
 
-class MessageForm(forms.ModelForm):
+class CourseForm(forms.ModelForm):
+    LANGUAGES = (
+        ('en', _('English')),
+        ('es', _('Spanish')),
+        ('fr', _('French')),
+        ('other', [ (code, name) for code, name in LANGUAGES if code not in ['en', 'es', 'fr']]),
+    )
+    language = forms.ChoiceField(choices=LANGUAGES, initial='en')
+
+    def __init__(self, *args, **kwargs):
+        super(CourseForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        if self.instance:
+            self.helper.add_input(Submit('submit', 'Save'))
+        else:
+            self.helper.add_input(Submit('submit', 'Create course'))
+        self.helper.layout.insert(4, HTML("""
+            <p><label class="from-control requiredField">
+                Availability<span class="asteriskField">*</span>
+            </label></p>
+        """))
+
     class Meta:
-        model = Reminder
-        exclude = ['study_group_meeting', 'created_at', 'sent_at']
-        widgets = {'study_group': forms.HiddenInput} 
+        model = Course
+        fields = [
+            'title',
+            'provider',
+            'link',
+            'caption',
+            'on_demand',
+            'topics',
+            'language',
+        ]
+        labels = {
+            'title': _('Course title'),
+            'provider': _('Course creator'),
+            'link': _('Course website'),
+            'caption': _('Course description (200 character limit)'),
+            'topic': _('Course topics'),
+            'on_demand': _('Always available'),
+        }
+        help_texts = {
+             'provider': _('e.g. MIT, University of Michigan, Khan Academy.'),
+             'link': _('Paste full URL above.'),
+             'caption': _('Write 1-2 sentences that describe what people will accomplish if they take this course. This description is what learners will see when signing up for learning circles, and what facilitators will see when selecting a course.'),
+             'topics': _('Select or create a few topics that will help learners and future facilitators find this course.'),
+             'on_demand': _(u'Select “always available” if the course is openly licensed or on-demand, meaning that there are no start and end dates for course availability.')
+        }
 
 
 class StudyGroupForm(forms.ModelForm):
-    TIMEZONES = [('', _('Select one of the following')),] + zip(pytz.common_timezones, pytz.common_timezones)
+    TIMEZONES = [('', _('Select one of the following')),] + list(zip(pytz.common_timezones, pytz.common_timezones))
 
     meeting_time = forms.TimeField(input_formats=['%I:%M %p'], label=_('What time will your Learning Circle meet each week?'), help_text=_('We recommend establishing a consistent weekly meeting time. You can always change individual meeting times from your Dashboard later.'), initial=datetime.time(16))
     weeks = forms.IntegerField(min_value=1, label=_('How many weeks will your Learning Circle run for?'), help_text=_('If you\'re not sure, six weeks is generally a good bet!'))
     timezone = forms.ChoiceField(choices=TIMEZONES, label=_('What timezone is your Learning Circle happening in?'))
+
+    latitude = forms.DecimalField(required=False, widget=forms.HiddenInput)
+    longitude = forms.DecimalField(required=False, widget=forms.HiddenInput)
 
     def __init__(self, *args, **kwargs):
         super(StudyGroupForm, self).__init__(*args, **kwargs)
@@ -171,15 +255,18 @@ class StudyGroupForm(forms.ModelForm):
             self.helper.add_input(Submit('submit', 'Create Learning Circle'))
         else:
             self.helper.add_input(Submit('submit', 'Save'))
-        self.helper.layout.insert(11, HTML("""<p>For inspiration, check out <a href="https://www.flickr.com/search/?license=2%2C3%2C4%2C5%2C6%2C9" target="_blank">openly licensed images on Flickr</a>.</p>"""))
+        self.helper.layout.insert(
+            len(self.helper.layout),
+            HTML("""<p>For inspiration, check out <a href="https://www.flickr.com/search/?license=2%2C3%2C4%2C5%2C6%2C9" target="_blank">openly licensed images on Flickr</a>.</p>""")
+        )
         self.helper.layout.insert(1, HTML("""
-            <p>You can read more about each course <a href="{% url 'studygroups_courses' %}">here</a>.</p>
-            <p>Or add a new course that isn't listed yet. Note that courses you add will be visible only to you.</p>
+            <p>You can learn more about each course and explore what other people are facilitating on the <a href="https://www.p2pu.org/en/courses/">courses page</a>.</p>
+            <p>Or add an online course that isn&#39;t already listed.</p>
             <p><a class="btn btn-default" href="{% url 'studygroups_course_create' %}">Add a new course</a></p>
         """))
 
         if self.instance.pk:
-            self.fields['weeks'].initial = self.instance.studygroupmeeting_set.active().count()
+            self.fields['weeks'].initial = self.instance.meeting_set.active().count()
 
     def save(self, commit=True):
         self.instance.end_date = self.cleaned_data['start_date'] + datetime.timedelta(weeks=self.cleaned_data['weeks'] - 1)
@@ -189,21 +276,24 @@ class StudyGroupForm(forms.ModelForm):
         model = StudyGroup
         fields = [
             'course',
+            'description',
             'venue_name',
             'venue_details',
             'venue_address',
             'city',
+            'latitude',
+            'longitude',
             'start_date',
             'weeks',
             'meeting_time',
             'duration',
             'timezone',
             'venue_website',
-            'image',
-            'facilitator',
+            'image'
         ]
         labels = {
             'course': _('Choose the course that your Learning Circle will study.'),
+            'description': _('Share a welcome message with potential learners.'),
             'venue_name': _('Where will you meet?'),
             'venue_details': _('Where is the specific meeting spot?'),
             'venue_address': _('What is the address of the venue?'),
@@ -215,6 +305,7 @@ class StudyGroupForm(forms.ModelForm):
         }
         help_texts = {
             'course': '',
+            'description': _(u'You can include a bit about yourself, why you’re facilitating this course, and anything else you want people to know before they sign up.'),
             'venue_name': _('Name of the venue, e.g. Pretoria Library or Bekka\'s house'),
             'venue_details': _('e.g. second floor kitchen or Room 409 (third floor)'),
             'venue_address': _('Write it out like you were mailing a letter.'),
@@ -224,28 +315,16 @@ class StudyGroupForm(forms.ModelForm):
             'duration': _('We recommend 90 - 120 minutes.'),
             'image': _('Make your Learning Circle stand out with a picture or .gif. It could be related to location, subject matter, or anything else you want to identify with!'),
         }
+        widgets = {
+            'latitude': forms.HiddenInput,
+            'longitude': forms.HiddenInput,
+        } 
 
 
-class FacilitatorForm(forms.ModelForm):
-    username = forms.EmailField(required=True, label=_('Email'))
-    mailing_list_signup = forms.BooleanField(required=False, label=_('Subscribe to facilitator mailing list?'))
-
-    def clean(self):
-        cleaned_data = super(FacilitatorForm, self).clean()
-        username = cleaned_data.get('username')
-        if User.objects.filter(username__iexact=username).exists():
-            self.add_error('username', _('A user with that username already exists.'))
-        return cleaned_data
-
-    class Meta:
-        model = User
-        fields = ['username', 'first_name', 'last_name', 'mailing_list_signup']
-
-
-class StudyGroupMeetingForm(forms.ModelForm):
+class MeetingForm(forms.ModelForm):
     meeting_time = forms.TimeField(input_formats=['%I:%M %p'], initial=datetime.time(16))
     class Meta:
-        model = StudyGroupMeeting
+        model = Meeting
         fields = ['meeting_date', 'meeting_time', 'study_group']
         widgets = {'study_group': forms.HiddenInput} 
 

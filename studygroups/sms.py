@@ -1,10 +1,9 @@
 from django.conf import settings
 
-import twilio
-import twilio.rest
+from twilio.rest import Client
 
 def send_message(to, body):
-    client = twilio.rest.TwilioRestClient(
+    client = Client(
         settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN 
     )
     message = client.messages.create(

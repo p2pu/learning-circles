@@ -1,28 +1,30 @@
 {% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
 {% load crispy_forms_tags %}
 {% load static %}
 {% load i18n %}
 
 {% block content %}
 <div class="container learning-circle-signup">
-<div class="row">
-    
-  <div class="col-md-12 col-sm-12">
-      <h2>{% trans "Add a Course" %}</h2>
-      <p>{% trans "Want to run an online course that isn&#39;t listed on our website yet? Just fill in this form and then you&#39;ll be able to select this course when creating Learning Circles going forward." %}</p>
-	  <form action="" method="POST" enctype="multipart/form-data">
-	    {% csrf_token %}
-	    {{ form|crispy }}
-        <p><button type="submit" class="btn btn-default">{% trans "Add Course" %}</button></p>
-	  </form>
+  <div class="row">
+
+    <div class="col-md-12 col-sm-12">
+      {% if object %}
+      <h2>{% trans "Edit course" %}</h2>
+      {% else %}
+      <h2>{% trans "Add a course" %}</h2>
+      <p>{% blocktrans %}Want to run an online course that isn&#39;t listed on our website yet? Just fill in this form and then you&#39;ll be able to select this course when creating Learning Circles going forward. This course will also be visible to other facilitators on the <a href="https://www.p2pu.org/en/courses/">courses page</a>.{% endblocktrans %}</p>
+      {% endif %}
+
+      {% crispy form %}
+    </div>
   </div>
-</div>
 </div>
 {% endblock %}
 
 {% block css %}
-  <link type="text/css" rel="stylesheet" href="{% static 'css/datepicker.css' %}" charset="utf-8">
-  <link type="text/css" rel="stylesheet" href="{% static 'css/jquery.timepicker.css' %}" charset="utf-8">
+<link type="text/css" rel="stylesheet" href="{% static 'css/datepicker.css' %}" charset="utf-8">
+<link type="text/css" rel="stylesheet" href="{% static 'css/jquery.timepicker.css' %}" charset="utf-8">
 {% endblock %}
 
 
@@ -30,9 +32,17 @@
 <script src="{% static 'js/vendor/bootstrap-datepicker.js' %}"></script>
 <script src="{% static 'js/vendor/jquery.timepicker.js' %}"></script>
 <script>
-    $(document).ready(function(){
-            $('.dateinput').datepicker({'format':'yyyy-mm-dd'});
-            $('.timeinput').timepicker({ 'step': 15, 'timeFormat': 'h:i A' });
-    });
+$(document).ready(function(){
+  $('.dateinput').datepicker({'format':'yyyy-mm-dd'});
+  $('.timeinput').timepicker({ 'step': 15, 'timeFormat': 'h:i A' });
+});
+window.reactData = window.reactData || {};
+window.reactData.topics = [
+{% for topic in topics %}"{{topic}}",
+{% endfor %}
+];
+
 </script>
+{% render_bundle 'common' %}
+{% render_bundle 'course-form' %}
 {% endblock %}

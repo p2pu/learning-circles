@@ -13,6 +13,8 @@ from __future__ import absolute_import
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 path = lambda *a: os.path.join(BASE_DIR, *a)
+env = lambda key, default: os.environ.get(key, default)
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
@@ -21,11 +23,14 @@ ADMINS = (
     ('Admin', os.environ.get('ADMIN_EMAIL', 'admin@localhost') ),
 )
 
+COMMUNITY_MANAGER = os.environ.get('COMMUNITY_MANAGER_EMAIL', 'community@localhost')
+
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', 'youshouldchangethis')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DEBUG', False) == 'true'
 CRISPY_FAIL_SILENTLY = not DEBUG
 
 # Application definition
@@ -48,9 +53,11 @@ INSTALLED_APPS = [
     'analytics',
     'uxhelpers',
     'webpack_loader',
+    'custom_registration',
 ]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -58,7 +65,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-)
+]
 
 ROOT_URLCONF = 'learnwithpeople.urls'
 
@@ -148,8 +155,13 @@ EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
+if DEBUG is True:
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = path('mailbox')
+
+
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
-SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'no-reply@p2pu.org') #TODO grab this from environment
+SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'no-reply@p2pu.org')
 
 ##### Database config
 import dj_database_url
@@ -170,6 +182,7 @@ TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
 TWILIO_NUMBER = os.environ.get('TWILIO_NUMBER')
 
 LOGIN_REDIRECT_URL = '/login_redirect/'
+LOGOUT_REDIRECT_URL = 'https://www.p2pu.org/en/facilitate/'
 DOMAIN = os.environ.get('DOMAIN', 'example.net')
 
 ####### Google analytics tracking info ####### 
@@ -182,14 +195,13 @@ BROKER_URL = os.environ.get('BROKER_URL', 'amqp://guest:guest@localhost//')
 from celery.schedules import crontab
 
 CELERYBEAT_SCHEDULE = {
-    # Executes every Monday morning at 7:30 A.M
     'gen_reminders': {
         'task': 'studygroups.tasks.gen_reminders',
-        'schedule': crontab(minute='*/10'),
+        'schedule': crontab(minute='5'),
     },
     'send_reminders': {
         'task': 'studygroups.tasks.send_reminders',
-        'schedule': crontab(minute='*/10'),
+        'schedule': crontab(minute='5'),
     },
     'send_new_facilitator_email': {
         'task': 'studygroups.tasks.send_new_facilitator_emails',
@@ -226,15 +238,20 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler',
             'include_html': True,
         },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'INFO',
+            'stream': 'ext://sys.stdout'
+        },
     },
     'loggers': {
         '': {
-            'handlers': ['mail_admins'],
+            'handlers': ['mail_admins', 'console'],
             'level': 'DEBUG',
             'propagate': False,
         },
         'django': {
-            'handlers': ['mail_admins'],
+            'handlers': ['mail_admins', 'console'],
             'level': 'DEBUG',
             'propagate': False,
         },
@@ -249,9 +266,7 @@ BACKUP_AWS_SECRET_ACCESS_KEY = os.environ.get('BACKUP_AWS_SECRET_ACCESS_KEY') # 
 BACKUP_AWS_STORAGE_BUCKET_NAME = os.environ.get('BACKUP_AWS_STORAGE_BUCKET_NAME') # Name of the bucket where backups should be stored
 BACKUP_AWS_KEY_PREFIX = os.environ.get('BACKUP_AWS_KEY_PREFIX') # Prefix for generated key on AWS s3
 
-
-##### Support for settings_local.py
-try:
-    from .settings_local import *
-except ImportError:
-    pass
+#### Mailchimp API key ###
+MAILCHIMP_API_KEY = env('MAILCHIMP_API_KEY', '')
+MAILCHIMP_LIST_ID = env('MAILCHIMP_LIST_ID', '')
+MAILCHIMP_API_ROOT = env('MAILCHIMP_API_ROOT', 'https://??.api.mailchimp.com/3.0/')

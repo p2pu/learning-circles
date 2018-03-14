@@ -3,12 +3,51 @@
 {% load i18n %}
 
 <nav class="nav-collapsed">
-  <span class="logo dark">
+  <div class="logo dark">
     <a href="https://www.p2pu.org/en/">
       <img src="{% static 'images/p2pu-logo.png' %}" alt="P2PU Logo" />
     </a>
-  </span>
-  <span class="menu"><i class="fa fa-bars" aria-hidden="true"></i>MENU</span>
+  </div>
+
+  <div class="nav-items">
+    <div class="account nav-item">
+      {% if user.is_authenticated %}
+      <div class="dropdown">
+        <div class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+          <i class="fa fa-user" aria-hidden="true"></i>
+          <span class="uppercase hidden-xs">{{user.first_name}}</span>
+        </div>
+        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+          {% if user.is_staff %}
+          <li>
+            <a href="{% url 'studygroups_staff_dash' %}">{% trans "Staff dash" %}</a>
+          </li>
+          {% endif %}
+
+          {% if user|is_organizer %}
+          <li>
+            <a href="{% url 'studygroups_organize' %}">{% trans "My team" %}</a>
+          </li>
+          {% endif %}
+          <li>
+            <a href="{% url 'studygroups_facilitator' %}">{% trans "My learning circles" %}</a>
+          </li>
+          <li><a href="{% url 'logout' %}">{% trans "Log out" %}</a></li>
+        </ul>
+      </div>
+      {% else %}
+        <i class="fa fa-user" aria-hidden="true"></i>
+        <a class="uppercase" href="{% url 'studygroups_login_redirect' %}">{% trans "Log in" %}</a>
+      {% endif %}
+    </div>
+
+    <div class="menu nav-item">
+      <i class="fa fa-bars" aria-hidden="true"></i>
+      <span class="uppercase hidden-xs">Menu</span>
+    </div>
+  </div>
+
+
 
   <div id="full-page-menu" class="collapsed">
     <div class="content-container">
@@ -23,6 +62,7 @@
           </h2>
 
           <p><a href="https://www.p2pu.org/en/#search">Join a learning circle</a></p>
+          <p><a href="{% url 'studygroups_facilitator_studygroup_create' %}" class="dark">Create a learning circle</a></p>
 
         </div>
       </div>
@@ -30,7 +70,7 @@
       <div class="menu-section full-column">
         <div class="nav-container">
           <h2>
-            <a href="/en/facilitate/">
+            <a href="https://www.p2pu.org/en/facilitate/">
               Facilitate
               <i class="fa fa-arrow-right"></i>
             </a>
@@ -40,30 +80,13 @@
 
           <p><a href="https://groups.google.com/a/p2pu.org/forum/#!forum/community">Community</a></p>
 
-          <p><a href="https://learningcircles.p2pu.org/en/courses/">Courses</a></p>
+          <p><a href="https://www.p2pu.org/en/courses/">Courses</a></p>
 
           <p><a href="https://learningcircles.p2pu.org/en/facilitator/">Dashboard</a></p>
 
         </div>
       </div>
 
-      <div class="menu-section full-column">
-        <div class="nav-container">
-          <h2>
-            <a href="https://www.p2pu.org/en/about/">
-              About
-              <i class="fa fa-arrow-right"></i>
-            </a>
-          </h2>
-
-          <p><a href="https://www.p2pu.org/en/about/people/">People</a></p>
-
-          <p><a href="https://www.p2pu.org/en/about/values/">Values</a></p>
-
-          <p><a href="https://www.p2pu.org/en/jobs/">Job openings</a></p>
-
-        </div>
-      </div>
 
       <div class="menu-section full-column">
         <div class="nav-container">
@@ -73,29 +96,37 @@
               <i class="fa fa-arrow-right"></i>
             </a>
           </h2>
-
-          <p><a href="http://info.p2pu.org/2017/06/14/when-seekers-and-rebels-meet-or-my-experience-studying-the-learning-circles/">Seekers and Rebels</a></p>
-
-          <p><a href="http://info.p2pu.org/2017/06/02/will-people-show-up/">Will People Show Up?</a></p>
-
-          <p><a href="http://info.p2pu.org/2017/05/16/peer-2-peer-coast-2-coast/">Coast 2 Coast</a></p>
-
+          
+            <p><a href="http://info.p2pu.org/2018/02/05/learning/" class="dark">Learning about learning circles</a></p>
+          
+            <p><a href="http://info.p2pu.org/2018/01/31/fictioncourse/" class="dark">Learn To Write Fiction: Creating My Own Online Course</a></p>
+          
+            <p><a href="http://info.p2pu.org/2018/01/30/p2pu-business-models/" class="dark">Open learning and financial sustainability</a></p>
+          
+            <p><a href="http://info.p2pu.org/2017/09/28/empowering-volunteers/" class="dark">Empowering Volunteers in Kenya</a></p>
+          
         </div>
       </div>
 
       <div class="menu-section full-column">
         <div class="nav-container">
           <h2>
-            <a href="https://www.p2pu.org/en/workwithus/">
-              Work with us
+            <a href="https://www.p2pu.org/en/about/">
+              About P2PU
               <i class="fa fa-arrow-right"></i>
             </a>
           </h2>
-
-          <p><a href="https://www.p2pu.org/en/donate/">Donate</a></p>
-
-          <p><a href="https://www.p2pu.org/en/connect/">Connect</a></p>
-
+          
+            <p><a href="https://www.p2pu.org/en/workwithus/" class="dark">Hire us</a></p>
+          
+            <p><a href="https://www.p2pu.org/en/jobs/" class="dark">Job openings</a></p>
+          
+            <p><a href="https://shop.spreadshirt.com/p2pu/" class="dark">Shop</a></p>
+          
+            <p><a href="https://www.p2pu.org/en/donate/" class="dark">Donate</a></p>
+          
+            <p><a href="https://www.p2pu.org/en/connect/" class="dark">Contact</a></p>
+          
         </div>
       </div>
 

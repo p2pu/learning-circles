@@ -1,55 +1,57 @@
-Organizer guide
-===============
+Team organizer guide
+====================
 
-As an organizer it is your responsibility to add new facilitators, courses, locations and ultimately create learning circles. You can do all of this by loggin into the organizer dashboard. Go to http://example.com/en/organize/. If you are already logged in, you can simply follow the link at the top.
+As a team organizer, you get an overview of what is going on in learning circles run by facilitators in your team. Before you can get started, your team needs to be created for you. Chances are good that ist's been done already if you are here, but if not, get in contact with the P2PU team.
 
-.. image:: _static/organize-dash.png
+Log into your dashboard - https://learningcircles.p2pu.org/en/accounts/login/
+
+Dashboard overview
+------------------
+
+At the top of your dashboard, there are 4 different tabs for you to switch between upcoming meetings, active learning circles, facilitators and invitations.
+
+The **upcoming meetings** view gives you an overview of what learning circles are meeting this week. You can also see what is happening the previous week or the next week.
+
+.. image:: _static/organizer-dashboard-upcoming-meetings.png
+
+The **active learning circles** view gives you a list of all the learning circles that still have meetings scheduled in the future.
+
+.. image:: _static/organizer-dashboard-active-learning-circles.png
+
+The **facilitators** view gives you a list of all the facilitators that are currently part of your team.
+
+.. image:: _static/organizer-dashboard-facilitators.png
+
+The **invitations** view shows you a list of everyone who was invited to join your team, this is also where you will invite new facilitators.
+
+.. image:: _static/organizer-dashboard-invitations.png
 
 Adding facilitators
 -------------------
 
-To add a facilitator click on 'Add facilitator' and fill in the form and click 'Save'.
+To inviate a facilitator to join your team, you should go to the **invitations** tab mentioned above. Once here, you should enter the email address for the facilitatoryou want to invite below the list of current invitations.
 
-.. image:: _static/organize-facilitator-add.png
+If you invite a facilitator that is already signed up to learning circles, they will receive a notification asking them to confirm that they wish to join your team.
 
-.. image:: _static/organize-dash-facilitator.png
+.. image:: _static/organizer-invite-existing.png
 
-Facilitators will need to reset their password using the email above before they can log in. See the facilitator part of this manual for more details.
+If they haven't already signed up, they will receive a message asking them to sign up.
 
-Adding courses
---------------
+.. image:: _static/organizer-invite-new-user.png
 
-Click 'Add course', fill in the required data and click "Save" once done.
-
-.. image:: _static/organize-course-add.png
-
-.. image:: _static/organize-dash-course.png
-
-Adding locations
-----------------
-
-Click 'Add location' on the organizer dashboard, fill in the relevant fields and click save once done.
-
-.. image:: _static/organize-location-add.png
-
-.. image:: _static/organize-dash-location.png
-
-
-Creating learning circles
--------------------------
-
-Click 'Add learning circle', fill in the relevant data and click save once done.
-
-.. image:: _static/organize-learningcircle-add.png
-
-.. image:: _static/organize-dash-learningcircle.png
-
-Adding a new learning circle will also create the weekly meetings for the learning circle. A summary of learning circle meetings on a per week basis will be displayed on the organizer dashboard. For more information on managing weekly meetings, see the facilitator part of this guide.
+Once the facilitator signed up, they will need to accept the team invitation on their learning circles facilitator dashboard.
 
 Weekly update
 -------------
 
-As a facilitator you will also receive a weekly update of learning circle meetings that happened the previous week every Monday.
+As a team organizer you will also receive a weekly update every Monday. This update with contain all the meetings that happened in the previous week and any feedback that was submitted by facilitators in your team.
 
 .. image:: _static/organizer-weekly-update.png
 
+
+Facilitator dashboard
+---------------------
+
+You can still access your facilitator dashboard to create and run learning circles yourself. Use the dropdown menu in the top right with your name on it to switch between your team dashboard and your facilitator dashboard.
+
+.. image:: _static/organizer-dashboard-switch.png

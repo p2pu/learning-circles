@@ -1,189 +1,186 @@
 {% load i18n %}
 <div class="panel panel-default">
-    <div class="panel-heading">
-      <h2>{{ lc.course.title }}</h2>
-    </div>
-<div class="panel-body">
-<div class="row">
-  <div class="col-md-12">
-    {% with venue_website=lc.venue_website venue_name=lc.venue_name venue_details=lc.venue_details day=lc.day timezone=lc.timezone_display meeting_time=lc.meeting_time|time:"f A" end_time=lc.end_time|time:"f A" start_date=lc.start_date|date:"D d M Y" %}
-    {% if lc.venue_website %}
-      <p>{% blocktrans %}At <a href="{{venue_website}}">{{venue_name}}</a>, {{venue_details}} every {{day}}, {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}}{% endblocktrans %}</p>
-    {% else %}
-    <p>{% blocktrans %}At <strong>{{venue_name}}</strong>, {{venue_details}} every {{day}}, {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}}{% endblocktrans %}</p>
-    {% endif %}
-    {% endwith %}
-    <p><strong>{% trans "Facilitator:" %} </strong> {{ lc.facilitator.first_name }} {{ lc.facilitator.last_name }}</p>
+  <div class="panel-heading">
+    <h2>{{ lc.course.title }}</h2>
   </div>
-  {% if lc.deleted_at %}
-    <div class="col-md-12">
-      <div class="alert alert-danger" role="alert">
-          <p>{% trans "This study group has been deleted. If that is a mistake, please contact your team coordinator or the P2PU learning circles coordinator." %}</p>
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-md-12">
+        {% with venue_website=lc.venue_website venue_name=lc.venue_name venue_details=lc.venue_details day=lc.day timezone=lc.timezone_display meeting_time=lc.meeting_time|time:"f A" end_time=lc.end_time|time:"f A" start_date=lc.start_date|date:"D d M Y" %}
+        {% if lc.venue_website %}
+        <p>{% blocktrans %}At <a href="{{venue_website}}">{{venue_name}}</a>, {{venue_details}} every {{day}}, {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}}{% endblocktrans %}</p>
+        {% else %}
+        <p>{% blocktrans %}At <strong>{{venue_name}}</strong>, {{venue_details}} every {{day}}, {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}}{% endblocktrans %}</p>
+        {% endif %}
+        {% endwith %}
+        <p><strong>{% trans "Facilitator:" %} </strong> {{ lc.facilitator.first_name }} {{ lc.facilitator.last_name }}</p>
       </div>
-    </div>
-  {% else %}
-    <div class="col-md-12">
+      {% if lc.deleted_at %}
+      <div class="col-md-12">
+        <div class="alert alert-danger" role="alert">
+          <p>{% trans "This study group has been deleted. If that is a mistake, please contact your team coordinator or the P2PU learning circles coordinator." %}</p>
+        </div>
+      </div>
+      {% else %}
+      <div class="col-md-12">
         <p>
         <a class="btn btn-primary" href="{% url 'studygroups_edit_study_group' lc.id %}">{% trans "edit" %}</a>
         <a class="btn btn-primary" href="{% url 'studygroups_studygroup_delete' lc.id %}">{% trans "delete" %}</a>
+        {% if lc.draft %}{% else %}
         {% if lc.signup_open %}
-          <a class="btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' lc.id %}">{% trans "close signup" %}</a>
+        <a class="btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' lc.id %}">{% trans "close signup" %}</a>
         {% else %}
-          <a class="btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' lc.id %}">{% trans "open signup" %}</a>
+        <a class="btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' lc.id %}">{% trans "open signup" %}</a>
+        {% endif %}
         {% endif %}
         <a class="btn btn-primary" href="{% url 'studygroups_signup' location=lc.venue_name|slugify study_group_id=lc.pk %}">{% trans "view webpage" %}</a>
         </p>
-        {% if not lc.signup_open %}
-          <div class="alert alert-info" role="alert"><p>{% trans "Signup is currently closed and your Learning Circle will not be listed on the landing page." %}</div></p>
+        {% if lc.draft %}
+          <div class="alert alert-info" role="alert">
+            <p>{% trans "This learning circle is currently a draft and users won't be able to find it on www.p2pu.org or sign up." %}</p>
+            <form action="{% url 'studygroups_studygroup_publish' study_group_id=lc.pk %}" method="POST">{% csrf_token %}<button type="submit" class="btn btn-primary" href="">{% trans "publish" %}</button></form>
+          </div>
         {% endif %}
-    </div>
+        {% if not lc.signup_open %}
+          <div class="alert alert-info" role="alert">
+            <p>{% trans "Signup is currently closed and your Learning Circle will not be listed on the landing page." %}</p>
+          </div>
+        {% endif %}
+      </div>
       <div class="col-md-12 well">
-        <p><strong>{% trans "Next meeting" %}:</strong>{% if lc.next_meeting %} {{ lc.next_meeting.meeting_date|date:"D d M Y" }} {% trans "at" %} {{ lc.next_meeting.meeting_time|time:"f A" }}{% else %} {% trans "No meeting scheduled" %}.{% endif %}</p>
-      {% if lc.next_meeting.meeting_activity %}
-        <p><strong>{% trans "Upcoming recipe card" %}:</strong> <a href="{{ lc.next_meeting.meeting_activity.card.url }}" target="_blank">{{ lc.next_meeting.meeting_activity.description }}</a></p>
-      {% endif %}
-      <p>
-      <strong>{% trans "Attending" %} ({{ lc.next_meeting.rsvps.yes|length }}):</strong>
-        {% for rsvp in lc.next_meeting.rsvps.yes %}
-          {{ rsvp.application.name }}
-          {% if not forloop.last %}, {% endif %}
+        <h3>{% trans "Recipe Cards" %}</h3>
+        <p>{% trans "Use these recipe cards to foster community, build learner confidence, and help to bridge the course content and real life. Each recipe card includes a 15 minute group activity that you can do during the learning circle." %}</p>
+        <p class="recipe-card-links">
+        {% for activity in activities %}
+          <a class="btn btn-primary" href="{{activity.card.url}}" target="_blank">{{activity.description}}</a>
         {% endfor %}
-      </p>
-      <p>
-      <strong>{% trans "Not attending" %} ({{ lc.next_meeting.rsvps.no|length }}):</strong>
-        {% for rsvp in lc.next_meeting.rsvps.no %}
-          {{ rsvp.application.name }}
-          {% if not forloop.last %}, {% endif %}
-        {% endfor %} 
-      </p>
-    </div>
-    <div class="col-md-12">
-        <h3>{% trans "Meetings" %} ({{lc.studygroupmeeting_set.active.count}})</h3>
+        </p>
+      </div>
+      <div class="col-md-12">
+        <h3>{% trans "Meetings" %} ({{lc.meeting_set.active.count}})</h3>
         <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>{% trans "Date" %}</th>
-                    <th>{% trans "RSVPs" %}</th>
-                    <th>{% trans "Feedback" %}</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for meeting in lc.studygroupmeeting_set.active|dictsort:"meeting_datetime" %}
-                <tr>
-                  <td>{{ meeting.meeting_date|date:"D, d M Y" }}, {{ meeting.meeting_time|time:"f A" }}
- 
-                    <div class="pull-right">
-                        <a class="btn btn-primary" href="{% url 'studygroups_edit_study_group_meeting' lc.id meeting.id %}"><i class="fa fa-edit"></i> {% trans "Edit" %}</a>
-                        <a class="btn btn-primary" href="{% url 'studygroups_meeting_delete' lc.id meeting.id %}"><i class="fa fa-times"></i> {% trans "Delete" %}</a>
-                    </div>
-                    </td>
-                    <td>{% if meeting.rsvp_set.all.count %}{% trans "Yes" %} ({{ meeting.rsvps.yes|length }}), {% trans "No" %} ({{ meeting.rsvps.no|length }}){% endif %}</td>
-                    <td>
-                      {% if meeting.feedback_set.all.first %}
-                        {% with feedback=meeting.feedback_set.all.first %}
-                        {{feedback.feedback | truncatewords:10 }}
-                        <a href="{% url 'studygroups_feedback_detail' lc.id meeting.id feedback.id %}">{% trans "View feedback" %}</a>
-                        {% endwith %}
-                      {% else %}
-                        {% if meeting.meeting_datetime < today %}
-                          <a class="btn btn-primary" href="{% url 'studygroups_feedback' lc.id meeting.id %}">{% trans "Capture feedback" %}</a>
-                        {% else %}
-                          <a class="btn btn-primary disabled" href="{% url 'studygroups_feedback' lc.id meeting.id %}">{% trans "Capture feedback" %}</a>
-                        {% endif %}
-                      {% endif %}
-                    </td>
-                    <td>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
+          <thead>
+            <tr>
+              <th>{% trans "Date" %}</th>
+              <th>{% trans "RSVPs" %}</th>
+              <th>{% trans "Feedback" %}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for meeting in lc.meeting_set.active|dictsort:"meeting_datetime" %}
+            <tr>
+              <td>{{ meeting.meeting_date|date:"D, d M Y" }}, {{ meeting.meeting_time|time:"f A" }}
+
+                <div class="pull-right">
+                  <a class="btn btn-primary" href="{% url 'studygroups_edit_study_group_meeting' lc.id meeting.id %}"><i class="fa fa-edit"></i> {% trans "Edit" %}</a>
+                  <a class="btn btn-primary" href="{% url 'studygroups_meeting_delete' lc.id meeting.id %}"><i class="fa fa-times"></i> {% trans "Delete" %}</a>
+                </div>
+              </td>
+              <td>{% if meeting.rsvp_set.all.count %}{% trans "Yes" %} ({{ meeting.rsvps.yes|length }}), {% trans "No" %} ({{ meeting.rsvps.no|length }}){% endif %}</td>
+              <td>
+                {% if meeting.feedback_set.all.first %}
+                {% with feedback=meeting.feedback_set.all.first %}
+                {{feedback.feedback | truncatewords:10 }}
+                <a href="{% url 'studygroups_feedback_detail' lc.id meeting.id feedback.id %}">{% trans "View feedback" %}</a>
+                {% endwith %}
+                {% else %}
+                {% if meeting.meeting_datetime < today %}
+                <a class="btn btn-primary" href="{% url 'studygroups_feedback' lc.id meeting.id %}">{% trans "Capture feedback" %}</a>
+                {% else %}
+                <a class="btn btn-primary disabled" href="{% url 'studygroups_feedback' lc.id meeting.id %}">{% trans "Capture feedback" %}</a>
+                {% endif %}
+                {% endif %}
+              </td>
+              <td>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
         </table>
         <p><a class="btn btn-primary" href="{% url 'studygroups_create_study_group_meeting' lc.id %}">{% trans "Add meeting" %}</a></p>
-    </div>
-    <div class="col-md-12">
+      </div>
+      <div class="col-md-12">
         <h3>{% trans "Messages" %} ({{ lc.reminder_set.count }})</h3>
- 
+
         <table class="table table-bordered">
-        <thead>
-        <tr>
-            <th>{% trans "Email subject" %}</th>
-            <th>{% trans "Email body" %}</th>
-            <th>{% trans "SMS body" %}</th>
-            <th>{% trans "Sent at" %}</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for message in lc.reminder_set.all|dictsortreversed:"created_at" %}
+          <thead>
             <tr>
-                <td>{{ message.email_subject }}</td>
-                <td>{{ message.email_body }}</td>
-                <td>{{ message.sms_body }}</td>
-                <td>{{ message.sent_at|date:"D d M Y \a\t P" }}</td>
-                <td>
-                    {% if not message.sent_at %}
-                      <a href="{% url 'studygroups_message_edit' lc.id message.id %}" class="btn btn-info">{% trans "Edit" %}</a>
-                    {% endif %}
-                </td>
+              <th>{% trans "Email subject" %}</th>
+              <th>{% trans "Email body" %}</th>
+              <th>{% trans "SMS body" %}</th>
+              <th>{% trans "Sent at" %}</th>
+              <th></th>
             </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-      <a href="{% url 'studygroups_message_send' lc.id %}" class="btn btn-primary">{% trans "New message" %}</a>
-    </div>
- 
- 
- 
-    <div class="col-md-12">
+          </thead>
+          <tbody>
+            {% for message in lc.reminder_set.all|dictsortreversed:"created_at" %}
+            <tr>
+              <td>{{ message.email_subject }}</td>
+              <td>{{ message.email_body }}</td>
+              <td>{{ message.sms_body }}</td>
+              <td>{{ message.sent_at|date:"D d M Y \a\t P" }}</td>
+              <td>
+                {% if not message.sent_at %}
+                <a href="{% url 'studygroups_message_edit' lc.id message.id %}" class="btn btn-info">{% trans "Edit" %}</a>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <a href="{% url 'studygroups_message_send' lc.id %}" class="btn btn-primary">{% trans "New message" %}</a>
+      </div>
+
+
+
+      <div class="col-md-12">
         <h3>{% trans "Learners" %} ({{lc.application_set.active.count}})</h3>
         <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>{% trans "Name" %}</th>
-                    <th>{% trans "Goal" %}</th>
-                    <th>{% trans "Support" %}</th>
-                    <th>{% trans "Laptop & headphones" %}</th>
-                    <th>{% trans "Digital literacy" %}</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for learner in lc.application_set.active %}
-                <tr>
-                    <td>{{ learner.name }}
-                    <br/>
-                        {% if learner.email %}
-                            &lt;{{learner.email}}&gt;
-                        {% else %}
-                            &lt;{{learner.mobile}}&gt;
-                        {% endif %}
-                    </td>
-                    <td>{{ learner.get_signup_questions.goals }}</td>
-                    <td>{{ learner.get_signup_questions.support }}</td>
-                    <td>{{ learner.get_signup_questions.computer_access }}</td>
-                    <td class="digital-literacy">
-                      {% with dl=learner.digital_literacy_for_display %}
-                      {% if dl.use_internet %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.use_internet.question_text}}: {{dl.use_internet.answer_text}}"><i class="fa fa-globe level-{{dl.use_internet.answer}}"></i></button>{% endif %}
-                      {% if dl.send_email %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.send_email.question_text}}: {{dl.send_email.answer_text}}"><i class="fa fa-envelope level-{{dl.send_email.answer}}"></i></button>{% endif %}
-                      {% if dl.delete_spam %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.delete_spam.question_text}}: {{dl.delete_spam.answer_text}}"><i class="fa fa-flag level-{{dl.delete_spam.answer}}"></i></button>{% endif %}
-                      {% if dl.search_online %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.search_online.question_text}}: {{dl.search_online.answer_text}}"><i class="fa fa-search level-{{dl.search_online.answer}}"></i></button>{% endif %}
-                      {% if dl.browse_video %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.browse_video.question_text}}: {{dl.browse_video.answer_text}}"><i class="fa fa-youtube-play level-{{dl.browse_video.answer}}"></i></button>{% endif %}
-                      {% if dl.online_shopping %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.online_shopping.question_text}}: {{dl.online_shopping.answer_text}}"><i class="fa fa-shopping-cart level-{{dl.online_shopping.answer}}"></i></button>{% endif %}
-                      {% if dl.mobile_apps %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.mobile_apps.question_text}}: {{dl.mobile_apps.answer_text}}"><i class="fa fa-mobile level-{{dl.mobile_apps.answer}}"></i></button>{% endif %}
-                      {% if dl.web_safety %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.web_safety.question_text}}: {{dl.web_safety.answer_text}}"><i class="fa fa-lock level-{{dl.web_safety.answer}}"></i></button>{% endif %}
-                      {% endwith %}
-                    </td>
-                    <td><a class="btn btn-primary" href="{% url 'studygroups_application_delete' lc.id learner.id %}">{% trans "Remove" %}</a></td>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
+          <thead>
+            <tr>
+              <th>{% trans "Name" %}</th>
+              <th>{% trans "Goal" %}</th>
+              <th>{% trans "Support" %}</th>
+              <th>{% trans "Laptop & headphones" %}</th>
+              {% if lc.signup_question %}<th>{{ lc.signup_question }}</th>{% endif %}
+              <th>{% trans "Digital literacy" %}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for learner in lc.application_set.active %}
+            <tr>
+              <td>{{ learner.name }}
+                {% if learner.email %}<br/>&lt;{{learner.email}}&gt;{% endif %}
+                {% if learner.mobile %}<br/>{{learner.mobile}}{% endif %}
+              </td>
+              <td>{{ learner.get_signup_questions.goals }}</td>
+              <td>{{ learner.get_signup_questions.support }}</td>
+              <td>{{ learner.get_signup_questions.computer_access }}</td>
+              {% if lc.signup_question %}<td>{{ learner.get_signup_questions.custom_question }}</td>{% endif %}
+              <td class="digital-literacy">
+                {% with dl=learner.digital_literacy_for_display %}
+                {% if dl.use_internet %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.use_internet.question_text}}: {{dl.use_internet.answer_text}}"><i class="fa fa-globe level-{{dl.use_internet.answer}}"></i></button>{% endif %}
+                {% if dl.send_email %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.send_email.question_text}}: {{dl.send_email.answer_text}}"><i class="fa fa-envelope level-{{dl.send_email.answer}}"></i></button>{% endif %}
+                {% if dl.delete_spam %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.delete_spam.question_text}}: {{dl.delete_spam.answer_text}}"><i class="fa fa-flag level-{{dl.delete_spam.answer}}"></i></button>{% endif %}
+                {% if dl.search_online %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.search_online.question_text}}: {{dl.search_online.answer_text}}"><i class="fa fa-search level-{{dl.search_online.answer}}"></i></button>{% endif %}
+                {% if dl.browse_video %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.browse_video.question_text}}: {{dl.browse_video.answer_text}}"><i class="fa fa-youtube-play level-{{dl.browse_video.answer}}"></i></button>{% endif %}
+                {% if dl.online_shopping %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.online_shopping.question_text}}: {{dl.online_shopping.answer_text}}"><i class="fa fa-shopping-cart level-{{dl.online_shopping.answer}}"></i></button>{% endif %}
+                {% if dl.mobile_apps %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.mobile_apps.question_text}}: {{dl.mobile_apps.answer_text}}"><i class="fa fa-mobile level-{{dl.mobile_apps.answer}}"></i></button>{% endif %}
+                {% if dl.web_safety %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.web_safety.question_text}}: {{dl.web_safety.answer_text}}"><i class="fa fa-lock level-{{dl.web_safety.answer}}"></i></button>{% endif %}
+                {% endwith %}
+              </td>
+              <td><a class="btn btn-primary" href="{% url 'studygroups_application_delete' lc.id learner.id %}">{% trans "Remove" %}</a></td>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
         </table>
         <p><a class="btn btn-primary" href="{% url 'studygroups_add_member' lc.id %}">{% trans "Add learner" %}</a></p>
+      </div>
+      {% endif %}
     </div>
-  {% endif %}
-</div>
-</div>
+  </div>
 </div>
 

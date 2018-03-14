@@ -8,19 +8,22 @@ from django.utils.translation import get_language
 
 from mock import patch
 
+from studygroups.models import Course
 from studygroups.models import StudyGroup
-from studygroups.models import StudyGroupMeeting
+from studygroups.models import Meeting
 from studygroups.models import Application
-from studygroups.models import Facilitator
 from studygroups.models import Rsvp
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 from studygroups.models import Feedback
 from studygroups.rsvp import gen_rsvp_querystring
+from custom_registration.models import create_user
+from custom_registration.models import confirm_user_email
 
 import datetime
 import urllib
+import json
 
 
 """
@@ -35,10 +38,27 @@ class TestFacilitatorViews(TestCase):
         'name': 'Test User',
         'email': 'test@mail.com',
         'mobile': '',
-        'goals': 'try hard',
+        'goals': 'Social reasons',
         'support': 'thinking how to?',
         'computer_access': 'Both', 
         'use_internet': '2'
+    }
+
+    STUDY_GROUP_DATA = {
+        'course': '1',
+        'venue_name': 'My house',
+        'venue_details': 'Garrage at my house',
+        'venue_address': 'Rosemary Street 6',
+        'city': 'Johannesburg',
+        'latitude': -26.205, 
+        'longitude': 28.0497,
+        'description': 'We will complete the course about motorcycle maintenance together',
+        'start_date': '2016-07-25',
+        'weeks': '6',
+        'meeting_time': '19:00',
+        'duration': '90',
+        'timezone': 'Africa/Johannesburg',
+        'venue_website': 'http://venue.com',
     }
 
     def setUp(self):
@@ -46,52 +66,6 @@ class TestFacilitatorViews(TestCase):
         user.is_superuser = True
         user.is_staff = True
         user.save()
-
-
-    def test_facilitator_signup(self):
-        c = Client()
-        data = {
-            "username": "test@example.net",
-            "first_name": "firstname",
-            "last_name": "lastname",
-            "mailing_list_signup": "on",
-        }
-        resp = c.post('/en/facilitator/signup/', data)
-        self.assertRedirects(resp, '/en/facilitator/signup/success/')
-        users = User.objects.filter(email__iexact=data['username'])
-        self.assertEquals(users.count(), 1)
-        facilitator = Facilitator.objects.get(user=users.first())
-        self.assertEquals(facilitator.mailing_list_signup, True)
-        self.assertEquals(len(mail.outbox), 1)
-        self.assertIn('New facilitator account created on', mail.outbox[0].subject)
-
-
-    def test_facilitator_signup_with_mixed_case(self):
-        c = Client()
-        data = {
-            "username": "ThIsNoTaGoOd@EmAil.CoM",
-            "first_name": "firstname",
-            "last_name": "lastname",
-            "mailing_list_signup": "on",
-        }
-        resp = c.post('/en/facilitator/signup/', data)
-        self.assertRedirects(resp, '/en/facilitator/signup/success/')
-        data['username'] = data['username'].upper()
-        resp = c.post('/en/facilitator/signup/', data)
-        users = User.objects.filter(username__iexact=data['username'])
-        self.assertEquals(users.count(), 1)
-        facilitator = Facilitator.objects.get(user=users.first())
-        self.assertEquals(facilitator.mailing_list_signup, True)
-        self.assertEquals(len(mail.outbox), 1)
-        self.assertIn('New facilitator account created on', mail.outbox[0].subject)
-
-
-    def test_facilitator_login_redirect(self):
-        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
-        c = Client()
-        c.login(username='bob123', password='password')
-        resp = c.get('/en/login_redirect/')
-        self.assertRedirects(resp, '/en/facilitator/')
 
 
     def test_user_forbidden(self):
@@ -143,29 +117,95 @@ class TestFacilitatorViews(TestCase):
         assertStatus('/en/studygroup/1/meeting/2/feedback/create/', 404)
 
 
-    def test_create_study_group(self):
-        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
+    @patch('custom_registration.signals.handle_new_facilitator')
+    def test_publish_study_group(self, handle_new_facilitator):
+        user = create_user('bob@example.net', 'bob', 'test', 'password', False)
+        confirm_user_email(user)
         c = Client()
-        c.login(username='bob123', password='password')
-        study_group_data = {
-            'course': '1',
-            'venue_name': 'My house',
-            'venue_details': 'Garrage at my house',
-            'venue_address': 'Rosemary Street 6',
-            'city': 'Johannesburg',
-            'start_date': '07/25/2016',
-            'weeks': '6',
-            'meeting_time': '07:00 PM',
-            'duration': '90',
-            'timezone': 'Africa/Johannesburg',
-            'venue_website': 'http://venue.com'
-            #'image':
-        }
-        resp = c.post('/en/facilitator/study_group/create/', study_group_data)
-        self.assertRedirects(resp, '/en/facilitator/')
+        c.login(username='bob@example.net', password='password')
+
+        resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
+        self.assertEquals(resp.json()['status'], 'created')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
-        self.assertEquals(study_groups.first().studygroupmeeting_set.count(), 6)
+        self.assertEquals(study_groups.first().meeting_set.count(), 0)
+
+        resp = c.post('/en/studygroup/{0}/publish/'.format(study_groups.first().pk))
+        self.assertRedirects(resp, '/en/facilitator/')
+        study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
+        self.assertEquals(study_group.draft, False)
+        self.assertEquals(study_group.meeting_set.count(), 6)
+
+
+    @patch('custom_registration.signals.handle_new_facilitator')
+    def test_publish_study_group_email_unconfirmed(self, handle_new_facilitator):
+        user = create_user('bob@example.net', 'bob', 'test', 'password', False)
+        c = Client()
+        c.login(username='bob@example.net', password='password')
+
+        resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
+        self.assertEquals(resp.json()['status'], 'created')
+        study_groups = StudyGroup.objects.filter(facilitator=user)
+        self.assertEquals(study_groups.count(), 1)
+
+        resp = c.post('/en/studygroup/{0}/publish/'.format(study_groups.first().pk))
+        self.assertRedirects(resp, '/en/facilitator/')
+        study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
+        self.assertEquals(study_group.draft, True)
+
+
+    @patch('custom_registration.signals.handle_new_facilitator')
+    def test_draf_study_group_actions_disabled(self, handle_new_facilitator):
+        user = create_user('bob@example.net', 'bob', 'test', 'password', False)
+        confirm_user_email(user)
+        c = Client()
+        c.login(username='bob@example.net', password='password')
+
+        resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
+        self.assertEquals(resp.json()['status'], 'created')
+        study_groups = StudyGroup.objects.filter(facilitator=user)
+        self.assertEquals(study_groups.count(), 1)
+        self.assertEquals(study_groups.first().meeting_set.count(), 0)
+
+        # try to add a meeting
+        self.assertEqual(study_groups.first().pk, StudyGroup.objects.last().pk)
+        url_base = '/en/studygroup/{0}'.format(study_groups.first().pk)
+        resp = c.get(url_base + '/meeting/create/')
+        self.assertRedirects(resp, '/en/facilitator/')
+        meeting_data = {
+            "meeting_date": "2018-03-17",
+            "meeting_time": "04:00+PM",
+            "study_group": "515",
+        }
+        resp = c.post(url_base + '/meeting/create/', data=meeting_data)
+        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertEqual(StudyGroup.objects.last().meeting_set.count(), 0)
+
+        # try to send a message
+        resp = c.get('/en/studygroup/{0}/message/compose/'.format(study_groups.first().pk))
+        self.assertRedirects(resp, '/en/facilitator/')
+        mail_data = {
+            u'study_group': study_groups.first().pk,
+            u'email_subject': 'does not matter', 
+            u'email_body': 'does not matter', 
+        }
+        mail.outbox = []
+        resp = c.post(url_base + '/message/compose/', mail_data)
+        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertEqual(len(mail.outbox), 0)
+
+        # try to add a learner
+        resp = c.get('/en/studygroup/{0}/member/add/'.format(study_groups.first().pk))
+        self.assertRedirects(resp, '/en/facilitator/')
+        learner_data = {
+            "email": "learn@example.net",
+            "name": "no name",
+            "study_group": "515",
+        }
+        resp = c.post(url_base + '/member/add/', data=learner_data)
+        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertEqual(StudyGroup.objects.last().application_set.count(), 0)
+
 
 
     @patch('studygroups.models.send_message')
@@ -220,6 +260,29 @@ class TestFacilitatorViews(TestCase):
         self.assertTrue(send_message.called)
 
 
+    @patch('studygroups.models.send_message')
+    def test_dont_send_blank_sms(self, send_message):
+        c = Client()
+        c.login(username='admin', password='password')
+        signup_data = self.APPLICATION_DATA.copy()
+        signup_data['mobile'] = '+12812345678'
+        resp = c.post('/en/signup/foo-bob-1/', signup_data)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEquals(Application.objects.active().count(), 1)
+        mail.outbox = []
+
+        url = '/en/studygroup/{0}/message/compose/'.format(signup_data['study_group'])
+        mail_data = {
+            'study_group': signup_data['study_group'],
+            'email_subject': 'test', 
+            'email_body': 'Email body'
+        }
+        resp = c.post(url, mail_data)
+        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertEqual(len(mail.outbox), 1)  # Still send email
+        self.assertFalse(send_message.called) # dont send sms
+
+
     def test_feedback_submit(self):
         organizer = User.objects.create_user('organ@team.com', 'organ@team.com', '1234')
         faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', '1234')
@@ -234,7 +297,7 @@ class TestFacilitatorViews(TestCase):
         c = Client()
         c.login(username='faci1@team.com', password='1234')
         study_group = StudyGroup.objects.get(pk=1)
-        meeting = StudyGroupMeeting()
+        meeting = Meeting()
         meeting.study_group = study_group
         meeting.meeting_time = timezone.now().time()
         meeting.meeting_date = timezone.now().date() - datetime.timedelta(days=1)
@@ -296,3 +359,83 @@ class TestFacilitatorViews(TestCase):
         self.assertRedirects(resp, '/en/facilitator/')
         self.assertEquals(TeamMembership.objects.filter(team=team, role=TeamMembership.MEMBER, user=faci1).count(), 0)
         self.assertFalse(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email__iexact=faci1.email).responded_at is None)
+
+
+    def test_edit_course(self):
+        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
+        course_data = dict(
+            title='Course 1011',
+            provider='CourseMagick',
+            link='https://course.magick/test',
+            caption='learn by means of magic',
+            on_demand=True,
+            topics='html,test',
+            language='en',
+            created_by=user
+        )
+        course = Course.objects.create(**course_data)
+        c = Client()
+        c.login(username='bob123', password='password')
+        # make sure bob123 can edit the course
+        course_url = '/en/course/{}/edit/'.format(course.id)
+        resp = c.get(course_url)
+        course_data['topics'] = 'magic'
+        resp = c.post(course_url, course_data)
+        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertEqual(Course.objects.get(pk=course.id).topics, 'magic')
+
+
+    def test_cant_edit_other_facilitators_course(self):
+        User.objects.create_user('bob321', 'bob2@example.net', 'password')
+        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
+        course_data = dict(    
+            title='Course 1011',
+            provider='CourseMagick',
+            link='https://course.magick/test',
+            caption='learn by means of magic',
+            on_demand=True,
+            topics='html,test',
+            language='en',
+            created_by=user
+        )
+        course = Course.objects.create(**course_data)
+        c = Client()
+        c.login(username='bob321', password='password')
+        course_url = '/en/course/{}/edit/'.format(course.id)
+        resp = c.get(course_url)
+        self.assertEquals(resp.status_code, 403)
+        course_data['topics'] = 'magic'
+        resp = c.post(course_url, course_data)
+        self.assertEquals(resp.status_code, 403)
+        self.assertEqual(Course.objects.get(pk=course.id).topics, 'html,test')
+
+
+    def test_cant_edit_used_course(self):
+        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
+        user2 = User.objects.create_user('bob1234', 'bob2@example.net', 'password')
+        course_data = dict(
+            title='Course 1011',
+            provider='CourseMagick',
+            link='https://course.magick/test',
+            caption='learn by means of magic',
+            on_demand=True,
+            topics='html,test',
+            language='en',
+            created_by=user
+        )
+        course = Course.objects.create(**course_data)
+        sg = StudyGroup.objects.get(pk=1)
+        sg.course = course
+        sg.facilitator = user2
+        sg.save()
+        c = Client()
+        c.login(username='bob123', password='password')
+        # make sure bob123 can edit the course
+        course_url = '/en/course/{}/edit/'.format(course.id)
+        resp = c.get(course_url)
+        self.assertRedirects(resp, '/en/facilitator/')
+        course_data['topics'] = 'magic'
+        resp = c.post(course_url, course_data)
+        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertEqual(Course.objects.get(pk=course.id).topics, 'html,test')
+
