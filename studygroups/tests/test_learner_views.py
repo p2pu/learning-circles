@@ -56,6 +56,7 @@ class TestLearnerViews(TestCase):
         self.assertEquals(Application.objects.active().count(), 1)
         # Make sure notification was sent 
         self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to[0], self.APPLICATION_DATA['email'])
 
 
     def test_submit_application_sg_with_custom_q(self):
@@ -99,9 +100,12 @@ class TestLearnerViews(TestCase):
         self.assertEquals(Application.objects.active().count(), 1)
         # Make sure notification was sent 
         self.assertEqual(len(mail.outbox), 1)
+
+        mail.outbox = []
         resp = c.post('/en/signup/foo-bob-1/', self.APPLICATION_DATA)
         self.assertRedirects(resp, '/en/signup/1/success/')
         self.assertEquals(Application.objects.active().count(), 1)
+        self.assertEqual(len(mail.outbox), 0)
         
         data = self.APPLICATION_DATA.copy()
         data['email'] = 'test2@mail.com'
