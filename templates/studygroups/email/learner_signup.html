@@ -23,7 +23,7 @@ The address for the meeting is:<br/>
 
 <h2>{% trans "Meet your facilitator" %}</h2>
 
-<p>{% blocktrans with facilitator_first_name=study_group.facilitator.first_name facilitator_last_name=study_group.facilitator.last_name%}Your facilitator is <strong>{{facilitator_first_name}} {{facilitator_last_name}}</strong> and is copied them on this email. If you have any questions you can simply reply. To help your facilitator better assist you, we’re including your answers to the signup questions below:{% endblocktrans %}</p>
+<p>{% blocktrans with facilitator_first_name=study_group.facilitator.first_name facilitator_last_name=study_group.facilitator.last_name%}Your facilitator is <strong>{{facilitator_first_name}} {{facilitator_last_name}}</strong> and is copied on this email. If you have any questions you can simply reply. To help your facilitator better assist you, we’re including your answers to the signup questions below:{% endblocktrans %}</p>
 
 <ul style="list-style: none; padding: 1em; background: rgba(5, 199, 180, 15%); border-left: 10px solid rgba(5, 199, 180, 100%);">
     {% with answers=application.get_signup_questions %}
