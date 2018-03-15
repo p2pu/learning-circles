@@ -41,9 +41,6 @@ export default class RegistrationModal extends React.Component {
     const data = this.state.user;
     const url = this.state.registration ? API_ENDPOINTS.registration : API_ENDPOINTS.login;
 
-    console.log('login url', url)
-    console.log('login data', data)
-
     axios({
       url,
       data,
@@ -52,6 +49,9 @@ export default class RegistrationModal extends React.Component {
       config: { headers: {'Content-Type': 'application/json' }}
     }).then(res => {
       if (!!res.data.errors) {
+        if (typeof(res.data.errors) == "string") {
+          return this.props.showAlert(res.data.errors, 'danger')
+        }
         return this.setState({ errors: res.data.errors });
       }
       this.props.closeModal();

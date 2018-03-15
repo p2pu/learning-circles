@@ -1,0 +1,61 @@
+{% extends 'email_base.html' %}
+{% block body %}
+{% load i18n %}
+
+{% with study_group=application.study_group course=application.study_group.course first_meeting=application.study_group.next_meeting %}
+<p>{% blocktrans with name=application.name %}Hi {{name}},{% endblocktrans%}</p>
+
+<h2>{% trans "Welcome to your learning circle!" %}</h2>
+
+<p>
+  {% blocktrans with course_title=course.title meeting_date=first_meeting.meeting_datetime|date:"l, j N \a\t fA" %}You signed up for {{course_title}}! The first meeting will be on {{meeting_date}}.
+{% endblocktrans %}
+</p>
+
+<p>
+{% blocktrans with venue_name=study_group.venue_name venue_details=study_group.venue_details venue_address=study_group.venue_address %}
+The address for the meeting is:<br/>
+{{venue_details}}<br/>
+{{venue_name}}<br/>
+{{venue_address}}<br/>
+ {% endblocktrans %}
+</p>
+
+<h2>{% trans "Meet your facilitator" %}</h2>
+
+<p>{% blocktrans with facilitator_first_name=study_group.facilitator.first_name facilitator_last_name=study_group.facilitator.last_name%}Your facilitator is <strong>{{facilitator_first_name}} {{facilitator_last_name}}</strong> and is copied on this email. If you have any questions you can simply reply. To help your facilitator better assist you, we’re including your answers to the signup questions below:{% endblocktrans %}</p>
+
+<ul style="list-style: none; padding: 1em; background: rgba(5, 199, 180, 15%); border-left: 10px solid rgba(5, 199, 180, 100%);">
+    {% with answers=application.get_signup_questions %}
+    <li><strong>{% trans "Q: What is your goal for taking this learning circle?" %}</strong></li>
+    <li>{% blocktrans with answer=answers.goals %}A: {{answer}}{% endblocktrans %}</li>
+    <li>&nbsp;</li>
+    <li><strong>{% trans "Q: How will you help your peers achieve their goals?" %}</strong></li>
+    <li>{% blocktrans with answer=answers.support %}A: {{answer}}{% endblocktrans %}</li>
+    {% if study_group.signup_question %}
+    <li>&nbsp;</li>
+    <li><strong>{% blocktrans with question=study_group.signup_question %}Q: {{question}}{% endblocktrans %}</strong></li>
+    <li>{% blocktrans with answer=answers.custom_question %}A: {{answer}}{% endblocktrans %}</li>
+    {% endif %}
+    {% endwith %}
+</ul>
+
+<h2>{% trans "Welcome to P2PU" %}</h2>
+
+<p>{% blocktrans with city=study_group.city %}By signing up for this learning circle, you are joining the P2PU community of learners and facilitators. We work with libraries and community centers in {{city}} and around the world to create this program free of charge for you, and we really hope you enjoy it.{% endblocktrans %}</p>
+
+<p>{% blocktrans with name=advice.first_name city=advice.city country=advice.country topic=advice.topic tip=advice.tip %}Here is some advice from {{name}} in {{city}}, {{country}} who just finished a learning circle in {{topic}}: {% endblocktrans %}</p>
+
+<p style="padding:1em; border-left: solid 10px rgb(255,155,0); background: rgba(255,155,0,15%);">
+<span>“</span>{{advice.tip}}<span>”</span>
+</p>
+
+<p>{% blocktrans %}Want more? Check out <a href="https://www.p2pu.org/">P2PU’s website</a> to learn more about how we support equitable, social learning opportunities outside of school. You can also read <a href="http://info.p2pu.org/2018/03/06/tips/">more tips</a> from learners around the world.{% endblocktrans %}</p>
+
+<p>{% trans "Cheers" %}</p>
+<p>P2PU</p>
+
+<p>{% blocktrans with unapply_link=application.unapply_link%}If you’d no longer like to participate in this learning circle, you can unenroll through <a href="{{unapply_link}}">this link</a>.{% endblocktrans %}</p>
+
+{% endwith %}
+{% endblock %}

@@ -8,35 +8,47 @@ from .models import Application
 from .models import StudyGroup
 from .models import Course
 
+from .utils import html_body_to_text
+
+from advice.models import Advice
+
 @receiver(post_save, sender=Application)
 def handle_new_application(sender, instance, created, **kwargs):
+    """ Send welcome message to learner introducing them to their facilitator """
     if not created:
         return
 
     application = instance
 
-    # Send notification
-    notification_subject = render_to_string(
-        'studygroups/email/application-subject.txt',
-        {'application': application}
+    # get a random piece of advice
+    advice = Advice.objects.order_by('?').first()
+
+    context = {
+        'application': application,
+        'advice': advice,
+    }
+
+    learner_signup_subject = render_to_string(
+        'studygroups/email/learner_signup-subject.txt', context
     ).strip('\n')
-    notification_body = render_to_string(
-        'studygroups/email/application.txt', 
-        {'application': application}
+
+    learner_signup_html = render_to_string(
+        'studygroups/email/learner_signup.html', context
     )
-    notification_html = render_to_string(
-        'studygroups/email/application.html', 
-        {'application': application}
+
+    learner_signup_body = html_body_to_text(learner_signup_html)
+    to = [application.email]
+    # CC facilitator and put in reply-to
+    welcome_message = EmailMultiAlternatives(
+        learner_signup_subject,
+        learner_signup_body,
+        settings.DEFAULT_FROM_EMAIL,
+        to,
+        cc=[application.study_group.facilitator.email],
+        reply_to=[application.study_group.facilitator.email]
     )
-    to = [application.study_group.facilitator.email]
-    notification = EmailMultiAlternatives(
-        notification_subject,
-        notification_body,
-        settings.SERVER_EMAIL,
-        to
-    )
-    notification.attach_alternative(notification_html, 'text/html')
-    notification.send()
+    welcome_message.attach_alternative(learner_signup_html, 'text/html')
+    welcome_message.send()
 
 
 @receiver(post_save, sender=StudyGroup)
@@ -51,48 +63,16 @@ def handle_new_study_group_creation(sender, instance, created, **kwargs):
         'domain': settings.DOMAIN,
     }
     subject = render_to_string('studygroups/email/learning_circle_created-subject.txt', context).strip(' \n')
-    text_body = render_to_string('studygroups/email/learning_circle_created.txt', context)
     html_body = render_to_string('studygroups/email/learning_circle_created.html', context)
+    text_body = html_body_to_text(html_body)
 
-    
-    # bcc/cc community manager
-    bcc = [settings.COMMUNITY_MANAGER]
     notification = EmailMultiAlternatives(
         subject,
         text_body,
         settings.DEFAULT_FROM_EMAIL,
         [study_group.facilitator.email],
-        bcc
+        cc=[settings.COMMUNITY_MANAGER],
+        reply_to=[study_group.facilitator.email, settings.COMMUNITY_MANAGER]
     )
-
-    notification.attach_alternative(html_body, 'text/html')
-    notification.send()
-
-
-@receiver(post_save, sender=Course)
-def handle_new_course_creation(sender, instance, created, **kwargs):
-    if not created:
-        return
-    #TODO emails should be sent async
-
-    course = instance
-    context = {
-        'course': course,
-        'protocol': 'https',
-        'domain': settings.DOMAIN,
-    }
-
-    subject = render_to_string('studygroups/email/course_created-subject.txt', context).strip(' \n')
-    text_body = render_to_string('studygroups/email/course_created.txt', context)
-    html_body = render_to_string('studygroups/email/course_created.html', context)
-
-    to = [settings.COMMUNITY_MANAGER]
-    notification = EmailMultiAlternatives(
-        subject,
-        text_body,
-        settings.DEFAULT_FROM_EMAIL,
-        to,
-    )
-
     notification.attach_alternative(html_body, 'text/html')
     notification.send()

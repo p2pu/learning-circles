@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'uxhelpers',
     'webpack_loader',
     'custom_registration',
+    'advice',
 ]
 
 MIDDLEWARE = [
@@ -152,16 +153,17 @@ WEBPACK_LOADER = {
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = os.environ.get('EMAIL_PORT', 25)
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
-if DEBUG is True:
+if DEBUG is True and EMAIL_HOST is None:
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
     EMAIL_FILE_PATH = path('mailbox')
 
 
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
-SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'no-reply@p2pu.org') #TODO grab this from environment
+SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'no-reply@p2pu.org')
 
 ##### Database config
 import dj_database_url

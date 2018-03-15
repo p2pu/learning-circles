@@ -37,6 +37,7 @@ export default class CreateLearningCirclePage extends React.Component {
     this.showModal = () => this._showModal();
     this.closeModal = () => this._closeModal();
     this.closeAlert = () => this._closeAlert();
+    this.showAlert = (msg, type) => this._showAlert(msg, type);
     this.updateFormData = (data, cb) => this._updateFormData(data, cb);
     this.registerUser = () => this._registerUser();
     this.onLogin = (user) => this._onLogin(user);
@@ -107,15 +108,28 @@ export default class CreateLearningCirclePage extends React.Component {
     this.setState({ showModal: false })
   }
 
+  _showAlert(message, type) {
+    this.setState({
+      alert: {
+        message,
+        type,
+        show: true
+      }
+    })
+  }
+
   _closeAlert() {
     this.setState({ alert: { show: false }})
   }
 
-  _onSubmitForm() {
-    if (this.state.user) {
+  _onSubmitForm(draft=true) {
+    if (!this.state.user) {
+      this.showModal();
+    } else {
       const data = {
         ...this.state.learningCircle,
-        course: this.state.learningCircle.course.id
+        course: this.state.learningCircle.course.id,
+        draft: draft
       }
 
       const onSuccess = (data) => {
@@ -132,27 +146,21 @@ export default class CreateLearningCirclePage extends React.Component {
         this.setState({
           currentTab: 0,
           errors: data.errors,
-          alert: {
-            show: true,
-            type: 'danger',
-            message: 'There was a problem saving your learning circle. Please check the error messages in the form and make the necessary changes.'
-          },
           learningCircle: {
             ...this.state.learningCircle,
             draft: true
           }
         })
+
+        const msg = 'There was a problem saving your learning circle. Please check the error messages in the form and make the necessary changes.'
+        const type = 'danger'
+        this.showAlert(msg, type)
       }
 
       const onFail = (err) => {
-        console.log(err)
-        this.setState({
-          alert: {
-            show: true,
-            type: 'danger',
-            message: 'There was an error saving your learning circle. Please try again.'
-          }
-        })
+        const msg = 'There was an error saving your learning circle. Please try again.'
+        const type = 'danger'
+        this.showAlert(msg, type)
       }
 
       const opts = { data, onSuccess, onError, onFail };
@@ -163,8 +171,6 @@ export default class CreateLearningCirclePage extends React.Component {
       } else {
         api.createResource(opts);
       }
-    } else {
-      this.showModal()
     }
   }
 
@@ -173,7 +179,13 @@ export default class CreateLearningCirclePage extends React.Component {
   }
 
   _onLogin(user) {
-    this.setState({ user }, this.onSubmitForm)
+    this.setState({ user });
+    this.showAlert("You're logged in!", 'success')
+
+    // TODO: remove this when we switch to the React component for the account in the navbar
+    const accountLink = document.querySelector('nav .nav-items .account a');
+    accountLink.setAttribute('href', '/en/accounts/logout');
+    accountLink.innerText = 'Log out';
   }
 
   render() {
@@ -207,6 +219,7 @@ export default class CreateLearningCirclePage extends React.Component {
           closeModal={this.closeModal}
           user={this.props.user}
           onLogin={this.onLogin}
+          showAlert={this.showAlert}
         />
       </div>
     );

@@ -5,24 +5,48 @@
 <p>{% blocktrans with name=study_group.facilitator.first_name %}Hi {{name}}{% endblocktrans %},</p>
 
 {% url 'studygroups_signup' location=study_group.venue_name|slugify study_group_id=study_group.pk as study_group_url%}
-{% if study_group.draft %}
-{% blocktrans %}
-<p>Congratulations! Your Learning Circle has been created.</p>
-{% endblocktrans %}
-{% else %}
-{% blocktrans %}
-    <p>Congratulations! Your Learning Circle is now live at: <a href="{{protocol}}://{{domain}}{{study_group_url}}">{{protocol}}://{{domain}}{{study_group_url}}</a></p>
-{% endblocktrans %}
-{% endif %}
+<h2>{% trans "Your learning circle has been created!" %}</h2>
 
-<p>{% trans "What next?" %}
+<p>
+  {% blocktrans with course_title=study_group.course.title city=study_group.city %}
+    Congratulations! You created a learning circle on “{{course_title}}” in {{city}}.
+  {% endblocktrans %}
+  {% if study_group.draft %}
+    {% blocktrans %}You can view a draft signup page at  <a href="{{protocol}}://{{domain}}{{study_group_url}}">{{protocol}}://{{domain}}{{study_group_url}}</a>
+    {% endblocktrans %}
+  {% else %}
+    {% blocktrans %}
+      Your signup page is live at: <a href="{{protocol}}://{{domain}}{{study_group_url}}">{{protocol}}://{{domain}}{{study_group_url}}</a></p>
+    {% endblocktrans %}
+  {% endif %}
+</p>
+
+<p>{% trans "A handful of P2PU community members are copied on this email. So that they can better assist you, we are including your goals, questions and concerns below." %}</p>
+
+<div style="padding: 0.2em 1em; border-left: solid 10px rgb(255,155,0); background: rgba(255,155,0,15%);">
+  <p>
+    {% if study_group.facilitator_goal %}
+      {% blocktrans with goal=study_group.facilitator_goal %}<strong>Goals</strong>: {{goal}}{% endblocktrans %}
+    {% else %}
+      {% blocktrans %}<strong>Goals</strong>: Not specified{% endblocktrans %}
+    {% endif %}
+    </p>
+    {% if study_group.concerns %}
+      {% blocktrans with concerns=study_group.facilitator_concerns %}<strong>Questions or concerns</strong>: {{concerns}}{% endblocktrans %}
+    {% else %}
+      {% blocktrans %}<strong>Questions or concerns</strong>: Not specified{% endblocktrans %}
+    {% endif %}
+  </p>
+</div>
+
+<h2>{% trans "What next?" %}</h2>
 <ul>
     <li>{% blocktrans %}<a href="https://www.p2pu.org/en/facilitate/"><b>Review the Facilitator Guide</b></a>. It contains 40 pages of great tips, tricks, checklists, and templates to help you advertise, prepare for, and run your Learning Circle.{% endblocktrans %}</li>
     <li>{% blocktrans %}<a href="https://groups.google.com/a/p2pu.org/forum/#!forum/community"><b>Get in touch with other facilitators</b></a>. Ask questions, share advice, and contribute new ideas on our community forum.{% endblocktrans %}</li>
     <li>{% blocktrans %}<a href="https://learningcircles.p2pu.org/en/facilitator/"><b>Read the applications</b></a>. You’ll receive an email whenever somebody applies to your Learning Circle. You can view their applications and send them messages directly through your dashboard.{% endblocktrans %}</li>
-</ul></p>
+</ul>
 
-<p>{% blocktrans %}You&#39;ll hear from us again a few days before your first Learning Circle. If you have any questions in the meantime, you can ask in our <a href="https://groups.google.com/a/p2pu.org/forum/#!forum/community">facilitator community</a>.{% endblocktrans %}</p>
+<p>{% blocktrans %}You will hear from us again a few days before your first Learning Circle. If you have any questions in the meantime, you can ask in our <a href="https://groups.google.com/a/p2pu.org/forum/#!forum/community">facilitator community</a>.{% endblocktrans %}</p>
 
 <p>{% trans "Cheers" %},<br/>
 P2PU</p>

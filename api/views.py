@@ -487,7 +487,6 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
             study_group.draft = False
 
         study_group.course = data.get('course')
-        study_group.facilitator = request.user
         study_group.description = data.get('description')
         study_group.venue_name = data.get('venue_name')
         study_group.venue_address = data.get('venue_address')

@@ -513,14 +513,11 @@ def generate_reminder(study_group):
             )
             timezone.deactivate()
             to = [study_group.facilitator.email]
-            # TODO remove admin here, don't need to get these updates
-            bcc = [ admin[1] for admin in settings.ADMINS ]
             notification = EmailMultiAlternatives(
                 facilitator_notification_subject,
                 facilitator_notification_txt,
                 settings.SERVER_EMAIL,
-                to,
-                bcc
+                to
             )
             notification.attach_alternative(facilitator_notification_html, 'text/html')
             notification.send()
@@ -622,13 +619,14 @@ def send_reminder(reminder):
             email_body = re.sub(r'\(<!--RSVP:NO-->.*\)', no_link, email_body)
             email_body = re.sub(r'\(<!--UNSUBSCRIBE-->.*\)', unsubscribe_link, email_body)
             try:
-                send_mail(
+                reminder_email = EmailMultiAlternatives(
                     reminder.email_subject.strip('\n'),
                     email_body,
-                    reminder.study_group.facilitator.email,
+                    settings.DEFAULT_FROM_EMAIL,
                     [email],
-                    fail_silently=False
+                    reply_to=[reminder.study_group.facilitator.email],
                 )
+                reminder_email.send()
             except Exception as e:
                 logger.exception('Could not send email to ', email, exc_info=e)
         # Send to organizer without RSVP & unsubscribe links
@@ -636,7 +634,7 @@ def send_reminder(reminder):
             send_mail(
                 reminder.email_subject.strip('\n'),
                 reminder.email_body,
-                reminder.study_group.facilitator.email,
+                settings.DEFAULT_FROM_EMAIL,
                 [reminder.study_group.facilitator.email],
                 fail_silently=False
             )
@@ -652,9 +650,10 @@ def send_reminder(reminder):
             reminder_email = EmailMultiAlternatives(
                 reminder.email_subject.strip('\n'),
                 email_body,
-                reminder.study_group.facilitator.email,
+                settings.DEFAULT_FROM_EMAIL,
                 [],
                 bcc=to,
+                reply_to=[reminder.study_group.facilitator.email],
             )
             reminder_email.send()
         except Exception as e:
