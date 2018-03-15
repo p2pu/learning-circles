@@ -14,6 +14,7 @@ from advice.models import Advice
 
 @receiver(post_save, sender=Application)
 def handle_new_application(sender, instance, created, **kwargs):
+    """ Send welcome message to learner introducing them to their facilitator """
     if not created:
         return
 
@@ -22,20 +23,19 @@ def handle_new_application(sender, instance, created, **kwargs):
     # get a random piece of advice
     advice = Advice.objects.order_by('?').first()
 
-    # Send welcome message to learner 
+    context = {
+        'application': application,
+        'advice': advice,
+    }
+
     learner_signup_subject = render_to_string(
-        'studygroups/email/learner_signup-subject.txt', {
-            'application': application,
-            'advice': advice,
-        }
+        'studygroups/email/learner_signup-subject.txt', context
     ).strip('\n')
 
     learner_signup_html = render_to_string(
-        'studygroups/email/learner_signup.html', {
-            'application': application,
-            'advice': advice,
-        }
+        'studygroups/email/learner_signup.html', context
     )
+
     learner_signup_body = html_body_to_text(learner_signup_html)
     to = [application.email]
     # CC facilitator and put in reply-to
@@ -63,19 +63,16 @@ def handle_new_study_group_creation(sender, instance, created, **kwargs):
         'domain': settings.DOMAIN,
     }
     subject = render_to_string('studygroups/email/learning_circle_created-subject.txt', context).strip(' \n')
-    text_body = render_to_string('studygroups/email/learning_circle_created.txt', context)
     html_body = render_to_string('studygroups/email/learning_circle_created.html', context)
+    text_body = html_body_to_text(html_body)
 
-    
-    # cc community manager list
-    cc = [settings.COMMUNITY_MANAGER]
     notification = EmailMultiAlternatives(
         subject,
         text_body,
         settings.DEFAULT_FROM_EMAIL,
         [study_group.facilitator.email],
-        cc = cc
+        cc=[settings.COMMUNITY_MANAGER],
+        reply_to=[study_group.facilitator.email, settings.COMMUNITY_MANAGER]
     )
-
     notification.attach_alternative(html_body, 'text/html')
     notification.send()
