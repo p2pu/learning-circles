@@ -2,13 +2,11 @@
 {% block body %}
 {% load i18n %}
 
-<p>{% trans "Hi {{facilitator_name}}" %},</p>
+<p>{% block_trans %} Hi {{facilitator_name}},{% endblocktrans %}</p>
 
 <p>{% trans "Please help us improve learning circles by completing this 5 minute survey about your experience." %}</p>
 
-<div class="button-container">
-  <a href="{{survey_url}}" class="survey-button">{% trans "Take the survey" %}</a>
-</div>
+<a href="{{survey_url}}" style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-radius: 4px; text-decoration: none;">{% trans "Take the survey" %}</a>
 
 <p>{% trans "Cheers" %}</p>
 <p>The P2PU Team</p>

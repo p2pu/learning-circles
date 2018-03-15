@@ -1,13 +1,14 @@
-{% load i18n %}{% trans "Hi there" %},
+{% load i18n %}
+{% blocktrans %}
+Hi {{learner_name}},
+{% endblocktrans %}
 
 {% trans "Your learning circle is coming to a close, but with Peer 2 Peer University, your learning never ends." %}
 
-{% blocktrans %}Let us know how we can help plan your next steps by completing this brief online survey: https://docs.google.com/forms/d/e/1FAIpQLScuRY5CFGR_LrEUvWjyw9H3KCBJANzfuNxkMvpFa3umyusOFQ/viewform?usp=pp_url&entry.1456652861={{learning_circle}}. 
+{% blocktrans %}Let us know how we can help plan your next steps by completing this brief online survey: {{survey_url}}.
 
 As this a brand new education model, we'd love to hear about what worked for you and what still needs tweaking. {% endblocktrans %}
 
 
-{% trans "Let us know how we can help plan your next steps by completing this brief online survey. As this a brand new education model, we'd love to hear about what worked for you and what still needs tweaking. For your time, you'll be entered into drawing to receive a $50 Amazon gift card. Lucky you!" %}
-
 {% trans "Cheers" %},
-P2PU
+The P2PU Team
