@@ -2,20 +2,39 @@
 {% load i18n %}
 {% block body %}
 
-<p>{% trans "Hi {{learner_name}}" %},</p>
+<p>{% blocktrans %}Hi {{learner_name}}{% endblocktrans %},</p>
 
-<p>When you signed up for <strong>{{course_title}}</strong>, you said that your primary goal was to <strong>{{learner_goal}}</strong>. To what extent did you achieve this goal during the learning circle?
+{% blocktrans %}
+<p>When you signed up for <strong>{{course_title}}</strong>, you said that your primary goal was: <strong>{{learner_goal}}</strong>.</p>
+<p>To what extent did you achieve this goal during the learning circle?</p>
+{% endblocktrans %}
 
 <div class="star-ratings">
-  <a href="{{survey_url}}&goal=1"><i class="material-icons">star</i></a>
-  <a href="{{survey_url}}&goal=2"><i class="material-icons">star</i></a>
-  <a href="{{survey_url}}&goal=3"><i class="material-icons">star</i></a>
-  <a href="{{survey_url}}&goal=4"><i class="material-icons">star</i></a>
-  <a href="{{survey_url}}&goal=5"><i class="material-icons">star</i></a>
+  <div style="display: flex; flex-direction: column; margin-top: 2rem; margin-bottom: 2rem;">
+    <div style="display: flex; margin-bottom: 0.3rem">
+      <a href="{{survey_url}}&goal=1" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
+        <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none; border-radius: 4px 0 0 4px;">1</div>
+      </a>
+      <a href="{{survey_url}}&goal=2" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
+        <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none;">2</div>
+      </a>
+      <a href="{{survey_url}}&goal=3" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
+        <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none;">3</div>
+      </a>
+      <a href="{{survey_url}}&goal=4" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
+        <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none;">4</div>
+      </a>
+      <a href="{{survey_url}}&goal=5" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
+        <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-radius: 0 4px 4px 0;">5</div>
+      </a>
+    </div>
+
+    <div style="display: flex; justify-content: space-between;">
+      <small style="font-size: 0.8rem; color: #05C6B4">NOT AT ALL</small>
+      <small style="font-size: 0.8rem; color: #05C6B4">COMPLETELY!</small>
+    </div>
 </div>
 
-<p>{% blocktrans %}Let us know how we can help plan your next steps by completing <a href="https://docs.google.com/forms/d/e/1FAIpQLScuRY5CFGR_LrEUvWjyw9H3KCBJANzfuNxkMvpFa3umyusOFQ/viewform?usp=pp_url&entry.1456652861={{learning_circle}}">this brief online survey</a>. As this a brand new education model, we'd love to hear about what worked for you and what still needs tweaking." {% endblocktrans %}</p>
-
 <p>{% trans "Cheers" %},</p>
-<p>P2PU</p>
+<p>The P2PU Team</p>
 {% endblock %}
