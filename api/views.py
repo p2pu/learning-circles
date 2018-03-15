@@ -244,7 +244,7 @@ class LearningCircleTopicListView(View):
         from collections import Counter
         data = {}
         #data['items'] = list(set(topics))
-        data['topics'] = { k:v for k,v in Counter(topics).items() }
+        data['topics'] = { k:v for k,v in list(Counter(topics).items()) }
         return json_response(request, data)
 
 
@@ -353,7 +353,7 @@ class CourseTopicListView(View):
         from collections import Counter
         data = {}
         #data['items'] = list(set(topics))
-        data['topics'] = { k:v for k,v in Counter(topics).items() }
+        data['topics'] = { k:v for k,v in list(Counter(topics).items()) }
         return json_response(request, data)
 
 

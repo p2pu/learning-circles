@@ -24,17 +24,17 @@ class TestCourseApi(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()["count"], 4)
         item_fields = [
-            u'learning_circles',
-            u'language',
-            u'title',
-            u'topics',
-            u'caption',
-            u'link',
-            u'provider',
-            u'id',
-            u'on_demand',
+            'learning_circles',
+            'language',
+            'title',
+            'topics',
+            'caption',
+            'link',
+            'provider',
+            'id',
+            'on_demand',
         ]
-        resp_keys = resp.json()["items"][0].keys()
+        resp_keys = list(resp.json()["items"][0].keys())
         for key in resp_keys:
             self.assertIn(key, item_fields)
         for key in item_fields:

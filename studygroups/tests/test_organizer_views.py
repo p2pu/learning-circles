@@ -21,7 +21,7 @@ from studygroups.models import Feedback
 from studygroups.rsvp import gen_rsvp_querystring
 
 import datetime
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import json
 
 
@@ -71,7 +71,7 @@ class TestOrganizerViews(TestCase):
 
         def assertStatus(url, status):
             resp = c.get(url)
-            self.assertEquals(resp.status_code, status)
+            self.assertEqual(resp.status_code, status)
 
         def assertForbidden(url):
             resp = c.get(url)
@@ -118,7 +118,7 @@ class TestOrganizerViews(TestCase):
 
         def assertStatus(url, status):
             resp = c.get(url)
-            self.assertEquals(resp.status_code, status)
+            self.assertEqual(resp.status_code, status)
 
         def assertForbidden(url):
             resp = c.get(url)
@@ -166,9 +166,9 @@ class TestOrganizerViews(TestCase):
         self.assertRedirects(resp, '/en/organize/{}/'.format(team.pk))
 
         resp = c.get('/en/organize/{}/'.format(team.pk))
-        self.assertEquals(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200)
         # make sure only the relevant study groups are returned
-        self.assertEquals(len(resp.context['study_groups']), 2)
+        self.assertEqual(len(resp.context['study_groups']), 2)
         self.assertIn(StudyGroup.objects.get(pk=1), resp.context['study_groups'])
         self.assertIn(StudyGroup.objects.get(pk=2), resp.context['study_groups'])
 
@@ -177,10 +177,10 @@ class TestOrganizerViews(TestCase):
         c = Client()
         c.login(username='admin', password='password')
         resp = c.get('/en/organize/')
-        self.assertEquals(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200)
 
         # make sure all study groups are returned
-        self.assertEquals(StudyGroup.objects.active().count(), len(resp.context['study_groups']))
+        self.assertEqual(StudyGroup.objects.active().count(), len(resp.context['study_groups']))
 
 
     def test_weekly_report(self):
@@ -217,9 +217,9 @@ class TestOrganizerViews(TestCase):
         c = Client()
         c.login(username='organ@team.com', password='password')
         resp = c.get('/en/report/weekly/{0}/'.format(datetime.date(2016, 11, 21).strftime("%Y-%m-%d")))
-        self.assertEquals(resp.status_code, 200)
-        self.assertEquals(len(resp.context['meetings']), 1)
-        self.assertEquals(resp.context['meetings'][0].pk, active_meeting.pk)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(resp.context['meetings']), 1)
+        self.assertEqual(resp.context['meetings'][0].pk, active_meeting.pk)
         #TODO test other parts of the weekly report
 
 
@@ -234,10 +234,10 @@ class TestOrganizerViews(TestCase):
         c.login(username='organ@team.com', password='password')
         invite_url = '/en/organize/team/{0}/member/invite/'.format(team.pk)
         resp = c.post(invite_url, json.dumps({"email":"hume@team.com"}), content_type="application/json")
-        self.assertEquals(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200)
         
-        self.assertEquals(TeamInvitation.objects.filter(team=team).count(),1)
-        self.assertEquals(len(mail.outbox), 1)
+        self.assertEqual(TeamInvitation.objects.filter(team=team).count(),1)
+        self.assertEqual(len(mail.outbox), 1)
         # Make sure correct email was sent
         self.assertIn('sign up', mail.outbox[0].body)
         self.assertIn('Orgaborga', mail.outbox[0].body)
@@ -258,9 +258,9 @@ class TestOrganizerViews(TestCase):
         c.login(username='organ@team.com', password='password')
         invite_url = '/en/organize/team/{0}/member/invite/'.format(team.pk)
         resp = c.post(invite_url, json.dumps({"email":"faci1@team.com"}), content_type="application/json")
-        self.assertEquals(resp.status_code, 200)
-        self.assertEquals(TeamInvitation.objects.filter(team=team).count(),1)
-        self.assertEquals(len(mail.outbox), 1)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(TeamInvitation.objects.filter(team=team).count(),1)
+        self.assertEqual(len(mail.outbox), 1)
         # Make sure correct email was sent
         self.assertIn('Bobobob', mail.outbox[0].body)
         self.assertIn('Orgaborga', mail.outbox[0].body)
@@ -281,10 +281,10 @@ class TestOrganizerViews(TestCase):
         c.login(username='organ@team.com', password='password')
         invite_url = '/en/organize/team/{0}/member/invite/'.format(team.pk)
         resp = c.post(invite_url, json.dumps({"email":"faCi1@team.com"}), content_type="application/json")
-        self.assertEquals(resp.status_code, 200)
-        self.assertEquals(resp.json()['status'], 'CREATED')
-        self.assertEquals(TeamInvitation.objects.filter(team=team).count(),1)
-        self.assertEquals(len(mail.outbox), 1)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()['status'], 'CREATED')
+        self.assertEqual(TeamInvitation.objects.filter(team=team).count(),1)
+        self.assertEqual(len(mail.outbox), 1)
         # Make sure correct email was sent
         self.assertIn('Bobobob', mail.outbox[0].body)
         self.assertIn('Orgaborga', mail.outbox[0].body)
@@ -303,7 +303,7 @@ class TestOrganizerViews(TestCase):
         c.login(username='organ@team.com', password='password')
         invite_url = '/en/organize/team/{0}/member/invite/'.format(team2.pk)
         resp = c.post(invite_url, json.dumps({"email":"hume@team.com"}), content_type="application/json")
-        self.assertEquals(resp.status_code, 403)
+        self.assertEqual(resp.status_code, 403)
 
 
     def test_valid_invite(self):
@@ -317,6 +317,6 @@ class TestOrganizerViews(TestCase):
         c.login(username='organ@team.com', password='password')
         invite_url = '/en/organize/team/{0}/member/invite/'.format(team.pk)
         resp = c.post(invite_url, json.dumps({"email":"humemail.mail"}), content_type="application/json")
-        self.assertEquals(resp.status_code, 200)
-        self.assertEquals(resp.json().get('status'), 'ERROR')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json().get('status'), 'ERROR')
 

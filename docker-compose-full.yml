@@ -1,0 +1,45 @@
+version: '3'
+services:
+  postgres:
+    image: postgres
+  rabbitmq:
+    image: rabbitmq:3
+  learning-circles:
+    build: .
+    image: p2pu/learning-circles:local
+    ports:
+    - "8000:80"
+#    volumes:
+#    - .:/opt/app
+    depends_on:
+    - rabbitmq
+    - postgres
+    environment:
+    - DATABASE_URL=postgres://lc:password@postgres:5432/lc
+    - SECRET_KEY=321
+    - BROKER_URL=amqp://guest:guest@rabbitmq//
+    - DEBUG=true
+  celery:
+    image: p2pu/learning-circles:local
+    depends_on:
+    - rabbitmq
+    - postgres
+    user: celery
+    working_dir: /opt/app
+    command: /opt/django-venv/bin/celery worker -A learnwithpeople --loglevel=INFO
+    environment:
+    - DATABASE_URL=postgres://lc:password@postgres:5432/lc
+    - SECRET_KEY=321
+    - BROKER_URL=amqp://guest:guest@rabbitmq//
+  celery-beat:
+    image: p2pu/learning-circles:local
+    depends_on:
+    - rabbitmq
+    - postgres
+    user: celery
+    working_dir: /opt/app
+    command: /opt/django-venv/bin/celery beat -A learnwithpeople --loglevel=DEBUG --pidfile=/var/lib/celery/celerybeat.pid --schedule=/var/lib/celery/celerybeat-schedule
+    environment:
+    - DATABASE_URL=postgres://lc:password@postgres:5432/lc
+    - SECRET_KEY=321
+    - BROKER_URL=amqp://guest:guest@rabbitmq//

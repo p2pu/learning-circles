@@ -56,7 +56,7 @@ class ApplicationForm(forms.ModelForm):
     ]
     mobile = PhoneNumberField(
         required=False,
-        label=_(u'If you’d like to receive weekly text messages reminding you of upcoming learning circle meetings, put your phone number here:'),
+        label=_('If you’d like to receive weekly text messages reminding you of upcoming learning circle meetings, put your phone number here:'),
         help_text=_('Your number won\'t be shared with other participants.')
     )
     computer_access = forms.ChoiceField(
@@ -121,7 +121,7 @@ class ApplicationForm(forms.ModelForm):
             signup_questions[question] = self.cleaned_data[question]
 
         if self.cleaned_data.get('goals') == 'Other':
-            signup_questions['goals'] = u'Other: {}'.format(self.cleaned_data.get('goals_other'))
+            signup_questions['goals'] = 'Other: {}'.format(self.cleaned_data.get('goals_other'))
 
         # add custom signup question to signup_questions if the facilitator specified one
         if self.instance.study_group.signup_question:
@@ -184,7 +184,7 @@ class OptOutForm(forms.Form):
                 try:
                     send_message(application.mobile, message)
                 except twilio.TwilioRestException as e:
-                    logger.exception(u"Could not send text message to %s", to, exc_info=e)
+                    logger.exception("Could not send text message to %s", to, exc_info=e)
                 application.delete()
 
 
@@ -234,7 +234,7 @@ class CourseForm(forms.ModelForm):
              'link': _('Paste full URL above.'),
              'caption': _('Write 1-2 sentences that describe what people will accomplish if they take this course. This description is what learners will see when signing up for learning circles, and what facilitators will see when selecting a course.'),
              'topics': _('Select or create a few topics that will help learners and future facilitators find this course.'),
-             'on_demand': _(u'Select “always available” if the course is openly licensed or on-demand, meaning that there are no start and end dates for course availability.')
+             'on_demand': _('Select “always available” if the course is openly licensed or on-demand, meaning that there are no start and end dates for course availability.')
         }
 
 
@@ -305,7 +305,7 @@ class StudyGroupForm(forms.ModelForm):
         }
         help_texts = {
             'course': '',
-            'description': _(u'You can include a bit about yourself, why you’re facilitating this course, and anything else you want people to know before they sign up.'),
+            'description': _('You can include a bit about yourself, why you’re facilitating this course, and anything else you want people to know before they sign up.'),
             'venue_name': _('Name of the venue, e.g. Pretoria Library or Bekka\'s house'),
             'venue_details': _('e.g. second floor kitchen or Room 409 (third floor)'),
             'venue_address': _('Write it out like you were mailing a letter.'),

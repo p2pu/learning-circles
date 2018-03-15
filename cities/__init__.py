@@ -60,5 +60,5 @@ def update_autocomplete_list():
         for city in read_cities()
     ]
     with codecs.open('cities/autocomplete_list.csv', 'w', 'utf-8') as f:
-        f.write(u'\n'.join(cities))
+        f.write('\n'.join(cities))
 
