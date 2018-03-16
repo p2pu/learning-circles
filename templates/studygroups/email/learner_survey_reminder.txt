@@ -11,4 +11,4 @@ As this a brand new education model, we'd love to hear about what worked for you
 
 
 {% trans "Cheers" %},
-The P2PU Team
+{% trans "The P2PU Team" %}

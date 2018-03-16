@@ -534,102 +534,100 @@ def generate_reminder(study_group):
 # If called directly, be sure to activate the current language
 # Should be called every 15 minutes starting just after the hour
 def send_survey_reminder(study_group):
-    # now = timezone.now()
-    # ## last :00, :15, :30 or :45
-    # last_15 = now.replace(minute=now.minute//15*15, second=0)
-    # last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
+    now = timezone.now()
+    ## last :00, :15, :30 or :45
+    last_15 = now.replace(minute=now.minute//15*15, second=0)
+    last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
 
-    # if last_meeting and last_15 - datetime.timedelta(minutes=15) <= last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < last_15:
-    print('SEND SURVEY REMINDER')
+    if last_meeting and last_15 - datetime.timedelta(minutes=15) <= last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < last_15:
 
-    applications = study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')
+        applications = study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')
 
-    timezone.deactivate()
+        timezone.deactivate()
 
-    for application in applications:
+        for application in applications:
 
-        course_title = study_group.course.title
-        learner_name = application.name
-        learner_email = application.email
-        signup_questions = json.loads(application.signup_questions)
-        learner_goal = signup_questions['goals']
-        domain = 'https://{}'.format(settings.DOMAIN)
-        path = reverse('studygroups_learner_feedback', kwargs={'study_group_uuid':study_group.uuid})
-        querystring = '?learner={}'.format(application.uuid)
-        survey_url = domain + path + querystring
+            course_title = study_group.course.title
+            learner_name = application.name
+            learner_email = application.email
+            signup_questions = json.loads(application.signup_questions)
+            learner_goal = signup_questions['goals']
+            domain = 'https://{}'.format(settings.DOMAIN)
+            path = reverse('studygroups_learner_feedback', kwargs={'study_group_uuid':study_group.uuid})
+            querystring = '?learner={}'.format(application.uuid)
+            survey_url = domain + path + querystring
 
-        context = {
-            'course_title': course_title,
-            'learner_name': learner_name,
-            'learner_goal': learner_goal,
-            'survey_url': survey_url
-        }
+            context = {
+                'course_title': course_title,
+                'learner_name': learner_name,
+                'learner_goal': learner_goal,
+                'survey_url': survey_url
+            }
 
-        subject = render_to_string(
-            'studygroups/email/learner_survey_reminder-subject.txt',
-            context
-        )
-        html = render_to_string(
-            'studygroups/email/learner_survey_reminder.html',
-            context
-        )
-        txt = render_to_string(
-            'studygroups/email/learner_survey_reminder.txt',
-            context
-        )
+            subject = render_to_string(
+                'studygroups/email/learner_survey_reminder-subject.txt',
+                context
+            )
+            html = render_to_string(
+                'studygroups/email/learner_survey_reminder.html',
+                context
+            )
+            txt = render_to_string(
+                'studygroups/email/learner_survey_reminder.txt',
+                context
+            )
 
-        to = [learner_email]
-        notification = EmailMultiAlternatives(
-            subject.strip(),
-            txt,
-            settings.SERVER_EMAIL,
-            to
-        )
-        notification.attach_alternative(html, 'text/html')
-        notification.send()
+            to = [learner_email]
+            notification = EmailMultiAlternatives(
+                subject.strip(),
+                txt,
+                settings.SERVER_EMAIL,
+                to
+            )
+            notification.attach_alternative(html, 'text/html')
+            notification.send()
 
 
 # If called directly, be sure to activate the current language
 # Should be called once a day minutes starting just after the hour
 def send_facilitator_survey(study_group):
     """ send survey to all facilitators if their last study group meetings was a week ago """
-    # now = timezone.now()
-    # today = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    # last_week = today - datetime.timedelta(days=7);
-    # last_meeting = study_group.meeting_set.active()\
-    #         .order_by('-meeting_date', '-meeting_time').first()
+    now = timezone.now()
+    today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    last_week = today - datetime.timedelta(days=7);
+    last_meeting = study_group.meeting_set.active()\
+            .order_by('-meeting_date', '-meeting_time').first()
 
-    # if last_meeting and last_week <= last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < last_week + datetime.timedelta(days=1):
-    print('SENDING FACILITATOR SURVEY EMAIL')
+    if last_meeting and last_week <= last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < last_week + datetime.timedelta(days=1):
 
-    facilitator_name = study_group.facilitator.first_name
-    path = reverse('studygroups_facilitator_feedback', kwargs={'study_group_uuid': study_group.uuid})
-    domain = 'https://{}'.format(settings.DOMAIN)
-    survey_url = domain + path
+        facilitator_name = study_group.facilitator.first_name
+        path = reverse('studygroups_facilitator_feedback', kwargs={'study_group_uuid': study_group.uuid})
+        domain = 'https://{}'.format(settings.DOMAIN)
+        survey_url = domain + path
 
-    context = {
-        'facilitator_name':  facilitator_name,
-        'survey_url': survey_url,
-        'course_title': study_group.course.title
-    }
+        context = {
+            'facilitator_name':  facilitator_name,
+            'survey_url': survey_url,
+            'course_title': study_group.course.title
+        }
 
-    timezone.deactivate()
-    subject, txt, html = render_email_templates(
-        'studygroups/email/facilitator-survey',
-        context
-    )
-    to = [study_group.facilitator.email]
-    applications = study_group.application_set.active()\
-        .filter(accepted_at__isnull=False).exclude(email='')
+        timezone.deactivate()
+        subject, txt, html = render_email_templates(
+            'studygroups/email/facilitator-survey',
+            context
+        )
+        to = [study_group.facilitator.email]
+        applications = study_group.application_set.active()\
+            .filter(accepted_at__isnull=False).exclude(email='')
 
-    notification = EmailMultiAlternatives(
-        subject,
-        txt,
-        settings.SERVER_EMAIL,
-        to
-    )
-    notification.attach_alternative(html, 'text/html')
-    notification.send()
+        notification = EmailMultiAlternatives(
+            subject,
+            txt,
+            settings.SERVER_EMAIL,
+            to
+        )
+        notification.attach_alternative(html, 'text/html')
+        notification.send()
 
 
 # If called directly, be sure to activate language to use for constructing URLs

@@ -10,4 +10,4 @@ Please help us improve learning circles by completing this 5 minute survey about
 {% endblocktrans %}
 
 {% trans "Cheers" %},
-The P2PU Team
+{% trans "The P2PU Team" %}
