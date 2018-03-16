@@ -273,7 +273,7 @@ class StudyGroupLearnerFeedback(TemplateView):
         uuid = self.request.GET.get('learner')
         goal_met = self.request.GET.get('goal')
         study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
-        application = study_group.application_set.filter(uuid=uuid)
+        application = study_group.application_set.get(uuid=uuid)
         application.goal_met = goal_met
         application.save()
 
@@ -283,6 +283,6 @@ class StudyGroupLearnerFeedback(TemplateView):
         context['study_group_id'] = study_group.id
         context['course_title'] = study_group.course.title
         context['contact'] = contact
-        context['goal'] = goal
+        context['goal_met'] = goal_met
 
         return context
