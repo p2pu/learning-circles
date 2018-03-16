@@ -30,7 +30,7 @@ from studygroups.rsvp import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
 
 import cities
-import base64
+import json
 
 
 def landing(request):
@@ -272,17 +272,21 @@ class StudyGroupLearnerFeedback(TemplateView):
     def get_context_data(self, **kwargs):
         uuid = self.request.GET.get('learner')
         goal_met = self.request.GET.get('goal')
-        study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
+        study_group = get_object_or_404(StudyGroup, uuid=kwargs.get('study_group_uuid'))
         application = study_group.application_set.get(uuid=uuid)
         application.goal_met = goal_met
         application.save()
 
+        signup_questions = json.loads(application.signup_questions)
+        learner_goal = signup_questions['goals']
+
         contact = application.email if application.email else application.mobile
 
         context = super(StudyGroupLearnerFeedback, self).get_context_data(**kwargs)
-        context['study_group_id'] = study_group.id
+        context['study_group_uuid'] = study_group.uuid
         context['course_title'] = study_group.course.title
         context['contact'] = contact
+        context['goal'] = learner_goal
         context['goal_met'] = goal_met
 
         return context
