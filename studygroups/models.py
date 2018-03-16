@@ -25,7 +25,7 @@ import re
 import json
 import urllib.request, urllib.parse, urllib.error
 import logging
-import base64
+import uuid
 
 
 logger = logging.getLogger(__name__)
@@ -288,7 +288,9 @@ class Application(LifeTimeTrackingModel):
     email = models.EmailField(verbose_name='Email address', blank=True)
     mobile = models.CharField(max_length=20, blank=True)
     signup_questions = models.TextField(default='{}')
+    goal_met = models.SmallIntegerField(null=True)
     accepted_at = models.DateTimeField(blank=True, null=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
 
     def __str__(self):
         return "{0} <{1}>".format(self.name, self.email if self.email else self.mobile)
@@ -550,9 +552,9 @@ def send_survey_reminder(study_group):
         learner_email = application.email
         signup_questions = json.loads(application.signup_questions)
         learner_goal = signup_questions['goals']
-        path = reverse('studygroups_learner_feedback', kwargs={'study_group_id':study_group.id})
         domain = 'https://{}'.format(settings.DOMAIN)
-        querystring = '?email={}'.format(learner_email)
+        path = reverse('studygroups_learner_feedback', kwargs={'study_group_id':study_group.id})
+        querystring = '?learner={}'.format(application.uuid)
         survey_url = domain + path + querystring
 
         context = {

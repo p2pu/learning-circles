@@ -270,14 +270,19 @@ class StudyGroupLearnerFeedback(TemplateView):
     template_name = 'studygroups/learner_feedback.html'
 
     def get_context_data(self, **kwargs):
-        email = self.request.GET.get('email')
-        goal = self.request.GET.get('goal')
+        uuid = self.request.GET.get('learner')
+        goal_met = self.request.GET.get('goal')
         study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
+        application = study_group.application_set.filter(uuid=uuid)
+        application.goal_met = goal_met
+        application.save()
+
+        contact = application.email if application.email else application.mobile
 
         context = super(StudyGroupLearnerFeedback, self).get_context_data(**kwargs)
         context['study_group_id'] = study_group.id
-        context['study_group_name'] = study_group.course.title
-        context['email'] = email
+        context['course_title'] = study_group.course.title
+        context['contact'] = contact
         context['goal'] = goal
 
         return context

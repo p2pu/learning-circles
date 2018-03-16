@@ -1,43 +1,30 @@
-<html style="color: #515665; font-family: open-sans, Helvetica, sans-serif;">
-<head>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet">
-</head>
-<body style="font-size: 16px;">
-<table align="center" style="width: 716px;" >
-<tbody>
-<tr style="height: 80px; ">
-<td style="border-bottom: 1px solid #DDD;">
-<img src="https://www.p2pu.org/assets/images/p2pu-logo.png"/>
-</td>
-</tr>
-<tr>
-<td style="background-color: #FFF; padding-top:10px; ">
+{% extends 'email_base.html' %}
+{% block body %}
+{% load i18n %}
 
+{% blocktrans %}
+<p>Hi {{learner_name}},</p>
 
-<p>Hi Bowie,</p>
-
-
-<p>When you signed up for <strong>Learn Python</strong>, you said that your primary goal was: <strong>Personal interest</strong>.</p>
+<p>When you signed up for <strong>{{course_title}}</strong>, you said that your primary goal was: <strong>{{learner_goal}}</strong>.</p>
 <p>To what extent did you achieve this goal during the learning circle?</p>
 
 
 <div class="star-ratings">
   <div style="display: flex; flex-direction: column; margin-top: 2rem; margin-bottom: 2rem;">
     <div style="display: flex; margin-bottom: 0.3rem">
-      <a href="https://example.net/en/studygroup/1/feedback/?email=sharon.peishan.kennedy@gmail.com&goal=1" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
+      <a href="{{survey_url}}&goal=1" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
         <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none; border-radius: 4px 0 0 4px;">1</div>
       </a>
-      <a href="https://example.net/en/studygroup/1/feedback/?email=sharon.peishan.kennedy@gmail.com&goal=2" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
+      <a href="{{survey_url}}&goal=2" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
         <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none;">2</div>
       </a>
-      <a href="https://example.net/en/studygroup/1/feedback/?email=sharon.peishan.kennedy@gmail.com&goal=3" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
+      <a href="{{survey_url}}&goal=3" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
         <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none;">3</div>
       </a>
-      <a href="https://example.net/en/studygroup/1/feedback/?email=sharon.peishan.kennedy@gmail.com&goal=4" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
+      <a href="{{survey_url}}&goal=4" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
         <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none;">4</div>
       </a>
-      <a href="https://example.net/en/studygroup/1/feedback/?email=sharon.peishan.kennedy@gmail.com&goal=5" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
+      <a href="{{survey_url}}&goal=5" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
         <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-radius: 0 4px 4px 0;">5</div>
       </a>
     </div>
@@ -47,13 +34,9 @@
       <small style="font-size: 0.8rem; color: #05C6B4">COMPLETELY!</small>
     </div>
 </div>
+{% endblocktrans %}
 
-<p>Cheers,</p>
-<p>The P2PU Team</p>
+<p>{% trans "Cheers" %},</p>
+<p>{% trans "The P2PU Team" %}</p>
 
-</td>
-</tr>
-</tbody>
-</table>
-</body>
-</html>
+{% endblock %}
