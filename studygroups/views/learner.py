@@ -30,6 +30,7 @@ from studygroups.rsvp import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
 
 import cities
+import base64
 
 
 def landing(request):
@@ -269,8 +270,15 @@ class StudyGroupLearnerFeedback(TemplateView):
     template_name = 'studygroups/learner_feedback.html'
 
     def get_context_data(self, **kwargs):
-        study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
+        decoded_id = base64.urlsafe_b64decode(kwargs.get('study_group_id'))
+        decoded_email = base64.urlsafe_b64decode(kwargs.get('email'))
+        goal = kwargs.get('goal')
+        study_group = get_object_or_404(StudyGroup, pk=decoded_id)
+
         context = super(StudyGroupLearnerFeedback, self).get_context_data(**kwargs)
         context['study_group_id'] = study_group.id
         context['study_group_name'] = study_group.course.title
+        context['email'] = decoded_email
+        context['goal'] = goal
+
         return context

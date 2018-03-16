@@ -2,11 +2,13 @@
 {% block body %}
 {% load i18n %}
 
-<p>{% block_trans %} Hi {{facilitator_name}},{% endblocktrans %}</p>
+<p>{% blocktrans %} Hi {{facilitator_name}},{% endblocktrans %}</p>
 
-<p>{% trans "Please help us improve learning circles by completing this 5 minute survey about your experience." %}</p>
+<p>{% blocktrans %}Please help us improve learning circles by completing this 5 minute survey about your experience facilitating <strong>{{course_title}}</strong>. {% endblocktrans %}</p>
 
-<a href="{{survey_url}}" style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-radius: 4px; text-decoration: none;">{% trans "Take the survey" %}</a>
+<div style="margin-top: 2rem; margin-bottom: 2rem; display: flex; justify-content: center;">
+  <a href="{{survey_url}}" style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-radius: 4px; text-decoration: none;">{% trans "Take the survey" %}</a>
+</div>
 
 <p>{% trans "Cheers" %}</p>
 <p>The P2PU Team</p>
