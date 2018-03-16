@@ -550,11 +550,9 @@ def send_survey_reminder(study_group):
         learner_email = application.email
         signup_questions = json.loads(application.signup_questions)
         learner_goal = signup_questions['goals']
-        encoded_id = base64.urlsafe_b64encode(study_group.id)
-        path = reverse('studygroups_learner_feedback', kwargs={'study_group_id':encoded_id})
+        path = reverse('studygroups_learner_feedback', kwargs={'study_group_id':study_group.id})
         domain = 'https://{}'.format(settings.DOMAIN)
-        encoded_email = base64.urlsafe_b64encode(learner_email)
-        querystring = '?email={}'.format(encoded_email)
+        querystring = '?email={}'.format(learner_email)
         survey_url = domain + path + querystring
 
         context = {
@@ -602,8 +600,7 @@ def send_facilitator_survey(study_group):
     print('SENDING FACILITATOR SURVEY EMAIL')
 
     facilitator_name = study_group.facilitator.first_name
-    encoded_id = base64.urlsafe_b64encode(study_group.id)
-    path = reverse('studygroups_facilitator_feedback', kwargs={'study_group_id': encoded_id})
+    path = reverse('studygroups_facilitator_feedback', kwargs={'study_group_id': study_group.id})
     domain = 'https://{}'.format(settings.DOMAIN)
     survey_url = domain + path
 

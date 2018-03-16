@@ -270,15 +270,14 @@ class StudyGroupLearnerFeedback(TemplateView):
     template_name = 'studygroups/learner_feedback.html'
 
     def get_context_data(self, **kwargs):
-        decoded_id = base64.urlsafe_b64decode(kwargs.get('study_group_id'))
-        decoded_email = base64.urlsafe_b64decode(kwargs.get('email'))
-        goal = kwargs.get('goal')
-        study_group = get_object_or_404(StudyGroup, pk=decoded_id)
+        email = self.request.GET.get('email')
+        goal = self.request.GET.get('goal')
+        study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
 
         context = super(StudyGroupLearnerFeedback, self).get_context_data(**kwargs)
         context['study_group_id'] = study_group.id
         context['study_group_name'] = study_group.course.title
-        context['email'] = decoded_email
+        context['email'] = email
         context['goal'] = goal
 
         return context
