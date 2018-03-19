@@ -2,16 +2,14 @@
 {% block body %}
 {% load i18n %}
 
-<p>{% trans "Hi there" %},</p>
+<p>{% blocktrans %} Hi {{facilitator_name}},{% endblocktrans %}</p>
 
-<p>{% trans "Your learning circle finished last week, but with Peer 2 Peer University, your learning never ends." %}</p>
+<p>{% blocktrans %}Please help us improve learning circles by completing this 5 minute survey about your experience facilitating <strong>{{course_title}}</strong>. {% endblocktrans %}</p>
 
-{% blocktrans %}
-  <p>
-  Let us know how we can help plan your next steps by completing this <a href="https://docs.google.com/forms/d/e/1FAIpQLSdvzlyXUMZy29WetnCQLT3jnQvD9TrYqMq7KWXB-lZa8mLhJA/viewform?usp=pp_url&entry.73798480={{learning_circle_slug}}">brief online survey</a>. As this a brand new education model, we'd love to hear about what worked for you and what still needs tweaking.
-  </p>
-{% endblocktrans %}
+<div style="margin-top: 2rem; margin-bottom: 2rem; display: flex; justify-content: center;">
+  <a href="{{survey_url}}" style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-radius: 4px; text-decoration: none;">{% trans "Take the survey" %}</a>
+</div>
 
 <p>{% trans "Cheers" %}</p>
-<p>P2PU</p>
+<p>{% trans "The P2PU Team" %}</p>
 {% endblock %}

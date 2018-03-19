@@ -25,6 +25,8 @@ import re
 import json
 import urllib.request, urllib.parse, urllib.error
 import logging
+import uuid
+
 
 logger = logging.getLogger(__name__)
 
@@ -192,6 +194,7 @@ class StudyGroup(LifeTimeTrackingModel):
     signup_question = models.CharField(max_length=256, blank=True)
     facilitator_goal = models.CharField(max_length=256, blank=True)
     facilitator_concerns = models.CharField(max_length=256, blank=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
 
 
     objects = StudyGroupQuerySet.as_manager()
@@ -286,7 +289,9 @@ class Application(LifeTimeTrackingModel):
     email = models.EmailField(verbose_name='Email address', blank=True)
     mobile = models.CharField(max_length=20, blank=True)
     signup_questions = models.TextField(default='{}')
+    goal_met = models.SmallIntegerField(null=True)
     accepted_at = models.DateTimeField(blank=True, null=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
 
     def __str__(self):
         return "{0} <{1}>".format(self.name, self.email if self.email else self.mobile)
@@ -532,36 +537,52 @@ def send_survey_reminder(study_group):
     last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
 
     if last_meeting and last_15 - datetime.timedelta(minutes=15) <= last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < last_15:
-        slug = '{}-{}'.format(slugify(study_group.venue_name), study_group.id)
-        learning_circle_text = "{} at {} ({})".format(study_group.course.title, study_group.venue_name, slug)
-        context = {
-            'learning_circle':  urllib.parse.quote(learning_circle_text)
-        }
-        subject = render_to_string(
-            'studygroups/email/learner_survey_reminder-subject.txt',
-            context
-        )
-        html = render_to_string(
-            'studygroups/email/learner_survey_reminder.html',
-            context
-        )
-        txt = render_to_string(
-            'studygroups/email/learner_survey_reminder.txt',
-            context
-        )
-        timezone.deactivate()
-        to = []
+
         applications = study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')
-        bcc = [su.email for su in applications]
-        notification = EmailMultiAlternatives(
-            subject.strip(),
-            txt,
-            settings.SERVER_EMAIL,
-            to,
-            bcc
-        )
-        notification.attach_alternative(html, 'text/html')
-        notification.send()
+
+        timezone.deactivate()
+
+        for application in applications:
+
+            course_title = study_group.course.title
+            learner_name = application.name
+            learner_email = application.email
+            signup_questions = json.loads(application.signup_questions)
+            learner_goal = signup_questions['goals']
+            domain = 'https://{}'.format(settings.DOMAIN)
+            path = reverse('studygroups_learner_feedback', kwargs={'study_group_uuid':study_group.uuid})
+            querystring = '?learner={}'.format(application.uuid)
+            survey_url = domain + path + querystring
+
+            context = {
+                'course_title': course_title,
+                'learner_name': learner_name,
+                'learner_goal': learner_goal,
+                'survey_url': survey_url
+            }
+
+            subject = render_to_string(
+                'studygroups/email/learner_survey_reminder-subject.txt',
+                context
+            )
+            html = render_to_string(
+                'studygroups/email/learner_survey_reminder.html',
+                context
+            )
+            txt = render_to_string(
+                'studygroups/email/learner_survey_reminder.txt',
+                context
+            )
+
+            to = [learner_email]
+            notification = EmailMultiAlternatives(
+                subject.strip(),
+                txt,
+                settings.SERVER_EMAIL,
+                to
+            )
+            notification.attach_alternative(html, 'text/html')
+            notification.send()
 
 
 # If called directly, be sure to activate the current language
@@ -575,11 +596,18 @@ def send_facilitator_survey(study_group):
             .order_by('-meeting_date', '-meeting_time').first()
 
     if last_meeting and last_week <= last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < last_week + datetime.timedelta(days=1):
-        slug = '{}-{}'.format(slugify(study_group.venue_name), study_group.id)
-        learning_circle_text = "{} at {} ({})".format(study_group.course.title, study_group.venue_name, slug)
+
+        facilitator_name = study_group.facilitator.first_name
+        path = reverse('studygroups_facilitator_feedback', kwargs={'study_group_uuid': study_group.uuid})
+        domain = 'https://{}'.format(settings.DOMAIN)
+        survey_url = domain + path
+
         context = {
-            'learning_circle_slug':  urllib.parse.quote(learning_circle_text)
+            'facilitator_name':  facilitator_name,
+            'survey_url': survey_url,
+            'course_title': study_group.course.title
         }
+
         timezone.deactivate()
         subject, txt, html = render_email_templates(
             'studygroups/email/facilitator-survey',
