@@ -3,6 +3,7 @@ anyjson==0.3.3
 appdirs==1.4.3
 Babel==2.3.4
 billiard==3.3.0.23
+bleach==2.1.3
 boto==2.38.0
 boto3==1.1.4
 botocore==1.2.9
@@ -21,6 +22,8 @@ freezegun==0.3.8
 futures==2.2.0
 geonamescache==0.21
 gunicorn==19.7.1
+html5lib==1.0.1
+httplib2==0.9.1
 idna==2.6
 jmespath==0.9.0
 kombu==3.0.37
@@ -42,3 +45,4 @@ twilio==6.8.0
 unicodecsv==0.14.1
 urllib3==1.22
 vine==1.1.3
+webencodings==0.5.1

@@ -89,7 +89,7 @@ class AjaxLoginView(View):
         if user is None:
             return json_response(request, {
                 "status": "error",
-                "errors": AuthenticationForm.error_messages.get('invalid_login')
+                "errors": AuthenticationForm.error_messages.get('invalid_login') % { "username" : "email" }
             })
 
         if not user.is_active:

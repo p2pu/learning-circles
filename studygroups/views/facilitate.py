@@ -42,7 +42,7 @@ from studygroups.models import generate_all_meetings
 from studygroups.models import send_reminder
 from studygroups.models import get_study_group_organizers
 from studygroups.decorators import user_is_group_facilitator
-
+from studygroups.decorators import study_group_is_published
 
 @login_required
 def login_redirect(request):
@@ -99,6 +99,7 @@ class FacilitatorRedirectMixin(object):
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
+@method_decorator(study_group_is_published, name='dispatch')
 class MeetingCreate(FacilitatorRedirectMixin, CreateView):
     model = Meeting
     form_class = MeetingForm
@@ -112,12 +113,14 @@ class MeetingCreate(FacilitatorRedirectMixin, CreateView):
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
+@method_decorator(study_group_is_published, name='dispatch')
 class MeetingUpdate(FacilitatorRedirectMixin, UpdateView):
     model = Meeting
     form_class = MeetingForm
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
+@method_decorator(study_group_is_published, name='dispatch')
 class MeetingDelete(FacilitatorRedirectMixin, DeleteView):
     model = Meeting
 
@@ -128,6 +131,7 @@ class FeedbackDetail(FacilitatorRedirectMixin, DetailView):
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
+@method_decorator(study_group_is_published, name='dispatch')
 class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
     model = Feedback
     form_class = FeedbackForm
@@ -320,6 +324,7 @@ class StudyGroupPublish(SingleObjectMixin, View):
 
 
 @user_is_group_facilitator
+@study_group_is_published
 def message_send(request, study_group_id):
     # TODO - this piggy backs of Reminder, won't work of Reminder is coupled to Meeting
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
@@ -349,6 +354,7 @@ def message_send(request, study_group_id):
 
 
 @user_is_group_facilitator
+@study_group_is_published
 def message_edit(request, study_group_id, message_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
     reminder = get_object_or_404(Reminder, pk=message_id)
@@ -383,6 +389,7 @@ def message_edit(request, study_group_id, message_id):
 
 
 @user_is_group_facilitator
+@study_group_is_published
 def add_member(request, study_group_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
 
