@@ -543,11 +543,11 @@ class TestSignupModels(TestCase):
         # 25 minutes after start
         with freeze_time("2010-02-05 18:25:34"):
             send_survey_reminder(sg)
-            self.assertEqual(len(mail.outbox), 1)
-            self.assertEqual(len(mail.outbox[0].bcc), 2)
-            self.assertIn('mail1@example.net', mail.outbox[0].bcc)
-            self.assertIn('mail2@example.net', mail.outbox[0].bcc)
-            self.assertIn('https://docs.google.com/forms/d/e/1FAIpQLScuRY5CFGR_LrEUvWjyw9H3KCBJANzfuNxkMvpFa3umyusOFQ/viewform?usp=pp_url&entry.1456652861=Public%20Speaking%20at%20Harold%20Washington%20%28harold-washington-1%29', mail.outbox[0].body)
+            self.assertEqual(len(mail.outbox), 2)
+            self.assertIn('mail1@example.net', mail.outbox[0].to + mail.outbox[1].to)
+            self.assertIn('mail2@example.net', mail.outbox[0].to + mail.outbox[1].to)
+            a1 = Application.objects.get(email=mail.outbox[0].to[0])
+            self.assertIn('https://example.net/en/studygroup/{}/feedback/?learner={}'.format(sg.uuid, a1.uuid), mail.outbox[0].body)
 
         mail.outbox = []
         # 40 minutes after start
@@ -613,5 +613,5 @@ class TestSignupModels(TestCase):
         with freeze_time("2010-02-12 17:55:34"):
             send_facilitator_survey(sg)
             self.assertEqual(len(mail.outbox), 1)
-            self.assertIn('https://docs.google.com/forms/d/e/1FAIpQLSdvzlyXUMZy29WetnCQLT3jnQvD9TrYqMq7KWXB-lZa8mLhJA/viewform?usp=pp_url&entry.73798480=Public%20Speaking%20at%20Harold%20Washington%20%28harold-washington-1%29', mail.outbox[0].body)
+            self.assertIn('https://example.net/en/studygroup/{0}/facilitator_feedback/'.format(sg.uuid), mail.outbox[0].body)
             self.assertIn(sg.facilitator.email, mail.outbox[0].to)
