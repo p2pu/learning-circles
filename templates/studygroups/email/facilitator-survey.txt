@@ -3,7 +3,9 @@
 {% blocktrans %}
 Hi {{facilitator_name}},
 
-Please help us improve learning circles by completing this 5 minute survey about your experience.
+As your learning circle comes to a close, now is a great time reflect on the last {{weeks}} weeks of facilitating {{course_title}}. Congratulations on getting your learners through to the end!
+
+Your experience as a facilitator is very valuable to us and to the whole P2PU community. Please take a few minutes to help us improve learning circles by sharing your feedback.
 
 {{survey_url}}
 

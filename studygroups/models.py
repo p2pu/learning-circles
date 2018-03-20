@@ -531,18 +531,19 @@ def generate_reminder(study_group):
 # If called directly, be sure to activate the current language
 # Should be called every 15 minutes starting just after the hour
 def send_survey_reminder(study_group):
-    now = timezone.now()
-    ## last :00, :15, :30 or :45
-    last_15 = now.replace(minute=now.minute//15*15, second=0)
-    last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
+    # now = timezone.now()
+    # ## last :00, :15, :30 or :45
+    # last_15 = now.replace(minute=now.minute//15*15, second=0)
+    # last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
 
-    if last_meeting and last_15 - datetime.timedelta(minutes=15) <= last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < last_15:
+    # if last_meeting and last_15 - datetime.timedelta(minutes=15) <= last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < last_15:
 
-        applications = study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')
+    applications = study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')
 
-        timezone.deactivate()
+    timezone.deactivate()
 
-        for application in applications:
+    for application in applications:
+
 
             course_title = study_group.course.title
             learner_name = application.name
@@ -554,35 +555,37 @@ def send_survey_reminder(study_group):
             querystring = '?learner={}'.format(application.uuid)
             survey_url = domain + path + querystring
 
-            context = {
-                'course_title': course_title,
-                'learner_name': learner_name,
-                'learner_goal': learner_goal,
-                'survey_url': survey_url
-            }
+        context = {
+            'course_title': course_title,
+            'learner_name': learner_name,
+            'facilitator_name': facilitator_name,
+            'weeks': weeks,
+            'learner_goal': learner_goal,
+            'survey_url': survey_url
+        }
 
-            subject = render_to_string(
-                'studygroups/email/learner_survey_reminder-subject.txt',
-                context
-            )
-            html = render_to_string(
-                'studygroups/email/learner_survey_reminder.html',
-                context
-            )
-            txt = render_to_string(
-                'studygroups/email/learner_survey_reminder.txt',
-                context
-            )
+        subject = render_to_string(
+            'studygroups/email/learner_survey_reminder-subject.txt',
+            context
+        )
+        html = render_to_string(
+            'studygroups/email/learner_survey_reminder.html',
+            context
+        )
+        txt = render_to_string(
+            'studygroups/email/learner_survey_reminder.txt',
+            context
+        )
 
-            to = [learner_email]
-            notification = EmailMultiAlternatives(
-                subject.strip(),
-                txt,
-                settings.SERVER_EMAIL,
-                to
-            )
-            notification.attach_alternative(html, 'text/html')
-            notification.send()
+        to = [learner_email]
+        notification = EmailMultiAlternatives(
+            subject.strip(),
+            txt,
+            settings.SERVER_EMAIL,
+            to
+        )
+        notification.attach_alternative(html, 'text/html')
+        notification.send()
 
 
 # If called directly, be sure to activate the current language
@@ -605,7 +608,8 @@ def send_facilitator_survey(study_group):
         context = {
             'facilitator_name':  facilitator_name,
             'survey_url': survey_url,
-            'course_title': study_group.course.title
+            'course_title': study_group.course.title,
+            'weeks': study_group.meeting_set.active().count()
         }
 
         timezone.deactivate()

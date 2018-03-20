@@ -3,43 +3,74 @@
 {% load i18n %}
 
 {% blocktrans %}
-<p>Hi {{learner_name}},</p>
 
-<p>When you signed up for <strong>{{course_title}}</strong>, you said that your primary goal was: <strong>{{learner_goal}}</strong>.</p>
-<p>To what extent did you achieve this goal during the learning circle?</p>
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <p>Hi {{learner_name}},</p>
 
+        <p>As your learning circle comes to an end, now is a great time reflect on the last {{weeks}} weeks of learning with {{facilitator_name}}. Please take few minutes to let us know how it went.
+        </p>
 
-<div class="star-ratings">
-  <div style="display: flex; flex-direction: column; margin-top: 2rem; margin-bottom: 2rem;">
-    <div style="display: flex; margin-bottom: 0.3rem">
-      <a href="{{survey_url}}&goal=1" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
-        <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none; border-radius: 4px 0 0 4px;">1</div>
-      </a>
-      <a href="{{survey_url}}&goal=2" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
-        <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none;">2</div>
-      </a>
-      <a href="{{survey_url}}&goal=3" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
-        <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none;">3</div>
-      </a>
-      <a href="{{survey_url}}&goal=4" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
-        <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none;">4</div>
-      </a>
-      <a href="{{survey_url}}&goal=5" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
-        <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-radius: 0 4px 4px 0;">5</div>
-      </a>
-    </div>
+        <p>When you signed up for <strong>{{course_title}}</strong>, you said that your primary goal was: <strong>{{learner_goal}}</strong>.</p>
+        <p>To what extent did you achieve this goal during the learning circle?</p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <table align="center" style="margin-top: 2rem; margin-bottom: 2rem;">
+          <tbody>
+            <tr>
+              <td>
+                <div style="display: flex; margin-bottom: 0.3rem">
+                  <a href="{{survey_url}}&goal=1" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
+                    <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none; border-radius: 4px 0 0 4px;">1</div>
+                  </a>
+                  <a href="{{survey_url}}&goal=2" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
+                    <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none;">2</div>
+                  </a>
+                  <a href="{{survey_url}}&goal=3" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
+                    <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none;">3</div>
+                  </a>
+                  <a href="{{survey_url}}&goal=4" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
+                    <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none;">4</div>
+                  </a>
+                  <a href="{{survey_url}}&goal=5" style="flex: 1 1 auto; text-align: center; text-decoration: none;">
+                    <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-radius: 0 4px 4px 0;">5</div>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <table width="100%">
+                  <tbody>
+                    <tr>
+                      <td>
+                        <small style="font-size: 0.8rem; color: #05C6B4">Not at all</small>
+                      </td>
+                      <td style="text-align: right;">
+                        <small style="font-size: 0.8rem; color: #05C6B4">Completely!</small>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p>Cheers,</p>
+        <p>The P2PU Team</p>
+      </td>
 
-    <div style="display: flex; justify-content: space-between;">
-      <small style="font-size: 0.8rem; color: #05C6B4">Not at all</small>
-      <small style="font-size: 0.8rem; color: #05C6B4">Completely!</small>
-    </div>
-</div>
-
-<p>Or go straight to the survey: {{survey_url}}</p>
+    </tr>
+  </tbody>
+</table>
 {% endblocktrans %}
-
-
-<p>{% trans "Cheers" %},</p>
-<p>{% trans "The P2PU Team" %}</p>
 
 {% endblock %}

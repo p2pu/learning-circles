@@ -1,14 +1,14 @@
 {% load i18n %}
 {% blocktrans %}
 Hi {{learner_name}},
+
+As your learning circle comes to an end, now is a great time reflect on the last {{weeks}} weeks of learning with {{facilitator_name}}. Please take few minutes to let us know how it went.
+
+Share your feedback here: {{survey_url}}
+
+Thank you for being part of the P2PU community, and we look forward to hearing from you!
+
 {% endblocktrans %}
-
-{% trans "Your learning circle is coming to a close, but with Peer 2 Peer University, your learning never ends." %}
-
-{% blocktrans %}Let us know how we can help plan your next steps by completing this brief online survey: {{survey_url}}
-
-As this a brand new education model, we'd love to hear about what worked for you and what still needs tweaking. {% endblocktrans %}
-
 
 {% trans "Cheers" %},
 {% trans "The P2PU Team" %}
