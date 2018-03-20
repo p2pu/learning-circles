@@ -194,7 +194,7 @@ class StudyGroup(LifeTimeTrackingModel):
     signup_question = models.CharField(max_length=256, blank=True)
     facilitator_goal = models.CharField(max_length=256, blank=True)
     facilitator_concerns = models.CharField(max_length=256, blank=True)
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
 
     objects = StudyGroupQuerySet.as_manager()
@@ -291,7 +291,7 @@ class Application(LifeTimeTrackingModel):
     signup_questions = models.TextField(default='{}')
     goal_met = models.SmallIntegerField(null=True)
     accepted_at = models.DateTimeField(blank=True, null=True)
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def __str__(self):
         return "{0} <{1}>".format(self.name, self.email if self.email else self.mobile)
@@ -547,8 +547,8 @@ def send_survey_reminder(study_group):
             course_title = study_group.course.title
             learner_name = application.name
             learner_email = application.email
-            signup_questions = json.loads(application.signup_questions)
-            learner_goal = signup_questions['goals']
+            signup_questions = application.get_signup_questions()
+            learner_goal = signup_questions.get('goals', '')
             domain = 'https://{}'.format(settings.DOMAIN)
             path = reverse('studygroups_learner_feedback', kwargs={'study_group_uuid':study_group.uuid})
             querystring = '?learner={}'.format(application.uuid)
