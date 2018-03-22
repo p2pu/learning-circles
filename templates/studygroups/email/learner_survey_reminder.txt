@@ -2,7 +2,7 @@
 {% blocktrans %}
 Hi {{learner_name}},
 
-As your learning circle comes to an end, now is a great time reflect on the last {{weeks}} weeks of learning with {{facilitator_name}}. Please take few minutes to let us know how it went.
+Can you take a few minutes to let us know how your learning circle went? Your feedback - the good and the bad - will improve the learning circle program for learners and facilitators around the world.
 
 Share your feedback here: {{survey_url}}
 

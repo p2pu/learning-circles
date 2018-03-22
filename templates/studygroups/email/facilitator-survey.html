@@ -2,18 +2,40 @@
 {% block body %}
 {% load i18n %}
 
-{% blocktrans %}
-<p>Hi {{facilitator_name}},</p>
+<table>
+  <tbody>
+    <tr>
+      <td>
+        {% blocktrans %}
+        <p>Hi {{facilitator_name}},</p>
 
-<p>As your learning circle comes to a close, now is a great time reflect on the last {{weeks}} weeks of facilitating {{course_title}}. Congratulations on getting your learners through to the end!</p>
+        <p>After your learning circle, you probably have a few things to say (good and bad!) about <strong>{{course_title}}</strong>, activities you tried, and the learning circle process in general.</p>
 
-<p>Your experience as a facilitator is very valuable to us and to the whole P2PU community. Please take a few minutes to help us improve learning circles by sharing your feedback.</p>
-
-<div style="margin-top: 2rem; margin-bottom: 2rem; display: flex; justify-content: center;">
-  <a href="{{survey_url}}" style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-radius: 4px; text-decoration: none;">{% trans "Share your feedback" %}</a>
-</div>
-{% endblocktrans %}
-
-<p>{% trans "Cheers" %}</p>
-<p>{% trans "The P2PU Team" %}</p>
+        <p>Can you take a few minutes to share with us? Your feedback will be immediately put to use, helping our community identify high-quality online courses and deliver equitable learning experiences around the world.</p>
+        {% endblocktrans %}
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <table align="center" style="margin-top: 2rem; margin-bottom: 2rem;">
+          <tbody>
+            <tr>
+              <td>
+                <a href="{{survey_url}}" style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-radius: 4px; text-decoration: none;">
+                  {% trans "Review your learning circle now" %}
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p>{% trans "Cheers" %},</p>
+        <p>{% trans "The P2PU Team" %}</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
 {% endblock %}

@@ -3,12 +3,11 @@
 {% blocktrans %}
 Hi {{facilitator_name}},
 
-As your learning circle comes to a close, now is a great time reflect on the last {{weeks}} weeks of facilitating {{course_title}}. Congratulations on getting your learners through to the end!
+After your learning circle, you probably have a few things to say (good and bad!) about {{course_title}}, activities you tried, and the learning circle process in general.
 
-Your experience as a facilitator is very valuable to us and to the whole P2PU community. Please take a few minutes to help us improve learning circles by sharing your feedback.
+Can you take a few minutes to share with us? Your feedback will be immediately put to use, helping our community identify high-quality online courses and deliver equitable learning experiences around the world.
 
-{{survey_url}}
-
+Review your learning circle now: {{survey_url}}
 {% endblocktrans %}
 
 {% trans "Cheers" %},
