@@ -543,8 +543,6 @@ def send_survey_reminder(study_group):
         timezone.deactivate()
 
         for application in applications:
-
-            course_title = study_group.course.title
             learner_name = application.name
             learner_email = application.email
             signup_questions = application.get_signup_questions()
@@ -555,7 +553,6 @@ def send_survey_reminder(study_group):
             survey_url = domain + path + querystring
 
             context = {
-                'course_title': course_title,
                 'learner_name': learner_name,
                 'learner_goal': learner_goal,
                 'survey_url': survey_url
@@ -605,7 +602,7 @@ def send_facilitator_survey(study_group):
         context = {
             'facilitator_name':  facilitator_name,
             'survey_url': survey_url,
-            'course_title': study_group.course.title
+            'course_title': study_group.course.title,
         }
 
         timezone.deactivate()

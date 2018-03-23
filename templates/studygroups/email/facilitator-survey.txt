@@ -3,10 +3,11 @@
 {% blocktrans %}
 Hi {{facilitator_name}},
 
-Please help us improve learning circles by completing this 5 minute survey about your experience.
+After your learning circle, you probably have a few things to say (good and bad!) about {{course_title}}, activities you tried, and the learning circle process in general.
 
-{{survey_url}}
+Can you take a few minutes to share with us? Your feedback will be immediately put to use, helping our community identify high-quality online courses and deliver equitable learning experiences around the world.
 
+Review your learning circle now: {{survey_url}}
 {% endblocktrans %}
 
 {% trans "Cheers" %},
