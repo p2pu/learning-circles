@@ -1,0 +1,12 @@
+{% load i18n %}
+{% blocktrans %}
+
+Learning circles are happening around the world, and your experience is valuable to others who are just beginning their journey. {{upcoming_studygroup_info}} We'll make sure they get it!
+
+Here are a few prompts:
+- What was the highlight of your learning circle?
+- What course did you study? How was it?
+- What do you wish you knew before your learning circle started that you know now?
+- What’s the weather like where you are?
+
+{% endblocktrans %}

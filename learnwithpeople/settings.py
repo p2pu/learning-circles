@@ -164,6 +164,7 @@ if DEBUG is True and EMAIL_HOST is None:
 
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
 SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'no-reply@p2pu.org')
+REPLY_TO_EMAIL = os.environ.get('REPLY_TO_EMAIL', 'learningcircles@p2pu.org')
 
 ##### Database config
 import dj_database_url
@@ -187,7 +188,7 @@ LOGIN_REDIRECT_URL = '/login_redirect/'
 LOGOUT_REDIRECT_URL = 'https://www.p2pu.org/en/facilitate/'
 DOMAIN = os.environ.get('DOMAIN', 'example.net')
 
-####### Google analytics tracking info ####### 
+####### Google analytics tracking info #######
 GA_TRACKING_ID = os.environ.get('GA_TRACKING_ID', 'UA-0000000-00')
 
 ####### Celery config #######
@@ -219,6 +220,10 @@ CELERYBEAT_SCHEDULE = {
     },
     'send_facilitator_survey': {
         'task': 'studygroups.tasks.send_all_facilitator_surveys',
+        'schedule':  crontab(hour='10', minute='0'),
+    },
+    'send_last_week_group_activity': {
+        'task': 'studygroups.tasks.send_all_last_week_group_activities',
         'schedule':  crontab(hour='10', minute='0'),
     },
     'weekly_update': {

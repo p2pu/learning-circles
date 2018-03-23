@@ -1,0 +1,17 @@
+{% extends 'email_base.html' %}
+{% block body %}
+{% load i18n %}
+
+{% blocktrans %}
+<p>Learning circles are happening around the world, and your experience is valuable to others who are just beginning their journey. {{upcoming_studygroup_info}} We'll make sure they get it!</p>
+
+<p>Here are a few prompts:</p>
+<ul>
+  <li>What was the highlight of your learning circle?</li>
+  <li>What course did you study? How was it?</li>
+  <li>What do you wish you knew before your learning circle started that you know now?</li>
+  <li>What’s the weather like where you are?</li>
+</ul>
+
+{% endblocktrans %}
+{% endblock %}
