@@ -32,6 +32,10 @@ def html_body_to_text(html):
     hx_re = re.compile(r'<h\d>(?P<text>.*?)</h\d>')
     html = hx_re.sub(r'# \1', html)
 
+    # rewrite list items
+    hx_re = re.compile(r'<li>(?P<text>.*?)</li>')
+    html = hx_re.sub(r' - \1', html)
+
     # remove all HTML markup
     txt = bleach.clean(html, tags=[], strip=True)
 

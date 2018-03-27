@@ -17,6 +17,7 @@ import pytz
 
 @receiver(post_save, sender=Application)
 def handle_new_application(sender, instance, created, **kwargs):
+    """ Send welcome message to learner introducing them to their facilitator """
     if not created:
         return
 
@@ -69,19 +70,16 @@ def handle_new_study_group_creation(sender, instance, created, **kwargs):
         'domain': settings.DOMAIN,
     }
     subject = render_to_string('studygroups/email/learning_circle_created-subject.txt', context).strip(' \n')
-    text_body = render_to_string('studygroups/email/learning_circle_created.txt', context)
     html_body = render_to_string('studygroups/email/learning_circle_created.html', context)
+    text_body = html_body_to_text(html_body)
 
-    
-    # cc community manager list
-    cc = [settings.COMMUNITY_MANAGER]
     notification = EmailMultiAlternatives(
         subject,
         text_body,
         settings.DEFAULT_FROM_EMAIL,
         [study_group.facilitator.email],
-        cc = cc
+        cc=[settings.COMMUNITY_MANAGER],
+        reply_to=[study_group.facilitator.email, settings.COMMUNITY_MANAGER]
     )
-
     notification.attach_alternative(html_body, 'text/html')
     notification.send()
