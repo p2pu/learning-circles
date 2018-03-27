@@ -2,16 +2,28 @@
 {% block body %}
 {% load i18n %}
 
-{% blocktrans %}
-<p>Learning circles are happening around the world, and your experience is valuable to others who are just beginning their journey. {{upcoming_studygroup_info}} We'll make sure they get it!</p>
+<p>
+{% trans "Learning circles are happening around the world, and your experience is valuable to others who are just beginning their journey." %}
+</p>
 
-<p>Here are a few prompts:</p>
+<p>
+{% if next_study_group %}
+{% blocktrans %}
+In {{ weeks }} weeks, a learning circle will start in {{ city }} studying "{{ course_title }}". As a group, can you write them a short note welcoming them to the P2PU Community?
+{% endblocktrans %}
+{% else %}
+{% trans "Can you write a short note welcoming the next learning circle to the P2PU community?" %}
+{% endif %}
+
+{% trans "We'll make sure they get it!" %}
+</p>
+
+<p>{% trans "Here are a few prompts:" %}</p>
 <ul>
-  <li>What was the highlight of your learning circle?</li>
-  <li>What course did you study? How was it?</li>
-  <li>What do you wish you knew before your learning circle started that you know now?</li>
-  <li>What’s the weather like where you are?</li>
+  <li>{% trans "What was the highlight of your learning circle?" %}</li>
+  <li>{% trans "What course did you study? How was it?" %}</li>
+  <li>{% trans "What do you wish you knew before your learning circle started that you know now?" %}</li>
+  <li>{% trans "What’s the weather like where you are?" %}</li>
 </ul>
 
-{% endblocktrans %}
 {% endblock %}

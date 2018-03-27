@@ -637,16 +637,17 @@ def send_last_week_group_activity(study_group):
 
         timezone.deactivate()
 
-        if next_study_group:
-            next_study_group_start_delta = next_study_group.start_date - today
-            weeks_until_start = next_study_group_start_delta.days/7.0
-            upcoming_studygroup_info = 'In a {} weeks, a learning circle will start in {} studying {}. As a group, can you write them a short note welcoming them to the P2PU Community?'.format(weeks_until_start, next_study_group.city, next_study_group.course.title)
-        else:
-            upcoming_studygroup_info = 'Can you write a short note welcoming the next learning circle to the P2PU community?'
-
         context = {
-            'upcoming_studygroup_info': upcoming_studygroup_info
+            'next_study_group': next_study_group
         }
+
+        if next_study_group:
+            next_study_group_start_delta = next_study_group.start_date - today.date()
+            weeks_until_start = int(next_study_group_start_delta.days/7)
+            context['weeks'] = weeks_until_start
+            context['city'] = next_study_group.city
+            context['course_title'] = next_study_group.course.title
+
         subject, txt, html = render_email_templates(
             'studygroups/email/last_week_group_activity',
             context
