@@ -3,6 +3,7 @@ from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives, send_mail
 from django.conf import settings
+from django.utils import timezone
 
 from .models import Application
 from .models import StudyGroup
@@ -11,6 +12,8 @@ from .models import Course
 from .utils import html_body_to_text
 
 from advice.models import Advice
+
+import pytz
 
 @receiver(post_save, sender=Application)
 def handle_new_application(sender, instance, created, **kwargs):
@@ -22,21 +25,24 @@ def handle_new_application(sender, instance, created, **kwargs):
     # get a random piece of advice
     advice = Advice.objects.order_by('?').first()
 
-    # Send welcome message to learner 
-    learner_signup_subject = render_to_string(
-        'studygroups/email/learner_signup-subject.txt', {
-            'application': application,
-            'advice': advice,
-        }
-    ).strip('\n')
+    # activitate timezone for message reminder
+    with timezone.override(pytz.timezone(application.study_group.timezone)):
+        # Send welcome message to learner 
+        learner_signup_subject = render_to_string(
+            'studygroups/email/learner_signup-subject.txt', {
+                'application': application,
+                'advice': advice,
+            }
+        ).strip('\n')
 
-    learner_signup_html = render_to_string(
-        'studygroups/email/learner_signup.html', {
-            'application': application,
-            'advice': advice,
-        }
-    )
-    learner_signup_body = html_body_to_text(learner_signup_html)
+        learner_signup_html = render_to_string(
+            'studygroups/email/learner_signup.html', {
+                'application': application,
+                'advice': advice,
+            }
+        )
+        learner_signup_body = html_body_to_text(learner_signup_html)
+
     to = [application.email]
     # CC facilitator and put in reply-to
     welcome_message = EmailMultiAlternatives(
