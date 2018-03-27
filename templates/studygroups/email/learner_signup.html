@@ -8,7 +8,7 @@
 <h2>{% trans "Welcome to your learning circle!" %}</h2>
 
 <p>
-  {% blocktrans with course_title=course.title meeting_date=first_meeting.meeting_datetime|date:"l, j N \a\t fA" %}You signed up for {{course_title}}! The first meeting will be on {{meeting_date}}.
+{% blocktrans with course_title=course.title meeting_date=first_meeting.meeting_date|date:"l, j N" meeting_time=first_meeting.meeting_time|date:"fA"%}You signed up for {{course_title}}! The first meeting will be on {{meeting_date}} at {{meeting_time}}.
 {% endblocktrans %}
 </p>
 
