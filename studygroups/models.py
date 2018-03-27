@@ -659,7 +659,7 @@ def send_last_week_group_activity(study_group):
             txt,
             settings.SERVER_EMAIL,
             to,
-            reply_to=[settings.REPLY_TO_EMAIL]
+            reply_to=[settings.DEFAULT_FROM_EMAIL]
         )
         notification.attach_alternative(html, 'text/html')
         notification.send()

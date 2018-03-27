@@ -164,7 +164,6 @@ if DEBUG is True and EMAIL_HOST is None:
 
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
 SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'no-reply@p2pu.org')
-REPLY_TO_EMAIL = os.environ.get('REPLY_TO_EMAIL', 'learningcircles@p2pu.org')
 
 ##### Database config
 import dj_database_url
