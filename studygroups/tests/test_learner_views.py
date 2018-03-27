@@ -16,7 +16,10 @@ from studygroups.models import Rsvp
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import Feedback
+from studygroups.models import generate_all_meetings
 from studygroups.rsvp import gen_rsvp_querystring
+
+from freezegun import freeze_time
 
 import datetime
 import urllib
@@ -59,6 +62,22 @@ class TestLearnerViews(TestCase):
         self.assertEqual(mail.outbox[0].to[0], self.APPLICATION_DATA['email'])
 
 
+    def test_application_welcome_message(self):
+        c = Client()
+        study_group = StudyGroup.objects.get(pk=1)
+        study_group.timezone = 'America/Chicago'
+        with freeze_time("2015-03-06 18:55:34"):
+            generate_all_meetings(study_group)
+            resp = c.post('/en/signup/foo-bob-1/', self.APPLICATION_DATA)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEquals(Application.objects.active().count(), 1)
+        # Make sure notification was sent 
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to[0], self.APPLICATION_DATA['email'])
+        self.assertEqual(mail.outbox[0].cc[0], study_group.facilitator.email)
+        self.assertIn('The first meeting will be on Monday, 23 March at 6:30PM', mail.outbox[0].body)
+
+
     def test_submit_application_sg_with_custom_q(self):
         study_group = StudyGroup.objects.get(pk=1)
         study_group.signup_question = 'how do you do?'
@@ -92,6 +111,7 @@ class TestLearnerViews(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         signup_questions = json.loads(Application.objects.last().signup_questions)
         self.assertEqual(signup_questions['goals'], 'Other: some goal')
+
 
     def test_update_application(self):
         c = Client()
