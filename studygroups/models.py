@@ -611,14 +611,55 @@ def send_facilitator_survey(study_group):
             context
         )
         to = [study_group.facilitator.email]
-        applications = study_group.application_set.active()\
-            .filter(accepted_at__isnull=False).exclude(email='')
 
         notification = EmailMultiAlternatives(
             subject,
             txt,
             settings.SERVER_EMAIL,
             to
+        )
+        notification.attach_alternative(html, 'text/html')
+        notification.send()
+
+
+def send_last_week_group_activity(study_group):
+    """ send to facilitator when last meeting is in 2 days """
+    now = timezone.now()
+    today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    two_days_from_now = today + datetime.timedelta(days=2);
+    last_meeting = study_group.meeting_set.active()\
+            .order_by('-meeting_date', '-meeting_time').first()
+
+    if last_meeting and last_meeting.meeting_datetime() > today and last_meeting.meeting_datetime() < two_days_from_now:
+
+        two_weeks_from_now = today + datetime.timedelta(weeks=2)
+        next_study_group = StudyGroup.objects.filter(start_date__gte=two_weeks_from_now).order_by('start_date').first()
+
+        timezone.deactivate()
+
+        context = {
+            'next_study_group': next_study_group
+        }
+
+        if next_study_group:
+            next_study_group_start_delta = next_study_group.start_date - today.date()
+            weeks_until_start = int(next_study_group_start_delta.days/7)
+            context['weeks'] = weeks_until_start
+            context['city'] = next_study_group.city
+            context['course_title'] = next_study_group.course.title
+
+        subject, txt, html = render_email_templates(
+            'studygroups/email/last_week_group_activity',
+            context
+        )
+        to = [study_group.facilitator.email]
+
+        notification = EmailMultiAlternatives(
+            subject,
+            txt,
+            settings.SERVER_EMAIL,
+            to,
+            reply_to=[settings.DEFAULT_FROM_EMAIL]
         )
         notification.attach_alternative(html, 'text/html')
         notification.send()
