@@ -53,9 +53,16 @@
         {{signup_count}} learners applied to join a Learning Circle.
       {% endblocktrans %}
     </li>
+    <li>
+      {% blocktrans count course_count=courses|length %}
+        {{course_count}} course was added.
+      {% plural %}
+        {{course_count}} courses were added.
+      {% endblocktrans %}
+    </li>
   </ul>
-
-  <h2>{% trans "Feedback from this week" %}</h2>
+  
+  {% if feedback %}<h2>{% trans "Feedback from this week" %}</h2>{% endif %}
   {% for feedback_response in feedback %}
     {% with study_group=feedback_response.study_group_meeting.study_group %}
     <h3>{% blocktrans with course=study_group.course.title venue=study_group.venue_name first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name email=study_group.facilitator.email %}
@@ -70,6 +77,19 @@
     <hr/>
   {% endfor %}
 
+  {% if courses %}<h2>{% trans "Courses added this week" %}</h2>{% endif %}
+  {% for course in courses %}
+    <ul style="list-style:none; padding: 1em; background-color: #E9E9E9;">
+      <li><strong>{% trans "Title" %}</strong>: {{course.title}}</li>
+      <li><strong>{% trans "Creator" %}</strong>: {{course.provider}}</li>
+      <li><strong>{% trans "Website" %}</strong>: <a href="{{course.link}}">{{course.link}}</a></li>
+      <li><strong>{% trans "Description" %}</strong>: {{course.caption}}</li>
+      <li><strong>{% trans "Availability" %}</strong>: {% if course.on_demand %}{% trans "On demand" %}{% else %}{% trans "Check website" %}{% endif %}</li>
+      <li><strong>{% trans "Topics" %}</strong>: {{course.topics}}</li>
+    </ul>
+  {% endfor %}
+
+  {% if meetings %}
   <h2>{% trans "Meetings this week" %}</h2>
   <ol>
   {% for meeting in meetings|dictsort:"meeting_datetime" %}
@@ -82,4 +102,5 @@
     {% endwith %}
   {% endfor %}
   </ol>
+  {% endif %}
 {% endblock %}
