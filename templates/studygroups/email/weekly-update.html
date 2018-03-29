@@ -89,14 +89,27 @@
     </ul>
   {% endfor %}
 
+  {% if finished_study_groups %}<h2>{% trans "Learning circles that finished this week" %}</h2>
+  <ol>
+  {% for study_group in finished_study_groups %}
+      <li>
+      {% blocktrans with course=study_group.course.title venue=study_group.venue_name first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name email=study_group.facilitator.email%}
+        <strong><i>&quot;{{course}}&quot;</i></strong> at {{venue}} facilitated by <a href="mailto:{{email}}">{{first_name}} {{last_name}}</a>.
+      {% endblocktrans %}
+      </li>
+
+  {% endfor %}
+  </ol>
+  {% endif %}
+
   {% if meetings %}
   <h2>{% trans "Meetings this week" %}</h2>
   <ol>
   {% for meeting in meetings|dictsort:"meeting_datetime" %}
     {% with study_group=meeting.study_group %}
     <li>
-      {% blocktrans with meeting_date=meeting.meeting_datetime|date:"fA, l, j F" meeting_number=meeting.meeting_number|ordinal course=study_group.course.title venue=study_group.venue_name first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name email=study_group.facilitator.email%}
-        <strong><i>&quot;{{course}}&quot;</i></strong> at {{venue}} facilitated by <a href="mailto:{{email}}">{{first_name}} {{last_name}}</a> met {{meeting_date}} for the {{meeting_number}} time.
+      {% blocktrans with meeting_date=meeting.meeting_datetime|date:"fA, l, j F" meeting_number=meeting.meeting_number course=study_group.course.title venue=study_group.venue_name first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name email=study_group.facilitator.email meeting_count=study_group.meeting_set.active.count %}
+      <strong><i>&quot;{{course}}&quot;</i></strong> at {{venue}} facilitated by <a href="mailto:{{email}}">{{first_name}} {{last_name}}</a> met {{meeting_date}} for meeting {{meeting_number}} of {{meeting_count}}.
       {% endblocktrans %}
     </li>
     {% endwith %}
