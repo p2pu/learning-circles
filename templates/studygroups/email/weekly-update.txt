@@ -18,8 +18,10 @@
     
  - {% blocktrans count signup_count=signups|length %}{{signup_count}} learner applied to join a Learning Circle.{% plural %}{{signup_count}} learners applied to join a Learning Circle.{% endblocktrans %}
 
+ - {% blocktrans count course_count=courses|length %}{{course_count}} course was added.{% plural %}{{course_count}} courses were added.{% endblocktrans %}
 
-## {% trans "Feedback from this week" %}
+
+{% if feedback %}## {% trans "Feedback from this week" %}{% endif %}
 
 {% for feedback_response in feedback %}{% with study_group=feedback_response.study_group_meeting.study_group %}{% blocktrans with course=study_group.course.title venue=study_group.venue_name first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name email=study_group.facilitator.email %}### "{{course}}" at {{venue}} facilitated by {{first_name}} {{last_name}} <{{email}}>{% endblocktrans %}{% endwith %}
 
@@ -38,7 +40,18 @@
 ------------------------------------------------------------------------
 {% endfor %}
 
-## {% trans "Meetings this week" %}
+{% if courses %}## {% trans "Courses added this week" %}{% endif %}
+{% for course in courses %}
+  {% trans "Title" %}: {{course.title}}
+  {% trans "Creator" %}: {{course.provider}}
+  {% trans "Website" %}: {{course.link}}
+  {% trans "Description" %}: {{course.caption}}
+  {% trans "Availability" %}: {% if course.on_demand %}{% trans "On demand" %}{% else %}{% trans "Check website" %}{% endif %}
+  {% trans "Topics" %}: {{course.topics}}
+
+{% endfor %}
+
+{% if meetings %}## {% trans "Meetings this week" %}{% endif %}
   
 {% for meeting in meetings|dictsort:"meeting_datetime" %}{% with study_group=meeting.study_group %}
 {{forloop.counter}}: {% blocktrans with meeting_date=meeting.meeting_datetime|date:"fA, l, j F" meeting_number=meeting.meeting_number|ordinal course=study_group.course.title venue=study_group.venue_name first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name email=study_group.facilitator.email%}"{{course}}" at {{venue}} facilitated by {{first_name}} {{last_name}} <{{email}}> met {{meeting_date}} for the {{meeting_number}} time.{% endblocktrans %}{% endwith %}{% endfor %}
