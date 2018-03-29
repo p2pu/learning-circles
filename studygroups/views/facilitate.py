@@ -484,4 +484,7 @@ class StudyGroupFacilitatorFeedback(TemplateView):
         context['study_group_name'] = study_group.course.title
         context['facilitator'] = self.request.user
         context['facilitator_name'] = self.request.user.first_name
+        context['rating'] = self.request.GET.get('rating', None)
+        context['no_studygroup'] = self.request.GET.get('nostudygroup', False)
+
         return context
