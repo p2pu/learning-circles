@@ -638,3 +638,4 @@ class TestSignupModels(TestCase):
         with freeze_time("2018-01-05 00:00:00"):
             send_last_week_group_activity(sg)
             self.assertEqual(len(mail.outbox), 1)
+            self.assertIn(sg.facilitator.email, mail.outbox[0].to)

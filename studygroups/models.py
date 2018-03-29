@@ -638,7 +638,8 @@ def send_last_week_group_activity(study_group):
         timezone.deactivate()
 
         context = {
-            'next_study_group': next_study_group
+            'next_study_group': next_study_group,
+            'facilitator_name': study_group.facilitator.first_name
         }
 
         if next_study_group:
