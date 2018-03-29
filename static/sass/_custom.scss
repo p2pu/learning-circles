@@ -424,4 +424,25 @@ img.lc-about-image{
       color: $p2pu-orange;
     }
   }
+
+  .actions {
+    a {
+      margin-bottom: 1rem;
+      white-space: nowrap;
+    }
+  }
 }
+
+@media (max-width: $screen-xs-max) {
+  .feedback-done {
+    .actions {
+      display: flex;
+      flex-direction: column;
+
+      a {
+        margin-bottom: 1rem;
+      }
+    }
+  }
+}
+

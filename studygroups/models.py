@@ -592,34 +592,34 @@ def send_facilitator_survey(study_group):
     last_meeting = study_group.meeting_set.active()\
             .order_by('-meeting_date', '-meeting_time').first()
 
-    # if last_meeting and last_week <= last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < last_week + datetime.timedelta(days=1):
+    if last_meeting and last_week <= last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < last_week + datetime.timedelta(days=1):
 
-    facilitator_name = study_group.facilitator.first_name
-    path = reverse('studygroups_facilitator_feedback', kwargs={'study_group_uuid': study_group.uuid})
-    domain = 'https://{}'.format(settings.DOMAIN)
-    survey_url = domain + path
+        facilitator_name = study_group.facilitator.first_name
+        path = reverse('studygroups_facilitator_feedback', kwargs={'study_group_uuid': study_group.uuid})
+        domain = 'https://{}'.format(settings.DOMAIN)
+        survey_url = domain + path
 
-    context = {
-        'facilitator_name': facilitator_name,
-        'survey_url': survey_url,
-        'course_title': study_group.course.title,
-    }
+        context = {
+            'facilitator_name': facilitator_name,
+            'survey_url': survey_url,
+            'course_title': study_group.course.title,
+        }
 
-    timezone.deactivate()
-    subject, txt, html = render_email_templates(
-        'studygroups/email/facilitator-survey',
-        context
-    )
-    to = [study_group.facilitator.email]
+        timezone.deactivate()
+        subject, txt, html = render_email_templates(
+            'studygroups/email/facilitator-survey',
+            context
+        )
+        to = [study_group.facilitator.email]
 
-    notification = EmailMultiAlternatives(
-        subject,
-        txt,
-        settings.SERVER_EMAIL,
-        to
-    )
-    notification.attach_alternative(html, 'text/html')
-    notification.send()
+        notification = EmailMultiAlternatives(
+            subject,
+            txt,
+            settings.SERVER_EMAIL,
+            to
+        )
+        notification.attach_alternative(html, 'text/html')
+        notification.send()
 
 
 def send_last_week_group_activity(study_group):
