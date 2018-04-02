@@ -95,3 +95,7 @@ export const KANSAS_CITY_OPTION = {
   }
 };
 
+export const FACILITATOR_SURVEY = 'wPg50i';
+export const NO_STUDYGROUP_SURVEY = 'iVldef';
+export const LEARNER_SURVEY = 'VA1aVz';
+

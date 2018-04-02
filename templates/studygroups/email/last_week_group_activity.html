@@ -2,6 +2,7 @@
 {% block body %}
 {% load i18n %}
 
+<p>{% blocktrans %}Dear {{facilitator_name}},{% endblocktrans %}</p>
 <p>
 {% trans "Learning circles are happening around the world, and your experience is valuable to others who are just beginning their journey." %}
 </p>
@@ -14,8 +15,7 @@ In {{ weeks }} weeks, a learning circle will start in {{ city }} studying "{{ co
 {% else %}
 {% trans "Can you write a short note welcoming the next learning circle to the P2PU community?" %}
 {% endif %}
-
-{% trans "We'll make sure they get it!" %}
+{% trans "Just reply to this email, and we’ll make sure they get it. Feel free to attach a photo of your learning circle :)" %}
 </p>
 
 <p>{% trans "Here are a few prompts:" %}</p>
@@ -25,5 +25,8 @@ In {{ weeks }} weeks, a learning circle will start in {{ city }} studying "{{ co
   <li>{% trans "What do you wish you knew before your learning circle started that you know now?" %}</li>
   <li>{% trans "What’s the weather like where you are?" %}</li>
 </ul>
+
+<p>{% trans "Cheers" %},</p>
+<p>{% trans "The P2PU Team" %}</p>
 
 {% endblock %}

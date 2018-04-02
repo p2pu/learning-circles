@@ -600,7 +600,7 @@ def send_facilitator_survey(study_group):
         survey_url = domain + path
 
         context = {
-            'facilitator_name':  facilitator_name,
+            'facilitator_name': facilitator_name,
             'survey_url': survey_url,
             'course_title': study_group.course.title,
         }
@@ -638,7 +638,8 @@ def send_last_week_group_activity(study_group):
         timezone.deactivate()
 
         context = {
-            'next_study_group': next_study_group
+            'next_study_group': next_study_group,
+            'facilitator_name': study_group.facilitator.first_name
         }
 
         if next_study_group:
