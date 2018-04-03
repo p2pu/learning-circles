@@ -707,6 +707,7 @@ def report_data(start_time, end_time, team=None):
     signups = Application.objects.active().filter(created_at__gte=start_time, created_at__lt=end_time)
     new_courses = Course.objects.active().filter(created_at__gte=start_time, created_at__lt=end_time)
 
+
     if team:
         members = team.teammembership_set.all().values('user')
         logins = logins.filter(pk__in=members)
@@ -714,6 +715,12 @@ def report_data(start_time, end_time, team=None):
         new_study_groups = new_study_groups.filter(facilitator__in=members)
         signups = signups.filter(study_group__facilitator__in=members)
         meetings = meetings.filter(study_group__facilitator__in=members)
+        study_groups = study_groups.filter(facilitator__in=members)
+
+
+    meeting_check = lambda mtg: mtg and mtg.meeting_date >= start_time.date() and mtg.meeting_date < end_time.date()
+
+    finished_study_groups = [sg for sg in study_groups if meeting_check(sg.meeting_set.active().order_by('-meeting_date').first())]
 
     feedback = Feedback.objects.filter(study_group_meeting__in=meetings)
 
@@ -721,6 +728,7 @@ def report_data(start_time, end_time, team=None):
         'meetings': meetings,
         'feedback': feedback,
         'study_groups': new_study_groups,
+        'finished_study_groups': finished_study_groups,
         'facilitators': new_facilitators,
         'courses': new_courses,
         'logins': logins,
