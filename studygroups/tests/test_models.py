@@ -36,7 +36,6 @@ import calendar
 import datetime
 import pytz
 import re
-import urllib.parse
 import urllib.request, urllib.parse, urllib.error
 import json
 
