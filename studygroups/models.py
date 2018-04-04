@@ -644,7 +644,7 @@ def send_last_week_group_activity(study_group):
 
         if next_study_group:
             next_study_group_start_delta = next_study_group.start_date - today.date()
-            weeks_until_start = int(next_study_group_start_delta.days/7)
+            weeks_until_start = next_study_group_start_delta.days//7
             context['weeks'] = weeks_until_start
             context['city'] = next_study_group.city
             context['course_title'] = next_study_group.course.title
