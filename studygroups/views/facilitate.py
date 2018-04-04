@@ -315,7 +315,7 @@ class StudyGroupPublish(SingleObjectMixin, View):
             study_group.draft = False
             study_group.save()
             generate_all_meetings(study_group)
-            
+
 
         url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
         if self.get_object().facilitator == self.request.user:
@@ -472,3 +472,19 @@ class InvitationConfirm(FormView):
             TeamMembership.objects.create(team=invitation.team, user=self.request.user, role=invitation.role)
 
         return super(InvitationConfirm, self).form_valid(form)
+
+
+class StudyGroupFacilitatorFeedback(TemplateView):
+    template_name = 'studygroups/facilitator_feedback.html'
+
+    def get_context_data(self, **kwargs):
+        study_group = get_object_or_404(StudyGroup, uuid=kwargs.get('study_group_uuid'))
+        context = super(StudyGroupFacilitatorFeedback, self).get_context_data(**kwargs)
+        context['study_group_uuid'] = study_group.uuid
+        context['study_group_name'] = study_group.course.title
+        context['facilitator'] = self.request.user
+        context['facilitator_name'] = self.request.user.first_name
+        context['rating'] = self.request.GET.get('rating', None)
+        context['no_studygroup'] = self.request.GET.get('nostudygroup', False)
+
+        return context

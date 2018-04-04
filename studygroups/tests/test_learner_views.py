@@ -337,3 +337,19 @@ class TestLearnerViews(TestCase):
         self.assertEqual(len(mail.outbox), 0)
         self.assertTrue(send_message.called)
 
+
+    def test_study_group_learner_feedback(self):
+        c = Client()
+        sg = StudyGroup.objects.get(pk=1)
+        learner = Application.objects.create(
+            study_group=sg,
+            email='learner@mail.com',
+            signup_questions='{"goals": "nothing"}',
+            accepted_at=timezone.now()
+        )
+        url = '/en/studygroup/{}/feedback/?learner={}&goal=2'.format(sg.uuid, learner.uuid)
+        resp = c.get(url)
+        redirect_url = '/en/studygroup/{}/feedback/'.format(sg.uuid)
+        self.assertRedirects(resp, redirect_url)
+        learner.refresh_from_db()
+        self.assertEqual(learner.goal_met, 2)

@@ -24,6 +24,7 @@ from studygroups.models import generate_all_meetings
 from studygroups.models import send_weekly_update
 from studygroups.models import send_survey_reminder
 from studygroups.models import send_facilitator_survey
+from studygroups.models import send_last_week_group_activity
 from studygroups.rsvp import gen_rsvp_querystring
 from studygroups.rsvp import check_rsvp_signature
 from studygroups.utils import gen_unsubscribe_querystring
@@ -47,7 +48,6 @@ class TestSignupModels(TestCase):
     APPLICATION_DATA = {
         'name': 'Test User',
         'email': 'test@mail.com',
-
         'signup_questions': json.dumps({
             'computer_access': 'Yes',
             'goals': 'try hard',
@@ -243,6 +243,38 @@ class TestSignupModels(TestCase):
 
 
     @patch('studygroups.models.send_message')
+    def test_facilitator_reminder_email_links(self, send_message):
+        now = timezone.now()
+        sg = StudyGroup.objects.get(pk=1)
+        sg.timezone = now.strftime("%Z")
+        sg.start_date = now - datetime.timedelta(days=5)
+        sg.meeting_time = sg.start_date.time()
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
+        sg.save()
+        sg = StudyGroup.objects.get(pk=1)
+        data = self.APPLICATION_DATA
+        data['study_group'] = sg
+        application = Application(**data)
+        accept_application(application)
+        application.save()
+        mail.outbox = []
+        generate_all_meetings(sg)
+        generate_reminder(sg)
+        self.assertEqual(Reminder.objects.all().count(), 1)
+        reminder = Reminder.objects.all()[0]
+        self.assertEqual(len(mail.outbox), 1)
+        mail.outbox = []
+        send_reminder(reminder)
+        self.assertEqual(len(mail.outbox), 2) # should be sent to facilitator & application
+        self.assertEqual(mail.outbox[0].to[0], data['email'])
+        self.assertEqual(mail.outbox[1].to[0], sg.facilitator.email)
+        self.assertFalse(send_message.called)
+        self.assertNotIn('https://example.net/{0}/rsvp/'.format(get_language()), mail.outbox[1].body)
+        self.assertIn('https://example.net/{0}/facilitator/'.format(get_language()), mail.outbox[1].body)
+        self.assertNotIn('https://example.net/{0}/optout/confirm/?user='.format(get_language()), mail.outbox[1].body)
+
+
+    @patch('studygroups.models.send_message')
     def test_dont_send_automatic_reminder_for_old_message(self, send_message):
         now = timezone.now()
         sg = StudyGroup.objects.get(pk=1)
@@ -293,7 +325,7 @@ class TestSignupModels(TestCase):
         self.assertEqual(Reminder.objects.filter(sent_at__isnull=True).count(), 1)
 
 
-    
+
     @patch('studygroups.models.send_message')
     def test_send_custom_reminder_email(self, send_message):
         now = timezone.now()
@@ -416,7 +448,7 @@ class TestSignupModels(TestCase):
     def test_send_new_facilitator_update(self):
         tasks.send_new_facilitator_emails()
         self.assertEqual(len(mail.outbox), 0)
-        
+
         user = User.objects.create_user('facil', 'facil@test.com', 'password')
         user.date_joined = timezone.now() - datetime.timedelta(days=7)
         user.save()
@@ -466,7 +498,7 @@ class TestSignupModels(TestCase):
         self.assertEqual(mail.outbox[0].to[0], 'organ@team.com')
         self.assertEqual(mail.outbox[1].to[0], 'admin@test.com')
 
-        
+
     def test_send_survey_reminder(self):
         now = timezone.now()
         sg = StudyGroup.objects.get(pk=1)
@@ -513,18 +545,18 @@ class TestSignupModels(TestCase):
         # 25 minutes after start
         with freeze_time("2010-02-05 18:25:34"):
             send_survey_reminder(sg)
-            self.assertEqual(len(mail.outbox), 1)
-            self.assertEqual(len(mail.outbox[0].bcc), 2)
-            self.assertIn('mail1@example.net', mail.outbox[0].bcc)
-            self.assertIn('mail2@example.net', mail.outbox[0].bcc)
-            self.assertIn('https://docs.google.com/forms/d/e/1FAIpQLScuRY5CFGR_LrEUvWjyw9H3KCBJANzfuNxkMvpFa3umyusOFQ/viewform?usp=pp_url&entry.1456652861=Public%20Speaking%20at%20Harold%20Washington%20%28harold-washington-1%29', mail.outbox[0].body)
+            self.assertEqual(len(mail.outbox), 2)
+            self.assertIn('mail1@example.net', mail.outbox[0].to + mail.outbox[1].to)
+            self.assertIn('mail2@example.net', mail.outbox[0].to + mail.outbox[1].to)
+            a1 = Application.objects.get(email=mail.outbox[0].to[0])
+            self.assertIn('https://example.net/en/studygroup/{}/feedback/?learner={}'.format(sg.uuid, a1.uuid), mail.outbox[0].body)
 
         mail.outbox = []
         # 40 minutes after start
         with freeze_time("2010-02-05 18:40:34"):
             send_survey_reminder(sg)
             self.assertEqual(len(mail.outbox), 0)
-  
+
 
     def test_generate_final_reminder(self):
         now = timezone.now()
@@ -536,7 +568,7 @@ class TestSignupModels(TestCase):
         sg.save()
         sg = StudyGroup.objects.get(pk=1)
         generate_all_meetings(sg)
-    
+
         last_meeting = sg.meeting_set.active().order_by('meeting_date', 'meeting_time').last()
         self.assertEqual(last_meeting.meeting_date, datetime.date(2010, 2, 5))
         self.assertEqual(last_meeting.meeting_time, datetime.time(18,0))
@@ -562,7 +594,7 @@ class TestSignupModels(TestCase):
         sg.save()
         sg = StudyGroup.objects.get(pk=1)
         generate_all_meetings(sg)
-    
+
         last_meeting = sg.meeting_set.active().order_by('meeting_date', 'meeting_time').last()
         self.assertEqual(last_meeting.meeting_date, datetime.date(2010, 2, 5))
         self.assertEqual(last_meeting.meeting_time, datetime.time(18,0))
@@ -578,12 +610,35 @@ class TestSignupModels(TestCase):
         with freeze_time("2010-02-13 17:55:34"):
             send_facilitator_survey(sg)
             self.assertEqual(len(mail.outbox), 0)
-        
+
         # freeze time to 7 days after last
         with freeze_time("2010-02-12 17:55:34"):
             send_facilitator_survey(sg)
             self.assertEqual(len(mail.outbox), 1)
-            self.assertIn('https://docs.google.com/forms/d/e/1FAIpQLSdvzlyXUMZy29WetnCQLT3jnQvD9TrYqMq7KWXB-lZa8mLhJA/viewform?usp=pp_url&entry.73798480=Public%20Speaking%20at%20Harold%20Washington%20%28harold-washington-1%29', mail.outbox[0].body)
+            self.assertIn('https://example.net/en/studygroup/{0}/facilitator_feedback/'.format(sg.uuid), mail.outbox[0].body)
+            self.assertIn(sg.facilitator.email, mail.outbox[0].to)
+
+
+    def test_generate_last_week_activity_email(self):
+        now = timezone.now()
+        sg = StudyGroup.objects.get(pk=1)
+        sg.timezone = now.strftime("%Z")
+        sg.meeting_time = datetime.time(18,0)
+        sg.end_date = datetime.date(2018, 1, 6)
+        sg.start_date = sg.end_date - datetime.timedelta(weeks=5)
+        sg.save()
+        sg = StudyGroup.objects.get(pk=1)
+        generate_all_meetings(sg)
+
+        # freeze time to more than 2 days before last meeting
+        with freeze_time("2018-01-03 00:00:00"):
+            send_last_week_group_activity(sg)
+            self.assertEqual(len(mail.outbox), 0)
+
+        # freeze time to less than 2 days before last meeting
+        with freeze_time("2018-01-05 00:00:00"):
+            send_last_week_group_activity(sg)
+            self.assertEqual(len(mail.outbox), 1)
             self.assertIn(sg.facilitator.email, mail.outbox[0].to)
 
 

@@ -113,6 +113,15 @@
     }
   }
 
+  &.orange {
+    background: $p2pu-orange;
+    color: $white;
+
+    &:before {
+      background: lighten($p2pu-orange, 1%);
+    }
+  }
+
   &:focus {
     outline: none;
   }

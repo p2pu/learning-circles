@@ -16,6 +16,7 @@ from django.views.generic import ListView, DetailView
 from django.views.generic.edit import FormView
 from django.views.generic import TemplateView
 from django.db.models import Count
+from django.http import HttpResponseRedirect, HttpResponse
 
 from studygroups.models import Course
 from studygroups.models import StudyGroup
@@ -30,6 +31,7 @@ from studygroups.rsvp import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
 
 import cities
+import json
 
 
 def landing(request):
@@ -264,3 +266,50 @@ def receive_sms(request):
     notification.attach_alternative(html_body, 'text/html')
     notification.send()
     return http.HttpResponse(status=200)
+
+class StudyGroupLearnerFeedback(TemplateView):
+    template_name = 'studygroups/learner_feedback.html'
+
+    def get(self, request, *args, **kwargs):
+        study_group = get_object_or_404(StudyGroup, uuid=kwargs.get('study_group_uuid'))
+        learner_uuid = request.GET.get('learner', None)
+        goal_met = request.GET.get('goal', None)
+
+        if learner_uuid is not None:
+            application = study_group.application_set.get(uuid=learner_uuid)
+            application.goal_met = goal_met
+            application.save()
+
+            request.session['learner_uuid'] = learner_uuid
+            request.session['goal_met'] = goal_met
+
+            redirect_url = reverse('studygroups_learner_feedback', kwargs={'study_group_uuid': kwargs.get('study_group_uuid')})
+            return HttpResponseRedirect(redirect_url)
+        else:
+            learner_uuid = request.session.get('learner_uuid', None)
+            goal_met = request.session.get('goal_met', None)
+
+            if learner_uuid is not None:
+                application = study_group.application_set.get(uuid=learner_uuid)
+                signup_questions = json.loads(application.signup_questions)
+                learner_goal = signup_questions['goals']
+                contact = application.email if application.email else application.mobile
+
+                context = {
+                    'study_group_uuid': study_group.uuid,
+                    'course_title': study_group.course.title,
+                    'contact': contact,
+                    'goal': learner_goal,
+                    'goal_met': goal_met,
+                    'learner_name': application.name,
+                    'facilitator_name': study_group.facilitator.first_name
+                }
+            else:
+                context = {
+                    'study_group_uuid': study_group.uuid,
+                    'course_title': study_group.course.title,
+                    'facilitator_name': study_group.facilitator.first_name
+                }
+
+        request.session.clear()
+        return render(request, self.template_name, context)

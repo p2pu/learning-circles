@@ -18,6 +18,8 @@ from studygroups.views import StudyGroupDelete
 from studygroups.views import StudyGroupToggleSignup
 from studygroups.views import StudyGroupPublish
 from studygroups.views import StudyGroupList
+from studygroups.views import StudyGroupLearnerFeedback
+from studygroups.views import StudyGroupFacilitatorFeedback
 from studygroups.views import MeetingList
 from studygroups.views import TeamMembershipDelete
 from studygroups.views import TeamInvitationCreate
@@ -60,6 +62,10 @@ urlpatterns = [
 
     url(r'^studygroup/(?P<study_group_id>[\d]+)/member/add/$', views.add_member, name='studygroups_add_member'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/member/(?P<pk>[0-9]+)/delete/$', ApplicationDelete.as_view(), name='studygroups_application_delete'),
+    url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/feedback/$', StudyGroupLearnerFeedback.as_view(), name='studygroups_learner_feedback'),
+    url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/facilitator_feedback/$', login_required(StudyGroupFacilitatorFeedback.as_view()), name='studygroups_facilitator_feedback'),
+    url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/feedback/done$', TemplateView.as_view(template_name='studygroups/learner_feedback_done.html'), name='studygroups_learner_feedback_done'),
+    url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/facilitator_feedback/done$', TemplateView.as_view(template_name='studygroups/facilitator_feedback_done.html'), name='studygroups_facilitator_feedback_done'),
 
     # views regarding study group meetings
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[\d]+)/edit/$', MeetingUpdate.as_view(), name='studygroups_edit_study_group_meeting'),

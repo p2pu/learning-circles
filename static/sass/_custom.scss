@@ -401,3 +401,48 @@ img.lc-about-image{
     box-shadow: 0 2.5em 0 0;
   }
 }
+
+.feedback-done {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  padding: 2rem;
+  margin-bottom: 2rem;
+
+  h2 {
+    margin-bottom: 6rem;
+  }
+
+  .option {
+    p {
+      display: flex;
+      align-items: center;
+    }
+
+    i {
+      margin-right: 20px;
+      color: $p2pu-orange;
+    }
+  }
+
+  .actions {
+    a {
+      margin-bottom: 1rem;
+      white-space: nowrap;
+    }
+  }
+}
+
+@media (max-width: $screen-xs-max) {
+  .feedback-done {
+    .actions {
+      display: flex;
+      flex-direction: column;
+
+      a {
+        margin-bottom: 1rem;
+      }
+    }
+  }
+}
+
