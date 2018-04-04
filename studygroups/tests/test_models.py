@@ -614,7 +614,7 @@ class TestSignupModels(TestCase):
         with freeze_time("2010-02-12 17:55:34"):
             send_facilitator_survey(sg)
             self.assertEqual(len(mail.outbox), 1)
-            self.assertIn('https://example.net/en/studygroup/{0}/facilitator_feedback/'.format(sg.uuid), mail.outbox[0].body)
+            self.assertIn('https://example.net/en/studygroup/{0}/facilitator_feedback/'.format(sg.id), mail.outbox[0].body)
             self.assertIn(sg.facilitator.email, mail.outbox[0].to)
 
 

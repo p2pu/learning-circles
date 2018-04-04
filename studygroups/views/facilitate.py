@@ -474,6 +474,7 @@ class InvitationConfirm(FormView):
         return super(InvitationConfirm, self).form_valid(form)
 
 
+@method_decorator(user_is_group_facilitator, name='dispatch')
 class StudyGroupFacilitatorFeedback(TemplateView):
     template_name = 'studygroups/facilitator_feedback.html'
 
