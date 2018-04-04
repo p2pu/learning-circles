@@ -162,10 +162,10 @@ class TestFacilitatorViews(TestCase):
         c.login(username='bob@example.net', password='password')
 
         resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
-        self.assertEquals(resp.json()['status'], 'created')
+        self.assertEqual(resp.json()['status'], 'created')
         study_groups = StudyGroup.objects.filter(facilitator=user)
-        self.assertEquals(study_groups.count(), 1)
-        self.assertEquals(study_groups.first().meeting_set.count(), 0)
+        self.assertEqual(study_groups.count(), 1)
+        self.assertEqual(study_groups.first().meeting_set.count(), 0)
 
         # try to add a meeting
         self.assertEqual(study_groups.first().pk, StudyGroup.objects.last().pk)

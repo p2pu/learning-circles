@@ -70,7 +70,7 @@ class TestLearnerViews(TestCase):
             generate_all_meetings(study_group)
             resp = c.post('/en/signup/foo-bob-1/', self.APPLICATION_DATA)
         self.assertRedirects(resp, '/en/signup/1/success/')
-        self.assertEquals(Application.objects.active().count(), 1)
+        self.assertEqual(Application.objects.active().count(), 1)
         # Make sure notification was sent 
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].to[0], self.APPLICATION_DATA['email'])
