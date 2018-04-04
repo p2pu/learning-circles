@@ -87,6 +87,7 @@ class TestFacilitatorViews(TestCase):
         assertForbidden('/en/studygroup/1/meeting/2/edit/')
         assertForbidden('/en/studygroup/1/meeting/2/delete/')
         assertForbidden('/en/studygroup/1/meeting/2/feedback/create/')
+        assertForbidden('/en/studygroup/1/facilitator_feedback/')
 
 
     def test_facilitator_access(self):
@@ -115,6 +116,7 @@ class TestFacilitatorViews(TestCase):
         assertStatus('/en/studygroup/1/meeting/2/edit/', 404)
         assertStatus('/en/studygroup/1/meeting/2/delete/', 404)
         assertStatus('/en/studygroup/1/meeting/2/feedback/create/', 404)
+        assertAllowed('/en/studygroup/1/facilitator_feedback/')
 
 
     @patch('custom_registration.signals.handle_new_facilitator')

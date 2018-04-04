@@ -479,8 +479,8 @@ class StudyGroupFacilitatorFeedback(TemplateView):
     template_name = 'studygroups/facilitator_feedback.html'
 
     def get_context_data(self, **kwargs):
-        study_group = get_object_or_404(StudyGroup, uuid=kwargs.get('study_group_uuid'))
         context = super(StudyGroupFacilitatorFeedback, self).get_context_data(**kwargs)
+        study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
         context['study_group_uuid'] = study_group.uuid
         context['study_group_name'] = study_group.course.title
         context['facilitator'] = self.request.user
