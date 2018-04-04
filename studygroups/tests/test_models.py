@@ -8,6 +8,7 @@ from django.utils.translation import get_language
 from mock import patch
 from freezegun import freeze_time
 
+from studygroups.models import Course
 from studygroups.models import StudyGroup
 from studygroups.models import Meeting
 from studygroups.models import Application
@@ -639,3 +640,30 @@ class TestSignupModels(TestCase):
             send_last_week_group_activity(sg)
             self.assertEqual(len(mail.outbox), 1)
             self.assertIn(sg.facilitator.email, mail.outbox[0].to)
+
+
+    def test_new_study_group_email(self):
+        facilitator = User.objects.create_user('facil', 'facil@test.com', 'password')
+        sg = StudyGroup(
+            course=Course.objects.first(),
+            facilitator=facilitator,
+            description='blah',
+            venue_name='ACME publich library',
+            venue_address='ACME rd 1',
+            venue_details='venue_details',
+            city='city',
+            latitude=0,
+            longitude=0,
+            start_date=datetime.date(2010,1,1),
+            end_date=datetime.date(2010,1,1) + datetime.timedelta(weeks=6),
+            meeting_time=datetime.time(12,0),
+            duration=90,
+            timezone='SAST',
+            facilitator_goal='the_facilitator_goal',
+            facilitator_concerns='the_facilitators_concerns'
+        )
+        sg.save()
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn('the_facilitator_goal', mail.outbox[0].body)
+        self.assertIn('the_facilitators_concerns', mail.outbox[0].body)
+
