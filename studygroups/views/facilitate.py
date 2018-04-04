@@ -157,7 +157,7 @@ class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
         subject = render_to_string('studygroups/email/feedback-submitted-subject.txt', context).strip('\n')
         html_body = render_to_string('studygroups/email/feedback-submitted.html', context)
         text_body = render_to_string('studygroups/email/feedback-submitted.txt', context)
-        notification = EmailMultiAlternatives(subject, text_body, settings.SERVER_EMAIL, to)
+        notification = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
         notification.attach_alternative(html_body, 'text/html')
         notification.send()
 

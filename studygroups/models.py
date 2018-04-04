@@ -521,7 +521,7 @@ def generate_reminder(study_group):
             notification = EmailMultiAlternatives(
                 facilitator_notification_subject,
                 facilitator_notification_txt,
-                settings.SERVER_EMAIL,
+                settings.DEFAULT_FROM_EMAIL,
                 to
             )
             notification.attach_alternative(facilitator_notification_html, 'text/html')
@@ -575,7 +575,7 @@ def send_survey_reminder(study_group):
             notification = EmailMultiAlternatives(
                 subject.strip(),
                 txt,
-                settings.SERVER_EMAIL,
+                settings.DEFAULT_FROM_EMAIL,
                 to
             )
             notification.attach_alternative(html, 'text/html')
@@ -615,7 +615,7 @@ def send_facilitator_survey(study_group):
         notification = EmailMultiAlternatives(
             subject,
             txt,
-            settings.SERVER_EMAIL,
+            settings.DEFAULT_FROM_EMAIL,
             to
         )
         notification.attach_alternative(html, 'text/html')
@@ -658,7 +658,7 @@ def send_last_week_group_activity(study_group):
         notification = EmailMultiAlternatives(
             subject,
             txt,
-            settings.SERVER_EMAIL,
+            settings.DEFAULT_FROM_EMAIL,
             to,
             reply_to=[settings.DEFAULT_FROM_EMAIL]
         )
@@ -838,7 +838,7 @@ def send_weekly_update():
         update = EmailMultiAlternatives(
             _('Weekly Learning Circles update'),
             text_body,
-            settings.SERVER_EMAIL,
+            settings.DEFAULT_FROM_EMAIL,
             to
         )
         update.attach_alternative(html_body, 'text/html')
@@ -857,7 +857,7 @@ def send_weekly_update():
     update = EmailMultiAlternatives(
         _('Weekly Learning Circles update'),
         text_body,
-        settings.SERVER_EMAIL,
+        settings.DEFAULT_FROM_EMAIL,
         to
     )
     update.attach_alternative(html_body, 'text/html')
@@ -877,7 +877,7 @@ def send_new_facilitator_email(facilitator):
     timezone.deactivate()
     to = [facilitator.email]
 
-    msg = EmailMultiAlternatives(subject, text_body, settings.SERVER_EMAIL, to)
+    msg = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
     msg.attach_alternative(html_body, 'text/html')
     msg.send()
 
@@ -895,7 +895,7 @@ def send_new_studygroup_email(studygroup):
     timezone.deactivate()
     to = [studygroup.facilitator.email]
 
-    msg = EmailMultiAlternatives(subject, text_body, settings.SERVER_EMAIL, to)
+    msg = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
     msg.attach_alternative(html_body, 'text/html')
     msg.send()
 

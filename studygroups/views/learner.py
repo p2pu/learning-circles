@@ -259,7 +259,7 @@ def receive_sms(request):
     notification = EmailMultiAlternatives(
         subject,
         text_body,
-        settings.SERVER_EMAIL,
+        settings.DEFAULT_FROM_EMAIL,
         to,
         bcc
     )

@@ -161,8 +161,10 @@ if DEBUG is True and EMAIL_HOST is None:
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
     EMAIL_FILE_PATH = path('mailbox')
 
-
+# Default email sender
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
+
+# Used for error messages to admin/staff
 SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'no-reply@p2pu.org')
 
 ##### Database config
