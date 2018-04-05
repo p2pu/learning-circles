@@ -626,7 +626,7 @@ def send_last_week_group_activity(study_group):
     """ send to facilitator when last meeting is in 2 days """
     now = timezone.now()
     today = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    two_days_from_now = today + datetime.timedelta(days=2);
+    two_days_from_now = today + datetime.timedelta(days=2)
     last_meeting = study_group.meeting_set.active()\
             .order_by('-meeting_date', '-meeting_time').first()
 
