@@ -30,7 +30,8 @@
     {% else %}
       {% blocktrans %}<strong>Goals</strong>: Not specified{% endblocktrans %}
     {% endif %}
-    </p>
+  </p>
+  <p>
     {% if study_group.facilitator_concerns %}
       {% blocktrans with concerns=study_group.facilitator_concerns %}<strong>Questions or concerns</strong>: {{concerns}}{% endblocktrans %}
     {% else %}
