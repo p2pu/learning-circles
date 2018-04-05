@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/p2pu/learning-circles#readme",
   "dependencies": {
+    "@typeform/embed": "^0.5.6",
     "axios": "^0.17.1",
     "babel-core": "^6.24.1",
     "babel-loader": "^6.4.1",

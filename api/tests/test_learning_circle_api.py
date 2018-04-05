@@ -58,8 +58,8 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(lc.start_date, datetime.date(2018,2,12))
         self.assertEqual(lc.meeting_time, datetime.time(17,1))
         self.assertEqual(lc.meeting_set.all().count(), 0)
-        self.assertEquals(len(mail.outbox), 1)
-        self.assertEquals(mail.outbox[0].subject, 'Your Learning Circle has been created! What next?')
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, 'Your Learning Circle has been created! What next?')
         self.assertIn('faci@example.net', mail.outbox[0].to)
         self.assertIn('community@localhost', mail.outbox[0].cc)
 
@@ -103,8 +103,8 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(lc.start_date, datetime.date(2018,2,12))
         self.assertEqual(lc.meeting_time, datetime.time(17,1))
         self.assertEqual(lc.meeting_set.all().count(), 2)
-        self.assertEquals(len(mail.outbox), 1)
-        self.assertEquals(mail.outbox[0].subject, 'Your Learning Circle has been created! What next?')
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, 'Your Learning Circle has been created! What next?')
         self.assertIn('faci@example.net', mail.outbox[0].to)
         self.assertIn('community@localhost', mail.outbox[0].cc)
 
@@ -137,7 +137,7 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(resp.json().get('status'), 'created')
         self.assertEqual(StudyGroup.objects.all().count(), 5)
         self.assertEqual(StudyGroup.objects.last().draft, True)
-        self.assertEquals(len(mail.outbox), 1)
+        self.assertEqual(len(mail.outbox), 1)
 
 
     def test_update_learning_circle(self):

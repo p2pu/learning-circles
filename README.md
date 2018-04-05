@@ -58,8 +58,15 @@ In a new shell:
 ```
 docker-compose exec postgres psql -U postgres -c "create user lc WITH PASSWORD 'password';"
 docker-compose exec postgres psql -U postgres -c "create database lc with owner lc;"
+docker-compose exec postgres psql -U postgres -c "ALTER USER lc CREATEDB;"
 docker-compose restart learning-circles
 docker-compose exec learning-circles /opt/django-venv/bin/python manage.py migrate
 ```
 
 You should now be able to open the dashboard on http://localhost:8000/. Any changes you make to local Python files will be reflected
+
+To run the tests:
+
+```
+docker-compose exec learning-circles /opt/django-venv/bin/python manage.py test
+```

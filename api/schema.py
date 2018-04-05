@@ -167,7 +167,7 @@ def validate(schema, data):
     """
     cleaned_data = {}
     errors = {}
-    for field, validator in schema.iteritems():
+    for field, validator in list(schema.items()):
         parsed, error = validator(data.get(field))
         if error != None and error != [] and error != {}:
             if type(error) == type([]):
@@ -187,7 +187,7 @@ def validate(schema, data):
 
 def django_get_to_dict(get):
     data = {}
-    for key, value in get.items():
+    for key, value in list(get.items()):
         data[key] = value[0] if len(value)==1 else value
     return data
 

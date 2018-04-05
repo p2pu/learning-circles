@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+  <div class="container feedback-done">
+    <section class="inner-container col-xs-12 col-sm-8 col-md-6">
+      <div class="centered">
+        <img src="{% static "images/thankyou1.gif" %}" alt="Thank you!" style="max-height: 300px; max-width: 100%; width: auto;"/>
+      </div>
+      <h2>{% trans "Thanks for participating! What do you want to do next?" %}</h2>
+      <div class="option">
+        <p>
+          <i class="material-icons">mail_outline</i>
+          <a href="http://p2pu.us2.list-manage.com/subscribe/post?u=f080ec78070523d59ef613eda&id=06e9c4ece8">Stay up-to-date through the P2PU mailing list</a>
+        </p>
+      </div>
+      <div class="option">
+        <p>
+          <i class="material-icons">view_list</i>
+          <a href="https://www.p2pu.org/en/learning-circles">See what other learning circles are happening now</a>
+        </p>
+      </div>
+      <div class="option">
+        <p>
+          <i class="material-icons">group_work</i>
+          <a href="https://www.p2pu.org/en/facilitate/">Facilitate my own learning circle</a>
+        </p>
+      </div>
+      <div class="option">
+        <p>
+          <i class="material-icons">local_offer</i>
+          <a href="https://shop.spreadshirt.com/p2pu/">Get a P2PU t-shirt</a>
+        </p>
+      </div>
+      <br>
+      <p>If you’re talking about your learning circle on social media, please mention <a href="https://twitter.com/p2pu">@p2pu</a> and <a href="https://twitter.com/hashtag/learningcircles">#learningcircles</a> so we can follow your journey.</p>
+    </section>
+  </div>
+{% endblock %}

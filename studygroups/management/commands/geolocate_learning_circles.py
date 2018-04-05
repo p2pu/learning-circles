@@ -20,14 +20,14 @@ class Command(BaseCommand):
             country = city_data[2].strip() if len(city_data) > 2 else None
             results = data.find_city(city, region, country)
             if len(results) == 0:
-                print(u'Could not find any cities matching: {}'.format(study_group.city))
+                print(('Could not find any cities matching: {}'.format(study_group.city)))
                 continue
 
             if len(results) > 1:
-                print(u'Found more than one city matching: {}'.format(study_group.city))
-                for i, opt in enumerate([u', '.join(cd[:3]) for cd in results]):
-                    print(u'{}: {}'.format(i+1, opt))
-                choice = raw_input('Please choose one: ')
+                print(('Found more than one city matching: {}'.format(study_group.city)))
+                for i, opt in enumerate([', '.join(cd[:3]) for cd in results]):
+                    print(('{}: {}'.format(i+1, opt)))
+                choice = eval(input('Please choose one: '))
                 try:
                     choice = int(choice)-1
                     if choice > 0 and choice < len(results):
@@ -38,7 +38,7 @@ class Command(BaseCommand):
             if len(results) != 1:
                 continue
 
-            print(u'update location for {}, lat={}, lon={}'.format(study_group.city, results[0][3], results[0][4]))
+            print(('update location for {}, lat={}, lon={}'.format(study_group.city, results[0][3], results[0][4])))
             study_group.latitude = results[0][3]
             study_group.longitude = results[0][4]
             study_group.save()

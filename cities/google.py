@@ -40,7 +40,7 @@ def example_data():
                     {
                         "height" : 2204,
                         "html_attributions" : [
-                            "\u003ca href=\"https://maps.google.com/maps/contrib/116900064763385163773/photos\"\u003eLonglong Tian\u003c/a\u003e"
+                            "\\u003ca href=\"https://maps.google.com/maps/contrib/116900064763385163773/photos\"\\u003eLonglong Tian\\u003c/a\\u003e"
                             ],
                         "photo_reference" : "CmRaAAAAwFcb4Zx8z1OIdCg2KCgSWp-aTACZ4fY5BBH8pVWXhVI1mH7uTuP8_VKoo2SIBOD7CqVYpCVIpOq8kIZDE-PwdFkx1u4K6tmjOxjg0qrwOB3p9W-gap28vAMAeorO6O-hEhAq5qRzIswsE7tBMyTaB8UJGhRnA5j3DIn84sY3judh5s4FqooJzQ",
                         "width" : 3920

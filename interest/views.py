@@ -18,7 +18,7 @@ def sync(request):
             # TODO return error if data is missing - need at least name AND email or mobile
             # TODO check if email is already signed up, if so, update previous signup
             # Create a new lead
-            lead_data = {key:value for key,value in post_data.items() if key in ['email', 'mobile', 'name', 'utm']}
+            lead_data = {key:value for key,value in list(post_data.items()) if key in ['email', 'mobile', 'name', 'utm']}
             lead = Lead.objects.create(**lead_data)
         else:
             return http.HttpResponse(status=400)

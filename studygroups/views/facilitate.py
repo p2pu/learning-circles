@@ -157,7 +157,7 @@ class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
         subject = render_to_string('studygroups/email/feedback-submitted-subject.txt', context).strip('\n')
         html_body = render_to_string('studygroups/email/feedback-submitted.html', context)
         text_body = render_to_string('studygroups/email/feedback-submitted.txt', context)
-        notification = EmailMultiAlternatives(subject, text_body, settings.SERVER_EMAIL, to)
+        notification = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
         notification.attach_alternative(html_body, 'text/html')
         notification.send()
 
@@ -315,7 +315,7 @@ class StudyGroupPublish(SingleObjectMixin, View):
             study_group.draft = False
             study_group.save()
             generate_all_meetings(study_group)
-            
+
 
         url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
         if self.get_object().facilitator == self.request.user:
@@ -472,3 +472,20 @@ class InvitationConfirm(FormView):
             TeamMembership.objects.create(team=invitation.team, user=self.request.user, role=invitation.role)
 
         return super(InvitationConfirm, self).form_valid(form)
+
+
+@method_decorator(user_is_group_facilitator, name='dispatch')
+class StudyGroupFacilitatorFeedback(TemplateView):
+    template_name = 'studygroups/facilitator_feedback.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(StudyGroupFacilitatorFeedback, self).get_context_data(**kwargs)
+        study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
+        context['study_group_uuid'] = study_group.uuid
+        context['study_group_name'] = study_group.course.title
+        context['facilitator'] = self.request.user
+        context['facilitator_name'] = self.request.user.first_name
+        context['rating'] = self.request.GET.get('rating', None)
+        context['no_studygroup'] = self.request.GET.get('nostudygroup', False)
+
+        return context

@@ -38,4 +38,4 @@ def add_member_to_list(user):
         logger.error("Error: {} {}".format(str(response.status_code), err))
         logger.error(json.dumps(response.json(), indent=4))
     except ValueError:
-        logger.error(u"Cannot decode json, got %s" % response.text)
+        logger.error("Cannot decode json, got %s" % response.text)

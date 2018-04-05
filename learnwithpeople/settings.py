@@ -7,7 +7,7 @@ https://docs.djangoproject.com/en/1.7/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
-from __future__ import absolute_import
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
@@ -161,8 +161,10 @@ if DEBUG is True and EMAIL_HOST is None:
     EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
     EMAIL_FILE_PATH = path('mailbox')
 
-
+# Default email sender
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
+
+# Used for error messages to admin/staff
 SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'no-reply@p2pu.org')
 
 ##### Database config
@@ -187,7 +189,7 @@ LOGIN_REDIRECT_URL = '/login_redirect/'
 LOGOUT_REDIRECT_URL = 'https://www.p2pu.org/en/facilitate/'
 DOMAIN = os.environ.get('DOMAIN', 'example.net')
 
-####### Google analytics tracking info ####### 
+####### Google analytics tracking info #######
 GA_TRACKING_ID = os.environ.get('GA_TRACKING_ID', 'UA-0000000-00')
 
 ####### Celery config #######
@@ -219,6 +221,10 @@ CELERYBEAT_SCHEDULE = {
     },
     'send_facilitator_survey': {
         'task': 'studygroups.tasks.send_all_facilitator_surveys',
+        'schedule':  crontab(hour='10', minute='0'),
+    },
+    'send_last_week_group_activity': {
+        'task': 'studygroups.tasks.send_all_last_week_group_activities',
         'schedule':  crontab(hour='10', minute='0'),
     },
     'weekly_update': {

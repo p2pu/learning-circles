@@ -23,8 +23,10 @@ import datetime
 import pytz
 import re
 import json
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import logging
+import uuid
+
 
 logger = logging.getLogger(__name__)
 
@@ -91,7 +93,7 @@ class Course(LifeTimeTrackingModel):
     unlisted = models.BooleanField(default=False)
 
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 
@@ -101,7 +103,7 @@ class Activity(models.Model):
     index = models.PositiveIntegerField(help_text=_('meeting index this activity corresponds to'))
     card = models.FileField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.description
 
 
@@ -111,16 +113,16 @@ class Profile(models.Model):
     mailing_list_signup = models.BooleanField(default=False)
     email_confirmed_at = models.DateTimeField(null=True, blank=True)
 
-    def __unicode__(self):
-        return self.user.__unicode__()
+    def __str__(self):
+        return self.user.__str__()
 
 
 # TODO remove organizer model - only use Facilitator model + Team Membership
 class Organizer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    def __unicode__(self):
-        return self.user.__unicode__()
+    def __str__(self):
+        return self.user.__str__()
 
 
 class Team(models.Model):
@@ -128,7 +130,7 @@ class Team(models.Model):
     page_slug = models.SlugField(max_length=256, blank=True)
     page_image = models.ImageField(blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -143,8 +145,8 @@ class TeamMembership(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE) # TODO should this be a OneToOneField?
     role = models.CharField(max_length=256, choices=ROLES)
 
-    def __unicode__(self):
-        return 'Team membership: {}'.format(self.user.__unicode__())
+    def __str__(self):
+        return 'Team membership: {}'.format(self.user.__str__())
 
 
 class TeamInvitation(models.Model):
@@ -157,8 +159,8 @@ class TeamInvitation(models.Model):
     responded_at = models.DateTimeField(null=True, blank=True)
     joined = models.NullBooleanField(null=True)
 
-    def __unicode__(self):
-        return u'Invatation <{} to join {}>'.format(self.email, self.team.name)
+    def __str__(self):
+        return 'Invatation <{} to join {}>'.format(self.email, self.team.name)
 
 
 class StudyGroupQuerySet(SoftDeleteQuerySet):
@@ -192,6 +194,7 @@ class StudyGroup(LifeTimeTrackingModel):
     signup_question = models.CharField(max_length=256, blank=True)
     facilitator_goal = models.CharField(max_length=256, blank=True)
     facilitator_concerns = models.CharField(max_length=256, blank=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
 
     objects = StudyGroupQuerySet.as_manager()
@@ -230,7 +233,7 @@ class StudyGroup(LifeTimeTrackingModel):
 
     @property
     def weeks(self):
-        return (self.end_date - self.start_date).days/7 + 1
+        return (self.end_date - self.start_date).days//7 + 1
 
 
     def to_dict(self):
@@ -276,8 +279,8 @@ class StudyGroup(LifeTimeTrackingModel):
         return json.dumps(self.to_dict(), cls=DjangoJSONEncoder)
 
 
-    def __unicode__(self):
-        return u'{0} - {1}s {2} at the {3}'.format(self.course.title, self.day(), self.meeting_time, self.venue_name)
+    def __str__(self):
+        return '{0} - {1}s {2} at the {3}'.format(self.course.title, self.day(), self.meeting_time, self.venue_name)
 
 
 class Application(LifeTimeTrackingModel):
@@ -286,10 +289,12 @@ class Application(LifeTimeTrackingModel):
     email = models.EmailField(verbose_name='Email address', blank=True)
     mobile = models.CharField(max_length=20, blank=True)
     signup_questions = models.TextField(default='{}')
+    goal_met = models.SmallIntegerField(null=True)
     accepted_at = models.DateTimeField(blank=True, null=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
-    def __unicode__(self):
-        return u"{0} <{1}>".format(self.name, self.email if self.email else self.mobile)
+    def __str__(self):
+        return "{0} <{1}>".format(self.name, self.email if self.email else self.mobile)
 
     def unapply_link(self):
         domain = 'https://{0}'.format(settings.DOMAIN)
@@ -312,16 +317,16 @@ class Application(LifeTimeTrackingModel):
     }
 
     DIGITAL_LITERACY_CHOICES = (
-        ('0', _(u'Can\'t do')),
-        ('1', _(u'Need help doing')),
-        ('2', _(u'Can do with difficulty')),
-        ('3', _(u'Can do')),
-        ('4', _(u'Expert (can teach others)')),
+        ('0', _('Can\'t do')),
+        ('1', _('Need help doing')),
+        ('2', _('Can do with difficulty')),
+        ('3', _('Can do')),
+        ('4', _('Expert (can teach others)')),
     )
 
     def digital_literacy_for_display(self):
         answers = json.loads(self.signup_questions)
-        return { q: {'question_text': text, 'answer': answers.get(q), 'answer_text': dict(self.DIGITAL_LITERACY_CHOICES).get(answers.get(q)) if q in answers else ''} for q, text in self.DIGITAL_LITERACY_QUESTIONS.iteritems() if answers.get(q) }
+        return { q: {'question_text': text, 'answer': answers.get(q), 'answer_text': dict(self.DIGITAL_LITERACY_CHOICES).get(answers.get(q)) if q in answers else ''} for q, text in list(self.DIGITAL_LITERACY_QUESTIONS.items()) if answers.get(q) }
 
 
 class Meeting(LifeTimeTrackingModel):
@@ -368,9 +373,9 @@ class Meeting(LifeTimeTrackingModel):
         )
         return '{0}{1}?{2}'.format(domain,url,no_qs)
 
-    def __unicode__(self):
+    def __str__(self):
         tz = pytz.timezone(self.study_group.timezone)
-        return u'{0}, {1} at {2}'.format(self.study_group.course.title, self.meeting_datetime(), self.study_group.venue_name)
+        return '{0}, {1} at {2}'.format(self.study_group.course.title, self.meeting_datetime(), self.study_group.venue_name)
 
     def to_json(self):
         data = {
@@ -397,8 +402,8 @@ class Rsvp(models.Model):
     application = models.ForeignKey('studygroups.Application', on_delete=models.CASCADE)
     attending = models.BooleanField()
 
-    def __unicode__(self):
-        return u'{0} ({1})'.format(self.application, 'yes' if self.attending else 'no')
+    def __str__(self):
+        return '{0} ({1})'.format(self.application, 'yes' if self.attending else 'no')
 
 
 class Feedback(LifeTimeTrackingModel):
@@ -502,7 +507,7 @@ def generate_reminder(study_group):
             reminder.sms_body = reminder.sms_body[:160]
             reminder.save()
 
-            facilitator_notification_subject = u'A reminder for {0} was generated'.format(study_group.course.title)
+            facilitator_notification_subject = 'A reminder for {0} was generated'.format(study_group.course.title)
             facilitator_notification_html = render_to_string(
                 'studygroups/email/reminder_notification.html',
                 context
@@ -516,7 +521,7 @@ def generate_reminder(study_group):
             notification = EmailMultiAlternatives(
                 facilitator_notification_subject,
                 facilitator_notification_txt,
-                settings.SERVER_EMAIL,
+                settings.DEFAULT_FROM_EMAIL,
                 to
             )
             notification.attach_alternative(facilitator_notification_html, 'text/html')
@@ -532,36 +537,49 @@ def send_survey_reminder(study_group):
     last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
 
     if last_meeting and last_15 - datetime.timedelta(minutes=15) <= last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < last_15:
-        slug = '{}-{}'.format(slugify(study_group.venue_name), study_group.id)
-        learning_circle_text = "{} at {} ({})".format(study_group.course.title, study_group.venue_name, slug)
-        context = {
-            'learning_circle':  urllib.quote(learning_circle_text)
-        }
-        subject = render_to_string(
-            'studygroups/email/learner_survey_reminder-subject.txt',
-            context
-        )
-        html = render_to_string(
-            'studygroups/email/learner_survey_reminder.html',
-            context
-        )
-        txt = render_to_string(
-            'studygroups/email/learner_survey_reminder.txt',
-            context
-        )
-        timezone.deactivate()
-        to = []
+
         applications = study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')
-        bcc = [su.email for su in applications]
-        notification = EmailMultiAlternatives(
-            subject.strip(),
-            txt,
-            settings.SERVER_EMAIL,
-            to,
-            bcc
-        )
-        notification.attach_alternative(html, 'text/html')
-        notification.send()
+
+        timezone.deactivate()
+
+        for application in applications:
+            learner_name = application.name
+            learner_email = application.email
+            signup_questions = application.get_signup_questions()
+            learner_goal = signup_questions.get('goals', '')
+            domain = 'https://{}'.format(settings.DOMAIN)
+            path = reverse('studygroups_learner_feedback', kwargs={'study_group_uuid':study_group.uuid})
+            querystring = '?learner={}'.format(application.uuid)
+            survey_url = domain + path + querystring
+
+            context = {
+                'learner_name': learner_name,
+                'learner_goal': learner_goal,
+                'survey_url': survey_url
+            }
+
+            subject = render_to_string(
+                'studygroups/email/learner_survey_reminder-subject.txt',
+                context
+            )
+            html = render_to_string(
+                'studygroups/email/learner_survey_reminder.html',
+                context
+            )
+            txt = render_to_string(
+                'studygroups/email/learner_survey_reminder.txt',
+                context
+            )
+
+            to = [learner_email]
+            notification = EmailMultiAlternatives(
+                subject.strip(),
+                txt,
+                settings.DEFAULT_FROM_EMAIL,
+                to
+            )
+            notification.attach_alternative(html, 'text/html')
+            notification.send()
 
 
 # If called directly, be sure to activate the current language
@@ -575,25 +593,74 @@ def send_facilitator_survey(study_group):
             .order_by('-meeting_date', '-meeting_time').first()
 
     if last_meeting and last_week <= last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < last_week + datetime.timedelta(days=1):
-        slug = '{}-{}'.format(slugify(study_group.venue_name), study_group.id)
-        learning_circle_text = "{} at {} ({})".format(study_group.course.title, study_group.venue_name, slug)
+
+        facilitator_name = study_group.facilitator.first_name
+        path = reverse('studygroups_facilitator_feedback', kwargs={'study_group_id': study_group.id})
+        domain = 'https://{}'.format(settings.DOMAIN)
+        survey_url = domain + path
+
         context = {
-            'learning_circle_slug':  urllib.quote(learning_circle_text)
+            'facilitator_name': facilitator_name,
+            'survey_url': survey_url,
+            'course_title': study_group.course.title,
         }
+
         timezone.deactivate()
         subject, txt, html = render_email_templates(
             'studygroups/email/facilitator-survey',
             context
         )
         to = [study_group.facilitator.email]
-        applications = study_group.application_set.active()\
-            .filter(accepted_at__isnull=False).exclude(email='')
 
         notification = EmailMultiAlternatives(
             subject,
             txt,
-            settings.SERVER_EMAIL,
+            settings.DEFAULT_FROM_EMAIL,
             to
+        )
+        notification.attach_alternative(html, 'text/html')
+        notification.send()
+
+
+def send_last_week_group_activity(study_group):
+    """ send to facilitator when last meeting is in 2 days """
+    now = timezone.now()
+    today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    two_days_from_now = today + datetime.timedelta(days=2)
+    last_meeting = study_group.meeting_set.active()\
+            .order_by('-meeting_date', '-meeting_time').first()
+
+    if last_meeting and two_days_from_now < last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < two_days_from_now + datetime.timedelta(days=1):
+
+        two_weeks_from_now = today + datetime.timedelta(weeks=2)
+        next_study_group = StudyGroup.objects.filter(start_date__gte=two_weeks_from_now).order_by('start_date').first()
+
+        timezone.deactivate()
+
+        context = {
+            'next_study_group': next_study_group,
+            'facilitator_name': study_group.facilitator.first_name
+        }
+
+        if next_study_group:
+            next_study_group_start_delta = next_study_group.start_date - today.date()
+            weeks_until_start = next_study_group_start_delta.days//7
+            context['weeks'] = weeks_until_start
+            context['city'] = next_study_group.city
+            context['course_title'] = next_study_group.course.title
+
+        subject, txt, html = render_email_templates(
+            'studygroups/email/last_week_group_activity',
+            context
+        )
+        to = [study_group.facilitator.email]
+
+        notification = EmailMultiAlternatives(
+            subject,
+            txt,
+            settings.DEFAULT_FROM_EMAIL,
+            to,
+            reply_to=[settings.DEFAULT_FROM_EMAIL]
         )
         notification.attach_alternative(html, 'text/html')
         notification.send()
@@ -628,22 +695,29 @@ def send_reminder(reminder):
                 )
                 reminder_email.send()
             except Exception as e:
-                logger.exception(u'Could not send email to ', email, exc_info=e)
+                logger.exception('Could not send email to ', email, exc_info=e)
         # Send to organizer without RSVP & unsubscribe links
         try:
+            url = reverse('studygroups_facilitator')
+            dash_link = 'https://{}{}'.format(settings.DOMAIN, url)
+            email_body = reminder.email_body
+            email_body = re.sub(r'\(<!--RSVP:YES-->.*\)', dash_link, email_body)
+            email_body = re.sub(r'\(<!--RSVP:NO-->.*\)', dash_link, email_body)
+            email_body = re.sub(r'\(<!--UNSUBSCRIBE-->.*\)', dash_link, email_body)
+
             send_mail(
                 reminder.email_subject.strip('\n'),
-                reminder.email_body,
+                email_body,
                 settings.DEFAULT_FROM_EMAIL,
                 [reminder.study_group.facilitator.email],
                 fail_silently=False
             )
         except Exception as e:
-            logger.exception(u'Could not send email to ', reminder.study_group.facilitator.email, exc_info=e)
+            logger.exception('Could not send email to ', reminder.study_group.facilitator.email, exc_info=e)
     else:
         email_body = reminder.email_body
         # TODO i18n
-        email_body = u'{0}\n\nTo leave this Learning Circle you can visit https://{1}{2}'.format(email_body, settings.DOMAIN, reverse('studygroups_optout'))
+        email_body = '{0}\n\nTo leave this Learning Circle you can visit https://{1}{2}'.format(email_body, settings.DOMAIN, reverse('studygroups_optout'))
         # TODO - all emails should contain the unsubscribe link
         to += [reminder.study_group.facilitator.email]
         try:
@@ -668,7 +742,7 @@ def send_reminder(reminder):
                 #if reminder.study_group_meeting:
                 send_message(to, reminder.sms_body)
             except TwilioRestException as e:
-                logger.exception(u"Could not send text message to %s", to, exc_info=e)
+                logger.exception("Could not send text message to %s", to, exc_info=e)
 
 
 def create_rsvp(contact, study_group, meeting_datetime, attending):
@@ -705,13 +779,22 @@ def report_data(start_time, end_time, team=None):
     new_facilitators = User.objects.filter(date_joined__gte=start_time, date_joined__lt=end_time)
     logins = User.objects.filter(last_login__gte=start_time, last_login__lt=end_time)
     signups = Application.objects.active().filter(created_at__gte=start_time, created_at__lt=end_time)
+    new_courses = Course.objects.active().filter(created_at__gte=start_time, created_at__lt=end_time)
+
 
     if team:
         members = team.teammembership_set.all().values('user')
-        meetings = meetings.filter(study_group__facilitator__in=members)
-        new_study_groups = new_study_groups.filter(facilitator__in=members)
         logins = logins.filter(pk__in=members)
+        new_courses = new_courses.filter(created_by__in=members)
+        new_study_groups = new_study_groups.filter(facilitator__in=members)
         signups = signups.filter(study_group__facilitator__in=members)
+        meetings = meetings.filter(study_group__facilitator__in=members)
+        study_groups = study_groups.filter(facilitator__in=members)
+
+
+    meeting_check = lambda mtg: mtg and mtg.meeting_date >= start_time.date() and mtg.meeting_date < end_time.date()
+
+    finished_study_groups = [sg for sg in study_groups if meeting_check(sg.meeting_set.active().order_by('-meeting_date').first())]
 
     feedback = Feedback.objects.filter(study_group_meeting__in=meetings)
 
@@ -719,7 +802,9 @@ def report_data(start_time, end_time, team=None):
         'meetings': meetings,
         'feedback': feedback,
         'study_groups': new_study_groups,
+        'finished_study_groups': finished_study_groups,
         'facilitators': new_facilitators,
+        'courses': new_courses,
         'logins': logins,
         'signups': signups,
     }
@@ -753,7 +838,7 @@ def send_weekly_update():
         update = EmailMultiAlternatives(
             _('Weekly Learning Circles update'),
             text_body,
-            settings.SERVER_EMAIL,
+            settings.DEFAULT_FROM_EMAIL,
             to
         )
         update.attach_alternative(html_body, 'text/html')
@@ -772,7 +857,7 @@ def send_weekly_update():
     update = EmailMultiAlternatives(
         _('Weekly Learning Circles update'),
         text_body,
-        settings.SERVER_EMAIL,
+        settings.DEFAULT_FROM_EMAIL,
         to
     )
     update.attach_alternative(html_body, 'text/html')
@@ -792,7 +877,7 @@ def send_new_facilitator_email(facilitator):
     timezone.deactivate()
     to = [facilitator.email]
 
-    msg = EmailMultiAlternatives(subject, text_body, settings.SERVER_EMAIL, to)
+    msg = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
     msg.attach_alternative(html_body, 'text/html')
     msg.send()
 
@@ -810,7 +895,7 @@ def send_new_studygroup_email(studygroup):
     timezone.deactivate()
     to = [studygroup.facilitator.email]
 
-    msg = EmailMultiAlternatives(subject, text_body, settings.SERVER_EMAIL, to)
+    msg = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
     msg.attach_alternative(html_body, 'text/html')
     msg.send()
 

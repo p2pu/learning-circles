@@ -56,7 +56,7 @@ class CourseAdmin(admin.ModelAdmin):
 
     def created_by(course):
         def display_user(user):
-            return u'{} {}'.format(user.first_name, user.last_name)
+            return '{} {}'.format(user.first_name, user.last_name)
         return display_user(course.created_by) if course.created_by else 'P2PU'
 
     def email(course):
