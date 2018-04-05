@@ -86,6 +86,7 @@ def send_all_facilitator_surveys():
         translation.activate(settings.LANGUAGE_CODE)
         send_facilitator_survey(study_group)
 
+
 @shared_task
 def send_all_last_week_group_activities():
     for study_group in StudyGroup.objects.published():

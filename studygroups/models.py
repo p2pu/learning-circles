@@ -630,7 +630,7 @@ def send_last_week_group_activity(study_group):
     last_meeting = study_group.meeting_set.active()\
             .order_by('-meeting_date', '-meeting_time').first()
 
-    if last_meeting and last_meeting.meeting_datetime() > today and last_meeting.meeting_datetime() < two_days_from_now:
+    if last_meeting and two_days_from_now < last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < two_days_from_now + datetime.timedelta(days=1):
 
         two_weeks_from_now = today + datetime.timedelta(weeks=2)
         next_study_group = StudyGroup.objects.filter(start_date__gte=two_weeks_from_now).order_by('start_date').first()
