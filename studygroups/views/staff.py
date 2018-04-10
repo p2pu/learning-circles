@@ -17,12 +17,13 @@ from django.views.generic import TemplateView
 
 from studygroups.models import Application
 from studygroups.models import StudyGroup
+from studygroups.models import Course
 from ..decorators import user_is_staff
+
 
 @method_decorator(user_is_staff, name='dispatch')
 class StaffDashView(TemplateView):
     template_name = 'studygroups/staff_dash.html'
-
 
 
 @method_decorator(user_is_staff, name='dispatch')
@@ -153,4 +154,36 @@ class ExportStudyGroupsView(ListView):
         return self.csv(**kwargs)
 
 
+@method_decorator(user_is_staff, name='dispatch')
+class ExportCoursesView(ListView):
 
+    def get_queryset(self):
+        return Course.objects.active().prefetch_related('created_by')
+
+    def csv(self, **kwargs):
+        response = http.HttpResponse(content_type="text/csv")
+        response['Content-Disposition'] = 'attachment; filename="learning-circles.csv"'
+        fields = [
+            'title',
+            'provider',
+            'link',
+            'caption',
+            'on_demand',
+            'topics',
+            'language',
+            'created_by',
+            'unlisted',
+            'license',
+        ]
+        writer = csv.writer(response)
+        writer.writerow(fields)
+        for obj in self.object_list:
+            data = [
+                getattr(obj, field) for field in fields
+            ]
+            writer.writerow(data)
+        return response
+
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset()
+        return self.csv(**kwargs)
