@@ -23,6 +23,7 @@ from django.core import serializers
 from django.template.defaultfilters import slugify
 
 import json
+import datetime
 
 
 from studygroups.models import Activity
@@ -56,9 +57,14 @@ def login_redirect(request):
 
 @login_required
 def facilitator(request):
+    today = datetime.datetime.now().date()
+    two_weeks_ago = today - datetime.timedelta(weeks=2, days=today.weekday())
+
     study_groups = StudyGroup.objects.active().filter(facilitator=request.user)
-    current_study_groups = study_groups.filter(end_date__gt=timezone.now())
-    past_study_groups = study_groups.filter(end_date__lte=timezone.now())
+    current_study_groups = study_groups.filter(
+        id__in=Meeting.objects.active().filter(meeting_date__gte=two_weeks_ago).values('study_group')
+    )
+    past_study_groups = study_groups.exclude(id__in=current_study_groups)
     team = None
     if TeamMembership.objects.filter(user=request.user).exists():
         team = TeamMembership.objects.filter(user=request.user).first().team
