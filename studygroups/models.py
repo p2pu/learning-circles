@@ -91,6 +91,7 @@ class Course(LifeTimeTrackingModel):
     language = models.CharField(max_length=6)
     created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     unlisted = models.BooleanField(default=False)
+    license = models.CharField(max_length=128, blank=True)
 
 
     def __str__(self):
