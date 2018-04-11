@@ -15,6 +15,7 @@ RUN apk --no-cache add --virtual .python-rundeps \
         libpq \
         libjpeg \
         zlib \
+        postgresql \
     && apk --no-cache add --virtual .build-deps \
         gcc \
         make \

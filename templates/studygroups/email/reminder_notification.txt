@@ -4,8 +4,6 @@
 
 {% if reminder.study_group_meeting.meeting_activity %}{% blocktrans with activity_description=reminder.study_group_meeting.meeting_activity.description activity_url=reminder.study_group_meeting.meeting_activity.card.url %}You can find the recommended activity for this week in the recipe card: {{ activity_description }} ({{ protocol }}://{{ domain }}{{ activity_url }}){% endblocktrans %}{% endif %}
 
-{% if is_last_meeting %}{% blocktrans %}This is the last learning circle meeting. Please print a few copies of this learner survey (https://learningcircles.p2pu.org/static/uploads/learner_survey.pdf) for learners who can't complete the online survey.{% endblocktrans %}{% endif %}
-
 {% trans "This is what the reminder will look like." %}
 
 # {% trans "Email to Learning Circle participants" %}

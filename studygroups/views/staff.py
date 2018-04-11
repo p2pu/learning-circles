@@ -164,6 +164,7 @@ class ExportCoursesView(ListView):
         response = http.HttpResponse(content_type="text/csv")
         response['Content-Disposition'] = 'attachment; filename="learning-circles.csv"'
         fields = [
+            'id',
             'title',
             'provider',
             'link',
@@ -174,6 +175,7 @@ class ExportCoursesView(ListView):
             'created_by',
             'unlisted',
             'license',
+            'created_at',
         ]
         writer = csv.writer(response)
         writer.writerow(fields)
