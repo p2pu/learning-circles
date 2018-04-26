@@ -58,11 +58,13 @@ export default class Search extends Component {
   _searchCallback(response, opts) {
     const results = opts.appendResults ? this.state.searchResults.concat(response.items) : response.items;
 
+    const scrollToTop = () => document.querySelector('body').scrollTop = 0;
+
     this.setState({
       searchResults: results,
       currentQuery: opts.params,
       totalResults: response.count
-    }, this.props.scrollToTop)
+    }, scrollToTop)
   }
 
   render() {

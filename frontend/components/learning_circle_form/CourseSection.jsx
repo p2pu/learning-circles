@@ -6,9 +6,6 @@ import '../stylesheets/search.scss'
 
 
 const CourseSection = (props) => {
-  const scrollToTop = () => {
-    document.querySelector('.form-container').scrollTop = 0;
-  }
 
   const removeCourseSelection = () => {
     props.updateFormData({ course: {} });
@@ -38,8 +35,6 @@ const CourseSection = (props) => {
             learningCircle={props.learningCircle}
             searchSubject={'courses'}
             updateFormData={props.updateFormData}
-            scrollToTop={scrollToTop}
-            changeTab={props.changeTab}
             showHelp={props.showHelp}
           />
         }
