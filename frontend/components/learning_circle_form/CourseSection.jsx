@@ -1,16 +1,23 @@
 import React from 'react'
-import Search from './course_search/Search'
-import CourseCard from './course_search/CourseCard'
+import Search from './Search/Search'
+import BrowseCourses from './Search/Courses/Browse'
+import CourseCard from './Search/Courses/CourseCard'
 
 import '../stylesheets/search.scss'
 
 
 const CourseSection = (props) => {
-
   const removeCourseSelection = () => {
     props.updateFormData({ course: {} });
     const cleanUrl = window.location.origin + window.location.pathname;
     window.history.replaceState({}, document.title, cleanUrl)
+  }
+
+  const scrollToTop = () => document.querySelector('body').scrollTop = 0;
+
+  const handleSelectResult = selected => {
+    props.updateFormData({ course: selected })
+    scrollToTop()
   }
 
   return (
@@ -32,10 +39,9 @@ const CourseSection = (props) => {
         {
           !props.learningCircle.course.id &&
           <Search
-            learningCircle={props.learningCircle}
             searchSubject={'courses'}
-            updateFormData={props.updateFormData}
-            showHelp={props.showHelp}
+            Browse={BrowseCourses}
+            onSelectResult={handleSelectResult}
           />
         }
     </div>

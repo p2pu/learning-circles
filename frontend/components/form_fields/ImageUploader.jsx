@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import ApiHelper from '../../helpers/ApiHelper';
+import axios from 'axios';
+
+const API_ENDPOINT = '/api/upload_image/';
 
 export default class ImageUploader extends Component {
 
@@ -7,6 +10,28 @@ export default class ImageUploader extends Component {
     super(props);
     this.state = { image: this.props.image };
     this.onChange = (e) => this._onChange(e);
+  }
+
+  saveImage = opts => {
+    const url = API_ENDPOINT;
+    const data = opts.data;
+    const config = opts.config;
+
+    axios({
+      url,
+      data,
+      config,
+      method: 'post',
+      responseType: 'json',
+    }).then(res => {
+      if (res.data.errors) {
+        return opts.onError(res.data)
+      }
+      opts.onSuccess(res.data)
+    }).catch(err => {
+      console.log(err)
+      opts.onFail(err)
+    })
   }
 
   _onChange(e) {
@@ -30,9 +55,8 @@ export default class ImageUploader extends Component {
 
     const config = { headers: {'Content-Type': 'multipart/form-data' }}
     const opts = { data, config, onSuccess, onError, onFail };
-    const api = new ApiHelper('images');
 
-    api.createResource(opts);
+    this.saveImage(opts);
   }
 
   render() {

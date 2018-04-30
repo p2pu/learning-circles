@@ -72,29 +72,6 @@ export const LC_DEFAULTS = {
   draft: true,
 };
 
-export const EXTERNAL_APIS = {
-  algolia: 'https://places-dsn.algolia.net/1/places',
-  geonames: 'https://secure.geonames.org'
-};
-
-export const KANSAS_CITY_OPTION = {
-  label: 'Kansas City, Missouri, United States of America',
-  value: {
-    administrative: ['Missouri'],
-    country: {
-      default: 'United States of America'
-    },
-    locale_names: {
-      default: ['Kansas City']
-    },
-    // from https://tools.wmflabs.org
-    _geoloc: {
-      lat: 39.099722,
-      lng: -94.578333
-    }
-  }
-};
-
 export const FACILITATOR_SURVEY = 'wPg50i';
 export const NO_STUDYGROUP_SURVEY = 'iVldef';
 export const LEARNER_SURVEY = 'VA1aVz';

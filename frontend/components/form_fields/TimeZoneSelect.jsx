@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
+import { compact, uniqBy, sortBy } from 'lodash';
 import axios from 'axios';
 import moment from 'moment-timezone';
 import Select from 'react-select';
-import { compact, uniqBy, sortBy } from 'lodash';
-import { EXTERNAL_APIS } from '../../constants';
 
 import css from 'react-select/dist/react-select.css';
 
+const GEONAMES_ENDPOINT = 'https://secure.geonames.org/timezoneJSON'
 
 export default class TimeZoneSelect extends Component {
   constructor(props) {
@@ -32,7 +32,7 @@ export default class TimeZoneSelect extends Component {
       this.setState({ value: { value: this.props.timezone, label: this.props.timezone } })
     } else if (!!this.props.latitude && !!this.props.longitude) {
       // use selected city to detect timezone
-      const url = `${EXTERNAL_APIS.geonames}/timezoneJSON?lat=${this.props.latitude}&lng=${this.props.longitude}&username=p2pu`;
+      const url = `${GEONAMES_ENDPOINT}?lat=${this.props.latitude}&lng=${this.props.longitude}&username=p2pu`;
       axios.get(url).then(res => {
         const timezone = res.data.timezoneId;
         this.props.handleChange({ timezone })

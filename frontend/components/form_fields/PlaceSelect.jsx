@@ -2,10 +2,28 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import Select from 'react-select';
 import { compact, uniqBy, sortBy } from 'lodash';
-import { EXTERNAL_APIS, KANSAS_CITY_OPTION } from '../../constants';
 
 import css from 'react-select/dist/react-select.css';
 
+const ALGOLIA_ENDPOINT = 'https://places-dsn.algolia.net/1/places'
+
+const KANSAS_CITY_OPTION = {
+  label: 'Kansas City, Missouri, United States of America',
+  value: {
+    administrative: ['Missouri'],
+    country: {
+      default: 'United States of America'
+    },
+    locale_names: {
+      default: ['Kansas City']
+    },
+    // from https://tools.wmflabs.org
+    _geoloc: {
+      lat: 39.099722,
+      lng: -94.578333
+    }
+  }
+};
 
 export default class PlaceSelect extends Component {
   constructor(props) {
@@ -45,7 +63,7 @@ export default class PlaceSelect extends Component {
   }
 
   _searchPlaces(query) {
-    const url = `${EXTERNAL_APIS.algolia}/query/`;
+    const url = `${ALGOLIA_ENDPOINT}/query/`;
     const data = {
       'type': 'city',
       'hitsPerPage': '10',
@@ -72,7 +90,7 @@ export default class PlaceSelect extends Component {
   }
 
   _fetchPlaceById() {
-    const url = `${EXTERNAL_APIS.algolia}/${this.props.place_id}`;
+    const url = `${ALGOLIA_ENDPOINT}/${this.props.place_id}`;
 
     axios.get(url)
       .then(res => {
