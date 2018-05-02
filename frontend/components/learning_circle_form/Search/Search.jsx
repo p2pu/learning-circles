@@ -6,7 +6,6 @@ import ApiHelper from '../../../helpers/ApiHelper'
 
 export default class Search extends Component {
   constructor(props) {
-    console.log('HELLO')
     super(props)
     const urlParams = new URL(window.location.href).searchParams;
     this.state = {

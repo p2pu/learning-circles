@@ -1,5 +1,6 @@
 import React from 'react'
-import SwitchWithLabels from '../../../form_fields/SwitchWithLabels'
+import { SwitchWithLabels } from 'p2pu-input-fields'
+
 
 const OrderCoursesForm = (props) => {
   const formValues = {

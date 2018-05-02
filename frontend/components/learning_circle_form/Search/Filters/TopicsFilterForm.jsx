@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { keys } from 'lodash'
 
-import CheckboxWithLabel from '../../../form_fields/CheckboxWithLabel'
-import SelectWithLabel from '../../../form_fields/SelectWithLabel'
+import { CheckboxWithLabel, SelectWithLabel } from 'p2pu-input-fields'
+
 import ApiHelper from '../../../../helpers/ApiHelper'
 
 export default class TopicsFilterForm extends Component {

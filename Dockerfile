@@ -4,6 +4,7 @@ COPY package.json /opt/app/
 RUN apk --no-cache add --virtual native-deps \
   g++ make python && \
   npm install --quiet --production && \
+  npm rebuild node-sass --build-from-source && \
   apk del native-deps
 COPY . /opt/app/
 RUN npm run build:production
