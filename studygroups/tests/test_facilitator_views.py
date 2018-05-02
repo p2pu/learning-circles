@@ -8,6 +8,7 @@ from django.utils.translation import get_language
 from django.urls import reverse
 
 from mock import patch
+from freezegun import freeze_time
 
 from studygroups.models import Course
 from studygroups.models import StudyGroup
@@ -470,3 +471,20 @@ class TestFacilitatorViews(TestCase):
         self.assertEqual(response.context_data['study_group_name'], course.title)
         self.assertEqual(response.context_data['facilitator'], facilitator)
         self.assertEqual(response.context_data['facilitator_name'], facilitator.first_name)
+
+    @freeze_time("2018-05-02")
+    def test_facilitator_active_learning_circles(self):
+        facilitator = User.objects.create_user('bowie', 'hi@example.net', 'password')
+        sg = StudyGroup.objects.get(pk=1)
+        sg.facilitator = facilitator
+        sg.start_date = datetime.date(2018, 5, 24)
+        sg.end_date = datetime.date(2018, 5, 24) + datetime.timedelta(weeks=5)
+        sg.draft = True
+        sg.save()
+        sg.meeting_set.delete()
+        c = Client()
+        c.login(username='bowie', password='password')
+        resp = c.get('/en/facilitator/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn(sg, resp.context['current_study_groups'])
+
