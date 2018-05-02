@@ -19,6 +19,7 @@ from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 from studygroups.models import Feedback
+from studygroups.models import generate_all_meetings
 from studygroups.rsvp import gen_rsvp_querystring
 from custom_registration.models import create_user
 from custom_registration.models import confirm_user_email
@@ -472,7 +473,6 @@ class TestFacilitatorViews(TestCase):
         self.assertEqual(response.context_data['facilitator'], facilitator)
         self.assertEqual(response.context_data['facilitator_name'], facilitator.first_name)
 
-    @freeze_time("2018-05-02")
     def test_facilitator_active_learning_circles(self):
         facilitator = User.objects.create_user('bowie', 'hi@example.net', 'password')
         sg = StudyGroup.objects.get(pk=1)
@@ -483,8 +483,27 @@ class TestFacilitatorViews(TestCase):
         sg.save()
         sg.meeting_set.delete()
         c = Client()
-        c.login(username='bowie', password='password')
-        resp = c.get('/en/facilitator/')
-        self.assertEqual(resp.status_code, 200)
-        self.assertIn(sg, resp.context['current_study_groups'])
+
+        with freeze_time("2018-05-02"):
+            c.login(username='bowie', password='password')
+            resp = c.get('/en/facilitator/')
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn(sg, resp.context['current_study_groups'])
+    
+        sg.draft = False
+        sg.save()
+        generate_all_meetings(sg)
+
+        with freeze_time("2018-05-02"):
+            c.login(username='bowie', password='password')
+            resp = c.get('/en/facilitator/')
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn(sg, resp.context['current_study_groups'])
+
+        with freeze_time("2018-07-16"):
+            c.login(username='bowie', password='password')
+            resp = c.get('/en/facilitator/')
+            self.assertEqual(resp.status_code, 200)
+            self.assertNotIn(sg, resp.context['current_study_groups'])
+
 
