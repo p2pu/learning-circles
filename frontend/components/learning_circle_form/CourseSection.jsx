@@ -1,7 +1,5 @@
 import React from 'react'
-import Search from './Search/Search'
-import BrowseCourses from './Search/Courses/Browse'
-import CourseCard from './Search/Courses/CourseCard'
+import { Search, BrowseCourses, CourseCard } from 'p2pu-search-cards';
 
 import '../stylesheets/search.scss'
 
