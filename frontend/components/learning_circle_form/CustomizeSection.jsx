@@ -42,6 +42,7 @@ const CustomizeSection = (props) => {
         id={'id_image'}
         image={props.learningCircle.image || props.learningCircle.image_url}
         errorMessage={props.errors.image}
+        imageUploadUrl='/api/upload_image/'
       />
     </div>
   )
