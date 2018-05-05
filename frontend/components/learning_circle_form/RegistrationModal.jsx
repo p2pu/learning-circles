@@ -6,7 +6,8 @@ import { CheckboxWithLabel, InputWithLabel } from 'p2pu-input-fields';
 
 import { API_ENDPOINTS } from '../../constants'
 
-import '../stylesheets/learning-circle-form.scss'
+import '../stylesheets/learning-circle-form.scss';
+import 'p2pu-input-fields/dist/build.css';
 
 
 axios.defaults.xsrfCookieName = 'csrftoken'

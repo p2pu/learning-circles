@@ -1,7 +1,7 @@
 import React from 'react'
 import { Search, BrowseCourses, CourseCard } from 'p2pu-search-cards';
 
-import '../stylesheets/search.scss'
+import 'p2pu-search-cards/dist/build.css';
 
 
 const CourseSection = (props) => {
