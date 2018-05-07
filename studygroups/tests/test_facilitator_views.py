@@ -49,7 +49,7 @@ class TestFacilitatorViews(TestCase):
 
     STUDY_GROUP_DATA = {
         'course': '1',
-        'venue_name': 'My house',
+        'venue_name': 'мой дом',
         'venue_details': 'Garrage at my house',
         'venue_address': 'Rosemary Street 6',
         'city': 'Johannesburg',
@@ -230,7 +230,7 @@ class TestFacilitatorViews(TestCase):
 
         resp = c.get('/en/facilitator/')
         self.assertEqual(resp.status_code, 200)
-        self.assertIn('/en/signup/%D0%B1%D1%8B%D1%81%D1%82%D1%80%D0%B5%D0%B5-%D0%B8-%D0%BB%D1%83%D1%87%D1%88%D0%B5-', resp.body)
+        self.assertIn('/en/signup/%D0%B1%D1%8B%D1%81%D1%82%D1%80%D0%B5%D0%B5-%D0%B8-%D0%BB%D1%83%D1%87%D1%88%D0%B5-', resp.content.decode("utf-8"))
 
 
 
