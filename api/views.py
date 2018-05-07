@@ -3,7 +3,7 @@ from django.views import View
 from django.views.generic.edit import FormView
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.template.defaultfilters import slugify
+from django.utils.text import slugify
 from django.db.models import Q, F, Case, When, Value, Sum, Min, Max
 from django.db import models
 from django.contrib.auth.models import User
@@ -72,7 +72,7 @@ def _map_to_json(sg):
         "time_zone": sg.timezone_display(),
         "end_time": sg.end_time(),
         "weeks": sg.meeting_set.active().count(),
-        "url": 'https://' + settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
+        "url": 'https://' + settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
     }
     if sg.image:
         data["image_url"] = 'https://' + settings.DOMAIN + sg.image.url
@@ -458,7 +458,7 @@ class LearningCircleCreateView(View):
         if study_group.draft == False:
             generate_all_meetings(study_group)
 
-        study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name), study_group.id,))
+        study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name, allow_unicode=True), study_group.id,))
         return json_response(request, { "status": "created", "url": study_group_url });
 
 
@@ -511,7 +511,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         if published:
             generate_all_meetings(study_group)
 
-        study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name), study_group.id,))
+        study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name, allow_unicode=True), study_group.id,))
         return json_response(request, { "status": "updated", "url": study_group_url });
 
 

@@ -21,7 +21,6 @@ from django.utils.decorators import method_decorator
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.core import serializers
-from django.template.defaultfilters import slugify
 
 import json
 import datetime
