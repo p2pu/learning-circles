@@ -264,7 +264,7 @@ class TestLearningCircleApi(TestCase):
         lc = StudyGroup.objects.all().last()
         self.assertEqual(resp.json(), {
             "status": "created",
-            "url": "example.net/en/signup/75-harrington-{}/".format(lc.pk)
+            "url": "example.net/en/signup/%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%A7%D9%84%D9%86%D9%81%D8%B3%D9%8A%D8%A9-%D9%84%D9%84%D8%B7%D9%81%D9%84-{}/".format(lc.pk)
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
 
