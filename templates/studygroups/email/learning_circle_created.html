@@ -1,10 +1,11 @@
 {% extends 'email_base.html' %}
 {% load i18n %}
+{% load extras %}
 {% block body %}
  
 <p>{% blocktrans with name=study_group.facilitator.first_name %}Hi {{name}}{% endblocktrans %},</p>
 
-{% url 'studygroups_signup' location=study_group.venue_name|slugify study_group_id=study_group.pk as study_group_url%}
+{% url 'studygroups_signup' location=study_group.venue_name|unicode_slugify study_group_id=study_group.pk as study_group_url%}
 <h2>{% trans "Your learning circle has been created!" %}</h2>
 
 <p>
