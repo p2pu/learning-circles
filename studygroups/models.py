@@ -3,9 +3,9 @@ from django.db import models
 from django.utils import timezone
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
+from django.utils.text import slugify
 from django.core.serializers.json import DjangoJSONEncoder
 from django.template.loader import render_to_string
-from django.template.defaultfilters import slugify
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -267,7 +267,7 @@ class StudyGroup(LifeTimeTrackingModel):
             "signup_count": sg.application_set.count(),
             "draft": sg.draft,
             "url": reverse('studygroups_view_study_group', args=(sg.id,)),
-            "signup_url": reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
+            "signup_url": reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
         }
         next_meeting = self.next_meeting()
         if next_meeting:

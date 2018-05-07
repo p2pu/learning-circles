@@ -49,7 +49,7 @@ class TestFacilitatorViews(TestCase):
 
     STUDY_GROUP_DATA = {
         'course': '1',
-        'venue_name': 'My house',
+        'venue_name': 'мой дом',
         'venue_details': 'Garrage at my house',
         'venue_address': 'Rosemary Street 6',
         'city': 'Johannesburg',
@@ -210,6 +210,27 @@ class TestFacilitatorViews(TestCase):
         resp = c.post(url_base + '/member/add/', data=learner_data)
         self.assertRedirects(resp, '/en/facilitator/')
         self.assertEqual(StudyGroup.objects.last().application_set.count(), 0)
+
+
+    @patch('custom_registration.signals.handle_new_facilitator')
+    def test_study_group_unicode_venue_name(self, handle_new_facilitator):
+        user = create_user('bob@example.net', 'bob', 'test', 'password', False)
+        confirm_user_email(user)
+        c = Client()
+        c.login(username='bob@example.net', password='password')
+        sgd = self.STUDY_GROUP_DATA.copy()
+        sgd['draft'] = False
+        sgd['venue_name'] = 'Быстрее и лучше'
+        sgd['start_date'] = (datetime.datetime.now() + datetime.timedelta(weeks=2)).date().isoformat()
+        resp = c.post('/api/learning-circle/', data=json.dumps(sgd), content_type='application/json')
+        self.assertEqual(resp.json()['status'], 'created')
+        study_groups = StudyGroup.objects.filter(facilitator=user)
+        self.assertEqual(study_groups.count(), 1)
+        self.assertEqual(study_groups.first().meeting_set.count(), 6)
+
+        resp = c.get('/en/facilitator/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('/en/signup/%D0%B1%D1%8B%D1%81%D1%82%D1%80%D0%B5%D0%B5-%D0%B8-%D0%BB%D1%83%D1%87%D1%88%D0%B5-', resp.content.decode("utf-8"))
 
 
 
