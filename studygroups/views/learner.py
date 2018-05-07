@@ -17,6 +17,7 @@ from django.views.generic.edit import FormView
 from django.views.generic import TemplateView
 from django.db.models import Count
 from django.http import HttpResponseRedirect, HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
 
 from studygroups.models import Course
 from studygroups.models import StudyGroup
@@ -276,20 +277,24 @@ class StudyGroupLearnerFeedback(TemplateView):
         goal_met = request.GET.get('goal', None)
 
         if learner_uuid is not None:
-            application = study_group.application_set.get(uuid=learner_uuid)
-            application.goal_met = goal_met
-            application.save()
+            try:
+                application = study_group.application_set.get(uuid=learner_uuid)
+                application.goal_met = goal_met
+                application.save()
 
-            request.session['learner_uuid'] = learner_uuid
-            request.session['goal_met'] = goal_met
+                request.session['learner_uuid'] = learner_uuid
+                request.session['goal_met'] = goal_met
 
-            redirect_url = reverse('studygroups_learner_feedback', kwargs={'study_group_uuid': kwargs.get('study_group_uuid')})
-            return HttpResponseRedirect(redirect_url)
+                redirect_url = reverse('studygroups_learner_feedback', kwargs={'study_group_uuid': kwargs.get('study_group_uuid')})
+                return HttpResponseRedirect(redirect_url)
+            except ObjectDoesNotExist:
+                redirect_url = reverse('studygroups_learner_feedback', kwargs={'study_group_uuid': kwargs.get('study_group_uuid')})
+                return HttpResponseRedirect(redirect_url)
         else:
             learner_uuid = request.session.get('learner_uuid', None)
             goal_met = request.session.get('goal_met', None)
 
-            if learner_uuid is not None:
+            try:
                 application = study_group.application_set.get(uuid=learner_uuid)
                 signup_questions = json.loads(application.signup_questions)
                 learner_goal = signup_questions['goals']
@@ -304,7 +309,7 @@ class StudyGroupLearnerFeedback(TemplateView):
                     'learner_name': application.name,
                     'facilitator_name': study_group.facilitator.first_name
                 }
-            else:
+            except ObjectDoesNotExist:
                 context = {
                     'study_group_uuid': study_group.uuid,
                     'course_title': study_group.course.title,

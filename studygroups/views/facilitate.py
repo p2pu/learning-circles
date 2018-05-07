@@ -14,13 +14,13 @@ from django.views.generic import DetailView
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db.models import Q
 from django.utils.translation import ugettext as _
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.core import serializers
-from django.template.defaultfilters import slugify
 
 import json
 import datetime
@@ -62,7 +62,8 @@ def facilitator(request):
 
     study_groups = StudyGroup.objects.active().filter(facilitator=request.user)
     current_study_groups = study_groups.filter(
-        id__in=Meeting.objects.active().filter(meeting_date__gte=two_weeks_ago).values('study_group')
+        Q(id__in=Meeting.objects.active().filter(meeting_date__gte=two_weeks_ago).values('study_group')) |
+        Q(draft=True, end_date__gte=two_weeks_ago)
     )
     past_study_groups = study_groups.exclude(id__in=current_study_groups)
     team = None
