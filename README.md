@@ -12,9 +12,9 @@ We maintain a [feature roadmap](https://github.com/p2pu/learning-circles/wiki/Ro
 
 ## Development environment
 
-You will need python 2.7 with virtualenv and node v8 available for development.
+You will need python 3.6 with virtualenv and node v8 available for development.
 
-This section assumes that you have python 2.7 available and set as the default python version and Node.js v8. If that is not the case, please see https://python.org and https://nodejs.org respectively for instruction on how to set it up. If you are running other versions of node on your computer, it is recommended that you use a tool like nvm to manage the different versions.
+This section assumes that you have python 3.6 available and set as the default python version and Node.js v8. If that is not the case, please see https://python.org and https://nodejs.org respectively for instruction on how to set it up. If you are running other versions of node on your computer, it is recommended that you use a tool like nvm to manage the different versions.
 
 
 The shortest path to a running environment is:

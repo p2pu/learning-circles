@@ -18,6 +18,7 @@ from django.views.generic import TemplateView
 from studygroups.models import Application
 from studygroups.models import StudyGroup
 from studygroups.models import Course
+from studygroups.models import TeamMembership
 from ..decorators import user_is_staff
 
 
@@ -125,6 +126,9 @@ class ExportStudyGroupsView(ListView):
             'time',
             'day',
             'last meeting',
+            'first meeting',
+            'singups',
+            'team',
         ]
         writer = csv.writer(response)
         writer.writerow(field_names)
@@ -142,6 +146,19 @@ class ExportStudyGroupsView(ListView):
             ] 
             if sg.meeting_set.active().last():
                 data += [sg.meeting_set.active().order_by('meeting_date', 'meeting_time').last().meeting_date]
+            else:
+                data += ['']
+
+            if sg.meeting_set.active().first():
+                data += [sg.meeting_set.active().order_by('meeting_date', 'meeting_time').first().meeting_date]
+            else:
+                data += ['']
+
+            data += [sg.application_set.count()]
+            # team
+            team_membership = TeamMembership.objects.filter(user=sg.facilitator)
+            if team_membership.count() == 1:
+                data += [team_membership.get().team.name]
             else:
                 data += ['']
                 
