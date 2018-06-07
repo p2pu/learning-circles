@@ -51,15 +51,21 @@ const reactBuild = {
     ],
   },
   plugins: [
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new BundleTracker({filename: './assets/frontend-webpack-manifest.json'}),
+    new webpack.DefinePlugin({
+       'process.env.NODE_ENV': JSON.stringify('production')
+    }),
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new webpack.ProvidePlugin({
       $: "jquery",
       jQuery: "jquery"
     }),
     new webpack.optimize.CommonsChunkPlugin({
       name: 'common',
-    })
+    }),
+    new webpack.optimize.OccurrenceOrderPlugin(true),
+    new webpack.optimize.UglifyJsPlugin(),
+    new webpack.optimize.AggressiveMergingPlugin(),
   ],
   resolve: {
     modules: [

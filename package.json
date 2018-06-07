@@ -63,6 +63,7 @@
     "whatwg-url": "^6.4.0"
   },
   "devDependencies": {
-    "babel-plugin-transform-object-rest-spread": "^6.26.0"
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "uglifyjs-webpack-plugin": "^1.2.5"
   }
 }
