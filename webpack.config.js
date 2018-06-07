@@ -2,7 +2,10 @@ var path = require("path");
 var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
+var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
 var fs = require("fs");
+var env = process.env.NODE_ENV;
 
 function getReactChunks(){
   // Add all jsx files in /assets/js as entries
@@ -53,7 +56,7 @@ const reactBuild = {
   plugins: [
     new BundleTracker({filename: './assets/frontend-webpack-manifest.json'}),
     new webpack.DefinePlugin({
-       'process.env.NODE_ENV': JSON.stringify('production')
+       'process.env.NODE_ENV': JSON.stringify(env)
     }),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new webpack.ProvidePlugin({
@@ -66,6 +69,7 @@ const reactBuild = {
     new webpack.optimize.OccurrenceOrderPlugin(true),
     new webpack.optimize.UglifyJsPlugin(),
     new webpack.optimize.AggressiveMergingPlugin(),
+    new BundleAnalyzerPlugin(),
   ],
   resolve: {
     modules: [

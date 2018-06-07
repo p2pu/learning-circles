@@ -37,8 +37,8 @@
     "moment": "^2.18.1",
     "moment-timezone": "^0.5.14",
     "node-sass": "^3.13.0",
-    "p2pu-input-fields": "^0.4.6",
-    "p2pu-search-cards": "^0.7.3",
+    "p2pu-input-fields": "^0.4.7",
+    "p2pu-search-cards": "^0.7.4",
     "places.js": "^1.4.18",
     "promise-polyfill": "^6.0.2",
     "rc-time-picker": "^3.2.1",
@@ -64,6 +64,7 @@
   },
   "devDependencies": {
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "uglifyjs-webpack-plugin": "^1.2.5"
+    "uglifyjs-webpack-plugin": "^1.2.5",
+    "webpack-bundle-analyzer": "^2.13.1"
   }
 }
