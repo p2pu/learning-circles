@@ -2,10 +2,9 @@ var path = require("path");
 var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
-var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+var CompressionPlugin = require("compression-webpack-plugin")
 
 var fs = require("fs");
-var env = process.env.NODE_ENV;
 
 function getReactChunks(){
   // Add all jsx files in /assets/js as entries
@@ -55,9 +54,6 @@ const reactBuild = {
   },
   plugins: [
     new BundleTracker({filename: './assets/frontend-webpack-manifest.json'}),
-    new webpack.DefinePlugin({
-       'process.env.NODE_ENV': JSON.stringify(env)
-    }),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new webpack.ProvidePlugin({
       $: "jquery",
@@ -69,7 +65,14 @@ const reactBuild = {
     new webpack.optimize.OccurrenceOrderPlugin(true),
     new webpack.optimize.UglifyJsPlugin(),
     new webpack.optimize.AggressiveMergingPlugin(),
-    new BundleAnalyzerPlugin(),
+    new CompressionPlugin({
+      asset: "[path].gz[query]",
+      algorithm: "gzip",
+      test: /\.js$|\.css$|\.html$/,
+      threshold: 10240,
+      minRatio: 0.8,
+      deleteOriginalAssets: true
+    })
   ],
   resolve: {
     modules: [
