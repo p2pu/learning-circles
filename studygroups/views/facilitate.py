@@ -264,6 +264,15 @@ class CourseUpdate(UpdateView):
         return url
 
 
+class StudyGroupCreate(TemplateView):
+    template_name = 'studygroups/facilitator_studygroup_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(StudyGroupCreate, self).get_context_data(**kwargs)
+        context['hide_footer'] = True
+        return context
+
+
 class StudyGroupCreateHtml(CreateView):
     success_url = reverse_lazy('studygroups_facilitator')
     template_name = 'studygroups/studygroup_form_html.html'
@@ -449,15 +458,6 @@ def add_member(request, study_group_id):
         'study_group': study_group,
     }
     return render(request, 'studygroups/add_member.html', context)
-
-
-class StudyGroupCreate(TemplateView):
-    template_name = 'studygroups/facilitator_studygroup_form.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(StudyGroupCreate, self).get_context_data(**kwargs)
-        context['hide_footer'] = True
-        return context
 
 
 class InvitationConfirm(FormView):
