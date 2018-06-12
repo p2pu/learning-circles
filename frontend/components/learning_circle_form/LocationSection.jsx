@@ -1,6 +1,5 @@
 import React from 'react'
-import InputWithLabel from '../form_fields/InputWithLabel'
-import PlaceSelect from '../form_fields/PlaceSelect'
+import { PlaceSelect, InputWithLabel } from 'p2pu-input-fields'
 
 
 const LocationSection = (props) => {

@@ -116,6 +116,7 @@ class ExportStudyGroupsView(ListView):
         response = http.HttpResponse(content_type="text/csv")
         response['Content-Disposition'] = 'attachment; filename="learning-circles.csv"'
         field_names = [
+            'id',
             'date created',
             'course id',
             'course title',
@@ -134,6 +135,7 @@ class ExportStudyGroupsView(ListView):
         writer.writerow(field_names)
         for sg in self.object_list:
             data = [
+                sg.pk,
                 sg.created_at,
                 sg.course.id,
                 sg.course.title,

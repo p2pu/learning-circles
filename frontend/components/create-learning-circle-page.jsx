@@ -14,7 +14,8 @@ import {
   DESKTOP_BREAKPOINT
 } from '../constants';
 
-import './stylesheets/learning-circle-form.scss'
+import './stylesheets/learning-circle-form.scss';
+import 'p2pu-input-fields/dist/build.css';
 
 
 export default class CreateLearningCirclePage extends React.Component {

@@ -1,7 +1,5 @@
 import React from 'react'
-import TextareaWithLabel from '../form_fields/TextareaWithLabel'
-import InputWithLabel from '../form_fields/InputWithLabel'
-import ImageUploader from '../form_fields/ImageUploader'
+import { TextareaWithLabel, InputWithLabel, ImageUploader } from 'p2pu-input-fields'
 
 const CustomizeSection = (props) => {
   const handleImageUpload = (pictures) => {
@@ -44,6 +42,7 @@ const CustomizeSection = (props) => {
         id={'id_image'}
         image={props.learningCircle.image || props.learningCircle.image_url}
         errorMessage={props.errors.image}
+        imageUploadUrl='/api/upload_image/'
       />
     </div>
   )

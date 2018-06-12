@@ -1,9 +1,11 @@
 import React from 'react';
-import InputWithLabel from '../form_fields/InputWithLabel';
-import SelectWithLabel from '../form_fields/SelectWithLabel';
-import TimePickerWithLabel from '../form_fields/TimePickerWithLabel';
-import DatePickerWithLabel from '../form_fields/DatePickerWithLabel';
-import TimeZoneSelect from '../form_fields/TimeZoneSelect';
+import {
+  SelectWithLabel,
+  InputWithLabel,
+  TimePickerWithLabel,
+  DatePickerWithLabel,
+  TimeZoneSelect
+} from 'p2pu-input-fields';
 
 const DayTimeSection = (props) => {
   return (

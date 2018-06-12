@@ -636,12 +636,14 @@ def send_facilitator_survey(study_group):
             context
         )
         to = [study_group.facilitator.email]
+        cc = [settings.DEFAULT_FROM_EMAIL]
 
         notification = EmailMultiAlternatives(
             subject,
             txt,
             settings.DEFAULT_FROM_EMAIL,
-            to
+            to,
+            cc=cc
         )
         notification.attach_alternative(html, 'text/html')
         notification.send()
