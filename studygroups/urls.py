@@ -52,7 +52,7 @@ urlpatterns = [
     url(r'^signup/(?P<study_group_id>[\d]+)/success/$', SignupSuccess.as_view(), name='studygroups_signup_success'),
 
     url(r'^studygroup/create/$', StudyGroupCreate.as_view(), name='studygroups_facilitator_studygroup_create'),
-    url(r'^studygroup/create/html/$', StudyGroupCreateHtml.as_view(), name='studygroups_facilitator_studygroup_create'),
+    url(r'^studygroup/create/html/$', StudyGroupCreateHtml.as_view(), name='studygroups_facilitator_studygroup_create_old'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/$', views.view_study_group, name='studygroups_view_study_group'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/edit/$', StudyGroupUpdate.as_view(), name='studygroups_edit_study_group'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/delete/$', StudyGroupDelete.as_view(), name='studygroups_studygroup_delete'),

@@ -252,7 +252,7 @@ class StudyGroupForm(forms.ModelForm):
         super(StudyGroupForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         if self.instance:
-            self.helper.add_input(Submit('submit', 'Create Learning Circle'))
+            self.helper.add_input(Submit('submit', 'Save draft'))
         else:
             self.helper.add_input(Submit('submit', 'Save'))
         self.helper.layout.insert(
@@ -276,20 +276,24 @@ class StudyGroupForm(forms.ModelForm):
         model = StudyGroup
         fields = [
             'course',
-            'description',
+            'city',
+            'place_id',
+            'latitude',
+            'longitude',
             'venue_name',
             'venue_details',
             'venue_address',
-            'city',
-            'latitude',
-            'longitude',
             'start_date',
             'weeks',
             'meeting_time',
-            'duration',
             'timezone',
+            'duration',
+            'description',
+            'signup_question',
             'venue_website',
-            'image'
+            'image',
+            'facilitator_goal',
+            'facilitator_concerns',
         ]
         labels = {
             'course': _('Choose the course that your Learning Circle will study.'),
@@ -302,6 +306,10 @@ class StudyGroupForm(forms.ModelForm):
             'start_date': _('What is the date of the first Learning Circle?'),
             'duration': _('How long will each Learning Circle last (in minutes)?'),
             'image': _('Care to add an image?'),
+            'signup_question': _('Is there another question that you want people to answer when they sign up for your learning circle? If so, write that here: '),
+            'facilitator_goal': _('What are your personal goals as you facilitate this learning circle? '),
+            'facilitator_concerns': _('What questions or concerns do you have about the learning circle? Is there anything that you want feedback on before you get started?'),
+
         }
         help_texts = {
             'course': '',
@@ -318,6 +326,7 @@ class StudyGroupForm(forms.ModelForm):
         widgets = {
             'latitude': forms.HiddenInput,
             'longitude': forms.HiddenInput,
+            'place_id': forms.HiddenInput,
         } 
 
 

@@ -49,6 +49,12 @@
         placesAutocomplete.on('change', function(e){
           $('#id_latitude').val(e.suggestion.latlng.lat);
           $('#id_longitude').val(e.suggestion.latlng.lng);
+          try {
+            $('#id_place_id').val(e.suggestion.rawAnswer.hits[0].objectID);
+          }
+          catch (error) {
+            console.log("Couldn't get objectID for place");
+          }
         });
     });
 </script>
