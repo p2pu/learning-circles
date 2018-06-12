@@ -10,7 +10,7 @@
     {% if object.pk %}
       <a href="{% url 'studygroups_studygroup_edit_legacy' object.pk %}">{% trans "Use old form" %}</a>
     {% else %}
-      <a href="{% url 'studygroups_studygroup_create_old' %}">{% trans "Use old form" %}</a>
+      <a href="{% url 'studygroups_studygroup_create_legacy' %}">{% trans "Use old form" %}</a>
     {% endif %}
   </div>
 </div>

@@ -273,9 +273,9 @@ class StudyGroupCreate(TemplateView):
         return context
 
 
-class StudyGroupCreateHtml(CreateView):
+class StudyGroupCreateLegacy(CreateView):
     success_url = reverse_lazy('studygroups_facilitator')
-    template_name = 'studygroups/studygroup_form_html.html'
+    template_name = 'studygroups/studygroup_form_legacy.html'
     form_class = StudyGroupForm
 
     def get_initial(self):

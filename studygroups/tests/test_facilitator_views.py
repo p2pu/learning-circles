@@ -130,7 +130,7 @@ class TestFacilitatorViews(TestCase):
         data = self.STUDY_GROUP_DATA.copy()
         data['start_date'] = '07/25/2016',
         data['meeting_time'] = '07:00 PM',
-        resp = c.post('/en/studygroup/create/html/', data)
+        resp = c.post('/en/studygroup/create/legacy/', data)
         self.assertRedirects(resp, '/en/facilitator/')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
