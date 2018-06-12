@@ -251,10 +251,10 @@ class StudyGroupForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(StudyGroupForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
-        if self.instance:
-            self.helper.add_input(Submit('submit', 'Save draft'))
-        else:
+        if self.instance and self.instance.pk:
             self.helper.add_input(Submit('submit', 'Save'))
+        else:
+            self.helper.add_input(Submit('submit', 'Save draft'))
         self.helper.layout.insert(
             len(self.helper.layout),
             HTML("""<p>For inspiration, check out <a href="https://www.flickr.com/search/?license=2%2C3%2C4%2C5%2C6%2C9" target="_blank">openly licensed images on Flickr</a>.</p>""")

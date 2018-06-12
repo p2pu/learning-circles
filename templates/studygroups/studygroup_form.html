@@ -4,19 +4,28 @@
 {% load i18n %}
 
 {% block content %}
-<div id='create-learning-circle-form' data-user="{{ request.user }}" }}">
+<div id='create-learning-circle-form' data-user="{{ request.user }}">
   <div class="loader"></div>
-</div>
+  <div class="legacy-link">
+    {% if object.pk %}
+      <a href="{% url 'studygroups_studygroup_edit_legacy' object.pk %}">{% trans "Use old form" %}</a>
+    {% else %}
+      <a href="{% url 'studygroups_studygroup_create_old' %}">{% trans "Use old form" %}</a>
+    {% endif %}
+  </div>
 </div>
 
-<script>
-    window.lc = window.lc || {};
-    var learningCircle = {{ object.to_json|safe }};
-    window.lc = learningCircle;
-</script>
 {% endblock %}
 
 {% block scripts %}
+{% if object.pk %}
+<script>
+  window.lc = window.lc || {};
+  var learningCircle = {{ object.to_json|safe }};
+  window.lc = learningCircle;
+</script>
+{% endif %}
+
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 {% render_bundle 'common' %}
 {% render_bundle 'learning-circle-create' %}

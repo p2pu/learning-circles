@@ -265,7 +265,7 @@ class CourseUpdate(UpdateView):
 
 
 class StudyGroupCreate(TemplateView):
-    template_name = 'studygroups/facilitator_studygroup_form.html'
+    template_name = 'studygroups/studygroup_form.html'
 
     def get_context_data(self, **kwargs):
         context = super(StudyGroupCreate, self).get_context_data(**kwargs)
@@ -295,7 +295,6 @@ class StudyGroupCreateHtml(CreateView):
         return http.HttpResponseRedirect(self.success_url)
 
 
-## This form is used by facilitators
 @method_decorator(user_is_group_facilitator, name="dispatch")
 class StudyGroupUpdate(FacilitatorRedirectMixin, UpdateView):
     model = StudyGroup
@@ -307,6 +306,14 @@ class StudyGroupUpdate(FacilitatorRedirectMixin, UpdateView):
         context = super(StudyGroupUpdate, self).get_context_data(**kwargs)
         context['hide_footer'] = True
         return context
+
+
+@method_decorator(user_is_group_facilitator, name="dispatch")
+class StudyGroupUpdateLegacy(FacilitatorRedirectMixin, UpdateView):
+    model = StudyGroup
+    form_class =  StudyGroupForm
+    pk_url_kwarg = 'study_group_id'
+    template_name = 'studygroups/studygroup_form_html.html'
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")

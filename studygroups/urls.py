@@ -14,6 +14,7 @@ from studygroups.views import CourseCreate
 from studygroups.views import CourseUpdate
 from studygroups.views import CourseDelete
 from studygroups.views import StudyGroupUpdate
+from studygroups.views import StudyGroupUpdateLegacy
 from studygroups.views import StudyGroupDelete
 from studygroups.views import StudyGroupToggleSignup
 from studygroups.views import StudyGroupPublish
@@ -55,6 +56,7 @@ urlpatterns = [
     url(r'^studygroup/create/html/$', StudyGroupCreateHtml.as_view(), name='studygroups_studygroup_create_old'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/$', views.view_study_group, name='studygroups_view_study_group'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/edit/$', StudyGroupUpdate.as_view(), name='studygroups_edit_study_group'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/edit/legacy/$', StudyGroupUpdateLegacy.as_view(), name='studygroups_studygroup_edit_legacy'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/delete/$', StudyGroupDelete.as_view(), name='studygroups_studygroup_delete'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/toggle_signup/$', StudyGroupToggleSignup.as_view(), name='studygroups_studygroup_toggle_signup'),
 
