@@ -6,6 +6,9 @@
 {% block content %}
 <div id='create-learning-circle-form' data-user="{{ request.user }}">
   <div class="loader"></div>
+  <div class="legacy-link">
+    <a href="{% url 'studygroups_studygroup_create_old' %}">{% trans "Use old form" %}</a>
+  </div>
 </div>
 {% endblock %}
 
