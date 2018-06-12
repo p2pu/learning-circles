@@ -55,6 +55,7 @@ class TestFacilitatorViews(TestCase):
         'city': 'Johannesburg',
         'latitude': -26.205,
         'longitude': 28.0497,
+        'place_id': '342432',
         'description': 'We will complete the course about motorcycle maintenance together',
         'start_date': '2016-07-25',
         'weeks': '6',
@@ -120,6 +121,24 @@ class TestFacilitatorViews(TestCase):
         assertStatus('/en/studygroup/1/meeting/2/delete/', 404)
         assertStatus('/en/studygroup/1/meeting/2/feedback/create/', 404)
         assertAllowed('/en/studygroup/1/facilitator_feedback/')
+
+
+    def test_create_study_group(self):
+        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
+        c = Client()
+        c.login(username='bob123', password='password')
+        data = self.STUDY_GROUP_DATA.copy()
+        data['start_date'] = '07/25/2016',
+        data['meeting_time'] = '07:00 PM',
+        resp = c.post('/en/studygroup/create/html/', data)
+        self.assertRedirects(resp, '/en/facilitator/')
+        study_groups = StudyGroup.objects.filter(facilitator=user)
+        self.assertEquals(study_groups.count(), 1)
+        self.assertEquals(study_groups.first().meeting_set.count(), 0)
+        self.assertEquals(len(mail.outbox), 1)
+        self.assertEquals(mail.outbox[0].subject, 'Your Learning Circle has been created! What next?')
+        self.assertIn('bob@example.net', mail.outbox[0].to)
+        self.assertIn('community@localhost', mail.outbox[0].cc)
 
 
     @patch('custom_registration.signals.handle_new_facilitator')
