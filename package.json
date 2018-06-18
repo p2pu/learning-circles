@@ -9,7 +9,7 @@
   "scripts": {
     "build": "webpack --config webpack.config.js",
     "watch": "webpack --config webpack.config.js --watch",
-    "build:production": "NODE_ENV=production webpack -p --config webpack.config.js"
+    "build:production": "webpack -p --config webpack.config.js"
   },
   "repository": {
     "type": "git",
@@ -36,7 +36,7 @@
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "node-sass": "^3.13.0",
-    "p2pu-input-fields": "^0.5.2",
+    "p2pu-input-fields": "^0.5.6",
     "p2pu-search-cards": "^0.7.5",
     "places.js": "^1.4.18",
     "promise-polyfill": "^6.0.2",
