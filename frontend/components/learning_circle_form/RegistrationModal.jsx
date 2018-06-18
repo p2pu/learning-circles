@@ -10,7 +10,6 @@ import '../stylesheets/learning-circle-form.scss';
 import 'p2pu-input-fields/dist/build.css';
 
 
-
 axios.defaults.xsrfCookieName = 'csrftoken'
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 
