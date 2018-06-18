@@ -38,7 +38,10 @@ class ExportSignupsView(ListView):
         response = http.HttpResponse(content_type="text/csv")
         response['Content-Disposition'] = 'attachment; filename="signups.csv"'
         signup_questions = ['support', 'goals', 'computer_access']
-        field_names = ['study group id', 'course', 'location', 'name', 'email', 'mobile', 'date'] + signup_questions + ['use_internet']
+        field_names = [
+            'id', 'uuid', 'study group id', 'study group uuid', 'course',
+            'location', 'name', 'email', 'mobile', 'date'
+        ] + signup_questions + ['use_internet']
         writer = csv.writer(response)
         writer.writerow(field_names)
         for signup in self.object_list:
@@ -48,7 +51,10 @@ class ExportSignupsView(ListView):
                 digital_literacy = dict(Application.DIGITAL_LITERACY_CHOICES)[signup_data.get('use_internet')]
             writer.writerow(
                 [
+                    signup.id,
+                    signup.uuid,
                     signup.study_group_id,
+                    signup.study_group.uuid,
                     signup.study_group.course.title,
                     signup.study_group.venue_name,
                     signup.name,
