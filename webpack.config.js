@@ -51,8 +51,8 @@ const reactBuild = {
     ],
   },
   plugins: [
-    new BundleTracker({filename: './assets/frontend-webpack-manifest.json'}),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    new BundleTracker({filename: './assets/frontend-webpack-manifest.json'}),
     new webpack.ProvidePlugin({
       $: "jquery",
       jQuery: "jquery"

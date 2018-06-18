@@ -2,7 +2,7 @@ FROM node:carbon-alpine AS frontend
 WORKDIR /opt/app/
 COPY package.json /opt/app/
 RUN apk --no-cache add --virtual native-deps \
-  g++ make python git && \
+  g++ make python && \
   npm install --quiet --production && \
   apk del native-deps
 COPY . /opt/app/
