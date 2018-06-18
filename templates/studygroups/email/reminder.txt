@@ -10,4 +10,4 @@
 
 {% trans "See you soon." %}
 
-{% trans "To leave this study group and stop receiving subsequent notifications, click here" %}: (<!--UNSUBSCRIBE--> {% trans "link will be inserted here" %} )
+{% trans "To leave this learning circle and stop receiving messages, click here" %}: (<!--UNSUBSCRIBE--> {% trans "link will be inserted here" %} )

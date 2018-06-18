@@ -744,7 +744,7 @@ def send_reminder(reminder):
     else:
         email_body = reminder.email_body
         # TODO i18n
-        email_body = '{0}\n\nTo leave this Learning Circle you can visit https://{1}{2}'.format(email_body, settings.DOMAIN, reverse('studygroups_optout'))
+        email_body = '{0}\n\nTo leave this learning circle and stop receiving messages, click here: https://{1}{2}'.format(email_body, settings.DOMAIN, reverse('studygroups_optout'))
         # TODO - all emails should contain the unsubscribe link
         to += [reminder.study_group.facilitator.email]
         try:
