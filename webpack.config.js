@@ -2,7 +2,6 @@ var path = require("path");
 var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
-var CompressionPlugin = require("compression-webpack-plugin")
 
 var fs = require("fs");
 
@@ -63,16 +62,8 @@ const reactBuild = {
       name: 'common',
     }),
     new webpack.optimize.OccurrenceOrderPlugin(true),
-    new webpack.optimize.UglifyJsPlugin(),
     new webpack.optimize.AggressiveMergingPlugin(),
-    new CompressionPlugin({
-      asset: "[path].gz[query]",
-      algorithm: "gzip",
-      test: /\.js$|\.css$|\.html$/,
-      threshold: 10240,
-      minRatio: 0.8,
-      deleteOriginalAssets: true
-    })
+    new webpack.optimize.UglifyJsPlugin()
   ],
   resolve: {
     modules: [
