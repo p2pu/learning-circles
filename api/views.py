@@ -3,7 +3,7 @@ from django.views import View
 from django.views.generic.edit import FormView
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.template.defaultfilters import slugify
+from django.utils.text import slugify
 from django.db.models import Q, F, Case, When, Value, Sum, Min, Max
 from django.db import models
 from django.contrib.auth.models import User
@@ -72,7 +72,7 @@ def _map_to_json(sg):
         "time_zone": sg.timezone_display(),
         "end_time": sg.end_time(),
         "weeks": sg.meeting_set.active().count(),
-        "url": 'https://' + settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
+        "url": 'https://' + settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
     }
     if sg.image:
         data["image_url"] = 'https://' + settings.DOMAIN + sg.image.url
@@ -387,26 +387,26 @@ def _make_learning_circle_schema(request):
             schema.integer(),
             _course_check,
         ], required=True),
-        "description": schema.text(required=True),
-        "venue_name": schema.text(required=True),
-        "venue_details": schema.text(required=True),
-        "venue_address": schema.text(required=True),
+        "description": schema.text(required=True, length=500),
+        "venue_name": schema.text(required=True, length=256),
+        "venue_details": schema.text(required=True, length=128),
+        "venue_address": schema.text(required=True, length=256),
         "venue_website": schema.text(),
-        "city": schema.text(required=True),
+        "city": schema.text(required=True, length=256),
         "latitude": schema.floating_point(),
         "longitude": schema.floating_point(),
-        "place_id": schema.text(),
+        "place_id": schema.text(length=256),
         "start_date": schema.date(required=True),
         "weeks": schema.chain([
             schema.integer(required=True),
             lambda v: (None, 'Need to be at least 1') if v < 1 else (v, None),
         ]),
         "meeting_time": schema.time(required=True),
-        "duration": schema.text(required=True),
-        "timezone": schema.text(required=True),
-        "signup_question": schema.text(),
-        "facilitator_goal": schema.text(),
-        "facilitator_concerns": schema.text(),
+        "duration": schema.integer(required=True),
+        "timezone": schema.text(required=True, length=128),
+        "signup_question": schema.text(length=256),
+        "facilitator_goal": schema.text(length=256),
+        "facilitator_concerns": schema.text(length=256),
         "image": schema.chain([
             schema.text(),
             _image_check(),
@@ -458,7 +458,7 @@ class LearningCircleCreateView(View):
         if study_group.draft == False:
             generate_all_meetings(study_group)
 
-        study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name), study_group.id,))
+        study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name, allow_unicode=True), study_group.id,))
         return json_response(request, { "status": "created", "url": study_group_url });
 
 
@@ -511,7 +511,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         if published:
             generate_all_meetings(study_group)
 
-        study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name), study_group.id,))
+        study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name, allow_unicode=True), study_group.id,))
         return json_response(request, { "status": "updated", "url": study_group_url });
 
 

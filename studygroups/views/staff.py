@@ -18,6 +18,7 @@ from django.views.generic import TemplateView
 from studygroups.models import Application
 from studygroups.models import StudyGroup
 from studygroups.models import Course
+from studygroups.models import TeamMembership
 from ..decorators import user_is_staff
 
 
@@ -37,7 +38,10 @@ class ExportSignupsView(ListView):
         response = http.HttpResponse(content_type="text/csv")
         response['Content-Disposition'] = 'attachment; filename="signups.csv"'
         signup_questions = ['support', 'goals', 'computer_access']
-        field_names = ['study group id', 'course', 'location', 'name', 'email', 'mobile', 'date'] + signup_questions + ['use_internet']
+        field_names = [
+            'id', 'uuid', 'study group id', 'study group uuid', 'course',
+            'location', 'name', 'email', 'mobile', 'date'
+        ] + signup_questions + ['use_internet']
         writer = csv.writer(response)
         writer.writerow(field_names)
         for signup in self.object_list:
@@ -47,7 +51,10 @@ class ExportSignupsView(ListView):
                 digital_literacy = dict(Application.DIGITAL_LITERACY_CHOICES)[signup_data.get('use_internet')]
             writer.writerow(
                 [
+                    signup.id,
+                    signup.uuid,
                     signup.study_group_id,
+                    signup.study_group.uuid,
                     signup.study_group.course.title,
                     signup.study_group.venue_name,
                     signup.name,
@@ -115,6 +122,7 @@ class ExportStudyGroupsView(ListView):
         response = http.HttpResponse(content_type="text/csv")
         response['Content-Disposition'] = 'attachment; filename="learning-circles.csv"'
         field_names = [
+            'id',
             'date created',
             'course id',
             'course title',
@@ -125,11 +133,15 @@ class ExportStudyGroupsView(ListView):
             'time',
             'day',
             'last meeting',
+            'first meeting',
+            'singups',
+            'team',
         ]
         writer = csv.writer(response)
         writer.writerow(field_names)
         for sg in self.object_list:
             data = [
+                sg.pk,
                 sg.created_at,
                 sg.course.id,
                 sg.course.title,
@@ -142,6 +154,19 @@ class ExportStudyGroupsView(ListView):
             ] 
             if sg.meeting_set.active().last():
                 data += [sg.meeting_set.active().order_by('meeting_date', 'meeting_time').last().meeting_date]
+            else:
+                data += ['']
+
+            if sg.meeting_set.active().first():
+                data += [sg.meeting_set.active().order_by('meeting_date', 'meeting_time').first().meeting_date]
+            else:
+                data += ['']
+
+            data += [sg.application_set.count()]
+            # team
+            team_membership = TeamMembership.objects.filter(user=sg.facilitator)
+            if team_membership.count() == 1:
+                data += [team_membership.get().team.name]
             else:
                 data += ['']
                 

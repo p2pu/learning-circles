@@ -1,10 +1,16 @@
 from django import template
+from django.utils.text import slugify
 
 from studygroups.models import TeamMembership
 
 import datetime
 
 register = template.Library()
+
+
+@register.filter
+def unicode_slugify(text):
+    return slugify(text, allow_unicode=True)
 
 
 @register.filter

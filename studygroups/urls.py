@@ -13,7 +13,10 @@ from studygroups.views import SignupSuccess
 from studygroups.views import CourseCreate
 from studygroups.views import CourseUpdate
 from studygroups.views import CourseDelete
+from studygroups.views import StudyGroupCreate
+from studygroups.views import StudyGroupCreateLegacy
 from studygroups.views import StudyGroupUpdate
+from studygroups.views import StudyGroupUpdateLegacy
 from studygroups.views import StudyGroupDelete
 from studygroups.views import StudyGroupToggleSignup
 from studygroups.views import StudyGroupPublish
@@ -23,7 +26,6 @@ from studygroups.views import StudyGroupFacilitatorFeedback
 from studygroups.views import MeetingList
 from studygroups.views import TeamMembershipDelete
 from studygroups.views import TeamInvitationCreate
-from studygroups.views import FacilitatorStudyGroupCreate
 from studygroups.views import InvitationConfirm
 from studygroups.views import OptOutView
 from studygroups.views import CourseListView
@@ -50,9 +52,11 @@ urlpatterns = [
     url(r'^signup/(?P<location>[\w-]+)-(?P<study_group_id>[\d]+)/$', views.signup, name='studygroups_signup'),
     url(r'^signup/(?P<study_group_id>[\d]+)/success/$', SignupSuccess.as_view(), name='studygroups_signup_success'),
 
-    url(r'^studygroup/create/$', FacilitatorStudyGroupCreate.as_view(), name='studygroups_facilitator_studygroup_create'),
+    url(r'^studygroup/create/$', StudyGroupCreate.as_view(), name='studygroups_facilitator_studygroup_create'),
+    url(r'^studygroup/create/legacy/$', StudyGroupCreateLegacy.as_view(), name='studygroups_studygroup_create_legacy'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/$', views.view_study_group, name='studygroups_view_study_group'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/edit/$', StudyGroupUpdate.as_view(), name='studygroups_edit_study_group'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/edit/legacy/$', StudyGroupUpdateLegacy.as_view(), name='studygroups_studygroup_edit_legacy'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/delete/$', StudyGroupDelete.as_view(), name='studygroups_studygroup_delete'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/toggle_signup/$', StudyGroupToggleSignup.as_view(), name='studygroups_studygroup_toggle_signup'),
 

@@ -43,7 +43,6 @@ const reactBuild = {
           { loader: 'css-loader'}
         ]
       },
-
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
@@ -60,10 +59,8 @@ const reactBuild = {
     }),
     new webpack.optimize.CommonsChunkPlugin({
       name: 'common',
-    }),
-    new webpack.optimize.OccurrenceOrderPlugin(true),
-    new webpack.optimize.AggressiveMergingPlugin(),
-    new webpack.optimize.UglifyJsPlugin()
+      minChunks: 3,
+    })
   ],
   resolve: {
     modules: [
