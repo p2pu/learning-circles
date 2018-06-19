@@ -1,5 +1,7 @@
 import React from 'react'
-import { TextareaWithLabel, InputWithLabel, ImageUploader } from 'p2pu-input-fields'
+import TextareaWithLabel from 'p2pu-input-fields/dist/TextareaWithLabel'
+import InputWithLabel from 'p2pu-input-fields/dist/InputWithLabel'
+import ImageUploader from 'p2pu-input-fields/dist/ImageUploader'
 
 const CustomizeSection = (props) => {
   const handleImageUpload = (pictures) => {

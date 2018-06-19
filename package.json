@@ -35,26 +35,20 @@
     "jsonp": "^0.2.1",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
-    "moment-timezone": "^0.5.14",
     "node-sass": "^3.13.0",
-    "p2pu-input-fields": "^0.4.8",
+    "p2pu-input-fields": "^0.5.6",
     "p2pu-search-cards": "^0.7.5",
     "places.js": "^1.4.18",
     "promise-polyfill": "^6.0.2",
     "rc-time-picker": "^3.2.1",
     "react": "^15.5.4",
     "react-autocomplete": "^1.7.1",
-    "react-datepicker": "^1.1.0",
     "react-dom": "^15.5.4",
     "react-images-upload": "^1.1.1",
-    "react-masonry-component": "^6.0.2",
     "react-modal": "^3.1.11",
-    "react-rangeslider": "^2.2.0",
     "react-responsive-modal": "^2.0.0",
-    "react-select": "^1.2.1",
     "react-tabs": "^2.2.1",
     "react-telephone-input": "^4.0.1",
-    "react-tooltip": "^3.4.0",
     "sass-loader": "^4.0.2",
     "style-loader": "^0.13.2",
     "webpack": "^2.6.1",
@@ -63,6 +57,8 @@
     "whatwg-url": "^6.4.0"
   },
   "devDependencies": {
-    "babel-plugin-transform-object-rest-spread": "^6.26.0"
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "uglifyjs-webpack-plugin": "^1.2.5",
+    "webpack-bundle-analyzer": "^2.13.1"
   }
 }

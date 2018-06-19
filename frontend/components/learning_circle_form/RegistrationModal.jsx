@@ -2,7 +2,8 @@ import React from 'react';
 import axios from 'axios';
 
 import Modal from 'react-responsive-modal';
-import { CheckboxWithLabel, InputWithLabel } from 'p2pu-input-fields';
+import CheckboxWithLabel from 'p2pu-input-fields/dist/CheckboxWithLabel'
+import InputWithLabel from 'p2pu-input-fields/dist/InputWithLabel'
 
 import { API_ENDPOINTS } from '../../constants'
 
