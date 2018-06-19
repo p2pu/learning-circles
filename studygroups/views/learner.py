@@ -16,6 +16,7 @@ from django.views.generic import ListView, DetailView
 from django.views.generic.edit import FormView
 from django.views.generic import TemplateView
 from django.db.models import Count
+from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -26,6 +27,8 @@ from studygroups.models import Meeting
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import create_rsvp
+from studygroups.models import application_mobile_opt_out
+from studygroups.models import application_mobile_opt_out_revert
 from studygroups.forms import ApplicationForm
 from studygroups.forms import OptOutForm
 from studygroups.rsvp import check_rsvp_signature
@@ -223,40 +226,58 @@ def receive_sms(request):
     # TODO - secure this callback
     sender = request.POST.get('From')
     message = request.POST.get('Body')
+
+    STOP_LIST = ['STOP', 'STOPALL', 'UNSUBSCRIBE', 'CANCEL', 'END', 'QUIT']
+    opt_out = message.strip().upper() in STOP_LIST
+    if opt_out:
+        application_mobile_opt_out(sender)
+        return http.HttpResponse(status=200)
+
+    START_LIST = ['START', 'YES', 'UNSTOP']
+    opt_in = message.strip().upper() in START_LIST
+    if opt_in:
+        application_mobile_opt_out_revert(sender)
+        return http.HttpResponse(status=200)
+ 
     to = []
     bcc = None
-    # Try to find a signup with the mobile number
-    #sender = '-'.join([sender[2:5], sender[5:8], sender[8:12]])
     subject = 'New SMS reply from {0}'.format(sender)
     context = {
         'message': message,
         'sender': sender,
     }
-    signups = Application.objects.active().filter(mobile=sender)
-    # TODO only get signups for active learning circles
-    if signups.count() > 0:
-        # Send to all facilitators if user is signed up to more than 1 study group
-        signup = next(s for s in signups)
+       
+    # Only forward message to facilitator if there is a meeting in the future-ish
+    today = datetime.datetime.now().date()
+    yesterday = today - datetime.timedelta(days=1)
+    meetings = Meeting.objects.active().filter(meeting_date__gte=yesterday)
+    signups = Application.objects.active().filter(
+        Q(mobile=sender) &
+        Q(mobile_opt_out_at__isnull=True) &
+        Q(study_group__in=meetings.values('study_group'))
+    )
+
+    # TODO handle user signed up to 2 learning circles
+    if signups.count() == 1:
+        signup = signups.first()
         context['signup'] = signup
+        # TODO i18n
         subject = 'New SMS reply from {0} <{1}>'.format(signup.name, sender)
-        # TODO - don't send email to all facilitators
-        to += [ signup.study_group.facilitator.email for signup in signups]
-
-    if len(to) == 0:
-        to = [ a[1] for a in settings.ADMINS ]
-    else:
-        bcc = [ a[1] for a in settings.ADMINS ]
-
-    if signups.count() == 1 and signups.first().study_group.next_meeting():
+        to += [ signup.study_group.facilitator.email ]
         next_meeting = signups.first().study_group.next_meeting()
         # TODO - replace this check with a check to see if the meeting reminder has been sent
-        if next_meeting.meeting_datetime() - timezone.now() < datetime.timedelta(days=2):
+        if next_meeting and next_meeting.meeting_datetime() - timezone.now() < datetime.timedelta(days=2):
             context['next_meeting'] = next_meeting
             context['rsvp_yes'] = next_meeting.rsvp_yes_link(sender)
             context['rsvp_no'] = next_meeting.rsvp_no_link(sender)
 
     text_body = render_to_string('studygroups/email/incoming_sms.txt', context)
     html_body = render_to_string('studygroups/email/incoming_sms.html', context)
+    if len(to) == 0:
+        to = [ a[1] for a in settings.ADMINS ]
+    else:
+        bcc = [ a[1] for a in settings.ADMINS ]
+
     notification = EmailMultiAlternatives(
         subject,
         text_body,
@@ -267,6 +288,7 @@ def receive_sms(request):
     notification.attach_alternative(html_body, 'text/html')
     notification.send()
     return http.HttpResponse(status=200)
+
 
 class StudyGroupLearnerFeedback(TemplateView):
     template_name = 'studygroups/learner_feedback.html'
@@ -293,6 +315,7 @@ class StudyGroupLearnerFeedback(TemplateView):
         else:
             learner_uuid = request.session.get('learner_uuid', None)
             goal_met = request.session.get('goal_met', None)
+            # consider unsetting session variable here
 
             try:
                 application = study_group.application_set.get(uuid=learner_uuid)
