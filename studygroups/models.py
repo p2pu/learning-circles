@@ -440,7 +440,7 @@ def accept_application(application):
 def application_mobile_opt_out(mobile):
     """ Opt-out user with given mobile number """
     applications = Application.objects.active().filter(
-        mobile=sender, mobile_opt_out_at__isnull=True
+        mobile=mobile, mobile_opt_out_at__isnull=True
     )
     applications.update(mobile_opt_out_at=timezone.now())
     # TODO smarter handling for multiple applications 
@@ -449,7 +449,7 @@ def application_mobile_opt_out(mobile):
 def application_mobile_opt_out_revert(mobile):
     """ Cancel opt-out for applications with given mobile number """
     applications = Application.objects.active().filter(
-        mobile=sender, mobile_opt_out_at__isnull=False
+        mobile=mobile, mobile_opt_out_at__isnull=False
     )
     applications.update(mobile_opt_out_at=None)
 
