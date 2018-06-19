@@ -780,11 +780,11 @@ def send_reminder(reminder):
 
     # send SMS
     if reminder.sms_body != '':
-        tos = [su.mobile for su in reminder.study_group.application_set.active().filter(accepted_at__isnull=False).exclude(mobile='')]
+        applications = reminder.study_group.application_set.active().filter(accepted_at__isnull=False).exclude(mobile='')
+        applications = applications.filter(mobile_opt_out_at__isnull=True)
+        tos = [su.mobile for su in applications]
         for to in tos:
             try:
-                #TODO - insert opt out link
-                #if reminder.study_group_meeting:
                 send_message(to, reminder.sms_body)
             except TwilioRestException as e:
                 logger.exception("Could not send text message to %s", to, exc_info=e)
