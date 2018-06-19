@@ -289,6 +289,7 @@ class Application(LifeTimeTrackingModel):
     name = models.CharField(max_length=128)
     email = models.EmailField(verbose_name='Email address', blank=True)
     mobile = models.CharField(max_length=20, blank=True)
+    mobile_opt_out_at = models.DateTimeField(blank=True, null=True)
     signup_questions = models.TextField(default='{}')
     goal_met = models.SmallIntegerField(null=True)
     accepted_at = models.DateTimeField(blank=True, null=True)
@@ -434,6 +435,23 @@ def accept_application(application):
     # add a study group application to a study group
     application.accepted_at = timezone.now()
     application.save()
+
+
+def application_mobile_opt_out(mobile):
+    """ Opt-out user with given mobile number """
+    applications = Application.objects.active().filter(
+        mobile=sender, mobile_opt_out_at__isnull=True
+    )
+    applications.update(mobile_opt_out_at=timezone.now())
+    # TODO smarter handling for multiple applications 
+
+
+def application_mobile_opt_out_revert(mobile):
+    """ Cancel opt-out for applications with given mobile number """
+    applications = Application.objects.active().filter(
+        mobile=sender, mobile_opt_out_at__isnull=False
+    )
+    applications.update(mobile_opt_out_at=None)
 
 
 def get_all_meeting_times(study_group):
