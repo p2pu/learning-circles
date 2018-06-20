@@ -40,7 +40,7 @@ class ExportSignupsView(ListView):
         signup_questions = ['support', 'goals', 'computer_access']
         field_names = [
             'id', 'uuid', 'study group id', 'study group uuid', 'course',
-            'location', 'name', 'email', 'mobile', 'date'
+            'location', 'name', 'email', 'mobile', 'signed up at'
         ] + signup_questions + ['use_internet']
         writer = csv.writer(response)
         writer.writerow(field_names)
