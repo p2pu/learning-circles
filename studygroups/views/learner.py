@@ -320,7 +320,7 @@ class StudyGroupLearnerFeedback(TemplateView):
             try:
                 application = study_group.application_set.get(uuid=learner_uuid)
                 signup_questions = json.loads(application.signup_questions)
-                learner_goal = signup_questions['goals']
+                learner_goal = signup_questions.get('goals', None)
                 contact = application.email if application.email else application.mobile
 
                 context = {
