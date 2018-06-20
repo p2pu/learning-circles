@@ -27,14 +27,14 @@ def send_reminders():
     now = timezone.now()
     translation.activate(settings.LANGUAGE_CODE)
     # TODO - should this be set here or closer to where the language matters?
-    # TODO - make sure both the StudyGroup and Meeting is still available
+    # make sure both the StudyGroup and Meeting is still available
     reminders = Reminder.objects.filter(
         sent_at__isnull=True,
         study_group__in=StudyGroup.objects.published(),
         study_group_meeting__in=Meeting.objects.active()
     )
     for reminder in reminders:
-        # TODO don't send reminders older than the meeting
+        # don't send reminders older than the meeting
         meeting_datetime = reminder.study_group_meeting.meeting_datetime()
         if reminder.study_group_meeting and meeting_datetime - now < datetime.timedelta(days=2) and meeting_datetime > now:
             send_reminder(reminder)
