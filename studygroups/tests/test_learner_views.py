@@ -169,6 +169,7 @@ class TestLearnerViews(TestCase):
     def test_receive_sms(self):
         # Test receiving a message
         signup_data = self.APPLICATION_DATA.copy()
+
         signup_data['mobile'] = '+12812347890'
         c = Client()
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
@@ -181,12 +182,30 @@ class TestLearnerViews(TestCase):
             'Body': 'The first study group for GED® Prep Math will meet next Thursday, May 7th, from 6:00 pm-7:45 pm at Edgewater on the 2nd floor. Feel free to bring a study buddy!',
             'From': '+12812347890'
         }
-        resp = c.post(url, sms_data)
+
+        sg = StudyGroup.objects.get(pk=1)
+        sg.meeting_set.delete()
+        sg.start_date = datetime.date(2017,10,1)
+        sg.end_date = datetime.date(2017,10,1) + datetime.timedelta(weeks=6)
+        generate_all_meetings(sg)
+
+        with freeze_time("2017-10-24 17:55:34"):
+            resp = c.post(url, sms_data)
+
         self.assertEqual(len(mail.outbox), 1)
         self.assertTrue(mail.outbox[0].subject.find(signup_data['name']) > 0)
         self.assertTrue(mail.outbox[0].subject.find(signup_data['mobile']) > 0)
         self.assertIn(StudyGroup.objects.get(pk=1).facilitator.email, mail.outbox[0].to)
         self.assertIn('admin@localhost', mail.outbox[0].bcc)
+
+        mail.outbox = []
+        with freeze_time("2018-10-24 17:55:34"):
+            resp = c.post(url, sms_data)
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertTrue(mail.outbox[0].subject.find(signup_data['mobile']) > 0)
+        self.assertNotIn(StudyGroup.objects.get(pk=1).facilitator.email, mail.outbox[0].to)
+        self.assertIn('admin@localhost', mail.outbox[0].to)
 
 
     def test_receive_sms_rsvp(self):
@@ -230,6 +249,29 @@ class TestLearnerViews(TestCase):
         self.assertTrue(mail.outbox[0].subject.find('+12812344321') > 0)
         self.assertFalse(mail.outbox[0].subject.find('Test User') > 0)
         self.assertIn('admin@localhost', mail.outbox[0].to)
+
+
+    def test_receive_sms_optout(self):
+        # Test receiving a message
+        signup_data = self.APPLICATION_DATA.copy()
+
+        signup_data['mobile'] = '+12812347890'
+        c = Client()
+        resp = c.post('/en/signup/foo-bob-1/', signup_data)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEqual(Application.objects.active().count(), 1)
+
+        mail.outbox = []
+        url = '/en/receive_sms/'
+        sms_data = {
+            'Body': 'STOP',
+            'From': '+12812347890'
+        }
+
+        resp = c.post(url, sms_data)
+        self.assertEqual(len(mail.outbox), 0)
+        sg = StudyGroup.objects.get(pk=signup_data['study_group'])
+        self.assertNotEqual(sg.application_set.all().first().mobile_opt_out_at, None)
 
 
     def test_rsvp_view(self):
@@ -365,6 +407,23 @@ class TestLearnerViews(TestCase):
             accepted_at=timezone.now()
         )
         url = '/en/studygroup/{}/feedback/?learner={}&goal=2'.format(sg.uuid, '00ce18b9-b65d-4e10-8a6e-1b30d3ddc77e')
+        resp = c.get(url)
+        redirect_url = '/en/studygroup/{}/feedback/'.format(sg.uuid)
+        self.assertRedirects(resp, redirect_url)
+        learner.refresh_from_db()
+        self.assertEqual(learner.goal_met, None)
+
+
+    def test_study_group_learner_feedback_no_goal(self):
+        c = Client()
+        sg = StudyGroup.objects.get(pk=1)
+        learner = Application.objects.create(
+            study_group=sg,
+            email='learner@mail.com',
+            signup_questions='{}',
+            accepted_at=timezone.now()
+        )
+        url = '/en/studygroup/{}/feedback/?learner={}'.format(sg.uuid, learner.uuid)
         resp = c.get(url)
         redirect_url = '/en/studygroup/{}/feedback/'.format(sg.uuid)
         self.assertRedirects(resp, redirect_url)
