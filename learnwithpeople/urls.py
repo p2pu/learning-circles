@@ -13,6 +13,7 @@ urlpatterns = i18n_patterns(
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/', include('custom_registration.urls')),
     url(r'^jsi18n/$', javascript_catalog, js_info_dict, name='javascript-catalog'),
+    url(r'^discourse/', include('discourse_sso.urls')),
     url(r'^', include('studygroups.urls'))
 )
 
