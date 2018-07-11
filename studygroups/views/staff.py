@@ -4,7 +4,7 @@ import unicodecsv as csv
 
 from django import http
 from django.shortcuts import render, get_object_or_404
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.conf import settings
@@ -123,6 +123,7 @@ class ExportStudyGroupsView(ListView):
         response['Content-Disposition'] = 'attachment; filename="learning-circles.csv"'
         field_names = [
             'id',
+            'uuid',
             'date created',
             'course id',
             'course title',
@@ -136,12 +137,15 @@ class ExportStudyGroupsView(ListView):
             'first meeting',
             'singups',
             'team',
+            'facilitator survey',
+            'learner survey',
         ]
         writer = csv.writer(response)
         writer.writerow(field_names)
         for sg in self.object_list:
             data = [
                 sg.pk,
+                sg.uuid,
                 sg.created_at,
                 sg.course.id,
                 sg.course.title,
@@ -169,6 +173,21 @@ class ExportStudyGroupsView(ListView):
                 data += [team_membership.get().team.name]
             else:
                 data += ['']
+
+
+            domain = 'https://{0}'.format(settings.DOMAIN)
+            facilitator_survey =  '{}{}'.format(
+                domain, 
+                reverse('studygroups_facilitator_feedback', args=(sg.pk,))
+            )
+            learner_survey = '{}{}'.format(
+                domain,
+                reverse('studygroups_learner_feedback', args=(sg.uuid,))
+            )
+            data += [
+                facilitator_survey,
+                learner_survey,
+            ]
                 
             writer.writerow(data)
         return response
