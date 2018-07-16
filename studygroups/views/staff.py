@@ -138,6 +138,7 @@ class ExportStudyGroupsView(ListView):
             'singups',
             'team',
             'facilitator survey',
+            'facilitator survey completed',
             'learner survey',
         ]
         writer = csv.writer(response)
@@ -180,14 +181,13 @@ class ExportStudyGroupsView(ListView):
                 domain, 
                 reverse('studygroups_facilitator_feedback', args=(sg.pk,))
             )
+            data += [facilitator_survey]
+            data += ['yes' if sg.facilitatorsurveyresponse_set.count() else 'no']
             learner_survey = '{}{}'.format(
                 domain,
                 reverse('studygroups_learner_feedback', args=(sg.uuid,))
             )
-            data += [
-                facilitator_survey,
-                learner_survey,
-            ]
+            data += [learner_survey]
                 
             writer.writerow(data)
         return response
