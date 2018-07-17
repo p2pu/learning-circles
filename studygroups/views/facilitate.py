@@ -284,7 +284,7 @@ class StudyGroupCreateLegacy(CreateView):
         if course_id:
             initial['course'] = get_object_or_404(Course, pk=course_id)
         return initial
-    
+
 
     def form_valid(self, form):
         study_group = form.save(commit=False)
