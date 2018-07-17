@@ -35,7 +35,6 @@ def get_all_responses(form_id, after=None):
     }
     if after:
         params['after'] = after
-    print('&'.join(['{}={}'.format(k,v) for k,v in params.items()]))
     response = requests.get(
         url,
         params=params,
@@ -56,8 +55,6 @@ def sync_facilitator_responses():
 
     r = get_all_responses(form_id, after=after)
 
-    print(r.get('total_items'))
-    print(len(r.get('items', [])))
     for survey in r.get('items', []):
         study_group_id = survey.get('hidden').get('studygroup')
         study_group = None
@@ -95,12 +92,7 @@ def sync_learner_responses():
 
     r = get_all_responses(form_id, after=after)
 
-    from pprint import pprint
-    print(r.get('total_items'))
-    print(len(r.get('items', [])))
     for survey in r.get('items', []):
-        pprint(survey.get('hidden'))
-        pprint(r.get('answers'))
 
         study_group_id = survey.get('hidden').get('studygroup')
         study_group = None
