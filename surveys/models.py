@@ -10,3 +10,12 @@ class FacilitatorSurveyResponse(models.Model):
     survey = models.TextField()
     response = models.TextField() #This will be a JSON value
     responded_at = models.DateTimeField()
+
+
+class LearnerSurveyResponse(models.Model):
+    typeform_key = models.CharField(max_length=64, unique=True) #Called token in the JSON response
+    study_group = models.ForeignKey(StudyGroup, blank=True, null=True)
+    learner = models.ForeignKey(Application, blank=True, null=True)
+    survey = models.TextField()
+    response = models.TextField() #This will be a JSON value
+    responded_at = models.DateTimeField()

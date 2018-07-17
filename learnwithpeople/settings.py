@@ -240,6 +240,10 @@ CELERYBEAT_SCHEDULE = {
         'task': 'surveys.tasks.sync_facilitator_surveys',
         'schedule': crontab(minute='10'),
     },
+    'sync_learner_surveys': {
+        'task': 'surveys.tasks.sync_learner_surveys',
+        'schedule': crontab(minute='20'),
+    },
 
 }
 

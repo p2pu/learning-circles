@@ -7,8 +7,10 @@ import logging
 from dateutil import parser
 
 from studygroups.models import StudyGroup
+from studygroups.models import Application
 
 from .models import FacilitatorSurveyResponse
+from .models import LearnerSurveyResponse
 
 logger = logging.getLogger(__name__)
 
@@ -83,5 +85,51 @@ def sync_facilitator_responses():
 
 
 def sync_learner_responses():
-    r = get_all_responses('VA1aVz')
-    r.json()['items'][0]['hidden']['studygroup']
+    form_id = settings.TYPEFORM_LEARNER_SURVEY_FORM
+    form = get_form(form_id)
+
+    last_response = LearnerSurveyResponse.objects.order_by('-responded_at').first()
+    after = None
+    if last_response:
+        after = last_response.typeform_key
+
+    r = get_all_responses(form_id, after=after)
+
+    from pprint import pprint
+    print(r.get('total_items'))
+    print(len(r.get('items', [])))
+    for survey in r.get('items', []):
+        pprint(survey.get('hidden'))
+        pprint(r.get('answers'))
+
+        study_group_id = survey.get('hidden').get('studygroup')
+        study_group = None
+        try:
+            study_group = StudyGroup.objects.get(uuid=study_group_id)
+        except ObjectDoesNotExist as e:
+            logger.debug('Study group with ID does not exist', e)
+
+        responded_at = parser.parse(survey.get('submitted_at'))
+
+        email = survey.get('hidden').get('contact')
+        learner = None
+        try:
+            learner = Application.objects.get(email=email, study_group=study_group)
+        except ObjectDoesNotExist as e:
+            logger.debug('Application not found', e)
+       
+        data = {
+            'study_group': study_group,
+            'learner': learner,
+            'survey': json.dumps(form),
+            'response': json.dumps(survey),
+            'responded_at': responded_at
+        }
+        survey_response, created = LearnerSurveyResponse.objects.get_or_create(
+            typeform_key=survey.get('token'),
+            defaults=data
+        )
+        if not created:
+            for attr, value in data.items():
+                setattr(survey_response, attr, value)
+            survey_response.save()

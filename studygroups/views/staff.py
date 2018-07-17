@@ -41,7 +41,7 @@ class ExportSignupsView(ListView):
         field_names = [
             'id', 'uuid', 'study group id', 'study group uuid', 'course',
             'location', 'name', 'email', 'mobile', 'signed up at'
-        ] + signup_questions + ['use_internet']
+        ] + signup_questions + ['use_internet', 'survey completed']
         writer = csv.writer(response)
         writer.writerow(field_names)
         for signup in self.object_list:
@@ -63,7 +63,10 @@ class ExportSignupsView(ListView):
                     signup.created_at,
                 ] + 
                 [ signup_data.get(key, 'n/a') for key in signup_questions ] +
-                [ digital_literacy ]
+                [ 
+                    digital_literacy,
+                    'yes' if signup.learnersurveyresponse_set.count() else 'no'
+                ]
             )
         return response
 
@@ -140,6 +143,7 @@ class ExportStudyGroupsView(ListView):
             'facilitator survey',
             'facilitator survey completed',
             'learner survey',
+            'learner survey responses',
         ]
         writer = csv.writer(response)
         writer.writerow(field_names)
@@ -188,6 +192,7 @@ class ExportStudyGroupsView(ListView):
                 reverse('studygroups_learner_feedback', args=(sg.uuid,))
             )
             data += [learner_survey]
+            data += [sg.learnersurveyresponse_set.count()]
                 
             writer.writerow(data)
         return response
