@@ -31,7 +31,8 @@ def get_all_responses(form_id, after=None):
     # polling intervals, this should be okay.
     url = 'https://api.typeform.com/forms/{}/responses'.format(form_id)
     params = {
-        'page_size': 1000
+        'page_size': 1000,
+        'completed': 'true',
     }
     if after:
         params['after'] = after
@@ -40,6 +41,9 @@ def get_all_responses(form_id, after=None):
         params=params,
         headers={'Authorization': 'bearer {}'.format(settings.TYPEFORM_ACCESS_TOKEN)},
     )
+    if response.status_code != 200:
+        logger.error('Typeform request failed')
+        return {}
     return response.json()
 
 
