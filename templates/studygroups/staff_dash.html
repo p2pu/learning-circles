@@ -18,6 +18,12 @@
     <li><a href="{% url 'admin:studygroups_course_changelist' %}">{% trans "Courses" %}</a></li>
     <li><a href="{% url 'admin:studygroups_studygroup_changelist' %}">{% trans "Learning circles" %}</a></li>
   </ul>
+
+  <h3>{% trans "Version" %}</h3>
+  <ul>
+    <li><p>Version: {{ version }}</p></li>
+    <li><p>Git revision: {{ git_revision }}</p></li>
+  </ul>
 </div>
 
 {% endblock %}

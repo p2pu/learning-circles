@@ -20,11 +20,20 @@ from studygroups.models import StudyGroup
 from studygroups.models import Course
 from studygroups.models import TeamMembership
 from ..decorators import user_is_staff
+from learnwithpeople import __version__ as VERSION
+from learnwithpeople import GIT_REVISION
 
 
 @method_decorator(user_is_staff, name='dispatch')
 class StaffDashView(TemplateView):
     template_name = 'studygroups/staff_dash.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['version'] = VERSION
+        context['git_revision'] = GIT_REVISION
+        return context
+
 
 
 @method_decorator(user_is_staff, name='dispatch')
