@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 from django.views.generic.base import RedirectView
@@ -21,8 +22,8 @@ from studygroups.views import StudyGroupDelete
 from studygroups.views import StudyGroupToggleSignup
 from studygroups.views import StudyGroupPublish
 from studygroups.views import StudyGroupList
-from studygroups.views import StudyGroupLearnerFeedback
-from studygroups.views import StudyGroupFacilitatorFeedback
+from studygroups.views import StudyGroupLearnerSurvey
+from studygroups.views import StudyGroupFacilitatorSurvey
 from studygroups.views import MeetingList
 from studygroups.views import TeamMembershipDelete
 from studygroups.views import TeamInvitationCreate
@@ -67,11 +68,13 @@ urlpatterns = [
 
     url(r'^studygroup/(?P<study_group_id>[\d]+)/member/add/$', views.add_member, name='studygroups_add_member'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/member/(?P<pk>[0-9]+)/delete/$', ApplicationDelete.as_view(), name='studygroups_application_delete'),
-    url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/feedback/$', StudyGroupLearnerFeedback.as_view(), name='studygroups_learner_feedback'),
-    url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/feedback/done$', TemplateView.as_view(template_name='studygroups/learner_feedback_done.html'), name='studygroups_learner_feedback_done'),
-    url(r'^studygroup/(?P<study_group_id>[\w-]+)/facilitator_feedback/$', StudyGroupFacilitatorFeedback.as_view(), name='studygroups_facilitator_feedback'),
-    url(r'^facilitator_feedback/$', TemplateView.as_view(template_name='studygroups/anonymous_facilitator_feedback.html'), name='anonymous_facilitator_feedback'),
-    url(r'^facilitator_feedback/done$', TemplateView.as_view(template_name='studygroups/facilitator_feedback_done.html'), name='studygroups_facilitator_feedback_done'),
+    url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/feedback/$', StudyGroupLearnerSurvey.as_view()), #TODO remove after Aug 2018
+    url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/survey/$', StudyGroupLearnerSurvey.as_view(), name='studygroups_learner_survey'),
+    url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/survey/done$', TemplateView.as_view(template_name='studygroups/learner_survey_done.html'), name='studygroups_learnear_survey_done'),
+    url(r'^studygroup/(?P<study_group_id>[\w-]+)/facilitator_feedback/$', StudyGroupFacilitatorSurvey.as_view()), #TODO remove after Aug 2018
+    url(r'^studygroup/(?P<study_group_id>[\w-]+)/facilitator_survey/$', StudyGroupFacilitatorSurvey.as_view(), name='studygroups_facilitator_survey'),
+    url(r'^facilitator_survey/$', TemplateView.as_view(template_name='studygroups/anonymous_facilitator_survey.html'), name='anonymous_facilitator_survey'),
+    url(r'^facilitator_survey/done$', TemplateView.as_view(template_name='studygroups/facilitator_survey_done.html'), name='studygroups_facilitator_survey_done'),
 
     # views regarding study group meetings
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[\d]+)/edit/$', MeetingUpdate.as_view(), name='studygroups_edit_study_group_meeting'),

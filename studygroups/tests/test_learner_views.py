@@ -380,7 +380,7 @@ class TestLearnerViews(TestCase):
         self.assertTrue(send_message.called)
 
 
-    def test_study_group_learner_feedback(self):
+    def test_study_group_learner_survey(self):
         c = Client()
         sg = StudyGroup.objects.get(pk=1)
         learner = Application.objects.create(
@@ -389,15 +389,15 @@ class TestLearnerViews(TestCase):
             signup_questions='{"goals": "nothing"}',
             accepted_at=timezone.now()
         )
-        url = '/en/studygroup/{}/feedback/?learner={}&goal=2'.format(sg.uuid, learner.uuid)
+        url = '/en/studygroup/{}/survey/?learner={}&goal=2'.format(sg.uuid, learner.uuid)
         resp = c.get(url)
-        redirect_url = '/en/studygroup/{}/feedback/'.format(sg.uuid)
+        redirect_url = '/en/studygroup/{}/survey/'.format(sg.uuid)
         self.assertRedirects(resp, redirect_url)
         learner.refresh_from_db()
         self.assertEqual(learner.goal_met, 2)
 
 
-    def test_study_group_learner_feedback_uuid_error(self):
+    def test_study_group_learner_survey_uuid_error(self):
         c = Client()
         sg = StudyGroup.objects.get(pk=1)
         learner = Application.objects.create(
@@ -406,15 +406,15 @@ class TestLearnerViews(TestCase):
             signup_questions='{"goals": "nothing"}',
             accepted_at=timezone.now()
         )
-        url = '/en/studygroup/{}/feedback/?learner={}&goal=2'.format(sg.uuid, '00ce18b9-b65d-4e10-8a6e-1b30d3ddc77e')
+        url = '/en/studygroup/{}/survey/?learner={}&goal=2'.format(sg.uuid, '00ce18b9-b65d-4e10-8a6e-1b30d3ddc77e')
         resp = c.get(url)
-        redirect_url = '/en/studygroup/{}/feedback/'.format(sg.uuid)
+        redirect_url = '/en/studygroup/{}/survey/'.format(sg.uuid)
         self.assertRedirects(resp, redirect_url)
         learner.refresh_from_db()
         self.assertEqual(learner.goal_met, None)
 
 
-    def test_study_group_learner_feedback_no_goal(self):
+    def test_study_group_learner_survey_no_goal(self):
         c = Client()
         sg = StudyGroup.objects.get(pk=1)
         learner = Application.objects.create(
@@ -423,9 +423,9 @@ class TestLearnerViews(TestCase):
             signup_questions='{}',
             accepted_at=timezone.now()
         )
-        url = '/en/studygroup/{}/feedback/?learner={}'.format(sg.uuid, learner.uuid)
+        url = '/en/studygroup/{}/survey/?learner={}'.format(sg.uuid, learner.uuid)
         resp = c.get(url)
-        redirect_url = '/en/studygroup/{}/feedback/'.format(sg.uuid)
+        redirect_url = '/en/studygroup/{}/survey/'.format(sg.uuid)
         self.assertRedirects(resp, redirect_url)
         learner.refresh_from_db()
         self.assertEqual(learner.goal_met, None)

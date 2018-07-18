@@ -4,16 +4,13 @@
 
 {% block content %}
 <div class="typeform-container" style="height: 90vh">
-  <div
-    id='studygroup-learner-feedback'
-    style="height: 100%"
+  <div id='studygroup-facilitator-feedback' style="height: 100%"
     data-studygroup={{study_group_uuid}}
-    data-course="{{course_title}}"
-    data-contact="{{contact}}"
-    data-goal="{{goal}}"
-    data-goal-met="{{goal_met}}"
-    data-learner-name="{{learner_name}}"
-    data-facilitator-name="{{facilitator_name}}">
+    data-studygroup-name="{{study_group_name}}"
+    data-facilitator="{{facilitator}}"
+    data-facilitator-name="{{facilitator_name}}"
+    data-nostudygroup="{{no_studygroup}}"
+    data-rating="{{rating}}">
   </div>
 </div>
 
@@ -22,5 +19,5 @@
 {% block scripts %}
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 {% render_bundle 'common' %}
-{% render_bundle 'learner-feedback' %}
+{% render_bundle 'facilitator-survey' %}
 {% endblock %}

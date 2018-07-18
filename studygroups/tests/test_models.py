@@ -548,7 +548,7 @@ class TestSignupModels(TestCase):
             self.assertIn('mail1@example.net', mail.outbox[0].to + mail.outbox[1].to)
             self.assertIn('mail2@example.net', mail.outbox[0].to + mail.outbox[1].to)
             a1 = Application.objects.get(email=mail.outbox[0].to[0])
-            self.assertIn('https://example.net/en/studygroup/{}/feedback/?learner={}'.format(sg.uuid, a1.uuid), mail.outbox[0].body)
+            self.assertIn('https://example.net/en/studygroup/{}/survey/?learner={}'.format(sg.uuid, a1.uuid), mail.outbox[0].body)
 
         mail.outbox = []
         # 40 minutes after start
@@ -557,7 +557,7 @@ class TestSignupModels(TestCase):
             self.assertEqual(len(mail.outbox), 0)
 
 
-    def test_generate_finished_studygroup_feedback_email(self):
+    def test_generate_finished_studygroup_survey_email(self):
         now = timezone.now()
         sg = StudyGroup.objects.get(pk=1)
         sg.timezone = now.strftime("%Z")
@@ -588,7 +588,7 @@ class TestSignupModels(TestCase):
         with freeze_time("2010-02-12 17:55:34"):
             send_facilitator_survey(sg)
             self.assertEqual(len(mail.outbox), 1)
-            self.assertIn('https://example.net/en/studygroup/{0}/facilitator_feedback/'.format(sg.id), mail.outbox[0].body)
+            self.assertIn('https://example.net/en/studygroup/{0}/facilitator_survey/'.format(sg.id), mail.outbox[0].body)
             self.assertIn(sg.facilitator.email, mail.outbox[0].to)
 
 

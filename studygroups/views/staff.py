@@ -183,13 +183,13 @@ class ExportStudyGroupsView(ListView):
             domain = 'https://{0}'.format(settings.DOMAIN)
             facilitator_survey =  '{}{}'.format(
                 domain, 
-                reverse('studygroups_facilitator_feedback', args=(sg.pk,))
+                reverse('studygroups_facilitator_survey', args=(sg.pk,))
             )
             data += [facilitator_survey]
             data += ['yes' if sg.facilitatorsurveyresponse_set.count() else 'no']
             learner_survey = '{}{}'.format(
                 domain,
-                reverse('studygroups_learner_feedback', args=(sg.uuid,))
+                reverse('studygroups_learner_survey', args=(sg.uuid,))
             )
             data += [learner_survey]
             data += [sg.learnersurveyresponse_set.count()]
