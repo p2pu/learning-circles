@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.conf import settings
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.generic.base import View
@@ -45,7 +46,8 @@ class ExportSignupsView(ListView):
 
     def csv(self, **kwargs):
         response = http.HttpResponse(content_type="text/csv")
-        response['Content-Disposition'] = 'attachment; filename="signups.csv"'
+        ts = timezone.now().utcnow().isoformat()
+        response['Content-Disposition'] = 'attachment; filename="signups-{}.csv"'.format(ts)
         signup_questions = ['support', 'goals', 'computer_access']
         field_names = [
             'id', 'uuid', 'study group id', 'study group uuid', 'course',
@@ -94,7 +96,8 @@ class ExportFacilitatorsView(ListView):
 
     def csv(self, **kwargs):
         response = http.HttpResponse(content_type="text/csv")
-        response['Content-Disposition'] = 'attachment; filename="facilitators.csv"'
+        ts = timezone.now().utcnow().isoformat()
+        response['Content-Disposition'] = 'attachment; filename="facilitators-{}.csv"'.format(ts)
         field_names = ['name', 'email', 'date joined', 'last login', 'learning circles run', 'last learning circle date', 'last learning circle course', 'last learning circle venue']
         writer = csv.writer(response)
         writer.writerow(field_names)
@@ -132,7 +135,8 @@ class ExportStudyGroupsView(ListView):
 
     def csv(self, **kwargs):
         response = http.HttpResponse(content_type="text/csv")
-        response['Content-Disposition'] = 'attachment; filename="learning-circles.csv"'
+        ts = timezone.now().utcnow().isoformat()
+        response['Content-Disposition'] = 'attachment; filename="learning-circles-{}.csv"'.format(ts)
         field_names = [
             'id',
             'uuid',
@@ -220,7 +224,8 @@ class ExportCoursesView(ListView):
 
     def csv(self, **kwargs):
         response = http.HttpResponse(content_type="text/csv")
-        response['Content-Disposition'] = 'attachment; filename="learning-circles.csv"'
+        ts = timezone.now().utcnow().isoformat()
+        response['Content-Disposition'] = 'attachment; filename="courses-{}.csv"'.format(ts)
         fields = [
             'id',
             'title',
