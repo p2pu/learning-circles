@@ -284,7 +284,7 @@ class StudyGroupCreateLegacy(CreateView):
         if course_id:
             initial['course'] = get_object_or_404(Course, pk=course_id)
         return initial
-    
+
 
     def form_valid(self, form):
         study_group = form.save(commit=False)
@@ -511,11 +511,11 @@ class InvitationConfirm(FormView):
 
 
 @method_decorator(user_is_group_facilitator, name='dispatch')
-class StudyGroupFacilitatorFeedback(TemplateView):
-    template_name = 'studygroups/facilitator_feedback.html'
+class StudyGroupFacilitatorSurvey(TemplateView):
+    template_name = 'studygroups/facilitator_survey.html'
 
     def get_context_data(self, **kwargs):
-        context = super(StudyGroupFacilitatorFeedback, self).get_context_data(**kwargs)
+        context = super(StudyGroupFacilitatorSurvey, self).get_context_data(**kwargs)
         study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
         context['study_group_uuid'] = study_group.uuid
         context['study_group_name'] = study_group.course.title

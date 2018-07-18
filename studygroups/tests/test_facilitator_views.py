@@ -91,7 +91,7 @@ class TestFacilitatorViews(TestCase):
         assertForbidden('/en/studygroup/1/meeting/2/edit/')
         assertForbidden('/en/studygroup/1/meeting/2/delete/')
         assertForbidden('/en/studygroup/1/meeting/2/feedback/create/')
-        assertForbidden('/en/studygroup/1/facilitator_feedback/')
+        assertForbidden('/en/studygroup/1/facilitator_survey/')
 
 
     def test_facilitator_access(self):
@@ -120,7 +120,7 @@ class TestFacilitatorViews(TestCase):
         assertStatus('/en/studygroup/1/meeting/2/edit/', 404)
         assertStatus('/en/studygroup/1/meeting/2/delete/', 404)
         assertStatus('/en/studygroup/1/meeting/2/feedback/create/', 404)
-        assertAllowed('/en/studygroup/1/facilitator_feedback/')
+        assertAllowed('/en/studygroup/1/facilitator_survey/')
 
 
     def test_create_study_group(self):
@@ -485,7 +485,7 @@ class TestFacilitatorViews(TestCase):
         self.assertEqual(Course.objects.get(pk=course.id).topics, 'html,test')
 
 
-    def test_study_group_facilitator_feedback(self):
+    def test_study_group_facilitator_survey(self):
         facilitator = User.objects.create_user('bowie', 'hi@example.net', 'password')
         course_data = dict(
             title='Course 1011',
@@ -504,7 +504,7 @@ class TestFacilitatorViews(TestCase):
         sg.save()
         c = Client()
         c.login(username='bowie', password='password')
-        feedback_url = reverse('studygroups_facilitator_feedback', kwargs={'study_group_id': sg.pk})
+        feedback_url = reverse('studygroups_facilitator_survey', kwargs={'study_group_id': sg.pk})
         response = c.get(feedback_url)
 
         self.assertEqual(response.status_code, 200)

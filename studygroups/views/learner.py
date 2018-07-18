@@ -290,8 +290,8 @@ def receive_sms(request):
     return http.HttpResponse(status=200)
 
 
-class StudyGroupLearnerFeedback(TemplateView):
-    template_name = 'studygroups/learner_feedback.html'
+class StudyGroupLearnerSurvey(TemplateView):
+    template_name = 'studygroups/learner_survey.html'
 
     def get(self, request, *args, **kwargs):
         study_group = get_object_or_404(StudyGroup, uuid=kwargs.get('study_group_uuid'))
@@ -307,10 +307,10 @@ class StudyGroupLearnerFeedback(TemplateView):
                 request.session['learner_uuid'] = learner_uuid
                 request.session['goal_met'] = goal_met
 
-                redirect_url = reverse('studygroups_learner_feedback', kwargs={'study_group_uuid': kwargs.get('study_group_uuid')})
+                redirect_url = reverse('studygroups_learner_survey', kwargs={'study_group_uuid': kwargs.get('study_group_uuid')})
                 return HttpResponseRedirect(redirect_url)
             except ObjectDoesNotExist:
-                redirect_url = reverse('studygroups_learner_feedback', kwargs={'study_group_uuid': kwargs.get('study_group_uuid')})
+                redirect_url = reverse('studygroups_learner_survey', kwargs={'study_group_uuid': kwargs.get('study_group_uuid')})
                 return HttpResponseRedirect(redirect_url)
         else:
             learner_uuid = request.session.get('learner_uuid', None)
@@ -339,5 +339,5 @@ class StudyGroupLearnerFeedback(TemplateView):
                     'facilitator_name': study_group.facilitator.first_name
                 }
 
-        request.session.clear()
+        request.session.clear() #TODO this logs anyone out of learningcircles.p2pu.org when they visit this URL
         return render(request, self.template_name, context)

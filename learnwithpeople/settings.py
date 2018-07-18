@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'webpack_loader',
     'custom_registration',
     'advice',
+    'surveys',
 ]
 
 MIDDLEWARE = [
@@ -235,6 +236,15 @@ CELERYBEAT_SCHEDULE = {
         'task': 'backup.tasks.make_backup',
         'schedule': crontab(hour=1, minute=0),
     },
+    'sync_facilitator_surveys': {
+        'task': 'surveys.tasks.sync_facilitator_surveys',
+        'schedule': crontab(minute='10'),
+    },
+    'sync_learner_surveys': {
+        'task': 'surveys.tasks.sync_learner_surveys',
+        'schedule': crontab(minute='20'),
+    },
+
 }
 
 LOGGING = {
@@ -281,3 +291,7 @@ MAILCHIMP_API_ROOT = env('MAILCHIMP_API_ROOT', 'https://??.api.mailchimp.com/3.0
 
 DISCOURSE_BASE_URL = env('DISCOURSE_BASE_URL', '')
 DISCOURSE_SSO_SECRET = env('DISCOURSE_SSO_SECRET', '')
+
+TYPEFORM_ACCESS_TOKEN = env('TYPEFORM_ACCESS_TOKEN', '')
+TYPEFORM_FACILITATOR_SURVEY_FORM = env('TYPEFORM_FACILITATOR_SURVEY_FORM', '')
+TYPEFORM_LEARNER_SURVEY_FORM = env('TYPEFORM_LEARNER_SURVEY_FORM', '')

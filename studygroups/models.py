@@ -566,7 +566,7 @@ def send_survey_reminder(study_group):
             signup_questions = application.get_signup_questions()
             learner_goal = signup_questions.get('goals', None)
             domain = 'https://{}'.format(settings.DOMAIN)
-            path = reverse('studygroups_learner_feedback', kwargs={'study_group_uuid':study_group.uuid})
+            path = reverse('studygroups_learner_survey', kwargs={'study_group_uuid':study_group.uuid})
             querystring = '?learner={}'.format(application.uuid)
             survey_url = domain + path + querystring
 
@@ -638,7 +638,7 @@ def send_facilitator_survey(study_group):
     if last_meeting and last_week <= last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < last_week + datetime.timedelta(days=1):
 
         facilitator_name = study_group.facilitator.first_name
-        path = reverse('studygroups_facilitator_feedback', kwargs={'study_group_id': study_group.id})
+        path = reverse('studygroups_facilitator_survey', kwargs={'study_group_id': study_group.id})
         domain = 'https://{}'.format(settings.DOMAIN)
         survey_url = domain + path
 

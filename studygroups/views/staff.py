@@ -4,7 +4,7 @@ import unicodecsv as csv
 
 from django import http
 from django.shortcuts import render, get_object_or_404
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.conf import settings
@@ -41,7 +41,7 @@ class ExportSignupsView(ListView):
         field_names = [
             'id', 'uuid', 'study group id', 'study group uuid', 'course',
             'location', 'name', 'email', 'mobile', 'signed up at'
-        ] + signup_questions + ['use_internet']
+        ] + signup_questions + ['use_internet', 'survey completed']
         writer = csv.writer(response)
         writer.writerow(field_names)
         for signup in self.object_list:
@@ -63,7 +63,10 @@ class ExportSignupsView(ListView):
                     signup.created_at,
                 ] + 
                 [ signup_data.get(key, 'n/a') for key in signup_questions ] +
-                [ digital_literacy ]
+                [ 
+                    digital_literacy,
+                    'yes' if signup.learnersurveyresponse_set.count() else 'no'
+                ]
             )
         return response
 
@@ -123,6 +126,7 @@ class ExportStudyGroupsView(ListView):
         response['Content-Disposition'] = 'attachment; filename="learning-circles.csv"'
         field_names = [
             'id',
+            'uuid',
             'date created',
             'course id',
             'course title',
@@ -136,12 +140,17 @@ class ExportStudyGroupsView(ListView):
             'first meeting',
             'singups',
             'team',
+            'facilitator survey',
+            'facilitator survey completed',
+            'learner survey',
+            'learner survey responses',
         ]
         writer = csv.writer(response)
         writer.writerow(field_names)
         for sg in self.object_list:
             data = [
                 sg.pk,
+                sg.uuid,
                 sg.created_at,
                 sg.course.id,
                 sg.course.title,
@@ -169,6 +178,21 @@ class ExportStudyGroupsView(ListView):
                 data += [team_membership.get().team.name]
             else:
                 data += ['']
+
+
+            domain = 'https://{0}'.format(settings.DOMAIN)
+            facilitator_survey =  '{}{}'.format(
+                domain, 
+                reverse('studygroups_facilitator_survey', args=(sg.pk,))
+            )
+            data += [facilitator_survey]
+            data += ['yes' if sg.facilitatorsurveyresponse_set.count() else 'no']
+            learner_survey = '{}{}'.format(
+                domain,
+                reverse('studygroups_learner_survey', args=(sg.uuid,))
+            )
+            data += [learner_survey]
+            data += [sg.learnersurveyresponse_set.count()]
                 
             writer.writerow(data)
         return response
