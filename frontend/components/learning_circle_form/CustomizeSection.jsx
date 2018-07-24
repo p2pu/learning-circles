@@ -2,6 +2,7 @@ import React from 'react'
 import TextareaWithLabel from 'p2pu-input-fields/dist/TextareaWithLabel'
 import InputWithLabel from 'p2pu-input-fields/dist/InputWithLabel'
 import ImageUploader from 'p2pu-input-fields/dist/ImageUploader'
+import UrlInput from './UrlInput'
 
 const CustomizeSection = (props) => {
   const handleImageUpload = (pictures) => {
@@ -28,7 +29,7 @@ const CustomizeSection = (props) => {
         id={'id_signup_question'}
         errorMessage={props.errors.signup_question}
       />
-      <InputWithLabel
+      <UrlInput
         label={'Do you have a website you want to link to?'}
         value={props.learningCircle.venue_website || ''}
         placeholder={'E.g. www.pretorialibrary.com'}
