@@ -69,9 +69,10 @@ class CourseAdmin(admin.ModelAdmin):
         return not course.unlisted
     listed.boolean = True
 
-    list_display = ('title', 'provider', 'on_demand', 'topics', learning_circles, created_by, email, listed, 'license')
+    list_display = ('id', 'title', 'provider', 'on_demand', 'topics', learning_circles, created_by, email, listed, 'license')
     exclude = ('deleted_at',)
     inlines = [StudyGroupInline]
+    search_fields = ['title', 'provider', 'topics', 'created_by__email', 'license']
  
 
 admin.site.register(Course, CourseAdmin)
