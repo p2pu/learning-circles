@@ -5,9 +5,11 @@ import css from 'react-select/dist/react-select.css'
 export default class TopicInput extends Component {
   constructor(props){
     super(props);
-    this.state = {
-      topics: [],
+    let topics = [];
+    if (props.value){
+      topics = props.value.split(',').map(e => { return {label: e, value: e};});
     }
+    this.state = {topics: topics}
     this.handleSelect = this.handleSelect.bind(this);
   }
 
@@ -20,6 +22,7 @@ export default class TopicInput extends Component {
   render(props) {
     const topicOptions = Array.from(this.props.topics);
     topicOptions.sort();
+
     return(
       <span>
         <input type="hidden" value={this.state.topics.map(t=>t.value).join(',')} name="topics" />
@@ -34,7 +37,6 @@ export default class TopicInput extends Component {
               label: topic,
             };
           })}
-          {...props}
         />
       </span>
     )
