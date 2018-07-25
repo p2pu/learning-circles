@@ -197,6 +197,19 @@ class CourseForm(forms.ModelForm):
     )
     language = forms.ChoiceField(choices=LANGUAGES, initial='en')
 
+    LICENSES = (
+        ('All rights reserved', _('All rights reserved')),
+        ('CC-BY', _('CC-BY')),
+        ('CC-BY-SA', _('CC-BY-SA')),
+        ('CC-BY-NC', _('CC-BY-NC')),
+        ('CC-BY-NC-SA', _('CC-BY-NC-SA')),
+        ('Public Domain', _('Public Domain')),
+        ('Other', _('Other')),
+        ('Not sure', _('Not sure')),
+    )
+    license = forms.ChoiceField(choices=LICENSES)
+
+
     def __init__(self, *args, **kwargs):
         super(CourseForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
@@ -220,6 +233,7 @@ class CourseForm(forms.ModelForm):
             'on_demand',
             'topics',
             'language',
+            'license',
         ]
         labels = {
             'title': _('Course title'),
@@ -228,6 +242,7 @@ class CourseForm(forms.ModelForm):
             'caption': _('Course description (200 character limit)'),
             'topic': _('Course topics'),
             'on_demand': _('Always available'),
+            'license': _('Course license'),
         }
         help_texts = {
              'provider': _('e.g. MIT, University of Michigan, Khan Academy.'),
