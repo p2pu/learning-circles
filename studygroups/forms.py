@@ -198,6 +198,7 @@ class CourseForm(forms.ModelForm):
     language = forms.ChoiceField(choices=LANGUAGES, initial='en')
 
     LICENSES = (
+        ('', _('Not set')),
         ('All rights reserved', _('All rights reserved')),
         ('CC-BY', _('CC-BY')),
         ('CC-BY-SA', _('CC-BY-SA')),
@@ -207,7 +208,7 @@ class CourseForm(forms.ModelForm):
         ('Other', _('Other')),
         ('Not sure', _('Not sure')),
     )
-    license = forms.ChoiceField(choices=LICENSES)
+    license = forms.ChoiceField(choices=LICENSES, initial='', required=False)
 
 
     def __init__(self, *args, **kwargs):
