@@ -14,6 +14,7 @@ urlpatterns = i18n_patterns(
     url(r'^accounts/', include('custom_registration.urls')),
     url(r'^jsi18n/$', javascript_catalog, js_info_dict, name='javascript-catalog'),
     url(r'^discourse/', include('discourse_sso.urls')),
+    url(r'^surveys/', include('surveys.urls')),
     url(r'^', include('studygroups.urls'))
 )
 
