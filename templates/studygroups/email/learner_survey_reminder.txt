@@ -4,7 +4,7 @@ Hi {{learner_name}},
 
 Can you take a few minutes to let us know how your learning circle went? Your feedback - the good and the bad - will improve the learning circle program for learners and facilitators around the world.
 
-Share your feedback here: {{survey_url}}
+Share your feedback by clicking this link: {{survey_url}}
 
 Thank you for being part of the P2PU community, and we look forward to hearing from you!
 
