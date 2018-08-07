@@ -4,7 +4,7 @@
 
 {% blocktrans %}The Getting Started section of the handbook (https://www.p2pu.org/en/facilitate/starting/) has lots of tips on how to promote your Learning Circle in your community. Once this is complete, you can check out the Running Learning Circles section (https://www.p2pu.org/en/facilitate/running/) to read facilitation tips and tricks from past facilitators.{% endblocktrans %}
 
-{% blocktrans %}If you have any other questions, or are looking for general support, post your questions in our facilitator community (https://groups.google.com/a/p2pu.org/forum/#!forum/community).{% endblocktrans %}
+{% blocktrans %}If you have any other questions, or are looking for general support, post your questions in our facilitator community (https://community.p2pu.org/).{% endblocktrans %}
 
 {% trans "Cheers" %}, 
 P2PU
