@@ -22,6 +22,7 @@ import datetime
 
 @shared_task
 def send_reminders():
+    """ Send meeting reminders """
     now = timezone.now()
     translation.activate(settings.LANGUAGE_CODE)
     # TODO - should this be set here or closer to where the language matters?
