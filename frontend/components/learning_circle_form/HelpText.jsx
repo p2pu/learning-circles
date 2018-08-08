@@ -5,13 +5,9 @@ export const Step1 = () => (
   <div className='help-text'>
     <h4>Course selection tips</h4>
     <div className='content'>
-      <p>Struggling to choose a course? Ask yourself these three questions:</p>
-      <ul>
-        <li><span className="bold">What topics are of interest in my community?</span> If you’re not sure what people want to learn, the <a href="http://info.p2pu.org/2017/06/02/will-people-show-up/" target="_blank">Q Method</a> is a great way to solicit feedback from your community.</li>
-        <li><span className="bold">What gaps exist?</span> Is there a lack of high school equivalency programming in your neighborhood? No good way to get an introduction to web design? Learning circles can be a great way to plug gaps between existing educational institutions.</li>
-        <li><span className="bold">What do I want to learn?</span> If you choose something that you are passionate about, your enthusiasm will resonate with the whole group.</li>
-      </ul>
-      <p>You can use a free course from anywhere on the web for your learning circle. If you don’t see one you like here, add a new one.</p>
+      <p>The courses here have been added by past facilitators. By default, courses are listed alphabetically but you can also order by the number of times each course has been used. We try to keep this list updated so that only on-demand courses, but you should confirm that a course is available by clicking “see the course” before you go ahead and select it for your learning circle.</p>
+      <p>For more information on how to select a good course, check out <a href="https://community.p2pu.org/t/what-to-look-for-in-a-course/2756" target="_blank" rel="noopener noreferrer">this discussion thread on the community.</a></p>
+      <p>If you want to use a course that is not listed on the P2PU courses page, that is fine too! You can use any course from around the web so long as it is free for learners. <a href="https://community.p2pu.org/t/how-do-i-find-a-good-online-course/2757" target="_blank" rel="noopener noreferrer">You can learn more about searching for online courses on the community</a>, as well. Once you find a course you like, you can add that here.</p>
       <a href="/en/course/create/"><button className="p2pu-btn blue">add a course</button></a>
     </div>
   </div>
@@ -42,6 +38,7 @@ export const Step2 = () => (
         <li>Do you know where chairs, tables, and additional supplies are stored?</li>
         <li>Are you aware of any rules determining what time you must finish by each week?</li>
       </ul>
+      <p>For more information, check out the <a href="https://community.p2pu.org/t/how-to-choose-a-good-location-for-learning-circles/2758" target="_blank" rel="noopener noreferrer">“How to choose a good location for learning circles”</a> discussion thread.</p>
     </div>
   </div>
 )
