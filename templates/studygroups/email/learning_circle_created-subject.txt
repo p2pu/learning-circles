@@ -1,1 +1,2 @@
-{% load i18n %}{% trans "Your learning circle has been created! What next?" %}
+{% load i18n %}{% blocktrans with course_title=study_group.course.title city=study_group.city %}Your learning circle on “{{course_title}}” in {{city}} has been created! What next?{% endblocktrans %}
+

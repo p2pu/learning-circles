@@ -134,9 +134,10 @@ class TestFacilitatorViews(TestCase):
         self.assertRedirects(resp, '/en/facilitator/')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
+        lc = study_groups.first()
         self.assertEquals(study_groups.first().meeting_set.count(), 0)
         self.assertEquals(len(mail.outbox), 1)
-        self.assertEquals(mail.outbox[0].subject, 'Your learning circle has been created! What next?')
+        self.assertEqual(mail.outbox[0].subject, 'Your learning circle on “{}” in {} has been created! What next?'.format(lc.course.title, lc.city))
         self.assertIn('bob@example.net', mail.outbox[0].to)
         self.assertIn('community@localhost', mail.outbox[0].cc)
 
