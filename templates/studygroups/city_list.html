@@ -8,23 +8,23 @@
     <div class="lc-jumbotron-conf">
       <div class="j-text-container">
           <span class="lc-jumbo-subhead">{% trans "P2PU presents:" %}</span> </br>
-          <span class="lc-jumbo-title">{% trans "Learning Circles" %}</span> </br>
+          <span class="lc-jumbo-title">{% trans "Learning circles" %}</span> </br>
         <span class="lc-jumbo-rule"></span></br>
         <span class="lc-jumbo-body">{% trans "Study groups for people who want to take online courses together, in-person." %}</span> </br>
         {% url 'studygroups_facilitator_signup' as signup_url %}
-        <span class="lc-jumbo-call">{% blocktrans %}Sign up below for a Learning Circle in your area, or <a class="lc-jumbo-link" href="{{signup_url}}">create your own!</a>{% endblocktrans %}</span> 
+        <span class="lc-jumbo-call">{% blocktrans %}Sign up below for a learning circle in your area, or <a class="lc-jumbo-link" href="{{signup_url}}">create your own!</a>{% endblocktrans %}</span> 
       </div>	
     </div>
 
     <section id="courses" class="shaded">
       <div class="container">
         <div class="col-md-12">
-            <h2>{% blocktrans with city=city|title %}Active Learning Circles in {{ city }}{% endblocktrans %}</h2>
+            <h2>{% blocktrans with city=city|title %}Active learning circles in {{ city }}{% endblocktrans %}</h2>
         </div>
         <div class="courses-list col-md-12">
           {% include 'studygroups/learning-circles.html' %}
           {% if not learning_circles %}
-            <p>{% blocktrans with city=city|title %}Currently there aren't any active Learning Circles in {{city}}.{% endblocktrans %}</p>
+            <p>{% blocktrans with city=city|title %}Currently there aren't any active learning circles in {{city}}.{% endblocktrans %}</p>
           {% endif %}
         </div>
       </div>

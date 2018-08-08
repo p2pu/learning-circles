@@ -882,7 +882,7 @@ def send_weekly_update():
 
         to = [o.user.email for o in team.teammembership_set.filter(role=TeamMembership.ORGANIZER)]
         update = EmailMultiAlternatives(
-            _('Weekly Learning Circles update'),
+            _('Weekly learning circles update'),
             text_body,
             settings.DEFAULT_FROM_EMAIL,
             to
@@ -901,7 +901,7 @@ def send_weekly_update():
 
     to = [o.email for o in User.objects.filter(is_staff=True)]
     update = EmailMultiAlternatives(
-        _('Weekly Learning Circles update'),
+        _('Weekly learning circles update'),
         text_body,
         settings.DEFAULT_FROM_EMAIL,
         to

@@ -6,7 +6,7 @@
 <div class="container">
     <a href="{% url 'studygroups_facilitator' %}">{% trans "Back to dashboard" %}</a>
     <h2>{% blocktrans with course_title=study_group.course.title venue_name=study_group.venue_name %}Send an email to &quot;{{course_title}}&quot; at {{venue_name}}{% endblocktrans %}</h2>
-    <p>{% trans "Send messages to everyone in your Learning Circle. You can include text in both the email and SMS (text message) field, and the message will be delivered to learners in whichever medium they selected when they signed up. Note that all messages will appear from your email address." %}</p>
+    <p>{% trans "Send messages to everyone in your learning circle. You can include text in both the email and SMS (text message) field, and the message will be delivered to learners in whichever medium they selected when they signed up. Note that all messages will appear from your email address." %}</p>
     <form action="" method="POST">
       {% csrf_token %}
       {{ form|crispy }}

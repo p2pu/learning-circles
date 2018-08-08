@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='course',
             name='start_date',
-            field=models.DateField(help_text=b"If the course is always available (many are), choose today's date. Note that this is the start date for the course - not for your specific Learning Circle.", verbose_name=b'Course start date'),
+            field=models.DateField(help_text=b"If the course is always available (many are), choose today's date. Note that this is the start date for the course - not for your specific learning circle.", verbose_name=b'Course start date'),
         ),
         migrations.AlterField(
             model_name='course',

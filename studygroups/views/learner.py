@@ -158,7 +158,7 @@ def optout_confirm(request):
     if all(conditions()):
         signup = Application.objects.active().filter(pk=user)
         signup.delete()
-        messages.success(request, _('You successfully opted out of the Learning Circle.'))
+        messages.success(request, _('You successfully opted out of the learning circle.'))
     else:
         messages.error(request, _('Please check the email you received and make sure this is the correct URL.'))
 

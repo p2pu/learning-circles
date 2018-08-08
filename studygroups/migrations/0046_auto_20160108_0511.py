@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='location',
             name='image',
-            field=models.ImageField(help_text=b"A photo to represent your Learning Circle. It could be a picture of the building, or anything else you'd like to choose!", upload_to=b'', blank=True),
+            field=models.ImageField(help_text=b"A photo to represent your learning circle. It could be a picture of the building, or anything else you'd like to choose!", upload_to=b'', blank=True),
         ),
     ]

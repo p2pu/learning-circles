@@ -3,7 +3,7 @@
 {% block body %}
 <p>{% blocktrans with first_name=study_group.facilitator.first_name %}Hi there {{first_name}}{% endblocktrans %}</p>
 
-<p>{% blocktrans with meeting_date=next_meeting.meeting_datetime|date:"l, j N, fA" %}We've generated a reminder for the Learning Circle meeting this {{meeting_date}}. The reminder will be sent automatically in 2 days from now.{% endblocktrans %}</p>
+<p>{% blocktrans with meeting_date=next_meeting.meeting_datetime|date:"l, j N, fA" %}We've generated a reminder for the learning circle meeting this {{meeting_date}}. The reminder will be sent automatically in 2 days from now.{% endblocktrans %}</p>
 
 {% if reminder.study_group_meeting.meeting_activity %}
 <p>{% blocktrans with activity_description=reminder.study_group_meeting.meeting_activity.description activity_url=reminder.study_group_meeting.meeting_activity.card.url %}
@@ -13,13 +13,13 @@
 
 <p>{% trans "This is what the reminder will look like." %}</p>
 
-<p><strong>{% trans "Email to Learning Circle participants" %}</strong></p>
+<p><strong>{% trans "Email to learning circle participants" %}</strong></p>
 
 <div style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9;">
     {{ reminder.email_body | linebreaks }}
 </div>
 
-<p><strong>{% trans "Text message to Learning Circle participants" %}</strong></p>
+<p><strong>{% trans "Text message to learning circle participants" %}</strong></p>
 
 <div style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9;">
     <p>{{ reminder.sms_body }}</p>

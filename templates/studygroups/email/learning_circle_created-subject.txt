@@ -1,1 +1,1 @@
-{% load i18n %}{% trans "Your Learning Circle has been created! What next?" %}
+{% load i18n %}{% trans "Your learning circle has been created! What next?" %}
