@@ -1,6 +1,23 @@
+body {
+  &.freeze {
+    overflow: hidden;
+  }
+}
+
 nav {
   z-index: $zindex-navbar-fixed;
   font-family: $headings-font-family;
+  font-size: $font-size-base;
+
+  button.nav-item {
+    cursor: pointer;
+    background: transparent;
+    border: none;
+
+    i {
+      margin-right: 12px;
+    }
+  }
 
   .logo {
     img {
@@ -28,7 +45,7 @@ nav {
     display: flex;
     align-items: center;
 
-    > .nav-item {
+     > .nav-item {
       margin: 0 15px;
       cursor: pointer;
 
@@ -42,20 +59,70 @@ nav {
 
       li {
         a {
-          color: $p2pu-dark-blue;
+          color: $gray-darker;
+          display: flex;
+          align-items: center;
 
-          &:hover {
-            color: $p2pu-yellow;
+          span.bullet {
+            height: 5px;
+            width: 0px;
+            background: $p2pu-yellow;
+            border-radius: 5px;
+            transition: all 0.2s ease-in-out;
+            display: block;
+          }
+
+          span.text {
+            transition: transform 0.2s ease-in-out;
+          }
+
+          &:hover, &:focus {
             background-color: transparent;
-            text-decoration: underline;
+
+            span.bullet {
+              width: 10px;
+            }
+
+            span.text {
+              transform: translateX(15px);
+            }
           }
         }
       }
 
       .dropdown-menu {
         padding: 10px;
+        min-width: 250px;
       }
     }
+  }
+}
+
+#close-menu {
+  height: 32px;
+  width: 32px;
+  border-radius: 50%;
+  background-color: $p2pu-blue;
+  color: white;
+  font-size: 22px;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  border: none;
+  z-index: 1;
+
+  &:hover {
+    transform: rotate(90deg);
+  }
+
+  &:focus {
+    box-shadow: 0px 0px 0px 4px $p2pu-light-blue;
+    outline: none;
   }
 }
 
@@ -64,8 +131,6 @@ nav {
   width: 100vw;
   position: fixed;
   background: rgba(255,255,255,0.97);
-  display: flex;
-  padding-bottom: 60px;
   top: 0;
   left: 0;
   transition: left 0.5s ease-in-out;
@@ -73,145 +138,79 @@ nav {
   box-shadow: -2px 2px 10px 1px rgba(0,0,0,0.2);
 
   .content-container {
-    display: flex;
     width: inherit;
     height: inherit;
+    display: flex;
+    justify-content: center;
+    padding-left: 5%;
+    padding-right: 5%;
+    position: fixed;
+    overflow-y: scroll;
+
+    .content {
+      padding-top: 40px;
+      padding-bottom: 20px;
+    }
+  }
+
+  .nav-container {
+    align-items: center;
   }
 
   &.collapsed {
     left: 105%;
   }
 
-  #close-menu {
-    height: 40px;
-    width: 40px;
-    border-radius: 50%;
-    background-color: $p2pu-blue;
-    color: white;
-    font-size: 28px;
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: transform 0.3s ease-in-out;
-
-    &:hover {
-      transform: rotate(90deg);
-    }
-  }
-
-  h2 {
-    font-size: $font-size-base;
-    margin-bottom: 60px;
-
-    a {
-      color: $p2pu-blue;
-
-      i {
-        margin-left: 6px;
-        font-size: 0.8em;
-        transition: transform 0.3s ease-in-out;
-      }
-    }
-
-    &:hover {
-      i {
-        transform: translateX(10px);
-      }
-    }
-  }
-
-  p {
-    font-size: $font-size-base;
-
-    a:hover, a:focus {
-      color: $p2pu-yellow;
+  a {
+    &:hover, &:focus {
+      text-decoration: none;
     }
   }
 
   .menu-section {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-
-    &.full-column {
-      height: 100%;
-      flex: 1 0 25%;
-      border-right: 1px solid $p2pu-light-blue;
-
-      .nav-container {
-        height: 40vh;
-        margin-left: 20px;
-        margin-right: 20px;
-      }
-    }
-
-    &.parent-column {
-      flex-direction: column;
-      flex: 1 0 20%;
-      padding-left: 40px;
-      padding-right: 40px;
-
-      .half-column {
-        flex: 1 1 50%;
-        width: 100%;
-
-        &:nth-of-type(1) {
-          border-bottom: 1px solid $p2pu-light-blue;
-        }
-      }
-    }
-  }
-}
-
-@media (max-width: $screen-sm-max) {
-  body {
-    &.freeze {
-      overflow: hidden;
-    }
-  }
-
-  #full-page-menu {
-    flex-direction: column;
-    width: 100vw;
-    padding-top: 60px;
-    position: fixed;
-    overflow-y: scroll;
-
-    .content-container {
-      position: static;
-      display: block;
-    }
-
-    h2 {
-      margin-bottom: 20px;
-    }
-
-    .menu-section {
-      text-align: center;
+    &.top-level {
       border-bottom: 1px solid $p2pu-light-blue;
+    }
 
-      &:last-of-type {
-        border-bottom: none;
+    .menu-item {
+      font-size: calc(14px + 1vh);
+      transition: transform 0.2s ease-in-out;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+
+      span.bullet {
+        height: calc(5px + 0.1vh);
+        min-height: 5px;
+        width: 0;
+        background: $p2pu-yellow;
+        border-radius: 100px;
+        transition: all 0.2s ease-in-out;
+        display: block;
       }
 
-      &.full-column, &.parent-column {
-        flex: 1 1 auto;
-        height: auto;
-        padding-left: 0;
-        padding-right: 0;
+      span.text {
+        color: $p2pu-blue;
+        transition: transform 0.2s ease-in-out;
+      }
 
-        .half-column {
-          flex: 1 1 auto;
-          border-bottom: none;
+      &:hover {
+        span.bullet {
+          width: calc(5px + 0.5vh);
         }
 
-        .nav-container {
-          height: auto;
-          width: 100%;
+        span.text {
+          transform: translateX(15px);
+        }
+      }
+
+      &.submenu {
+        font-size: calc(14px + 0.5vh);
+        padding: 4px;
+        padding-left: 40px;
+
+        span.text {
+          color: $gray-darker;
         }
       }
     }

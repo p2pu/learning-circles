@@ -1,12 +1,12 @@
 
 // Clearing mysterious margin on btn group
 .btn-toolbar {
-  margin-left: 0 !important;
-  > .btn, > .btn-group, .input-group{
-    &:first-child{
-      margin-left: 0 !important;
-    }
-  }
+	margin-left: 0 !important;
+	> .btn, > .btn-group, .input-group{
+		&:first-child{
+			margin-left: 0 !important;
+		}
+	}
 }
 
 .p2pu-btn {
@@ -113,15 +113,6 @@
     }
   }
 
-  &.orange {
-    background: $p2pu-orange;
-    color: $white;
-
-    &:before {
-      background: lighten($p2pu-orange, 1%);
-    }
-  }
-
   &:focus {
     outline: none;
   }
@@ -135,6 +126,8 @@
   }
 
   @media (max-width: $screen-xs-max) {
+    padding: 0.4em 1em;
+
     &.dark {
       background: $gray-darker;
       color: $white;
