@@ -14,9 +14,9 @@
 
  - {% blocktrans count login_count=logins|length%}{{login_count}} facilitator logged in.{% plural %}{{login_count}} facilitators logged in.{% endblocktrans %}
       
- - {% blocktrans count study_group_count=study_groups|length %}{{study_group_count}} Learning Circle was created.{% plural %}{{study_group_count}} Learning Circles were created.{% endblocktrans %}
+ - {% blocktrans count study_group_count=study_groups|length %}{{study_group_count}} learning circle was created.{% plural %}{{study_group_count}} learning circles were created.{% endblocktrans %}
     
- - {% blocktrans count signup_count=signups|length %}{{signup_count}} learner applied to join a Learning Circle.{% plural %}{{signup_count}} learners applied to join a Learning Circle.{% endblocktrans %}
+ - {% blocktrans count signup_count=signups|length %}{{signup_count}} learner applied to join a learning circle.{% plural %}{{signup_count}} learners applied to join a learning circle.{% endblocktrans %}
 
  - {% blocktrans count course_count=courses|length %}{{course_count}} course was added.{% plural %}{{course_count}} courses were added.{% endblocktrans %}
 

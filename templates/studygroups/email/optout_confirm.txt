@@ -1,10 +1,10 @@
 {% load i18n %}{% trans "Hi there" %}
 
-{% trans "You requested to be removed from the Learning Circle mentioned in the subject. Visit the link below to confirm:" %}
+{% trans "You requested to be removed from the learning circle mentioned in the subject. Visit the link below to confirm:" %}
 
 {{application.unapply_link | safe}}
 
-{% trans "If you didn't request to be removed from the Learning Circle, you can safely ignore this message." %}
+{% trans "If you didn't request to be removed from the learning circle, you can safely ignore this message." %}
 
 {% trans "Cheers" %}
 P2PU

@@ -1,20 +1,39 @@
 @font-face {
-    font-family: 'Open sans';
-    src: url('/static/fonts/OpenSans-Regular-webfont.eot');
-    src: url('/static/fonts/OpenSans-Regular-webfont.eot?#iefix') format('embedded-opentype'),
-         url('/static/fonts/OpenSans-Regular-webfont.woff') format('woff'),
-         url('/static/fonts/OpenSans-Regular-webfont.ttf') format('truetype'),
-         url('/static//fonts/OpenSans-Regular-webfont.svg#open_sansbold') format('svg');
-    font-weight: normal;
-    font-style: normal;
-
+  font-family: 'Open Sans';
+  src: url('/static/fonts/OpenSans-Regular-webfont.eot');
+  src: url('/static/fonts/OpenSans-Regular-webfont.eot?#iefix') format('embedded-opentype'),
+       url('/static/fonts/OpenSans-Regular-webfont.woff') format('woff'),
+       url('/static/fonts/OpenSans-Regular-webfont.ttf') format('truetype'),
+       url('/static/fonts/OpenSans-Regular-webfont.svg#open_sansbold') format('svg');
+  font-weight: normal;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'Arvo';
-    src: url('/static/fonts/Arvo.woff') format('woff'),
-         url('/static/fonts/Arvo.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+  font-family: 'Open Sans Light';
+  src: url('/static/fonts/OpenSans-Light-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
 
+@font-face {
+  font-family: 'Open Sans Bold';
+  src: url('/static/fonts/OpenSans-Bold-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans Extra Bold';
+  src: url('/static/fonts/OpenSans-ExtraBold-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Arvo';
+  src: url('/static/fonts/Arvo.woff') format('woff'),
+       url('/static/fonts/Arvo-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }

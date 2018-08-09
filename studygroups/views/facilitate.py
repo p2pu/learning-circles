@@ -291,7 +291,7 @@ class StudyGroupCreateLegacy(CreateView):
         study_group.facilitator = self.request.user
         study_group.save()
         #generate_all_meetings(study_group)
-        messages.success(self.request, _('You created a new Learning Circle! Check your email for next steps.'))
+        messages.success(self.request, _('You created a new learning circle! Check your email for next steps.'))
         return http.HttpResponseRedirect(self.success_url)
 
 

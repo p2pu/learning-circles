@@ -36,8 +36,37 @@
 	}
 }
 
-@mixin grayscale_element($value) {
-    -webkit-filter: grayscale($value);
-    -moz-filter: grayscale($value);
-    filter: grayscale($value);
+@mixin flex-column-centered {
+	display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin circle-cta {
+  @include flex-column-centered;
+  height: 200px;
+  width: 200px;
+  background: $p2pu-light-blue;
+  border-radius: 50%;
+  text-align: center;
+  padding: $padding-sm;
+  color: $gray-darker;
+}
+
+@keyframes pulse-grow {
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@mixin grow-on-hover {
+  transform: perspective(1px) translateZ(0);
+  animation-name: pulse-grow;
+  animation-duration: 0.5s;
+  animation-timing-function: linear;
+  animation-iteration-count: 1;
 }

@@ -8,7 +8,7 @@
   <div class="col-lg-3 col-md-4 col-sm-6">
     <div class="lc-card">
       <a class="link-overlay" href="{% url 'studygroups_signup' location=lc.venue_name|unicode_slugify study_group_id=lc.pk %}"></a>
-      {% if lc.image %}<img src="/media/{{ lc.image }}" height="143" width="286" alt="{% trans "Image of the Learning Circle location" %}">{% else %}<img src="{% static 'images/learning-circle-default.jpg' %}" height="143" width="286" alt="{% trans "Image of the Learning Circle location" %}">{% endif %}
+      {% if lc.image %}<img src="/media/{{ lc.image }}" height="143" width="286" alt="{% trans "Image of the learning circle location" %}">{% else %}<img src="{% static 'images/learning-circle-default.jpg' %}" height="143" width="286" alt="{% trans "Image of the learning circle location" %}">{% endif %}
       <div class="title-container"><h1>{{lc.course.title}}</h1></div>
       <div class="body-container">
           <p class="facilitatorX">{% blocktrans with first_name=lc.facilitator.first_name last_name=lc.facilitator.last_name %}Facilitator: <span class="extrabold">{{first_name}} {{last_name}}</span>{% endblocktrans %}</p>

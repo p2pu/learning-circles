@@ -59,7 +59,7 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(lc.meeting_time, datetime.time(17,1))
         self.assertEqual(lc.meeting_set.all().count(), 0)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject, 'Your Learning Circle has been created! What next?')
+        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.course.title, lc.city))
         self.assertIn('faci@example.net', mail.outbox[0].to)
         self.assertIn('community@localhost', mail.outbox[0].cc)
 
@@ -104,7 +104,7 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(lc.meeting_time, datetime.time(17,1))
         self.assertEqual(lc.meeting_set.all().count(), 2)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject, 'Your Learning Circle has been created! What next?')
+        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.course.title, lc.city))
         self.assertIn('faci@example.net', mail.outbox[0].to)
         self.assertIn('community@localhost', mail.outbox[0].cc)
 

@@ -1,6 +1,6 @@
 {% load i18n %}{% trans "Hi there!" %}
 
-{% blocktrans with course_title=study_group.course.title|safe meeting_date=next_meeting.meeting_datetime|date:"l, j N, fA" venue_name=study_group.venue_name venue_details=study_group.venue_details %}The {{course_title}} Learning Circle will meet this {{meeting_date}} at {{venue_name}}, {{venue_details}}.{% endblocktrans %}
+{% blocktrans with course_title=study_group.course.title|safe meeting_date=next_meeting.meeting_datetime|date:"l, j N, fA" venue_name=study_group.venue_name venue_details=study_group.venue_details %}The {{course_title}} learning circle will meet this {{meeting_date}} at {{venue_name}}, {{venue_details}}.{% endblocktrans %}
 
 {% if feedback %}{% blocktrans with feedback_text=feedback.feedback %}From last week's meeting: {{feedback_text}}{% endblocktrans %}{% endif %}
 

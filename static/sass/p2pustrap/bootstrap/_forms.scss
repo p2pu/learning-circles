@@ -476,3 +476,13 @@ input[type="checkbox"],
     right: ($grid-gutter-width / 2);
   }
 }
+
+// Remove outline on focus and make placeholder text branded gray
+input {
+  &:focus {
+    outline: none;
+  }
+  &::placeholder {
+    color: $gray;
+  }
+}

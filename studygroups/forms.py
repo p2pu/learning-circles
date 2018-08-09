@@ -257,9 +257,9 @@ class CourseForm(forms.ModelForm):
 class StudyGroupForm(forms.ModelForm):
     TIMEZONES = [('', _('Select one of the following')),] + list(zip(pytz.common_timezones, pytz.common_timezones))
 
-    meeting_time = forms.TimeField(input_formats=['%I:%M %p'], label=_('What time will your Learning Circle meet each week?'), help_text=_('We recommend establishing a consistent weekly meeting time. You can always change individual meeting times from your Dashboard later.'), initial=datetime.time(16))
-    weeks = forms.IntegerField(min_value=1, label=_('How many weeks will your Learning Circle run for?'), help_text=_('If you\'re not sure, six weeks is generally a good bet!'))
-    timezone = forms.ChoiceField(choices=TIMEZONES, label=_('What timezone is your Learning Circle happening in?'))
+    meeting_time = forms.TimeField(input_formats=['%I:%M %p'], label=_('What time will your learning circle meet each week?'), help_text=_('We recommend establishing a consistent weekly meeting time. You can always change individual meeting times from your Dashboard later.'), initial=datetime.time(16))
+    weeks = forms.IntegerField(min_value=1, label=_('How many weeks will your learning circle run for?'), help_text=_('If you\'re not sure, six weeks is generally a good bet!'))
+    timezone = forms.ChoiceField(choices=TIMEZONES, label=_('What timezone is your learning circle happening in?'))
 
     latitude = forms.DecimalField(required=False, widget=forms.HiddenInput)
     longitude = forms.DecimalField(required=False, widget=forms.HiddenInput)
@@ -312,15 +312,15 @@ class StudyGroupForm(forms.ModelForm):
             'facilitator_concerns',
         ]
         labels = {
-            'course': _('Choose the course that your Learning Circle will study.'),
+            'course': _('Choose the course that your learning circle will study.'),
             'description': _('Share a welcome message with potential learners.'),
             'venue_name': _('Where will you meet?'),
             'venue_details': _('Where is the specific meeting spot?'),
             'venue_address': _('What is the address of the venue?'),
             'city': _('In which city is this happening?'),
             'venue_website': _('Do you have a website you want to link to?'),
-            'start_date': _('What is the date of the first Learning Circle?'),
-            'duration': _('How long will each Learning Circle last (in minutes)?'),
+            'start_date': _('What is the date of the first learning circle?'),
+            'duration': _('How long will each learning circle last (in minutes)?'),
             'image': _('Care to add an image?'),
             'signup_question': _('Is there another question that you want people to answer when they sign up for your learning circle? If so, write that here: '),
             'facilitator_goal': _('What are your personal goals as you facilitate this learning circle? '),
@@ -333,11 +333,11 @@ class StudyGroupForm(forms.ModelForm):
             'venue_name': _('Name of the venue, e.g. Pretoria Library or Bekka\'s house'),
             'venue_details': _('e.g. second floor kitchen or Room 409 (third floor)'),
             'venue_address': _('Write it out like you were mailing a letter.'),
-            'city': _('This will be used for learners looking for Learning Circles by city.'),
-            'venue_website': _('Link to any website that has more info about the venue or Learning Circle.'),
+            'city': _('This will be used for learners looking for learning circles by city.'),
+            'venue_website': _('Link to any website that has more info about the venue or learning circle.'),
             'start_date': _('Give yourself at least 4 weeks to advertise, if possible.'),
             'duration': _('We recommend 90 - 120 minutes.'),
-            'image': _('Make your Learning Circle stand out with a picture or .gif. It could be related to location, subject matter, or anything else you want to identify with!'),
+            'image': _('Make your learning circle stand out with a picture or .gif. It could be related to location, subject matter, or anything else you want to identify with!'),
         }
         widgets = {
             'latitude': forms.HiddenInput,
@@ -359,7 +359,7 @@ class FeedbackForm(forms.ModelForm):
         model = Feedback
         fields = ['study_group_meeting', 'feedback', 'reflection', 'attendance', 'rating']
         labels = {
-            'feedback': _('For learners: Write a brief summary of this week\'s Learning Circle.'),
+            'feedback': _('For learners: Write a brief summary of this week\'s learning circle.'),
             'attendance': _('How many people attended?'),
             'reflection': _('For the rest of us: Anything you want to share?'),
             'rating': _('Overall, how would you say this week went?')

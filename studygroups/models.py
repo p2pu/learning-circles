@@ -15,6 +15,7 @@ from twilio.base.exceptions import TwilioRestException
 
 from studygroups.sms import send_message
 from studygroups.email_helper import render_email_templates
+from .utils import html_body_to_text
 from studygroups import rsvp
 from studygroups.utils import gen_unsubscribe_querystring
 
@@ -871,6 +872,7 @@ def send_weekly_update():
 
     for team in Team.objects.all():
         report_context = report_data(start_time, end_time, team)
+        # TODO check if there was any activity during this period. If not, discard the update
         report_context.update(context)
         timezone.activate(pytz.timezone(settings.TIME_ZONE)) #TODO not sure what this influences anymore?
         translation.activate(settings.LANGUAGE_CODE)
@@ -879,9 +881,8 @@ def send_weekly_update():
         timezone.deactivate()
 
         to = [o.user.email for o in team.teammembership_set.filter(role=TeamMembership.ORGANIZER)]
-        # TODO, extract this to make delegating to celery in the future easier
         update = EmailMultiAlternatives(
-            _('Weekly Learning Circles update'),
+            _('Weekly learning circles update'),
             text_body,
             settings.DEFAULT_FROM_EMAIL,
             to
@@ -900,7 +901,7 @@ def send_weekly_update():
 
     to = [o.email for o in User.objects.filter(is_staff=True)]
     update = EmailMultiAlternatives(
-        _('Weekly Learning Circles update'),
+        _('Weekly learning circles update'),
         text_body,
         settings.DEFAULT_FROM_EMAIL,
         to
@@ -936,7 +937,7 @@ def send_new_studygroup_email(studygroup):
     translation.activate(settings.LANGUAGE_CODE)
     subject = render_to_string('studygroups/email/new_studygroup_update-subject.txt', context).strip('\n')
     html_body = render_to_string('studygroups/email/new_studygroup_update.html', context)
-    text_body = render_to_string('studygroups/email/new_studygroup_update.txt', context)
+    text_body = html_body_to_text(html_body)
     timezone.deactivate()
     to = [studygroup.facilitator.email]
 

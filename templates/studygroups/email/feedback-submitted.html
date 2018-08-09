@@ -6,12 +6,12 @@
 {% with study_group=study_group_meeting.study_group%}
 <p>
   {% blocktrans with first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name course_title=study_group.course.title venue_name=study_group.venue_name meeting_date=study_group_meeting.meeting_datetime|date:"fA, l, j F" %}
-    {{first_name}} {{last_name}} submitted feedback for the "{{course_title}}" Learning Circle meeting at {{venue_name}}, {{meeting_date}}.
+    {{first_name}} {{last_name}} submitted feedback for the "{{course_title}}" learning circle meeting at {{venue_name}}, {{meeting_date}}.
   {% endblocktrans %}
 </p>
 
 <div style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9;">
-    <p><strong>{% trans "Learning Circle summary" %}:</strong></p>
+    <p><strong>{% trans "Learning circle summary" %}:</strong></p>
   <p> {{ feedback.feedback }}</p>
   <p><strong>{% trans "How many people attended?" %}</strong> {{ feedback.attendance }}</p>
   <p><strong>{% trans "Internal reflection" %}:</strong></p>

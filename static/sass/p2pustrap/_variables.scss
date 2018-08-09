@@ -30,7 +30,6 @@ $p2pu-light-orange:     transparentize($p2pu-orange, 0.85);
 $p2pu-light-green:      transparentize($p2pu-green, 0.85);
 $p2pu-light-blue:       transparentize($p2pu-blue, 0.85);
 $p2pu-light-yellow:     transparentize($p2pu-yellow, 0.85);
-$p2pu-dark-blue:        #5F9EA0;
 
 
 $white:                 #FFFFFF;
@@ -41,7 +40,7 @@ $white:                 #FFFFFF;
 //## Settings for some of the most global styles.
 
 //** Background color for `<body>`.
-$body-bg:               #fff;
+$body-bg:               $white;
 //** Global text color on `<body>`.
 $text-color:            $brand-primary;
 
@@ -66,6 +65,7 @@ $font-family-base:        $font-family-sans-serif;
 $font-size-base:          18px;
 $font-size-large:         ceil(($font-size-base * 1.25)); // ~18px
 $font-size-small:         ceil(($font-size-base * 0.75)); // ~12px
+$font-size-xs:            ceil(($font-size-base * 0.60)); // ~10px
 
 $font-size-base-mobile:   18px;
 
@@ -87,7 +87,7 @@ $base-font-family:        $font-family-sans-serif;
 $base-font-family-weight: normal;
 
 $headings-font-family:    "Arvo", Helvetica, Arial, sans-serif;
-$headings-font-weight:    400;
+$headings-font-weight:    700;
 $headings-line-height:    1.1;
 $headings-color:          inherit;
 
@@ -97,7 +97,7 @@ $headings-color:          inherit;
 //## Specify custom location and filename of the included Glyphicons icon font. Useful for those including Bootstrap via Bower.
 
 //** Load fonts from this directory.
-$icon-font-path:          "../fonts/";
+$icon-font-path:          "/static/fonts/";
 //** File name for all font files.
 $icon-font-name:          "glyphicons-halflings-regular";
 //** Element ID within SVG icon file.
@@ -120,6 +120,7 @@ $padding-small-horizontal:  9px;
 $padding-xs-vertical:       1px;
 $padding-xs-horizontal:     5px;
 
+$padding-xs:                10px;
 $padding-sm:                20px;
 $padding-md:                40px;
 $padding-lg:                60px;
@@ -275,7 +276,6 @@ $dropdown-caret-color:           #000;
 //
 // Note: These variables are not generated into the Customizer.
 
-$zindex-alert:             1050;
 $zindex-navbar:            1000;
 $zindex-dropdown:          1000;
 $zindex-popover:           1060;
@@ -291,7 +291,7 @@ $zindex-modal:             1050;
 
 // Extra small screen / phone
 //** Deprecated `$screen-xs` as of v3.0.1
-$screen-xs:                  320px;
+$screen-xs:                  420px;
 //** Deprecated `$screen-xs-min` as of v3.2.0
 $screen-xs-min:              $screen-xs;
 //** Deprecated `$screen-phone` as of v3.0.1

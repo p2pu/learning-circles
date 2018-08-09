@@ -4,7 +4,7 @@
 
 {{ message }}
 
-{% if rsvp_yes and rsvp_no %}{% blocktrans with meeting_date=next_meeting.meeting_date|date:"D, d M Y" meeting_time=next_meeting.meeting_time|time:"f A" %}If this is a RSVP for the Learning Circle meeting {{meeting_date}}, {{meeting_time}} please click the appropriate link below.{% endblocktrans %}
+{% if rsvp_yes and rsvp_no %}{% blocktrans with meeting_date=next_meeting.meeting_date|date:"D, d M Y" meeting_time=next_meeting.meeting_time|time:"f A" %}If this is a RSVP for the learning circle meeting {{meeting_date}}, {{meeting_time}} please click the appropriate link below.{% endblocktrans %}
 
 {% trans "The learner said they can attend" %}: {{ rsvp_yes | safe}}
 {% trans "The learner cannot attend" %}: {{ rsvp_no | safe}}

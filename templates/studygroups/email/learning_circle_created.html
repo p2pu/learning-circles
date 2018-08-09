@@ -41,14 +41,14 @@
   </p>
 </div>
 
+{% url 'studygroups_facilitator_studygroup_create' as dashboard_url %}
 <h2>{% trans "What next?" %}</h2>
 <ul>
-    <li>{% blocktrans %}<a href="https://www.p2pu.org/en/facilitate/"><b>Review the Facilitator Guide</b></a>. It contains 40 pages of great tips, tricks, checklists, and templates to help you advertise, prepare for, and run your Learning Circle.{% endblocktrans %}</li>
-    <li>{% blocktrans %}<a href="https://community.p2pu.org/"><b>Get in touch with other facilitators</b></a>. Ask questions, share advice, and contribute new ideas on our community forum.{% endblocktrans %}</li>
-    <li>{% blocktrans %}<a href="https://learningcircles.p2pu.org/en/facilitator/"><b>Read the applications</b></a>. You’ll receive an email whenever somebody applies to your Learning Circle. You can view their applications and send them messages directly through your dashboard.{% endblocktrans %}</li>
+    <li>{% blocktrans %}<a href="https://community.p2pu.org/c/learning-circles/promotion-and-outreach"><b>Review promotion and outreach.</b></a>You'll find templates and discussions on the community that will help you promote your learning circle.{% endblocktrans %}</li>
+    <li>{% blocktrans %}<a href="https://community.p2pu.org/c/learning-circles/creating-a-learning-circle"><b>Gather your supplies</b></a>. Make sure you have everything you need before your learning circle gets started.{% endblocktrans %}</li>
+    <li>{% blocktrans %}<a href="{{dashboard_url}}"><b>Review learner applications</b></a>. You’ll receive an email whenever somebody applies to your learning circle. You can view their applications and send them messages directly through your dashboard.{% endblocktrans %}</li>
 </ul>
 
-<p>{% blocktrans %}You will hear from us again a few days before your first Learning Circle. If you have any questions in the meantime, you can ask in our <a href="https://community.p2pu.org/">facilitator community</a>.{% endblocktrans %}</p>
 
 <p>{% trans "Cheers" %},<br/>
 P2PU</p>

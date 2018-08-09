@@ -3,7 +3,7 @@
 {% load i18n %}
 
 {% block body %}
-  <h1>{% trans "Learning Circles update" %}</h1>
+  <h1>{% trans "Learning circles update" %}</h1>
   <p>{% blocktrans with start_date=start_time|date:"l, j F" end_date=end_time|date:"l, j F" %}for the time period starting {{start_date}} and ending {{end_date}}.{% endblocktrans %}</p>
   {% url 'studygroups_weekly_report_date' start_time.year start_time.month start_time.day as report_url %}
   {% if protocol and domain %}<p>{% blocktrans %}You can also view this report <a href="{{protocol}}://{{domain}}{{report_url}}">online</a>.{% endblocktrans %}</p>{% endif %}
@@ -41,16 +41,16 @@
     </li>
     <li>
       {% blocktrans count study_group_count=study_groups|length %}
-        {{study_group_count}} Learning Circle was created.
+        {{study_group_count}} learning circle was created.
       {% plural %}
-        {{study_group_count}} Learning Circles were created.
+        {{study_group_count}} learning circles were created.
       {% endblocktrans %}
     </li>
     <li>
       {% blocktrans count signup_count=signups|length %}
-        {{signup_count}} learner applied to join a Learning Circle.
+        {{signup_count}} learner applied to join a learning circle.
       {% plural %}
-        {{signup_count}} learners applied to join a Learning Circle.
+        {{signup_count}} learners applied to join a learning circle.
       {% endblocktrans %}
     </li>
     <li>
