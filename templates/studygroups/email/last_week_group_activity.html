@@ -4,18 +4,18 @@
 
 <p>{% blocktrans %}Dear {{facilitator_name}},{% endblocktrans %}</p>
 <p>
-{% trans "Learning circles are happening around the world, and your experience is valuable to others who are just beginning their journey." %}
+{% if next_study_group %}
+{% blocktrans %}
+In {{ weeks }} weeks, a learning circle will start in {{ city }} studying "{{ course_title }}". As a group, can you please write them a short note welcoming them to the P2PU Community?
+{% endblocktrans %}
+{% else %}
+{% trans "Can you please write a short note welcoming the next learning circle to the P2PU community?" %}
+{% endif %}
+{% trans "Just reply to this email, and we’ll make sure they get it. Feel free to attach a photo of your learning circle :)" %}
 </p>
 
 <p>
-{% if next_study_group %}
-{% blocktrans %}
-In {{ weeks }} weeks, a learning circle will start in {{ city }} studying "{{ course_title }}". As a group, can you write them a short note welcoming them to the P2PU Community?
-{% endblocktrans %}
-{% else %}
-{% trans "Can you write a short note welcoming the next learning circle to the P2PU community?" %}
-{% endif %}
-{% trans "Just reply to this email, and we’ll make sure they get it. Feel free to attach a photo of your learning circle :)" %}
+{% trans "Learning circles are happening around the world, and your experience is valuable to others who are just beginning their journey." %}
 </p>
 
 <p>{% trans "Here are a few prompts:" %}</p>

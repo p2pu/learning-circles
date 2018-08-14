@@ -1,1 +1,1 @@
-{% load i18n %}{% trans 'Last week group activity' %}
+{% load i18n %}{% trans 'Welcome the next learning circle' %}

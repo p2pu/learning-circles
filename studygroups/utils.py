@@ -28,6 +28,10 @@ import re
 import bleach
 
 def html_body_to_text(html):
+    # remove style tags
+    link_re = re.compile(r'<style>.*?</style>', re.MULTILINE|re.DOTALL)
+    html = link_re.sub('', html)
+
     # rewrite links
     link_re = re.compile(r'<a.*?href="(?P<url>.*?)".*?>(?P<text>.*?)</a>')
     html = link_re.sub(r'\2 ( \1 ) ', html)

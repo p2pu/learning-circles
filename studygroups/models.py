@@ -695,10 +695,16 @@ def send_last_week_group_activity(study_group):
             context['city'] = next_study_group.city
             context['course_title'] = next_study_group.course.title
 
-        subject, txt, html = render_email_templates(
-            'studygroups/email/last_week_group_activity',
+        
+        subject = render_to_string(
+            'studygroups/email/last_week_group_activity-subject.txt',
+            context
+        ).strip('\n')
+        html = render_to_string(
+            'studygroups/email/last_week_group_activity.html',
             context
         )
+        txt = html_body_to_text(html)
         to = [study_group.facilitator.email]
 
         notification = EmailMultiAlternatives(
