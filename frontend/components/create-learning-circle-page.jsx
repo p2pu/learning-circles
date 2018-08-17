@@ -29,7 +29,9 @@ export default class CreateLearningCirclePage extends React.Component {
       showHelp: window.screen.width > DESKTOP_BREAKPOINT,
       user: this.props.user,
       errors: {},
-      alert: { show: false }
+      alert: { show: false },
+      isSaving: false,
+      isPublishing: false,
     };
     this.changeTab = (tab) => this._changeTab(tab);
     this.onSubmitForm = (val) => this._onSubmitForm(val);
@@ -127,6 +129,7 @@ export default class CreateLearningCirclePage extends React.Component {
     if (!this.state.user) {
       this.showModal();
     } else {
+      this.setState({ isSaving: draft, isPublishing: !draft })
       const data = {
         ...this.state.learningCircle,
         course: this.state.learningCircle.course.id,
@@ -134,7 +137,7 @@ export default class CreateLearningCirclePage extends React.Component {
       }
 
       const onSuccess = (data) => {
-        this.setState({ learningCircle: {} }, () => {
+        this.setState({ learningCircle: {}, isSaving: false, isPublishing: false }, () => {
           if (data.draft == false) {
             window.location.href = `${LC_PUBLISHED_PAGE}?url=${data.study_group_url}`;
           } else {
@@ -145,6 +148,8 @@ export default class CreateLearningCirclePage extends React.Component {
 
       const onError = (data) => {
         this.setState({
+          isSaving: false,
+          isPublishing: false,
           currentTab: 0,
           errors: data.errors,
           learningCircle: {
@@ -213,6 +218,8 @@ export default class CreateLearningCirclePage extends React.Component {
           errors={this.state.errors}
           onCancel={this.onCancel}
           onSubmitForm={this.onSubmitForm}
+          isSaving={this.state.isSaving}
+          isPublishing={this.state.isPublishing}
         />
         <HelpContainer currentTab={this.state.currentTab} />
         <RegistrationModal

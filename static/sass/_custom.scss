@@ -439,6 +439,13 @@ img.lc-about-image{
   }
 }
 
+.p2pu-btn {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 @media (max-width: $screen-xs-max) {
   .feedback-done {
     .actions {

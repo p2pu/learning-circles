@@ -45,6 +45,7 @@
     "react-autocomplete": "^1.7.1",
     "react-dom": "^15.5.4",
     "react-images-upload": "^1.1.1",
+    "react-loading": "^2.0.3",
     "react-modal": "^3.1.11",
     "react-responsive-modal": "^2.0.0",
     "react-tabs": "^2.2.1",
