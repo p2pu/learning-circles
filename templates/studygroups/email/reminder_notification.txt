@@ -2,8 +2,6 @@
 
 {% blocktrans with meeting_date=next_meeting.meeting_datetime|date:"l, j N, fA" %}We've generated a reminder for the learning circle meeting this {{meeting_date}}. The reminder will be sent automatically in 2 days from now.{% endblocktrans %}
 
-{% if reminder.study_group_meeting.meeting_activity %}{% blocktrans with activity_description=reminder.study_group_meeting.meeting_activity.description activity_url=reminder.study_group_meeting.meeting_activity.card.url %}You can find the recommended activity for this week in the recipe card: {{ activity_description }} ({{ protocol }}://{{ domain }}{{ activity_url }}){% endblocktrans %}{% endif %}
-
 {% trans "This is what the reminder will look like." %}
 
 # {% trans "Email to learning circle participants" %}

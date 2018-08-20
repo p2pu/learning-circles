@@ -6,7 +6,6 @@ from studygroups.models import StudyGroup
 from studygroups.models import Meeting 
 from studygroups.models import Application 
 from studygroups.models import Reminder 
-from studygroups.models import Activity
 from studygroups.models import Profile
 from studygroups.models import Team
 from studygroups.models import TeamMembership
@@ -76,7 +75,6 @@ class CourseAdmin(admin.ModelAdmin):
  
 
 admin.site.register(Course, CourseAdmin)
-admin.site.register(Activity)
 admin.site.register(StudyGroup, StudyGroupAdmin)
 admin.site.register(Meeting)
 admin.site.register(Application, ApplicationAdmin)

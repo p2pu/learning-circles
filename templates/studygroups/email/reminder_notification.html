@@ -5,12 +5,6 @@
 
 <p>{% blocktrans with meeting_date=next_meeting.meeting_datetime|date:"l, j N, fA" %}We've generated a reminder for the learning circle meeting this {{meeting_date}}. The reminder will be sent automatically in 2 days from now.{% endblocktrans %}</p>
 
-{% if reminder.study_group_meeting.meeting_activity %}
-<p>{% blocktrans with activity_description=reminder.study_group_meeting.meeting_activity.description activity_url=reminder.study_group_meeting.meeting_activity.card.url %}
-  You can find the recommended activity for this week in the recipe card: <a href="{{ protocol }}://{{ domain }}{{ activity_url }}">{{ activity_description }}</a>
-{% endblocktrans %}</p>
-{% endif %}
-
 <p>{% trans "This is what the reminder will look like." %}</p>
 
 <p><strong>{% trans "Email to learning circle participants" %}</strong></p>
@@ -24,6 +18,7 @@
 <div style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9;">
     <p>{{ reminder.sms_body }}</p>
 </div>
+
 {% url 'studygroups_message_edit' reminder.study_group.id reminder.id as message_edit_url %}
 <p>{% blocktrans %}If you wish to edit the reminder, you can follow <a href="{{protocol}}://{{domain}}{{message_edit_url}}">this link</a>.{% endblocktrans %}</p>
 
