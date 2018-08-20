@@ -197,6 +197,7 @@ class StudyGroup(LifeTimeTrackingModel):
     facilitator_goal = models.CharField(max_length=256, blank=True)
     facilitator_concerns = models.CharField(max_length=256, blank=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    facilitator_rating = models.IntegerField(blank=True, null=True)
 
 
     objects = StudyGroupQuerySet.as_manager()
@@ -444,7 +445,7 @@ def application_mobile_opt_out(mobile):
         mobile=mobile, mobile_opt_out_at__isnull=True
     )
     applications.update(mobile_opt_out_at=timezone.now())
-    # TODO smarter handling for multiple applications 
+    # TODO smarter handling for multiple applications
 
 
 def application_mobile_opt_out_revert(mobile):
@@ -695,7 +696,7 @@ def send_last_week_group_activity(study_group):
             context['city'] = next_study_group.city
             context['course_title'] = next_study_group.course.title
 
-        
+
         subject = render_to_string(
             'studygroups/email/last_week_group_activity-subject.txt',
             context

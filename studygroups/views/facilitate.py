@@ -514,6 +514,15 @@ class InvitationConfirm(FormView):
 class StudyGroupFacilitatorSurvey(TemplateView):
     template_name = 'studygroups/facilitator_survey.html'
 
+    def get(self, request, *args, **kwargs):
+        study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
+        study_group.facilitator_rating = request.GET.get('rating', None)
+        study_group.save()
+        response = super().get(request, *args, **kwargs)
+
+        return response
+
+
     def get_context_data(self, **kwargs):
         context = super(StudyGroupFacilitatorSurvey, self).get_context_data(**kwargs)
         study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
