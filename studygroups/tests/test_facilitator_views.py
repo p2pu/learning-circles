@@ -505,9 +505,11 @@ class TestFacilitatorViews(TestCase):
         sg.save()
         c = Client()
         c.login(username='bowie', password='password')
-        feedback_url = reverse('studygroups_facilitator_survey', kwargs={'study_group_id': sg.pk})
+        feedback_url = '/en/studygroup/{}/facilitator_survey/?rating=5'.format(sg.pk)
         response = c.get(feedback_url)
 
+        sg.refresh_from_db()
+        self.assertEqual(sg.facilitator_rating, 5)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context_data['study_group_uuid'], sg.uuid)
         self.assertEqual(response.context_data['study_group_name'], course.title)
@@ -530,7 +532,7 @@ class TestFacilitatorViews(TestCase):
             resp = c.get('/en/facilitator/')
             self.assertEqual(resp.status_code, 200)
             self.assertIn(sg, resp.context['current_study_groups'])
-    
+
         sg.draft = False
         sg.save()
         generate_all_meetings(sg)

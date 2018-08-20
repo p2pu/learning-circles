@@ -238,7 +238,7 @@ def receive_sms(request):
     if opt_in:
         application_mobile_opt_out_revert(sender)
         return http.HttpResponse(status=200)
- 
+
     to = []
     bcc = None
     subject = 'New SMS reply from {0}'.format(sender)
@@ -246,7 +246,7 @@ def receive_sms(request):
         'message': message,
         'sender': sender,
     }
-       
+
     # Only forward message to facilitator if there is a meeting in the future-ish
     today = datetime.datetime.now().date()
     yesterday = today - datetime.timedelta(days=1)
