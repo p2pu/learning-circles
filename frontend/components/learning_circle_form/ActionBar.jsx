@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactLoading from 'react-loading';
 
 const NextButton = (props) => (
   <button className="p2pu-btn blue" onClick={props.onClick}>
@@ -14,13 +15,15 @@ const BackButton = (props) => (
 
 const PublishButton = (props) => (
   <button className="p2pu-btn orange publish" onClick={props.onClick}>
-    Publish
+    <span style={{ opacity: Number(props.isPublishing), position: "absolute" }}><ReactLoading height={28} width={28} type="bubbles" /></span>
+    <span style={{ opacity: Number(!props.isPublishing) }}>Publish</span>
   </button>
 )
 
 const SaveButton = (props) => (
   <button className="p2pu-btn yellow save" onClick={props.onClick}>
-    {props.text}
+    <span style={{ opacity: Number(props.isSaving), position: "absolute" }}><ReactLoading height={28} width={28} type="bubbles" /></span>
+    <span style={{ opacity: Number(!props.isSaving) }}>{props.text}</span>
   </button>
 )
 
@@ -43,7 +46,7 @@ const ActionBar = (props) => {
         <div className='action-bar'>
           <BackButton onClick={prevTab} />
           <CancelButton onClick={props.onCancel} />
-          <SaveButton onClick={() => props.onSubmitForm()} text={'Save'} />
+          <SaveButton onClick={() => props.onSubmitForm()} text={'Save'} isLoading={props.isLoading} />
         </div>
       )
     }
@@ -52,8 +55,8 @@ const ActionBar = (props) => {
       <div className='action-bar'>
         <BackButton onClick={prevTab} />
         <CancelButton onClick={props.onCancel} />
-        <SaveButton onClick={() => props.onSubmitForm()} text={'Save & publish later'} />
-        <PublishButton onClick={() => props.onSubmitForm(false)} />
+        <SaveButton onClick={() => props.onSubmitForm()} text={'Save & publish later'} isSaving={props.isSaving} />
+        <PublishButton onClick={() => props.onSubmitForm(false)} isPublishing={props.isPublishing} />
       </div>
     )
   }
