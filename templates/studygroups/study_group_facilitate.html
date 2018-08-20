@@ -48,15 +48,6 @@
           </div>
         {% endif %}
       </div>
-      <div class="col-md-12 well">
-        <h3>{% trans "Recipe Cards" %}</h3>
-        <p>{% trans "Use these recipe cards to foster community, build learner confidence, and help to bridge the course content and real life. Each recipe card includes a 15 minute group activity that you can do during the learning circle." %}</p>
-        <p class="recipe-card-links">
-        {% for activity in activities %}
-          <a class="btn btn-primary" href="{{activity.card.url}}" target="_blank">{{activity.description}}</a>
-        {% endfor %}
-        </p>
-      </div>
       <div class="col-md-12">
         <h3>{% trans "Meetings" %} ({{lc.meeting_set.active.count}})</h3>
         <table class="table table-bordered">
