@@ -32,8 +32,14 @@ from .decorators import user_is_not_logged_in
 @method_decorator(user_is_not_logged_in, name='dispatch')
 class SignupView(FormView):
     form_class = SignupForm
-    success_url = reverse_lazy('studygroups_facilitator')
     template_name = 'custom_registration/signup.html'
+
+    def get_success_url(self):
+        # if there is a next URL defined, use that
+        if 'next' in self.request.GET:
+            return self.request.GET['next']
+        return reverse('studygroups_facilitator')
+        
 
     def form_valid(self, form):
         user = form.save(commit=False)
