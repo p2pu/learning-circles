@@ -1,1 +1,1 @@
-{% load i18n %}{% blocktrans with organizer_name=organizer.first_name %}{{organizer_name}} invited you to join their team on learningcircles.p2pu.org{% endblocktrans %}
+{% load i18n %}{% blocktrans with organizer_name=organizer.first_name|safe %}{{organizer_name}} invited you to join their team on learningcircles.p2pu.org{% endblocktrans %}
