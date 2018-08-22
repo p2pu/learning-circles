@@ -28,6 +28,8 @@ import re
 import bleach
 
 def html_body_to_text(html):
+    """ Convern HTML email body to text """
+    # Consider using https://github.com/aaronsw/html2text
     # remove style tags
     link_re = re.compile(r'<style>.*?</style>', re.MULTILINE|re.DOTALL)
     html = link_re.sub('', html)
