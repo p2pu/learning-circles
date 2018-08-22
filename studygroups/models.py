@@ -99,16 +99,6 @@ class Course(LifeTimeTrackingModel):
         return self.title
 
 
-class Activity(models.Model):
-    """ Activity to do during a meeting """
-    description = models.CharField(max_length=256)
-    index = models.PositiveIntegerField(help_text=_('meeting index this activity corresponds to'))
-    card = models.FileField()
-
-    def __str__(self):
-        return self.description
-
-
 # TODO rename to Profile and move to custom_registration/models.py
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -341,9 +331,6 @@ class Meeting(LifeTimeTrackingModel):
     def meeting_number(self):
         # TODO this will break for two meetings on the same day
         return Meeting.objects.active().filter(meeting_date__lte=self.meeting_date, study_group=self.study_group).count()
-
-    def meeting_activity(self):
-        return next((a for a in Activity.objects.filter(index=self.meeting_number())), None)
 
     def meeting_datetime(self):
         tz = pytz.timezone(self.study_group.timezone)

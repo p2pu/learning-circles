@@ -26,7 +26,6 @@ import json
 import datetime
 
 
-from studygroups.models import Activity
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 from studygroups.models import StudyGroup
@@ -73,7 +72,6 @@ def facilitator(request):
     context = {
         'current_study_groups': current_study_groups,
         'past_study_groups': past_study_groups,
-        'activities': Activity.objects.all().order_by('index'),
         'courses': Course.objects.filter(created_by=request.user),
         'invitation': invitation,
         'today': timezone.now(),
@@ -89,7 +87,6 @@ def view_study_group(request, study_group_id):
 
     context = {
         'study_group': study_group,
-        'activities': Activity.objects.all().order_by('index'),
         'today': timezone.now(),
     }
     return render(request, 'studygroups/view_study_group.html', context)
