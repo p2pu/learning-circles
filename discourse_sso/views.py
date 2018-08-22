@@ -42,9 +42,10 @@ def discourse_sso(request):
         'username': '{}_{}'.format(user.first_name, user.last_name),
         'name': user.get_full_name(),
     }
-    if user.profile.email_confirmed_at is None:
-        # Let discourse also verify the email address
-        params['require_activation'] = 'true'
+    # Note: disabled this 2018-08-22.
+    # Let discourse also verify the email address
+    #if user.profile.email_confirmed_at is None:
+        #params['require_activation'] = 'true'
 
     return_payload = base64.encodebytes(bytes(parse.urlencode(params), 'utf-8'))
     h = hmac.new(key, return_payload, digestmod=hashlib.sha256)
