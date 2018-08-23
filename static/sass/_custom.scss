@@ -1,3 +1,15 @@
+html {
+	height: 100%
+}
+body {
+	min-height: 100%;
+	position: relative;
+}
+main {
+	padding-top: $navbar-height;
+	background-color: $white;
+}
+
 .card-container {
     text-align: center;
 	max-width: 1400px;

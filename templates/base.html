@@ -38,11 +38,11 @@
       </div>
     {% endfor %}
 
-    <div class="page-content">
+    <main class="page-content">
       <div class="wrap">
       {% block content %}{% endblock %}
       </div>
-    </div>
+    </main>
 
     {% if hide_footer != True %}
       {% include 'footer.html' %}

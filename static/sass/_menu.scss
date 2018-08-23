@@ -29,7 +29,7 @@ nav {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding: 18px;
+    padding: 12px 18px;
     background-color: #fff;
     box-shadow: 2px 2px 2px 0px rgba(0, 0, 0, 0.1);
     position: fixed;
@@ -102,8 +102,8 @@ nav {
   height: 32px;
   width: 32px;
   border-radius: 50%;
-  background-color: $p2pu-blue;
-  color: white;
+  background-color: $white;
+  color: $p2pu-blue;
   font-size: 22px;
   position: absolute;
   top: 15px;
@@ -130,7 +130,7 @@ nav {
   height: 100vh;
   width: 100vw;
   position: fixed;
-  background: rgba(255,255,255,0.97);
+  background: transparentize($p2pu-blue, 0.03);
   top: 0;
   left: 0;
   transition: left 0.5s ease-in-out;
@@ -169,7 +169,7 @@ nav {
 
   .menu-section {
     &.top-level {
-      border-bottom: 1px solid $p2pu-light-blue;
+      border-bottom: 1px solid transparentize($white, 0.3);
     }
 
     .menu-item {
@@ -190,7 +190,7 @@ nav {
       }
 
       span.text {
-        color: $p2pu-blue;
+        color: $white;
         transition: transform 0.2s ease-in-out;
       }
 
@@ -210,7 +210,7 @@ nav {
         padding-left: 40px;
 
         span.text {
-          color: $gray-darker;
+          color: $white;
         }
       }
     }

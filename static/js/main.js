@@ -1,6 +1,5 @@
 /*global location, jQuery, window, console */
 
-
 var P2PU = window.P2PU || {};
 
 (function ($, P2PU) {
@@ -9,6 +8,7 @@ var P2PU = window.P2PU || {};
 
 
     var init = function () {
+        $('body').css("padding-bottom", $('footer').height());
 
         $(function () {
             // Smoth scrolling
