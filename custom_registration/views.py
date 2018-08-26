@@ -39,7 +39,7 @@ class SignupView(FormView):
         if 'next' in self.request.GET:
             return self.request.GET['next']
         return reverse('studygroups_facilitator')
-        
+
 
     def form_valid(self, form):
         user = form.save(commit=False)
