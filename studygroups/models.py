@@ -48,6 +48,15 @@ STUDY_GROUP_NAMES = [
     "The Eternal Lovers"
 ]
 
+LEARN = 'Join a learning circle'
+FACILITATE = 'Facilitate a learning circle'
+JOIN_COMMUNITY = 'Join the community'
+REASON_FOR_REGISTRATION_OPTIONS = (
+    (FACILITATE, FACILITATE),
+    (LEARN, LEARN),
+    (JOIN_COMMUNITY, JOIN_COMMUNITY)
+)
+
 
 def _study_group_name():
     idx = 1 + StudyGroup.objects.count()
@@ -104,6 +113,11 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     mailing_list_signup = models.BooleanField(default=False)
     email_confirmed_at = models.DateTimeField(null=True, blank=True)
+    reason_for_registration = models.CharField(
+        max_length=30,
+        choices=REASON_FOR_REGISTRATION_OPTIONS,
+        default=FACILITATE
+    )
 
     def __str__(self):
         return self.user.__str__()

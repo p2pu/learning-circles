@@ -43,7 +43,7 @@ class SignupView(FormView):
 
     def form_valid(self, form):
         user = form.save(commit=False)
-        user = create_user(user.email, user.first_name, user.last_name, form.cleaned_data['password1'], form.cleaned_data['newsletter'])
+        user = create_user(user.email, user.first_name, user.last_name, form.cleaned_data['password1'], form.cleaned_data['newsletter'], form.cleaned_data['reason_for_registration'])
         login(self.request, user)
         return http.HttpResponseRedirect(self.get_success_url())
 
