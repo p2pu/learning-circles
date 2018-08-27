@@ -838,7 +838,18 @@ def report_data(start_time, end_time, team=None):
 
     feedback = Feedback.objects.filter(study_group_meeting__in=meetings)
 
+    active = any([
+        len(meetings) > 0,
+        len(feedback) > 0,
+        len(new_study_groups) > 0,
+        len(finished_study_groups) > 0,
+        len(new_facilitators) > 0,
+        len(new_courses) > 0,
+        len(signups) > 0,
+    ])
+
     report = {
+        'active': active,
         'meetings': meetings,
         'feedback': feedback,
         'study_groups': new_study_groups,
@@ -866,7 +877,9 @@ def send_weekly_update():
 
     for team in Team.objects.all():
         report_context = report_data(start_time, end_time, team)
-        # TODO check if there was any activity during this period. If not, discard the update
+        # If there wasn't any activity during this period discard the update
+        if report_context['active'] is False:
+            continue
         report_context.update(context)
         timezone.activate(pytz.timezone(settings.TIME_ZONE)) #TODO not sure what this influences anymore?
         translation.activate(settings.LANGUAGE_CODE)

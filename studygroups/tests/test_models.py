@@ -498,6 +498,37 @@ class TestSignupModels(TestCase):
         self.assertEqual(mail.outbox[1].to[0], 'admin@test.com')
 
 
+    def test_dont_send_weekly_report(self):
+        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
+        faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', 'password')
+        StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
+
+        team = Team.objects.create(name='test team')
+        TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
+        TeamMembership.objects.create(team=team, user=faci1, role=TeamMembership.MEMBER)
+
+        study_group = StudyGroup.objects.get(pk=1)
+        meeting = Meeting()
+        meeting.study_group = study_group
+        meeting.meeting_time = timezone.now().time()
+        meeting.meeting_date = timezone.now().date() - datetime.timedelta(days=15)
+        meeting.save()
+
+        study_group = StudyGroup.objects.get(pk=2)
+        meeting = Meeting()
+        meeting.study_group = study_group
+        meeting.meeting_time = timezone.now().time()
+        meeting.meeting_date = timezone.now().date() - datetime.timedelta(days=15)
+        meeting.save()
+
+        send_weekly_update()
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to[0], 'admin@test.com')
+
+
+
+
     def test_send_survey_reminder(self):
         now = timezone.now()
         sg = StudyGroup.objects.get(pk=1)
