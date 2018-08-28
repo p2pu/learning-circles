@@ -480,18 +480,20 @@ class TestSignupModels(TestCase):
         study_group = StudyGroup.objects.get(pk=1)
         meeting = Meeting()
         meeting.study_group = study_group
-        meeting.meeting_time = timezone.now().time()
-        meeting.meeting_date = timezone.now().date() - datetime.timedelta(days=1)
+        meeting.meeting_time = datetime.time(9)
+        meeting.meeting_date = datetime.date(2018, 8, 22)
         meeting.save()
 
         study_group = StudyGroup.objects.get(pk=2)
         meeting = Meeting()
         meeting.study_group = study_group
-        meeting.meeting_time = timezone.now().time()
-        meeting.meeting_date = timezone.now().date() - datetime.timedelta(days=1)
+        meeting.meeting_time = datetime.time(9)
+        meeting.meeting_date = datetime.date(2018, 8, 22)
         meeting.save()
 
-        send_weekly_update()
+        
+        with freeze_time("2018-08-28 10:01:00"):
+            send_weekly_update()
 
         self.assertEqual(len(mail.outbox), 2)
         self.assertEqual(mail.outbox[0].to[0], 'organ@team.com')
@@ -510,18 +512,19 @@ class TestSignupModels(TestCase):
         study_group = StudyGroup.objects.get(pk=1)
         meeting = Meeting()
         meeting.study_group = study_group
-        meeting.meeting_time = timezone.now().time()
-        meeting.meeting_date = timezone.now().date() - datetime.timedelta(days=15)
+        meeting.meeting_time = datetime.time(9)
+        meeting.meeting_date = datetime.date(2018, 8, 14)
         meeting.save()
 
         study_group = StudyGroup.objects.get(pk=2)
         meeting = Meeting()
         meeting.study_group = study_group
-        meeting.meeting_time = timezone.now().time()
-        meeting.meeting_date = timezone.now().date() - datetime.timedelta(days=15)
+        meeting.meeting_time = datetime.time(9)
+        meeting.meeting_date = datetime.date(2018, 8, 14)
         meeting.save()
 
-        send_weekly_update()
+        with freeze_time("2018-08-28 10:01:00"):
+            send_weekly_update()
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].to[0], 'admin@test.com')
