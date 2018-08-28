@@ -13,7 +13,7 @@ from studygroups.models import send_reminder
 from studygroups.models import send_weekly_update
 from studygroups.models import send_new_studygroup_email
 from studygroups.models import send_new_facilitator_email
-from studygroups.models import send_survey_reminder
+from studygroups.models import send_learner_surveys
 from studygroups.models import send_facilitator_survey
 from studygroups.models import send_last_week_group_activity
 
@@ -76,7 +76,7 @@ def send_new_studygroup_emails():
 def send_all_studygroup_survey_reminders():
     for study_group in StudyGroup.objects.published():
         translation.activate(settings.LANGUAGE_CODE)
-        send_survey_reminder(study_group)
+        send_learner_surveys(study_group)
 
 
 @shared_task
