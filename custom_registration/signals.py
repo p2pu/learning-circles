@@ -20,7 +20,7 @@ def handle_new_facilitator(sender, instance, created, **kwargs):
 
 
     # TODO - do this async
-    # TODO - does this make sense to do before the email address is verified? 
+    # TODO - does this make sense to do before the email address is verified?
     # Add facilitator to Mailchimp newsletter
     if facilitator.mailing_list_signup:
         add_member_to_list(facilitator.user)

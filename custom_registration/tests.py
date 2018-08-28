@@ -128,7 +128,7 @@ class TestCustomRegistrationViews(TestCase):
         }
         resp = c.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json(), 
+        self.assertEqual(resp.json(),
             {"status": "created", "user": data['email']}
         )
         bob = User.objects.get(email=data['email'])
@@ -142,7 +142,7 @@ class TestCustomRegistrationViews(TestCase):
 
     @patch('custom_registration.signals.send_email_confirm_email')
     def test_ajax_login(self, send_email_confirm_email):
-        user = create_user('bob@example.net', 'bob', 'test', 'password', False)
+        user = create_user('bob@example.net', 'bob', 'test', 'password', False, Profile.FACILITATE)
         c = Client()
         data = {
             "email": "bob@example.net",
@@ -151,14 +151,14 @@ class TestCustomRegistrationViews(TestCase):
         url = '/en/accounts/fe/login/'
         resp = c.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json(), 
+        self.assertEqual(resp.json(),
             {"status": "success", "user": data['email']}
         )
 
 
     @patch('custom_registration.signals.handle_new_facilitator')
     def test_email_address_confirm_request(self, handle_new_facilitator):
-        user = create_user('bob@example.net', 'bob', 'test', 'password', False)
+        user = create_user('bob@example.net', 'bob', 'test', 'password', False, Profile.FACILITATE)
         c = Client()
         c.login(username='bob@example.net', password='password')
 
@@ -184,7 +184,7 @@ class TestCustomRegistrationViews(TestCase):
         }
         resp = c.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json(), 
+        self.assertEqual(resp.json(),
             {"status": "created", "user": data['email']}
         )
         self.assertEqual(len(mail.outbox), 1)

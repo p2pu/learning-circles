@@ -25,7 +25,7 @@ class TestApiSignupView(TestCase):
         'mobile': '',
         'goals': 'try hard',
         'support': 'thinking how to?',
-        'computer_access': 'Both', 
+        'computer_access': 'Both',
         'use_internet': '2'
     }
 
