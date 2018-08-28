@@ -48,15 +48,6 @@ STUDY_GROUP_NAMES = [
     "The Eternal Lovers"
 ]
 
-LEARN = 'Join a learning circle'
-FACILITATE = 'Facilitate a learning circle'
-JOIN_COMMUNITY = 'Join the community'
-REASON_FOR_REGISTRATION_OPTIONS = (
-    (FACILITATE, FACILITATE),
-    (LEARN, LEARN),
-    (JOIN_COMMUNITY, JOIN_COMMUNITY)
-)
-
 
 def _study_group_name():
     idx = 1 + StudyGroup.objects.count()
@@ -110,6 +101,14 @@ class Course(LifeTimeTrackingModel):
 
 # TODO rename to Profile and move to custom_registration/models.py
 class Profile(models.Model):
+    LEARN = 'Join a learning circle'
+    FACILITATE = 'Facilitate a learning circle'
+    JOIN_COMMUNITY = 'Join the community'
+    REASON_FOR_REGISTRATION_OPTIONS = (
+        (FACILITATE, _('Facilitate a learning circle')),
+        (LEARN, _('Join a learning circle')),
+        (JOIN_COMMUNITY, _('Join the community'))
+    )
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     mailing_list_signup = models.BooleanField(default=False)
     email_confirmed_at = models.DateTimeField(null=True, blank=True)

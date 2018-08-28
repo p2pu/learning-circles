@@ -19,6 +19,7 @@ from django.http import HttpResponseRedirect
 import json
 
 from studygroups.models import TeamMembership
+from studygroups.models import Profile
 from uxhelpers.utils import json_response
 from api import schema
 from .models import create_user
@@ -73,7 +74,7 @@ class AjaxSignupView(View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        user = create_user(data['email'], data['first_name'], data['last_name'], data['password'], data.get('newsletter', False))
+        user = create_user(data['email'], data['first_name'], data['last_name'], data['password'], data.get('newsletter', False), data.get('reason_for_registration', Profile.FACILITATE))
         login(request, user)
         return json_response(request, { "status": "created", "user": user.username });
 
