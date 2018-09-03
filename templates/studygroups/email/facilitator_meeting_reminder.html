@@ -1,0 +1,18 @@
+{% extends 'email_base.html' %}
+{% load i18n %}
+{% block body %}
+
+<p>{% trans "Hi there," %}</p>
+
+<p>{% trans "The following message has been sent to your learning circle." %}</p>
+
+<div style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9;">
+  {{ facilitator_snippet | linebreaks}}
+</div>
+
+{% url 'studygroups_facilitator' as dash_url %}
+<p>{% blocktrans %}To see how many learners RSVPed or to record feedback after the meeting, you can visit <a href="{{domain}}{{dash_url}}">your dashboard</a>.{% endblocktrans %}</p>
+
+<p>{% trans "Cheers" %}</p>
+<p>P2PU</p>
+{% endblock %}

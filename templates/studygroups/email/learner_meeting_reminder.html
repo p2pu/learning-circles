@@ -1,0 +1,16 @@
+{% extends 'email_base.html' %}
+{% load i18n %}
+{% block body %}
+
+{{ facilitator_snippet | linebreaks}}
+
+<p>{% trans "Please let us know if you can make it by visiting the appropriate link below." %}</p>
+
+<div><a style="display: block; padding: 0.6rem 2rem; margin-bottom: 1em; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-radius: 4px; text-align:center; text-decoration: none;" href="{{rsvp_yes_link | safe}}">{% trans "Yes, I can make it" %}</a></div>
+
+<div><a style="display: block; padding: 0.6rem 2rem; background-color: #ffead9; color: #fc7100; border: 1px solid #fc7100; border-radius: 4px; text-align:center; text-decoration: none;" href="{{rsvp_no_link | safe}}">{% trans "No, I can't make it" %}</a></div>
+
+<p>{% trans "See you soon." %}</p>
+
+<p>{% blocktrans with link=unsubscribe_link|safe %}To leave this learning circle and stop receiving messages, <a href="{{unsubscribe_link}}">click here</a>{% endblocktrans %}</p>
+{% endblock %}
