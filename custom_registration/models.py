@@ -14,7 +14,7 @@ import string
 
 from studygroups.models import Profile
 
-def create_user(email, first_name, last_name, password, mailing_list_signup, reason_for_registration):
+def create_user(email, first_name, last_name, password, mailing_list_signup):
     """ Create a new user using the email as the username  """
 
     if password == None:
@@ -31,7 +31,6 @@ def create_user(email, first_name, last_name, password, mailing_list_signup, rea
 
     profile = Profile(user=user)
     profile.mailing_list_signup = mailing_list_signup
-    profile.reason_for_registration = reason_for_registration
     profile.save()
     return user
 

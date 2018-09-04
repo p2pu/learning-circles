@@ -19,7 +19,6 @@ from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 from studygroups.models import Feedback
-from studygroups.models import Profile
 from studygroups.models import generate_all_meetings
 from studygroups.rsvp import gen_rsvp_querystring
 from custom_registration.models import create_user
@@ -145,7 +144,7 @@ class TestFacilitatorViews(TestCase):
 
     @patch('custom_registration.signals.handle_new_facilitator')
     def test_publish_study_group(self, handle_new_facilitator):
-        user = create_user('bob@example.net', 'bob', 'test', 'password', False, Profile.FACILITATE)
+        user = create_user('bob@example.net', 'bob', 'test', 'password', False)
         confirm_user_email(user)
         c = Client()
         c.login(username='bob@example.net', password='password')
@@ -165,7 +164,7 @@ class TestFacilitatorViews(TestCase):
 
     @patch('custom_registration.signals.handle_new_facilitator')
     def test_publish_study_group_email_unconfirmed(self, handle_new_facilitator):
-        user = create_user('bob@example.net', 'bob', 'test', 'password', False, Profile.FACILITATE)
+        user = create_user('bob@example.net', 'bob', 'test', 'password', False)
         c = Client()
         c.login(username='bob@example.net', password='password')
 
@@ -182,7 +181,7 @@ class TestFacilitatorViews(TestCase):
 
     @patch('custom_registration.signals.handle_new_facilitator')
     def test_draf_study_group_actions_disabled(self, handle_new_facilitator):
-        user = create_user('bob@example.net', 'bob', 'test', 'password', False, Profile.FACILITATE)
+        user = create_user('bob@example.net', 'bob', 'test', 'password', False)
         confirm_user_email(user)
         c = Client()
         c.login(username='bob@example.net', password='password')
@@ -235,7 +234,7 @@ class TestFacilitatorViews(TestCase):
 
     @patch('custom_registration.signals.handle_new_facilitator')
     def test_study_group_unicode_venue_name(self, handle_new_facilitator):
-        user = create_user('bob@example.net', 'bob', 'test', 'password', False, Profile.FACILITATE)
+        user = create_user('bob@example.net', 'bob', 'test', 'password', False)
         confirm_user_email(user)
         c = Client()
         c.login(username='bob@example.net', password='password')
