@@ -214,6 +214,7 @@ class StudyGroup(LifeTimeTrackingModel):
 
     @property
     def country(self):
+        # TODO this is broken since new creation form 
         country = self.city.split(',')[-1].strip()
         country_list = [
             'United States of America',
@@ -335,6 +336,11 @@ class Meeting(LifeTimeTrackingModel):
     def meeting_datetime(self):
         tz = pytz.timezone(self.study_group.timezone)
         return tz.localize(datetime.datetime.combine(self.meeting_date, self.meeting_time))
+
+    def meeting_datetime_end(self):
+        tz = pytz.timezone(self.study_group.timezone)
+        start = tz.localize(datetime.datetime.combine(self.meeting_date, self.meeting_time))
+        return start + datetime.timedelta(minutes=self.study_group.duration)
 
     def rsvps(self):
         return {
@@ -690,11 +696,13 @@ def send_meeting_reminder(reminder):
         unsubscribe_link = application.unapply_link()
         context = {
             "reminder": reminder,
+            "learning_circle": reminder.study_group,
             "facilitator_snippet": reminder.email_body,
             "rsvp_yes_link": yes_link,
             "rsvp_no_link": no_link,
             "unsubscribe_link": unsubscribe_link,
             "domain":'https://{0}'.format(settings.DOMAIN),
+            "event_meta": True,
         }
         subject, text_body, html_body = render_email_templates(
             'studygroups/email/learner_meeting_reminder',

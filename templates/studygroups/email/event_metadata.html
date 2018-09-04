@@ -1,0 +1,41 @@
+{% with lc=learning_circle meeting=reminder.study_group_meeting %}
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Event",
+  "name": "{{ lc.course.title }}",
+  "startDate": "{{meeting.meeting_datetime | date:'c' }}",
+  "endDate": "{{meeting.meeting_datetime_end | date:'c' }}",
+  "location": {
+    "@type": "Place",
+    "address": {
+      "@type": "PostalAddress",
+      "name": "{{lc.venue_name}}",
+      "streetAddress": "{{lc.venue_address}}",
+      "addressLocality": "{{lc.city}}"{% if lc.country %},
+      "addressCountry": "{{lc.country}}"{% endif %}
+    }
+  },
+  "potentialAction": [
+    {
+      "@type": "RsvpAction",
+      "rsvpResponse": "yes",
+      "handler": {
+        "@type": "HttpActionHandler",
+        "url": "{{rsvp_yes_link}}"
+      },
+      "attendance": "http://schema.org/RsvpAttendance/Yes"
+    },
+    {
+      "@type": "RsvpAction",
+      "rsvpResponse": "no",
+      "handler": {
+        "@type": "HttpActionHandler",
+        "url": "{{rsvp_no_link}}"
+      },
+      "attendance": "http://schema.org/RsvpAttendance/No"
+    }
+  ]
+}
+</script>
+{% endwith %}
