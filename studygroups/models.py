@@ -101,22 +101,9 @@ class Course(LifeTimeTrackingModel):
 
 # TODO rename to Profile and move to custom_registration/models.py
 class Profile(models.Model):
-    LEARN = 'Join a learning circle'
-    FACILITATE = 'Facilitate a learning circle'
-    JOIN_COMMUNITY = 'Join the community'
-    REASON_FOR_REGISTRATION_OPTIONS = (
-        (FACILITATE, _('Facilitate a learning circle')),
-        (LEARN, _('Join a learning circle')),
-        (JOIN_COMMUNITY, _('Join the community'))
-    )
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     mailing_list_signup = models.BooleanField(default=False)
     email_confirmed_at = models.DateTimeField(null=True, blank=True)
-    reason_for_registration = models.CharField(
-        max_length=30,
-        choices=REASON_FOR_REGISTRATION_OPTIONS,
-        default=FACILITATE
-    )
 
     def __str__(self):
         return self.user.__str__()
