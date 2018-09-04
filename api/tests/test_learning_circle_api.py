@@ -19,7 +19,7 @@ class TestLearningCircleApi(TestCase):
 
     def setUp(self):
         with patch('custom_registration.signals.send_email_confirm_email'):
-            user = create_user('faci@example.net', 'b', 't', 'password', False, Profile.FACILITATE)
+            user = create_user('faci@example.net', 'b', 't', 'password', False)
             user.save()
             self.facilitator = user
 
