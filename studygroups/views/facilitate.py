@@ -310,7 +310,7 @@ class StudyGroupUpdateLegacy(FacilitatorRedirectMixin, UpdateView):
     model = StudyGroup
     form_class =  StudyGroupForm
     pk_url_kwarg = 'study_group_id'
-    template_name = 'studygroups/studygroup_form_html.html'
+    template_name = 'studygroups/studygroup_form_legacy.html'
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
