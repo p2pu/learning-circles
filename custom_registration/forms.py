@@ -6,11 +6,13 @@ from django.utils.translation import ugettext as _
 from django.forms import ValidationError
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import UserCreationForm
+from studygroups.models import Profile
 
 
 class SignupForm(UserCreationForm):
 
     newsletter = forms.BooleanField(required=False, label=_('Subscribe to newsletter?'))
+    reason_for_registration = forms.ChoiceField(required=False, choices=Profile.REASON_FOR_REGISTRATION_OPTIONS, label="What is your reason for registering?")
 
     def __init__(self, *args, **kwargs):
         super(SignupForm, self).__init__(*args, **kwargs)
@@ -27,7 +29,7 @@ class SignupForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'last_name', 'password1', 'password2', 'newsletter']
+        fields = ['email', 'first_name', 'last_name', 'password1', 'password2', 'reason_for_registration', 'newsletter']
 
 
 class CustomPasswordResetForm(PasswordResetForm):

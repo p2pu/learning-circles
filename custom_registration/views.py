@@ -19,6 +19,7 @@ from django.http import HttpResponseRedirect
 import json
 
 from studygroups.models import TeamMembership
+from studygroups.models import Profile
 from uxhelpers.utils import json_response
 from api import schema
 from .models import create_user
@@ -39,11 +40,11 @@ class SignupView(FormView):
         if 'next' in self.request.GET:
             return self.request.GET['next']
         return reverse('studygroups_facilitator')
-        
+
 
     def form_valid(self, form):
         user = form.save(commit=False)
-        user = create_user(user.email, user.first_name, user.last_name, form.cleaned_data['password1'], form.cleaned_data['newsletter'])
+        user = create_user(user.email, user.first_name, user.last_name, form.cleaned_data['password1'], form.cleaned_data['newsletter'], form.cleaned_data['reason_for_registration'])
         login(self.request, user)
         return http.HttpResponseRedirect(self.get_success_url())
 
@@ -73,7 +74,7 @@ class AjaxSignupView(View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        user = create_user(data['email'], data['first_name'], data['last_name'], data['password'], data.get('newsletter', False))
+        user = create_user(data['email'], data['first_name'], data['last_name'], data['password'], data.get('newsletter', False), data.get('reason_for_registration', Profile.FACILITATE))
         login(request, user)
         return json_response(request, { "status": "created", "user": user.username });
 
