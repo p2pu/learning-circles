@@ -444,17 +444,6 @@ class TestSignupModels(TestCase):
         self.assertFalse(Rsvp.objects.all().first().attending)
 
 
-    def test_send_new_facilitator_update(self):
-        tasks.send_new_facilitator_emails()
-        self.assertEqual(len(mail.outbox), 0)
-
-        user = User.objects.create_user('facil', 'facil@test.com', 'password')
-        user.date_joined = timezone.now() - datetime.timedelta(days=7)
-        user.save()
-        tasks.send_new_facilitator_emails()
-        self.assertEqual(len(mail.outbox), 1)
-
-
     def test_send_new_studygroup_update(self):
         tasks.send_new_studygroup_emails()
         self.assertEqual(len(mail.outbox), 0)
@@ -462,7 +451,6 @@ class TestSignupModels(TestCase):
         studygroup = StudyGroup.objects.get(pk=1)
         studygroup.created_at = timezone.now() - datetime.timedelta(days=7)
         studygroup.save()
-
 
         tasks.send_new_studygroup_emails()
         self.assertEqual(len(mail.outbox), 1)
