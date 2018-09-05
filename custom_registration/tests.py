@@ -3,15 +3,18 @@ from django.test import TestCase, override_settings
 from django.test import Client
 from django.core import mail
 from django.contrib.auth.models import User
-
-from .models import create_user
+from django.utils.timezone import utc
 
 from mock import patch
+from freezegun import freeze_time
 
 import re
 import json
+import datetime
 
 from studygroups.models import Profile
+from .models import create_user
+from .tasks import send_new_user_emails
 
 
 """
@@ -195,5 +198,39 @@ class TestCustomRegistrationViews(TestCase):
         self.assertRedirects(res, '/en/facilitator/')
         bob = User.objects.get(email=data['email'])
         self.assertNotEqual(bob.profile.email_confirmed_at, None)
+    
+
+    def test_send_new_user_email(self):
+        c = Client()
+        data = {
+            "email": "test@example.net",
+            "first_name": "firstname",
+            "last_name": "lastname",
+            "newsletter": "on",
+            "password1": "password",
+            "password2": "password",
+        }
+        resp = c.post('/en/accounts/register/', data)
+        self.assertRedirects(resp, '/en/facilitator/')
+        users = User.objects.filter(email__iexact=data['email'])
+        self.assertEqual(users.count(), 1)
+        profile = Profile.objects.get(user=users.first())
+        profile.email_confirmed_at = datetime.datetime(2018, 9, 5, 12, 37, tzinfo=utc)
+        profile.save()
+        
+        mail.outbox = []
+        with freeze_time('2018-09-05 12:39:00'):
+            send_new_user_emails()
+        self.assertEqual(len(mail.outbox), 0)
+
+        with freeze_time('2018-09-05 12:40:00'):
+            send_new_user_emails()
+        self.assertEqual(len(mail.outbox), 1)
+
+        mail.outbox = []
+        with freeze_time('2018-09-05 12:51:00'):
+            send_new_user_emails()
+        self.assertEqual(len(mail.outbox), 0)
+
 
 

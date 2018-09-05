@@ -99,7 +99,7 @@ class Course(LifeTimeTrackingModel):
         return self.title
 
 
-# TODO rename to Profile and move to custom_registration/models.py
+# TODO move to custom_registration/models.py
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     mailing_list_signup = models.BooleanField(default=False)
@@ -917,24 +917,6 @@ def send_weekly_update():
     )
     update.attach_alternative(html_body, 'text/html')
     update.send()
-
-
-def send_new_facilitator_email(facilitator):
-    context = {
-        'facilitator': facilitator
-    }
-
-    timezone.activate(pytz.timezone(settings.TIME_ZONE))
-    translation.activate(settings.LANGUAGE_CODE)
-    subject = render_to_string('studygroups/email/new_facilitator_update-subject.txt', context).strip('\n')
-    html_body = render_to_string('studygroups/email/new_facilitator_update.html', context)
-    text_body = render_to_string('studygroups/email/new_facilitator_update.txt', context)
-    timezone.deactivate()
-    to = [facilitator.email]
-
-    msg = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
-    msg.attach_alternative(html_body, 'text/html')
-    msg.send()
 
 
 def send_new_studygroup_email(studygroup):

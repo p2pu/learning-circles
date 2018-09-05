@@ -12,7 +12,6 @@ from studygroups.models import generate_reminder
 from studygroups.models import send_reminder
 from studygroups.models import send_weekly_update
 from studygroups.models import send_new_studygroup_email
-from studygroups.models import send_new_facilitator_email
 from studygroups.models import send_learner_surveys
 from studygroups.models import send_facilitator_survey
 from studygroups.models import send_last_week_group_activity
@@ -50,17 +49,6 @@ def gen_reminders():
 def weekly_update():
     # Create a report for the previous week
     send_weekly_update()
-
-
-@shared_task
-def send_new_facilitator_emails():
-    # send email to organizers who signed up a week ago
-    now = timezone.now()
-    seven_days_ago = now.date() - datetime.timedelta(days=7)
-    six_days_ago = now.date() - datetime.timedelta(days=6)
-    for facilitator in User.objects.filter(date_joined__gte=seven_days_ago, date_joined__lt=six_days_ago):
-        send_new_facilitator_email(facilitator)
-
 
 @shared_task
 def send_new_studygroup_emails():

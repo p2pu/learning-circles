@@ -13,6 +13,7 @@ import random
 import string
 
 from studygroups.models import Profile
+from studygroups.utils import html_body_to_text
 
 def create_user(email, first_name, last_name, password, mailing_list_signup):
     """ Create a new user using the email as the username  """
@@ -77,6 +78,31 @@ def send_email_confirm_email(user):
     subject = render_to_string(subject_template, context).strip(' \n')
     text_body = render_to_string(email_template, context)
     html_body = render_to_string(html_email_template, context)
+
+    to = [user.email]
+    email = EmailMultiAlternatives(
+        subject,
+        text_body,
+        settings.DEFAULT_FROM_EMAIL,
+        to,
+    )
+    email.attach_alternative(html_body, 'text/html')
+    email.send()
+
+
+def send_new_user_email(user):
+    context = {
+        "user": user,
+        "protocol": "https",
+        "domain": settings.DOMAIN
+    }
+
+    subject_template = 'custom_registration/new_user_confirmed-subject.txt'
+    html_email_template = 'custom_registration/new_user_confirmed.html'
+
+    subject = render_to_string(subject_template, context).strip(' \n')
+    html_body = render_to_string(html_email_template, context)
+    text_body = html_body_to_text(html_body)
 
     to = [user.email]
     email = EmailMultiAlternatives(
