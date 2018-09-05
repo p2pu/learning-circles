@@ -19,8 +19,7 @@ Tests for when facilitators interact with the system
 """
 class TestCustomRegistrationViews(TestCase):
 
-    @patch('custom_registration.signals.add_member_to_list')
-    def test_account_create(self, add_member_to_list):
+    def test_account_create(self):
         c = Client()
         data = {
             "email": "test@example.net",
@@ -36,13 +35,11 @@ class TestCustomRegistrationViews(TestCase):
         self.assertEqual(users.count(), 1)
         profile = Profile.objects.get(user=users.first())
         self.assertEqual(profile.mailing_list_signup, True)
-        self.assertTrue(add_member_to_list.called)
         self.assertEqual(len(mail.outbox), 1) ##
         self.assertIn('Please confirm your email address', mail.outbox[0].subject)
 
 
-    @patch('custom_registration.signals.add_member_to_list')
-    def test_facilitator_signup_with_mixed_case(self, add_member_to_list):
+    def test_facilitator_signup_with_mixed_case(self):
         c = Client()
         data = {
             "email": "ThIsNoTaGoOd@EmAil.CoM",
@@ -59,7 +56,6 @@ class TestCustomRegistrationViews(TestCase):
         self.assertEqual(users.count(), 1)
         profile = Profile.objects.get(user=users.first())
         self.assertFalse(profile.mailing_list_signup)
-        self.assertFalse(add_member_to_list.called)
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn('Please confirm your email', mail.outbox[0].subject)
 
