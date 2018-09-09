@@ -104,6 +104,8 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     mailing_list_signup = models.BooleanField(default=False)
     email_confirmed_at = models.DateTimeField(null=True, blank=True)
+    interested_in_learning = models.CharField(max_length=500, blank=True, null=True)
+    communication_opt_in = models.BooleanField(default=True)
 
     def __str__(self):
         return self.user.__str__()
