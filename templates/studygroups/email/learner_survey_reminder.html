@@ -3,88 +3,93 @@
 {% load i18n %}
 
 
-{% blocktrans %}
-
 <table>
   <tbody>
     <tr>
       <td>
         <p>Hi {{learner_name}},</p>
 
-        <p>Can you take a few minutes to let us know how your learning circle went? Your feedback - the good and the bad - will improve the learning circle program for learners and facilitators around the world.</p>
+        <p>{% trans "Can you take a few minutes to let us know how your learning circle is going? Your feedback - the good and the bad - will improve the learning circle program for learners and facilitators around the world." %}</p>
 
-        <p>Let’s start with what brought you here. When you signed up for the learning circle, you said that your primary goal was: <strong>{{learner_goal}}</strong>.</p>
-        <p>To what extent did you achieve this goal during the learning circle?</p>
+        {% if learner_goal %}
+        <p>{% blocktrans %}Let’s start with what brought you here. When you signed up for the learning circle, you said that your primary goal was: <strong>{{learner_goal}}</strong>.{% endblocktrans %}</p>
+
+        <p>{% trans "To what extent did you achieve this goal during the learning circle?" %}</p>
+        {% else %}
+        <p>{% blocktrans %}Share your feedback by clicking <a href="{{survey_url}}">this link</a>{% endblocktrans %}<p>
+        {% endif %}
       </td>
     </tr>
+
+    {% if learner_goal %}
+      <tr>
+        <td>
+          <table align="center" align="center" style="margin-top: 2rem; margin-bottom: 2rem;">
+            <tbody>
+              <tr>
+                <td>
+                  <table border="0" cellspacing="0" cellpadding="0" >
+                    <tbody>
+                      <tr>
+                        <td>
+                          <a href="{{survey_url}}&goal=1" style="text-align: center; text-decoration: none;">
+                            <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none; border-radius: 4px 0 0 4px;">1</div>
+                          </a>
+                        </td>
+                        <td>
+                          <a href="{{survey_url}}&goal=2" style="text-align: center; text-decoration: none;">
+                            <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none;">2</div>
+                          </a>
+                        </td>
+                        <td>
+                          <a href="{{survey_url}}&goal=3" style="text-align: center; text-decoration: none;">
+                            <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none;">3</div>
+                          </a>
+                        </td>
+                        <td>
+                          <a href="{{survey_url}}&goal=4" style="text-align: center; text-decoration: none;">
+                            <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none;">4</div>
+                          </a>
+                        </td>
+                        <td>
+                          <a href="{{survey_url}}&goal=5" style="text-align: center; text-decoration: none;">
+                            <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-radius: 0 4px 4px 0;">5</div>
+                          </a>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <table width="100%">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <small style="font-size: 0.8rem; color: #05C6B4">{% trans "Not at all" %}</small>
+                        </td>
+                        <td style="text-align: right;">
+                          <small style="font-size: 0.8rem; color: #05C6B4">{% trans "Completely!" %}</small>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    {% endif %}
     <tr>
       <td>
-        <table align="center" align="center" style="margin-top: 2rem; margin-bottom: 2rem;">
-          <tbody>
-            <tr>
-              <td>
-                <table border="0" cellspacing="0" cellpadding="0" >
-                  <tbody>
-                    <tr>
-                      <td>
-                        <a href="{{survey_url}}&goal=1" style="text-align: center; text-decoration: none;">
-                          <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none; border-radius: 4px 0 0 4px;">1</div>
-                        </a>
-                      </td>
-                      <td>
-                        <a href="{{survey_url}}&goal=2" style="text-align: center; text-decoration: none;">
-                          <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none;">2</div>
-                        </a>
-                      </td>
-                      <td>
-                        <a href="{{survey_url}}&goal=3" style="text-align: center; text-decoration: none;">
-                          <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none;">3</div>
-                        </a>
-                      </td>
-                      <td>
-                        <a href="{{survey_url}}&goal=4" style="text-align: center; text-decoration: none;">
-                          <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none;">4</div>
-                        </a>
-                      </td>
-                      <td>
-                        <a href="{{survey_url}}&goal=5" style="text-align: center; text-decoration: none;">
-                          <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-radius: 0 4px 4px 0;">5</div>
-                        </a>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <table width="100%">
-                  <tbody>
-                    <tr>
-                      <td>
-                        <small style="font-size: 0.8rem; color: #05C6B4">Not at all</small>
-                      </td>
-                      <td style="text-align: right;">
-                        <small style="font-size: 0.8rem; color: #05C6B4">Completely!</small>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <p>Cheers,</p>
-        <p>The P2PU Team</p>
+        <p>{% trans "Cheers" %},</p>
+        <p>{% trans "The P2PU Team" %}</p>
       </td>
 
     </tr>
   </tbody>
 </table>
-{% endblocktrans %}
 
 {% endblock %}

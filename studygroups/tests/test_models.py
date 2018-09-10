@@ -22,7 +22,7 @@ from studygroups.models import send_reminder
 from studygroups.models import create_rsvp
 from studygroups.models import generate_all_meetings
 from studygroups.models import send_weekly_update
-from studygroups.models import send_survey_reminder
+from studygroups.models import send_learner_surveys
 from studygroups.models import send_facilitator_survey
 from studygroups.models import send_last_week_group_activity
 from studygroups.rsvp import gen_rsvp_querystring
@@ -480,31 +480,65 @@ class TestSignupModels(TestCase):
         study_group = StudyGroup.objects.get(pk=1)
         meeting = Meeting()
         meeting.study_group = study_group
-        meeting.meeting_time = timezone.now().time()
-        meeting.meeting_date = timezone.now().date() - datetime.timedelta(days=1)
+        meeting.meeting_time = datetime.time(9)
+        meeting.meeting_date = datetime.date(2018, 8, 22)
         meeting.save()
 
         study_group = StudyGroup.objects.get(pk=2)
         meeting = Meeting()
         meeting.study_group = study_group
-        meeting.meeting_time = timezone.now().time()
-        meeting.meeting_date = timezone.now().date() - datetime.timedelta(days=1)
+        meeting.meeting_time = datetime.time(9)
+        meeting.meeting_date = datetime.date(2018, 8, 22)
         meeting.save()
 
-        send_weekly_update()
+        
+        with freeze_time("2018-08-28 10:01:00"):
+            send_weekly_update()
 
         self.assertEqual(len(mail.outbox), 2)
         self.assertEqual(mail.outbox[0].to[0], 'organ@team.com')
         self.assertEqual(mail.outbox[1].to[0], 'admin@test.com')
 
 
-    def test_send_survey_reminder(self):
+    def test_dont_send_weekly_report(self):
+        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
+        faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', 'password')
+        StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
+
+        team = Team.objects.create(name='test team')
+        TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
+        TeamMembership.objects.create(team=team, user=faci1, role=TeamMembership.MEMBER)
+
+        study_group = StudyGroup.objects.get(pk=1)
+        meeting = Meeting()
+        meeting.study_group = study_group
+        meeting.meeting_time = datetime.time(9)
+        meeting.meeting_date = datetime.date(2018, 8, 14)
+        meeting.save()
+
+        study_group = StudyGroup.objects.get(pk=2)
+        meeting = Meeting()
+        meeting.study_group = study_group
+        meeting.meeting_time = datetime.time(9)
+        meeting.meeting_date = datetime.date(2018, 8, 14)
+        meeting.save()
+
+        with freeze_time("2018-08-28 10:01:00"):
+            send_weekly_update()
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to[0], 'admin@test.com')
+
+
+
+
+    def test_send_learner_surveys(self):
         now = timezone.now()
         sg = StudyGroup.objects.get(pk=1)
         sg.timezone = now.strftime("%Z")
         sg.start_date = datetime.date(2010, 1, 1)
         sg.meeting_time = datetime.time(18,0)
-        sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=6)
         sg.save()
         sg = StudyGroup.objects.get(pk=1)
         generate_all_meetings(sg)
@@ -526,24 +560,24 @@ class TestSignupModels(TestCase):
         mail.outbox = []
 
         last_meeting = sg.meeting_set.active().order_by('meeting_date', 'meeting_time').last()
-        self.assertEqual(last_meeting.meeting_date, datetime.date(2010, 2, 5))
-        self.assertEqual(last_meeting.meeting_time, datetime.time(18,0))
-        self.assertEqual(sg.meeting_set.active().count(), 6)
+        self.assertEqual(last_meeting.meeting_date, datetime.date(2010, 2, 12))
+        self.assertEqual(last_meeting.meeting_time, datetime.time(18))
+        self.assertEqual(sg.meeting_set.active().count(), 7)
         self.assertEqual(sg.application_set.active().count(), 2)
 
         # freeze time to 5 minutes before
         with freeze_time("2010-02-05 17:55:34"):
-            send_survey_reminder(sg)
+            send_learner_surveys(sg)
             self.assertEqual(len(mail.outbox), 0)
 
         # 10 minutes after start
         with freeze_time("2010-02-05 18:10:34"):
-            send_survey_reminder(sg)
+            send_learner_surveys(sg)
             self.assertEqual(len(mail.outbox), 0)
 
         # 25 minutes after start
         with freeze_time("2010-02-05 18:25:34"):
-            send_survey_reminder(sg)
+            send_learner_surveys(sg)
             self.assertEqual(len(mail.outbox), 2)
             self.assertIn('mail1@example.net', mail.outbox[0].to + mail.outbox[1].to)
             self.assertIn('mail2@example.net', mail.outbox[0].to + mail.outbox[1].to)
@@ -553,7 +587,7 @@ class TestSignupModels(TestCase):
         mail.outbox = []
         # 40 minutes after start
         with freeze_time("2010-02-05 18:40:34"):
-            send_survey_reminder(sg)
+            send_learner_surveys(sg)
             self.assertEqual(len(mail.outbox), 0)
 
 
