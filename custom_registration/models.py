@@ -15,7 +15,7 @@ import string
 from studygroups.models import Profile
 from studygroups.utils import html_body_to_text
 
-def create_user(email, first_name, last_name, password, mailing_list_signup):
+def create_user(email, first_name, last_name, password, communication_opt_in=False, interested_in_learning=None):
     """ Create a new user using the email as the username  """
 
     if password == None:
@@ -31,7 +31,8 @@ def create_user(email, first_name, last_name, password, mailing_list_signup):
     user.save()
 
     profile = Profile(user=user)
-    profile.mailing_list_signup = mailing_list_signup
+    profile.communication_opt_in = communication_opt_in
+    profile.interested_in_learning = interested_in_learning
     profile.save()
     return user
 

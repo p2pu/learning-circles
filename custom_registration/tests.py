@@ -28,7 +28,8 @@ class TestCustomRegistrationViews(TestCase):
             "email": "test@example.net",
             "first_name": "firstname",
             "last_name": "lastname",
-            "newsletter": "on",
+            "communication_opt_in": "on",
+            "interested_in_learning": "python",
             "password1": "password",
             "password2": "password",
         }
@@ -37,7 +38,8 @@ class TestCustomRegistrationViews(TestCase):
         users = User.objects.filter(email__iexact=data['email'])
         self.assertEqual(users.count(), 1)
         profile = Profile.objects.get(user=users.first())
-        self.assertEqual(profile.mailing_list_signup, True)
+        self.assertEqual(profile.interested_in_learning, "python")
+        self.assertEqual(profile.communication_opt_in, True)
         self.assertEqual(len(mail.outbox), 1) ##
         self.assertIn('Please confirm your email address', mail.outbox[0].subject)
 
@@ -50,6 +52,7 @@ class TestCustomRegistrationViews(TestCase):
             "last_name": "lastname",
             "password1": "password",
             "password2": "password",
+            "communication_opt_in": "on",
         }
         resp = c.post('/en/accounts/register/', data)
         self.assertRedirects(resp, '/en/facilitator/')
@@ -58,7 +61,7 @@ class TestCustomRegistrationViews(TestCase):
         users = User.objects.filter(username__iexact=data['email'])
         self.assertEqual(users.count(), 1)
         profile = Profile.objects.get(user=users.first())
-        self.assertFalse(profile.mailing_list_signup)
+        self.assertTrue(profile.communication_opt_in)
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn('Please confirm your email', mail.outbox[0].subject)
 
@@ -123,7 +126,7 @@ class TestCustomRegistrationViews(TestCase):
             "first_name": "Bob",
             "last_name": "Test",
             "password": "12345",
-            "newsletter": False
+            "communication_opt_in": False
         }
         resp = c.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 200)
@@ -132,7 +135,7 @@ class TestCustomRegistrationViews(TestCase):
         )
         bob = User.objects.get(email=data['email'])
         self.assertEqual(bob.first_name, 'Bob')
-        self.assertEqual(bob.profile.mailing_list_signup, False)
+        self.assertEqual(bob.profile.communication_opt_in, False)
         # make sure email confirmation email was sent
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn(data['email'], mail.outbox[0].to)
@@ -179,7 +182,7 @@ class TestCustomRegistrationViews(TestCase):
             "first_name": "Bob",
             "last_name": "Test",
             "password": "12345",
-            "newsletter": False
+            "communication_opt_in": False
         }
         resp = c.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 200)
@@ -206,7 +209,7 @@ class TestCustomRegistrationViews(TestCase):
             "email": "test@example.net",
             "first_name": "firstname",
             "last_name": "lastname",
-            "newsletter": "on",
+            "communication_opt_in": "on",
             "password1": "password",
             "password2": "password",
         }
