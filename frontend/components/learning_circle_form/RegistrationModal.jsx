@@ -51,14 +51,14 @@ export default class RegistrationModal extends React.Component {
     }).then(res => {
       if (!!res.data.errors) {
         if (typeof(res.data.errors) == "string") {
-          return this.props.showAlert(res.data.errors, 'danger')
+          return this.props.showAlert(res.data.errors, 'danger');
         }
         return this.setState({ errors: res.data.errors });
       }
       this.props.closeModal();
       this.props.onLogin(res.data.user);
     }).catch(err => {
-      console.log(err)
+      console.log(err);
     })
   }
 
