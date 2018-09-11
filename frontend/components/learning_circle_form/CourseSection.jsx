@@ -40,6 +40,7 @@ const CourseSection = (props) => {
             searchSubject={'courses'}
             Browse={BrowseCourses}
             onSelectResult={handleSelectResult}
+            origin={window.location.origin}
           />
         }
     </div>
