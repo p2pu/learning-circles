@@ -128,7 +128,7 @@ export default class RegistrationModal extends React.Component {
                 <p>Joining the community comes with an expectation that you would like to learn about upcoming events, new features, and updates from around the world. If you do not want to receive any of these messages, uncheck this box.</p>
                 <CheckboxWithLabel
                   label='P2PU can contact me.'
-                  checked={state.user.communication_opt_in}
+                  checked={this.state.user.communication_opt_in}
                   handleChange={this.updateUserData}
                   name={'communication_opt_in'}
                   id={'id_communication_opt_in'}
