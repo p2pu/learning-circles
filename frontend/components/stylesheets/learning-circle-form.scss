@@ -1,3 +1,5 @@
+@import 'variables';
+
 html {
   font-size: 100%;
 }
@@ -35,7 +37,7 @@ button.p2pu-btn {
   display: flex;
   left: 0;
   background: white;
-  padding-top: 64px;
+  padding-top: $navbar-height;
 
   &.show-help {
     width: 50%;
