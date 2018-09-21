@@ -4,6 +4,7 @@ from django import http
 from django import forms
 from django.forms import modelform_factory, HiddenInput
 from django.template.loader import render_to_string
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.generic.base import View
 from django.views.generic.base import RedirectView
 from django.views.generic.base import TemplateView
@@ -261,6 +262,7 @@ class CourseUpdate(UpdateView):
         return url
 
 
+@method_decorator(ensure_csrf_cookie, name='dispatch')
 class StudyGroupCreate(TemplateView):
     template_name = 'studygroups/studygroup_form.html'
 
