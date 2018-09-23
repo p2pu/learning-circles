@@ -6,9 +6,8 @@
 <div class="learning-circle-login">
   <div class="background">
     <div class="container">
-      <div class="row">
-        <div class="page-content">
-          <div class="col-md-5 col-sm-6 col-xs-12" data-aos="fade-right">
+        <div class="row justify-content-between page-content">
+          <div class="col-12 col-md-5" data-aos="fade-right">
             <header>
               <h1>{% trans "Log in" %}</h1>
               {% url 'register' as signup_url %}
@@ -17,7 +16,7 @@
             <p>{% trans "Forgot your username? It's the email address you signed up with." %}</p>
             <p>{% trans 'Forgot your password? ' %}<a href="{% url 'password_reset' %}">{% trans "Reset it here." %}</a></p>
           </div>
-          <div class="col-md-5 col-sm-6 col-xs-12" data-aos="fade-left">
+          <div class="col-12 col-md-5" data-aos="fade-left">
             <div class="form">
               <form action="" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
@@ -27,7 +26,6 @@
             </div>
           </div>
         </div>
-      </div>
     </div>
   </div>
 </div>

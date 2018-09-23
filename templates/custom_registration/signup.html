@@ -7,30 +7,28 @@
 <div class="learning-circle-signup">
   <div class="background">
     <div class="container">
-      <div class="row">
-        <div class="page-content">
-          <div class="col-md-5 col-sm-6 col-xs-12" data-aos="fade-right">
-            <header>
-              <h1>{% trans "Create an Account" %}</h1>
-              <small>{% blocktrans %}<a href="{{ login_url }}">Log in</a>{% endblocktrans %} if you already have an account.</small>
-            </header>
-            <p>Anybody can sign up for a learning circle without creating a P2PU account. <a href="https://www.p2pu.org/en/learning-circles/">Active learning circles are listed here</a>.</p>
-            <p>Creating a P2PU account allows you to:</p>
-            <ul>
-              <li>Create and publicize <a href="https://www.p2pu.org/en/learning-circles/">learning circles</a> on our website</li>
-              <li>Post in our <a href="http://community.p2pu.org">online community</a></li>
-              <li>Add online courses to our <a href="http://p2pu.org/en/courses">course page</a></li>
-              <li>Receive announcements and updates about learning circles and related events</li>
-            </ul>
-          </div>
-          <div class="col-md-5 col-sm-6 col-xs-12" data-aos="fade-left">
-            <div class="form">
-          	  <form action="" method="POST" enctype="multipart/form-data">
-          	    {% csrf_token %}
-          	    {{ form|crispy }}
-                <button type="submit" class="btn p2pu-btn light">{% trans "Submit" %}</button>
-          	  </form>
-            </div>
+      <div class="row justify-content-between page-content">
+        <div class="col-12 col-md-5" data-aos="fade-right">
+          <header>
+            <h1>{% trans "Create an Account" %}</h1>
+            <small>{% blocktrans %}<a href="{{ login_url }}">Log in</a>{% endblocktrans %} if you already have an account.</small>
+          </header>
+          <p>Anybody can sign up for a learning circle without creating a P2PU account. <a href="https://www.p2pu.org/en/learning-circles/">Active learning circles are listed here</a>.</p>
+          <p>Creating a P2PU account allows you to:</p>
+          <ul>
+            <li>Create and publicize <a href="https://www.p2pu.org/en/learning-circles/">learning circles</a> on our website</li>
+            <li>Post in our <a href="http://community.p2pu.org">online community</a></li>
+            <li>Add online courses to our <a href="http://p2pu.org/en/courses">course page</a></li>
+            <li>Receive announcements and updates about learning circles and related events</li>
+          </ul>
+        </div>
+        <div class="col-12 col-md-5" data-aos="fade-left">
+          <div class="form">
+        	  <form action="" method="POST" enctype="multipart/form-data">
+        	    {% csrf_token %}
+        	    {{ form|crispy }}
+              <button type="submit" class="btn p2pu-btn light">{% trans "Submit" %}</button>
+        	  </form>
           </div>
         </div>
       </div>

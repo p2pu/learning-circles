@@ -99,7 +99,7 @@ const styleBuild = {
             loader: 'sass-loader',
             options: {
               sourceMap: true,
-              includePaths: [path.resolve("./static/")]
+              includePaths: [path.resolve("./static/"), path.resolve("./node_modules/")]
             }
           }]
         }),
