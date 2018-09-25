@@ -278,6 +278,7 @@ class TestFacilitatorViews(TestCase):
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, mail_data['email_subject'])
+        self.assertEqual(mail.outbox[0].from_email, 'Facilitator1 <webmaster@localhost>')
         self.assertFalse(send_message.called)
         self.assertIn('https://example.net/en/optout/', mail.outbox[0].body)
 

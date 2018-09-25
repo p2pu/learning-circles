@@ -764,11 +764,12 @@ def send_reminder(reminder):
         email_body = '{0}\n\nTo leave this learning circle and stop receiving messages, click here: https://{1}{2}'.format(email_body, settings.DOMAIN, reverse('studygroups_optout'))
         # TODO - all emails should contain the unsubscribe link
         to += [reminder.study_group.facilitator.email]
+        sender = '{0} <{1}>'.format(reminder.study_group.facilitator.first_name, settings.DEFAULT_FROM_EMAIL)
         try:
             reminder_email = EmailMultiAlternatives(
                 reminder.email_subject.strip('\n'),
                 email_body,
-                settings.DEFAULT_FROM_EMAIL,
+                sender,
                 [],
                 bcc=to,
                 reply_to=[reminder.study_group.facilitator.email],

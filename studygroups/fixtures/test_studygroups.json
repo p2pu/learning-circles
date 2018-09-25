@@ -1,6 +1,8 @@
 [
 {
     "fields": {
+      "first_name": "Facilitator1",
+      "last_name": "Lastname1",
       "username": "facilitator",
       "password": "facilitator123",
       "email": "facilitator@example.net"
