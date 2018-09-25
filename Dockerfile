@@ -46,7 +46,6 @@ ENV DATABASE_URL="sqlite:////var/app/db.sqlite3" \
     EMAIL_HOST="" \
     EMAIL_HOST_USER="" \
     EMAIL_HOST_PASSWORD="" \
-    DEFAULT_FROM_EMAIL="" \
     TWILIO_ACCOUNT_SID="" \
     TWILIO_AUTH_TOKEN="" \
     TWILIO_NUMBER="" \
