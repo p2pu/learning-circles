@@ -7,6 +7,7 @@ from django.utils import timezone
 from mock import patch
 
 from studygroups.models import StudyGroup
+from studygroups.models import Profile
 from custom_registration.models import create_user
 
 import datetime
@@ -293,7 +294,7 @@ class TestLearningCircleApi(TestCase):
         sg.start_date = datetime.date(2018,1,27)
         sg.save()
         c = Client()
-        # Friday and Saturday   
+        # Friday and Saturday
         resp = c.get('/api/learningcircles/?weekdays=4,5')
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()["count"], 2)

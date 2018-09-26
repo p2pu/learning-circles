@@ -21,6 +21,7 @@
       <meta property="og:image" content="https://learningcircles.p2pu.org{% static 'images/og.jpg' %}" />
       <link rel="canonical" href="">
       <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+      <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
       {% render_bundle 'p2pu-strap' 'css' 'STYLEBUILD' %}
 
       {% block css %}{% endblock %}
@@ -32,13 +33,13 @@
 
   {% include 'nav.html' %}
 
+    <main class="page-content">
     {% for message in messages %}
       <div class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %}" role="alert">
         <div class="container">{{ message }}</div>
       </div>
     {% endfor %}
 
-    <main class="page-content">
       <div class="wrap">
       {% block content %}{% endblock %}
       </div>

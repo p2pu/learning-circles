@@ -3,15 +3,18 @@ from django.test import TestCase, override_settings
 from django.test import Client
 from django.core import mail
 from django.contrib.auth.models import User
-
-from .models import create_user
+from django.utils.timezone import utc
 
 from mock import patch
+from freezegun import freeze_time
 
 import re
 import json
+import datetime
 
 from studygroups.models import Profile
+from .models import create_user
+from .tasks import send_new_user_emails
 
 
 """
@@ -19,14 +22,14 @@ Tests for when facilitators interact with the system
 """
 class TestCustomRegistrationViews(TestCase):
 
-    @patch('custom_registration.signals.add_member_to_list')
-    def test_account_create(self, add_member_to_list):
+    def test_account_create(self):
         c = Client()
         data = {
             "email": "test@example.net",
             "first_name": "firstname",
             "last_name": "lastname",
-            "newsletter": "on",
+            "communication_opt_in": "on",
+            "interested_in_learning": "python",
             "password1": "password",
             "password2": "password",
         }
@@ -35,14 +38,13 @@ class TestCustomRegistrationViews(TestCase):
         users = User.objects.filter(email__iexact=data['email'])
         self.assertEqual(users.count(), 1)
         profile = Profile.objects.get(user=users.first())
-        self.assertEqual(profile.mailing_list_signup, True)
-        self.assertTrue(add_member_to_list.called)
+        self.assertEqual(profile.interested_in_learning, "python")
+        self.assertEqual(profile.communication_opt_in, True)
         self.assertEqual(len(mail.outbox), 1) ##
         self.assertIn('Please confirm your email address', mail.outbox[0].subject)
 
 
-    @patch('custom_registration.signals.add_member_to_list')
-    def test_facilitator_signup_with_mixed_case(self, add_member_to_list):
+    def test_facilitator_signup_with_mixed_case(self):
         c = Client()
         data = {
             "email": "ThIsNoTaGoOd@EmAil.CoM",
@@ -50,6 +52,7 @@ class TestCustomRegistrationViews(TestCase):
             "last_name": "lastname",
             "password1": "password",
             "password2": "password",
+            "communication_opt_in": "on",
         }
         resp = c.post('/en/accounts/register/', data)
         self.assertRedirects(resp, '/en/facilitator/')
@@ -58,8 +61,7 @@ class TestCustomRegistrationViews(TestCase):
         users = User.objects.filter(username__iexact=data['email'])
         self.assertEqual(users.count(), 1)
         profile = Profile.objects.get(user=users.first())
-        self.assertFalse(profile.mailing_list_signup)
-        self.assertFalse(add_member_to_list.called)
+        self.assertTrue(profile.communication_opt_in)
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn('Please confirm your email', mail.outbox[0].subject)
 
@@ -124,16 +126,16 @@ class TestCustomRegistrationViews(TestCase):
             "first_name": "Bob",
             "last_name": "Test",
             "password": "12345",
-            "newsletter": False
+            "communication_opt_in": False
         }
         resp = c.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json(), 
+        self.assertEqual(resp.json(),
             {"status": "created", "user": data['email']}
         )
         bob = User.objects.get(email=data['email'])
         self.assertEqual(bob.first_name, 'Bob')
-        self.assertEqual(bob.profile.mailing_list_signup, False)
+        self.assertEqual(bob.profile.communication_opt_in, False)
         # make sure email confirmation email was sent
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn(data['email'], mail.outbox[0].to)
@@ -151,7 +153,7 @@ class TestCustomRegistrationViews(TestCase):
         url = '/en/accounts/fe/login/'
         resp = c.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json(), 
+        self.assertEqual(resp.json(),
             {"status": "success", "user": data['email']}
         )
 
@@ -180,11 +182,11 @@ class TestCustomRegistrationViews(TestCase):
             "first_name": "Bob",
             "last_name": "Test",
             "password": "12345",
-            "newsletter": False
+            "communication_opt_in": False
         }
         resp = c.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json(), 
+        self.assertEqual(resp.json(),
             {"status": "created", "user": data['email']}
         )
         self.assertEqual(len(mail.outbox), 1)
@@ -199,5 +201,39 @@ class TestCustomRegistrationViews(TestCase):
         self.assertRedirects(res, '/en/facilitator/')
         bob = User.objects.get(email=data['email'])
         self.assertNotEqual(bob.profile.email_confirmed_at, None)
+    
+
+    def test_send_new_user_email(self):
+        c = Client()
+        data = {
+            "email": "test@example.net",
+            "first_name": "firstname",
+            "last_name": "lastname",
+            "communication_opt_in": "on",
+            "password1": "password",
+            "password2": "password",
+        }
+        resp = c.post('/en/accounts/register/', data)
+        self.assertRedirects(resp, '/en/facilitator/')
+        users = User.objects.filter(email__iexact=data['email'])
+        self.assertEqual(users.count(), 1)
+        profile = Profile.objects.get(user=users.first())
+        profile.email_confirmed_at = datetime.datetime(2018, 9, 5, 12, 37, tzinfo=utc)
+        profile.save()
+        
+        mail.outbox = []
+        with freeze_time('2018-09-05 12:39:00'):
+            send_new_user_emails()
+        self.assertEqual(len(mail.outbox), 0)
+
+        with freeze_time('2018-09-05 12:40:00'):
+            send_new_user_emails()
+        self.assertEqual(len(mail.outbox), 1)
+
+        mail.outbox = []
+        with freeze_time('2018-09-05 12:51:00'):
+            send_new_user_emails()
+        self.assertEqual(len(mail.outbox), 0)
+
 
 

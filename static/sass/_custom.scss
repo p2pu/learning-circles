@@ -263,10 +263,56 @@ img.lc-about-image{
 	}
 }
 
-.learning-circle-signup {
-    img {
-        width: 100%;
+.learning-circle-signup, .learning-circle-login {
+  background: url("../images/learning-circle.png") bottom center no-repeat;
+  background-size: 80% auto;
+
+  .background {
+    padding-bottom: 20%;
+    background: rgba(255,255,255,0.7);
+  }
+
+  img {
+    width: 100%;
+  }
+
+  .page-content {
+    padding-bottom: $padding-md;
+    padding-top: $padding-md;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+    header {
+      margin-bottom: 1em;
+
+      small {
+        color: $gray;
+      }
     }
+
+    .form {
+      background: $gray-darker;
+      padding: 2em;
+      color: $white;
+
+      #div_id_communication_opt_in {
+        label {
+          display: flex;
+          align-items: center;
+
+          input {
+            margin-right: 10px;
+          }
+        }
+      }
+
+      .help-block {
+        color: $gray-lighter;
+        font-size: 0.8em;
+      }
+    }
+  }
 }
 
 .signup-success {

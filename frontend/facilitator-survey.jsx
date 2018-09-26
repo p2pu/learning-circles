@@ -13,7 +13,7 @@ const url = `https://p2pu.typeform.com/to/${surveyId}?studygroup=${studygroup}&c
 
 const options = {
   onSubmit: () => {
-    window.location.href = '/en/facilitator_feedback/done'
+    window.location.href = '/en/facilitator_survey/done/'
   }
 }
 

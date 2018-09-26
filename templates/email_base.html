@@ -18,6 +18,7 @@
   }
 </style>
 <body>
+  {% if event_meta %}{% include "studygroups/email/event_metadata.html" %}{% endif %}
 <table align="center" style="width: 716px;" >
 <tbody>
 <tr style="height: 80px; ">
@@ -30,6 +31,7 @@
     {% block body %}{% endblock %}
 </td>
 </tr>
+<!-- TODO: insert message here about preferences for any email that is sent to a user, aka profile != None -->
 </tbody>
 </table>
 </body>

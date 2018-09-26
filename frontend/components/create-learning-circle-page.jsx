@@ -58,7 +58,7 @@ export default class CreateLearningCirclePage extends React.Component {
     const courseId = !!this.props.learningCircle ? this.props.learningCircle.course : urlParams.get('course_id');
 
     if (!!courseId) {
-      const api = new ApiHelper('courses');
+      const api = new ApiHelper('courses', window.location.origin);
       const params = { course_id: courseId }
       const callback = (response, _opts) => {
         const course = response.items[0];
@@ -170,7 +170,7 @@ export default class CreateLearningCirclePage extends React.Component {
       }
 
       const opts = { data, onSuccess, onError, onFail };
-      const api = new ApiHelper('learningCircles');
+      const api = new ApiHelper('learningCircles', window.location.origin);
 
       if (this.state.learningCircle.id) {
         api.updateResource(opts, this.state.learningCircle.id)
@@ -186,7 +186,7 @@ export default class CreateLearningCirclePage extends React.Component {
 
   _onLogin(user) {
     this.setState({ user });
-    this.showAlert("You're logged in!", 'success')
+    this.showAlert("You're logged in! You can now save or publish your learning circle.", 'success')
 
     // TODO: remove this when we switch to the React component for the account in the navbar
     const accountLink = document.querySelector('nav .nav-items .account a');

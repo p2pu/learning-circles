@@ -1,0 +1,1 @@
+{% load i18n %}{% blocktrans with course_title=study_group.course.title|safe meeting_date=next_meeting.meeting_datetime|date:"l, j N, fA" venue=study_group.venue_name|safe %}{{course_title}} study group meeting this {{meeting_date}} at {{venue}}.{% endblocktrans %}

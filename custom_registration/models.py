@@ -13,8 +13,9 @@ import random
 import string
 
 from studygroups.models import Profile
+from studygroups.utils import html_body_to_text
 
-def create_user(email, first_name, last_name, password, mailing_list_signup):
+def create_user(email, first_name, last_name, password, communication_opt_in=False, interested_in_learning=None):
     """ Create a new user using the email as the username  """
 
     if password == None:
@@ -29,8 +30,9 @@ def create_user(email, first_name, last_name, password, mailing_list_signup):
     user.last_name = last_name
     user.save()
 
-    profile = Profile(user=user) 
-    profile.mailing_list_signup = mailing_list_signup
+    profile = Profile(user=user)
+    profile.communication_opt_in = communication_opt_in
+    profile.interested_in_learning = interested_in_learning
     profile.save()
     return user
 
@@ -38,18 +40,18 @@ def create_user(email, first_name, last_name, password, mailing_list_signup):
 class EmailConfirmTokenGenerator(PasswordResetTokenGenerator):
     def _make_hash_value(self, user, timestamp):
         # Remove last login timestamp from hash and replace with date
-        # that email address was confirmed 
+        # that email address was confirmed
         confirm_timestamp = '' if user.profile.email_confirmed_at is None else user.profile.email_confirmed_at.replace(microsecond=0, tzinfo=None)
         return (
             six.text_type(user.pk) + user.password + six.text_type(timestamp) +
             six.text_type(confirm_timestamp)
         )
- 
+
 
 def generate_user_token(user):
     """ generate token for user to validate user email address """
     return EmailConfirmTokenGenerator().make_token(user)
-        
+
 
 def check_user_token(user, token):
     return EmailConfirmTokenGenerator().check_token(user, token)
@@ -77,6 +79,31 @@ def send_email_confirm_email(user):
     subject = render_to_string(subject_template, context).strip(' \n')
     text_body = render_to_string(email_template, context)
     html_body = render_to_string(html_email_template, context)
+
+    to = [user.email]
+    email = EmailMultiAlternatives(
+        subject,
+        text_body,
+        settings.DEFAULT_FROM_EMAIL,
+        to,
+    )
+    email.attach_alternative(html_body, 'text/html')
+    email.send()
+
+
+def send_new_user_email(user):
+    context = {
+        "user": user,
+        "protocol": "https",
+        "domain": settings.DOMAIN
+    }
+
+    subject_template = 'custom_registration/new_user_confirmed-subject.txt'
+    html_email_template = 'custom_registration/new_user_confirmed.html'
+
+    subject = render_to_string(subject_template, context).strip(' \n')
+    html_body = render_to_string(html_email_template, context)
+    text_body = html_body_to_text(html_body)
 
     to = [user.email]
     email = EmailMultiAlternatives(
