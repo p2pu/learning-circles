@@ -691,6 +691,8 @@ def send_last_week_group_activity(study_group):
 
 def send_meeting_reminder(reminder):
     to = [su.email for su in reminder.study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')]
+    sender = '{0} <{1}>'.format(reminder.study_group.facilitator.first_name, settings.DEFAULT_FROM_EMAIL)
+
     for email in to:
         yes_link = reminder.study_group_meeting.rsvp_yes_link(email)
         no_link = reminder.study_group_meeting.rsvp_no_link(email)
@@ -715,7 +717,7 @@ def send_meeting_reminder(reminder):
             reminder_email = EmailMultiAlternatives(
                 reminder.email_subject.strip('\n'),
                 text_body,
-                settings.DEFAULT_FROM_EMAIL,
+                sender,
                 [email],
                 reply_to=[reminder.study_group.facilitator.email]
             )
@@ -734,8 +736,6 @@ def send_meeting_reminder(reminder):
             'studygroups/email/facilitator_meeting_reminder',
             context
         )
-
-        sender = '{0} <{1}>'.format(reminder.study_group.facilitator.first_name, settings.DEFAULT_FROM_EMAIL)
 
         reminder_email = EmailMultiAlternatives(
             reminder.email_subject.strip('\n'),
