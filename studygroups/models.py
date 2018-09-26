@@ -699,7 +699,7 @@ def send_meeting_reminder(reminder):
         context = {
             "reminder": reminder,
             "learning_circle": reminder.study_group,
-            "facilitator_snippet": reminder.email_body,
+            "facilitator_message": reminder.email_body,
             "rsvp_yes_link": yes_link,
             "rsvp_no_link": no_link,
             "unsubscribe_link": unsubscribe_link,
@@ -735,10 +735,12 @@ def send_meeting_reminder(reminder):
             context
         )
 
+        sender = '{0} <{1}>'.format(reminder.study_group.facilitator.first_name, settings.DEFAULT_FROM_EMAIL)
+
         reminder_email = EmailMultiAlternatives(
             reminder.email_subject.strip('\n'),
             text_body,
-            settings.DEFAULT_FROM_EMAIL,
+            sender,
             [reminder.study_group.facilitator.email]
         )
         reminder_email.attach_alternative(html_body, 'text/html')
@@ -759,21 +761,27 @@ def send_reminder(reminder):
     if reminder.study_group_meeting:
         send_meeting_reminder(reminder)
     else:
-        email_body = reminder.email_body
-        # TODO i18n
-        email_body = '{0}\n\nTo leave this learning circle and stop receiving messages, click here: https://{1}{2}'.format(email_body, settings.DOMAIN, reverse('studygroups_optout'))
-        # TODO - all emails should contain the unsubscribe link
+        context = {
+            "reminder": reminder,
+            "facilitator_message": reminder.email_body,
+            "domain":'https://{0}'.format(settings.DOMAIN),
+        }
+        subject, text_body, html_body = render_email_templates(
+            'studygroups/email/facilitator_message',
+            context
+        )
         to += [reminder.study_group.facilitator.email]
         sender = '{0} <{1}>'.format(reminder.study_group.facilitator.first_name, settings.DEFAULT_FROM_EMAIL)
         try:
             reminder_email = EmailMultiAlternatives(
                 reminder.email_subject.strip('\n'),
-                email_body,
+                text_body,
                 sender,
                 [],
                 bcc=to,
                 reply_to=[reminder.study_group.facilitator.email],
             )
+            reminder_email.attach_alternative(html_body, 'text/html')
             reminder_email.send()
         except Exception as e:
             logger.exception('Could not send reminder to whole study group', exc_info=e)

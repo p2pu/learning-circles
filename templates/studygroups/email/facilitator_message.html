@@ -1,0 +1,9 @@
+{% extends 'email_base.html' %}
+{% load i18n %}
+{% block body %}
+
+{{ facilitator_message | linebreaks}}
+
+{% url studygroups_optout as unsubscribe_link %}
+<p>{% blocktrans with link=unsubscribe_link|safe %}To leave this learning circle and stop receiving messages, <a href="{{domain}}{{link}}">click here</a>{% endblocktrans %}</p>
+{% endblock %}
