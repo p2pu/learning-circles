@@ -186,7 +186,7 @@ export default class CreateLearningCirclePage extends React.Component {
 
   _onLogin(user) {
     this.setState({ user });
-    this.showAlert("You're logged in!", 'success')
+    this.showAlert("You're logged in! You can now save or publish your learning circle.", 'success')
 
     // TODO: remove this when we switch to the React component for the account in the navbar
     const accountLink = document.querySelector('nav .nav-items .account a');
