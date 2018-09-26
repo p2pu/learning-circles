@@ -1,0 +1,5 @@
+{% extends 'email_base.txt' %}
+{% load i18n %}
+{% block body %}{{ facilitator_message }}
+
+{% url 'studygroups_optout' as unsubscribe_link %}{% blocktrans with link=unsubscribe_link|safe %}To leave this learning circle and stop receiving messages, click here: {{domain}}{{link}}{% endblocktrans %}{% endblock %}

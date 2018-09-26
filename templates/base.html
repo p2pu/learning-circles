@@ -33,13 +33,13 @@
 
   {% include 'nav.html' %}
 
+    <main class="page-content">
     {% for message in messages %}
       <div class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %}" role="alert">
         <div class="container">{{ message }}</div>
       </div>
     {% endfor %}
 
-    <main class="page-content">
       <div class="wrap">
       {% block content %}{% endblock %}
       </div>

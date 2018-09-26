@@ -1,1 +1,0 @@
-{% load i18n %}{% trans "How is it going?" %}

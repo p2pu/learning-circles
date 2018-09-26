@@ -99,11 +99,13 @@ class Course(LifeTimeTrackingModel):
         return self.title
 
 
-# TODO rename to Profile and move to custom_registration/models.py
+# TODO move to custom_registration/models.py
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     mailing_list_signup = models.BooleanField(default=False)
     email_confirmed_at = models.DateTimeField(null=True, blank=True)
+    interested_in_learning = models.CharField(max_length=500, blank=True, null=True)
+    communication_opt_in = models.BooleanField(default=True)
 
     def __str__(self):
         return self.user.__str__()
@@ -214,6 +216,7 @@ class StudyGroup(LifeTimeTrackingModel):
 
     @property
     def country(self):
+        # TODO this is broken since new creation form 
         country = self.city.split(',')[-1].strip()
         country_list = [
             'United States of America',
@@ -336,6 +339,11 @@ class Meeting(LifeTimeTrackingModel):
         tz = pytz.timezone(self.study_group.timezone)
         return tz.localize(datetime.datetime.combine(self.meeting_date, self.meeting_time))
 
+    def meeting_datetime_end(self):
+        tz = pytz.timezone(self.study_group.timezone)
+        start = tz.localize(datetime.datetime.combine(self.meeting_date, self.meeting_time))
+        return start + datetime.timedelta(minutes=self.study_group.duration)
+
     def rsvps(self):
         return {
             'yes': self.rsvp_set.all().filter(attending=True),
@@ -378,7 +386,7 @@ class Meeting(LifeTimeTrackingModel):
 
 
 class Reminder(models.Model):
-    study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE) #TODO redundant field
+    study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE)
     study_group_meeting = models.ForeignKey('studygroups.Meeting', blank=True, null=True, on_delete=models.CASCADE) #TODO check this makes sense
     email_subject = models.CharField(max_length=256)
     email_body = models.TextField()
@@ -499,7 +507,7 @@ def generate_reminder(study_group):
             reminder.email_subject = render_to_string(
                 'studygroups/email/reminder-subject.txt',
                 context
-            )
+            ).strip('\n')
             reminder.email_body = render_to_string(
                 'studygroups/email/reminder.txt',
                 context
@@ -681,6 +689,67 @@ def send_last_week_group_activity(study_group):
         notification.send()
 
 
+def send_meeting_reminder(reminder):
+    to = [su.email for su in reminder.study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')]
+    for email in to:
+        yes_link = reminder.study_group_meeting.rsvp_yes_link(email)
+        no_link = reminder.study_group_meeting.rsvp_no_link(email)
+        application = reminder.study_group_meeting.study_group.application_set.active().filter(email__iexact=email).first()
+        unsubscribe_link = application.unapply_link()
+        context = {
+            "reminder": reminder,
+            "learning_circle": reminder.study_group,
+            "facilitator_message": reminder.email_body,
+            "rsvp_yes_link": yes_link,
+            "rsvp_no_link": no_link,
+            "unsubscribe_link": unsubscribe_link,
+            "domain":'https://{0}'.format(settings.DOMAIN),
+            "event_meta": True,
+        }
+        subject, text_body, html_body = render_email_templates(
+            'studygroups/email/learner_meeting_reminder',
+            context
+        )
+        # TODO not using subject
+        try:
+            reminder_email = EmailMultiAlternatives(
+                reminder.email_subject.strip('\n'),
+                text_body,
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+                reply_to=[reminder.study_group.facilitator.email]
+            )
+            reminder_email.attach_alternative(html_body, 'text/html')
+            reminder_email.send()
+        except Exception as e:
+            logger.exception('Could not send email to ', email, exc_info=e)
+    # Send to organizer without RSVP & unsubscribe links
+    try:
+        context = {
+            "reminder": reminder,
+            "facilitator_snippet": reminder.email_body,
+            "domain":'https://{0}'.format(settings.DOMAIN),
+        }
+        subject, text_body, html_body = render_email_templates(
+            'studygroups/email/facilitator_meeting_reminder',
+            context
+        )
+
+        sender = '{0} <{1}>'.format(reminder.study_group.facilitator.first_name, settings.DEFAULT_FROM_EMAIL)
+
+        reminder_email = EmailMultiAlternatives(
+            reminder.email_subject.strip('\n'),
+            text_body,
+            sender,
+            [reminder.study_group.facilitator.email]
+        )
+        reminder_email.attach_alternative(html_body, 'text/html')
+        reminder_email.send()
+
+    except Exception as e:
+        logger.exception('Could not send email to ', reminder.study_group.facilitator.email, exc_info=e)
+
+
 # If called directly, be sure to activate language to use for constructing URLs
 # Failed text delivery won't case this function to fail, simply log an error
 def send_reminder(reminder):
@@ -690,60 +759,29 @@ def send_reminder(reminder):
 
     to = [su.email for su in reminder.study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')]
     if reminder.study_group_meeting:
-        # this is a reminder and we need RSVP links
-        for email in to:
-            yes_link = reminder.study_group_meeting.rsvp_yes_link(email)
-            no_link = reminder.study_group_meeting.rsvp_no_link(email)
-            application = reminder.study_group_meeting.study_group.application_set.active().filter(email__iexact=email).first()
-            unsubscribe_link = application.unapply_link()
-            email_body = reminder.email_body
-            email_body = re.sub(r'\(<!--RSVP:YES-->.*\)', yes_link, email_body)
-            email_body = re.sub(r'\(<!--RSVP:NO-->.*\)', no_link, email_body)
-            email_body = re.sub(r'\(<!--UNSUBSCRIBE-->.*\)', unsubscribe_link, email_body)
-            try:
-                reminder_email = EmailMultiAlternatives(
-                    reminder.email_subject.strip('\n'),
-                    email_body,
-                    settings.DEFAULT_FROM_EMAIL,
-                    [email],
-                    reply_to=[reminder.study_group.facilitator.email],
-                )
-                reminder_email.send()
-            except Exception as e:
-                logger.exception('Could not send email to ', email, exc_info=e)
-        # Send to organizer without RSVP & unsubscribe links
-        try:
-            url = reverse('studygroups_facilitator')
-            dash_link = 'https://{}{}'.format(settings.DOMAIN, url)
-            email_body = reminder.email_body
-            email_body = re.sub(r'\(<!--RSVP:YES-->.*\)', dash_link, email_body)
-            email_body = re.sub(r'\(<!--RSVP:NO-->.*\)', dash_link, email_body)
-            email_body = re.sub(r'\(<!--UNSUBSCRIBE-->.*\)', dash_link, email_body)
-
-            send_mail(
-                reminder.email_subject.strip('\n'),
-                email_body,
-                settings.DEFAULT_FROM_EMAIL,
-                [reminder.study_group.facilitator.email],
-                fail_silently=False
-            )
-        except Exception as e:
-            logger.exception('Could not send email to ', reminder.study_group.facilitator.email, exc_info=e)
+        send_meeting_reminder(reminder)
     else:
-        email_body = reminder.email_body
-        # TODO i18n
-        email_body = '{0}\n\nTo leave this learning circle and stop receiving messages, click here: https://{1}{2}'.format(email_body, settings.DOMAIN, reverse('studygroups_optout'))
-        # TODO - all emails should contain the unsubscribe link
+        context = {
+            "reminder": reminder,
+            "facilitator_message": reminder.email_body,
+            "domain":'https://{0}'.format(settings.DOMAIN),
+        }
+        subject, text_body, html_body = render_email_templates(
+            'studygroups/email/facilitator_message',
+            context
+        )
         to += [reminder.study_group.facilitator.email]
+        sender = '{0} <{1}>'.format(reminder.study_group.facilitator.first_name, settings.DEFAULT_FROM_EMAIL)
         try:
             reminder_email = EmailMultiAlternatives(
                 reminder.email_subject.strip('\n'),
-                email_body,
-                settings.DEFAULT_FROM_EMAIL,
+                text_body,
+                sender,
                 [],
                 bcc=to,
                 reply_to=[reminder.study_group.facilitator.email],
             )
+            reminder_email.attach_alternative(html_body, 'text/html')
             reminder_email.send()
         except Exception as e:
             logger.exception('Could not send reminder to whole study group', exc_info=e)
@@ -890,24 +928,6 @@ def send_weekly_update():
     )
     update.attach_alternative(html_body, 'text/html')
     update.send()
-
-
-def send_new_facilitator_email(facilitator):
-    context = {
-        'facilitator': facilitator
-    }
-
-    timezone.activate(pytz.timezone(settings.TIME_ZONE))
-    translation.activate(settings.LANGUAGE_CODE)
-    subject = render_to_string('studygroups/email/new_facilitator_update-subject.txt', context).strip('\n')
-    html_body = render_to_string('studygroups/email/new_facilitator_update.html', context)
-    text_body = render_to_string('studygroups/email/new_facilitator_update.txt', context)
-    timezone.deactivate()
-    to = [facilitator.email]
-
-    msg = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
-    msg.attach_alternative(html_body, 'text/html')
-    msg.send()
 
 
 def send_new_studygroup_email(studygroup):

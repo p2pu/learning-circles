@@ -2,6 +2,7 @@ from django.template.loader import render_to_string
 
 def render_email_templates(template_base, context):
     """ use template_base to render subject, text and html for email """
+    # TODO make text template optional - use html to text when not specified
     subject = render_to_string(
         '{}-subject.txt'.format(template_base),
         context
