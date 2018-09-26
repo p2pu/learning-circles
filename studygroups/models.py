@@ -729,7 +729,7 @@ def send_meeting_reminder(reminder):
     try:
         context = {
             "reminder": reminder,
-            "facilitator_snippet": reminder.email_body,
+            "facilitator_message": reminder.email_body,
             "domain":'https://{0}'.format(settings.DOMAIN),
         }
         subject, text_body, html_body = render_email_templates(
