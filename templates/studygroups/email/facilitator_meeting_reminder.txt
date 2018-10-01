@@ -1,0 +1,15 @@
+{% extends 'email_base.txt' %}
+{% load i18n %}
+{% block body %}
+
+{% trans "Hi there," %}
+
+{% trans "The following message has been sent to your learning circle." %}
+
+>  {{ facilitator_message }}
+
+{% url 'studygroups_facilitator' as dash_url %}{% blocktrans %}To see how many learners RSVP-ed or to record feedback after the meeting, you can visit your dashboard ({{domain}}{{dash_url}}).{% endblocktrans %}</p>
+
+{% trans "Cheers" %}
+P2PU
+{% endblock %}

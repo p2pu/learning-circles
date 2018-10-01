@@ -1,4 +1,4 @@
-@import "variables";
+@import 'variables';
 
 html {
   font-size: 100%;
@@ -210,7 +210,7 @@ button.p2pu-btn {
 
 div.modal-overlay {
   background: rgba(255,255,255,0.9) ;
-  top: 64px;
+  top: $navbar-height;
 
   .registration-modal {
     padding: 3em;
@@ -225,9 +225,14 @@ div.modal-overlay {
       flex-wrap: wrap;
       margin-top: 20px;
 
-      button {
-        margin-left: 8px;
-        padding: 0.6em 1.2em;
+      .buttons {
+        flex-wrap: nowrap;
+        display: flex;
+
+        button {
+          margin-left: 8px;
+          padding: 0.6em 1.2em;
+        }
       }
     }
   }

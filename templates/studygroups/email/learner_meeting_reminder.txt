@@ -1,0 +1,13 @@
+{% extends 'email_base.txt' %}
+{% load i18n %}
+{% block body %}{{ facilitator_message }}
+
+{% trans "Please let us know if you can make it by visiting the appropriate link below." %}
+
+{% trans "Yes, I can make it" %}: {{rsvp_yes_link | safe}}
+{% trans "No, I can't make it" %}: {{rsvp_no_link | safe}}
+
+{% trans "See you soon." %}
+
+{% blocktrans with link=unsubscribe_link|safe %}To leave this learning circle and stop receiving messages, click here: {{link}}{% endblocktrans %}
+{% endblock %}

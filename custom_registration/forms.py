@@ -10,7 +10,8 @@ from studygroups.models import Profile
 
 
 class SignupForm(UserCreationForm):
-    newsletter = forms.BooleanField(required=False, label=_('Subscribe to newsletter?'))
+    communication_opt_in = forms.BooleanField(required=True, initial=True, label=_('P2PU can contact me.'), help_text=_('Joining the community comes with an expectation that you would like to learn about upcoming events, new features, and updates from around the world. If you do not want to receive any of these messages, uncheck this box.'))
+    interested_in_learning = forms.CharField(required=False, label=_('What are you interested in learning?'))
 
     def __init__(self, *args, **kwargs):
         super(SignupForm, self).__init__(*args, **kwargs)
@@ -27,7 +28,7 @@ class SignupForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'last_name', 'password1', 'password2', 'newsletter']
+        fields = ['email', 'first_name', 'last_name', 'password1', 'password2', 'interested_in_learning', 'communication_opt_in']
 
 
 class CustomPasswordResetForm(PasswordResetForm):

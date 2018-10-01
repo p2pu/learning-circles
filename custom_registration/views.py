@@ -43,7 +43,7 @@ class SignupView(FormView):
 
     def form_valid(self, form):
         user = form.save(commit=False)
-        user = create_user(user.email, user.first_name, user.last_name, form.cleaned_data['password1'], form.cleaned_data['newsletter'])
+        user = create_user(user.email, user.first_name, user.last_name, form.cleaned_data['password1'], form.cleaned_data['communication_opt_in'], form.cleaned_data['interested_in_learning'], )
         login(self.request, user)
         return http.HttpResponseRedirect(self.get_success_url())
 
@@ -66,14 +66,14 @@ class AjaxSignupView(View):
             "first_name": schema.text(required=True),
             "last_name": schema.text(required=True),
             "password": schema.text(required=True),
-            "newsletter": schema.boolean(),
+            "communication_opt_in": schema.boolean(required=True),
         }
         data = json.loads(request.body)
         data, errors = schema.validate(post_schema, data)
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        user = create_user(data['email'], data['first_name'], data['last_name'], data['password'], data.get('newsletter', False))
+        user = create_user(data['email'], data['first_name'], data['last_name'], data['password'], data.get('communication_opt_in', False))
         login(request, user)
         return json_response(request, { "status": "created", "user": user.username });
 

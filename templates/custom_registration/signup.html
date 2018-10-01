@@ -13,22 +13,24 @@
             <h1>{% trans "Create an Account" %}</h1>
             <small>{% blocktrans %}<a href="{{ login_url }}">Log in</a>{% endblocktrans %} if you already have an account.</small>
           </header>
-          <p>Anybody can sign up for a learning circle without creating a P2PU account. <a href="https://www.p2pu.org/en/learning-circles/">Active learning circles are listed here</a>.</p>
-          <p>Creating a P2PU account allows you to:</p>
+          <p>We invite you to join our global network as we build equitable, empowering, and liberating alternatives to mainstream education.</p>
+
+          <p>Create a P2PU account in order to:</p>
           <ul>
             <li>Create and publicize <a href="https://www.p2pu.org/en/learning-circles/">learning circles</a> on our website</li>
-            <li>Post in our <a href="http://community.p2pu.org">online community</a></li>
-            <li>Add online courses to our <a href="http://p2pu.org/en/courses">course page</a></li>
+            <li>Participate in our <a href="http://community.p2pu.org">online community</a></li>
+            <li>Add learning resources you like to our <a href="http://p2pu.org/en/courses">course database</a></li>
             <li>Receive announcements and updates about learning circles and related events</li>
           </ul>
         </div>
         <div class="col-12 col-md-5" data-aos="fade-left">
           <div class="form">
-        	  <form action="" method="POST" enctype="multipart/form-data">
-        	    {% csrf_token %}
-        	    {{ form|crispy }}
+            <form action="" method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              {{ form|crispy }}
+              <p>P2PU values your privacy and will never sell your data. By signing up, you accept our <a href="https://www.p2pu.org/en/terms/">terms of service</a>.</p>
               <button type="submit" class="btn p2pu-btn light">{% trans "Submit" %}</button>
-        	  </form>
+            </form>
           </div>
         </div>
       </div>

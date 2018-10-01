@@ -236,9 +236,9 @@ class TestSignupModels(TestCase):
         self.assertEqual(len(mail.outbox), 3) # should be sent to facilitator & application
         self.assertEqual(mail.outbox[1].to[0], data['email'])
         self.assertFalse(send_message.called)
-        self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=yes&sig='.format(get_language(), urllib.parse.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].body)
-        self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=no&sig='.format(get_language(), urllib.parse.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].body)
-        self.assertIn('https://example.net/{0}/optout/confirm/?user='.format(get_language()), mail.outbox[1].body)
+        self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=yes&sig='.format(get_language(), urllib.parse.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].alternatives[0][0])
+        self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=no&sig='.format(get_language(), urllib.parse.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].alternatives[0][0])
+        self.assertIn('https://example.net/{0}/optout/confirm/?user='.format(get_language()), mail.outbox[1].alternatives[0][0])
 
 
     @patch('studygroups.models.send_message')
@@ -268,9 +268,9 @@ class TestSignupModels(TestCase):
         self.assertEqual(mail.outbox[0].to[0], data['email'])
         self.assertEqual(mail.outbox[1].to[0], sg.facilitator.email)
         self.assertFalse(send_message.called)
-        self.assertNotIn('https://example.net/{0}/rsvp/'.format(get_language()), mail.outbox[1].body)
-        self.assertIn('https://example.net/{0}/facilitator/'.format(get_language()), mail.outbox[1].body)
-        self.assertNotIn('https://example.net/{0}/optout/confirm/?user='.format(get_language()), mail.outbox[1].body)
+        self.assertNotIn('https://example.net/{0}/rsvp/'.format(get_language()), mail.outbox[1].alternatives[0][0])
+        self.assertIn('https://example.net/{0}/facilitator/'.format(get_language()), mail.outbox[1].alternatives[0][0])
+        self.assertNotIn('https://example.net/{0}/optout/confirm/?user='.format(get_language()), mail.outbox[1].alternatives[0][0])
 
 
     @patch('studygroups.models.send_message')
@@ -444,17 +444,6 @@ class TestSignupModels(TestCase):
         self.assertFalse(Rsvp.objects.all().first().attending)
 
 
-    def test_send_new_facilitator_update(self):
-        tasks.send_new_facilitator_emails()
-        self.assertEqual(len(mail.outbox), 0)
-
-        user = User.objects.create_user('facil', 'facil@test.com', 'password')
-        user.date_joined = timezone.now() - datetime.timedelta(days=7)
-        user.save()
-        tasks.send_new_facilitator_emails()
-        self.assertEqual(len(mail.outbox), 1)
-
-
     def test_send_new_studygroup_update(self):
         tasks.send_new_studygroup_emails()
         self.assertEqual(len(mail.outbox), 0)
@@ -462,7 +451,6 @@ class TestSignupModels(TestCase):
         studygroup = StudyGroup.objects.get(pk=1)
         studygroup.created_at = timezone.now() - datetime.timedelta(days=7)
         studygroup.save()
-
 
         tasks.send_new_studygroup_emails()
         self.assertEqual(len(mail.outbox), 1)

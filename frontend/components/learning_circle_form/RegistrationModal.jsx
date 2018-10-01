@@ -18,7 +18,7 @@ export default class RegistrationModal extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { user: this.props.user || {}, errors: {}, registration: true };
+    this.state = { user: this.props.user || { communication_opt_in: true }, errors: {}, registration: true };
     this.updateUserData = (data) => this._updateUserData(data);
     this.toggleModalType = () => this._toggleModalType();
     this.submitForm = (e) => this._submitForm(e);
@@ -51,14 +51,14 @@ export default class RegistrationModal extends React.Component {
     }).then(res => {
       if (!!res.data.errors) {
         if (typeof(res.data.errors) == "string") {
-          return this.props.showAlert(res.data.errors, 'danger')
+          return this.props.showAlert(res.data.errors, 'danger');
         }
         return this.setState({ errors: res.data.errors });
       }
       this.props.closeModal();
       this.props.onLogin(res.data.user);
     }).catch(err => {
-      console.log(err)
+      console.log(err);
     })
   }
 
@@ -124,14 +124,17 @@ export default class RegistrationModal extends React.Component {
               errorMessage={this.state.errors.password}
             />
             { this.state.registration &&
-              <CheckboxWithLabel
-                label='Would you like to receive the P2PU newsletter?'
-                checked={this.state.user.newsletter || false}
-                handleChange={this.updateUserData}
-                name={'newsletter'}
-                id={'id_newsletter'}
-                errorMessage={this.state.errors.newsletter}
-              />
+              <div>
+                <p>Joining the community comes with an expectation that you would like to learn about upcoming events, new features, and updates from around the world. If you do not want to receive any of these messages, uncheck this box.</p>
+                <CheckboxWithLabel
+                  label='P2PU can contact me.'
+                  checked={this.state.user.communication_opt_in}
+                  handleChange={this.updateUserData}
+                  name={'communication_opt_in'}
+                  id={'id_communication_opt_in'}
+                  errorMessage={this.state.errors.communication_opt_in}
+                />
+              </div>
             }
             <div className="modal-actions">
               <a onClick={this.toggleModalType}>
