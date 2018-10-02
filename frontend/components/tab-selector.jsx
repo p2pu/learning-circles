@@ -18,8 +18,8 @@ export default class TabSelector extends React.Component {
         const {header, children} = this.props;
         const {activeTab} = this.state;
         var tabs = header.map((heading,i) =>
-            <li role="presentation" key={i} className={i==activeTab&&'active'}>
-                <a href="#" onClick={this._handleTabSwitch.bind(this,i)}>{heading}</a>
+            <li role="presentation" key={i} className={'nav-item'}>
+                <a className={'nav-link' + (i==activeTab?' active':'')} href="#" onClick={this._handleTabSwitch.bind(this,i)}>{heading}</a>
             </li>
         );
         var activeChild = React.Children.toArray(children)[activeTab];
