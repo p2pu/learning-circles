@@ -1,10 +1,10 @@
 {% load i18n %}
 {% load extras %}
-<div class="panel panel-default">
-  <div class="panel-heading">
+<div class="card">
+  <div class="card-header text-light bg-dark">
     <h2>{{ lc.course.title }}</h2>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <div class="row">
       <div class="col-md-12">
         {% with venue_website=lc.venue_website venue_name=lc.venue_name venue_details=lc.venue_details day=lc.day timezone=lc.timezone_display meeting_time=lc.meeting_time|time:"f A" end_time=lc.end_time|time:"f A" start_date=lc.start_date|date:"D d M Y" %}
