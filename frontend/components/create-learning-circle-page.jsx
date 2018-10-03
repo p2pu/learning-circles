@@ -12,7 +12,7 @@ import {
   FACILITATOR_PAGE,
   LC_DEFAULTS,
   DESKTOP_BREAKPOINT
-} from '../constants';
+} from '../helpers/constants';
 
 import './stylesheets/learning-circle-form.scss';
 import 'p2pu-input-fields/dist/build.css';

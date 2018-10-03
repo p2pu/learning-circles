@@ -39,7 +39,7 @@
     "node-sass": "^3.13.0",
     "p2pu-input-fields": "^0.5.7",
     "p2pu-search-cards": "^0.8.7",
-    "p2pu-theme": "^1.0.0",
+    "p2pu-theme": "^1.0.5",
     "places.js": "^1.4.18",
     "promise-polyfill": "^6.0.2",
     "rc-time-picker": "^3.2.1",

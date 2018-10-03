@@ -1,5 +1,5 @@
 import * as typeformEmbed from '@typeform/embed';
-import { LEARNER_SURVEY } from './constants'
+import { LEARNER_SURVEY } from './helpers/constants'
 
 const element = document.getElementById('studygroup-learner-feedback');
 const studygroup = element.dataset.studygroup;
