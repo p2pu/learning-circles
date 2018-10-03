@@ -76,7 +76,7 @@ export default class InvitationList extends React.Component {
                 <h3>{gettext('Invite facilitators')}</h3>
                 <div className="form-group">
                     <input type="email" className="form-control" value={this.state.emailInput} onChange={this.handleChange} placeholder={gettext("Email address of user to invite")} />
-                    <a className="btn btn-primary" onClick={this.handleInviteClick}>{gettext("Invite facilitator")}</a>
+                    <button type="button" className="btn btn-primary" onClick={this.handleInviteClick}>{gettext("Invite facilitator")}</button>
                 </div>
                 {errorMsg}
             </div>
