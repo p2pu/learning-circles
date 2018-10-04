@@ -22,7 +22,7 @@
   {% empty %}
   <p>{% trans "No active learning circles found, why not create one?" %}</p>
   {% endfor %}
-  <p><a class="btn btn-primary" href="{% url 'studygroups_facilitator_studygroup_create' %}">{% trans "Create a learning circle" %}</a>
+  <p class="mt-4"><a class="btn btn-primary" href="{% url 'studygroups_facilitator_studygroup_create' %}">{% trans "Create a learning circle" %}</a>
   </p>
 
   {% if past_study_groups %}

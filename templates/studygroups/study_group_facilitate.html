@@ -56,7 +56,6 @@
               <th>{% trans "Date" %}</th>
               <th>{% trans "RSVPs" %}</th>
               <th>{% trans "Feedback" %}</th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -83,8 +82,6 @@
                 <a class="btn btn-primary disabled" href="{% url 'studygroups_feedback' lc.id meeting.id %}">{% trans "Capture feedback" %}</a>
                 {% endif %}
                 {% endif %}
-              </td>
-              <td>
               </td>
             </tr>
             {% endfor %}
