@@ -90,9 +90,9 @@ export default class WeeklyMeetingsList extends React.Component {
         return (
             <div>
                 <h2>{interpolate(gettext("Upcoming meetings Week of %s"), [weekStart.format('MMM. D, YYYY')])}</h2>
-                <a className="btn btn-primary" disabled={!showPrevWeek} onClick={e=> this._handleWeekChange(prevWeek) }>{interpolate(gettext("Week of %s"), [prevWeek.format('MMM. D, YYYY')])}</a>&nbsp;
-                <a className="btn btn-primary" disabled={!showNextWeek} onClick={e=> this._handleWeekChange(nextWeek) }>{interpolate(gettext("Week of %s"), [nextWeek.format('MMM. D, YYYY')])}</a>&nbsp;
-                <a className="btn btn-primary" onClick={e=> this._handleWeekChange(moment().startOf('week')) }>{gettext("This week")}</a>
+                <a href="#" className="btn btn-primary" disabled={!showPrevWeek} onClick={e=> this._handleWeekChange(prevWeek) }>{interpolate(gettext("Week of %s"), [prevWeek.format('MMM. D, YYYY')])}</a>&nbsp;
+                <a href="#" className="btn btn-primary" disabled={!showNextWeek} onClick={e=> this._handleWeekChange(nextWeek) }>{interpolate(gettext("Week of %s"), [nextWeek.format('MMM. D, YYYY')])}</a>&nbsp;
+                <a href="#" className="btn btn-primary" onClick={e=> this._handleWeekChange(moment().startOf('week')) }>{gettext("This week")}</a>
                 { week.map(day => <DayMeetingTable day={day} {...this.props} />) }
                 <p><a href="/organize/studygroup_meetings/">{gettext("View all meetings")}</a></p>
             </div>

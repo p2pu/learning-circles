@@ -1,17 +1,5 @@
-html {
-	height: 100%
-}
-body {
-	min-height: 100%;
-	position: relative;
-}
-main {
-	padding-top: $navbar-height;
-	background-color: $white;
-}
-
 .card-container {
-    text-align: center;
+  text-align: center;
 	max-width: 1400px;
 	margin: 0 auto;
 	margin-top: 60px;
@@ -26,7 +14,7 @@ main {
 }
 
 .lc-card {
-    @media (min-width: $screen-sm){
+    @media (min-width: map-get($grid-breakpoints, "sm")){
 	    height: 380px;
     }
     max-width: 340px;
@@ -140,7 +128,7 @@ main {
 	.thumbnail-side {
 		position: relative;
 		text-align: center;
-		background: $brand-primary;
+		background: $primary;
 		color: $white;
 		margin-bottom: 0.5em;
 		font-family: $headings-font-family;
@@ -254,7 +242,7 @@ img.lc-about-image{
 	&:hover{
 		.icon-circle {
 			background-color: $gray-snow;
-			color: $brand-primary;
+			color: $primary;
 		}
 
 		.item-title {
@@ -279,9 +267,6 @@ img.lc-about-image{
   .page-content {
     padding-bottom: $padding-md;
     padding-top: $padding-md;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
 
     header {
       margin-bottom: 1em;
@@ -474,7 +459,8 @@ img.lc-about-image{
   margin-bottom: 2rem;
 
   h2 {
-    margin-bottom: 6rem;
+    margin-bottom: 1rem;
+    margin-top: 1.5rem;
   }
 
   .option {
@@ -497,14 +483,7 @@ img.lc-about-image{
   }
 }
 
-.p2pu-btn {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-@media (max-width: $screen-xs-max) {
+@media (max-width: map-get($grid-breakpoints, "sm")) {
   .feedback-done {
     .actions {
       display: flex;

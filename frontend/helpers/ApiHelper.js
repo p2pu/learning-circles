@@ -1,4 +1,4 @@
-import { API_ENDPOINTS } from '../constants';
+import { API_ENDPOINTS } from '../helpers/constants';
 import compact from 'lodash/compact';
 import jsonp from 'jsonp';
 import axios from 'axios';

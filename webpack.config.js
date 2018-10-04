@@ -50,13 +50,13 @@ const reactBuild = {
       },
     ],
   },
+  externals: {
+    jquery: 'jQuery',
+    $: 'jQuery'
+  },
   plugins: [
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new BundleTracker({filename: './assets/frontend-webpack-manifest.json'}),
-    new webpack.ProvidePlugin({
-      $: "jquery",
-      jQuery: "jquery"
-    }),
     new webpack.optimize.CommonsChunkPlugin({
       name: 'common',
       minChunks: 3,
@@ -99,7 +99,7 @@ const styleBuild = {
             loader: 'sass-loader',
             options: {
               sourceMap: true,
-              includePaths: [path.resolve("./static/")]
+              includePaths: [path.resolve("./static/"), path.resolve("./node_modules/")]
             }
           }]
         }),
