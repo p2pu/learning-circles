@@ -8,6 +8,8 @@ from studygroups.models import StudyGroup
 from studygroups.models import Meeting
 from studygroups.models import Course
 from studygroups.models import Application
+from studygroups.charts import LearnerGoalsChart
+
 
 
 @method_decorator(user_is_group_facilitator, name='dispatch')
@@ -17,6 +19,11 @@ class StudyGroupFinalReport(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(StudyGroupFinalReport, self).get_context_data(**kwargs)
         study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
-        context['study_group_uuid'] = study_group.uuid
+        learner_goals_chart = LearnerGoalsChart(study_group)
+
+        context = {
+            'study_group': study_group,
+            'learner_goals_chart': learner_goals_chart.generate()
+        }
 
         return context

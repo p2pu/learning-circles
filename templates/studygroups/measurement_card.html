@@ -1,0 +1,11 @@
+{% load i18n %}
+
+<div class="report-measurement bg-white p-4 mb-4">
+    <header>
+        <p class="bold text-uppercase mb-0">{{ title }}</p>
+        <p class="small mt-0">{{ description }}</p>
+    </header>
+    <div class="visualization">
+        {{ learner_goals_chart|safe }}
+    </div>
+</div>
