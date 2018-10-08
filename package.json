@@ -9,7 +9,9 @@
   "scripts": {
     "build": "webpack --config webpack.config.js",
     "watch": "webpack --config webpack.config.js --watch",
-    "build:production": "webpack -p --config webpack.config.js"
+    "build:production": "webpack -p --config webpack.config.js",
+    "profile": "webpack -p --config webpack.config.profile.js --watch"
+
   },
   "repository": {
     "type": "git",
