@@ -5,7 +5,7 @@ import Modal from 'react-responsive-modal';
 import CheckboxWithLabel from 'p2pu-input-fields/dist/CheckboxWithLabel'
 import InputWithLabel from 'p2pu-input-fields/dist/InputWithLabel'
 
-import { API_ENDPOINTS } from '../../constants'
+import { API_ENDPOINTS } from '../../helpers/constants'
 
 import '../stylesheets/learning-circle-form.scss';
 import 'p2pu-input-fields/dist/build.css';

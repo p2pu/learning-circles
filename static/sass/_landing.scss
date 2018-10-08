@@ -24,7 +24,7 @@ section{
 		height: 68px;
 		padding: 15px 0 15px 1em;
 
-		@media (min-width: $screen-xs-max) {
+		@media (min-width: map-get($grid-breakpoints, "sm")) {
 		    padding: 15px 1em 15px 0;
 		}
 	}
@@ -35,12 +35,12 @@ section{
 	padding: 0;
 	list-style-type: none;
 
-	@media (min-width: $screen-xs-max) {
+	@media (min-width: map-get($grid-breakpoints, "sm")) {
 	}
 
 	li {
 		float: left;
-		@media (min-width: $screen-xs-max) {
+		@media (min-width: map-get($grid-breakpoints, "sm")) {
 		}
 	}
 
@@ -167,7 +167,7 @@ padding-bottom: 20px;
     .lc-jumbo-call{
         font-size: 14px;
     }
-      
+
     .j-text-container a.lc-jumbo-link:link, .j-text-container a.lc-jumbo-link:visited{
         font-size: 14px;
     }
@@ -267,11 +267,11 @@ padding-bottom: 20px;
 #signup{
 	padding: 2em 0;
 
-	@media (min-width: $screen-sm) {
+	@media (min-width: map-get($grid-breakpoints, "sm")) {
 		padding: 2em 0;
 	}
 
-	@media (min-width: $screen-md-max) {
+	@media (min-width: map-get($grid-breakpoints, "lg")) {
 		padding: 2em;
 	}
 
@@ -284,7 +284,6 @@ padding-bottom: 20px;
 	p {
 		line-height: 1.3;
 		font-size: 1.1em;
-		font-family: $headings-font-family;
 	}
 
 	.collapse.in ~ #su-contact-success, .collapse.in ~ h3 {
@@ -300,11 +299,11 @@ padding-bottom: 20px;
 			width: 100%;
 			padding: 0 1em;
 
-			@media (min-width: $screen-sm) {
+			@media (min-width: map-get($grid-breakpoints, "sm")) {
 				width: 100%;
 			}
 
-			@media (min-width: $screen-md-max) {
+			@media (min-width: map-get($grid-breakpoints, "lg")) {
 				width: 35%;
 			}
 
@@ -316,11 +315,11 @@ padding-bottom: 20px;
 				font-size: 1.6em;
 				left: 1em;
 				color: $gray;
-				@media (min-width: $screen-sm) {
+				@media (min-width: map-get($grid-breakpoints, "sm")) {
 					top: 13px;
 				}
 
-				@media (min-width: $screen-md-max) {
+				@media (min-width: map-get($grid-breakpoints, "lg")) {
 					top: 15px;
 				}
 			}
@@ -346,7 +345,7 @@ padding-bottom: 20px;
 
 		.btn{
 			padding: 0.7em 1.5em;
-			font-family: $base-font-family;
+			font-family: $font-family-sans-serif;
 			text-transform: uppercase;
 			font-size: 1em;
 			border-width: 2px;
@@ -361,7 +360,7 @@ padding-bottom: 20px;
 	#su-contact-success{
     border-color: $p2pu-green;
 		background-color: transparent;
-    color: $brand-primary;
+    color: $primary;
 
 		.btn{
 			text-transform: uppercase;
@@ -371,13 +370,13 @@ padding-bottom: 20px;
 #interest-extra {
 	background-color: $gray-lighter;
 	padding: 1em;
-	border: 1px $brand-primary solid;
+	border: 1px $primary solid;
 
-	@media (min-width: $screen-sm) {
+	@media (min-width: map-get($grid-breakpoints, "sm")) {
 		padding: 1em;
 	}
 
-	@media (min-width: $screen-md-max) {
+	@media (min-width: map-get($grid-breakpoints, "lg")) {
 		padding: 3em;
 	}
 }
@@ -414,11 +413,11 @@ padding-bottom: 20px;
 		height: 100%;
 		padding: 0;
 
-		@media (min-width: $screen-sm) {
+		@media (min-width: map-get($grid-breakpoints, "sm")) {
 
 		}
 
-		@media (min-width: $screen-md-max) {
+		@media (min-width: map-get($grid-breakpoints, "lg")) {
 
 		}
 
@@ -427,18 +426,18 @@ padding-bottom: 20px;
 			width: 100%;
 			height: 100%;
 
-			@media (min-width: $screen-sm) {
+			@media (min-width: map-get($grid-breakpoints, "sm")) {
 
 			}
 
-			@media (min-width: $screen-md-max) {
+			@media (min-width: map-get($grid-breakpoints, "lg")) {
 				border-radius: 0;
 			}
 		}
 
 	}
 	.course-description {
-		@media (min-width: $screen-md-max) {
+		@media (min-width: map-get($grid-breakpoints, "lg")) {
 			margin-top: 0;
 		}
 	}
@@ -455,7 +454,7 @@ padding-bottom: 20px;
 		border: 1px solid $gray-lighter;
 		padding-top: 5px;
 		padding-bottom: 5px;
-		color: $brand-primary;
+		color: $primary;
 		text-align: center;
 		text-underline: none;
 		display: block;
@@ -522,11 +521,11 @@ padding-bottom: 20px;
 		overflow: auto;
 		min-height: 23em;
 
-		@media (min-width: $screen-md) {
+		@media (min-width: map-get($grid-breakpoints, "md")) {
 			min-height: 31em;
 		}
 
-		@media (min-width: $screen-lg) {
+		@media (min-width: map-get($grid-breakpoints, "lg")) {
 			min-height: 26em;
 		}
 
@@ -546,7 +545,7 @@ padding-bottom: 20px;
 		position: absolute;
 		bottom: -360px;
 
-		@media (min-width: $screen-xs-max) {
+		@media (min-width: map-get($grid-breakpoints, "sm")) {
 			bottom: 0;
 		}
 
@@ -630,7 +629,7 @@ padding-bottom: 20px;
 	}
 
 	.icon {
-		display: block;		
+		display: block;
 		padding: 0.2em 0.3em;
 		color: $white;
 		border-radius: 100%;
@@ -665,11 +664,11 @@ padding-bottom: 20px;
 
 #course-selection, #location-selection {
 
-	@media (min-width: $screen-sm) {
+	@media (min-width: map-get($grid-breakpoints, "sm")) {
 
 	}
 
-	@media (min-width: $screen-md-max) {
+	@media (min-width: map-get($grid-breakpoints, "lg")) {
 		-webkit-column-count: 2; /* Chrome, Safari, Opera */
 		-moz-column-count: 2; /* Firefox */
 		column-count: 2;

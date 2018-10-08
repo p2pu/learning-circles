@@ -1,5 +1,5 @@
 import * as typeformEmbed from '@typeform/embed';
-import { FACILITATOR_SURVEY, NO_STUDYGROUP_SURVEY } from './constants'
+import { FACILITATOR_SURVEY, NO_STUDYGROUP_SURVEY } from './helpers/constants'
 
 const element = document.getElementById('studygroup-facilitator-feedback');
 const studygroup = element.dataset.studygroup || '';

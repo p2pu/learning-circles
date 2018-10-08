@@ -15,9 +15,9 @@
   <div class="row">
     <div class="col-md-4 col-sm-12">
       {% if study_group.image %}
-      <img src="{{study_group.image.url}}">
+      <img class="img-fluid" src="{{study_group.image.url}}">
       {% else %}
-      <img src="{% static 'images/learning-circle-default.jpg' %}">
+      <img class="img-fluid" src="{% static 'images/learning-circle-default.jpg' %}">
       {% endif %}
       <p>{{study_group.description}}</p>
       <p>{% blocktrans with first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name %}Facilitated by {{first_name}} {{last_name}}{% endblocktrans %}</p>
