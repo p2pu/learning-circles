@@ -19,24 +19,24 @@
 
     <div class="row mt-4">
       <div class="col-12">
-          <h2>Summary</h2>
+          <h2 class="mb-4">Summary</h2>
       </div>
       <div class="col-12 col-md-6">
           {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart %}
       </div>
 
       <div class="col-12 col-md-6">
-          {% include "studygroups/measurement_card.html" with title='Goals Met' description='To what extent did you achieve your goals for this learning circle?' chart=learner_goals_chart %}
+          {% include "studygroups/measurement_card.html" with title='Goals Met' description='To what extent did you achieve your goals for this learning circle?' chart=goals_met_chart %}
       </div>
 
       <div class="col-12 col-md-6">
-          {% include "studygroups/measurement_card.html" with title='Skills Learned' description='After the learning circle, I feel more comfortable...' chart=learner_goals_chart %}
+          {% include "studygroups/measurement_card.html" with title='Skills Learned' description='After the learning circle, I feel more comfortable...' chart=skills_learned_chart %}
       </div>
     </div>
 
     <div class="row mt-4">
       <div class="col-12">
-          <h2>Learners' Reflections</h2>
+          <h2 class="mb-4">Learners' Reflections</h2>
       </div>
       <div class="col-12 col-md-6">
           {% include "studygroups/measurement_card.html" with title='Reasons for Success' description='I succeeded in the learning circle because I…' chart=learner_goals_chart %}
@@ -53,14 +53,14 @@
 
     <div class="row mt-4">
       <div class="col-12">
-          <h2>Participation</h2>
+          <h2 class="mb-4">Participation</h2>
       </div>
       <div class="col-12 col-md-6">
-          {% include "studygroups/measurement_card.html" with title='New Learners' chart=learner_goals_chart %}
+          {% include "studygroups/measurement_card.html" with title='New Learners' chart=new_learners_chart %}
       </div>
 
       <div class="col-12 col-md-6">
-          {% include "studygroups/measurement_card.html" with title='Completion Rate' chart=learner_goals_chart %}
+          {% include "studygroups/measurement_card.html" with title='Completion Rate' chart=completion_rate_chart %}
       </div>
 
       <div class="col-12 col-md-6">
@@ -74,7 +74,7 @@
 
     <div class="row mt-4">
       <div class="col-12">
-          <h2>Course Quality</h2>
+          <h2 class="mb-4">Course Quality</h2>
       </div>
       <div class="col-12 col-md-6">
           {% include "studygroups/measurement_card.html" with title="Facilitator's Rating" description="How well did this course work as a learning circle?" chart=learner_goals_chart %}
