@@ -296,6 +296,139 @@ class IdeasChart():
         return quotes + "</ul>"
 
 
+class PromotionChart():
+    def __init__(self, study_group, **kwargs):
+        self.chart = pygal.Dot(stroke=False, show_legend=False, show_y_guides=False, style=custom_style, **kwargs)
+        self.study_group = study_group
+
+    def get_data(self):
+        data = { 'Other': [] }
+
+        survey_str = self.study_group.learnersurveyresponse_set.first().survey
+        survey_fields = json.loads(survey_str)['fields']
+        promo_field = next((field for field in survey_fields if field["id"] == "lYX1qfcSKARQ"), None)
+        choices = promo_field['properties']['choices']
+
+        for choice in choices:
+            data[choice['label']] = []
+
+        survey_responses = self.study_group.learnersurveyresponse_set.values_list('response', flat=True)
+
+        for response_str in survey_responses:
+            response = json.loads(response_str)
+            answers = response['answers']
+            field = next((answer for answer in answers if answer["field"]["id"] == "lYX1qfcSKARQ"), None)
+            if field is not None:
+                selections = field['choices'].get('labels', None)
+
+            if selections is not None:
+                for label in selections:
+                    if label in data:
+                        data[label].append(1)
+            else:
+                selection = field['choices'].get('other', None)
+                if selection is not None:
+                    data['Other'].append(1)
+
+        return data
+
+    def generate(self):
+        chart_data = self.get_data()
+
+        for key, value in chart_data.items():
+            self.chart.add(key, value)
+
+        return self.chart.render(is_unicode=True)
+
+
+class LibraryUsageChart():
+    def __init__(self, study_group, **kwargs):
+        self.chart = pygal.Dot(stroke=False, show_legend=False, show_y_guides=False, style=custom_style, **kwargs)
+        self.study_group = study_group
+
+    def get_data(self):
+        data = {}
+
+        survey_str = self.study_group.learnersurveyresponse_set.first().survey
+        survey_fields = json.loads(survey_str)['fields']
+        choices = survey_fields
+        promo_field = next((field for field in survey_fields if field["id"] == "LQGB3S5v0rUk"), None)
+        # LQGB3S5v0rUk = "Aside from the learning circle, how often do you visit the library?"
+        choices = promo_field['properties']['choices']
+
+        for choice in choices:
+            data[choice['label']] = []
+
+        survey_responses = self.study_group.learnersurveyresponse_set.values_list('response', flat=True)
+
+        for response_str in survey_responses:
+            response = json.loads(response_str)
+            answers = response['answers']
+            field = next((answer for answer in answers if answer["field"]["id"] == "LQGB3S5v0rUk"), None)
+            if field is not None:
+                label = field['choice'].get('label', None)
+
+            if label is not None:
+                if label in data:
+                    data[label].append(1)
+
+        return data
+
+    def generate(self):
+        chart_data = self.get_data()
+
+        for key, value in chart_data.items():
+            self.chart.add(key, value)
+
+        return self.chart.render(is_unicode=True)
+
+
+class LearnerRatingChart():
+
+    def __init__(self, study_group, **kwargs):
+        self.study_group = study_group
+
+    def get_data(self):
+        data = {}
+        survey_responses = self.study_group.learnersurveyresponse_set.values_list('response', flat=True)
+
+        ratings = []
+
+        for response_str in survey_responses:
+            response = json.loads(response_str)
+            answers = response['answers']
+            field = next((answer for answer in answers if answer["field"]["id"] == "iGWRNCyniE7s"), None)
+            # iGWRNCyniE7s = "How well did the online course {{hidden:course}} work as a learning circle?"
+            if field is not None:
+                ratings.append(field['number'])
+
+        average_rating = sum(ratings) / len(ratings)
+
+        print(average_rating)
+
+        data = {
+            'average_rating': int(round(average_rating)),
+            'maximum': 5
+        }
+
+        return data
+
+    def generate(self):
+        chart_data = self.get_data()
+
+        remainder = chart_data['maximum'] - chart_data['average_rating']
+
+        stars = "<div class='course-rating row justify-content-around text-warning'>"
+
+        for x in range(0, chart_data['average_rating']):
+            stars += "<i class='fas fa-star'></i>"
+
+        for x in range(0, remainder):
+            stars += "<i class='far fa-star'></i>"
+
+        return stars + "</div>"
+
+
 class FacilitatorRatingChart():
 
     def __init__(self, study_group, **kwargs):
@@ -303,11 +436,30 @@ class FacilitatorRatingChart():
 
     def get_data(self):
         data = {}
-        learners = self.study_group.application_set
+        survey_questions = self.study_group.facilitatorsurveyresponse_set.first().survey
+        survey_responses = self.study_group.facilitatorsurveyresponse_set.values_list('response', flat=True)
+
+        ratings = []
+
+        for response_str in survey_responses:
+            response = json.loads(response_str)
+            answers = response['answers']
+            field = next((answer for answer in answers if answer["field"]["id"] == "Zm9XlzKGKC66"), None)
+            # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
+            if field is not None:
+                ratings.append(field['number'])
+
+        average_rating = sum(ratings) / len(ratings)
+
+        survey_fields = json.loads(survey_questions)['fields']
+        selected_field = next((field for field in survey_fields if field["id"] == "Zm9XlzKGKC66"), None)
+        steps = selected_field['properties']['steps']
+
+        print(average_rating)
 
         data = {
-            'average_rating': 4,
-            'maximum': 5
+            'average_rating': int(round(average_rating)),
+            'maximum': steps
         }
 
         return data
