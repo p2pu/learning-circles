@@ -1,7 +1,9 @@
 import pygal
+import json
 from pygal.style import Style
 
 from studygroups.models import StudyGroup
+from studygroups.forms import ApplicationForm
 
 custom_style = Style(
   font_family='Open Sans',
@@ -31,15 +33,20 @@ class LearnerGoalsChart():
 
     def get_data(self):
         data = {}
-        learners = self.study_group.application_set
+        for choice in ApplicationForm.GOAL_CHOICES:
+            data[choice[0]] = []
 
-        #TODO this is so dumb lolol
-        data = {
-            "Personal interest": [1,1,1,1,1,1],
-            "Increase employability": [1,1,1,1],
-            "Accompany other education programs": [1,1,1],
-            "Professional development": [1]
-        }
+        signup_questions = self.study_group.application_set.values_list('signup_questions', flat=True)
+
+        for answer_str in signup_questions:
+            answer = json.loads(answer_str)
+            goal = answer['goals']
+
+            if goal in data:
+                data[goal].append(1)
+            else:
+                data['Other'].append(1)
+
         return data
 
     def generate(self):
@@ -54,7 +61,7 @@ class LearnerGoalsChart():
 class GoalsMetChart():
 
     def __init__(self, study_group, **kwargs):
-        self.chart = pygal.Bar(style=custom_style, show_y_guides=False, show_y_labels=False, show_legend=False, **kwargs)
+        self.chart = pygal.Bar(style=custom_style, show_legend=False, **kwargs)
         self.chart.x_labels = ["1", "2", "3", "4", "5"]
         self.study_group = study_group
 
@@ -78,19 +85,14 @@ class GoalsMetChart():
 class SkillsLearnedChart():
 
     def __init__(self, study_group, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style, **kwargs)
+        self.chart = pygal.HorizontalBar(style=custom_style, show_legend = False, **kwargs)
         self.study_group = study_group
 
     def get_data(self):
         data = {}
         learners = self.study_group.application_set
         data = {
-            "Setting goals for myself": 4.29,
-            "Navigating online courses": 3.86,
-            "Working with others": 3.86,
-            "Feeling connected to my community": 3.71,
-            "Speaking in public": 3.71,
-            "Using the internet": 3.71
+            "average": [4.29, 3.86, 3.86, 3.71, 3.71, 3.71]
         }
         return data
 
@@ -100,6 +102,16 @@ class SkillsLearnedChart():
         for key, value in chart_data.items():
             self.chart.add(key, value)
 
+        labels = {
+            "Setting goals for myself": 4.29,
+            "Navigating online courses": 3.86,
+            "Working with others": 3.86,
+            "Feeling connected to my community": 3.71,
+            "Speaking in public": 3.71,
+            "Using the internet": 3.71
+        }
+
+        self.chart.x_labels = list(labels)
         return self.chart.render(is_unicode=True)
 
 

@@ -12,7 +12,7 @@ from studygroups.charts import LearnerGoalsChart, NewLearnersChart, CompletionRa
 
 
 
-@method_decorator(user_is_group_facilitator, name='dispatch')
+# @method_decorator(user_is_group_facilitator, name='dispatch')
 class StudyGroupFinalReport(TemplateView):
     template_name = 'studygroups/final_report.html'
 
@@ -31,6 +31,8 @@ class StudyGroupFinalReport(TemplateView):
 
         context = {
             'study_group': study_group,
+            'registrations': study_group.application_set.active().count(),
+            'survey_responses': study_group.learnersurveyresponse_set.count(),
             'learner_goals_chart': learner_goals_chart.generate(),
             'new_learners_chart': new_learners_chart.generate(),
             'completion_rate_chart': completion_rate_chart.generate(),

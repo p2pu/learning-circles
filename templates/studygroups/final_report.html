@@ -7,11 +7,13 @@
   <div class="container">
     <div class="row">
       <div class="title col-12">
-        <h1 class="mt-5">Learning Circle Insights</h1>
+        <p class="bold large text-uppercase mt-4">Learning Circle Insights</p>
+        <h1 class="mt-4">{{ study_group.course.title }}</h1>
+        <h4>with {{ study_group.facilitator.first_name }} {{study_group.facilitator.last_name}}</h4>
       </div>
-      <div class="intro col-12">
-          <p class="bold large text-uppercase mt-4">{{ study_group.course.title }}</p>
-          <p class="my-0">{{ study_group.facilitator.first_name }} {{study_group.facilitator.last_name}}</p>
+      <div class="intro col-12 my-4">
+          <p class="my-0">{{ registrations }} learners signed up</p>
+          <p class="my-0">{{ survey_responses }} learners responded to the survey</p>
           <p class="my-0">{{ study_group.start_date }} at {{ study_group.venue_name }}</p>
           <p class="my-0">{{ study_group.city }}</p>
       </div>
