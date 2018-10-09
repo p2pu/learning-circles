@@ -153,3 +153,124 @@ class CompletionRateChart():
             self.chart.add(key, value)
 
         return self.chart.render(is_unicode=True)
+
+
+class ReasonsForSuccessChart():
+
+    def __init__(self, study_group, **kwargs):
+        self.study_group = study_group
+
+    def get_data(self):
+        data = {}
+        learners = self.study_group.application_set
+
+        data = {
+            'learner1': "Took on a personal challenge of learning to code.",
+            'learner2': "Attended every week to hear the various ways people learn to do this skill.",
+            'learner3': "I have a better understanding on how to design a website",
+            'learner4': "Had to set a goal for myself",
+            'learner5': "Have a degree in web management ecommerce and at the time CDs pages were not introduced",
+        }
+
+        return data
+
+    def generate(self):
+        chart_data = self.get_data()
+
+        quotes = "<ul class='quote-list list-unstyled'>"
+
+        for key, value in chart_data.items():
+            quotes += "<li class='pl-2 my-3 font-italic'>\"{}\"</li>".format(value)
+
+        return quotes + "</ul>"
+
+
+class NextStepsChart():
+
+    def __init__(self, study_group, **kwargs):
+        self.study_group = study_group
+
+    def get_data(self):
+        data = {}
+        learners = self.study_group.application_set
+
+        data = {
+            'learner1': "learn/work IT",
+            'learner2': "Use it on the side as extra income",
+            'learner3': "Design a website for my business",
+            'learner4': "continue learning",
+            'learner5': "Create web pages",
+            'learner6': "Enroll in continuing education",
+        }
+
+        return data
+
+    def generate(self):
+        chart_data = self.get_data()
+
+        quotes = "<ul class='quote-list list-unstyled'>"
+
+        for key, value in chart_data.items():
+            quotes += "<li class='pl-2 my-3 font-italic'>\"{}\"</li>".format(value)
+
+        return quotes + "</ul>"
+
+
+class IdeasChart():
+
+    def __init__(self, study_group, **kwargs):
+        self.study_group = study_group
+
+    def get_data(self):
+        data = {}
+        learners = self.study_group.application_set
+
+        data = {
+            'learner1': "Furthering in this course of coding.",
+            'learner2': "Intermediate or advanced Excel or Access",
+            'learner3': "Advance Excel",
+        }
+
+        return data
+
+    def generate(self):
+        chart_data = self.get_data()
+
+        quotes = "<ul class='quote-list list-unstyled'>"
+
+        for key, value in chart_data.items():
+            quotes += "<li class='pl-2 my-3 font-italic'>\"{}\"</li>".format(value)
+
+        return quotes + "</ul>"
+
+
+class FacilitatorRatingChart():
+
+    def __init__(self, study_group, **kwargs):
+        self.study_group = study_group
+
+    def get_data(self):
+        data = {}
+        learners = self.study_group.application_set
+
+        data = {
+            'average_rating': 4,
+            'maximum': 5
+        }
+
+        return data
+
+    def generate(self):
+        chart_data = self.get_data()
+
+        remainder = chart_data['maximum'] - chart_data['average_rating']
+
+        stars = "<div class='course-rating row justify-content-around text-warning'>"
+
+        for x in range(0, chart_data['average_rating']):
+            stars += "<i class='fas fa-star'></i>"
+
+        for x in range(0, remainder):
+            stars += "<i class='far fa-star'></i>"
+
+        return stars + "</div>"

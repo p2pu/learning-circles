@@ -8,7 +8,7 @@ from studygroups.models import StudyGroup
 from studygroups.models import Meeting
 from studygroups.models import Course
 from studygroups.models import Application
-from studygroups.charts import LearnerGoalsChart, NewLearnersChart, CompletionRateChart, GoalsMetChart, SkillsLearnedChart
+from studygroups.charts import LearnerGoalsChart, NewLearnersChart, CompletionRateChart, GoalsMetChart, SkillsLearnedChart, ReasonsForSuccessChart, NextStepsChart, IdeasChart, FacilitatorRatingChart
 
 
 
@@ -24,6 +24,10 @@ class StudyGroupFinalReport(TemplateView):
         completion_rate_chart = CompletionRateChart(study_group)
         goals_met_chart = GoalsMetChart(study_group)
         skills_learned_chart = SkillsLearnedChart(study_group)
+        reasons_for_success_chart = ReasonsForSuccessChart(study_group)
+        next_steps_chart = NextStepsChart(study_group)
+        ideas_chart = IdeasChart(study_group)
+        facilitator_rating_chart = FacilitatorRatingChart(study_group)
 
         context = {
             'study_group': study_group,
@@ -32,6 +36,10 @@ class StudyGroupFinalReport(TemplateView):
             'completion_rate_chart': completion_rate_chart.generate(),
             'goals_met_chart': goals_met_chart.generate(),
             'skills_learned_chart': skills_learned_chart.generate(),
+            'reasons_for_success_chart': reasons_for_success_chart.generate(),
+            'next_steps_chart': next_steps_chart.generate(),
+            'ideas_chart': ideas_chart.generate(),
+            'facilitator_rating_chart': facilitator_rating_chart.generate(),
         }
 
         return context

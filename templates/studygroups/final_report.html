@@ -10,7 +10,7 @@
         <h1 class="mt-5">Learning Circle Insights</h1>
       </div>
       <div class="intro col-12">
-          <p class="bold text-uppercase mt-4">{{ study_group.course.title }}</p>
+          <p class="bold large text-uppercase mt-4">{{ study_group.course.title }}</p>
           <p class="my-0">{{ study_group.facilitator.first_name }} {{study_group.facilitator.last_name}}</p>
           <p class="my-0">{{ study_group.start_date }} at {{ study_group.venue_name }}</p>
           <p class="my-0">{{ study_group.city }}</p>
@@ -39,15 +39,15 @@
           <h2 class="mb-4">Learners' Reflections</h2>
       </div>
       <div class="col-12 col-md-6">
-          {% include "studygroups/measurement_card.html" with title='Reasons for Success' description='I succeeded in the learning circle because I…' chart=learner_goals_chart %}
+          {% include "studygroups/measurement_card.html" with title='Reasons for Success' description='I succeeded in the learning circle because I…' chart=reasons_for_success_chart %}
       </div>
 
       <div class="col-12 col-md-6">
-          {% include "studygroups/measurement_card.html" with title='Next Steps' description='What do you want to do with your new skills?' chart=learner_goals_chart %}
+          {% include "studygroups/measurement_card.html" with title='Next Steps' description='What do you want to do with your new skills?' chart=next_steps_chart %}
       </div>
 
       <div class="col-12 col-md-6">
-          {% include "studygroups/measurement_card.html" with title='Ideas for Next Time' description='What other topics are you interested in learning?' chart=learner_goals_chart %}
+          {% include "studygroups/measurement_card.html" with title='Ideas for Next Time' description='What other topics are you interested in learning?' chart=ideas_chart %}
       </div>
     </div>
 
@@ -77,11 +77,11 @@
           <h2 class="mb-4">Course Quality</h2>
       </div>
       <div class="col-12 col-md-6">
-          {% include "studygroups/measurement_card.html" with title="Facilitator's Rating" description="How well did this course work as a learning circle?" chart=learner_goals_chart %}
+          {% include "studygroups/measurement_card.html" with title="Facilitator's Rating" description="How well did this course work as a learning circle?" chart=facilitator_rating_chart %}
       </div>
 
       <div class="col-12 col-md-6">
-          {% include "studygroups/measurement_card.html" with title="Learners' Rating" description="How well did this course work as a learning circle?" chart=learner_goals_chart %}
+          {% include "studygroups/measurement_card.html" with title="Learners' Rating" description="How well did this course work as a learning circle?" chart=facilitator_rating_chart %}
       </div>
     </div>
 

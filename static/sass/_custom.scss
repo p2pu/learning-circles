@@ -505,3 +505,29 @@ img.lc-about-image{
   box-shadow: -2px 2px 6px rgba(0,0,0,0.2);
 }
 
+.quote-list {
+  li {
+    border-left: 6px solid $primary;
+    line-height: 1.5;
+
+    &:nth-of-type(4n+1) {
+      border-color: $info;
+    }
+
+    &:nth-of-type(4n+2) {
+      border-color: $success;
+    }
+
+    &:nth-of-type(4n+3) {
+      border-color: $warning;
+    }
+
+    &:nth-of-type(4n+4) {
+      border-color: $danger;
+    }
+  }
+}
+
+.course-rating {
+  font-size: calc(18px + 1.5vw);
+}
