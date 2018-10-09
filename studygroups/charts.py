@@ -70,7 +70,6 @@ class GoalsMetChart():
 
     def get_data(self):
         data = { 'Rating': [0,0,0,0,0] }
-        learners = self.study_group.application_set
         survey_responses = self.study_group.learnersurveyresponse_set.values_list('response', flat=True)
 
         for response_str in survey_responses:
@@ -83,8 +82,6 @@ class GoalsMetChart():
 
             if field is not None:
                 data['Rating'][field["number"] - 1] += 1
-
-            print(data)
 
         # G6AXyEuG2NRQ = "When you signed up for {{hidden:course}}, you said that your primary goal was: {{hidden:goal}}. To what extent did you meet your goal?"
         # IO9ALWvVYE3n = "To what extent did you meet your goal?"
@@ -142,12 +139,23 @@ class NewLearnersChart():
         self.study_group = study_group
 
     def get_data(self):
-        data = {}
-        learners = self.study_group.application_set
+        data = { 'New learners': [ {'value': 0, 'max_value': 100} ]}
+        survey_responses = self.study_group.learnersurveyresponse_set.values_list('response', flat=True)
 
-        data = {
-            'New learners': [{'value': 100, 'max_value': 100}]
-        }
+        first_timers = 0
+
+        for response_str in survey_responses:
+            response = json.loads(response_str)
+            answers = response['answers']
+            field = next((answer for answer in answers if answer["field"]["id"] == "Sj4fL5I6GEei"), None)
+            # Sj4fL5I6GEei = "Was this your first learning circle?"
+
+            if field["boolean"] == True:
+                first_timers += 1
+
+        percentage = (first_timers / len(survey_responses)) * 100
+        data['New learners'][0]['value'] = percentage
+
         return data
 
     def generate(self):
@@ -167,12 +175,23 @@ class CompletionRateChart():
         self.study_group = study_group
 
     def get_data(self):
-        data = {}
-        learners = self.study_group.application_set
+        data = { 'Completed': [ {'value': 0, 'max_value': 100} ]}
+        survey_responses = self.study_group.learnersurveyresponse_set.values_list('response', flat=True)
 
-        data = {
-            'Completed': [{'value': 71, 'max_value': 100}]
-        }
+        completed = 0
+
+        for response_str in survey_responses:
+            response = json.loads(response_str)
+            answers = response['answers']
+            field = next((answer for answer in answers if answer["field"]["id"] == "i7ps4iNBVya0"), None)
+            # i7ps4iNBVya0 = "Which best describes you?"
+
+            if field["choice"]["label"] == "I completed the learning circle":
+                completed += 1
+
+        percentage = (completed / len(survey_responses)) * 100
+        data['Completed'][0]['value'] = percentage
+
         return data
 
     def generate(self):
@@ -191,15 +210,16 @@ class ReasonsForSuccessChart():
 
     def get_data(self):
         data = {}
-        learners = self.study_group.application_set
+        survey_responses = self.study_group.learnersurveyresponse_set.values_list('response', flat=True)
 
-        data = {
-            'learner1': "Took on a personal challenge of learning to code.",
-            'learner2': "Attended every week to hear the various ways people learn to do this skill.",
-            'learner3': "I have a better understanding on how to design a website",
-            'learner4': "Had to set a goal for myself",
-            'learner5': "Have a degree in web management ecommerce and at the time CDs pages were not introduced",
-        }
+        for response_str in survey_responses:
+            response = json.loads(response_str)
+            answers = response['answers']
+            field = next((answer for answer in answers if answer["field"]["id"] == "BBZ52adAzbGJ"), None)
+            #BBZ52adAzbGJ = "I succeeded in the learning circle because I..."
+
+            if field is not None:
+                data[response['landing_id']] = field["text"]
 
         return data
 
@@ -221,16 +241,16 @@ class NextStepsChart():
 
     def get_data(self):
         data = {}
-        learners = self.study_group.application_set
+        survey_responses = self.study_group.learnersurveyresponse_set.values_list('response', flat=True)
 
-        data = {
-            'learner1': "learn/work IT",
-            'learner2': "Use it on the side as extra income",
-            'learner3': "Design a website for my business",
-            'learner4': "continue learning",
-            'learner5': "Create web pages",
-            'learner6': "Enroll in continuing education",
-        }
+        for response_str in survey_responses:
+            response = json.loads(response_str)
+            answers = response['answers']
+            field = next((answer for answer in answers if answer["field"]["id"] == "qf8iCyr2dw4G"), None)
+            #qf8iCyr2dw4G = "What do you want to do with the skills you've developed in the learning circle?"
+
+            if field is not None:
+                data[response['landing_id']] = field["text"]
 
         return data
 
@@ -252,13 +272,16 @@ class IdeasChart():
 
     def get_data(self):
         data = {}
-        learners = self.study_group.application_set
+        survey_responses = self.study_group.learnersurveyresponse_set.values_list('response', flat=True)
 
-        data = {
-            'learner1': "Furthering in this course of coding.",
-            'learner2': "Intermediate or advanced Excel or Access",
-            'learner3': "Advance Excel",
-        }
+        for response_str in survey_responses:
+            response = json.loads(response_str)
+            answers = response['answers']
+            field = next((answer for answer in answers if answer["field"]["id"] == "ll0ZbuEnCkiW"), None)
+            #ll0ZbuEnCkiW = "Another topic that I'd like to take a learning circle in is"
+
+            if field is not None:
+                data[response['landing_id']] = field["text"]
 
         return data
 
