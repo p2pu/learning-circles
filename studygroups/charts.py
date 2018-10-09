@@ -38,6 +38,9 @@ class LearnerGoalsChart():
 
         signup_questions = self.study_group.application_set.values_list('signup_questions', flat=True)
 
+        # check for responses for field id UXwfFPX0On3f in typeform responses
+        # check if the email for those responses already exists in application_set
+
         for answer_str in signup_questions:
             answer = json.loads(answer_str)
             goal = answer['goals']
@@ -61,16 +64,30 @@ class LearnerGoalsChart():
 class GoalsMetChart():
 
     def __init__(self, study_group, **kwargs):
-        self.chart = pygal.Bar(style=custom_style, show_legend=False, **kwargs)
-        self.chart.x_labels = ["1", "2", "3", "4", "5"]
+        self.chart = pygal.HorizontalBar(style=custom_style, show_legend=False, max_scale=5, order_min=0, **kwargs)
+        self.chart.x_labels = ["1 (not at all)", "2", "3", "4", "5 (completely)"]
         self.study_group = study_group
 
     def get_data(self):
-        data = {}
+        data = { 'Rating': [0,0,0,0,0] }
         learners = self.study_group.application_set
-        data = {
-            "Rating": [0, 0, 3, 1, 1]
-        }
+        survey_responses = self.study_group.learnersurveyresponse_set.values_list('response', flat=True)
+
+        for response_str in survey_responses:
+            response = json.loads(response_str)
+            answers = response['answers']
+            field = next((answer for answer in answers if answer["field"]["id"] == "G6AXyEuG2NRQ"), None)
+
+            if field is None:
+                field = next((answer for answer in answers if answer["field"]["id"] == "IO9ALWvVYE3n"), None)
+
+            if field is not None:
+                data['Rating'][field["number"] - 1] += 1
+
+            print(data)
+
+        # G6AXyEuG2NRQ = "When you signed up for {{hidden:course}}, you said that your primary goal was: {{hidden:goal}}. To what extent did you meet your goal?"
+        # IO9ALWvVYE3n = "To what extent did you meet your goal?"
         return data
 
     def generate(self):
