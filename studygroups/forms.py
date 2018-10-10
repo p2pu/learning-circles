@@ -293,6 +293,8 @@ class StudyGroupForm(forms.ModelForm):
         fields = [
             'course',
             'city',
+            'region',
+            'country',
             'place_id',
             'latitude',
             'longitude',
@@ -343,6 +345,8 @@ class StudyGroupForm(forms.ModelForm):
             'latitude': forms.HiddenInput,
             'longitude': forms.HiddenInput,
             'place_id': forms.HiddenInput,
+            'country': forms.HiddenInput,
+            'region': forms.HiddenInput,
         } 
 
 

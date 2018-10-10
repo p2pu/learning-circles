@@ -53,6 +53,8 @@ class TestFacilitatorViews(TestCase):
         'venue_details': 'Garrage at my house',
         'venue_address': 'Rosemary Street 6',
         'city': 'Johannesburg',
+        'country': 'South Africa',
+        'region': 'Gauteng',
         'latitude': -26.205,
         'longitude': 28.0497,
         'place_id': '342432',

@@ -50,9 +50,18 @@
           $('#id_longitude').val(e.suggestion.latlng.lng);
           try {
             $('#id_place_id').val(e.suggestion.rawAnswer.hits[0].objectID);
-          }
-          catch (error) {
+          } catch (error) {
             console.log("Couldn't get objectID for place");
+          }
+          try {
+            $('#id_country').val(e.suggestion.country);
+          } catch (error) {
+            console.log("Couldn't get country for place");
+          }
+          try {
+            $('#id_region').val(e.suggestion.administrative);
+          } catch (error){
+            console.log("Couldn't get region for place");
           }
         });
     });

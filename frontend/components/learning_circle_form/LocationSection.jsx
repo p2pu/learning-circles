@@ -14,6 +14,8 @@ const LocationSection = (props) => {
           label='Start typing any city name'
           place_id={props.learningCircle.place_id}
           city={props.learningCircle.city}
+          region={props.learningCircle.region}
+          country={props.learningCircle.country}
           handleSelect={props.updateFormData}
           errorMessage={props.errors.city}
         />

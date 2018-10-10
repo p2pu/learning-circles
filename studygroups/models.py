@@ -173,9 +173,11 @@ class StudyGroup(LifeTimeTrackingModel):
     venue_details = models.CharField(max_length=128)
     venue_website = models.URLField(blank=True)
     city = models.CharField(max_length=256)
+    region = models.CharField(max_length=256, blank=True) # schema.org. Algolia => administrative
+    country = models.CharField(max_length=256, blank=True)
     latitude = models.DecimalField(max_digits=8, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    place_id = models.CharField(max_length=256, blank=True)
+    place_id = models.CharField(max_length=256, blank=True) # Algolia place_id
     facilitator = models.ForeignKey(User, on_delete=models.CASCADE)
     start_date = models.DateField()
     meeting_time = models.TimeField()
@@ -215,7 +217,7 @@ class StudyGroup(LifeTimeTrackingModel):
         return self.local_start_date().strftime("%Z")
 
     @property
-    def country(self):
+    def _country(self):
         # TODO this is broken since new creation form 
         country = self.city.split(',')[-1].strip()
         country_list = [
@@ -373,6 +375,7 @@ class Meeting(LifeTimeTrackingModel):
         return '{0}{1}?{2}'.format(domain,url,no_qs)
 
     def __str__(self):
+        # TODO i18n
         tz = pytz.timezone(self.study_group.timezone)
         return '{0}, {1} at {2}'.format(self.study_group.course.title, self.meeting_datetime(), self.study_group.venue_name)
 
