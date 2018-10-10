@@ -43,12 +43,12 @@ class LearnerGoalsChart():
 
         for answer_str in signup_questions:
             answer = json.loads(answer_str)
-            goal = answer['goals']
+            goal = answer.get('goals', None)
 
             if goal in data:
                 data[goal].append(1)
-            else:
-                data['Other'].append(1)
+            # else:
+            #     data['Other'].append(1)
 
         return data
 
@@ -103,29 +103,48 @@ class SkillsLearnedChart():
         self.study_group = study_group
 
     def get_data(self):
-        data = {}
-        learners = self.study_group.application_set
         data = {
-            "average": [4.29, 3.86, 3.86, 3.71, 3.71, 3.71]
+            "Setting goals for myself": [],
+            "Navigating online courses": [],
+            "Working with others":[],
+            "Feeling connected to my community": [],
+            "Speaking in public": [],
+            "Using the internet": []
         }
+
+        survey_responses = self.study_group.learnersurveyresponse_set.values_list('response', flat=True)
+
+        for response_str in survey_responses:
+            response = json.loads(response_str)
+            answers = response['answers']
+
+            questions = [
+                ("QH6akGDy6aHK", "Using the internet"),
+                ("itpQxFRlOsOe", "Working with others"),
+                ("g0is1ZBXECbh", "Navigating online courses"),
+                ("ycB6quFHzH85", "Setting goals for myself"),
+                ("zH8IomUmmoaH", "Speaking in public"),
+                ("tO3TFJDBmH60", "Feeling connected to my community")
+            ]
+
+            for question in questions:
+                field = next((answer for answer in answers if answer["field"]["id"] == question[0]), None)
+                if field is not None:
+                    data[question[1]].append(field['number'])
+
         return data
 
     def generate(self):
         chart_data = self.get_data()
 
+        averages = []
         for key, value in chart_data.items():
-            self.chart.add(key, value)
+            average_value = round(sum(value) / len(value), 2)
+            averages.append(average_value)
 
-        labels = {
-            "Setting goals for myself": 4.29,
-            "Navigating online courses": 3.86,
-            "Working with others": 3.86,
-            "Feeling connected to my community": 3.71,
-            "Speaking in public": 3.71,
-            "Using the internet": 3.71
-        }
+        self.chart.add('Average', averages)
+        self.chart.x_labels = list(chart_data)
 
-        self.chart.x_labels = list(labels)
         return self.chart.render(is_unicode=True)
 
 
@@ -153,7 +172,7 @@ class NewLearnersChart():
             if field["boolean"] == True:
                 first_timers += 1
 
-        percentage = (first_timers / len(survey_responses)) * 100
+        percentage = round((first_timers / len(survey_responses)) * 100, 2)
         data['New learners'][0]['value'] = percentage
 
         return data
@@ -186,10 +205,12 @@ class CompletionRateChart():
             field = next((answer for answer in answers if answer["field"]["id"] == "i7ps4iNBVya0"), None)
             # i7ps4iNBVya0 = "Which best describes you?"
 
-            if field["choice"]["label"] == "I completed the learning circle":
+            print(field)
+
+            if field is not None and field["choice"]["label"] == "I completed the learning circle":
                 completed += 1
 
-        percentage = (completed / len(survey_responses)) * 100
+        percentage = round((completed / len(survey_responses)) * 100, 2)
         data['Completed'][0]['value'] = percentage
 
         return data
@@ -318,17 +339,17 @@ class PromotionChart():
             response = json.loads(response_str)
             answers = response['answers']
             field = next((answer for answer in answers if answer["field"]["id"] == "lYX1qfcSKARQ"), None)
+
             if field is not None:
                 selections = field['choices'].get('labels', None)
-
-            if selections is not None:
-                for label in selections:
-                    if label in data:
-                        data[label].append(1)
-            else:
-                selection = field['choices'].get('other', None)
-                if selection is not None:
-                    data['Other'].append(1)
+                if selections is not None:
+                    for label in selections:
+                        if label in data:
+                            data[label].append(1)
+                else:
+                    selection = field['choices'].get('other', None)
+                    if selection is not None:
+                        data['Other'].append(1)
 
         return data
 
@@ -435,8 +456,13 @@ class FacilitatorRatingChart():
         self.study_group = study_group
 
     def get_data(self):
-        data = {}
-        survey_questions = self.study_group.facilitatorsurveyresponse_set.first().survey
+        data = { 'average_rating': 0, 'maximum': 0 }
+        response = self.study_group.facilitatorsurveyresponse_set.first()
+
+        if response is None:
+            return data
+
+        survey_questions = response.survey
         survey_responses = self.study_group.facilitatorsurveyresponse_set.values_list('response', flat=True)
 
         ratings = []
@@ -454,8 +480,6 @@ class FacilitatorRatingChart():
         survey_fields = json.loads(survey_questions)['fields']
         selected_field = next((field for field in survey_fields if field["id"] == "Zm9XlzKGKC66"), None)
         steps = selected_field['properties']['steps']
-
-        print(average_rating)
 
         data = {
             'average_rating': int(round(average_rating)),
