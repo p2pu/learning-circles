@@ -11,7 +11,6 @@
     "watch": "webpack --config webpack.config.js --watch",
     "build:production": "webpack -p --config webpack.config.js",
     "profile": "webpack -p --config webpack.config.profile.js --watch"
-
   },
   "repository": {
     "type": "git",
@@ -40,7 +39,7 @@
     "moment": "^2.18.1",
     "node-sass": "^3.13.0",
     "p2pu-input-fields": "^0.5.7",
-    "p2pu-search-cards": "^0.8.7",
+    "p2pu-search-cards": "^0.8.11",
     "p2pu-theme": "^1.0.5",
     "places.js": "^1.4.18",
     "promise-polyfill": "^6.0.2",
