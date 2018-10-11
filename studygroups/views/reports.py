@@ -19,6 +19,16 @@ class StudyGroupFinalReport(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(StudyGroupFinalReport, self).get_context_data(**kwargs)
         study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
+
+        if study_group.learnersurveyresponse_set.count() == 0:
+            context = {
+                'study_group': study_group,
+                'registrations': study_group.application_set.active().count(),
+                'survey_responses': study_group.learnersurveyresponse_set.count()
+            }
+
+            return context
+
         learner_goals_chart = LearnerGoalsChart(study_group)
         new_learners_chart = NewLearnersChart(study_group)
         completion_rate_chart = CompletionRateChart(study_group)

@@ -5,6 +5,8 @@ from pygal.style import Style
 from studygroups.models import StudyGroup
 from studygroups.forms import ApplicationForm
 
+theme_colors = ['#05C6B4', '#B7D500', '#FFBC1A', '#FC7100', '#e83e8c']
+
 custom_style = Style(
   font_family='Open Sans',
   label_font_size=18.0,
@@ -23,8 +25,33 @@ custom_style = Style(
   opacity='.6',
   opacity_hover='.9',
   transition='400ms ease-in',
-  colors=('#05C6B4', '#B7D500', '#FFBC1A', '#FC7100', '#e83e8c'))
+  colors=theme_colors)
 
+def get_typeform_survey_learner_responses(study_group):
+    return study_group.learnersurveyresponse_set.values_list('response', flat=True)
+
+def get_typeform_survey_facilitator_responses(study_group):
+    return study_group.facilitatorsurveyresponse_set.values_list('response', flat=True)
+
+def get_question_field(study_group, question_id):
+    if study_group.learnersurveyresponse_set.count() > 0:
+        survey_str = study_group.learnersurveyresponse_set.first().survey
+        survey_fields = json.loads(survey_str)['fields']
+        return next((field for field in survey_fields if field["id"] == question_id), None)
+
+def get_response_field(response_str, question_id):
+    response = json.loads(response_str)
+    answers = response['answers']
+    return next((answer for answer in answers if answer["field"]["id"] == question_id), None)
+
+def average(total, divisor):
+    if divisor == 0:
+        return 0
+
+    return round(total / divisor, 2)
+
+def rotate_colors():
+    theme_colors.append(theme_colors.pop(0))
 
 class LearnerGoalsChart():
     def __init__(self, study_group, **kwargs):
@@ -70,21 +97,23 @@ class GoalsMetChart():
 
     def get_data(self):
         data = { 'Rating': [0,0,0,0,0] }
-        survey_responses = self.study_group.learnersurveyresponse_set.values_list('response', flat=True)
+        survey_responses = get_typeform_survey_learner_responses(self.study_group)
 
-        for response_str in survey_responses:
-            response = json.loads(response_str)
-            answers = response['answers']
-            field = next((answer for answer in answers if answer["field"]["id"] == "G6AXyEuG2NRQ"), None)
+        if len(survey_responses) < 1:
+            return data
+
+        # G6AXyEuG2NRQ = "When you signed up for {{hidden:course}}, you said that your primary goal was: {{hidden:goal}}. To what extent did you meet your goal?"
+        # IO9ALWvVYE3n = "To what extent did you meet your goal?"
+
+        for response in survey_responses:
+            field = get_response_field(response, "G6AXyEuG2NRQ")
 
             if field is None:
-                field = next((answer for answer in answers if answer["field"]["id"] == "IO9ALWvVYE3n"), None)
+                field = get_response_field(response, "IO9ALWvVYE3n")
 
             if field is not None:
                 data['Rating'][field["number"] - 1] += 1
 
-        # G6AXyEuG2NRQ = "When you signed up for {{hidden:course}}, you said that your primary goal was: {{hidden:goal}}. To what extent did you meet your goal?"
-        # IO9ALWvVYE3n = "To what extent did you meet your goal?"
         return data
 
     def generate(self):
@@ -99,6 +128,7 @@ class GoalsMetChart():
 class SkillsLearnedChart():
 
     def __init__(self, study_group, **kwargs):
+        rotate_colors()
         self.chart = pygal.HorizontalBar(style=custom_style, show_legend = False, **kwargs)
         self.study_group = study_group
 
@@ -112,7 +142,10 @@ class SkillsLearnedChart():
             "Using the internet": []
         }
 
-        survey_responses = self.study_group.learnersurveyresponse_set.values_list('response', flat=True)
+        survey_responses = get_typeform_survey_learner_responses(self.study_group)
+
+        if len(survey_responses) < 1:
+            return data
 
         for response_str in survey_responses:
             response = json.loads(response_str)
@@ -139,7 +172,7 @@ class SkillsLearnedChart():
 
         averages = []
         for key, value in chart_data.items():
-            average_value = round(sum(value) / len(value), 2)
+            average_value = average(sum(value), len(value))
             averages.append(average_value)
 
         self.chart.add('Average', averages)
@@ -151,6 +184,7 @@ class SkillsLearnedChart():
 class NewLearnersChart():
 
     def __init__(self, study_group, **kwargs):
+        rotate_colors()
         custom_style.value_font_size = 40
         custom_style.title_font_size = 24
         self.chart = pygal.SolidGauge(style=custom_style, inner_radius=0.70, show_legend = False, x_title="of participants were taking a learning circle for the first time", **kwargs)
@@ -159,14 +193,14 @@ class NewLearnersChart():
 
     def get_data(self):
         data = { 'New learners': [ {'value': 0, 'max_value': 100} ]}
-        survey_responses = self.study_group.learnersurveyresponse_set.values_list('response', flat=True)
+        survey_responses = get_typeform_survey_learner_responses(self.study_group)
+
+        if len(survey_responses) < 1:
+            return data
 
         first_timers = 0
-
-        for response_str in survey_responses:
-            response = json.loads(response_str)
-            answers = response['answers']
-            field = next((answer for answer in answers if answer["field"]["id"] == "Sj4fL5I6GEei"), None)
+        for response in survey_responses:
+            field = get_response_field(response, "Sj4fL5I6GEei")
             # Sj4fL5I6GEei = "Was this your first learning circle?"
 
             if field["boolean"] == True:
@@ -189,23 +223,23 @@ class NewLearnersChart():
 class CompletionRateChart():
 
     def __init__(self, study_group, **kwargs):
+        rotate_colors()
         self.chart = pygal.SolidGauge(style=custom_style, inner_radius=0.70, show_legend = False, x_title="of participants who responded to the survey completed the learning circle", **kwargs)
         self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
         self.study_group = study_group
 
     def get_data(self):
         data = { 'Completed': [ {'value': 0, 'max_value': 100} ]}
-        survey_responses = self.study_group.learnersurveyresponse_set.values_list('response', flat=True)
+        survey_responses = get_typeform_survey_learner_responses(self.study_group)
+
+        if len(survey_responses) < 1:
+            return data
 
         completed = 0
 
         for response_str in survey_responses:
-            response = json.loads(response_str)
-            answers = response['answers']
-            field = next((answer for answer in answers if answer["field"]["id"] == "i7ps4iNBVya0"), None)
+            field = get_response_field(response_str, "i7ps4iNBVya0")
             # i7ps4iNBVya0 = "Which best describes you?"
-
-            print(field)
 
             if field is not None and field["choice"]["label"] == "I completed the learning circle":
                 completed += 1
@@ -231,15 +265,17 @@ class ReasonsForSuccessChart():
 
     def get_data(self):
         data = {}
-        survey_responses = self.study_group.learnersurveyresponse_set.values_list('response', flat=True)
+        survey_responses = get_typeform_survey_learner_responses(self.study_group)
+
+        if len(survey_responses) < 1:
+            return data
 
         for response_str in survey_responses:
-            response = json.loads(response_str)
-            answers = response['answers']
-            field = next((answer for answer in answers if answer["field"]["id"] == "BBZ52adAzbGJ"), None)
+            field = get_response_field(response_str, "BBZ52adAzbGJ")
             #BBZ52adAzbGJ = "I succeeded in the learning circle because I..."
 
             if field is not None:
+                response = json.loads(response_str)
                 data[response['landing_id']] = field["text"]
 
         return data
@@ -262,15 +298,17 @@ class NextStepsChart():
 
     def get_data(self):
         data = {}
-        survey_responses = self.study_group.learnersurveyresponse_set.values_list('response', flat=True)
+        survey_responses = get_typeform_survey_learner_responses(self.study_group)
+
+        if len(survey_responses) < 1:
+            return data
 
         for response_str in survey_responses:
-            response = json.loads(response_str)
-            answers = response['answers']
-            field = next((answer for answer in answers if answer["field"]["id"] == "qf8iCyr2dw4G"), None)
+            field = get_response_field(response_str, "qf8iCyr2dw4G")
             #qf8iCyr2dw4G = "What do you want to do with the skills you've developed in the learning circle?"
 
             if field is not None:
+                response = json.loads(response_str)
                 data[response['landing_id']] = field["text"]
 
         return data
@@ -293,15 +331,17 @@ class IdeasChart():
 
     def get_data(self):
         data = {}
-        survey_responses = self.study_group.learnersurveyresponse_set.values_list('response', flat=True)
+        survey_responses = get_typeform_survey_learner_responses(self.study_group)
+
+        if len(survey_responses) < 1:
+            return data
 
         for response_str in survey_responses:
-            response = json.loads(response_str)
-            answers = response['answers']
-            field = next((answer for answer in answers if answer["field"]["id"] == "ll0ZbuEnCkiW"), None)
+            field = get_response_field(response_str, "ll0ZbuEnCkiW")
             #ll0ZbuEnCkiW = "Another topic that I'd like to take a learning circle in is"
 
             if field is not None:
+                response = json.loads(response_str)
                 data[response['landing_id']] = field["text"]
 
         return data
@@ -319,88 +359,95 @@ class IdeasChart():
 
 class PromotionChart():
     def __init__(self, study_group, **kwargs):
-        self.chart = pygal.Dot(stroke=False, show_legend=False, show_y_guides=False, style=custom_style, **kwargs)
+        self.chart = pygal.HorizontalBar(style=custom_style, show_legend=False, max_scale=5, order_min=0, **kwargs)
         self.study_group = study_group
 
     def get_data(self):
-        data = { 'Other': [] }
+        data = { 'Other': 0 }
 
-        survey_str = self.study_group.learnersurveyresponse_set.first().survey
-        survey_fields = json.loads(survey_str)['fields']
-        promo_field = next((field for field in survey_fields if field["id"] == "lYX1qfcSKARQ"), None)
-        choices = promo_field['properties']['choices']
+        question_field = get_question_field(self.study_group, "lYX1qfcSKARQ")
+        if question_field is not None:
+            choices = question_field['properties']['choices']
 
-        for choice in choices:
-            data[choice['label']] = []
+            for choice in choices:
+                data[choice['label']] = 0
 
-        survey_responses = self.study_group.learnersurveyresponse_set.values_list('response', flat=True)
+        survey_responses = get_typeform_survey_learner_responses(self.study_group)
+
+        if len(survey_responses) < 1:
+            return data
 
         for response_str in survey_responses:
-            response = json.loads(response_str)
-            answers = response['answers']
-            field = next((answer for answer in answers if answer["field"]["id"] == "lYX1qfcSKARQ"), None)
+            field = get_response_field(response_str, "lYX1qfcSKARQ")
 
             if field is not None:
                 selections = field['choices'].get('labels', None)
                 if selections is not None:
                     for label in selections:
                         if label in data:
-                            data[label].append(1)
+                            data[label] += 1
                 else:
                     selection = field['choices'].get('other', None)
                     if selection is not None:
-                        data['Other'].append(1)
+                        data['Other'] += 1
 
         return data
 
     def generate(self):
         chart_data = self.get_data()
+        serie = []
+        labels = []
 
         for key, value in chart_data.items():
-            self.chart.add(key, value)
+            labels.append(key)
+            serie.append(value)
 
+        self.chart.add('Number of learners', serie)
+        self.chart.x_labels = labels
         return self.chart.render(is_unicode=True)
 
 
 class LibraryUsageChart():
     def __init__(self, study_group, **kwargs):
-        self.chart = pygal.Dot(stroke=False, show_legend=False, show_y_guides=False, style=custom_style, **kwargs)
+        self.chart = pygal.HorizontalBar(style=custom_style, show_legend=False, max_scale=5, order_min=0, **kwargs)
         self.study_group = study_group
 
     def get_data(self):
         data = {}
 
-        survey_str = self.study_group.learnersurveyresponse_set.first().survey
-        survey_fields = json.loads(survey_str)['fields']
-        choices = survey_fields
-        promo_field = next((field for field in survey_fields if field["id"] == "LQGB3S5v0rUk"), None)
+        question_field = get_question_field(self.study_group, "LQGB3S5v0rUk")
         # LQGB3S5v0rUk = "Aside from the learning circle, how often do you visit the library?"
-        choices = promo_field['properties']['choices']
+        if question_field is not None:
+            choices = question_field['properties']['choices']
 
-        for choice in choices:
-            data[choice['label']] = []
+            for choice in choices:
+                data[choice['label']] = 0
 
-        survey_responses = self.study_group.learnersurveyresponse_set.values_list('response', flat=True)
+        survey_responses = get_typeform_survey_learner_responses(self.study_group)
+        if len(survey_responses) < 1:
+            return data
 
         for response_str in survey_responses:
-            response = json.loads(response_str)
-            answers = response['answers']
-            field = next((answer for answer in answers if answer["field"]["id"] == "LQGB3S5v0rUk"), None)
+            field = get_response_field(response_str, "LQGB3S5v0rUk")
+
             if field is not None:
                 label = field['choice'].get('label', None)
-
-            if label is not None:
                 if label in data:
-                    data[label].append(1)
+                    data[label] += 1
 
         return data
 
     def generate(self):
         chart_data = self.get_data()
+        serie = []
+        labels = []
 
         for key, value in chart_data.items():
-            self.chart.add(key, value)
+            labels.append(key)
+            serie.append(value)
 
+        self.chart.add('Number of learners', serie)
+        self.chart.x_labels = labels
         return self.chart.render(is_unicode=True)
 
 
@@ -410,25 +457,24 @@ class LearnerRatingChart():
         self.study_group = study_group
 
     def get_data(self):
-        data = {}
-        survey_responses = self.study_group.learnersurveyresponse_set.values_list('response', flat=True)
+        data = { 'average_rating': 0, 'maximum': 0 }
+        survey_responses = get_typeform_survey_learner_responses(self.study_group)
+
+        if len(survey_responses) < 1:
+            return data
 
         ratings = []
 
         for response_str in survey_responses:
-            response = json.loads(response_str)
-            answers = response['answers']
-            field = next((answer for answer in answers if answer["field"]["id"] == "iGWRNCyniE7s"), None)
+            field = get_response_field(response_str, "iGWRNCyniE7s")
             # iGWRNCyniE7s = "How well did the online course {{hidden:course}} work as a learning circle?"
             if field is not None:
                 ratings.append(field['number'])
 
-        average_rating = sum(ratings) / len(ratings)
-
-        print(average_rating)
+        average_rating = average(sum(ratings), len(ratings))
 
         data = {
-            'average_rating': int(round(average_rating)),
+            'average_rating': int(average_rating),
             'maximum': 5
         }
 
@@ -463,26 +509,24 @@ class FacilitatorRatingChart():
             return data
 
         survey_questions = response.survey
-        survey_responses = self.study_group.facilitatorsurveyresponse_set.values_list('response', flat=True)
+        survey_responses = get_typeform_survey_facilitator_responses(self.study_group)
 
         ratings = []
 
         for response_str in survey_responses:
-            response = json.loads(response_str)
-            answers = response['answers']
-            field = next((answer for answer in answers if answer["field"]["id"] == "Zm9XlzKGKC66"), None)
+            field = get_response_field(response_str, "Zm9XlzKGKC66")
             # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
             if field is not None:
                 ratings.append(field['number'])
 
-        average_rating = sum(ratings) / len(ratings)
+        average_rating = average(sum(ratings), len(ratings))
 
         survey_fields = json.loads(survey_questions)['fields']
         selected_field = next((field for field in survey_fields if field["id"] == "Zm9XlzKGKC66"), None)
         steps = selected_field['properties']['steps']
 
         data = {
-            'average_rating': int(round(average_rating)),
+            'average_rating': int(average_rating),
             'maximum': steps
         }
 
@@ -490,6 +534,9 @@ class FacilitatorRatingChart():
 
     def generate(self):
         chart_data = self.get_data()
+
+        if chart_data['maximum'] == 0:
+            return "<p>No data</p>"
 
         remainder = chart_data['maximum'] - chart_data['average_rating']
 
