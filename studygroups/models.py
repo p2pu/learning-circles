@@ -235,7 +235,7 @@ class StudyGroup(LifeTimeTrackingModel):
 
 
     def to_dict(self):
-        sg = self  # TODO
+        sg = self  # TODO - this logic is repeated in the API class
         data = {
             "id": sg.pk,
             "course": sg.course.id,
@@ -246,6 +246,8 @@ class StudyGroup(LifeTimeTrackingModel):
             "venue_address": sg.venue_address,
             "venue_website": sg.venue_website,
             "city": sg.city,
+            "region": sg.region,
+            "country": sg.country,
             "latitude": sg.latitude,
             "longitude": sg.longitude,
             "place_id": sg.place_id,
@@ -725,6 +727,14 @@ def send_meeting_reminder(reminder):
                 reply_to=[reminder.study_group.facilitator.email]
             )
             reminder_email.attach_alternative(html_body, 'text/html')
+            # TODO attach icalendar event
+            from .events import make_meeting_2
+            ical = make_meeting_2(reminder.study_group_meeting)
+            from email.mime.text import MIMEText
+            part = MIMEText(ical, 'calendar')
+            part.add_header('Filename', 'shifts.ics') 
+            part.add_header('Content-Disposition', 'attachment; filename=lc.ics')
+            reminder_email.attach(part)
             reminder_email.send()
         except Exception as e:
             logger.exception('Could not send email to ', email, exc_info=e)
