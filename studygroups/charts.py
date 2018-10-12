@@ -7,25 +7,36 @@ from studygroups.forms import ApplicationForm
 
 theme_colors = ['#05C6B4', '#B7D500', '#FFBC1A', '#FC7100', '#e83e8c']
 
-custom_style = Style(
-  font_family='Open Sans',
-  label_font_size=18.0,
-  major_label_font_size=18.0,
-  value_font_size=18.0,
-  value_label_font_size=18.0,
-  tooltip_font_size=18.0,
-  title_font_size=18.0,
-  legend_font_size=18.0,
-  no_data_font_size=18.0,
-  background='transparent',
-  plot_background='#ffffff',
-  foreground='#515665',
-  foreground_strong='#515665',
-  foreground_subtle='#6c757d',
-  opacity='.6',
-  opacity_hover='.9',
-  transition='400ms ease-in',
-  colors=theme_colors)
+
+def rotate_colors():
+    theme_colors.append(theme_colors.pop(0))
+    colors = theme_colors.copy()
+    return colors
+
+def custom_style():
+    colors = rotate_colors()
+
+    style = Style(
+        font_family='Open Sans',
+        label_font_size=18.0,
+        major_label_font_size=18.0,
+        value_font_size=18.0,
+        value_label_font_size=18.0,
+        tooltip_font_size=18.0,
+        title_font_size=18.0,
+        legend_font_size=18.0,
+        no_data_font_size=18.0,
+        background='transparent',
+        plot_background='#ffffff',
+        foreground='#515665',
+        foreground_strong='#515665',
+        foreground_subtle='#6c757d',
+        opacity='.6',
+        opacity_hover='.9',
+        transition='400ms ease-in',
+        colors=colors)
+
+    return style
 
 def get_typeform_survey_learner_responses(study_group):
     return study_group.learnersurveyresponse_set.values_list('response', flat=True)
@@ -50,12 +61,10 @@ def average(total, divisor):
 
     return round(total / divisor, 2)
 
-def rotate_colors():
-    theme_colors.append(theme_colors.pop(0))
 
 class LearnerGoalsChart():
     def __init__(self, study_group, **kwargs):
-        self.chart = pygal.Dot(stroke=False, show_legend=False, show_y_guides=False, style=custom_style, **kwargs)
+        self.chart = pygal.Dot(stroke=False, show_legend=False, show_y_guides=False, style=custom_style(), **kwargs)
         self.study_group = study_group
 
     def get_data(self):
@@ -91,7 +100,7 @@ class LearnerGoalsChart():
 class GoalsMetChart():
 
     def __init__(self, study_group, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style, show_legend=False, max_scale=5, order_min=0, **kwargs)
+        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, **kwargs)
         self.chart.x_labels = ["1 (not at all)", "2", "3", "4", "5 (completely)"]
         self.study_group = study_group
 
@@ -128,8 +137,7 @@ class GoalsMetChart():
 class SkillsLearnedChart():
 
     def __init__(self, study_group, **kwargs):
-        rotate_colors()
-        self.chart = pygal.HorizontalBar(style=custom_style, show_legend = False, **kwargs)
+        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend = False, **kwargs)
         self.study_group = study_group
 
     def get_data(self):
@@ -184,10 +192,10 @@ class SkillsLearnedChart():
 class NewLearnersChart():
 
     def __init__(self, study_group, **kwargs):
-        rotate_colors()
-        custom_style.value_font_size = 40
-        custom_style.title_font_size = 24
-        self.chart = pygal.SolidGauge(style=custom_style, inner_radius=0.70, show_legend = False, x_title="of participants were taking a learning circle for the first time", **kwargs)
+        style = custom_style()
+        style.value_font_size = 40
+        style.title_font_size = 24
+        self.chart = pygal.SolidGauge(style=style, inner_radius=0.70, show_legend = False, x_title="of participants were taking a learning circle for the first time", **kwargs)
         self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
         self.study_group = study_group
 
@@ -223,8 +231,10 @@ class NewLearnersChart():
 class CompletionRateChart():
 
     def __init__(self, study_group, **kwargs):
-        rotate_colors()
-        self.chart = pygal.SolidGauge(style=custom_style, inner_radius=0.70, show_legend = False, x_title="of participants who responded to the survey completed the learning circle", **kwargs)
+        style = custom_style()
+        style.value_font_size = 40
+        style.title_font_size = 24
+        self.chart = pygal.SolidGauge(style=style, inner_radius=0.70, show_legend = False, x_title="of participants who responded to the survey completed the learning circle", **kwargs)
         self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
         self.study_group = study_group
 
@@ -359,7 +369,7 @@ class IdeasChart():
 
 class PromotionChart():
     def __init__(self, study_group, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style, show_legend=False, max_scale=5, order_min=0, **kwargs)
+        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, **kwargs)
         self.study_group = study_group
 
     def get_data(self):
@@ -409,7 +419,7 @@ class PromotionChart():
 
 class LibraryUsageChart():
     def __init__(self, study_group, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style, show_legend=False, max_scale=5, order_min=0, **kwargs)
+        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, **kwargs)
         self.study_group = study_group
 
     def get_data(self):
