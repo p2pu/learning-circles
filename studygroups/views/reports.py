@@ -5,9 +5,6 @@ from django.utils.decorators import method_decorator
 from studygroups.decorators import user_is_group_facilitator
 
 from studygroups.models import StudyGroup
-from studygroups.models import Meeting
-from studygroups.models import Course
-from studygroups.models import Application
 from studygroups.charts import LearnerGoalsChart, NewLearnersChart, CompletionRateChart, GoalsMetChart, SkillsLearnedChart, ReasonsForSuccessChart, NextStepsChart, IdeasChart, FacilitatorRatingChart, LearnerRatingChart, PromotionChart, LibraryUsageChart
 
 
@@ -47,9 +44,9 @@ class StudyGroupFinalReport(TemplateView):
             'registrations': study_group.application_set.active().count(),
             'survey_responses': study_group.learnersurveyresponse_set.count(),
             'learner_goals_chart': learner_goals_chart.generate(),
+            'goals_met_chart': goals_met_chart.generate(),
             'new_learners_chart': new_learners_chart.generate(),
             'completion_rate_chart': completion_rate_chart.generate(),
-            'goals_met_chart': goals_met_chart.generate(),
             'skills_learned_chart': skills_learned_chart.generate(),
             'reasons_for_success_chart': reasons_for_success_chart.generate(),
             'next_steps_chart': next_steps_chart.generate(),

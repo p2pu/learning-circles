@@ -1,0 +1,22 @@
+{% extends 'email_base.html' %}
+{% block body %}
+{% load i18n %}
+{% load staticfiles %}
+
+<p>{% blocktrans %}Dear {{facilitator_name}},{% endblocktrans %}</p>
+
+<p>
+{% blocktrans %}
+Congratulations on finishing your learning circle! To help you reflect on your experience, we've put together some insights about your learning circle based on the feedback of the participants.
+{% endblocktrans %}
+</p>
+
+<p>
+{% trans "Here's a preview - click through to see the full report." %}
+</p>
+
+
+<p>{% trans "Cheers" %},</p>
+<p>{% trans "The P2PU Team" %}</p>
+
+{% endblock %}

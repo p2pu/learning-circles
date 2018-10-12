@@ -1,12 +1,22 @@
 import pygal
 import json
-from pygal.style import Style
 
-from studygroups.models import StudyGroup
-from studygroups.forms import ApplicationForm
+from pygal.style import Style
+from django.utils.translation import ugettext_lazy as _
+# from studygroups.forms import ApplicationForm
+
+GOAL_CHOICES = [
+    ('', _('Select one of the following')),
+    ('To increase my employability', _('To increase my employability')),
+    ('Professional development for my current job', _('Professional development for my current job')),
+    ('To accompany other educational programs', _('To accompany other educational programs')),
+    ('Personal interest', _('Personal interest')),
+    ('Social reasons', _('Social reasons')),
+    ('For fun / to try something new', _('For fun / to try something new')),
+    ('Other', _('Other')),
+]
 
 theme_colors = ['#05C6B4', '#B7D500', '#FFBC1A', '#FC7100', '#e83e8c']
-
 
 def rotate_colors():
     theme_colors.append(theme_colors.pop(0))
@@ -69,7 +79,7 @@ class LearnerGoalsChart():
 
     def get_data(self):
         data = {}
-        for choice in ApplicationForm.GOAL_CHOICES:
+        for choice in GOAL_CHOICES:
             data[choice[0]] = []
 
         signup_questions = self.study_group.application_set.values_list('signup_questions', flat=True)
@@ -88,11 +98,16 @@ class LearnerGoalsChart():
 
         return data
 
-    def generate(self):
+    def generate(self, **opts):
         chart_data = self.get_data()
 
         for key, value in chart_data.items():
             self.chart.add(key, value)
+
+        if opts.get('output', None) == "png":
+            filename = "report-{}-learner-goals-chart.png".format(self.study_group.uuid)
+            self.chart.render_to_png("/static/images/charts/{}".format(filename))
+            return "/images/charts/{}".format(filename)
 
         return self.chart.render(is_unicode=True)
 
@@ -125,11 +140,16 @@ class GoalsMetChart():
 
         return data
 
-    def generate(self):
+    def generate(self, **opts):
         chart_data = self.get_data()
 
         for key, value in chart_data.items():
             self.chart.add(key, value)
+
+        if opts.get('output', None) == "png":
+            filename = "report-{}-learner-goals-chart.png".format(self.study_group.uuid)
+            self.chart.render_to_png("/static/images/charts/{}".format(filename))
+            return "/images/charts/{}".format(filename)
 
         return self.chart.render(is_unicode=True)
 

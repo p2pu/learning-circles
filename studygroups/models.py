@@ -19,6 +19,7 @@ from .utils import html_body_to_text
 from studygroups import rsvp
 from studygroups.utils import gen_unsubscribe_querystring
 from .events import make_meeting_ics
+from studygroups import charts
 
 import calendar
 import datetime
@@ -221,7 +222,8 @@ class StudyGroup(LifeTimeTrackingModel):
         return self.local_start_date().strftime("%Z")
 
     @property
-    def _country(self):
+    def country(self):
+        # TODO this is broken since new creation form
         country = self.city.split(',')[-1].strip()
         country_list = [
             'United States of America',
@@ -1016,3 +1018,41 @@ def get_team_users(user):
 def get_user_team(user):
     team_membership = TeamMembership.objects.filter(user=user).get()
     return team_membership.team
+
+
+def send_final_learning_circle_report(study_group):
+    # TODO add timing for this email - after the LC ends?
+
+    learner_goals_chart = charts.LearnerGoalsChart(study_group)
+    goals_met_chart = charts.GoalsMetChart(study_group)
+
+    context = {
+        'study_group': study_group,
+        'facilitator_name': study_group.facilitator.first_name,
+        'registrations': study_group.application_set.active().count(),
+        'survey_responses': study_group.learnersurveyresponse_set.count(),
+        'learner_goals_chart': learner_goals_chart.generate(output="png"),
+        'goals_met_chart': goals_met_chart.generate(output="png"),
+    }
+
+    subject = render_to_string(
+        'studygroups/email/learning_circle_final_report-subject.txt',
+        context
+    ).strip('\n')
+    html = render_to_string(
+        'studygroups/email/learning_circle_final_report.html',
+        context
+    )
+    txt = html_body_to_text(html)
+    to = [study_group.facilitator.email]
+
+    notification = EmailMultiAlternatives(
+        subject,
+        txt,
+        settings.DEFAULT_FROM_EMAIL,
+        to,
+        reply_to=[settings.DEFAULT_FROM_EMAIL]
+    )
+    notification.attach_alternative(html, 'text/html')
+    notification.send()
+
