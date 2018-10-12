@@ -64,8 +64,11 @@ def _map_to_json(sg):
         "venue": sg.venue_name,
         "venue_address": sg.venue_address + ", " + sg.city,
         "city": sg.city,
+        "region": sg.region,
+        "country": sg.country,
         "latitude": sg.latitude,
         "longitude": sg.longitude,
+        "place_id": sg.place_id,
         "day": sg.day(),
         "start_date": sg.start_date,
         "meeting_time": sg.meeting_time,
@@ -393,6 +396,8 @@ def _make_learning_circle_schema(request):
         "venue_address": schema.text(required=True, length=256),
         "venue_website": schema.text(),
         "city": schema.text(required=True, length=256),
+        "region": schema.text(required=True, length=256),
+        "country": schema.text(required=True, length=256),
         "latitude": schema.floating_point(),
         "longitude": schema.floating_point(),
         "place_id": schema.text(length=256),
@@ -436,6 +441,8 @@ class LearningCircleCreateView(View):
             venue_details=data.get('venue_details'),
             venue_website=data.get('venue_website', ''),
             city=data.get('city'),
+            region=data.get('region'),
+            country=data.get('country'),
             latitude=data.get('latitude'),
             longitude=data.get('longitude'),
             place_id=data.get('place_id', ''),
@@ -493,6 +500,8 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         study_group.venue_details = data.get('venue_details')
         study_group.venue_website = data.get('venue_website', '')
         study_group.city = data.get('city')
+        study_group.region = data.get('region')
+        study_group.country = data.get('country')
         study_group.latitude = data.get('latitude')
         study_group.longitude = data.get('longitude')
         study_group.place_id = data.get('place_id', '')
