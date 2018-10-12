@@ -107,7 +107,7 @@ class Profile(models.Model):
     mailing_list_signup = models.BooleanField(default=False)
     email_confirmed_at = models.DateTimeField(null=True, blank=True)
     interested_in_learning = models.CharField(max_length=500, blank=True, null=True)
-    communication_opt_in = models.BooleanField(default=True)
+    communication_opt_in = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.__str__()
@@ -222,7 +222,6 @@ class StudyGroup(LifeTimeTrackingModel):
 
     @property
     def _country(self):
-        # TODO this is broken since new creation form 
         country = self.city.split(',')[-1].strip()
         country_list = [
             'United States of America',
@@ -587,7 +586,7 @@ def send_learner_survey(application):
 
 
 def send_learner_surveys(study_group):
-    """ 
+    """
         Send survey links to learners a week before their last learning circle.
         - If called directly, be sure to activate the current language
         - Should be called every 15 minutes starting just after the hour
