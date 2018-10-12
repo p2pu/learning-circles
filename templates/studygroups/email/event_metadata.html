@@ -3,7 +3,7 @@
 {
   "@context": "http://schema.org",
   "@type": "Event",
-  "name": "{{ lc.course.title }}",
+  "name": "{{ lc.course.title | safe }}",
   "startDate": "{{meeting.meeting_datetime | date:'c' }}",
   "endDate": "{{meeting.meeting_datetime_end | date:'c' }}",
   "location": {
@@ -12,9 +12,11 @@
       "@type": "PostalAddress",
       "name": "{{lc.venue_name}}",
       "streetAddress": "{{lc.venue_address}}",
-      "addressLocality": "{{lc.city}}"{% if lc.country %},
+      "addressLocality": "{{lc.city}}"{% if lc.region %},
+      "addressRegion": "{{lc.region}}"{% endif %}{% if lc.country %},
       "addressCountry": "{{lc.country}}"{% endif %}
-    }
+    }{% if lc.venue_website %},
+    "url": "{{lc.venue_website}}"{% endif %}
   },
   "potentialAction": [
     {
@@ -22,7 +24,7 @@
       "rsvpResponse": "yes",
       "handler": {
         "@type": "HttpActionHandler",
-        "url": "{{rsvp_yes_link}}"
+        "url": "{{rsvp_yes_link|safe}}"
       },
       "attendance": "http://schema.org/RsvpAttendance/Yes"
     },
@@ -31,7 +33,7 @@
       "rsvpResponse": "no",
       "handler": {
         "@type": "HttpActionHandler",
-        "url": "{{rsvp_no_link}}"
+        "url": "{{rsvp_no_link|safe}}"
       },
       "attendance": "http://schema.org/RsvpAttendance/No"
     }

@@ -18,6 +18,7 @@ from studygroups.email_helper import render_email_templates
 from .utils import html_body_to_text
 from studygroups import rsvp
 from studygroups.utils import gen_unsubscribe_querystring
+from .events import make_meeting_ics
 
 import calendar
 import datetime
@@ -27,6 +28,7 @@ import json
 import urllib.request, urllib.parse, urllib.error
 import logging
 import uuid
+from email.mime.text import MIMEText
 
 
 logger = logging.getLogger(__name__)
@@ -105,7 +107,7 @@ class Profile(models.Model):
     mailing_list_signup = models.BooleanField(default=False)
     email_confirmed_at = models.DateTimeField(null=True, blank=True)
     interested_in_learning = models.CharField(max_length=500, blank=True, null=True)
-    communication_opt_in = models.BooleanField(default=True)
+    communication_opt_in = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.__str__()
@@ -173,9 +175,11 @@ class StudyGroup(LifeTimeTrackingModel):
     venue_details = models.CharField(max_length=128)
     venue_website = models.URLField(blank=True)
     city = models.CharField(max_length=256)
+    region = models.CharField(max_length=256, blank=True) # schema.org. Algolia => administrative
+    country = models.CharField(max_length=256, blank=True)
     latitude = models.DecimalField(max_digits=8, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    place_id = models.CharField(max_length=256, blank=True)
+    place_id = models.CharField(max_length=256, blank=True) # Algolia place_id
     facilitator = models.ForeignKey(User, on_delete=models.CASCADE)
     start_date = models.DateField()
     meeting_time = models.TimeField()
@@ -190,6 +194,8 @@ class StudyGroup(LifeTimeTrackingModel):
     facilitator_concerns = models.CharField(max_length=256, blank=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     facilitator_rating = models.IntegerField(blank=True, null=True)
+    attach_ics = models.BooleanField(default=False)
+
 
 
     objects = StudyGroupQuerySet.as_manager()
@@ -215,8 +221,7 @@ class StudyGroup(LifeTimeTrackingModel):
         return self.local_start_date().strftime("%Z")
 
     @property
-    def country(self):
-        # TODO this is broken since new creation form 
+    def _country(self):
         country = self.city.split(',')[-1].strip()
         country_list = [
             'United States of America',
@@ -233,7 +238,7 @@ class StudyGroup(LifeTimeTrackingModel):
 
 
     def to_dict(self):
-        sg = self  # TODO
+        sg = self  # TODO - this logic is repeated in the API class
         data = {
             "id": sg.pk,
             "course": sg.course.id,
@@ -244,6 +249,8 @@ class StudyGroup(LifeTimeTrackingModel):
             "venue_address": sg.venue_address,
             "venue_website": sg.venue_website,
             "city": sg.city,
+            "region": sg.region,
+            "country": sg.country,
             "latitude": sg.latitude,
             "longitude": sg.longitude,
             "place_id": sg.place_id,
@@ -373,6 +380,7 @@ class Meeting(LifeTimeTrackingModel):
         return '{0}{1}?{2}'.format(domain,url,no_qs)
 
     def __str__(self):
+        # TODO i18n
         tz = pytz.timezone(self.study_group.timezone)
         return '{0}, {1} at {2}'.format(self.study_group.course.title, self.meeting_datetime(), self.study_group.venue_name)
 
@@ -578,7 +586,7 @@ def send_learner_survey(application):
 
 
 def send_learner_surveys(study_group):
-    """ 
+    """
         Send survey links to learners a week before their last learning circle.
         - If called directly, be sure to activate the current language
         - Should be called every 15 minutes starting just after the hour
@@ -722,6 +730,13 @@ def send_meeting_reminder(reminder):
                 reply_to=[reminder.study_group.facilitator.email]
             )
             reminder_email.attach_alternative(html_body, 'text/html')
+            # TODO attach icalendar event
+            if reminder.study_group.attach_ics:
+                ical = make_meeting_ics(reminder.study_group_meeting)
+                part = MIMEText(ical, 'calendar')
+                part.add_header('Filename', 'shifts.ics')
+                part.add_header('Content-Disposition', 'attachment; filename=lc.ics')
+                reminder_email.attach(part)
             reminder_email.send()
         except Exception as e:
             logger.exception('Could not send email to ', email, exc_info=e)
