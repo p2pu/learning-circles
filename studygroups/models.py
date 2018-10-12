@@ -18,6 +18,7 @@ from studygroups.email_helper import render_email_templates
 from .utils import html_body_to_text
 from studygroups import rsvp
 from studygroups.utils import gen_unsubscribe_querystring
+from .events import make_meeting_ics
 
 import calendar
 import datetime
@@ -27,6 +28,7 @@ import json
 import urllib.request, urllib.parse, urllib.error
 import logging
 import uuid
+from email.mime.text import MIMEText
 
 
 logger = logging.getLogger(__name__)
@@ -192,6 +194,8 @@ class StudyGroup(LifeTimeTrackingModel):
     facilitator_concerns = models.CharField(max_length=256, blank=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     facilitator_rating = models.IntegerField(blank=True, null=True)
+    attach_ics = models.BooleanField(default=False)
+
 
 
     objects = StudyGroupQuerySet.as_manager()
@@ -728,13 +732,12 @@ def send_meeting_reminder(reminder):
             )
             reminder_email.attach_alternative(html_body, 'text/html')
             # TODO attach icalendar event
-            from .events import make_meeting_2
-            ical = make_meeting_2(reminder.study_group_meeting)
-            from email.mime.text import MIMEText
-            part = MIMEText(ical, 'calendar')
-            part.add_header('Filename', 'shifts.ics') 
-            part.add_header('Content-Disposition', 'attachment; filename=lc.ics')
-            reminder_email.attach(part)
+            if reminder.study_group.attach_ics:
+                ical = make_meeting_ics(reminder.study_group_meeting)
+                part = MIMEText(ical, 'calendar')
+                part.add_header('Filename', 'shifts.ics')
+                part.add_header('Content-Disposition', 'attachment; filename=lc.ics')
+                reminder_email.attach(part)
             reminder_email.send()
         except Exception as e:
             logger.exception('Could not send email to ', email, exc_info=e)
