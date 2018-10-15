@@ -11,7 +11,7 @@
     "watch": "webpack --config webpack.config.js --watch",
     "build:production": "webpack -p --config webpack.config.js",
     "profile": "webpack -p --config webpack.config.profile.js --watch",
-    "test": "mocha test/bootstrap.js --recursive test"
+    "test": "mocha test/bootstrap.js --timeout 10000 --recursive test"
   },
   "repository": {
     "type": "git",
