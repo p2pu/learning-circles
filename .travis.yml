@@ -22,7 +22,7 @@ script:
 - docker run -d --name=postgres -e POSTGRES_PASSWORD=password postgres:9.3
 - docker run --rm -it --link postgres -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost p2pu/learning-circles dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
 - docker run -d --name=learningcircles --link postgres -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost p2pu/learning-circles dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py runserver
-- docker run --rm -it --link postgres --link learningcircles -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost p2pu/learning-circles dockerize -wait tcp://postgres:5432 sh -c "cd /opt/app/ && npm test"
+- docker run --rm -it --link postgres --link learningcircles -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost node:carbon-alpine sh -c "cd /opt/app/ && npm i --only=dev && npm test"
 
 
 after_success:
