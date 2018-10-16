@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load staticfiles %}
 
+
 <p>{% blocktrans %}Dear {{facilitator_name}},{% endblocktrans %}</p>
 
 <p>
@@ -12,9 +13,23 @@ Congratulations on finishing your learning circle! To help you reflect on your e
 </p>
 
 <p>
-{% trans "Here's a preview - click through to see the full report." %}
+{% trans "Here's a preview - <a href="{{ report_link }}">click here to see the full report.</a> %}
 </p>
 
+<table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="report-table">
+    <tr>
+        <td align="center" valign="top">
+            <image src="{{ learner_goals_chart }}">
+        </td>
+        <td align="center" valign="top">
+            <image src="{{ goals_met_chart }}">
+        </td>
+    </tr>
+</table>
+
+<div>
+     <a href="{{ report_link }}">See the full report here.</a>
+</div>
 
 <p>{% trans "Cheers" %},</p>
 <p>{% trans "The P2PU Team" %}</p>

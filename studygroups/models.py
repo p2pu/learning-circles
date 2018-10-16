@@ -1028,6 +1028,7 @@ def send_final_learning_circle_report(study_group):
 
     context = {
         'study_group': study_group,
+        'report_link': reverse('studygroups_final_report', kwargs={'study_group_id': study_group.id}),
         'facilitator_name': study_group.facilitator.first_name,
         'registrations': study_group.application_set.active().count(),
         'survey_responses': study_group.learnersurveyresponse_set.count(),
