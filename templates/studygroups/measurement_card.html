@@ -1,11 +1,13 @@
 {% load i18n %}
 
-<div class="report-measurement bg-white p-4 mb-4">
-    <header>
-        <p class="bold text-uppercase mb-0">{{ title }}</p>
-        <p class="small mt-0">{{ description }}</p>
-    </header>
-    <div class="visualization">
-        {{ chart|safe }}
+<div class="col-12 col-md-6">
+    <div class="report-measurement bg-white p-4 mb-4">
+        <header>
+            <p class="bold text-uppercase mb-0">{{ title }}</p>
+            <p class="small mt-0">{{ description }}</p>
+        </header>
+        <div class="visualization">
+            {{ chart|safe }}
+        </div>
     </div>
 </div>

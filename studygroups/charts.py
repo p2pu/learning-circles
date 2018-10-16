@@ -6,6 +6,8 @@ from django.utils.translation import ugettext_lazy as _
 
 # from studygroups.forms import ApplicationForm
 
+
+# TODO how to import this from the ApplicationForm without creating a circular dependency?
 GOAL_CHOICES = [
     ('', _('Select one of the following')),
     ('To increase my employability', _('To increase my employability')),
@@ -16,6 +18,8 @@ GOAL_CHOICES = [
     ('For fun / to try something new', _('For fun / to try something new')),
     ('Other', _('Other')),
 ]
+
+STAR_RATING_STEPS = 5
 
 theme_colors = ['#05C6B4', '#B7D500', '#FFBC1A', '#FC7100', '#e83e8c']
 
@@ -75,13 +79,13 @@ def average(total, divisor):
 
 class LearnerGoalsChart():
     def __init__(self, study_group, **kwargs):
-        self.chart = pygal.Dot(stroke=False, show_legend=False, show_y_guides=False, style=custom_style(), **kwargs)
+        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, **kwargs)
         self.study_group = study_group
 
     def get_data(self):
         data = {}
-        for choice in GOAL_CHOICES:
-            data[choice[0]] = []
+        for choice in reversed(GOAL_CHOICES):
+            data[choice[0]] = 0
 
         signup_questions = self.study_group.application_set.values_list('signup_questions', flat=True)
 
@@ -93,17 +97,17 @@ class LearnerGoalsChart():
             goal = answer.get('goals', None)
 
             if goal in data:
-                data[goal].append(1)
-            # else:
-            #     data['Other'].append(1)
+                data[goal] += 1
 
         return data
 
     def generate(self, **opts):
         chart_data = self.get_data()
+        labels = chart_data.keys()
+        serie = chart_data.values()
 
-        for key, value in chart_data.items():
-            self.chart.add(key, value)
+        self.chart.add('Number of learners', serie)
+        self.chart.x_labels = labels
 
         if opts.get('output', None) == "png":
             filename = "report-{}-learner-goals-chart.png".format(self.study_group.uuid)
@@ -116,7 +120,7 @@ class LearnerGoalsChart():
 class GoalsMetChart():
 
     def __init__(self, study_group, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, **kwargs)
+        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=10, order_min=0, **kwargs)
         self.chart.x_labels = ["1 (not at all)", "2", "3", "4", "5 (completely)"]
         self.study_group = study_group
 
@@ -158,17 +162,17 @@ class GoalsMetChart():
 class SkillsLearnedChart():
 
     def __init__(self, study_group, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend = False, **kwargs)
+        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend = False, max_scale=5, order_min=0, **kwargs)
         self.study_group = study_group
 
     def get_data(self):
         data = {
-            "Setting goals for myself": [],
-            "Navigating online courses": [],
-            "Working with others":[],
-            "Feeling connected to my community": [],
+            "Using the internet": [],
             "Speaking in public": [],
-            "Using the internet": []
+            "Feeling connected to my community": [],
+            "Working with others":[],
+            "Navigating online courses": [],
+            "Setting goals for myself": [],
         }
 
         survey_responses = get_typeform_survey_learner_responses(self.study_group)
@@ -191,7 +195,7 @@ class SkillsLearnedChart():
 
             for question in questions:
                 field = next((answer for answer in answers if answer["field"]["id"] == question[0]), None)
-                if field is not None:
+                if field is not None and field['number'] > 3:
                     data[question[1]].append(field['number'])
 
         return data
@@ -201,10 +205,10 @@ class SkillsLearnedChart():
 
         averages = []
         for key, value in chart_data.items():
-            average_value = average(sum(value), len(value))
-            averages.append(average_value)
+            total = len(value)
+            averages.append(total)
 
-        self.chart.add('Average', averages)
+        self.chart.add('Number of learners', averages)
         self.chart.x_labels = list(chart_data)
 
         return self.chart.render(is_unicode=True)
@@ -216,7 +220,7 @@ class NewLearnersChart():
         style = custom_style()
         style.value_font_size = 40
         style.title_font_size = 24
-        self.chart = pygal.SolidGauge(style=style, inner_radius=0.70, show_legend = False, x_title="of participants were taking a learning circle for the first time", **kwargs)
+        self.chart = pygal.SolidGauge(style=style, inner_radius=0.70, show_legend = False, x_title="of participants were taking their first learning circle", **kwargs)
         self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
         self.study_group = study_group
 
@@ -235,7 +239,7 @@ class NewLearnersChart():
             if field["boolean"] == True:
                 first_timers += 1
 
-        percentage = round((first_timers / len(survey_responses)) * 100, 2)
+        percentage = round((first_timers / len(survey_responses)) * 100)
         data['New learners'][0]['value'] = percentage
 
         return data
@@ -255,7 +259,7 @@ class CompletionRateChart():
         style = custom_style()
         style.value_font_size = 40
         style.title_font_size = 24
-        self.chart = pygal.SolidGauge(style=style, inner_radius=0.70, show_legend = False, x_title="of participants who responded to the survey completed the learning circle", **kwargs)
+        self.chart = pygal.SolidGauge(style=style, inner_radius=0.70, show_legend = False, x_title="of participants completed the learning circle", **kwargs)
         self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
         self.study_group = study_group
 
@@ -275,7 +279,7 @@ class CompletionRateChart():
             if field is not None and field["choice"]["label"] == "I completed the learning circle":
                 completed += 1
 
-        percentage = round((completed / len(survey_responses)) * 100, 2)
+        percentage = round((completed / len(survey_responses)) * 100)
         data['Completed'][0]['value'] = percentage
 
         return data
@@ -426,12 +430,8 @@ class PromotionChart():
 
     def generate(self):
         chart_data = self.get_data()
-        serie = []
-        labels = []
-
-        for key, value in chart_data.items():
-            labels.append(key)
-            serie.append(value)
+        serie = chart_data.keys()
+        labels = chart_data.values()
 
         self.chart.add('Number of learners', serie)
         self.chart.x_labels = labels
@@ -470,12 +470,8 @@ class LibraryUsageChart():
 
     def generate(self):
         chart_data = self.get_data()
-        serie = []
-        labels = []
-
-        for key, value in chart_data.items():
-            labels.append(key)
-            serie.append(value)
+        serie = chart_data.keys()
+        labels = chart_data.values()
 
         self.chart.add('Number of learners', serie)
         self.chart.x_labels = labels
@@ -556,8 +552,14 @@ class FacilitatorRatingChart():
         selected_field = next((field for field in survey_fields if field["id"] == "Zm9XlzKGKC66"), None)
         steps = selected_field['properties']['steps']
 
+        # Make sure rating is out of 5
+        if steps > STAR_RATING_STEPS:
+            multiplier = STAR_RATING_STEPS / steps
+            steps = STAR_RATING_STEPS
+            average_rating = average_rating * multiplier
+
         data = {
-            'average_rating': int(average_rating),
+            'average_rating': round(average_rating),
             'maximum': steps
         }
 
@@ -580,3 +582,90 @@ class FacilitatorRatingChart():
             stars += "<i class='far fa-star'></i>"
 
         return stars + "</div>"
+
+
+class AdditionalResourcesChart():
+
+    def __init__(self, study_group, **kwargs):
+        self.study_group = study_group
+
+    def get_data(self):
+        data = {}
+        response = self.study_group.facilitatorsurveyresponse_set.first()
+
+        if response is None:
+            return data
+
+        response_str = response.response
+        field = get_response_field(response_str, "jB4WMEz4S6gt")
+
+        if field is not None:
+            data['text'] = field['text']
+
+        return data
+
+    def generate(self):
+        chart_data = self.get_data()
+
+        if chart_data.get('text', None) is None:
+            return "<p>No data</p>"
+
+        return "<ul class='quote-list list-unstyled'><li class='pl-2 my-3 font-italic'>\"{}\"</li></ul>".format(chart_data.get('text'))
+
+
+class FacilitatorNewSkillsChart():
+
+    def __init__(self, study_group, **kwargs):
+        self.study_group = study_group
+
+    def get_data(self):
+        data = {}
+        response = self.study_group.facilitatorsurveyresponse_set.first()
+
+        if response is None:
+            return data
+
+        response_str = response.response
+        field = get_response_field(response_str, "TYrhfYZxLH2p")
+
+        if field is not None:
+            data['text'] = field['text']
+
+        return data
+
+    def generate(self):
+        chart_data = self.get_data()
+
+        if chart_data.get('text', None) is None:
+            return "<p>No data</p>"
+
+        return "<ul class='quote-list list-unstyled'><li class='pl-2 my-3 font-italic'>\"{}\"</li></ul>".format(chart_data.get('text'))
+
+
+class FacilitatorTipsChart():
+
+    def __init__(self, study_group, **kwargs):
+        self.study_group = study_group
+
+    def get_data(self):
+        data = {}
+        response = self.study_group.facilitatorsurveyresponse_set.first()
+
+        if response is None:
+            return data
+
+        response_str = response.response
+        field = get_response_field(response_str, "dP7B4zDIZRcF")
+
+        if field is not None:
+            data['text'] = field['text']
+
+        return data
+
+    def generate(self):
+        chart_data = self.get_data()
+
+        if chart_data.get('text', None) is None:
+            return "<p>No data</p>"
+
+        return "<ul class='quote-list list-unstyled'><li class='pl-2 my-3 font-italic'>\"{}\"</li></ul>".format(chart_data.get('text'))

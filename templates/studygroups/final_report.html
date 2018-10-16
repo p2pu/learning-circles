@@ -11,9 +11,7 @@
         <h1 class="mt-4">{{ study_group.course.title }}</h1>
         <h4>with {{ study_group.facilitator.first_name }} {{study_group.facilitator.last_name}}</h4>
       </div>
-      <div class="intro col-12 my-4">
-          <p class="my-0">{{ registrations }} learners signed up</p>
-          <p class="my-0">{{ survey_responses }} learners responded to the survey</p>
+      <div class="intro col-12">
           <p class="my-0">{{ study_group.start_date }} to {{ study_group.end_date }} at {{ study_group.venue_name }}</p>
           <p class="my-0">{{ study_group.city }}</p>
       </div>
@@ -26,71 +24,55 @@
 
     {% else %}
       <div class="row mt-4">
-        <div class="col-12">
-            <h2 class="mb-4">Summary</h2>
-        </div>
-        <div class="col-12 col-md-6">
-            {% include "studygroups/measurement_card.html" with title='Learner Goals' description='What is your goal for taking this learning circle?' chart=learner_goals_chart %}
+        <div class="col-12 mb-4">
+            <h2>Summary</h2>
+            <p class="my-0">{{ registrations }} learners signed up; {{ survey_responses }} responded to the survey</p>
         </div>
 
-        <div class="col-12 col-md-6">
-            {% include "studygroups/measurement_card.html" with title='Goals Met' description='To what extent did you achieve your goals for this learning circle?' chart=goals_met_chart %}
-        </div>
+          {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart %}
 
-        <div class="col-12 col-md-6">
-            {% include "studygroups/measurement_card.html" with title='Skills Learned' description='After the learning circle, I feel more comfortable...' chart=skills_learned_chart %}
-        </div>
-      </div>
+          {% include "studygroups/measurement_card.html" with title='Goals Met' description='Did participants reach their learning goals?' chart=goals_met_chart %}
 
-      <div class="row mt-4">
-        <div class="col-12">
-            <h2 class="mb-4">Learners' Reflections</h2>
-        </div>
-        <div class="col-12 col-md-6">
-            {% include "studygroups/measurement_card.html" with title='Reasons for Success' description='I succeeded in the learning circle because I…' chart=reasons_for_success_chart %}
-        </div>
+          {% include "studygroups/measurement_card.html" with title='Skills Learned' description='Participants expressed increased comfort…' chart=skills_learned_chart %}
 
-        <div class="col-12 col-md-6">
-            {% include "studygroups/measurement_card.html" with title='Next Steps' description='What do you want to do with your new skills?' chart=next_steps_chart %}
-        </div>
+          {% include "studygroups/measurement_card.html" with title='Next Steps' description='What do participants want to do with the skills they gained?' chart=next_steps_chart %}
 
-        <div class="col-12 col-md-6">
-            {% include "studygroups/measurement_card.html" with title='Ideas for Next Time' description='What other topics are you interested in learning?' chart=ideas_chart %}
-        </div>
+          {% include "studygroups/measurement_card.html" with title='Reasons for Success' description='Participants succeeded because they…' chart=reasons_for_success_chart %}
+
+          {% include "studygroups/measurement_card.html" with title='Ideas for Next Time' description='What other topics do participants want to take a learning circle in?' chart=ideas_chart %}
       </div>
 
       <div class="row mt-4">
         <div class="col-12">
             <h2 class="mb-4">Participation</h2>
         </div>
-        <div class="col-12 col-md-6">
-            {% include "studygroups/measurement_card.html" with title='New Learners' chart=new_learners_chart %}
-        </div>
 
-        <div class="col-12 col-md-6">
-            {% include "studygroups/measurement_card.html" with title='Completion Rate' chart=completion_rate_chart %}
-        </div>
+          {% include "studygroups/measurement_card.html" with title='New Learners' chart=new_learners_chart %}
 
-        <div class="col-12 col-md-6">
-            {% include "studygroups/measurement_card.html" with title='Promotion and Outreach' description='How did people hear about the learning circle?' chart=promotion_chart %}
-        </div>
+          {% include "studygroups/measurement_card.html" with title='Completion Rate' chart=completion_rate_chart %}
 
-        <div class="col-12 col-md-6">
-            {% include "studygroups/measurement_card.html" with title='Library Usage' description='Aside from the learning circle, how often do you visit the library?' chart=library_usage_chart %}
-        </div>
+          {% include "studygroups/measurement_card.html" with title='Promotion and Outreach' description='How did people hear about the learning circle?' chart=promotion_chart %}
+
+          {% include "studygroups/measurement_card.html" with title='Library Usage' description='Aside from the learning circle, how often do participants visit the library?' chart=library_usage_chart %}
       </div>
 
       <div class="row mt-4">
         <div class="col-12">
             <h2 class="mb-4">Course Quality</h2>
         </div>
-        <div class="col-12 col-md-6">
-            {% include "studygroups/measurement_card.html" with title="Facilitator's Rating" description="How well did this course work as a learning circle?" chart=facilitator_rating_chart %}
-        </div>
+          {% include "studygroups/measurement_card.html" with title="Facilitator's Rating" description="How well did this course work as a learning circle?" chart=facilitator_rating_chart %}
 
-        <div class="col-12 col-md-6">
-            {% include "studygroups/measurement_card.html" with title="Learners' Rating" description="How well did this course work as a learning circle?" chart=learner_rating_chart %}
+          {% include "studygroups/measurement_card.html" with title="Learners' Rating" description="How well did this course work as a learning circle?" chart=learner_rating_chart %}
+      </div>
+
+      <div class="row mt-4">
+        <div class="col-12">
+            <h2 class="mb-4">{{ study_group.facilitator.first_name }}'s Reflections</h2>
         </div>
+          {% include "studygroups/measurement_card.html" with title="Resources, activities, and experiences that were particularly rewarding" chart=additional_resources_chart %}
+
+          {% include "studygroups/measurement_card.html" with title="New skills gained as a facilitator" chart=facilitator_new_skills_chart %}
+          {% include "studygroups/measurement_card.html" with title="Tips for future facilitators" chart=facilitator_tips_chart %}
       </div>
       {% endif %}
   </div>

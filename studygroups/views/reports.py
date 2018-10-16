@@ -5,7 +5,7 @@ from django.utils.decorators import method_decorator
 from studygroups.decorators import user_is_group_facilitator
 
 from studygroups.models import StudyGroup
-from studygroups.charts import LearnerGoalsChart, NewLearnersChart, CompletionRateChart, GoalsMetChart, SkillsLearnedChart, ReasonsForSuccessChart, NextStepsChart, IdeasChart, FacilitatorRatingChart, LearnerRatingChart, PromotionChart, LibraryUsageChart
+from studygroups.charts import LearnerGoalsChart, NewLearnersChart, CompletionRateChart, GoalsMetChart, SkillsLearnedChart, ReasonsForSuccessChart, NextStepsChart, IdeasChart, FacilitatorRatingChart, LearnerRatingChart, PromotionChart, LibraryUsageChart, AdditionalResourcesChart, FacilitatorNewSkillsChart, FacilitatorTipsChart
 
 
 
@@ -38,6 +38,9 @@ class StudyGroupFinalReport(TemplateView):
         learner_rating_chart = LearnerRatingChart(study_group)
         promotion_chart = PromotionChart(study_group)
         library_usage_chart = LibraryUsageChart(study_group)
+        additional_resources_chart = AdditionalResourcesChart(study_group)
+        facilitator_new_skills_chart = FacilitatorNewSkillsChart(study_group)
+        facilitator_tips_chart = FacilitatorTipsChart(study_group)
 
         context = {
             'study_group': study_group,
@@ -55,6 +58,9 @@ class StudyGroupFinalReport(TemplateView):
             'learner_rating_chart': learner_rating_chart.generate(),
             'promotion_chart': promotion_chart.generate(),
             'library_usage_chart': library_usage_chart.generate(),
+            'additional_resources_chart': additional_resources_chart.generate(),
+            'facilitator_new_skills_chart': facilitator_new_skills_chart.generate(),
+            'facilitator_tips_chart': facilitator_tips_chart.generate(),
         }
 
         return context
