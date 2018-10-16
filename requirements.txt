@@ -8,7 +8,8 @@ bleach==2.1.3
 boto==2.38.0
 boto3==1.7.3
 botocore==1.10.3
-cairosvg==2.2.0
+cairocffi==0.9.0
+CairoSVG==2.1.3
 celery==3.1.25
 certifi==2017.7.27.1
 chardet==3.0.4
@@ -36,6 +37,7 @@ packaging==16.8
 phonenumberslite==7.7.0
 Pillow==4.3.0
 psycopg2==2.7.3.1
+pycairo==1.17.0
 pygal===2.4.0
 PyJWT==1.5.3
 pyparsing==2.2.0

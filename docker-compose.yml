@@ -25,9 +25,10 @@ services:
     - COMMUNITY_MANAGER=user@mail.com
     - DEFAULT_FROM_EMAIL=notify@mail.com
     - DEBUG=true
+    - DYLD_FALLBACK_LIBRARY_PATH=/usr/lib
   frontend:
     image: p2pu/js-build:carbon-alpine
-    volumes: 
+    volumes:
     - .:/opt/app
     working_dir: /opt/app
     command: sh -c "npm i && npm run watch"

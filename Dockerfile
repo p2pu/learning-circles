@@ -11,12 +11,13 @@ RUN npm run build:production
 FROM python:3.6-alpine
 WORKDIR /opt/app/
 COPY requirements.txt /opt/app/
-RUN apk --no-cache add --virtual .python-rundeps \
+RUN apk --no-cache --update --upgrade add --virtual .python-rundeps \
         libpq \
         libjpeg \
         zlib \
         postgresql \
-    && apk --no-cache add --virtual .build-deps \
+        cairo \
+    && apk --no-cache --update --upgrade add --virtual .build-deps \
         gcc \
         make \
         musl-dev \
@@ -24,6 +25,13 @@ RUN apk --no-cache add --virtual .python-rundeps \
         postgresql-dev \
         jpeg-dev \
         zlib-dev \
+        libffi-dev \
+        build-base \
+        g++ \
+        cairo-dev \
+        pango-dev \
+        giflib-dev \
+        gdk-pixbuf \
     && python3 -m venv /opt/django-venv \
     && /opt/django-venv/bin/pip install -r /opt/app/requirements.txt \
     && apk del .build-deps

@@ -3,6 +3,7 @@ import json
 
 from pygal.style import Style
 from django.utils.translation import ugettext_lazy as _
+
 # from studygroups.forms import ApplicationForm
 
 GOAL_CHOICES = [
