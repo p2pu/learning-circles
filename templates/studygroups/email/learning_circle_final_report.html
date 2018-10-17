@@ -7,13 +7,11 @@
 <p>{% blocktrans %}Dear {{facilitator_name}},{% endblocktrans %}</p>
 
 <p>
-{% blocktrans %}
-Congratulations on finishing your learning circle! To help you reflect on your experience, we've put together some insights about your learning circle based on the feedback of the participants.
-{% endblocktrans %}
+{% trans "You can now view your learning circle report online, or through your facilitator dashboard." %}
 </p>
 
 <p>
-{% trans "Here's a preview - <a href="{{ report_link }}">click here to see the full report.</a> %}
+{% trans "Here's a preview:" %}
 </p>
 
 <table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="report-table">
@@ -28,7 +26,7 @@ Congratulations on finishing your learning circle! To help you reflect on your e
 </table>
 
 <div>
-     <a href="{{ report_link }}">See the full report here.</a>
+    <a href="{{ report_link }}">{% trans "Click here to see the full report." %}</a>
 </div>
 
 <p>{% trans "Cheers" %},</p>

@@ -5,15 +5,21 @@
 {% block content %}
 <div class="bg-light">
   <div class="container">
+    <div class="row justify-content-between border-bottom pt-4" style="align-items: baseline">
+      <div class="col">
+        <span class="bold large text-uppercase">Learning Circle Insights</span>
+      </div>
+      <div class="col">
+        <img class="d-none d-md-block float-right" src="{% static 'images/logo.png' %}" alt="P2PU Logo">
+      </div>
+    </div>
+
     <div class="row">
-      <div class="title col-12">
-        <p class="bold large text-uppercase mt-4">Learning Circle Insights</p>
+      <div class="col-12">
         <h1 class="mt-4">{{ study_group.course.title }}</h1>
         <h4>with {{ study_group.facilitator.first_name }} {{study_group.facilitator.last_name}}</h4>
-      </div>
-      <div class="intro col-12">
-          <p class="my-0">{{ study_group.start_date }} to {{ study_group.end_date }} at {{ study_group.venue_name }}</p>
-          <p class="my-0">{{ study_group.city }}</p>
+        <p class="my-0">{{ study_group.start_date }} to {{ study_group.end_date }} at {{ study_group.venue_name }}</p>
+        <p class="my-0">{{ study_group.city }}</p>
       </div>
     </div>
 

@@ -15,6 +15,7 @@ from studygroups.models import send_new_studygroup_email
 from studygroups.models import send_learner_surveys
 from studygroups.models import send_facilitator_survey
 from studygroups.models import send_last_week_group_activity
+from studygroups.models import send_final_learning_circle_report
 
 import datetime
 
@@ -79,3 +80,9 @@ def send_all_last_week_group_activities():
     for study_group in StudyGroup.objects.published():
         translation.activate(settings.LANGUAGE_CODE)
         send_last_week_group_activity(study_group)
+
+@shared_task
+def send_all_learning_circle_reports():
+    for study_group in StudyGroup.objects.published():
+        translation.activate(settings.LANGUAGE_CODE)
+        send_final_learning_circle_report(study_group)

@@ -1021,38 +1021,108 @@ def get_user_team(user):
 
 
 def send_final_learning_circle_report(study_group):
-    # TODO add timing for this email - after the LC ends?
+    """ send survey to all facilitators two days after last meeting """
+    now = timezone.now()
+    today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
+    two_days_after_last_meeting = last_meeting.meeting_datetime() + datetime.timedelta(days=2)
 
-    learner_goals_chart = charts.LearnerGoalsChart(study_group)
-    goals_met_chart = charts.GoalsMetChart(study_group)
+    if today.date() == two_days_after_last_meeting.date():
+        timezone.deactivate()
+
+        learner_goals_chart = charts.LearnerGoalsChart(study_group)
+        goals_met_chart = charts.GoalsMetChart(study_group)
+        domain = 'https://{}'.format(settings.DOMAIN)
+        report_path = reverse('studygroups_final_report', kwargs={'study_group_id': study_group.id})
+        report_url = domain + report_path
+
+        context = {
+            'study_group': study_group,
+            'report_url': report_url,
+            'facilitator_name': study_group.facilitator.first_name,
+            'registrations': study_group.application_set.active().count(),
+            'survey_responses': study_group.learnersurveyresponse_set.count(),
+            'learner_goals_chart': learner_goals_chart.generate(output="png"),
+            'goals_met_chart': goals_met_chart.generate(output="png"),
+        }
+
+        subject = render_to_string(
+            'studygroups/email/learning_circle_final_report-subject.txt',
+            context
+        ).strip('\n')
+        html = render_to_string(
+            'studygroups/email/learning_circle_final_report.html',
+            context
+        )
+        txt = html_body_to_text(html)
+        to = [study_group.facilitator.email]
+
+        notification = EmailMultiAlternatives(
+            subject,
+            txt,
+            settings.DEFAULT_FROM_EMAIL,
+            to,
+            reply_to=[settings.DEFAULT_FROM_EMAIL]
+        )
+        notification.attach_alternative(html, 'text/html')
+        notification.send()
+
+
+def send_facilitator_survey_reminder(study_group):
+    """ send survey reminder to all facilitators two days before the last meeting """
+    # now = timezone.now()
+    # today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    # last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
+    # two_days_before_last_meeting = last_meeting.meeting_datetime() - datetime.timedelta(days=2)
+
+    # if today.date() == two_days_before_last_meeting.date():
+    #     timezone.deactivate()
+
+    facilitator_name = study_group.facilitator.first_name
+    facilitator_survey_path = reverse(
+        'studygroups_facilitator_survey',
+        kwargs={'study_group_id': study_group.id}
+    )
+    learner_survey_path = reverse(
+        'studygroups_learner_survey',
+        kwargs={'study_group_uuid': study_group.uuid}
+    )
+    report_path = reverse('studygroups_final_report', kwargs={'study_group_id': study_group.id})
+    domain = 'https://{}'.format(settings.DOMAIN)
+    facilitator_survey_url = domain + facilitator_survey_path
+    learner_survey_url = domain + learner_survey_path
+    report_url = domain + report_path
+    learners_without_survey_responses = study_group.application_set.active().filter(goal_met=None)
 
     context = {
-        'study_group': study_group,
-        'report_link': reverse('studygroups_final_report', kwargs={'study_group_id': study_group.id}),
-        'facilitator_name': study_group.facilitator.first_name,
-        'registrations': study_group.application_set.active().count(),
-        'survey_responses': study_group.learnersurveyresponse_set.count(),
-        'learner_goals_chart': learner_goals_chart.generate(output="png"),
-        'goals_met_chart': goals_met_chart.generate(output="png"),
+        'facilitator_name': facilitator_name,
+        'learner_survey_url': learner_survey_url,
+        'facilitator_survey_url': facilitator_survey_url,
+        'course_title': study_group.course.title,
+        'learners_without_survey_responses': learners_without_survey_responses,
+        'learner_responses_count': study_group.learnersurveyresponse_set.count(),
+        'report_url': report_url,
     }
 
-    subject = render_to_string(
-        'studygroups/email/learning_circle_final_report-subject.txt',
-        context
-    ).strip('\n')
-    html = render_to_string(
-        'studygroups/email/learning_circle_final_report.html',
+    if study_group.facilitatorsurveyresponse_set.exists():
+        context['facilitator_survey_url'] = None
+
+    if learners_without_survey_responses.count() == 0:
+        context['learners_without_survey_responses'] = None
+
+    subject, txt, html = render_email_templates(
+        'studygroups/email/facilitator-survey-reminder',
         context
     )
-    txt = html_body_to_text(html)
     to = [study_group.facilitator.email]
+    cc = [settings.DEFAULT_FROM_EMAIL]
 
     notification = EmailMultiAlternatives(
         subject,
         txt,
         settings.DEFAULT_FROM_EMAIL,
         to,
-        reply_to=[settings.DEFAULT_FROM_EMAIL]
+        cc=cc
     )
     notification.attach_alternative(html, 'text/html')
     notification.send()

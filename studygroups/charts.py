@@ -20,6 +20,7 @@ GOAL_CHOICES = [
 ]
 
 STAR_RATING_STEPS = 5
+SKILLS_LEARNED_THRESHOLD = 3
 
 theme_colors = ['#05C6B4', '#B7D500', '#FFBC1A', '#FC7100', '#e83e8c']
 
@@ -195,7 +196,7 @@ class SkillsLearnedChart():
 
             for question in questions:
                 field = next((answer for answer in answers if answer["field"]["id"] == question[0]), None)
-                if field is not None and field['number'] > 3:
+                if field is not None and field['number'] > SKILLS_LEARNED_THRESHOLD:
                     data[question[1]].append(field['number'])
 
         return data
@@ -430,8 +431,8 @@ class PromotionChart():
 
     def generate(self):
         chart_data = self.get_data()
-        serie = chart_data.keys()
-        labels = chart_data.values()
+        serie = chart_data.values()
+        labels = chart_data.keys()
 
         self.chart.add('Number of learners', serie)
         self.chart.x_labels = labels
@@ -470,8 +471,8 @@ class LibraryUsageChart():
 
     def generate(self):
         chart_data = self.get_data()
-        serie = chart_data.keys()
-        labels = chart_data.values()
+        serie = chart_data.values()
+        labels = chart_data.keys()
 
         self.chart.add('Number of learners', serie)
         self.chart.x_labels = labels

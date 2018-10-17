@@ -1,0 +1,37 @@
+{% extends 'email_base.html' %}
+{% block body %}
+{% load i18n %}
+
+<table>
+  <tbody>
+    <tr>
+      <td>
+        {% blocktrans with responses_p=learner_responses_count|pluralize %}
+        <p>Hi {{ facilitator_name }},</p>
+
+        <p>The survey we sent to your learning circle participants has {{ learner_responses_count }} response{{ responses_p }} so far. Here’s a preview of what your learning circle report currently looks like: <a href="{{ report_url }}">{{ report_url }}</a></p>
+        {% endblocktrans %}
+
+        <p>Can you remind the following people to reply to this survey? You can share this link with them: <a href="{{ learner_survey_url }}">{{ learner_survey_url }}</a></p>
+
+          {% if learners_without_survey_responses is not None %}
+          <ul>
+            {% for learner in learners_without_survey_responses %}
+              <li>{{ learner.name }} - {{ learner.email }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+
+        {% if facilitator_survey_url is not None %}
+        {% blocktrans %}
+          <p>As a reminder, this is the link for you to leave your own feedback: <a href="{{ facilitator_survey_url }}">{{ facilitator_survey_url }}</a></p>
+        {% endblocktrans %}
+        {% endif %}
+
+        <p>{% trans "Cheers" %},</p>
+        <p>{% trans "The P2PU Team" %}</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+{% endblock %}

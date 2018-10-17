@@ -1,0 +1,17 @@
+{% extends 'email_base.html' %}
+{% block body %}
+{% load i18n %}
+{% load staticfiles %}
+
+
+{% blocktrans %}Dear {{facilitator_name}},{% endblocktrans %}
+
+{% trans "You can now view your learning circle report online, or through your facilitator dashboard." %}
+
+{% blocktrans %}Click here to see the full report: {{ report_link }}" %}{% endblocktrans %}
+
+{% trans "Cheers" %},
+
+{% trans "The P2PU Team" %}
+
+{% endblock %}
