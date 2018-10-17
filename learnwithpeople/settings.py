@@ -244,7 +244,14 @@ CELERYBEAT_SCHEDULE = {
         'task': 'surveys.tasks.sync_learner_surveys',
         'schedule': crontab(minute='20'),
     },
-
+    'send_facilitator_survey_reminder': {
+        'task': 'studygroups.tasks.send_all_facilitator_survey_reminders',
+        'schedule': crontab(hour='10', minute='0'),
+    },
+    'send_final_learning_circle_report': {
+        'task': 'studygroups.tasks.send_all_learning_circle_reports',
+        'schedule': crontab(hour='10', minute='0'),
+    },
 }
 
 LOGGING = {

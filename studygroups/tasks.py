@@ -16,6 +16,7 @@ from studygroups.models import send_learner_surveys
 from studygroups.models import send_facilitator_survey
 from studygroups.models import send_last_week_group_activity
 from studygroups.models import send_final_learning_circle_report
+from studygroups.models import send_facilitator_survey_reminder
 
 import datetime
 
@@ -80,6 +81,12 @@ def send_all_last_week_group_activities():
     for study_group in StudyGroup.objects.published():
         translation.activate(settings.LANGUAGE_CODE)
         send_last_week_group_activity(study_group)
+
+@shared_task
+def send_all_facilitator_survey_reminders():
+    for study_group in StudyGroup.objects.published():
+        translation.activate(settings.LANGUAGE_CODE)
+        send_facilitator_survey_reminder(study_group)
 
 @shared_task
 def send_all_learning_circle_reports():
