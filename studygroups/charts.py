@@ -80,7 +80,7 @@ def average(total, divisor):
 
 class LearnerGoalsChart():
     def __init__(self, study_group, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, **kwargs)
+        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, x_title="Learners", **kwargs)
         self.study_group = study_group
 
     def get_data(self):
@@ -121,7 +121,7 @@ class LearnerGoalsChart():
 class GoalsMetChart():
 
     def __init__(self, study_group, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=10, order_min=0, **kwargs)
+        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=10, order_min=0, x_title="Learners", **kwargs)
         self.chart.x_labels = ["1 (not at all)", "2", "3", "4", "5 (completely)"]
         self.study_group = study_group
 
@@ -163,7 +163,7 @@ class GoalsMetChart():
 class SkillsLearnedChart():
 
     def __init__(self, study_group, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend = False, max_scale=5, order_min=0, **kwargs)
+        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend = False, max_scale=5, order_min=0, x_title="Learners (multiple selections)", **kwargs)
         self.study_group = study_group
 
     def get_data(self):
@@ -395,7 +395,7 @@ class IdeasChart():
 
 class PromotionChart():
     def __init__(self, study_group, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, **kwargs)
+        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, x_title="Learners", **kwargs)
         self.study_group = study_group
 
     def get_data(self):
@@ -441,11 +441,15 @@ class PromotionChart():
 
 class LibraryUsageChart():
     def __init__(self, study_group, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, **kwargs)
+        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, x_title="Learners", **kwargs)
         self.study_group = study_group
 
     def get_data(self):
         data = {}
+
+        survey_responses = get_typeform_survey_learner_responses(self.study_group)
+        if len(survey_responses) < 1:
+            return data
 
         question_field = get_question_field(self.study_group, "LQGB3S5v0rUk")
         # LQGB3S5v0rUk = "Aside from the learning circle, how often do you visit the library?"
@@ -454,10 +458,6 @@ class LibraryUsageChart():
 
             for choice in choices:
                 data[choice['label']] = 0
-
-        survey_responses = get_typeform_survey_learner_responses(self.study_group)
-        if len(survey_responses) < 1:
-            return data
 
         for response_str in survey_responses:
             field = get_response_field(response_str, "LQGB3S5v0rUk")
@@ -473,6 +473,9 @@ class LibraryUsageChart():
         chart_data = self.get_data()
         serie = chart_data.values()
         labels = chart_data.keys()
+
+        if sum(serie) == 0:
+            return None
 
         self.chart.add('Number of learners', serie)
         self.chart.x_labels = labels
