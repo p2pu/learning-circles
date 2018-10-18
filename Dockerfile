@@ -16,7 +16,8 @@ RUN apk --no-cache --update --upgrade add --virtual .python-rundeps \
         libjpeg \
         zlib \
         postgresql \
-        cairo \
+        build-base cairo-dev cairo cairo-tools \
+        jpeg-dev zlib-dev freetype-dev lcms2-dev openjpeg-dev tiff-dev tk-dev tcl-dev \
     && apk --no-cache --update --upgrade add --virtual .build-deps \
         gcc \
         make \

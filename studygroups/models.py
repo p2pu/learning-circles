@@ -1022,20 +1022,25 @@ def get_user_team(user):
 
 def send_final_learning_circle_report(study_group):
     """ send survey to all facilitators two days after last meeting """
-    now = timezone.now()
-    today = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
-    two_days_after_last_meeting = last_meeting.meeting_datetime() + datetime.timedelta(days=2)
+    # now = timezone.now()
+    # today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    # last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
+    # two_days_after_last_meeting = last_meeting.meeting_datetime() + datetime.timedelta(days=2)
 
-    if today.date() == two_days_after_last_meeting.date():
-        timezone.deactivate()
+    # if today.date() == two_days_after_last_meeting.date():
+    #     timezone.deactivate()
+
+    if True:
 
         learner_goals_chart = charts.LearnerGoalsChart(study_group)
         goals_met_chart = charts.GoalsMetChart(study_group)
         domain = 'https://{}'.format(settings.DOMAIN)
         report_path = reverse('studygroups_final_report', kwargs={'study_group_id': study_group.id})
         report_url = domain + report_path
-
+        recipients = study_group.application_set.values_list('email', flat=True)
+        to = list(recipients)
+        to.append(study_group.facilitator.email)
+        print(to)
         context = {
             'study_group': study_group,
             'report_url': report_url,
@@ -1055,7 +1060,6 @@ def send_final_learning_circle_report(study_group):
             context
         )
         txt = html_body_to_text(html)
-        to = [study_group.facilitator.email]
 
         notification = EmailMultiAlternatives(
             subject,

@@ -46,6 +46,7 @@ class StudyGroupFinalReport(TemplateView):
             'study_group': study_group,
             'registrations': study_group.application_set.active().count(),
             'survey_responses': study_group.learnersurveyresponse_set.count(),
+            'course': study_group.course,
             'learner_goals_chart': learner_goals_chart.generate(),
             'goals_met_chart': goals_met_chart.generate(),
             'new_learners_chart': new_learners_chart.generate(),

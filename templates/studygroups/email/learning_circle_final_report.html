@@ -4,29 +4,31 @@
 {% load staticfiles %}
 
 
-<p>{% blocktrans %}Dear {{facilitator_name}},{% endblocktrans %}</p>
+<p>{% blocktrans %}Hi {{facilitator_name}} and learning circle participants,{% endblocktrans %}</p>
 
 <p>
-{% trans "You can now view your learning circle report online, or through your facilitator dashboard." %}
+{% trans "We’ve generated a learning circle report based on feedback you’ve provided." %}
 </p>
 
 <p>
 {% trans "Here's a preview:" %}
 </p>
 
-<table border="0" cellpadding="0" cellspacing="0" height="100%" width="100%" id="report-table">
+<table border="0" cellpadding="10" cellspacing="10" id="report-table">
     <tr>
-        <td align="center" valign="top">
-            <image src="{{ learner_goals_chart }}">
+        <td valign="top">
+            {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart %}
         </td>
-        <td align="center" valign="top">
-            <image src="{{ goals_met_chart }}">
+    </tr>
+    <tr>
+        <td valign="top">
+            {% include "studygroups/measurement_card.html" with title='Goals Met' description='Did participants reach their learning goals?' chart=goals_met_chart %}
         </td>
     </tr>
 </table>
 
 <div>
-    <a href="{{ report_link }}">{% trans "Click here to see the full report." %}</a>
+    <a href="{{ report_url }}">{% trans "Click here to see the full report." %}</a>
 </div>
 
 <p>{% trans "Cheers" %},</p>

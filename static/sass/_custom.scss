@@ -545,6 +545,13 @@ img.lc-about-image{
   main {
     padding-top: 0;
   }
+
+  .avoid-page-break {
+    display: block;
+    page-break-before: auto;
+    page-break-after: auto;
+    page-break-inside: avoid;
+  }
 }
 
 

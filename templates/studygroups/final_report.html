@@ -49,8 +49,8 @@
       </div>
 
       <div class="row mt-4">
-        <div class="col-12">
-            <h2 class="mb-4">Participation</h2>
+        <div class="col-12 mb-4">
+            <h2>Participation</h2>
         </div>
 
           {% include "studygroups/measurement_card.html" with title='New Learners' chart=new_learners_chart %}
@@ -63,8 +63,9 @@
       </div>
 
       <div class="row mt-4">
-        <div class="col-12">
-            <h2 class="mb-4">Course Quality</h2>
+        <div class="col-12 mb-4">
+            <h2>Course Quality</h2>
+            <p class="my-0">Course used: <a href="{{ course.link }}">{{ course.title }}</a></p>
         </div>
           {% include "studygroups/measurement_card.html" with title="Facilitator's Rating" description="How well did this course work as a learning circle?" chart=facilitator_rating_chart %}
 
@@ -72,8 +73,8 @@
       </div>
 
       <div class="row mt-4">
-        <div class="col-12">
-            <h2 class="mb-4">{{ study_group.facilitator.first_name }}'s Reflections</h2>
+        <div class="col-12 mb-4">
+            <h2>{{ study_group.facilitator.first_name }}'s Reflections</h2>
         </div>
           {% include "studygroups/measurement_card.html" with title="Resources, activities, and experiences that were particularly rewarding" chart=additional_resources_chart %}
 

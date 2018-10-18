@@ -4,11 +4,11 @@
 {% load staticfiles %}
 
 
-{% blocktrans %}Dear {{facilitator_name}},{% endblocktrans %}
+{% blocktrans %}Hi {{facilitator_name}} and learning circle participants,{% endblocktrans %}
 
-{% trans "You can now view your learning circle report online, or through your facilitator dashboard." %}
+{% trans "We’ve generated a learning circle report based on feedback you’ve provided." %}
 
-{% blocktrans %}Click here to see the full report: {{ report_link }}" %}{% endblocktrans %}
+{% blocktrans %}You can view the full report here: {{ report_url }}" %}{% endblocktrans %}
 
 {% trans "Cheers" %},
 

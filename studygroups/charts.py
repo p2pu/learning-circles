@@ -1,8 +1,11 @@
 import pygal
 import json
+import os
+import boto3
 
 from pygal.style import Style
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 
 # from studygroups.forms import ApplicationForm
 
@@ -24,6 +27,8 @@ SKILLS_LEARNED_THRESHOLD = 3
 
 theme_colors = ['#05C6B4', '#B7D500', '#FFBC1A', '#FC7100', '#e83e8c']
 
+s3 = boto3.resource('s3', aws_access_key_id=settings.AWS_ACCESS_KEY, aws_secret_access_key=settings.AWS_SECRET_KEY)
+
 def rotate_colors():
     theme_colors.append(theme_colors.pop(0))
     colors = theme_colors.copy()
@@ -33,7 +38,7 @@ def custom_style():
     colors = rotate_colors()
 
     style = Style(
-        font_family='Open Sans',
+        font_family="'Open Sans', 'Helvetica', 'Arial', sans-serif",
         label_font_size=18.0,
         major_label_font_size=18.0,
         value_font_size=18.0,
@@ -112,8 +117,15 @@ class LearnerGoalsChart():
 
         if opts.get('output', None) == "png":
             filename = "report-{}-learner-goals-chart.png".format(self.study_group.uuid)
-            self.chart.render_to_png("/static/images/charts/{}".format(filename))
-            return "/images/charts/{}".format(filename)
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            print(target_path)
+
+            response = s3.Object(settings.AWS_BUCKET, filename).put(Body=open(target_path, 'rb'))
+            print(response)
+            img_url = "https://s3.amazonaws.com/{}/{}".format(settings.AWS_BUCKET, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Learner goals chart')
 
         return self.chart.render(is_unicode=True)
 
@@ -122,7 +134,7 @@ class GoalsMetChart():
 
     def __init__(self, study_group, **kwargs):
         self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=10, order_min=0, x_title="Learners", **kwargs)
-        self.chart.x_labels = ["1 (not at all)", "2", "3", "4", "5 (completely)"]
+        self.chart.x_labels = ["Not at all", "Not very much", "Moderately", "Very much", "Completely"]
         self.study_group = study_group
 
     def get_data(self):
@@ -153,9 +165,16 @@ class GoalsMetChart():
             self.chart.add(key, value)
 
         if opts.get('output', None) == "png":
-            filename = "report-{}-learner-goals-chart.png".format(self.study_group.uuid)
-            self.chart.render_to_png("/static/images/charts/{}".format(filename))
-            return "/images/charts/{}".format(filename)
+            filename = "report-{}-goals-met-chart.png".format(self.study_group.uuid)
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            print(target_path)
+
+            response = s3.Object(settings.AWS_BUCKET, filename).put(Body=open(target_path, 'rb'))
+            print(response)
+            img_url = "https://s3.amazonaws.com/{}}/{}".format(settings.AWS_BUCKET, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Goal met chart')
 
         return self.chart.render(is_unicode=True)
 
