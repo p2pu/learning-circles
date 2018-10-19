@@ -216,7 +216,6 @@ class StudyGroup(LifeTimeTrackingModel):
     def report_url(self):
         domain = 'https://{0}'.format(settings.DOMAIN)
         path = reverse('studygroups_final_report', kwargs={'study_group_id': self.id})
-
         return domain + path
 
     @property
