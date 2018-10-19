@@ -222,7 +222,7 @@ class StudyGroup(LifeTimeTrackingModel):
         return self.local_start_date().strftime("%Z")
 
     @property
-    def country(self):
+    def _country(self):
         # TODO this is broken since new creation form
         country = self.city.split(',')[-1].strip()
         country_list = [

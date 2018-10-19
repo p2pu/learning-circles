@@ -73,5 +73,5 @@ docker-compose exec learning-circles /opt/django-venv/bin/python manage.py test
 
 To restore the database from an .sql file:
 ```
-docker container exec -i $(docker-compose ps -q postgres) psql -U postgres lc <filename>.sql
+docker container exec -i $(docker-compose ps -q postgres) psql -U postgres lc < <filename>.sql
 ```
