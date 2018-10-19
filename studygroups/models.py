@@ -589,17 +589,20 @@ def send_learner_survey(application):
 
 def send_learner_surveys(study_group):
     """
-        Send survey links to learners a week before their last learning circle.
+        Send survey links to learners two days before their second to last learning circle.
         - If called directly, be sure to activate the current language
-        - Should be called every 15 minutes starting just after the hour
+        - Should be called once per day
     """
     now = timezone.now()
-    ## last :00, :15, :30 or :45 plus one week
-    last_15 = now.replace(minute=now.minute//15*15, second=0) + datetime.timedelta(days=7)
-    last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
+    today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    last_two_meetings = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time')[:2]
+    two_days_before_penultimate_meeting = None
+    if last_two_meetings.count() == 2:
+        penultimate_meeting = last_two_meetings[1]
+        two_days_before_penultimate_meeting = penultimate_meeting.meeting_datetime() - datetime.timedelta(days=2)
 
-    # send surveys 1 week before last meeting
-    if last_meeting and last_15 - datetime.timedelta(minutes=15) <= last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < last_15:
+    # send surveys 2 days before second to last meeting
+    if two_days_before_penultimate_meeting and two_days_before_penultimate_meeting.date() == today.date():
         applications = study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')
         timezone.deactivate()
 
@@ -610,15 +613,17 @@ def send_learner_surveys(study_group):
 # If called directly, be sure to activate the current language
 # Should be called once a day minutes starting just after the hour
 def send_facilitator_survey(study_group):
-    """ send survey to all facilitators if their last study group meetings was a week ago """
+    """ send survey to all facilitators two days before their second to last meeting """
     now = timezone.now()
     today = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    last_week = today - datetime.timedelta(days=7);
-    last_meeting = study_group.meeting_set.active()\
-            .order_by('-meeting_date', '-meeting_time').first()
+    last_two_meetings = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time')[:2]
+    two_days_before_penultimate_meeting = None
+    if last_two_meetings.count() == 2:
+        penultimate_meeting = last_two_meetings[1]
+        two_days_before_penultimate_meeting = penultimate_meeting.meeting_datetime() - datetime.timedelta(days=2)
 
-    if last_meeting and last_week <= last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < last_week + datetime.timedelta(days=1):
-
+    # send surveys 2 days before second to last meeting
+    if two_days_before_penultimate_meeting and two_days_before_penultimate_meeting.date() == today.date():
         facilitator_name = study_group.facilitator.first_name
         path = reverse('studygroups_facilitator_survey', kwargs={'study_group_id': study_group.id})
         domain = 'https://{}'.format(settings.DOMAIN)
@@ -1022,15 +1027,13 @@ def get_user_team(user):
 
 def send_final_learning_circle_report(study_group):
     """ send survey to all facilitators two days after last meeting """
-    # now = timezone.now()
-    # today = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    # last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
-    # two_days_after_last_meeting = last_meeting.meeting_datetime() + datetime.timedelta(days=2)
+    now = timezone.now()
+    today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
+    two_days_after_last_meeting = last_meeting.meeting_datetime() + datetime.timedelta(days=2)
 
-    # if today.date() == two_days_after_last_meeting.date():
-    #     timezone.deactivate()
-
-    if True:
+    if today.date() == two_days_after_last_meeting.date():
+        timezone.deactivate()
 
         learner_goals_chart = charts.LearnerGoalsChart(study_group)
         goals_met_chart = charts.GoalsMetChart(study_group)

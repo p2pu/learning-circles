@@ -218,7 +218,7 @@ CELERYBEAT_SCHEDULE = {
     },
     'send_survey_reminders': {
         'task': 'studygroups.tasks.send_all_studygroup_survey_reminders',
-        'schedule': crontab(minute='*/15'),
+        'schedule': crontab(hour='10', minute='0'),
     },
     'send_facilitator_survey': {
         'task': 'studygroups.tasks.send_all_facilitator_surveys',
