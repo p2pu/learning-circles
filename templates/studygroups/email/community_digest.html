@@ -1,0 +1,83 @@
+{% extends 'email_base.html' %}
+{% block body %}
+{% load i18n %}
+
+
+<table>
+  <tbody>
+    <tr>
+      <td>
+        <div>
+          <h1>P2PU Community Digest</h1>
+          <p>{{ start_date }} to {{ end_date }}</p>
+          <img src="https://www.p2pu.org/assets/images/learning-circle-cropped.jpg" alt="Photo of the month" width="100%">
+        </div>
+
+        <div>
+          <h2>News and Events</h2>
+          <p>News goes here</p>
+        </div>
+
+        <div>
+          <h2>{{ learning_circle_met_count }} learning circles met, reaching {{ learners_reached_count }} learners</h2>
+          <p>Charts go here</p>
+        </div>
+
+        <div>
+          <h2>{{ new_facilitators_count }} facilitators joined P2PU</h2>
+          <p>Introduce facilitators</p>
+        </div>
+
+        <div>
+          <h2>{{ upcoming_studygroups_count }} learning circles will begin in the next 3 weeks</h2>
+          <ul>
+            {% for studygroup in upcoming_studygroups %}
+            <li>{{ studygroup.facilitator.first_name }} is facilitating {{ studygroup.course.title }} at {{ studygroup.venue }} in {{ studygroup.city }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div>
+          <h2>{{ finished_studygroups_count }} learning circles wrapped up</h2>
+          <p>Click to see the learning circle report:</p>
+          <ul>
+            {% for studygroup in finished_studygroups %}
+              <li><a href="{{ studygroup.report_url }}">{{ studygroup.course.title }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div>
+          <h2>{{ new_learners_count }} learners applied to join a learning circle</h2>
+          <p>Learner goal charts goes here</p>
+        </div>
+
+        <div>
+          <h2>{{ new_courses_count }} courses were added</h2>
+          {% for course in new_courses %}
+              <li>{{ course.created_by.first_name }} added <a href="{{ course.link }}">{{ course.title }}</a></li>
+            {% endfor %}
+          <p>To see more, check out the <a href="https://www.p2pu.org/en/courses/" target="_blank">courses page</a>.</p>
+        </div>
+
+        <div>
+          <h2>What we're talking about</h2>
+          <p>Discourse table goes here</p>
+        </div>
+
+        <div>
+          <h2>What we’re working on</h2>
+          <p>All the cool stuff that's happening</p>
+        </div>
+
+        <div>
+          <p>{% trans "Cheers" %},</p>
+          <p>{% trans "The P2PU Team" %}</p>
+        </div>
+      </td>
+    </tr>
+
+  </tbody>
+</table>
+
+{% endblock %}

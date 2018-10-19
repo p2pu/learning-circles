@@ -37,6 +37,7 @@ from studygroups.views import ExportStudyGroupsView
 from studygroups.views import ExportCoursesView
 from studygroups.views import StaffDashView
 from studygroups.views import StudyGroupFinalReport
+from studygroups.views import CommunityDigestView
 
 from . import views
 
@@ -119,5 +120,7 @@ urlpatterns = [
     url(r'^export/facilitators/$', ExportFacilitatorsView.as_view(), name='studygroups_export_facilitators'),
     url(r'^export/studygroups/$', ExportStudyGroupsView.as_view(), name='studygroups_export_studygroups'),
     url(r'^export/courses/$', ExportCoursesView.as_view(), name='studygroups_export_courses'),
+
+    url(r'^community_digest/$', CommunityDigestView.as_view(), name='studygroups_community_digest'),
 ]
 

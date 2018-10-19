@@ -63,3 +63,7 @@ class StudyGroupFinalReport(TemplateView):
         }
 
         return context
+
+
+class CommunityDigestView(TemplateView):
+    template_name = 'studygroups/community_digest.html'

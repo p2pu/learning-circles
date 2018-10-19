@@ -183,8 +183,6 @@ class StudyGroup(LifeTimeTrackingModel):
     facilitator_rating = models.IntegerField(blank=True, null=True)
     attach_ics = models.BooleanField(default=True)
 
-
-
     objects = StudyGroupQuerySet.as_manager()
 
     def day(self):
@@ -207,6 +205,15 @@ class StudyGroup(LifeTimeTrackingModel):
     def timezone_display(self):
         return self.local_start_date().strftime("%Z")
 
+    def last_meeting(self):
+        return self.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
+
+    def report_url(self):
+        domain = 'https://{0}'.format(settings.DOMAIN)
+
+        # TODO when report PR is merged use reverse
+        path = "/{}/report".format(self.id)
+        return domain + path
 
     @property
     def weeks(self):

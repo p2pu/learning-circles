@@ -1,0 +1,11 @@
+{% load i18n %}
+
+{% blocktrans %}
+Hi there,
+
+This is going to be a community digest!
+
+{% endblocktrans %}
+
+{% trans "Cheers" %},
+{% trans "The P2PU Team" %}
