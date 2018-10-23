@@ -20,7 +20,20 @@
 
         <div>
           <h2>{{ learning_circle_met_count }} learning circles met, reaching {{ learners_reached_count }} learners</h2>
-          <p>Charts go here</p>
+          <table>
+            <tbody>
+              <tr>
+                <td>
+                  {{ meetings_chart | safe }}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  {{ countries_chart | safe }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         <div>

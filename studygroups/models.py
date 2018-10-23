@@ -208,6 +208,9 @@ class StudyGroup(LifeTimeTrackingModel):
     def last_meeting(self):
         return self.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
 
+    def first_meeting(self):
+        return self.meeting_set.active().order_by('meeting_date', 'meeting_time').first()
+
     def report_url(self):
         domain = 'https://{0}'.format(settings.DOMAIN)
 

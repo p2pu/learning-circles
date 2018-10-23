@@ -10,9 +10,11 @@ import pygal
 import json
 import os
 import boto3
+import datetime
 
 from pygal.style import Style
 from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
 from django.conf import settings
 
 from studygroups.forms import ApplicationForm
@@ -687,3 +689,94 @@ class FacilitatorTipsChart():
             return "<p>No data</p>"
 
         return "<ul class='quote-list list-unstyled'><li class='pl-2 my-3 font-italic'>\"{}\"</li></ul>".format(chart_data.get('text'))
+
+
+class LearningCircleMeetingsChart():
+
+    def __init__(self, report_date, Meeting, **kwargs):
+        self.chart = pygal.Line(style=custom_style(), show_legend=False, order_min=0, y_title="Meetings", x_label_rotation=90, **kwargs)
+        self.report_date = report_date
+        self.Meeting = Meeting
+
+    def get_data(self):
+        data = { "meetings": [], "dates": [] }
+        start_date = self.report_date.replace(month=1, day=1)
+        end_date = start_date + datetime.timedelta(days=7)
+
+        while end_date <= self.report_date:
+            meetings_count = self.Meeting.objects.filter(meeting_date__gte=start_date, meeting_date__lt=end_date).count()
+            data["dates"].append(start_date.isoformat())
+            data["meetings"].append(meetings_count)
+            start_date = end_date
+            end_date = start_date + datetime.timedelta(days=7)
+
+        return data
+
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+
+        self.chart.add('Number of meetings', chart_data["meetings"])
+        self.chart.x_labels = chart_data["dates"]
+
+        if opts.get('output', None) == "png":
+            filename = "community-digest-{}-meetings-chart.png".format(self.report_date.isoformat())
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+
+            response = s3.Object(settings.AWS_BUCKET, filename).put(Body=open(target_path, 'rb'))
+
+            img_url = "https://s3.amazonaws.com/{}/{}".format(settings.AWS_BUCKET, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Learner goals chart')
+
+        return self.chart.render(is_unicode=True)
+
+
+class LearningCircleCountriesChart():
+
+    def __init__(self, report_date, StudyGroup, **kwargs):
+        self.chart = pygal.Pie(style=custom_style(), inner_radius=.4, **kwargs)
+        self.report_date = report_date
+        self.StudyGroup = StudyGroup
+
+    def get_data(self):
+        data = { "Other": 0 }
+
+        studygroups = self.StudyGroup.objects.published()
+
+        for sg in studygroups:
+            first_meeting = sg.first_meeting()
+            last_meeting = sg.last_meeting()
+
+            if first_meeting and last_meeting and first_meeting.meeting_date <= self.report_date and last_meeting.meeting_date >= self.report_date:
+                country = sg._country
+
+                if country in data:
+                    data[country] += 1
+                elif country is None:
+                    data["Other"] += 1
+                else:
+                    data[country] = 1
+
+        return data
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+
+        for key, value in chart_data.items():
+            self.chart.add(key, value)
+
+        if opts.get('output', None) == "png":
+            filename = "community-digest-{}-countries-chart.png".format(self.report_date.isoformat())
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+
+            response = s3.Object(settings.AWS_BUCKET, filename).put(Body=open(target_path, 'rb'))
+
+            img_url = "https://s3.amazonaws.com/{}/{}".format(settings.AWS_BUCKET, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Learner goals chart')
+
+        return self.chart.render(is_unicode=True)
+
