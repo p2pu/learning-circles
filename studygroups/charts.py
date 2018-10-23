@@ -743,7 +743,6 @@ class LearningCircleCountriesChart():
 
     def get_data(self):
         data = { "Other": 0 }
-
         studygroups = StudyGroup.objects.published()
 
         for sg in studygroups:
@@ -752,7 +751,6 @@ class LearningCircleCountriesChart():
 
             if first_meeting and last_meeting and first_meeting.meeting_date <= self.report_date and last_meeting.meeting_date >= self.report_date:
                 country = sg.country
-
                 country = "USA" if country == "United States of America" else country
 
                 if country in data:
@@ -868,5 +866,4 @@ class TopTopicsChart():
             return "<img src={} alt={} width='100%'>".format(img_url, 'Top 10 Topics')
 
         return self.chart.render(is_unicode=True)
-
 
