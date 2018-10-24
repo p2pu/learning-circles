@@ -3,7 +3,7 @@ describe('learning circle creation', function () {
 
   before (async function () {
     page = await browser.newPage();
-    await page.goto('http://learningcircles:8000/en/studygroup/create/', {timeout: 0, waitUntil: 'domcontentloaded'});
+    await page.goto('http://learningcircles/en/studygroup/create/', {timeout: 0, waitUntil: 'domcontentloaded'});
   });
 
   after (async function () {
