@@ -5,7 +5,8 @@ const globalVariables = Object.assign({}, { browser: browser, expect: expect_ })
 
 // puppeteer options
 const opts = {
-  timeout: 10000
+  timeout: 10000,
+  args: ['--no-sandbox', '--disable-setuid-sandbox']
 };
 
 // expose variables
