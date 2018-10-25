@@ -764,10 +764,7 @@ class LearningCircleCountriesChart():
 
             if first_meeting and last_meeting and first_meeting.meeting_date <= self.report_date and last_meeting.meeting_date >= self.report_date:
                 country = sg.country
-<<<<<<< HEAD
                 country = "USA" if country == "United States of America" else country
-=======
->>>>>>> community digest changes
 
                 if country in data:
                     data[country] += 1
