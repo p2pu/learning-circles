@@ -695,10 +695,9 @@ class FacilitatorTipsChart():
 
 class LearningCircleMeetingsChart():
 
-    def __init__(self, report_date, study_group_ids, Meeting, **kwargs):
+    def __init__(self, report_date, Meeting, **kwargs):
         self.chart = pygal.Line(style=custom_style(), show_legend=False, order_min=0, y_title="Meetings", x_label_rotation=90, **kwargs)
         self.report_date = report_date
-        self.study_group_ids = study_group_ids
         self.Meeting = Meeting
 
     def get_data(self):
@@ -707,8 +706,7 @@ class LearningCircleMeetingsChart():
         end_date = start_date + relativedelta(months=+1)
 
         while end_date <= self.report_date:
-            # studygroup must be active
-            meetings_count = self.Meeting.objects.active().filter(meeting_date__gte=start_date, meeting_date__lt=end_date, study_group__in=self.study_group_ids).count()
+            meetings_count = self.Meeting.objects.active().filter(meeting_date__gte=start_date, meeting_date__lt=end_date, study_group__deleted_at__isnull=True, study_group__draft=False).count()
             data["dates"].append(end_date.strftime("%B %Y"))
             data["meetings"].append(meetings_count)
             end_date = end_date + relativedelta(months=+1)

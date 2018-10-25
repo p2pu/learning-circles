@@ -11,10 +11,10 @@
     </tr>
   </thead>
   <tbody>
-    {% for topic in topics %}
+    {% for topic in top_discourse_topics.topics %}
       <tr>
         <td><a href="https://community.p2pu.org/t/{{ topic.slug }}">{{ topic.title }}</a></td>
-        <td>{{ topic.category_id|category_title:categories }}</td>
+        <td>{{ topic.category_id|category_title:discourse_categories }}</td>
         <td>{{ topic.reply_count }}</td>
         <td>{{ topic.views }}</td>
         <td>{{ topic.last_posted_at | parse_date }}</td>

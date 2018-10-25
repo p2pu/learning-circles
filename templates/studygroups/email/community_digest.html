@@ -110,7 +110,7 @@
 <div class="report-section">
   <h2>
     <span class="section-header">
-      {{ learning_circle_met_count }} learning circles met, reaching {{ learners_reached_count }} learners*
+      {{ studygroups_met_count }} learning circles met, reaching {{ learners_reached_count }} learners*
     </span>
   </h2>
   <p>* Based on learning circle signups</p>
@@ -138,7 +138,7 @@
 <div class="report-section">
   <h2>
     <span class="section-header">
-      {{ new_facilitators_count }} people joined P2PU
+      {{ new_users_count }} people joined P2PU
     </span>
   </h2>
   <ul>
@@ -217,7 +217,7 @@
   <h2>
     <span class="section-header">What we're talking about</span>
   </h2>
-  {% include "studygroups/discourse_table.html" with topics=top_topics users=top_topics_users %}
+  {% include "studygroups/discourse_table.html" %}
 </div>
 
 {% if not web %}
