@@ -194,7 +194,7 @@ class StudyGroup(LifeTimeTrackingModel):
     facilitator_concerns = models.CharField(max_length=256, blank=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     facilitator_rating = models.IntegerField(blank=True, null=True)
-    attach_ics = models.BooleanField(default=False)
+    attach_ics = models.BooleanField(default=True)
 
 
 
