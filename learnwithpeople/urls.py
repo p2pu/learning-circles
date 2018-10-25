@@ -20,6 +20,7 @@ urlpatterns = i18n_patterns(
 
 urlpatterns += [
     url(r'^api/', include('api.urls')),
+    url(r'^announce/', include('announce.urls')),
 ]
 
 if settings.DEBUG:
