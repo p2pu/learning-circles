@@ -7,27 +7,19 @@ from pygal.style import Style
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
-# from studygroups.forms import ApplicationForm
-
-
-# TODO how to import this from the ApplicationForm without creating a circular dependency?
-GOAL_CHOICES = [
-    ('', _('Select one of the following')),
-    ('To increase my employability', _('To increase my employability')),
-    ('Professional development for my current job', _('Professional development for my current job')),
-    ('To accompany other educational programs', _('To accompany other educational programs')),
-    ('Personal interest', _('Personal interest')),
-    ('Social reasons', _('Social reasons')),
-    ('For fun / to try something new', _('For fun / to try something new')),
-    ('Other', _('Other')),
-]
+from studygroups.forms import ApplicationForm
 
 STAR_RATING_STEPS = 5
 SKILLS_LEARNED_THRESHOLD = 3
 
 theme_colors = ['#05C6B4', '#B7D500', '#FFBC1A', '#FC7100', '#e83e8c']
 
-s3 = boto3.resource('s3', aws_access_key_id=settings.AWS_ACCESS_KEY, aws_secret_access_key=settings.AWS_SECRET_KEY)
+s3 = boto3.resource('s3', aws_access_key_id=settings.P2PU_RESOURCES_AWS_ACCESS_KEY, aws_secret_access_key=settings.P2PU_RESOURCES_AWS_SECRET_KEY)
+
+def save_to_aws(file, filename):
+    response = s3.Object(settings.P2PU_RESOURCES_AWS_BUCKET, filename).put(Body=file)
+    resource_url = "https://s3.amazonaws.com/{}/{}".format(settings.P2PU_RESOURCES_AWS_BUCKET, filename)
+    return resource_url
 
 def rotate_colors():
     theme_colors.append(theme_colors.pop(0))
@@ -90,7 +82,7 @@ class LearnerGoalsChart():
 
     def get_data(self):
         data = {}
-        for choice in reversed(GOAL_CHOICES):
+        for choice in reversed(ApplicationForm.GOAL_CHOICES):
             data[choice[0]] = 0
 
         signup_questions = self.study_group.application_set.values_list('signup_questions', flat=True)
@@ -120,11 +112,9 @@ class LearnerGoalsChart():
             target_path = os.path.join('tmp', filename)
             self.chart.height = 400
             self.chart.render_to_png(target_path)
-            print(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
 
-            response = s3.Object(settings.AWS_BUCKET, filename).put(Body=open(target_path, 'rb'))
-            print(response)
-            img_url = "https://s3.amazonaws.com/{}/{}".format(settings.AWS_BUCKET, filename)
             return "<img src={} alt={} width='100%'>".format(img_url, 'Learner goals chart')
 
         return self.chart.render(is_unicode=True)
@@ -169,11 +159,8 @@ class GoalsMetChart():
             target_path = os.path.join('tmp', filename)
             self.chart.height = 400
             self.chart.render_to_png(target_path)
-            print(target_path)
-
-            response = s3.Object(settings.AWS_BUCKET, filename).put(Body=open(target_path, 'rb'))
-            print(response)
-            img_url = "https://s3.amazonaws.com/{}}/{}".format(settings.AWS_BUCKET, filename)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
             return "<img src={} alt={} width='100%'>".format(img_url, 'Goal met chart')
 
         return self.chart.render(is_unicode=True)

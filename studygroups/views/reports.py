@@ -5,11 +5,9 @@ from django.utils.decorators import method_decorator
 from studygroups.decorators import user_is_group_facilitator
 
 from studygroups.models import StudyGroup
-from studygroups.charts import LearnerGoalsChart, NewLearnersChart, CompletionRateChart, GoalsMetChart, SkillsLearnedChart, ReasonsForSuccessChart, NextStepsChart, IdeasChart, FacilitatorRatingChart, LearnerRatingChart, PromotionChart, LibraryUsageChart, AdditionalResourcesChart, FacilitatorNewSkillsChart, FacilitatorTipsChart
+from studygroups import charts
 
 
-
-# @method_decorator(user_is_group_facilitator, name='dispatch')
 class StudyGroupFinalReport(TemplateView):
     template_name = 'studygroups/final_report.html'
 
@@ -26,21 +24,21 @@ class StudyGroupFinalReport(TemplateView):
 
             return context
 
-        learner_goals_chart = LearnerGoalsChart(study_group)
-        new_learners_chart = NewLearnersChart(study_group)
-        completion_rate_chart = CompletionRateChart(study_group)
-        goals_met_chart = GoalsMetChart(study_group)
-        skills_learned_chart = SkillsLearnedChart(study_group)
-        reasons_for_success_chart = ReasonsForSuccessChart(study_group)
-        next_steps_chart = NextStepsChart(study_group)
-        ideas_chart = IdeasChart(study_group)
-        facilitator_rating_chart = FacilitatorRatingChart(study_group)
-        learner_rating_chart = LearnerRatingChart(study_group)
-        promotion_chart = PromotionChart(study_group)
-        library_usage_chart = LibraryUsageChart(study_group)
-        additional_resources_chart = AdditionalResourcesChart(study_group)
-        facilitator_new_skills_chart = FacilitatorNewSkillsChart(study_group)
-        facilitator_tips_chart = FacilitatorTipsChart(study_group)
+        learner_goals_chart = charts.LearnerGoalsChart(study_group)
+        new_learners_chart = charts.NewLearnersChart(study_group)
+        completion_rate_chart = charts.CompletionRateChart(study_group)
+        goals_met_chart = charts.GoalsMetChart(study_group)
+        skills_learned_chart = charts.SkillsLearnedChart(study_group)
+        reasons_for_success_chart = charts.ReasonsForSuccessChart(study_group)
+        next_steps_chart = charts.NextStepsChart(study_group)
+        ideas_chart = charts.IdeasChart(study_group)
+        facilitator_rating_chart = charts.FacilitatorRatingChart(study_group)
+        learner_rating_chart = charts.LearnerRatingChart(study_group)
+        promotion_chart = charts.PromotionChart(study_group)
+        library_usage_chart = charts.LibraryUsageChart(study_group)
+        additional_resources_chart = charts.AdditionalResourcesChart(study_group)
+        facilitator_new_skills_chart = charts.FacilitatorNewSkillsChart(study_group)
+        facilitator_tips_chart = charts.FacilitatorTipsChart(study_group)
 
         context = {
             'study_group': study_group,
