@@ -165,10 +165,13 @@ if DEBUG is True and EMAIL_HOST is None:
     EMAIL_FILE_PATH = path('mailbox')
 
 # Default email sender
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
+
+# Default community manager email
+DEFAULT_COMMUNITY_MANAGER_EMAIL = env('COMMUNITY_MANAGER_EMAIL', 'team@p2pu.org')
 
 # Used for error messages to admin/staff
-SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'no-reply@p2pu.org')
+SERVER_EMAIL = env('SERVER_EMAIL', 'no-reply@p2pu.org')
 
 ##### Database config
 import dj_database_url
@@ -190,13 +193,13 @@ TWILIO_NUMBER = os.environ.get('TWILIO_NUMBER')
 
 LOGIN_REDIRECT_URL = '/login_redirect/'
 LOGOUT_REDIRECT_URL = 'https://www.p2pu.org/en/facilitate/'
-DOMAIN = os.environ.get('DOMAIN', 'example.net')
+DOMAIN = env('DOMAIN', 'localhost:8000')
 
 ####### Google analytics tracking info #######
-GA_TRACKING_ID = os.environ.get('GA_TRACKING_ID', 'UA-0000000-00')
+GA_TRACKING_ID = env('GA_TRACKING_ID', 'UA-0000000-00')
 
 ####### Celery config #######
-BROKER_URL = os.environ.get('BROKER_URL', 'amqp://guest:guest@localhost//')
+BROKER_URL = env('BROKER_URL', 'amqp://guest:guest@localhost//')
 
 
 from celery.schedules import crontab
@@ -287,7 +290,7 @@ LOGGING = {
 
 #### Backup config ####
 
-BACKUP_DIR = os.environ.get('BACKUP_DIR', '/tmp') # Directory where backups will be stored locally
+BACKUP_DIR = env('BACKUP_DIR', '/tmp') # Directory where backups will be stored locally
 BACKUP_AWS_ACCESS_KEY_ID = os.environ.get('BACKUP_AWS_ACCESS_KEY_ID') # AWS key with access to backup bucket
 BACKUP_AWS_SECRET_ACCESS_KEY = os.environ.get('BACKUP_AWS_SECRET_ACCESS_KEY') # AWS secret for above key
 BACKUP_AWS_STORAGE_BUCKET_NAME = os.environ.get('BACKUP_AWS_STORAGE_BUCKET_NAME') # Name of the bucket where backups should be stored

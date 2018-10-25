@@ -17,6 +17,7 @@ from pygal.style import Style
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.conf import settings
+from collections import Counter
 
 from studygroups.forms import ApplicationForm
 
@@ -825,6 +826,52 @@ class NewLearnerGoalsChart():
             print(response)
             img_url = "https://s3.amazonaws.com/{}/{}".format(settings.AWS_BUCKET, filename)
             return "<img src={} alt={} width='100%'>".format(img_url, 'Learner Goals')
+
+        return self.chart.render(is_unicode=True)
+
+
+class TopTopicsChart():
+
+    def __init__(self, report_date, study_group_ids, StudyGroup, Course, **kwargs):
+        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, x_title="Courses with this topic", **kwargs)
+        self.study_group_ids = study_group_ids
+        self.StudyGroup = StudyGroup
+        self.Course = Course
+        self.report_date = report_date
+
+    def get_data(self):
+        data = {}
+        course_ids = self.StudyGroup.objects.filter(id__in=self.study_group_ids).values_list('course')
+        course_topics = self.Course.objects.filter(id__in=course_ids).exclude(topics="").values_list("topics")
+        topics = [
+            item.strip().lower() for sublist in course_topics for item in sublist[0].split(',')
+        ]
+
+        top_topics = Counter(topics).most_common(10)
+        for topic in reversed(top_topics):
+            data[topic[0]] = topic[1]
+
+        return data
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+        labels = chart_data.keys()
+        serie = chart_data.values()
+
+        self.chart.add('Courses tagged', serie)
+        self.chart.x_labels = labels
+
+        if opts.get('output', None) == "png":
+            filename = "community-digest-{}-top_topics-chart.png".format(self.report_date.isoformat())
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            print(target_path)
+
+            response = s3.Object(settings.AWS_BUCKET, filename).put(Body=open(target_path, 'rb'))
+            print(response)
+            img_url = "https://s3.amazonaws.com/{}/{}".format(settings.AWS_BUCKET, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Top 10 Topics')
 
         return self.chart.render(is_unicode=True)
 

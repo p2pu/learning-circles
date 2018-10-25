@@ -19,12 +19,6 @@ import re
 import json
 import urllib.request, urllib.parse, urllib.error
 import uuid
-<<<<<<< HEAD
-=======
-import requests
-from email.mime.text import MIMEText
-
->>>>>>> community digest changes
 
 
 # TODO - remove this
@@ -220,9 +214,8 @@ class StudyGroup(LifeTimeTrackingModel):
 
     def report_url(self):
         domain = 'https://{0}'.format(settings.DOMAIN)
+        path = reverse('studygroups_final_report', kwargs={'study_group_id': self.id})
 
-        # TODO when report PR is merged use reverse
-        path = "/{}/report".format(self.id)
         return domain + path
 
     @property

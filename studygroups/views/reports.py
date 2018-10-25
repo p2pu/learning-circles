@@ -75,7 +75,7 @@ class CommunityDigestView(TemplateView):
         start_date = make_aware(datetime.strptime(kwargs.get('start_date'), "%d-%m-%Y"))
         end_date = make_aware(datetime.strptime(kwargs.get('end_date'), "%d-%m-%Y"))
 
-        digest_data = get_data_for_community_digest(start_date, end_date)
+        digest_data = get_data_for_community_digest(start_date, end_date, web=True)
         context.update(digest_data)
         context.update({ "web": True })
 
