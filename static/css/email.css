@@ -1,0 +1,52 @@
+.email {
+  color: #515665;
+  font-family: open-sans, Helvetica, sans-serif;
+}
+
+.email .body {
+  @media screen and (max-device-width: 716px), screen and (max-width: 716px) {
+    table {
+      width: 100% !important;
+    }
+
+    table small {
+      font-size: 1.6rem;
+    }
+  }
+}
+
+.email .body table.email-layout {
+  width: 716px;
+}
+
+.email .body table.email-layout tr {
+  height: 80px;
+}
+
+table tr td.email-header {
+  border-bottom: 1px solid #DDD;
+}
+
+table tr td.email-content {
+  background-color: #FFF;
+  padding-top: 10px;
+}
+
+table.inner-table {
+  line-height: 1.5;
+  border-collapse: collapse;
+}
+
+table.inner-table thead tr {
+  font-weight: bold;
+}
+
+table.inner-table thead td {
+  border-bottom: 1px solid #515665;
+  padding: 5px;
+}
+
+table.inner-table tbody td {
+  border-bottom: 1px solid #F3F4F8;
+  padding: 5px;
+}

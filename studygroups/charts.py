@@ -12,6 +12,7 @@ import os
 import boto3
 import datetime
 
+from dateutil.relativedelta import relativedelta
 from pygal.style import Style
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
@@ -693,22 +694,23 @@ class FacilitatorTipsChart():
 
 class LearningCircleMeetingsChart():
 
-    def __init__(self, report_date, Meeting, **kwargs):
+    def __init__(self, report_date, study_group_ids, Meeting, **kwargs):
         self.chart = pygal.Line(style=custom_style(), show_legend=False, order_min=0, y_title="Meetings", x_label_rotation=90, **kwargs)
         self.report_date = report_date
+        self.study_group_ids = study_group_ids
         self.Meeting = Meeting
 
     def get_data(self):
         data = { "meetings": [], "dates": [] }
-        start_date = self.report_date.replace(month=1, day=1)
-        end_date = start_date + datetime.timedelta(days=7)
+        start_date = datetime.date(2016, 1, 1)
+        end_date = start_date + relativedelta(months=+1)
 
         while end_date <= self.report_date:
-            meetings_count = self.Meeting.objects.filter(meeting_date__gte=start_date, meeting_date__lt=end_date).count()
-            data["dates"].append(start_date.isoformat())
+            # studygroup must be active
+            meetings_count = self.Meeting.objects.active().filter(meeting_date__gte=start_date, meeting_date__lt=end_date, study_group__in=self.study_group_ids).count()
+            data["dates"].append(end_date.strftime("%B %Y"))
             data["meetings"].append(meetings_count)
-            start_date = end_date
-            end_date = start_date + datetime.timedelta(days=7)
+            end_date = end_date + relativedelta(months=+1)
 
         return data
 
@@ -750,11 +752,11 @@ class LearningCircleCountriesChart():
             last_meeting = sg.last_meeting()
 
             if first_meeting and last_meeting and first_meeting.meeting_date <= self.report_date and last_meeting.meeting_date >= self.report_date:
-                country = sg._country
+                country = sg.country
 
                 if country in data:
                     data[country] += 1
-                elif country is None:
+                elif country is "" or country is None:
                     data["Other"] += 1
                 else:
                     data[country] = 1
@@ -779,4 +781,51 @@ class LearningCircleCountriesChart():
             return "<img src={} alt={} width='100%'>".format(img_url, 'Learner goals chart')
 
         return self.chart.render(is_unicode=True)
+
+
+class NewLearnerGoalsChart():
+
+    def __init__(self, report_date, applications, **kwargs):
+        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, x_title="Learners", **kwargs)
+        self.applications = applications
+        self.report_date = report_date
+
+    def get_data(self):
+        data = {}
+        for choice in reversed(GOAL_CHOICES):
+            data[choice[0]] = 0
+
+        signup_questions = self.applications.values_list('signup_questions', flat=True)
+
+        for answer_str in signup_questions:
+            answer = json.loads(answer_str)
+            goal = answer.get('goals', None)
+
+            if goal in data:
+                data[goal] += 1
+
+        return data
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+        labels = chart_data.keys()
+        serie = chart_data.values()
+
+        self.chart.add('Number of learners', serie)
+        self.chart.x_labels = labels
+
+        if opts.get('output', None) == "png":
+            filename = "community-digest-{}-learner-goals-chart.png".format(self.report_date.isoformat())
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            print(target_path)
+
+            response = s3.Object(settings.AWS_BUCKET, filename).put(Body=open(target_path, 'rb'))
+            print(response)
+            img_url = "https://s3.amazonaws.com/{}/{}".format(settings.AWS_BUCKET, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Learner Goals')
+
+        return self.chart.render(is_unicode=True)
+
 

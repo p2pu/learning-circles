@@ -7,6 +7,8 @@ from studygroups.decorators import user_is_group_facilitator
 from studygroups.models import StudyGroup
 from studygroups import charts
 
+from datetime import datetime
+from django.utils.timezone import make_aware
 
 class StudyGroupFinalReport(TemplateView):
     template_name = 'studygroups/final_report.html'
@@ -67,3 +69,14 @@ class StudyGroupFinalReport(TemplateView):
 
 class CommunityDigestView(TemplateView):
     template_name = 'studygroups/community_digest.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CommunityDigestView, self).get_context_data(**kwargs)
+        start_date = make_aware(datetime.strptime(kwargs.get('start_date'), "%d-%m-%Y"))
+        end_date = make_aware(datetime.strptime(kwargs.get('end_date'), "%d-%m-%Y"))
+
+        digest_data = get_data_for_community_digest(start_date, end_date)
+        context.update(digest_data)
+        context.update({ "web": True })
+
+        return context

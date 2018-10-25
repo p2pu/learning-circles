@@ -8,7 +8,7 @@
   {% regroup meetings|dictsort:"meeting_datetime" by meeting_datetime|first_weekday_date as weekly_meetings %}
   {% for week in weekly_meetings %}
     <div class="panel panel-default">
- 
+
       <div class="panel-heading" role="tab" id="heading{{forloop.counter}}">
           <h4 class="panel-title">
               <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}" aria-expanded="true" aria-controls="collapse{{forloop.counter}}">
@@ -16,7 +16,7 @@
               </a>
           </h4>
       </div>
- 
+
       <div id="collapse{{forloop.counter}}" class="panel-collapse collapse{%if week.grouper == today|first_weekday_date %} in{% endif %}" role="tabpanel" aria-labelledby="heading{{forloop.counter}}">
         <div class="panel-body">
           <table class="table table-bordered">

@@ -121,6 +121,6 @@ urlpatterns = [
     url(r'^export/studygroups/$', ExportStudyGroupsView.as_view(), name='studygroups_export_studygroups'),
     url(r'^export/courses/$', ExportCoursesView.as_view(), name='studygroups_export_courses'),
 
-    url(r'^community_digest/$', CommunityDigestView.as_view(), name='studygroups_community_digest'),
+    url(r'^community_digest/(?P<start_date>[\w-]+)/(?P<end_date>[\w-]+)$', CommunityDigestView.as_view(), name='studygroups_community_digest'),
 ]
 

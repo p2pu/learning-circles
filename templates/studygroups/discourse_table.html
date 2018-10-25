@@ -1,0 +1,24 @@
+{% load extras %}
+
+<table class="inner-table">
+  <thead>
+    <tr>
+      <td>Topic</td>
+      <td>Category</td>
+      <td>Replies</td>
+      <td>Views</td>
+      <td>Last activity</td>
+    </tr>
+  </thead>
+  <tbody>
+    {% for topic in topics %}
+      <tr>
+        <td><a href="https://community.p2pu.org/t/{{ topic.slug }}">{{ topic.title }}</a></td>
+        <td>{{ topic.category_id|category_title:categories }}</td>
+        <td>{{ topic.reply_count }}</td>
+        <td>{{ topic.views }}</td>
+        <td>{{ topic.last_posted_at | parse_date }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

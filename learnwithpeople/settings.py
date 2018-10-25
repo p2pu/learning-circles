@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # 3rd party apps
     'crispy_forms',
     'phonenumber_field',
+    'django_premailer',
     # own
     'studygroups',
     'api',

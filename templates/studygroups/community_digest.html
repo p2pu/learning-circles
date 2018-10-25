@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block content %}
-    {% include 'studygroups/email/community_digest.html' %}
+    {% include 'studygroups/email/community_digest.html' with web=web %}
 {% endblock %}
 
 {% block scripts %}

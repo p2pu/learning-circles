@@ -7,6 +7,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.urls import reverse  # TODO ideally this shouldn't be in the model
+from django.http import HttpResponse
 
 from studygroups import rsvp
 from studygroups.utils import gen_unsubscribe_querystring
@@ -18,6 +19,12 @@ import re
 import json
 import urllib.request, urllib.parse, urllib.error
 import uuid
+<<<<<<< HEAD
+=======
+import requests
+from email.mime.text import MIMEText
+
+>>>>>>> community digest changes
 
 
 # TODO - remove this
@@ -535,7 +542,6 @@ def report_data(start_time, end_time, team=None):
     logins = User.objects.filter(last_login__gte=start_time, last_login__lt=end_time)
     signups = Application.objects.active().filter(created_at__gte=start_time, created_at__lt=end_time)
     new_courses = Course.objects.active().filter(created_at__gte=start_time, created_at__lt=end_time)
-
 
     if team:
         members = team.teammembership_set.all().values('user')

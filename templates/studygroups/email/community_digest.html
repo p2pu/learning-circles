@@ -2,95 +2,222 @@
 {% block body %}
 {% load i18n %}
 
+<style type="text/css">
+  h1, h2, h3, h4, h5 {
+    font-family: open-sans, Helvetica, sans-serif;
+    line-height: normal;
+  }
 
-<table>
-  <tbody>
-    <tr>
-      <td>
-        <div>
-          <h1>P2PU Community Digest</h1>
-          <p>{{ start_date }} to {{ end_date }}</p>
-          <img src="https://www.p2pu.org/assets/images/learning-circle-cropped.jpg" alt="Photo of the month" width="100%">
-        </div>
+  h1 {
+    font-size: 2em;
+  }
 
-        <div>
-          <h2>News and Events</h2>
-          <p>News goes here</p>
-        </div>
+  h2 {
+    font-size: 1.5em;
+  }
 
-        <div>
-          <h2>{{ learning_circle_met_count }} learning circles met, reaching {{ learners_reached_count }} learners</h2>
-          <table>
-            <tbody>
-              <tr>
-                <td>
-                  {{ meetings_chart | safe }}
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  {{ countries_chart | safe }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+  table.inner-table {
+    line-height: 1.4;
+    border-collapse: collapse;
+  }
 
-        <div>
-          <h2>{{ new_facilitators_count }} facilitators joined P2PU</h2>
-          <p>Introduce facilitators</p>
-        </div>
+  table.inner-table thead tr {
+    font-weight: bold;
+  }
 
-        <div>
-          <h2>{{ upcoming_studygroups_count }} learning circles will begin in the next 3 weeks</h2>
-          <ul>
-            {% for studygroup in upcoming_studygroups %}
-            <li>{{ studygroup.facilitator.first_name }} is facilitating {{ studygroup.course.title }} at {{ studygroup.venue }} in {{ studygroup.city }}</li>
-            {% endfor %}
-          </ul>
-        </div>
+  table.inner-table thead td {
+    border-bottom: 1px solid #515665;
+    padding: 5px;
+  }
 
-        <div>
-          <h2>{{ finished_studygroups_count }} learning circles wrapped up</h2>
-          <p>Click to see the learning circle report:</p>
-          <ul>
-            {% for studygroup in finished_studygroups %}
-              <li><a href="{{ studygroup.report_url }}">{{ studygroup.course.title }}</a></li>
-            {% endfor %}
-          </ul>
-        </div>
+  table.inner-table tbody td {
+    border-bottom: 1px solid #F3F4F8;
+    padding: 5px;
+  }
 
-        <div>
-          <h2>{{ new_learners_count }} learners applied to join a learning circle</h2>
-          <p>Learner goal charts goes here</p>
-        </div>
+  .section-header {
+    background-color: #515665;
+    color: #FFFFFF;
+    padding: 5px;
+  }
 
-        <div>
-          <h2>{{ new_courses_count }} courses were added</h2>
-          {% for course in new_courses %}
-              <li>{{ course.created_by.first_name }} added <a href="{{ course.link }}">{{ course.title }}</a></li>
-            {% endfor %}
-          <p>To see more, check out the <a href="https://www.p2pu.org/en/courses/" target="_blank">courses page</a>.</p>
-        </div>
+  .report-section {
+    margin-bottom: 40px;
+  }
 
-        <div>
-          <h2>What we're talking about</h2>
-          <p>Discourse table goes here</p>
-        </div>
+  .title-section {
+    overflow: auto;
+  }
 
-        <div>
-          <h2>What we’re working on</h2>
-          <p>All the cool stuff that's happening</p>
-        </div>
+  .title-section h1 {
+    float: left;
+    margin-top: 0;
+  }
 
-        <div>
-          <p>{% trans "Cheers" %},</p>
-          <p>{% trans "The P2PU Team" %}</p>
-        </div>
-      </td>
-    </tr>
+  .title-section p {
+    float: right;
+    margin-top: 8px;
+    vertical-align: middle;
+    border-left: 6px solid #515665;
+    padding-left: 10px;
+    line-height: 1.4;
+  }
 
-  </tbody>
-</table>
+  ul {
+    padding-left: 0;
+    padding-bottom: 10px;
+    list-style: none;
+  }
+
+  ul li {
+    margin: 10px 0;
+    border-left: 6px solid #515665;
+    padding-left: 10px;
+    line-height: 1.4;
+  }
+
+  .emoji {
+    font-size: 26px;
+    vertical-align: middle;
+  }
+
+  .col-12 {
+    padding: 0;
+  }
+
+</style>
+
+<div class="title-section">
+  <h1>Community Digest</h1>
+  <p>{{ start_date }} to {{ end_date }}</p>
+</div>
+
+<div class="report-section">
+  <h2>
+    <span class="section-header">Photo of the Week</span>
+  </h2>
+  <img src="https://www.p2pu.org/assets/images/learning-circle-cropped.jpg" alt="Photo of the month" width="100%">
+</div>
+
+<div class="report-section">
+  <h2>
+    <span class="section-header">News and Events</span>
+  </h2>
+  <p>News goes here</p>
+</div>
+
+<div class="report-section">
+  <h2>
+    <span class="section-header">
+      {{ learning_circle_met_count }} learning circles met, reaching {{ learners_reached_count }} learners*
+    </span>
+  </h2>
+  <p>* Based on learning circle signups</p>
+  <table>
+    <tbody>
+      <tr>
+        <td>
+          {% include "studygroups/measurement_card.html" with title='Total Number of Meetings' chart=meetings_chart fullwidth=web %}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {% include "studygroups/measurement_card.html" with title='Countries where learning circles are currently happening' chart=countries_chart fullwidth=web %}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="report-section">
+  <h2>
+    <span class="section-header">
+      {{ new_facilitators_count }} people joined P2PU
+    </span>
+  </h2>
+  <ul>
+  {% for post in intros_from_new_users %}
+    <li>
+      <em>{{ post.cooked | safe | truncatewords_html:25 }}</em>
+      <a href="https://community.p2pu.org/t/introduce-yourself/1571/{{post.post_number}}">Read {{ post.name | title }}'s full post</a>
+    </li>
+  {% endfor %}
+  </ul>
+  <p>For more, go to the <a href="https://community.p2pu.org/t/introduce-yourself/1571">full thread <span class="emoji">👉</span></a></p>
+</div>
+
+<div class="report-section">
+  <h2>
+    <span class="section-header">
+      {{ upcoming_studygroups_count }} learning circles will begin in the next 3 weeks
+    </span>
+  </h2>
+  <table class="inner-table">
+    <thead>
+      <tr>
+        <td>Facilitator</td>
+        <td>Course</td>
+        <td>Location</td>
+      </tr>
+    </thead>
+    <tbody>
+      {% for studygroup in upcoming_studygroups %}
+        <tr>
+          <td>{{ studygroup.facilitator.first_name | title }}</td>
+          <td><a href="{{ studygroup.course.link }}">{{ studygroup.course.title }}</a></td>
+          <td>{{ studygroup.city | title }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="report-section">
+  <h2>
+    <span class="section-header">
+      {{ finished_studygroups_count }} learning circles wrapped up
+    </span>
+  </h2>
+  <p>Click to see the learning circle report:</p>
+  <ul>
+    {% for studygroup in finished_studygroups %}
+      <li><a href="{{ studygroup.report_url }}">{{ studygroup.course.title }}</a> in {{ studygroup.city }}</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="report-section">
+  <h2>
+    <span class="section-header">
+    {{ new_learners_count }} learners signed up for a learning circle
+    </span>
+  </h2>
+  {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart fullwidth=web %}
+</div>
+
+<div class="report-section">
+  <h2>
+    <span class="section-header">{{ new_courses_count }} courses were added</span>
+  </h2>
+  <ul>
+  {% for course in new_courses %}
+      <li>{{ course.created_by.first_name }} added <a href="{{ course.link }}">{{ course.title }}</a></li>
+    {% endfor %}
+  </ul>
+  <p>To see more, check out the <a href="https://www.p2pu.org/en/courses/" target="_blank">courses page <span class="emoji">👉</span></a></p>
+</div>
+
+<div class="report-section">
+  <h2>
+    <span class="section-header">What we're talking about</span>
+  </h2>
+  {% include "studygroups/discourse_table.html" with topics=top_topics users=top_topics_users %}
+</div>
+
+{% if not web %}
+  <div>
+    <p>You can also <a href="">view this report online</a></p>
+  </div>
+{% endif %}
 
 {% endblock %}
