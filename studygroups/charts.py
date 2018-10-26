@@ -1,3 +1,11 @@
+
+# TODOs:
+# - document which survey question each typeform id represents
+# - finish adding png condition to all the charts
+# - use tempfile module for image files
+# - function for generating star rating html
+# - function for generating quote list html
+
 import pygal
 import json
 import os

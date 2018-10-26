@@ -93,14 +93,16 @@ def generate_reminder(study_group):
 def send_facilitator_survey(study_group):
     """ send survey to all facilitators two days before their second to last meeting """
     now = timezone.now()
-    one_hour_ago = now - datetime.timedelta(hours=1)
+    end_of_window = now.replace(minute=0, second=0, microsecond=0)
+    start_of_window = end_of_window - datetime.timedelta(hours=1)
+
     last_two_meetings = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time')[:2]
     time_to_send = None
     if last_two_meetings.count() == 2:
         penultimate_meeting = last_two_meetings[1]
         time_to_send = penultimate_meeting.meeting_datetime() - datetime.timedelta(days=2, hours=1)
 
-    if time_to_send and time_to_send <= now and time_to_send > one_hour_ago:
+    if time_to_send and time_to_send > start_of_window and time_to_send <= end_of_window:
         facilitator_name = study_group.facilitator.first_name
         path = reverse('studygroups_facilitator_survey', kwargs={'study_group_id': study_group.id})
         domain = 'https://{}'.format(settings.DOMAIN)
@@ -135,11 +137,13 @@ def send_facilitator_survey(study_group):
 # should be called every hour at :30
 def send_facilitator_survey_reminder(study_group):
     now = timezone.now()
-    one_hour_ago = now - datetime.timedelta(hours=1)
+    end_of_window = now.replace(minute=0, second=0, microsecond=0)
+    start_of_window = end_of_window - datetime.timedelta(hours=1)
+
     last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
     time_to_send = last_meeting.meeting_datetime() - datetime.timedelta(days=2)
 
-    if time_to_send and time_to_send <= now and time_to_send > one_hour_ago:
+    if time_to_send and time_to_send > start_of_window and time_to_send <= end_of_window:
         timezone.deactivate()
 
         facilitator_name = study_group.facilitator.first_name
@@ -196,11 +200,13 @@ def send_facilitator_survey_reminder(study_group):
 # should be called every hour at :30
 def send_final_learning_circle_report(study_group):
     now = timezone.now()
-    one_hour_ago = now - datetime.timedelta(hours=1)
+    end_of_window = now.replace(minute=0, second=0, microsecond=0)
+    start_of_window = end_of_window - datetime.timedelta(hours=1)
+
     last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
     time_to_send = last_meeting.meeting_datetime() + datetime.timedelta(days=2)
 
-    if time_to_send and time_to_send <= now and time_to_send > one_hour_ago:
+    if time_to_send and time_to_send > start_of_window and time_to_send <= end_of_window:
         timezone.deactivate()
 
         learner_goals_chart = charts.LearnerGoalsChart(study_group)
@@ -325,14 +331,16 @@ def send_learner_survey(application):
 # should be called every hour at :30
 def send_learner_surveys(study_group):
     now = timezone.now()
-    one_hour_ago = now - datetime.timedelta(hours=1)
+    end_of_window = now.replace(minute=0, second=0, microsecond=0)
+    start_of_window = end_of_window - datetime.timedelta(hours=1)
+
     last_two_meetings = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time')[:2]
     time_to_send = None
     if last_two_meetings.count() == 2:
         penultimate_meeting = last_two_meetings[1]
         time_to_send = penultimate_meeting.meeting_datetime() - datetime.timedelta(days=2, hours=1)
 
-    if time_to_send and time_to_send <= now and time_to_send > one_hour_ago:
+    if time_to_send and time_to_send > start_of_window and time_to_send <= end_of_window:
         applications = study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')
         timezone.deactivate()
 
