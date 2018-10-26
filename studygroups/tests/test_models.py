@@ -17,14 +17,16 @@ from studygroups.models import Rsvp
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import accept_application
-from studygroups.models import generate_reminder
-from studygroups.models import send_reminder
+from studygroups.tasks import generate_reminder
+from studygroups.tasks import send_reminder
 from studygroups.models import create_rsvp
 from studygroups.models import generate_all_meetings
-from studygroups.models import send_weekly_update
-from studygroups.models import send_learner_surveys
-from studygroups.models import send_facilitator_survey
-from studygroups.models import send_last_week_group_activity
+from studygroups.tasks import send_weekly_update
+from studygroups.tasks import send_learner_surveys
+from studygroups.tasks import send_facilitator_survey
+from studygroups.tasks import send_facilitator_survey_reminder
+from studygroups.tasks import send_final_learning_circle_report
+from studygroups.tasks import send_last_week_group_activity
 from studygroups.rsvp import gen_rsvp_querystring
 from studygroups.rsvp import check_rsvp_signature
 from studygroups.utils import gen_unsubscribe_querystring
@@ -38,6 +40,10 @@ import pytz
 import re
 import urllib.request, urllib.parse, urllib.error
 import json
+
+class MockChart():
+    def generate():
+        return "image"
 
 # Create your tests here.
 class TestSignupModels(TestCase):
@@ -211,7 +217,7 @@ class TestSignupModels(TestCase):
         self.assertEqual(Reminder.objects.all().count(), 1)
 
 
-    @patch('studygroups.models.send_message')
+    @patch('studygroups.sms.send_message')
     def test_send_automatic_reminder_email(self, send_message):
         now = timezone.now()
         sg = StudyGroup.objects.get(pk=1)
@@ -241,7 +247,7 @@ class TestSignupModels(TestCase):
         self.assertIn('https://example.net/{0}/optout/confirm/?user='.format(get_language()), mail.outbox[1].alternatives[0][0])
 
 
-    @patch('studygroups.models.send_message')
+    @patch('studygroups.sms.send_message')
     def test_send_learner_reminder_ics(self, send_message):
         now = timezone.now()
         sg = StudyGroup.objects.get(pk=1)
@@ -274,7 +280,7 @@ class TestSignupModels(TestCase):
 
 
 
-    @patch('studygroups.models.send_message')
+    @patch('studygroups.sms.send_message')
     def test_facilitator_reminder_email_links(self, send_message):
         now = timezone.now()
         sg = StudyGroup.objects.get(pk=1)
@@ -306,7 +312,7 @@ class TestSignupModels(TestCase):
         self.assertNotIn('https://example.net/{0}/optout/confirm/?user='.format(get_language()), mail.outbox[1].alternatives[0][0])
 
 
-    @patch('studygroups.models.send_message')
+    @patch('studygroups.sms.send_message')
     def test_dont_send_automatic_reminder_for_old_message(self, send_message):
         now = timezone.now()
         sg = StudyGroup.objects.get(pk=1)
@@ -358,7 +364,7 @@ class TestSignupModels(TestCase):
 
 
 
-    @patch('studygroups.models.send_message')
+    @patch('studygroups.sms.send_message')
     def test_send_custom_reminder_email(self, send_message):
         now = timezone.now()
         sg = StudyGroup.objects.get(pk=1)
@@ -395,7 +401,7 @@ class TestSignupModels(TestCase):
         #self.assertIn('https://example.net/{0}/optout/confirm/?user='.format(get_language()), mail.outbox[0].body)
 
 
-    @patch('studygroups.models.send_message')
+    @patch('studygroups.sms.send_message')
     def test_send_reminder_sms(self, send_message):
         now = timezone.now()
         sg = StudyGroup.objects.get(pk=1)
@@ -512,7 +518,7 @@ class TestSignupModels(TestCase):
         meeting.meeting_date = datetime.date(2018, 8, 22)
         meeting.save()
 
-        
+
         with freeze_time("2018-08-28 10:01:00"):
             send_weekly_update()
 
@@ -551,8 +557,6 @@ class TestSignupModels(TestCase):
         self.assertEqual(mail.outbox[0].to[0], 'admin@test.com')
 
 
-
-
     def test_send_learner_surveys(self):
         now = timezone.now()
         sg = StudyGroup.objects.get(pk=1)
@@ -586,18 +590,19 @@ class TestSignupModels(TestCase):
         self.assertEqual(sg.meeting_set.active().count(), 7)
         self.assertEqual(sg.application_set.active().count(), 2)
 
-        # freeze time to 5 minutes before
-        with freeze_time("2010-02-05 17:55:34"):
+        # send time is 1 week, 2 days, and 1 hour before the last meeting
+        # freeze time to 1 hour before send time
+        with freeze_time("2010-02-03 16:00:00"):
             send_learner_surveys(sg)
             self.assertEqual(len(mail.outbox), 0)
 
-        # 10 minutes after start
-        with freeze_time("2010-02-05 18:10:34"):
+        # 1 hour and 10 minutes after send time
+        with freeze_time("2010-02-03 18:10:00"):
             send_learner_surveys(sg)
             self.assertEqual(len(mail.outbox), 0)
 
-        # 25 minutes after start
-        with freeze_time("2010-02-05 18:25:34"):
+        # 30 minutes after send_time
+        with freeze_time("2010-02-03 17:30:00"):
             send_learner_surveys(sg)
             self.assertEqual(len(mail.outbox), 2)
             self.assertIn('mail1@example.net', mail.outbox[0].to + mail.outbox[1].to)
@@ -606,8 +611,8 @@ class TestSignupModels(TestCase):
             self.assertIn('https://example.net/en/studygroup/{}/survey/?learner={}'.format(sg.uuid, a1.uuid), mail.outbox[0].body)
 
         mail.outbox = []
-        # 40 minutes after start
-        with freeze_time("2010-02-05 18:40:34"):
+        # 2 hours after send time
+        with freeze_time("2010-02-03 19:00:00"):
             send_learner_surveys(sg)
             self.assertEqual(len(mail.outbox), 0)
 
@@ -629,21 +634,109 @@ class TestSignupModels(TestCase):
         self.assertEqual(sg.meeting_set.active().count(), 6)
         self.assertEqual(Reminder.objects.all().count(), 0)
 
-        # freeze time to 6 days after last
-        with freeze_time("2010-02-11 17:55:34"):
+        # send time is 1 week, 2 days, and 1 hour before the last meeting
+        # freeze time to 1 day after send time
+        with freeze_time("2010-01-28 17:55:34"):
             send_facilitator_survey(sg)
             self.assertEqual(len(mail.outbox), 0)
 
-        # freeze time to 8 days after last
-        with freeze_time("2010-02-13 17:55:34"):
+        # freeze time to 3 days after send time
+        with freeze_time("2010-01-26 17:55:34"):
             send_facilitator_survey(sg)
             self.assertEqual(len(mail.outbox), 0)
 
-        # freeze time to 7 days after last
-        with freeze_time("2010-02-12 17:55:34"):
+        # freeze time to 2 days after send time
+        with freeze_time("2010-01-27 17:55:34"):
             send_facilitator_survey(sg)
             self.assertEqual(len(mail.outbox), 1)
             self.assertIn('https://example.net/en/studygroup/{0}/facilitator_survey/'.format(sg.id), mail.outbox[0].body)
+            self.assertIn(sg.facilitator.email, mail.outbox[0].to)
+
+
+    def test_send_facilitator_survey_reminder_email(self):
+        now = timezone.now()
+        sg = StudyGroup.objects.get(pk=1)
+        sg.timezone = now.strftime("%Z")
+        sg.start_date = datetime.date(2010, 1, 1)
+        sg.meeting_time = datetime.time(18,0)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
+        sg.save()
+        sg = StudyGroup.objects.get(pk=1)
+        generate_all_meetings(sg)
+
+        last_meeting = sg.meeting_set.active().order_by('meeting_date', 'meeting_time').last()
+        self.assertEqual(last_meeting.meeting_date, datetime.date(2010, 2, 5))
+        self.assertEqual(last_meeting.meeting_time, datetime.time(18,0))
+        self.assertEqual(sg.meeting_set.active().count(), 6)
+        self.assertEqual(Reminder.objects.all().count(), 0)
+
+        # send time is 2 days before the last meeting
+        # freeze time to 1 hour before send time
+        with freeze_time("2010-02-03 17:00:00"):
+            send_facilitator_survey_reminder(sg)
+            self.assertEqual(len(mail.outbox), 0)
+
+        # freeze time to 2 hours after send time
+        with freeze_time("2010-02-03 20:00:00"):
+            send_facilitator_survey_reminder(sg)
+            self.assertEqual(len(mail.outbox), 0)
+
+        # freeze time to 30 minutes after send time
+        with freeze_time("2010-02-03 18:30:00"):
+            send_facilitator_survey_reminder(sg)
+            self.assertEqual(len(mail.outbox), 1)
+            self.assertIn('https://example.net/en/studygroup/{0}/facilitator_survey/'.format(sg.id), mail.outbox[0].body)
+            self.assertIn(sg.facilitator.email, mail.outbox[0].to)
+
+    def mock_generate(self, **opts):
+        return "image"
+
+    @patch('studygroups.charts.LearnerGoalsChart.generate', mock_generate)
+    @patch('studygroups.charts.GoalsMetChart.generate', mock_generate)
+    def test_send_final_learning_circle_report_email(self):
+        now = timezone.now()
+        sg = StudyGroup.objects.get(pk=1)
+        sg.timezone = now.strftime("%Z")
+        sg.start_date = datetime.date(2010, 1, 1)
+        sg.meeting_time = datetime.time(18,0)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
+        sg.save()
+        sg = StudyGroup.objects.get(pk=1)
+        generate_all_meetings(sg)
+
+        data = dict(self.APPLICATION_DATA)
+        data['study_group'] = sg
+        data['email'] = 'mail1@example.net'
+        application = Application(**data)
+        application.save()
+        accept_application(application)
+
+        mail.outbox = []
+
+        last_meeting = sg.meeting_set.active().order_by('meeting_date', 'meeting_time').last()
+        self.assertEqual(last_meeting.meeting_date, datetime.date(2010, 2, 5))
+        self.assertEqual(last_meeting.meeting_time, datetime.time(18,0))
+        self.assertEqual(sg.meeting_set.active().count(), 6)
+        self.assertEqual(Reminder.objects.all().count(), 0)
+
+        # send time is 2 days before the last meeting
+        # freeze time to 1 hour before send time
+        with freeze_time("2010-02-07 17:00:00"):
+            send_final_learning_circle_report(sg)
+            self.assertEqual(len(mail.outbox), 0)
+
+        # freeze time to 2 hours after send time
+        with freeze_time("2010-02-07 20:00:00"):
+            send_final_learning_circle_report(sg)
+            self.assertEqual(len(mail.outbox), 0)
+
+        # freeze time to 30 minutes after send time
+        with freeze_time("2010-02-07 18:30:00"):
+            send_final_learning_circle_report(sg)
+            self.assertIn('mail1@example.net', mail.outbox[0].to)
+            self.assertIn('facilitator@example.net', mail.outbox[0].to)
+            self.assertEqual(len(mail.outbox[0].to), 2)
+            self.assertIn('https://example.net/en/studygroup/{0}/report/'.format(sg.id), mail.outbox[0].body)
             self.assertIn(sg.facilitator.email, mail.outbox[0].to)
 
 
@@ -701,4 +794,5 @@ class TestSignupModels(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn('the_facilitator_goal', mail.outbox[0].body)
         self.assertIn('the_facilitators_concerns', mail.outbox[0].body)
+
 

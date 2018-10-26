@@ -218,11 +218,11 @@ CELERYBEAT_SCHEDULE = {
     },
     'send_survey_reminders': {
         'task': 'studygroups.tasks.send_all_studygroup_survey_reminders',
-        'schedule': crontab(hour='10', minute='0'),
+        'schedule': crontab(minute='30'),
     },
     'send_facilitator_survey': {
         'task': 'studygroups.tasks.send_all_facilitator_surveys',
-        'schedule':  crontab(hour='10', minute='0'),
+        'schedule':  crontab(minute='30'),
     },
     'send_last_week_group_activity': {
         'task': 'studygroups.tasks.send_all_last_week_group_activities',
@@ -246,11 +246,11 @@ CELERYBEAT_SCHEDULE = {
     },
     'send_facilitator_survey_reminder': {
         'task': 'studygroups.tasks.send_all_facilitator_survey_reminders',
-        'schedule': crontab(hour='10', minute='0'),
+        'schedule': crontab(minute='30'),
     },
     'send_final_learning_circle_report': {
         'task': 'studygroups.tasks.send_all_learning_circle_reports',
-        'schedule': crontab(hour='10', minute='0'),
+        'schedule': crontab(minute='30'),
     },
 }
 

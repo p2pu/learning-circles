@@ -10,7 +10,6 @@ from django.urls import reverse  # TODO ideally this shouldn't be in the model
 
 from studygroups import rsvp
 from studygroups.utils import gen_unsubscribe_querystring
-from .events import make_meeting_ics
 
 import calendar
 import datetime
