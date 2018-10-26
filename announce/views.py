@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from .mailgun import check_webhook_signature
 from .tasks import send_announcement
 
-from email.utils import parseaddr
+from email.utils import parseaddr, formataddr
 import logging
 
 logger = logging.getLogger(__name__)
@@ -40,6 +40,8 @@ def announce_webhook(request):
     if not user or user.is_staff == False:
         logger.warn('Message sent to announce email from non-staff user')
         return http.HttpResponse(status=406)
+
+    from_ = formataddr((user.first_name, settings.ANNOUNCE_EMAIL))
 
     # Send announcement message to all users that opted in
     send_announcement.delay(from_, subject, body_text, body_html)
