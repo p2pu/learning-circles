@@ -8,6 +8,10 @@ from .mailgun import check_webhook_signature
 from .tasks import send_announcement
 
 from email.utils import parseaddr
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 @csrf_exempt
 @require_http_methods(['POST'])
@@ -19,21 +23,23 @@ def announce_webhook(request):
     signature = request.POST.get('signature')
     authenticated = check_webhook_signature(settings.MAILGUN_API_KEY, token, timestamp, signature)
     if not authenticated:
-        return http.HttpResponse(status=401)
+        logger.warn('Authentication failed for announce_webhook')
+        return http.HttpResponse(status=401) # TODO should this be 406 of just 200?
 
     # Get message details
     sender = request.POST.get('sender')
     from_ = request.POST.get('from')
     subject = request.POST.get('subject')
     body_text = request.POST.get('body-plain')
-    body_html = request.POST.get('stripped-html')
+    body_html = request.POST.get('body-html')
 
     # Verify that email was sent from a staff user
     # parse sender to make sure it's not in the format John Silver <john@mail.net>
     user_name, user_email = parseaddr(sender)
     user = User.objects.filter(email=user_email).first()
     if not user or user.is_staff == False:
-        return http.HttpResponse(status=200)
+        logger.warn('Message sent to announce email from non-staff user')
+        return http.HttpResponse(status=406)
 
     # Send announcement message to all users that opted in
     send_announcement.delay(from_, subject, body_text, body_html)
