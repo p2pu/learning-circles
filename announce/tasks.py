@@ -7,6 +7,7 @@ from studygroups.models import Profile
 
 import requests
 from requests.auth import HTTPBasicAuth
+import json
 import logging
 
 logger = logging.getLogger(__name__)
@@ -43,5 +44,5 @@ def send_announcement(sender, subject, body_text, body_html):
         post_data += [ ('recipient-variables', json.dumps({ u.email:{} for u in to })) ]
         resp = requests.post(url, auth=auth, data=post_data)
         if resp.status_code != 200:
-            logger.error('Could not send mailgun batch email', resp.body)
+            logger.error('Could not send mailgun batch email')
 

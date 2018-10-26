@@ -7,10 +7,10 @@ from django.contrib.auth.models import User, Group
 from django.utils import timezone
 from django.utils.translation import get_language
 
-from mock import patch
+from mock import patch, MagicMock
 
-from studygroups.models import StudyGroup
 from custom_registration.models import create_user
+from .tasks import send_announcement
 
 from freezegun import freeze_time
 
@@ -105,4 +105,11 @@ class TestAnnounceViews(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertTrue(send_announcement.delay.called)
 
+
+    @patch('announce.tasks.requests')
+    def test_send_announcement_task(self, requests):
+        requests.post = MagicMock()
+        requests.post.return_value.status_code = 200
+        send_announcement('Tester <test@example.net>', 'Subject', 'This is a message', '<html><body><h1>HTML message</h1></body></html>')
+        self.assertTrue(requests.post.called)
 
