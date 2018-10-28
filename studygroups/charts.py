@@ -699,7 +699,7 @@ class FacilitatorTipsChart():
 class LearningCircleMeetingsChart():
 
     def __init__(self, report_date, **kwargs):
-        self.chart = pygal.Line(style=custom_style(), fill=True, show_legend=False, max_scale=5, order_min=0, y_title="Meetings", x_label_rotation=90, **kwargs)
+        self.chart = pygal.Line(style=custom_style(), fill=True, show_legend=False, max_scale=10, order_min=0, y_title="Meetings", x_label_rotation=90, **kwargs)
         self.report_date = report_date
 
     def get_data(self):
