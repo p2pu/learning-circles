@@ -13,6 +13,7 @@ from django.urls import reverse
 
 from studygroups.models import StudyGroup, Meeting, Reminder, Course, Application, Feedback, Team, TeamMembership
 from studygroups.models import report_data
+from studygroups.views.reports import get_data_for_community_digest
 from studygroups import charts
 from studygroups.sms import send_message
 from studygroups.email_helper import render_email_templates
@@ -562,6 +563,23 @@ def send_weekly_update():
     )
     update.attach_alternative(html_body, 'text/html')
     update.send()
+
+
+def send_community_digest():
+    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    end_date = today
+    start_date = end_date - datetime.timedelta(days=14)
+
+    context = get_data_for_community_digest(start_date, end_date)
+
+    subject = "P2PU Community Digest!"
+    html_body = render_to_string('studygroups/email/community_digest.html', context)
+    text_body = render_to_string('studygroups/email/community_digest.txt', context)
+    to = [settings.DEFAULT_COMMUNITY_MANAGER_EMAIL]
+
+    msg = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
+    msg.attach_alternative(html_body, 'text/html')
+    msg.send()
 
 
 @shared_task

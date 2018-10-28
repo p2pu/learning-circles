@@ -725,10 +725,9 @@ class LearningCircleMeetingsChart():
             target_path = os.path.join('tmp', filename)
             self.chart.height = 400
             self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
 
-            response = s3.Object(settings.AWS_BUCKET, filename).put(Body=open(target_path, 'rb'))
-
-            img_url = "https://s3.amazonaws.com/{}/{}".format(settings.AWS_BUCKET, filename)
             return "<img src={} alt={} width='100%'>".format(img_url, 'Learner goals chart')
 
         return self.chart.render(is_unicode=True)
@@ -774,9 +773,9 @@ class LearningCircleCountriesChart():
             self.chart.height = 400
             self.chart.render_to_png(target_path)
 
-            response = s3.Object(settings.AWS_BUCKET, filename).put(Body=open(target_path, 'rb'))
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
 
-            img_url = "https://s3.amazonaws.com/{}/{}".format(settings.AWS_BUCKET, filename)
             return "<img src={} alt={} width='100%'>".format(img_url, 'Learner goals chart')
 
         return self.chart.render(is_unicode=True)
@@ -791,7 +790,7 @@ class NewLearnerGoalsChart():
 
     def get_data(self):
         data = {}
-        for choice in reversed(GOAL_CHOICES):
+        for choice in reversed(ApplicationForm.GOAL_CHOICES):
             data[choice[0]] = 0
 
         signup_questions = self.applications.values_list('signup_questions', flat=True)
@@ -818,11 +817,9 @@ class NewLearnerGoalsChart():
             target_path = os.path.join('tmp', filename)
             self.chart.height = 400
             self.chart.render_to_png(target_path)
-            print(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
 
-            response = s3.Object(settings.AWS_BUCKET, filename).put(Body=open(target_path, 'rb'))
-            print(response)
-            img_url = "https://s3.amazonaws.com/{}/{}".format(settings.AWS_BUCKET, filename)
             return "<img src={} alt={} width='100%'>".format(img_url, 'Learner Goals')
 
         return self.chart.render(is_unicode=True)
@@ -864,11 +861,9 @@ class TopTopicsChart():
             target_path = os.path.join('tmp', filename)
             self.chart.height = 400
             self.chart.render_to_png(target_path)
-            print(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
 
-            response = s3.Object(settings.AWS_BUCKET, filename).put(Body=open(target_path, 'rb'))
-            print(response)
-            img_url = "https://s3.amazonaws.com/{}/{}".format(settings.AWS_BUCKET, filename)
             return "<img src={} alt={} width='100%'>".format(img_url, 'Top 10 Topics')
 
         return self.chart.render(is_unicode=True)

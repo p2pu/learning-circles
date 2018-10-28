@@ -10,6 +10,7 @@ from django.urls import reverse  # TODO ideally this shouldn't be in the model
 from django.http import HttpResponse
 
 from studygroups import rsvp
+
 from studygroups.utils import gen_unsubscribe_querystring
 
 import calendar
@@ -19,6 +20,7 @@ import re
 import json
 import urllib.request, urllib.parse, urllib.error
 import uuid
+import requests
 
 
 # TODO - remove this
@@ -576,3 +578,5 @@ def report_data(start_time, end_time, team=None):
     if team:
         report['team'] = team
     return report
+
+
