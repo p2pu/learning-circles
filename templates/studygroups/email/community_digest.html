@@ -98,6 +98,7 @@
     <span class="section-header">Photo of the Week</span>
   </h2>
   <img src="https://www.p2pu.org/assets/images/learning-circle-cropped.jpg" alt="Photo of the month" width="100%">
+  <small><em>Caption goes here</em></small>
 </div>
 
 <div class="report-section">
@@ -123,16 +124,26 @@
       </tr>
       <tr>
         <td>
-          {% include "studygroups/measurement_card.html" with title='Countries where learning circles are currently happening' chart=countries_chart fullwidth=web %}
+          {% include "studygroups/measurement_card.html" with title='Current learning circles by country' chart=countries_chart fullwidth=web %}
         </td>
       </tr>
       <tr>
         <td>
-          {% include "studygroups/measurement_card.html" with title='Top 10 Topics' chart=top_topics_chart fullwidth=web %}
+          {% include "studygroups/measurement_card.html" with title='Current learning circles by topic' chart=top_topics_chart fullwidth=web %}
         </td>
       </tr>
     </tbody>
   </table>
+</div>
+
+
+<div class="report-section">
+  <h2>
+    <span class="section-header">
+    {{ new_learners_count }} learners signed up for a learning circle
+    </span>
+  </h2>
+  {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart fullwidth=web %}
 </div>
 
 <div class="report-section">
@@ -184,7 +195,7 @@
       {{ finished_studygroups_count }} learning circles wrapped up
     </span>
   </h2>
-  <p>The following learning circles have reports available, click to view the report:</p>
+  <p>The following learning circles have reports available. Click to view the report:</p>
   <ul>
     {% for studygroup in studygroups_with_survey_responses %}
       <li><a href="{{ studygroup.report_url }}">{{ studygroup.course.title }}</a> in {{ studygroup.city }}</li>
@@ -194,16 +205,7 @@
 
 <div class="report-section">
   <h2>
-    <span class="section-header">
-    {{ new_learners_count }} learners signed up for a learning circle
-    </span>
-  </h2>
-  {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart fullwidth=web %}
-</div>
-
-<div class="report-section">
-  <h2>
-    <span class="section-header">{{ new_courses_count }} courses were added</span>
+    <span class="section-header">{{ new_courses_count }} courses were added to the P2PU database</span>
   </h2>
   <ul>
   {% for course in new_courses %}

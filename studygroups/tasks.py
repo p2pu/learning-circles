@@ -13,7 +13,7 @@ from django.urls import reverse
 
 from studygroups.models import StudyGroup, Meeting, Reminder, Course, Application, Feedback, Team, TeamMembership
 from studygroups.models import report_data
-from studygroups.views.reports import get_data_for_community_digest
+from studygroups.models import community_digest_data
 from studygroups import charts
 from studygroups.sms import send_message
 from studygroups.email_helper import render_email_templates
@@ -570,7 +570,16 @@ def send_community_digest():
     end_date = today
     start_date = end_date - datetime.timedelta(days=14)
 
-    context = get_data_for_community_digest(start_date, end_date)
+    context = community_digest_data(start_date, end_date)
+
+    chart_data = {
+        "meetings_chart": charts.LearningCircleMeetingsChart(end_date.date()).generate(output="png"), # why does the svg set text-anchor: middle on the x_labels?!?!
+        "countries_chart": charts.LearningCircleCountriesChart(end_date.date()).generate(output="png"),
+        "learner_goals_chart": charts.NewLearnerGoalsChart(end_date.date(), context['new_applications']).generate(output="png"),
+        "top_topics_chart": charts.TopTopicsChart(end_date.date(), context['studygroups_that_met']).generate(output="png"),
+    }
+
+    context.update(chart_data)
 
     subject = "P2PU Community Digest!"
     html_body = render_to_string('studygroups/email/community_digest.html', context)

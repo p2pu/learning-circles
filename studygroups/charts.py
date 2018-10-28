@@ -20,6 +20,9 @@ from django.conf import settings
 from collections import Counter
 
 from studygroups.forms import ApplicationForm
+from studygroups.forms import StudyGroup
+from studygroups.forms import Course
+from studygroups.forms import Meeting
 
 STAR_RATING_STEPS = 5
 SKILLS_LEARNED_THRESHOLD = 3
@@ -695,10 +698,9 @@ class FacilitatorTipsChart():
 
 class LearningCircleMeetingsChart():
 
-    def __init__(self, report_date, Meeting, **kwargs):
-        self.chart = pygal.Line(style=custom_style(), show_legend=False, order_min=0, y_title="Meetings", x_label_rotation=90, **kwargs)
+    def __init__(self, report_date, **kwargs):
+        self.chart = pygal.Line(style=custom_style(), fill=True, show_legend=False, max_scale=5, order_min=0, y_title="Meetings", x_label_rotation=90, **kwargs)
         self.report_date = report_date
-        self.Meeting = Meeting
 
     def get_data(self):
         data = { "meetings": [], "dates": [] }
@@ -706,7 +708,7 @@ class LearningCircleMeetingsChart():
         end_date = start_date + relativedelta(months=+1)
 
         while end_date <= self.report_date:
-            meetings_count = self.Meeting.objects.active().filter(meeting_date__gte=start_date, meeting_date__lt=end_date, study_group__deleted_at__isnull=True, study_group__draft=False).count()
+            meetings_count = Meeting.objects.active().filter(meeting_date__gte=start_date, meeting_date__lt=end_date, study_group__deleted_at__isnull=True, study_group__draft=False).count()
             data["dates"].append(end_date.strftime("%B %Y"))
             data["meetings"].append(meetings_count)
             end_date = end_date + relativedelta(months=+1)
@@ -735,15 +737,14 @@ class LearningCircleMeetingsChart():
 
 class LearningCircleCountriesChart():
 
-    def __init__(self, report_date, StudyGroup, **kwargs):
+    def __init__(self, report_date, **kwargs):
         self.chart = pygal.Pie(style=custom_style(), inner_radius=.4, **kwargs)
         self.report_date = report_date
-        self.StudyGroup = StudyGroup
 
     def get_data(self):
         data = { "Other": 0 }
 
-        studygroups = self.StudyGroup.objects.published()
+        studygroups = StudyGroup.objects.published()
 
         for sg in studygroups:
             first_meeting = sg.first_meeting()
@@ -751,6 +752,8 @@ class LearningCircleCountriesChart():
 
             if first_meeting and last_meeting and first_meeting.meeting_date <= self.report_date and last_meeting.meeting_date >= self.report_date:
                 country = sg.country
+
+                country = "USA" if country == "United States of America" else country
 
                 if country in data:
                     data[country] += 1
@@ -784,7 +787,7 @@ class LearningCircleCountriesChart():
 class NewLearnerGoalsChart():
 
     def __init__(self, report_date, applications, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, x_title="Learners", **kwargs)
+        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, order_min=0, max_scale=10, x_title="Learners", **kwargs)
         self.applications = applications
         self.report_date = report_date
 
@@ -827,17 +830,15 @@ class NewLearnerGoalsChart():
 
 class TopTopicsChart():
 
-    def __init__(self, report_date, study_group_ids, StudyGroup, Course, **kwargs):
+    def __init__(self, report_date, study_group_ids, **kwargs):
         self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, x_title="Courses with this topic", **kwargs)
         self.study_group_ids = study_group_ids
-        self.StudyGroup = StudyGroup
-        self.Course = Course
         self.report_date = report_date
 
     def get_data(self):
         data = {}
-        course_ids = self.StudyGroup.objects.filter(id__in=self.study_group_ids).values_list('course')
-        course_topics = self.Course.objects.filter(id__in=course_ids).exclude(topics="").values_list("topics")
+        course_ids = StudyGroup.objects.filter(id__in=self.study_group_ids).values_list('course')
+        course_topics = Course.objects.filter(id__in=course_ids).exclude(topics="").values_list("topics")
         topics = [
             item.strip().lower() for sublist in course_topics for item in sublist[0].split(',')
         ]

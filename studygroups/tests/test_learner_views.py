@@ -5,6 +5,7 @@ from django.core import mail
 from django.contrib.auth.models import User, Group
 from django.utils import timezone
 from django.utils.translation import get_language
+from django.conf import settings
 
 from mock import patch
 
@@ -41,7 +42,7 @@ class TestLearnerViews(TestCase):
         'mobile': '',
         'goals': 'Personal interest',
         'support': 'thinking how to?',
-        'computer_access': 'Both', 
+        'computer_access': 'Both',
         'use_internet': '2'
     }
 
@@ -57,7 +58,7 @@ class TestLearnerViews(TestCase):
         resp = c.post('/en/signup/foo-bob-1/', self.APPLICATION_DATA)
         self.assertRedirects(resp, '/en/signup/1/success/')
         self.assertEqual(Application.objects.active().count(), 1)
-        # Make sure notification was sent 
+        # Make sure notification was sent
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].to[0], self.APPLICATION_DATA['email'])
 
@@ -71,7 +72,7 @@ class TestLearnerViews(TestCase):
             resp = c.post('/en/signup/foo-bob-1/', self.APPLICATION_DATA)
         self.assertRedirects(resp, '/en/signup/1/success/')
         self.assertEqual(Application.objects.active().count(), 1)
-        # Make sure notification was sent 
+        # Make sure notification was sent
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].to[0], self.APPLICATION_DATA['email'])
         self.assertEqual(mail.outbox[0].cc[0], study_group.facilitator.email)
@@ -88,12 +89,12 @@ class TestLearnerViews(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(Application.objects.active().count(), 0)
         self.assertEqual(len(mail.outbox), 0)
-        
+
         data['custom_question'] = 'an actual answer'
         resp = c.post('/en/signup/foo-bob-1/', data)
         self.assertRedirects(resp, '/en/signup/1/success/')
         self.assertEqual(Application.objects.active().count(), 1)
-        # Make sure notification was sent 
+        # Make sure notification was sent
         self.assertEqual(len(mail.outbox), 1)
         signup_questions = json.loads(Application.objects.last().signup_questions)
         self.assertEqual(signup_questions['custom_question'], 'an actual answer')
@@ -107,7 +108,7 @@ class TestLearnerViews(TestCase):
         resp = c.post('/en/signup/foo-bob-1/', data)
         self.assertRedirects(resp, '/en/signup/1/success/')
         self.assertEqual(Application.objects.active().count(), 1)
-        # Make sure notification was sent 
+        # Make sure notification was sent
         self.assertEqual(len(mail.outbox), 1)
         signup_questions = json.loads(Application.objects.last().signup_questions)
         self.assertEqual(signup_questions['goals'], 'Other: some goal')
@@ -118,7 +119,7 @@ class TestLearnerViews(TestCase):
         resp = c.post('/en/signup/foo-bob-1/', self.APPLICATION_DATA)
         self.assertRedirects(resp, '/en/signup/1/success/')
         self.assertEqual(Application.objects.active().count(), 1)
-        # Make sure notification was sent 
+        # Make sure notification was sent
         self.assertEqual(len(mail.outbox), 1)
 
         mail.outbox = []
@@ -127,7 +128,7 @@ class TestLearnerViews(TestCase):
 
         self.assertEqual(Application.objects.active().count(), 1)
         self.assertEqual(len(mail.outbox), 0)
-        
+
         data = self.APPLICATION_DATA.copy()
         data['email'] = 'test2@mail.com'
         resp = c.post('/en/signup/foo-bob-1/', data)
@@ -160,7 +161,7 @@ class TestLearnerViews(TestCase):
         self.assertRedirects(resp, '/en/signup/1/success/')
         self.assertEqual(Application.objects.active().count(), 1)
         app = Application.objects.active().first()
-        url = app.unapply_link().replace('https://example.net/', '/')
+        url = app.unapply_link().replace('{0}/', '/')
         resp = c.post(url)
         self.assertRedirects(resp, '/en/')
         self.assertEqual(Application.objects.active().count(), 0)
@@ -233,8 +234,8 @@ class TestLearnerViews(TestCase):
         self.assertTrue(mail.outbox[0].subject.find('+12812347890') > 0)
         self.assertTrue(mail.outbox[0].subject.find('Test User') > 0)
         self.assertIn(StudyGroup.objects.get(pk=1).facilitator.email, mail.outbox[0].to)
-        self.assertIn('https://example.net/{0}/rsvp/?user=%2B12812347890&study_group=1&meeting_date={1}&attending=yes&sig='.format(get_language(), urllib.parse.quote(next_meeting.meeting_datetime().isoformat())), mail.outbox[0].body)
-        self.assertIn('https://example.net/{0}/rsvp/?user=%2B12812347890&study_group=1&meeting_date={1}&attending=no&sig='.format(get_language(), urllib.parse.quote(next_meeting.meeting_datetime().isoformat())), mail.outbox[0].body)
+        self.assertIn('{0}/{1}/rsvp/?user=%2B12812347890&study_group=1&meeting_date={2}&attending=yes&sig='.format(settings.DOMAIN, get_language(), urllib.parse.quote(next_meeting.meeting_datetime().isoformat())), mail.outbox[0].body)
+        self.assertIn('{0}/{1}/rsvp/?user=%2B12812347890&study_group=1&meeting_date={2}&attending=no&sig='.format(settings.DOMAIN, get_language(), urllib.parse.quote(next_meeting.meeting_datetime().isoformat())), mail.outbox[0].body)
 
 
     def test_receive_random_sms(self):
@@ -323,7 +324,7 @@ class TestLearnerViews(TestCase):
         signup_data = self.APPLICATION_DATA.copy()
         signup_data['email'] = 'mmmmmm@lllll.ces'
         signup_data['mobile'] = '+12812347890'
-        
+
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
         self.assertRedirects(resp, '/en/signup/1/success/')
         self.assertEqual(Application.objects.active().count(), 2)
