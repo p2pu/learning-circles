@@ -10,7 +10,6 @@ from django.urls import reverse  # TODO ideally this shouldn't be in the model
 from django.http import HttpResponse
 
 from studygroups import rsvp
-
 from studygroups.utils import gen_unsubscribe_querystring
 
 import calendar
@@ -679,5 +678,4 @@ def community_digest_data(start_time, end_time):
         "intros_from_new_users": intros_from_new_users,
         "web_version_url": web_version_url,
     }
-
 

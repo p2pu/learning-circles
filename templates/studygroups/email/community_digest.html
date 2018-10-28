@@ -134,11 +134,21 @@
       </tr>
       <tr>
         <td>
-          {% include "studygroups/measurement_card.html" with title='Top 10 Topics' chart=top_topics_chart fullwidth=web %}
+          {% include "studygroups/measurement_card.html" with title='Current learning circles by topic' chart=top_topics_chart fullwidth=web %}
         </td>
       </tr>
     </tbody>
   </table>
+</div>
+
+
+<div class="report-section">
+  <h2>
+    <span class="section-header">
+    {{ new_learners_count }} learners signed up for a learning circle
+    </span>
+  </h2>
+  {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart fullwidth=web %}
 </div>
 
 <div class="report-section">
