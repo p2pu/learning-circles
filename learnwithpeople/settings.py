@@ -259,7 +259,7 @@ CELERYBEAT_SCHEDULE = {
     },
     'send_biweekly_community_digest': {
         'task': 'studygroups.tasks.send_biweekly_community_digest',
-        'schedule': crontab(day_of_month='1,15'),
+        'schedule': crontab(day_of_month='1,15', hour='12', minute='0'),
     },
 }
 
