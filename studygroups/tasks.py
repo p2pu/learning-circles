@@ -654,3 +654,8 @@ def send_all_learning_circle_reports():
     for study_group in StudyGroup.objects.published():
         translation.activate(settings.LANGUAGE_CODE)
         send_final_learning_circle_report(study_group)
+
+@shared_task
+def send_biweekly_community_digest():
+    translation.activate(settings.LANGUAGE_CODE)
+    send_community_digest()

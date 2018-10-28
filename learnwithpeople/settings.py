@@ -257,6 +257,10 @@ CELERYBEAT_SCHEDULE = {
         'task': 'studygroups.tasks.send_all_learning_circle_reports',
         'schedule': crontab(minute='30'),
     },
+    'send_biweekly_community_digest': {
+        'task': 'studygroups.tasks.send_biweekly_community_digest',
+        'schedule': crontab(day_of_month='1,15')
+    }
 }
 
 LOGGING = {
