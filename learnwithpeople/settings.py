@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'custom_registration',
     'advice',
     'surveys',
+    'announce',
 ]
 
 MIDDLEWARE = [
@@ -303,9 +304,13 @@ TYPEFORM_ACCESS_TOKEN = env('TYPEFORM_ACCESS_TOKEN', '')
 TYPEFORM_FACILITATOR_SURVEY_FORM = env('TYPEFORM_FACILITATOR_SURVEY_FORM', '')
 TYPEFORM_LEARNER_SURVEY_FORM = env('TYPEFORM_LEARNER_SURVEY_FORM', '')
 
-# AWSs
-
+# AWS credentials for email resources
 P2PU_RESOURCES_AWS_ACCESS_KEY = env('RESOURCES_AWS_ACCESS_KEY', '')
 P2PU_RESOURCES_AWS_SECRET_KEY = env('RESOURCES_AWS_SECRET_KEY', '')
 P2PU_RESOURCES_AWS_BUCKET = env('RESOURCES_AWS_BUCKET', '')
+
+# Config for sending announcements
+MAILGUN_API_KEY = env('MAILGUN_API_KEY', '')
+MAILGUN_DOMAIN = env('MAILGUN_DOMAIN', '')
+ANNOUNCE_EMAIL = env('ANNOUNCE_EMAIL', 'announce@localhost')
 
