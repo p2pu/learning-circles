@@ -36,6 +36,7 @@ from studygroups.views import ExportFacilitatorsView
 from studygroups.views import ExportStudyGroupsView
 from studygroups.views import ExportCoursesView
 from studygroups.views import StaffDashView
+from studygroups.views import StudyGroupFinalReport
 
 from . import views
 
@@ -75,6 +76,8 @@ urlpatterns = [
     url(r'^studygroup/(?P<study_group_id>[\w-]+)/facilitator_survey/$', StudyGroupFacilitatorSurvey.as_view(), name='studygroups_facilitator_survey'),
     url(r'^facilitator_survey/$', TemplateView.as_view(template_name='studygroups/anonymous_facilitator_survey.html'), name='anonymous_facilitator_survey'),
     url(r'^facilitator_survey/done$', TemplateView.as_view(template_name='studygroups/facilitator_survey_done.html'), name='studygroups_facilitator_survey_done'),
+
+    url(r'^studygroup/(?P<study_group_id>[\w-]+)/report/$', StudyGroupFinalReport.as_view(), name='studygroups_final_report'),
 
     # views regarding study group meetings
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[\d]+)/edit/$', MeetingUpdate.as_view(), name='studygroups_edit_study_group_meeting'),

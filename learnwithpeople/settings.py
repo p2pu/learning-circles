@@ -218,11 +218,11 @@ CELERYBEAT_SCHEDULE = {
     },
     'send_survey_reminders': {
         'task': 'studygroups.tasks.send_all_studygroup_survey_reminders',
-        'schedule': crontab(minute='*/15'),
+        'schedule': crontab(minute='30'),
     },
     'send_facilitator_survey': {
         'task': 'studygroups.tasks.send_all_facilitator_surveys',
-        'schedule':  crontab(hour='10', minute='0'),
+        'schedule':  crontab(minute='30'),
     },
     'send_last_week_group_activity': {
         'task': 'studygroups.tasks.send_all_last_week_group_activities',
@@ -244,7 +244,14 @@ CELERYBEAT_SCHEDULE = {
         'task': 'surveys.tasks.sync_learner_surveys',
         'schedule': crontab(minute='20'),
     },
-
+    'send_facilitator_survey_reminder': {
+        'task': 'studygroups.tasks.send_all_facilitator_survey_reminders',
+        'schedule': crontab(minute='30'),
+    },
+    'send_final_learning_circle_report': {
+        'task': 'studygroups.tasks.send_all_learning_circle_reports',
+        'schedule': crontab(minute='30'),
+    },
 }
 
 LOGGING = {
@@ -295,3 +302,10 @@ DISCOURSE_SSO_SECRET = env('DISCOURSE_SSO_SECRET', '')
 TYPEFORM_ACCESS_TOKEN = env('TYPEFORM_ACCESS_TOKEN', '')
 TYPEFORM_FACILITATOR_SURVEY_FORM = env('TYPEFORM_FACILITATOR_SURVEY_FORM', '')
 TYPEFORM_LEARNER_SURVEY_FORM = env('TYPEFORM_LEARNER_SURVEY_FORM', '')
+
+# AWSs
+
+P2PU_RESOURCES_AWS_ACCESS_KEY = env('AWS_ACCESS_KEY', '')
+P2PU_RESOURCES_AWS_SECRET_KEY = env('AWS_SECRET_KEY', '')
+P2PU_RESOURCES_AWS_BUCKET = 'p2pu-charts'
+

@@ -72,9 +72,9 @@ class ExportSignupsView(ListView):
                     signup.email,
                     signup.mobile,
                     signup.created_at,
-                ] + 
+                ] +
                 [ signup_data.get(key, 'n/a') for key in signup_questions ] +
-                [ 
+                [
                     digital_literacy,
                     'yes' if signup.learnersurveyresponse_set.count() else 'no'
                 ]
@@ -108,11 +108,11 @@ class ExportFacilitatorsView(ListView):
                 user.date_joined,
                 user.last_login,
                 user.studygroup_set.active().count()
-            ] 
+            ]
             last_study_group = user.studygroup_set.active().order_by('start_date').last()
             if last_study_group:
                 data += [
-                    last_study_group.start_date, 
+                    last_study_group.start_date,
                     last_study_group.course.title,
                     last_study_group.venue_name
                 ]
@@ -173,7 +173,7 @@ class ExportStudyGroupsView(ListView):
                 sg.city,
                 sg.meeting_time,
                 sg.day(),
-            ] 
+            ]
             if sg.meeting_set.active().last():
                 data += [sg.meeting_set.active().order_by('meeting_date', 'meeting_time').last().meeting_date]
             else:
@@ -195,7 +195,7 @@ class ExportStudyGroupsView(ListView):
 
             domain = 'https://{0}'.format(settings.DOMAIN)
             facilitator_survey =  '{}{}'.format(
-                domain, 
+                domain,
                 reverse('studygroups_facilitator_survey', args=(sg.pk,))
             )
             data += [facilitator_survey]
@@ -206,7 +206,7 @@ class ExportStudyGroupsView(ListView):
             )
             data += [learner_survey]
             data += [sg.learnersurveyresponse_set.count()]
-                
+
             writer.writerow(data)
         return response
 

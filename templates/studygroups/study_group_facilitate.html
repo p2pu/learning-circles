@@ -35,6 +35,7 @@
         {% endif %}
         {% endif %}
         <a class="btn btn-primary" href="{% url 'studygroups_signup' location=lc.venue_name|unicode_slugify study_group_id=lc.pk %}">{% trans "view webpage" %}</a>
+        <a class="btn btn-primary" href="{% url 'studygroups_final_report' study_group_id=lc.pk %}">{% trans "view final report" %}</a>
         </p>
         {% if lc.draft %}
           <div class="alert alert-info" role="alert">
