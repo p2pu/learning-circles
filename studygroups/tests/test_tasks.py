@@ -166,7 +166,7 @@ class TestStudyGroupTasks(TestCase):
         self.assertEqual(Reminder.objects.all().count(), 1)
 
 
-    @patch('studygroups.sms.send_message')
+    @patch('studygroups.tasks.send_message')
     def test_dont_send_automatic_reminder_for_old_message(self, send_message):
         now = timezone.now()
         sg = StudyGroup.objects.get(pk=1)
@@ -217,7 +217,7 @@ class TestStudyGroupTasks(TestCase):
         self.assertEqual(Reminder.objects.filter(sent_at__isnull=True).count(), 1)
 
 
-    @patch('studygroups.sms.send_message')
+    @patch('studygroups.tasks.send_message')
     def test_send_automatic_reminder_email(self, send_message):
         now = timezone.now()
         sg = StudyGroup.objects.get(pk=1)
@@ -247,7 +247,7 @@ class TestStudyGroupTasks(TestCase):
         self.assertIn('https://example.net/{0}/optout/confirm/?user='.format(get_language()), mail.outbox[1].alternatives[0][0])
 
 
-    @patch('studygroups.sms.send_message')
+    @patch('studygroups.tasks.send_message')
     def test_send_learner_reminder_ics(self, send_message):
         now = timezone.now()
         sg = StudyGroup.objects.get(pk=1)
@@ -279,7 +279,7 @@ class TestStudyGroupTasks(TestCase):
         self.assertIn('VEVENT', mail.outbox[1].attachments[0].get_payload())
 
 
-    @patch('studygroups.sms.send_message')
+    @patch('studygroups.tasks.send_message')
     def test_send_custom_reminder_email(self, send_message):
         now = timezone.now()
         sg = StudyGroup.objects.get(pk=1)
@@ -316,7 +316,7 @@ class TestStudyGroupTasks(TestCase):
         #self.assertIn('https://example.net/{0}/optout/confirm/?user='.format(get_language()), mail.outbox[0].body)
 
 
-    @patch('studygroups.sms.send_message')
+    @patch('studygroups.tasks.send_message')
     def test_facilitator_reminder_email_links(self, send_message):
         now = timezone.now()
         sg = StudyGroup.objects.get(pk=1)
@@ -348,7 +348,7 @@ class TestStudyGroupTasks(TestCase):
         self.assertNotIn('https://example.net/{0}/optout/confirm/?user='.format(get_language()), mail.outbox[1].alternatives[0][0])
 
 
-    @patch('studygroups.sms.send_message')
+    @patch('studygroups.tasks.send_message')
     def test_send_reminder_sms(self, send_message):
         now = timezone.now()
         sg = StudyGroup.objects.get(pk=1)
