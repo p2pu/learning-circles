@@ -6,6 +6,7 @@ from django.contrib.auth.models import User, Group
 from django.utils import timezone
 from django.utils.translation import get_language
 from django.urls import reverse
+from django.conf import settings
 
 from mock import patch
 from freezegun import freeze_time
@@ -256,7 +257,7 @@ class TestFacilitatorViews(TestCase):
 
 
 
-    @patch('studygroups.models.send_message')
+    @patch('studygroups.tasks.send_message')
     def test_send_email(self, send_message):
         # Test sending a message
         c = Client()
@@ -280,12 +281,12 @@ class TestFacilitatorViews(TestCase):
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, mail_data['email_subject'])
-        self.assertEqual(mail.outbox[0].from_email, 'Facilitator1 <webmaster@localhost>')
+        self.assertEqual(mail.outbox[0].from_email, 'Facilitator1 <{}>'.format(settings.DEFAULT_FROM_EMAIL))
         self.assertFalse(send_message.called)
         self.assertIn('https://example.net/en/optout/', mail.outbox[0].body)
 
 
-    @patch('studygroups.models.send_message')
+    @patch('studygroups.tasks.send_message')
     def test_send_sms(self, send_message):
         c = Client()
         c.login(username='admin', password='password')
@@ -309,7 +310,7 @@ class TestFacilitatorViews(TestCase):
         self.assertTrue(send_message.called)
 
 
-    @patch('studygroups.models.send_message')
+    @patch('studygroups.tasks.send_message')
     def test_dont_send_blank_sms(self, send_message):
         c = Client()
         c.login(username='admin', password='password')

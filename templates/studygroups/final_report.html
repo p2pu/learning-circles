@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block content %}
+<div class="bg-light">
+  <div class="container" id="learning-circle-report">
+    <div class="row justify-content-between border-bottom pt-4" style="align-items: baseline">
+      <div class="col">
+        <span class="bold large text-uppercase">{% trans 'Learning Circle Insights' %}</span>
+      </div>
+      <div class="col">
+        <img class="d-none d-md-block float-right" src="{% static 'images/logo.png' %}" alt="P2PU Logo">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <h1 class="mt-4">{{ study_group.course.title }}</h1>
+        <h4>{% trans 'with' %} {{ study_group.facilitator.first_name }} {{study_group.facilitator.last_name}}</h4>
+        <p class="my-0">{{ study_group.start_date }} {% trans "to" %} {{ study_group.end_date }} {% trans "at" %} {{ study_group.venue_name }}</p>
+        <p class="my-0">{{ study_group.city }}</p>
+      </div>
+    </div>
+    {% if survey_responses == 0 %}
+      <div class="row">
+        <div class="col">{% trans "Not enough data available." %}</div>
+      </div>
+
+    {% else %}
+      <div class="row mt-4">
+        <div class="col-12 mb-4">
+            <h2>{% trans "Summary" %}</h2>
+            <p class="my-0">{{ registrations }} {% trans "learners signed up" %}; {{ survey_responses }} {% trans "responded to the survey" %}</p>
+        </div>
+
+          {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart %}
+
+          {% include "studygroups/measurement_card.html" with title='Goals Met' description='Did participants reach their learning goals?' chart=goals_met_chart %}
+
+          {% include "studygroups/measurement_card.html" with title='Skills Learned' description='Participants expressed increased comfort…' chart=skills_learned_chart %}
+
+          {% include "studygroups/measurement_card.html" with title='Next Steps' description='What do participants want to do with the skills they gained?' chart=next_steps_chart %}
+
+          {% include "studygroups/measurement_card.html" with title='Reasons for Success' description='Participants succeeded because they…' chart=reasons_for_success_chart %}
+
+          {% include "studygroups/measurement_card.html" with title='Ideas for Next Time' description='What other topics do participants want to take a learning circle in?' chart=ideas_chart %}
+      </div>
+
+      <div class="row mt-4">
+        <div class="col-12 mb-4">
+            <h2>{% trans "Participation" %}</h2>
+        </div>
+
+          {% include "studygroups/measurement_card.html" with title='New Learners' chart=new_learners_chart %}
+
+          {% include "studygroups/measurement_card.html" with title='Completion Rate' chart=completion_rate_chart %}
+
+          {% include "studygroups/measurement_card.html" with title='Promotion and Outreach' description='How did people hear about the learning circle?' chart=promotion_chart %}
+
+          {% include "studygroups/measurement_card.html" with title='Library Usage' description='Aside from the learning circle, how often do participants visit the library?' chart=library_usage_chart %}
+      </div>
+
+      <div class="row mt-4">
+        <div class="col-12 mb-4">
+            <h2>{% trans "Course Quality" %}</h2>
+            <p class="my-0">{% trans "Course used" %}: <a href="{{ course.link }}">{{ course.title }}</a></p>
+        </div>
+          {% include "studygroups/measurement_card.html" with title="Facilitator's Rating" description="How well did this course work as a learning circle?" chart=facilitator_rating_chart %}
+
+          {% include "studygroups/measurement_card.html" with title="Learners' Rating" description="How well did this course work as a learning circle?" chart=learner_rating_chart %}
+      </div>
+
+      <div class="row mt-4">
+        <div class="col-12 mb-4">
+          <h2>
+            {% blocktrans with facilitator=study_group.facilitator.first_name %}
+              {{ facilitator }}'s Reflections
+            {% endblocktrans %}
+          </h2>
+        </div>
+          {% include "studygroups/measurement_card.html" with title="Resources, activities, and experiences that were particularly rewarding" chart=additional_resources_chart %}
+
+          {% include "studygroups/measurement_card.html" with title="New skills gained as a facilitator" chart=facilitator_new_skills_chart %}
+          {% include "studygroups/measurement_card.html" with title="Tips for future facilitators" chart=facilitator_tips_chart %}
+      </div>
+      {% endif %}
+  </div>
+</div>
+<script type="text/javascript" src="http://kozea.github.com/pygal.js/latest/pygal-tooltips.min.js"></script>
+{% endblock %}

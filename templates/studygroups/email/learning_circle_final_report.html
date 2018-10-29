@@ -1,0 +1,37 @@
+{% extends 'email_base.html' %}
+{% block body %}
+{% load i18n %}
+{% load staticfiles %}
+
+
+<p>{% blocktrans %}Hi {{facilitator_name}} and learning circle participants,{% endblocktrans %}</p>
+
+<p>
+{% trans "We’ve generated a learning circle report based on feedback you’ve provided." %}
+</p>
+
+<p>
+{% trans "Here's a preview:" %}
+</p>
+
+<table border="0" cellpadding="10" cellspacing="10" id="report-table">
+    <tr>
+        <td valign="top">
+            {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart %}
+        </td>
+    </tr>
+    <tr>
+        <td valign="top">
+            {% include "studygroups/measurement_card.html" with title='Goals Met' description='Did participants reach their learning goals?' chart=goals_met_chart %}
+        </td>
+    </tr>
+</table>
+
+<div>
+    <a href="{{ report_url }}">{% trans "Click here to see the full report." %}</a>
+</div>
+
+<p>{% trans "Cheers" %},</p>
+<p>{% trans "The P2PU Team" %}</p>
+
+{% endblock %}
