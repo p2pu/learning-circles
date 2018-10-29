@@ -39,8 +39,8 @@ from studygroups.forms import CourseForm
 from studygroups.forms import StudyGroupForm
 from studygroups.forms import MeetingForm
 from studygroups.forms import FeedbackForm
+from studygroups.tasks import send_reminder
 from studygroups.models import generate_all_meetings
-from studygroups.models import send_reminder
 from studygroups.models import get_study_group_organizers
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import study_group_is_published
