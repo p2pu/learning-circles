@@ -4,6 +4,7 @@ from django.utils import timezone
 import requests
 import json
 import logging
+import hashlib
 
 logger = logging.getLogger(__name__)
 
@@ -39,3 +40,43 @@ def add_member_to_list(user):
         logger.error(json.dumps(response.json(), indent=4))
     except ValueError:
         logger.error("Cannot decode json, got %s" % response.text)
+
+
+def clean_members(users):
+    # Update status to 'cleaned'
+    # PATCH /3.0/lists/<list-id>/members/<email-md5> {"status": "cleaned"}
+    
+    print(len(users))
+    make_operation = lambda user: {
+        "method": "PATCH",
+        "path": "/lists/{0}/members/{1}".format(
+            settings.MAILCHIMP_LIST_ID,
+            hashlib.md5(user.email.lower().encode()).hexdigest()
+        ),
+        "body": '{"status": "cleaned"}'
+    } 
+    batch = {
+        "operations": [make_operation(user) for user in users]
+    }
+    from pprint import pprint
+    pprint(batch)
+
+    api_url = '{0}batches'.format(settings.MAILCHIMP_API_ROOT)
+    response = requests.post(
+        api_url, 
+        auth=('apikey', settings.MAILCHIMP_API_KEY),
+        json=batch
+    )
+
+    try:
+        response.raise_for_status()
+        body = response.json()
+        print(body)
+    except requests.exceptions.HTTPError as err:
+        logger.error("Error: {} {}".format(str(response.status_code), err))
+        logger.error(json.dumps(response.json(), indent=4))
+    except ValueError:
+        logger.error("Cannot decode json, got %s" % response.text)
+
+
+

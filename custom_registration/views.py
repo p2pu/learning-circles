@@ -8,6 +8,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.cache import never_cache
 from django.views.generic.edit import FormView
+from django.views.generic.edit import UpdateView
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth.forms import AuthenticationForm
@@ -19,6 +20,7 @@ from django.http import HttpResponseRedirect
 import json
 
 from studygroups.models import TeamMembership
+from studygroups.models import Profile
 from uxhelpers.utils import json_response
 from api import schema
 from .models import create_user
@@ -187,3 +189,18 @@ class EmailConfirmView(View):
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
         return user
+
+
+@method_decorator(login_required, name='dispatch')
+class AccountSettingsView(UpdateView):
+    model = Profile
+    fields = ['communication_opt_in']
+    template_name = 'custom_registration/settings.html'
+    success_url = reverse_lazy('studygroups_facilitator')
+
+    def get_object(self):
+        return self.request.user.profile
+
+    def form_valid(self, form):
+        messages.success(self.request, _('Your account settings have been saved.'))
+        return super().form_valid(form)

@@ -7,6 +7,8 @@
 
   <h1>{% blocktrans with first_name=user.first_name %}{{first_name}}&#39;s Facilitator Dashboard{% endblocktrans %}</h1>
 
+  <p><a class="btn btn-primary" href="{% url 'account_settings' %}">Account settings</a></p>
+
   {% include 'studygroups/notifications.html' %}
 
   <h4>{% trans "For help with your learning circle, check out:" %}</h4>
