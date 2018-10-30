@@ -3,7 +3,7 @@ WORKDIR /opt/app/
 COPY package.json /opt/app/
 RUN apk --no-cache add --virtual native-deps \
   g++ make python && \
-  npm install --quiet --production && \
+  npm install --no-optional --quiet --production && \
   apk del native-deps
 COPY . /opt/app/
 RUN npm run build:production

@@ -30,5 +30,5 @@ services:
     volumes:
     - .:/opt/app
     working_dir: /opt/app
-    command: sh -c "npm i && npm run watch"
+    command: sh -c "npm i --no-optional && npm run watch"
 

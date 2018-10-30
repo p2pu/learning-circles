@@ -1,8 +1,6 @@
 import React from 'react'
 import InputWithLabel from 'p2pu-input-fields/dist/InputWithLabel'
 
-Location
-
 const UrlInput = (props) => {
   const addProtocol = (e) => {
     let url = e[props.name];
