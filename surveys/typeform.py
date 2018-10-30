@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 
 import json
 import requests
@@ -25,7 +25,7 @@ def get_form(form_id):
 
 
 def get_all_responses(form_id, after=None):
-    # NOTE: typeform doesn't paging, need to use after parameter, but no way 
+    # NOTE: typeform doesn't paging, need to use after parameter, but no way
     # to retrieve first token if len(responses) > 1000?
     # If there are < 1000 responses the first time this is run, and < 1000 between
     # polling intervals, this should be okay.
@@ -66,9 +66,11 @@ def sync_facilitator_responses():
             study_group = StudyGroup.objects.get(uuid=study_group_id)
         except ObjectDoesNotExist as e:
             logger.debug('Study group with ID does not exist', e)
+        except ValidationError as e:
+            logger.debug('UUID is not valid', e)
 
         responded_at = parser.parse(survey.get('submitted_at'))
-       
+
         data = {
             'study_group': study_group,
             'survey': json.dumps(form),
@@ -104,6 +106,8 @@ def sync_learner_responses():
             study_group = StudyGroup.objects.get(uuid=study_group_id)
         except ObjectDoesNotExist as e:
             logger.debug('Study group with ID does not exist', e)
+        except ValidationError as e:
+            logger.debug('UUID is not valid', e)
 
         responded_at = parser.parse(survey.get('submitted_at'))
 
@@ -113,7 +117,7 @@ def sync_learner_responses():
             learner = Application.objects.get(email=email, study_group=study_group)
         except ObjectDoesNotExist as e:
             logger.debug('Application not found', e)
-       
+
         data = {
             'study_group': study_group,
             'learner': learner,

@@ -1,4 +1,3 @@
-# no real changes just seeing if master also fails on travis now
 sudo: required
 dist: trusty
 before_install:
