@@ -37,7 +37,7 @@ def html_body_to_text(html):
     # rewrite links
     link_re = re.compile(r'<a.*?href="(?P<url>.*?)".*?>(?P<text>.*?)</a>')
     html = link_re.sub(r'\2 ( \1 ) ', html)
- 
+
     # rewrite headings
     hx_re = re.compile(r'<h\d>(?P<text>.*?)</h\d>')
     html = hx_re.sub(r'# \1', html)
@@ -51,3 +51,5 @@ def html_body_to_text(html):
 
     # remove leading and tailing whitespace and replace multiple newlines
     return re.sub(r'\n\s+', '\n\n', txt).strip()
+
+

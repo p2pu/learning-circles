@@ -655,7 +655,6 @@ def community_digest_data(start_time, end_time):
     discourse_categories = get_discourse_categories()
     top_discourse_topics = get_top_discourse_topics_and_users()
     web_version_path = reverse('studygroups_community_digest', kwargs={'start_date': start_time.strftime("%d-%m-%Y"), 'end_date': end_time.strftime("%d-%m-%Y")})
-    web_version_url = settings.DOMAIN + web_version_path
 
     return {
         "start_date": start_time.date(),
@@ -676,6 +675,6 @@ def community_digest_data(start_time, end_time):
         "top_discourse_topics": top_discourse_topics,
         "discourse_categories": discourse_categories,
         "intros_from_new_users": intros_from_new_users,
-        "web_version_url": web_version_url,
+        "web_version_path": web_version_path,
     }
 

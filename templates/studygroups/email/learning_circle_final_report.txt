@@ -7,7 +7,7 @@
 
 {% trans "We’ve generated a learning circle report based on feedback you’ve provided." %}
 
-{% blocktrans %}You can view the full report here: {{ report_url }}" %}{% endblocktrans %}
+{% blocktrans %}You can view the full report here: {{ report_path }}" %}{% endblocktrans %}
 
 {% trans "Cheers" %},
 

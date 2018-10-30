@@ -1,7 +1,4 @@
 {% load static %}
-{% load premailer %}
-
-{% premailer "https://www.p2pu.org" %}
 
 <html>
 <style type="text/css">
@@ -23,9 +20,14 @@
     padding-top: 10px;
   }
 
-  body.email a {
+  body.email .email-layout a {
     color: #05C6B4;
     text-decoration: none;
+  }
+
+  body.email .email-layout a:hover {
+    color: #05C6B4;
+    text-decoration: underline;
   }
 
   @media screen and (max-device-width: 716px), screen and (max-width: 716px) {
@@ -64,5 +66,3 @@
     </table>
   </body>
 </html>
-
-{% endpremailer %}

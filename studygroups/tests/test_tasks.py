@@ -25,7 +25,16 @@ from studygroups.rsvp import check_rsvp_signature
 from studygroups.utils import gen_unsubscribe_querystring
 from studygroups.utils import check_unsubscribe_signature
 
-from studygroups import tasks
+from studygroups.tasks import generate_reminder
+from studygroups.tasks import send_reminders
+from studygroups.tasks import send_reminder
+from studygroups.tasks import send_new_studygroup_emails
+from studygroups.tasks import send_weekly_update
+from studygroups.tasks import send_learner_surveys
+from studygroups.tasks import send_facilitator_survey
+from studygroups.tasks import send_facilitator_survey_reminder
+from studygroups.tasks import send_final_learning_circle_report
+from studygroups.tasks import send_last_week_group_activity
 
 import calendar
 import datetime
@@ -73,7 +82,7 @@ class TestStudyGroupTasks(TestCase):
         sg.save()
         sg = StudyGroup.objects.get(pk=1)
         generate_all_meetings(sg)
-        tasks.generate_reminder(sg)
+        generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 0)
 
 
@@ -90,14 +99,14 @@ class TestStudyGroupTasks(TestCase):
         generate_all_meetings(sg)
         self.assertEqual(sg.meeting_set.active().count(), 6)
         self.assertTrue(sg.next_meeting().meeting_datetime() - now < datetime.timedelta(days=4))
-        tasks.generate_reminder(sg)
+        generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
         reminder = Reminder.objects.all()[0]
         #TODO check that email was sent to site admin
         #TODO test with unicode in generated email subject
 
         # Make sure we do it only once
-        tasks.generate_reminder(sg)
+        generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
 
     def test_no_reminders_for_old_studygroups(self):
@@ -113,7 +122,7 @@ class TestStudyGroupTasks(TestCase):
         sg.save()
         sg = StudyGroup.objects.get(pk=1)
         generate_all_meetings(sg)
-        tasks.generate_reminder(sg)
+        generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 0)
 
 
@@ -130,7 +139,7 @@ class TestStudyGroupTasks(TestCase):
         sg.save()
         sg = StudyGroup.objects.get(pk=1)
         generate_all_meetings(sg)
-        tasks.generate_reminder(sg)
+        generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 0)
 
     def test_generate_reminder_with_long_name_and_location(self):
@@ -148,14 +157,14 @@ class TestStudyGroupTasks(TestCase):
         generate_all_meetings(sg)
         self.assertEqual(sg.meeting_set.active().count(), 6)
         self.assertTrue(sg.next_meeting().meeting_datetime() - now < datetime.timedelta(days=4))
-        tasks.generate_reminder(sg)
+        generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
         reminder = Reminder.objects.all()[0]
         #TODO check that email was sent to site admin
         #TODO test with unicode in generated email subject
 
         # Make sure we do it only once
-        tasks.generate_reminder(sg)
+        generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
 
 
@@ -179,14 +188,14 @@ class TestStudyGroupTasks(TestCase):
 
         mail.outbox = []
         with freeze_time("2010-03-06 18:55:34"):
-            tasks.generate_reminder(sg)
+            generate_reminder(sg)
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(Reminder.objects.all().count(), 1)
 
         mail.outbox = []
         with freeze_time("2010-03-08 18:55:34"):
-            tasks.send_reminders()
+            send_reminders()
         self.assertEqual(len(mail.outbox), 2)
         self.assertEqual(mail.outbox[0].to[0], data['email'])
         self.assertEqual(mail.outbox[1].to[0], 'facilitator@example.net')
@@ -195,7 +204,7 @@ class TestStudyGroupTasks(TestCase):
 
         mail.outbox = []
         with freeze_time("2010-03-13 18:55:34"):
-            tasks.generate_reminder(sg)
+            generate_reminder(sg)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(Reminder.objects.all().count(), 2)
         self.assertEqual(Reminder.objects.filter(sent_at__isnull=True).count(), 1)
@@ -205,7 +214,7 @@ class TestStudyGroupTasks(TestCase):
 
         mail.outbox = []
         with freeze_time("2010-03-18 18:55:34"):
-            tasks.send_reminders()
+            send_reminders()
         self.assertEqual(len(mail.outbox), 0)
         self.assertEqual(Reminder.objects.filter(sent_at__isnull=True).count(), 1)
 
@@ -227,11 +236,11 @@ class TestStudyGroupTasks(TestCase):
         application.save()
         mail.outbox = []
         generate_all_meetings(sg)
-        tasks.generate_reminder(sg)
+        generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
         reminder = Reminder.objects.all()[0]
         self.assertEqual(len(mail.outbox), 1)
-        tasks.send_reminder(reminder)
+        send_reminder(reminder)
         self.assertEqual(len(mail.outbox), 3) # should be sent to facilitator & application
         self.assertEqual(mail.outbox[1].to[0], data['email'])
         self.assertFalse(send_message.called)
@@ -258,11 +267,11 @@ class TestStudyGroupTasks(TestCase):
         application.save()
         mail.outbox = []
         generate_all_meetings(sg)
-        tasks.generate_reminder(sg)
+        generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
         reminder = Reminder.objects.all()[0]
         self.assertEqual(len(mail.outbox), 1)
-        tasks.send_reminder(reminder)
+        send_reminder(reminder)
         self.assertEqual(len(mail.outbox), 3) # should be sent to facilitator & application
         self.assertEqual(mail.outbox[1].to[0], data['email'])
         self.assertFalse(send_message.called)
@@ -301,7 +310,7 @@ class TestStudyGroupTasks(TestCase):
         self.assertEqual(Reminder.objects.all().count(), 1)
         reminder = Reminder.objects.all()[0]
         self.assertEqual(len(mail.outbox), 0)
-        tasks.send_reminder(reminder)
+        send_reminder(reminder)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(len(mail.outbox[0].bcc), 2)
         self.assertEqual(mail.outbox[0].bcc[0], data['email'])
@@ -326,12 +335,12 @@ class TestStudyGroupTasks(TestCase):
         application.save()
         mail.outbox = []
         generate_all_meetings(sg)
-        tasks.generate_reminder(sg)
+        generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
         reminder = Reminder.objects.all()[0]
         self.assertEqual(len(mail.outbox), 1)
         mail.outbox = []
-        tasks.send_reminder(reminder)
+        send_reminder(reminder)
         self.assertEqual(len(mail.outbox), 2) # should be sent to facilitator & application
         self.assertEqual(mail.outbox[0].to[0], data['email'])
         self.assertEqual(mail.outbox[1].to[0], sg.facilitator.email)
@@ -357,24 +366,24 @@ class TestStudyGroupTasks(TestCase):
         application.save()
         mail.outbox = []
         generate_all_meetings(sg)
-        tasks.generate_reminder(sg)
+        generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
         reminder = Reminder.objects.all()[0]
-        tasks.send_reminder(reminder)
+        send_reminder(reminder)
         self.assertEqual(len(mail.outbox), 2)
         #self.assertEqual(mail.outbox[0].subject, mail_data['email_subject'])
         self.assertFalse(send_message.called)
 
 
     def test_send_new_studygroup_update(self):
-        tasks.send_new_studygroup_emails()
+        send_new_studygroup_emails()
         self.assertEqual(len(mail.outbox), 0)
 
         studygroup = StudyGroup.objects.get(pk=1)
         studygroup.created_at = timezone.now() - datetime.timedelta(days=7)
         studygroup.save()
 
-        tasks.send_new_studygroup_emails()
+        send_new_studygroup_emails()
         self.assertEqual(len(mail.outbox), 1)
 
 
@@ -403,7 +412,7 @@ class TestStudyGroupTasks(TestCase):
 
 
         with freeze_time("2018-08-28 10:01:00"):
-            tasks.send_weekly_update()
+            send_weekly_update()
 
         self.assertEqual(len(mail.outbox), 2)
         self.assertEqual(mail.outbox[0].to[0], 'organ@team.com')
@@ -434,7 +443,7 @@ class TestStudyGroupTasks(TestCase):
         meeting.save()
 
         with freeze_time("2018-08-28 10:01:00"):
-            tasks.send_weekly_update()
+            send_weekly_update()
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].to[0], 'admin@test.com')
@@ -476,17 +485,17 @@ class TestStudyGroupTasks(TestCase):
         # send time is 1 week, 2 days, and 1 hour before the last meeting
         # freeze time to 1 hour before send time
         with freeze_time("2010-02-03 16:00:00"):
-            tasks.send_learner_surveys(sg)
+            send_learner_surveys(sg)
             self.assertEqual(len(mail.outbox), 0)
 
         # 1 hour and 10 minutes after send time
         with freeze_time("2010-02-03 18:10:00"):
-            tasks.send_learner_surveys(sg)
+            send_learner_surveys(sg)
             self.assertEqual(len(mail.outbox), 0)
 
         # 30 minutes after send_time
         with freeze_time("2010-02-03 17:30:00"):
-            tasks.send_learner_surveys(sg)
+            send_learner_surveys(sg)
             self.assertEqual(len(mail.outbox), 2)
             self.assertIn('mail1@example.net', mail.outbox[0].to + mail.outbox[1].to)
             self.assertIn('mail2@example.net', mail.outbox[0].to + mail.outbox[1].to)
@@ -496,7 +505,7 @@ class TestStudyGroupTasks(TestCase):
         mail.outbox = []
         # 2 hours after send time
         with freeze_time("2010-02-03 19:00:00"):
-            tasks.send_learner_surveys(sg)
+            send_learner_surveys(sg)
             self.assertEqual(len(mail.outbox), 0)
 
 
@@ -520,17 +529,17 @@ class TestStudyGroupTasks(TestCase):
         # send time is 1 week, 2 days, and 1 hour before the last meeting
         # freeze time to 1 day after send time
         with freeze_time("2010-01-28 17:55:34"):
-            tasks.send_facilitator_survey(sg)
+            send_facilitator_survey(sg)
             self.assertEqual(len(mail.outbox), 0)
 
         # freeze time to 3 days after send time
         with freeze_time("2010-01-26 17:55:34"):
-            tasks.send_facilitator_survey(sg)
+            send_facilitator_survey(sg)
             self.assertEqual(len(mail.outbox), 0)
 
         # freeze time to 2 days after send time
         with freeze_time("2010-01-27 17:55:34"):
-            tasks.send_facilitator_survey(sg)
+            send_facilitator_survey(sg)
             self.assertEqual(len(mail.outbox), 1)
             self.assertIn('{0}/en/studygroup/{1}/facilitator_survey/'.format(settings.DOMAIN, sg.id), mail.outbox[0].body)
             self.assertIn(sg.facilitator.email, mail.outbox[0].to)
@@ -556,17 +565,17 @@ class TestStudyGroupTasks(TestCase):
         # send time is 2 days before the last meeting
         # freeze time to 1 hour before send time
         with freeze_time("2010-02-03 17:00:00"):
-            tasks.send_facilitator_survey_reminder(sg)
+            send_facilitator_survey_reminder(sg)
             self.assertEqual(len(mail.outbox), 0)
 
         # freeze time to 2 hours after send time
         with freeze_time("2010-02-03 20:00:00"):
-            tasks.send_facilitator_survey_reminder(sg)
+            send_facilitator_survey_reminder(sg)
             self.assertEqual(len(mail.outbox), 0)
 
         # freeze time to 30 minutes after send time
         with freeze_time("2010-02-03 18:30:00"):
-            tasks.send_facilitator_survey_reminder(sg)
+            send_facilitator_survey_reminder(sg)
             self.assertEqual(len(mail.outbox), 1)
             self.assertIn('{0}/en/studygroup/{1}/facilitator_survey/'.format(settings.DOMAIN, sg.id), mail.outbox[0].body)
             self.assertIn(sg.facilitator.email, mail.outbox[0].to)
@@ -606,21 +615,21 @@ class TestStudyGroupTasks(TestCase):
         # send time is 2 days before the last meeting
         # freeze time to 1 hour before send time
         with freeze_time("2010-02-07 17:00:00"):
-            tasks.send_final_learning_circle_report(sg)
+            send_final_learning_circle_report(sg)
             self.assertEqual(len(mail.outbox), 0)
 
         # freeze time to 2 hours after send time
         with freeze_time("2010-02-07 20:00:00"):
-            tasks.send_final_learning_circle_report(sg)
+            send_final_learning_circle_report(sg)
             self.assertEqual(len(mail.outbox), 0)
 
         # freeze time to 30 minutes after send time
         with freeze_time("2010-02-07 18:30:00"):
-            tasks.send_final_learning_circle_report(sg)
+            send_final_learning_circle_report(sg)
             self.assertIn('mail1@example.net', mail.outbox[0].to)
             self.assertIn('facilitator@example.net', mail.outbox[0].to)
             self.assertEqual(len(mail.outbox[0].to), 2)
-            self.assertIn('{0}/en/studygroup/{1}/report/'.format(settings.DOMAIN, sg.id), mail.outbox[0].body)
+            self.assertIn('http://{0}/en/studygroup/{1}/report/'.format(settings.DOMAIN, sg.id), mail.outbox[0].body)
             self.assertIn(sg.facilitator.email, mail.outbox[0].to)
 
 
@@ -637,19 +646,19 @@ class TestStudyGroupTasks(TestCase):
 
         # freeze time to 3 days before last meeting
         with freeze_time("2018-01-03 17:59:00"):
-            tasks.send_last_week_group_activity(sg)
+            send_last_week_group_activity(sg)
             self.assertEqual(len(mail.outbox), 0)
 
         # freeze time to less than 2 days before last meeting
         with freeze_time("2018-01-04 18:01:00"):
-            tasks.send_last_week_group_activity(sg)
+            send_last_week_group_activity(sg)
             self.assertEqual(len(mail.outbox), 1)
             self.assertIn(sg.facilitator.email, mail.outbox[0].to)
 
         mail.outbox = []
         # freeze time to less than 1 day before last meeting
         with freeze_time("2018-01-05 18:01:00"):
-            tasks.send_last_week_group_activity(sg)
+            send_last_week_group_activity(sg)
             self.assertEqual(len(mail.outbox), 0)
 
 

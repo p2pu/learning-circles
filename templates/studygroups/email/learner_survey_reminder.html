@@ -2,6 +2,46 @@
 {% block body %}
 {% load i18n %}
 
+<style>
+.rating-scale {
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+.rating-scale .cell {
+  padding: 0.6em 2em;
+  background-color: #DDF6F4;
+  color: #05C6B4;
+  border: 1px solid #05C6B4;
+}
+
+.rating-scale .cell.first-cell {
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+}
+
+.rating-scale .cell.last-cell {
+  border-radius: 0 4px 4px 0;
+}
+
+.rating-scale .cell.middle-cell {
+  border-right: none;
+}
+
+.rating-scale td a {
+  text-align: center;
+  text-decoration: none;
+}
+
+.rating-scale .label.align-right {
+  text-align: right;
+}
+
+.rating-scale .label small {
+  font-size: 0.8em;
+  color: #05C6B4;
+}
+</style>
+
 
 <table>
   <tbody>
@@ -24,7 +64,7 @@
     {% if learner_goal %}
       <tr>
         <td>
-          <table align="center" align="center" style="margin-top: 2rem; margin-bottom: 2rem;">
+          <table align="center" class="rating-scale">
             <tbody>
               <tr>
                 <td>
@@ -32,28 +72,28 @@
                     <tbody>
                       <tr>
                         <td>
-                          <a href="{{survey_url}}&goal=1" style="text-align: center; text-decoration: none;">
-                            <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none; border-radius: 4px 0 0 4px;">1</div>
+                          <a href="{{survey_url}}&goal=1">
+                            <div class="cell first-cell">1</div>
                           </a>
                         </td>
                         <td>
-                          <a href="{{survey_url}}&goal=2" style="text-align: center; text-decoration: none;">
-                            <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none;">2</div>
+                          <a href="{{survey_url}}&goal=2">
+                            <div class="cell middle-cell">2</div>
                           </a>
                         </td>
                         <td>
-                          <a href="{{survey_url}}&goal=3" style="text-align: center; text-decoration: none;">
-                            <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none;">3</div>
+                          <a href="{{survey_url}}&goal=3">
+                            <div class="cell middle-cell">3</div>
                           </a>
                         </td>
                         <td>
-                          <a href="{{survey_url}}&goal=4" style="text-align: center; text-decoration: none;">
-                            <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-right: none;">4</div>
+                          <a href="{{survey_url}}&goal=4">
+                            <div class="cell middle-cell">4</div>
                           </a>
                         </td>
                         <td>
-                          <a href="{{survey_url}}&goal=5" style="text-align: center; text-decoration: none;">
-                            <div style="padding: 0.6rem 2rem; background-color: #DDF6F4; color: #05C6B4; border: 1px solid #05C6B4; border-radius: 0 4px 4px 0;">5</div>
+                          <a href="{{survey_url}}&goal=5">
+                            <div class="cell last-cell">5</div>
                           </a>
                         </td>
                       </tr>
@@ -66,11 +106,11 @@
                   <table width="100%">
                     <tbody>
                       <tr>
-                        <td>
-                          <small style="font-size: 0.8rem; color: #05C6B4">{% trans "Not at all" %}</small>
+                        <td class="label">
+                          <small>{% trans "Not at all" %}</small>
                         </td>
-                        <td style="text-align: right;">
-                          <small style="font-size: 0.8rem; color: #05C6B4">{% trans "Completely!" %}</small>
+                        <td class="label align-right">
+                          <small>{% trans "Completely!" %}</small>
                         </td>
                       </tr>
                     </tbody>

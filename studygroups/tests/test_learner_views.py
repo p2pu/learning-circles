@@ -161,7 +161,7 @@ class TestLearnerViews(TestCase):
         self.assertRedirects(resp, '/en/signup/1/success/')
         self.assertEqual(Application.objects.active().count(), 1)
         app = Application.objects.active().first()
-        url = app.unapply_link().replace('{0}/', '/')
+        url = app.unapply_link().replace('{0}/'.format(settings.DOMAIN), '/')
         resp = c.post(url)
         self.assertRedirects(resp, '/en/')
         self.assertEqual(Application.objects.active().count(), 0)
