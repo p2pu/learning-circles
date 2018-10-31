@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.translation import get_language
 from django.conf import settings
+from django.urls import reverse
 
 from mock import patch
 from freezegun import freeze_time
@@ -35,6 +36,7 @@ from studygroups.tasks import send_facilitator_survey
 from studygroups.tasks import send_facilitator_survey_reminder
 from studygroups.tasks import send_final_learning_circle_report
 from studygroups.tasks import send_last_week_group_activity
+from studygroups.tasks import send_community_digest
 
 import calendar
 import datetime
@@ -43,9 +45,7 @@ import re
 import urllib.request, urllib.parse, urllib.error
 import json
 
-class MockChart():
-    def generate():
-        return "image"
+
 
 # Create your tests here.
 class TestStudyGroupTasks(TestCase):
@@ -63,6 +63,8 @@ class TestStudyGroupTasks(TestCase):
         'study_group': '1',
     }
 
+    def mock_generate(self, **opts):
+        return "image"
 
     def setUp(self):
         user = User.objects.create_user('admin', 'admin@test.com', 'password')
@@ -581,9 +583,6 @@ class TestStudyGroupTasks(TestCase):
             self.assertIn(sg.facilitator.email, mail.outbox[0].to)
 
 
-    def mock_generate(self, **opts):
-        return "image"
-
     @patch('studygroups.charts.LearnerGoalsChart.generate', mock_generate)
     @patch('studygroups.charts.GoalsMetChart.generate', mock_generate)
     def test_send_final_learning_circle_report_email(self):
@@ -660,5 +659,26 @@ class TestStudyGroupTasks(TestCase):
         with freeze_time("2018-01-05 18:01:00"):
             send_last_week_group_activity(sg)
             self.assertEqual(len(mail.outbox), 0)
+
+
+    @patch('studygroups.charts.LearningCircleMeetingsChart.generate', mock_generate)
+    @patch('studygroups.charts.LearningCircleCountriesChart.generate', mock_generate)
+    @patch('studygroups.charts.NewLearnerGoalsChart.generate', mock_generate)
+    @patch('studygroups.charts.TopTopicsChart.generate', mock_generate)
+    def test_send_community_digest_email(self):
+        send_community_digest()
+
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date = today
+        start_date = end_date - datetime.timedelta(days=14)
+
+        web_version_path = reverse('studygroups_community_digest', kwargs={'start_date': start_date.strftime("%d-%m-%Y"), 'end_date': end_date.strftime("%d-%m-%Y")})
+        web_version_url = "http://{}".format(settings.DOMAIN) + web_version_path
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to[0], settings.DEFAULT_COMMUNITY_MANAGER_EMAIL)
+        self.assertEqual(mail.outbox[0].subject, "P2PU Community Digest for {} to {}".format(start_date.strftime("%b %-d"), end_date.strftime("%b %-d")))
+        self.assertIn("Community Digest", mail.outbox[0].body)
+        self.assertIn(web_version_url, mail.outbox[0].body)
 
 
