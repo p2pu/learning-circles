@@ -4,7 +4,7 @@
 
 <style type="text/css">
   .email-content h1, .email-content h2, .email-content h3, .email-content h4, .email-content h5 {
-    font-family: open-sans, Helvetica, sans-serif;
+    font-family: 'Open Sans', Helvetica, sans-serif;
     line-height: normal;
   }
 
@@ -89,13 +89,13 @@
 </style>
 
 <div class="title-section">
-  <h1>Community Digest</h1>
-  <p>{{ start_date }} to {{ end_date }}</p>
+  <h1>{% trans "Community Digest" %}</h1>
+  <p>{{ start_date }} {% trans "to" %} {{ end_date }}</p>
 </div>
 
 <div class="report-section">
   <h2>
-    <span class="section-header">Photo of the Week</span>
+    <span class="section-header">{% trans "Photo of the Week" %}</span>
   </h2>
   <img src="https://www.p2pu.org/assets/images/learning-circle-cropped.jpg" alt="Photo of the month" width="100%">
   <small><em>Caption goes here</em></small>
@@ -103,7 +103,7 @@
 
 <div class="report-section">
   <h2>
-    <span class="section-header">News and Events</span>
+    <span class="section-header">{% trans "News and Events" %}</span>
   </h2>
   <p>News goes here</p>
 </div>
@@ -111,26 +111,37 @@
 <div class="report-section">
   <h2>
     <span class="section-header">
-      {#  Pluralize! #}
-      {{ studygroups_met_count }} learning circles met, reaching {{ learners_reached_count }} learners*
+      {% blocktrans count studygroups_met_count=studygroups_met_count %}
+        {{ studygroups_met_count }} learning circle met,
+      {% plural %}
+        {{ studygroups_met_count }} learning circles met,
+      {% endblocktrans %}
+      {% blocktrans count learners_reached_count=learners_reached_count %}
+        reaching {{ learners_reached_count }} learner*
+      {% plural %}
+        reaching {{ learners_reached_count }} learners*
+      {% endblocktrans %}
     </span>
   </h2>
-  <p>* Based on learning circle signups</p>
+  <p>{% trans "* Based on learning circle signups" %}</p>
   <table>
     <tbody>
       <tr>
         <td>
-          {% include "studygroups/measurement_card.html" with title='Total Number of Meetings' chart=meetings_chart fullwidth=web %}
+          {% trans 'Total Number of Meetings' as chart_title %}
+          {% include "studygroups/measurement_card.html" with title=chart_title chart=meetings_chart fullwidth=web %}
         </td>
       </tr>
       <tr>
         <td>
-          {% include "studygroups/measurement_card.html" with title='Current learning circles by country' chart=countries_chart fullwidth=web %}
+          {% trans 'Current learning circles by country' as chart_title %}
+          {% include "studygroups/measurement_card.html" with title=chart_title chart=countries_chart fullwidth=web %}
         </td>
       </tr>
       <tr>
         <td>
-          {% include "studygroups/measurement_card.html" with title='Current learning circles by topic' chart=top_topics_chart fullwidth=web %}
+          {% trans 'Current learning circles by topic' as chart_title %}
+          {% include "studygroups/measurement_card.html" with title=chart_title chart=top_topics_chart fullwidth=web %}
         </td>
       </tr>
     </tbody>
@@ -141,8 +152,11 @@
 <div class="report-section">
   <h2>
     <span class="section-header">
-     {#  Pluralize! #}
-    {{ new_learners_count }} learners signed up for a learning circle
+      {% blocktrans count new_learners_count=new_learners_count %}
+        {{ new_learners_count }} learner signed up for a learning circle
+      {% plural %}
+        {{ new_learners_count }} learners signed up for a learning circle
+      {% endblocktrans %}
     </span>
   </h2>
   {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart fullwidth=web %}
@@ -151,20 +165,25 @@
 <div class="report-section">
   <h2>
     <span class="section-header">
-      {#  Pluralize! #}
-      {{ new_users_count }} people joined P2PU
+      {% blocktrans count new_users_count=new_users_count %}
+        {{ new_users_count }} person joined P2PU
+      {% plural %}
+        {{ new_users_count }} people joined P2PU
+      {% endblocktrans %}
     </span>
   </h2>
   <ul>
   {% for post in intros_from_new_users %}
     <li>
       <em>{{ post.cooked | safe | truncatewords_html:25 }}</em>
-      <a href="https://community.p2pu.org/t/introduce-yourself/1571/{{post.post_number}}">Read {{ post.name | title }}'s full post</a>
+      <a href="https://community.p2pu.org/t/introduce-yourself/1571/{{post.post_number}}">
+        {% blocktrans with name=post.name|title %}Read {{ name }}'s full post{% endblocktrans %}
+      </a>
     </li>
   {% endfor %}
   </ul>
   <p>
-    For more, go to the <a href="https://community.p2pu.org/t/introduce-yourself/1571">full thread</a>
+    {% trans "For more, go to the" %} <a href="https://community.p2pu.org/t/introduce-yourself/1571">{% trans "full thread" %}</a>
     <span class="emoji">👉</span>
   </p>
 </div>
@@ -172,16 +191,19 @@
 <div class="report-section">
   <h2>
     <span class="section-header">
-      {#  Pluralize! #}
-      {{ upcoming_studygroups_count }} learning circles will begin in the next 3 weeks
+      {% blocktrans count upcoming_studygroups_count=upcoming_studygroups_count %}
+        {{ upcoming_studygroups_count }} learning circle will begin in the next 3 weeks
+      {% plural %}
+        {{ upcoming_studygroups_count }} learning circles will begin in the next 3 weeks
+      {% endblocktrans %}
     </span>
   </h2>
   <table class="inner-table">
     <thead>
       <tr>
-        <td>Facilitator</td>
-        <td>Course</td>
-        <td>Location</td>
+        <td>{% trans "Facilitator" %}</td>
+        <td>{% trans "Course" %}</td>
+        <td>{% trans "Location" %}</td>
       </tr>
     </thead>
     <tbody>
@@ -199,44 +221,52 @@
 <div class="report-section">
   <h2>
     <span class="section-header">
-      {#  Pluralize! #}
-      {{ finished_studygroups_count }} learning circles wrapped up
+      {% blocktrans count finished_studygroups_count=finished_studygroups_count %}
+        {{ finished_studygroups_count }} learning circle wrapped up
+      {% plural %}
+        {{ finished_studygroups_count }} learning circles wrapped up
+      {% endblocktrans %}
     </span>
   </h2>
-  <p>The following learning circles have reports available. Click to view the report:</p>
+  <p>{% trans "The following learning circles have reports available. Click to view the report:" %}</p>
   <ul>
     {% for studygroup in studygroups_with_survey_responses %}
-      <li><a href="{{ studygroup.report_url }}">{{ studygroup.course.title }}</a> in {{ studygroup.city }}</li>
+      <li><a href="{{ studygroup.report_url }}">{{ studygroup.course.title }}</a> {% trans "in" %} {{ studygroup.city }}</li>
     {% endfor %}
   </ul>
 </div>
 
 <div class="report-section">
   <h2>
-    {#  Pluralize! #}
-    <span class="section-header">{{ new_courses_count }} courses were added to the P2PU database</span>
+    <span class="section-header">
+    {% blocktrans count new_courses_count=new_courses_count %}
+      {{ new_courses_count }} course was added to the P2PU database
+    {% plural %}
+      {{ new_courses_count }} courses were added to the P2PU database
+    {% endblocktrans %}
+    </span>
   </h2>
   <ul>
   {% for course in new_courses %}
-      <li>{{ course.created_by.first_name }} added <a href="{{ course.link }}">{{ course.title }}</a></li>
+      <li>{{ course.created_by.first_name }} {% trans "added" %} <a href="{{ course.link }}">{{ course.title }}</a></li>
     {% endfor %}
   </ul>
   <p>
-    To see all the courses, check out the <a href="https://www.p2pu.org/en/courses/" target="_blank">courses page</a>
+    {% trans "To see all the courses, check out the" %} <a href="https://www.p2pu.org/en/courses/" target="_blank">{% trans "courses page" %}</a>
     <span class="emoji">👉</span>
   </p>
 </div>
 
 <div class="report-section">
   <h2>
-    <span class="section-header">What we're talking about</span>
+    <span class="section-header">{% trans "What we're talking about" %}</span>
   </h2>
   {% include "studygroups/discourse_table.html" %}
 </div>
 
 {% if not web %}
   <div>
-    <p>You can also <a href="{{ web_version_path }}">view this digest online</a></p>
+    <p>{% trans "You can also" %} <a href="{{ web_version_path }}">{% trans "view this digest online" %}</a></p>
   </div>
 {% endif %}
 
