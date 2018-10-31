@@ -1,0 +1,27 @@
+{% extends 'email_base.html' %}
+{% block body %}
+{% load i18n %}
+
+{% blocktrans %}
+Hi {{ facilitator_name }},
+
+The survey we sent to your learning circle participants has {{ learner_responses_count }} response{{ learner_responses_count|pluralize }} so far. Here’s a preview of what your learning circle report currently looks like: {{ report_url }}
+
+Can you remind the following people to reply to this survey? You can share this link with them: {{ learner_survey_url }}
+{% endblocktrans %}
+
+{% if learners_without_survey_responses %}
+  {% for learner in learners_without_survey_responses %}
+    - {{ learner.name }} - {{ learner.email }}
+  {% endfor %}
+{% endif %}
+
+{% if facilitator_survey_url is not None %}
+{% blocktrans %}
+As a reminder, this is the link for you to leave your own feedback: {{ facilitator_survey_url }}
+{% endblocktrans %}
+{% endif %}
+
+{% trans "Cheers" %},
+{% trans "The P2PU Team" %}
+{% endblock %}

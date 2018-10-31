@@ -16,6 +16,12 @@ RUN apk --no-cache add --virtual .python-rundeps \
         libjpeg \
         zlib \
         postgresql \
+        build-base \
+        cairo-dev \
+        cairo \
+        cairo-tools \
+        openjpeg-dev \
+        tiff-dev \
     && apk --no-cache add --virtual .build-deps \
         gcc \
         make \
@@ -24,6 +30,11 @@ RUN apk --no-cache add --virtual .python-rundeps \
         postgresql-dev \
         jpeg-dev \
         zlib-dev \
+        libffi-dev \
+        freetype-dev \
+        lcms2-dev \
+        tk-dev \
+        tcl-dev \
     && python3 -m venv /opt/django-venv \
     && /opt/django-venv/bin/pip install -r /opt/app/requirements.txt \
     && apk del .build-deps

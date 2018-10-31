@@ -1,21 +1,8 @@
 from icalendar import Calendar, Event
 from icalendar import vCalAddress, vText
 
-#   def make_meeting_event(meeting):
-#       from ics import Calendar, Event
-#       e = Event()
-#       e.name = str(meeting.study_group)
-#       e.begin = meeting.meeting_datetime()
-#       e.end = meeting.meeting_datetime_end()
-#       e.location =  meeting.study_group.venue_name
-#       c = Calendar(
-#           creator='P2PU learning circles',
-#           events=[e]
-#       )
-#       return str(c)
 
-
-def make_meeting_2(meeting):
+def make_meeting_ics(meeting):
     study_group = meeting.study_group
     cal = Calendar()
     cal.add('prodid', '-//learningcircles.p2pu.org//LearningCircles')

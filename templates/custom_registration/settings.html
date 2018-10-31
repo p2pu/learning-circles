@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+{% block content %}
+{% url 'studygroups_login_redirect' as login_url %}
+
+<div class="learning-circle-signup">
+  <div class="background">
+    <div class="container">
+      <div class="row justify-content-between page-content">
+        <div class="col-12 col-md-5" data-aos="fade-right">
+          <header>
+            <h1>{% trans "Account Settings" %}</h1>
+          </header>
+          <p>Update your account settings</p>
+        </div>
+        <div class="col-12 col-md-5" data-aos="fade-left">
+          <div class="form">
+            <h4>Communication preferences</h4>
+            <form action="" method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              {{ form|crispy }}
+              <button type="submit" class="btn p2pu-btn light">{% trans "Submit" %}</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

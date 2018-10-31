@@ -27,7 +27,7 @@ services:
     - DEBUG=true
   frontend:
     image: p2pu/js-build:carbon-alpine
-    volumes: 
+    volumes:
     - .:/opt/app
     working_dir: /opt/app
     command: sh -c "npm i && npm run watch"
