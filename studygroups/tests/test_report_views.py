@@ -170,5 +170,5 @@ class TestReportViews(TestCase):
         topics_chart_generate.assert_called()
         goals_chart_generate.assert_called()
         countries_chart_generate.assert_called()
-        meetings_chart_generate.assert_called_with(output='png')
+        meetings_chart_generate.assert_called()
 

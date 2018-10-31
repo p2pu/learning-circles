@@ -563,7 +563,7 @@ def send_weekly_update():
     update.attach_alternative(html_body, 'text/html')
     update.send()
 
-
+from django.utils.timezone import make_aware
 def send_community_digest():
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     end_date = today
@@ -572,8 +572,8 @@ def send_community_digest():
     context = community_digest_data(start_date, end_date)
 
     chart_data = {
-        "meetings_chart": charts.LearningCircleMeetingsChart(end_date.date()).generate(output="png"), # why does the svg set text-anchor: middle on the x_labels?!?!
-        "countries_chart": charts.LearningCircleCountriesChart(end_date.date()).generate(output="png"),
+        "meetings_chart": charts.LearningCircleMeetingsChart(end_date.date()).generate(output="png"),
+        "countries_chart": charts.LearningCircleCountriesChart(start_date.date(), end_date.date()).generate(output="png"),
         "learner_goals_chart": charts.NewLearnerGoalsChart(end_date.date(), context['new_applications']).generate(output="png"),
         "top_topics_chart": charts.TopTopicsChart(end_date.date(), context['studygroups_that_met']).generate(output="png"),
     }

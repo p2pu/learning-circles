@@ -699,17 +699,20 @@ class FacilitatorTipsChart():
 class LearningCircleMeetingsChart():
 
     def __init__(self, report_date, **kwargs):
-        self.chart = pygal.Line(style=custom_style(), fill=True, show_legend=False, max_scale=10, order_min=0, y_title="Meetings", x_label_rotation=90, **kwargs)
+        self.chart = pygal.Line(style=custom_style(), height=400, fill=True, show_legend=False, max_scale=10, order_min=0, y_title="Meetings", x_label_rotation=30, **kwargs)
         self.report_date = report_date
 
     def get_data(self):
         data = { "meetings": [], "dates": [] }
         start_date = datetime.date(2016, 1, 1)
-        end_date = start_date + relativedelta(months=+1)
+        end_date = datetime.date(2016, 1, 31)
 
         while end_date <= self.report_date:
             meetings_count = Meeting.objects.active().filter(meeting_date__gte=start_date, meeting_date__lt=end_date, study_group__deleted_at__isnull=True, study_group__draft=False).count()
-            data["dates"].append(end_date.strftime("%B %Y"))
+            if end_date.month % 3 == 1:
+                data["dates"].append(end_date.strftime("%b %Y"))
+            else:
+                data["dates"].append("")
             data["meetings"].append(meetings_count)
             end_date = end_date + relativedelta(months=+1)
 
@@ -725,7 +728,6 @@ class LearningCircleMeetingsChart():
         if opts.get('output', None) == "png":
             filename = "community-digest-{}-meetings-chart.png".format(self.report_date.isoformat())
             target_path = os.path.join('tmp', filename)
-            self.chart.height = 400
             self.chart.render_to_png(target_path)
             file = open(target_path, 'rb')
             img_url = save_to_aws(file, filename)
@@ -737,12 +739,13 @@ class LearningCircleMeetingsChart():
 
 class LearningCircleCountriesChart():
 
-    def __init__(self, report_date, **kwargs):
-        self.chart = pygal.Pie(style=custom_style(), inner_radius=.4, **kwargs)
+    def __init__(self, start_date, report_date, **kwargs):
+        self.chart = pygal.Pie(style=custom_style(), height=400, inner_radius=.4, **kwargs)
+        self.start_date = start_date
         self.report_date = report_date
 
     def get_data(self):
-        data = { "Other": 0 }
+        data = { "Not reported": 0 }
 
         studygroups = StudyGroup.objects.published()
 
@@ -750,18 +753,21 @@ class LearningCircleCountriesChart():
             first_meeting = sg.first_meeting()
             last_meeting = sg.last_meeting()
 
-            if first_meeting and last_meeting and first_meeting.meeting_date <= self.report_date and last_meeting.meeting_date >= self.report_date:
-                country = sg.country
-                country = "USA" if country == "United States of America" else country
+            if first_meeting is not None and last_meeting is not None:
+                if (first_meeting.meeting_date >= self.start_date and first_meeting.meeting_date <= self.report_date)\
+                or (last_meeting.meeting_date >= self.start_date and last_meeting.meeting_date <= self.report_date)\
+                or (first_meeting.meeting_date <= self.start_date and last_meeting.meeting_date >= self.report_date):
+                    country = sg.country
+                    country = "USA" if country == "United States of America" else country
 
-                country = "USA" if country == "United States of America" else country
+                    country = "USA" if country == "United States of America" else country
 
-                if country in data:
-                    data[country] += 1
-                elif country is "" or country is None:
-                    data["Other"] += 1
-                else:
-                    data[country] = 1
+                    if country in data:
+                        data[country] += 1
+                    elif country is "" or country is None:
+                        data["Not reported"] += 1
+                    else:
+                        data[country] = 1
 
         return data
 
@@ -769,7 +775,10 @@ class LearningCircleCountriesChart():
         chart_data = self.get_data()
 
         for key, value in chart_data.items():
-            self.chart.add(key, value)
+            if key != "Not reported":
+                self.chart.add(key, value)
+
+        self.chart.add("Not reported", chart_data["Not reported"])
 
         if opts.get('output', None) == "png":
             filename = "community-digest-{}-countries-chart.png".format(self.report_date.isoformat())
@@ -788,7 +797,7 @@ class LearningCircleCountriesChart():
 class NewLearnerGoalsChart():
 
     def __init__(self, report_date, applications, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, order_min=0, max_scale=10, x_title="Learners", **kwargs)
+        self.chart = pygal.HorizontalBar(style=custom_style(), height=400, show_legend=False, order_min=0, max_scale=10, x_title="Learners", **kwargs)
         self.applications = applications
         self.report_date = report_date
 
@@ -831,7 +840,7 @@ class NewLearnerGoalsChart():
 class TopTopicsChart():
 
     def __init__(self, report_date, study_group_ids, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, x_title="Courses with this topic", **kwargs)
+        self.chart = pygal.HorizontalBar(style=custom_style(), height=400, show_legend=False, max_scale=5, order_min=0, x_title="Courses with this topic", **kwargs)
         self.study_group_ids = study_group_ids
         self.report_date = report_date
 

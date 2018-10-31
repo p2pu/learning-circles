@@ -84,8 +84,8 @@ class CommunityDigestView(TemplateView):
         digest_data = community_digest_data(start_date, end_date)
 
         chart_data = {
-            "meetings_chart": charts.LearningCircleMeetingsChart(end_date.date()).generate(output="png"), # why does the svg set text-anchor: middle on the x_labels?!?!
-            "countries_chart": charts.LearningCircleCountriesChart(end_date.date()).generate(),
+            "meetings_chart": charts.LearningCircleMeetingsChart(end_date.date()).generate(), # why does the svg set text-anchor: middle on the x_labels?!?!
+            "countries_chart": charts.LearningCircleCountriesChart(start_date.date(), end_date.date()).generate(),
             "learner_goals_chart": charts.NewLearnerGoalsChart(end_date.date(), digest_data['new_applications']).generate(),
             "top_topics_chart": charts.TopTopicsChart(end_date.date(), digest_data['studygroups_that_met']).generate(),
         }

@@ -3,8 +3,12 @@
 {% load i18n %}
 
 <style type="text/css">
+  .email-content {
+    color: #515665;
+  }
+
   .email-content h1, .email-content h2, .email-content h3, .email-content h4, .email-content h5 {
-    font-family: 'Open Sans', Helvetica, sans-serif;
+    font-family: 'Open Sans', 'Helvetica', sans-serif;
     line-height: normal;
   }
 
@@ -33,6 +37,10 @@
   table.inner-table tbody td {
     border-bottom: 1px solid #F3F4F8;
     padding: 5px;
+  }
+
+  table.chart-table {
+    width: 100%;
   }
 
   .section-header {
@@ -85,9 +93,11 @@
   .col-12 {
     padding: 0;
   }
-
 </style>
 
+{% if not web %}
+  <p class="preheader">In this issue: Highlights from the past three weeks</p>
+{% endif %}
 <div class="title-section">
   <h1>{% trans "Community Digest" %}</h1>
   <p>{{ start_date }} {% trans "to" %} {{ end_date }}</p>
@@ -117,25 +127,24 @@
         {{ studygroups_met_count }} learning circles met,
       {% endblocktrans %}
       {% blocktrans count learners_reached_count=learners_reached_count %}
-        reaching {{ learners_reached_count }} learner*
+        reaching {{ learners_reached_count }} learner
       {% plural %}
-        reaching {{ learners_reached_count }} learners*
+        reaching {{ learners_reached_count }} learners
       {% endblocktrans %}
     </span>
   </h2>
-  <p>{% trans "* Based on learning circle signups" %}</p>
-  <table>
+  <table class="chart-table">
     <tbody>
       <tr>
         <td>
-          {% trans 'Total Number of Meetings' as chart_title %}
+          {% trans 'Total number of learning circle meetings' as chart_title %}
           {% include "studygroups/measurement_card.html" with title=chart_title chart=meetings_chart fullwidth=web %}
         </td>
       </tr>
       <tr>
         <td>
           {% trans 'Current learning circles by country' as chart_title %}
-          {% include "studygroups/measurement_card.html" with title=chart_title chart=countries_chart fullwidth=web %}
+          {% include "studygroups/measurement_card.html" with title=chart_title chart=countries_chart fullwidth=web%}
         </td>
       </tr>
       <tr>
@@ -159,7 +168,7 @@
       {% endblocktrans %}
     </span>
   </h2>
-  {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart fullwidth=web %}
+  {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart fullwidth=web%}
 </div>
 
 <div class="report-section">
@@ -264,10 +273,15 @@
   {% include "studygroups/discourse_table.html" %}
 </div>
 
-{% if not web %}
-  <div>
-    <p>{% trans "You can also" %} <a href="{{ web_version_path }}">{% trans "view this digest online" %}</a></p>
-  </div>
-{% endif %}
+<div class="report-section">
+  <p>{% trans "Note: Learning circle data comes from P2PU’s registration system, survey results, and online community discussion." %}</p>
+
+  {% if not web %}
+    <div>
+      <p>{% trans "You can also" %} <a href="{{ web_version_path }}">{% trans "view this digest online" %}</a></p>
+    </div>
+  {% endif %}
+</div>
+
 
 {% endblock %}

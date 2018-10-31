@@ -16,12 +16,12 @@
 <table border="0" cellpadding="10" cellspacing="10" id="report-table">
     <tr>
         <td valign="top">
-            {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart %}
+            {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart fullwidth=True email=True %}
         </td>
     </tr>
     <tr>
         <td valign="top">
-            {% include "studygroups/measurement_card.html" with title='Goals Met' description='Did participants reach their learning goals?' chart=goals_met_chart %}
+            {% include "studygroups/measurement_card.html" with title='Goals Met' description='Did participants reach their learning goals?' chart=goals_met_chart fullwidth=True email=True %}
         </td>
     </tr>
 </table>
