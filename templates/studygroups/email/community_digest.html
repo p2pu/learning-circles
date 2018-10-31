@@ -1,0 +1,243 @@
+{% extends 'email_base.html' %}
+{% block body %}
+{% load i18n %}
+
+<style type="text/css">
+  .email-content h1, .email-content h2, .email-content h3, .email-content h4, .email-content h5 {
+    font-family: open-sans, Helvetica, sans-serif;
+    line-height: normal;
+  }
+
+  .email-content h1 {
+    font-size: 2em;
+  }
+
+  .email-content h2 {
+    font-size: 1.5em;
+  }
+
+  table.inner-table {
+    line-height: 1.4;
+    border-collapse: collapse;
+  }
+
+  table.inner-table thead tr {
+    font-weight: bold;
+  }
+
+  table.inner-table thead td {
+    border-bottom: 1px solid #515665;
+    padding: 5px;
+  }
+
+  table.inner-table tbody td {
+    border-bottom: 1px solid #F3F4F8;
+    padding: 5px;
+  }
+
+  .section-header {
+    background-color: #515665;
+    color: #FFFFFF;
+    padding: 5px;
+  }
+
+  .report-section {
+    margin-bottom: 40px;
+  }
+
+  .title-section {
+    overflow: auto;
+  }
+
+  .title-section h1 {
+    float: left;
+    margin-top: 0;
+  }
+
+  .title-section p {
+    float: right;
+    margin-top: 8px;
+    vertical-align: middle;
+    border-left: 6px solid #515665;
+    padding-left: 10px;
+    line-height: 1.4;
+  }
+
+  .email-content ul {
+    padding-left: 0;
+    padding-bottom: 10px;
+    list-style: none;
+    margin-top: 1em;
+  }
+
+  .email-content ul li {
+    margin: 10px 0;
+    border-left: 6px solid #515665;
+    padding-left: 10px;
+    line-height: 1.4;
+  }
+
+  .emoji {
+    font-size: 26px;
+    vertical-align: middle;
+  }
+
+  .col-12 {
+    padding: 0;
+  }
+
+</style>
+
+<div class="title-section">
+  <h1>Community Digest</h1>
+  <p>{{ start_date }} to {{ end_date }}</p>
+</div>
+
+<div class="report-section">
+  <h2>
+    <span class="section-header">Photo of the Week</span>
+  </h2>
+  <img src="https://www.p2pu.org/assets/images/learning-circle-cropped.jpg" alt="Photo of the month" width="100%">
+  <small><em>Caption goes here</em></small>
+</div>
+
+<div class="report-section">
+  <h2>
+    <span class="section-header">News and Events</span>
+  </h2>
+  <p>News goes here</p>
+</div>
+
+<div class="report-section">
+  <h2>
+    <span class="section-header">
+      {#  Pluralize! #}
+      {{ studygroups_met_count }} learning circles met, reaching {{ learners_reached_count }} learners*
+    </span>
+  </h2>
+  <p>* Based on learning circle signups</p>
+  <table>
+    <tbody>
+      <tr>
+        <td>
+          {% include "studygroups/measurement_card.html" with title='Total Number of Meetings' chart=meetings_chart fullwidth=web %}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {% include "studygroups/measurement_card.html" with title='Current learning circles by country' chart=countries_chart fullwidth=web %}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {% include "studygroups/measurement_card.html" with title='Current learning circles by topic' chart=top_topics_chart fullwidth=web %}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<div class="report-section">
+  <h2>
+    <span class="section-header">
+     {#  Pluralize! #}
+    {{ new_learners_count }} learners signed up for a learning circle
+    </span>
+  </h2>
+  {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart fullwidth=web %}
+</div>
+
+<div class="report-section">
+  <h2>
+    <span class="section-header">
+      {#  Pluralize! #}
+      {{ new_users_count }} people joined P2PU
+    </span>
+  </h2>
+  <ul>
+  {% for post in intros_from_new_users %}
+    <li>
+      <em>{{ post.cooked | safe | truncatewords_html:25 }}</em>
+      <a href="https://community.p2pu.org/t/introduce-yourself/1571/{{post.post_number}}">Read {{ post.name | title }}'s full post</a>
+    </li>
+  {% endfor %}
+  </ul>
+  <p>
+    For more, go to the <a href="https://community.p2pu.org/t/introduce-yourself/1571">full thread</a>
+    <span class="emoji">👉</span>
+  </p>
+</div>
+
+<div class="report-section">
+  <h2>
+    <span class="section-header">
+      {#  Pluralize! #}
+      {{ upcoming_studygroups_count }} learning circles will begin in the next 3 weeks
+    </span>
+  </h2>
+  <table class="inner-table">
+    <thead>
+      <tr>
+        <td>Facilitator</td>
+        <td>Course</td>
+        <td>Location</td>
+      </tr>
+    </thead>
+    <tbody>
+      {% for studygroup in upcoming_studygroups %}
+        <tr>
+          <td>{{ studygroup.facilitator.first_name | title }}</td>
+          <td><a href="{{ studygroup.course.link }}">{{ studygroup.course.title }}</a></td>
+          <td>{{ studygroup.city | title }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="report-section">
+  <h2>
+    <span class="section-header">
+      {#  Pluralize! #}
+      {{ finished_studygroups_count }} learning circles wrapped up
+    </span>
+  </h2>
+  <p>The following learning circles have reports available. Click to view the report:</p>
+  <ul>
+    {% for studygroup in studygroups_with_survey_responses %}
+      <li><a href="{{ studygroup.report_url }}">{{ studygroup.course.title }}</a> in {{ studygroup.city }}</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div class="report-section">
+  <h2>
+    {#  Pluralize! #}
+    <span class="section-header">{{ new_courses_count }} courses were added to the P2PU database</span>
+  </h2>
+  <ul>
+  {% for course in new_courses %}
+      <li>{{ course.created_by.first_name }} added <a href="{{ course.link }}">{{ course.title }}</a></li>
+    {% endfor %}
+  </ul>
+  <p>
+    To see all the courses, check out the <a href="https://www.p2pu.org/en/courses/" target="_blank">courses page</a>
+    <span class="emoji">👉</span>
+  </p>
+</div>
+
+<div class="report-section">
+  <h2>
+    <span class="section-header">What we're talking about</span>
+  </h2>
+  {% include "studygroups/discourse_table.html" %}
+</div>
+
+{% if not web %}
+  <div>
+    <p>You can also <a href="{{ web_version_path }}">view this digest online</a></p>
+  </div>
+{% endif %}
+
+{% endblock %}

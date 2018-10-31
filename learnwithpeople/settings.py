@@ -166,6 +166,9 @@ if DEBUG is True and EMAIL_HOST is None:
 # Default email sender
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
 
+# Default community manager email for community digest
+DEFAULT_COMMUNITY_MANAGER_EMAIL = env('COMMUNITY_MANAGER_EMAIL', 'team@p2pu.org')
+
 # Used for error messages to admin/staff
 SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'no-reply@p2pu.org')
 

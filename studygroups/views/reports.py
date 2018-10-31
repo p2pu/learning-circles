@@ -1,11 +1,19 @@
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.base import TemplateView
+from django.urls import reverse
+from django.conf import settings
 
 from django.utils.decorators import method_decorator
 from studygroups.decorators import user_is_group_facilitator
 
 from studygroups.models import StudyGroup
+from studygroups.models import community_digest_data
 from studygroups import charts
+
+from datetime import datetime, timedelta
+from django.utils.timezone import make_aware
+
+import requests
 
 
 class StudyGroupFinalReport(TemplateView):
@@ -63,3 +71,28 @@ class StudyGroupFinalReport(TemplateView):
         }
 
         return context
+
+
+class CommunityDigestView(TemplateView):
+    template_name = 'studygroups/community_digest.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(CommunityDigestView, self).get_context_data(**kwargs)
+        start_date = make_aware(datetime.strptime(kwargs.get('start_date'), "%d-%m-%Y"))
+        end_date = make_aware(datetime.strptime(kwargs.get('end_date'), "%d-%m-%Y"))
+
+        digest_data = community_digest_data(start_date, end_date)
+
+        chart_data = {
+            "meetings_chart": charts.LearningCircleMeetingsChart(end_date.date()).generate(output="png"), # why does the svg set text-anchor: middle on the x_labels?!?!
+            "countries_chart": charts.LearningCircleCountriesChart(end_date.date()).generate(),
+            "learner_goals_chart": charts.NewLearnerGoalsChart(end_date.date(), digest_data['new_applications']).generate(),
+            "top_topics_chart": charts.TopTopicsChart(end_date.date(), digest_data['studygroups_that_met']).generate(),
+        }
+
+        context.update(digest_data)
+        context.update(chart_data)
+        context.update({ "web": True })
+
+        return context
+

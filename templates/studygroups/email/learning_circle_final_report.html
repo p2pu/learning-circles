@@ -1,7 +1,6 @@
 {% extends 'email_base.html' %}
 {% block body %}
 {% load i18n %}
-{% load staticfiles %}
 
 
 <p>{% blocktrans %}Hi {{facilitator_name}} and learning circle participants,{% endblocktrans %}</p>
@@ -28,7 +27,7 @@
 </table>
 
 <div>
-    <a href="{{ report_url }}">{% trans "Click here to see the full report." %}</a>
+    <a href="{{ report_path }}">{% trans "Click here to see the full report." %}</a>
 </div>
 
 <p>{% trans "Cheers" %},</p>
