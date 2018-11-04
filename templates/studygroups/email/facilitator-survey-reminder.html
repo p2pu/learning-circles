@@ -1,6 +1,13 @@
 {% extends 'email_base.html' %}
 {% block body %}
 {% load i18n %}
+<style>
+  .indented {
+    padding: 10px;
+    padding-left: 30px;
+    border-left: 6px solid #D3D8E6;
+  }
+</style>
 
 <table>
   <tbody>
@@ -13,12 +20,12 @@
 
         <p>Can you remind your learning circle participants to reply to the survey? Feel free to copy the text below and modify it:</p>
         {% endblocktrans %}
-        <hr>
-        <p>{% trans "Hi there" %},</p>
-        <p>{% trans "Can you take a few minutes to let me know how your learning circle is going? Your feedback - the good and the bad - will improve the learning circle program for learners and facilitators around the world." %}</p>
-        <p>Share your feedback here: <a href="{{ learner_survey_url }}">{{ learner_survey_url }}</a></p>
-        <p>{% trans "Thank you!" %}</p>
-        <hr>
+        <div class="indented">
+          <p>{% trans "Hi there" %},</p>
+          <p>{% trans "Can you take a few minutes to let me know how your learning circle is going? Your feedback - the good and the bad - will improve the learning circle program for learners and facilitators around the world." %}</p>
+          <p>{% trans "Share your feedback here:" %} <a href="{{ learner_survey_url }}">{{ learner_survey_url }}</a></p>
+          <p>{% trans "Thank you!" %}</p>
+        </div>
 
           {% if learners_without_survey_responses is not None %}
           <p>{% trans "These are the participants who haven't responded yet, according to our records:" %}
@@ -30,9 +37,7 @@
           {% endif %}
 
         {% if facilitator_survey_url is not None %}
-        {% blocktrans %}
-          <p>As a reminder, this is the link for you to leave your own feedback: <a href="{{ facilitator_survey_url }}">{{ facilitator_survey_url }}</a></p>
-        {% endblocktrans %}
+          <p>{% trans "As a reminder, this is the link for you to leave your own feedback:" %} <a href="{{ facilitator_survey_url }}">{{ facilitator_survey_url }}</a></p>
         {% endif %}
 
         <p>{% trans "Cheers" %},</p>
