@@ -624,7 +624,7 @@ def get_new_user_intros(new_users, limit=5):
         if settings.DEBUG:
             discourse_username = discourse_username.split("_")[0] + "_Lastname" # TODO remove this on production!!
 
-        if discourse_username in new_discourse_usernames:
+        if discourse_username in new_discourse_usernames and post["reply_to_post_number"] is None:
             intros_from_new_users.append(post)
 
     return intros_from_new_users[::-1][:limit]

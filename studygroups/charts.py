@@ -740,7 +740,7 @@ class LearningCircleMeetingsChart():
 class LearningCircleCountriesChart():
 
     def __init__(self, start_date, report_date, **kwargs):
-        self.chart = pygal.Pie(style=custom_style(), height=400, inner_radius=.4, **kwargs)
+        self.chart = pygal.Pie(style=custom_style(), inner_radius=.4, **kwargs)
         self.start_date = start_date
         self.report_date = report_date
 
@@ -849,12 +849,17 @@ class TopTopicsChart():
         course_ids = StudyGroup.objects.filter(id__in=self.study_group_ids).values_list('course')
         course_topics = Course.objects.filter(id__in=course_ids).exclude(topics="").values_list("topics")
         topics = [
-            item.strip().lower() for sublist in course_topics for item in sublist[0].split(',')
+            item.strip().lower().capitalize() for sublist in course_topics for item in sublist[0].split(',')
         ]
 
         top_topics = Counter(topics).most_common(10)
         for topic in reversed(top_topics):
-            data[topic[0]] = topic[1]
+            topic_name = topic[0]
+            if topic[0] == "Html":
+                topic_name = "HTML"
+            if topic[0] == "Css":
+                topic_name = "CSS"
+            data[topic_name] = topic[1]
 
         return data
 
@@ -877,4 +882,3 @@ class TopTopicsChart():
             return "<img src={} alt={} width='100%'>".format(img_url, 'Top 10 Topics')
 
         return self.chart.render(is_unicode=True)
-
