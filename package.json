@@ -43,6 +43,7 @@
     "p2pu-theme": "^1.0.5",
     "places.js": "^1.4.18",
     "promise-polyfill": "^6.0.2",
+    "prop-types": "^15.6.2",
     "rc-time-picker": "^3.2.1",
     "react": "^16.0.0",
     "react-autocomplete": "^1.7.1",

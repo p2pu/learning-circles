@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types';
 
 /** Renders paging links */
 export default class Pager extends React.Component {
@@ -21,7 +22,7 @@ export default class Pager extends React.Component {
         const {activePage, pages} = this.props;
         let pageNodes = [];
         var makePageLink = i => (
-            <li key={i} 
+            <li key={i}
                 className={'page-item' + (i==activePage?' active':'')}
                 onClick={this._handleChange.bind(this,i)}>
                 <a className='page-link' href='#'>{i+1}</a>
@@ -47,7 +48,7 @@ export default class Pager extends React.Component {
             } else {
                 pageNodes.push(makePageLink(1));
             }
-        }             
+        }
         for (let i=start; i<=end; ++i){
             pageNodes.push(makePageLink(i));
         }
@@ -80,7 +81,7 @@ export default class Pager extends React.Component {
 
 
 Pager.propTypes = {
-    activePage: React.PropTypes.number,
-    pages: React.PropTypes.number,
-    onChange: React.PropTypes.func
+    activePage: PropTypes.number,
+    pages: PropTypes.number,
+    onChange: PropTypes.func
 }

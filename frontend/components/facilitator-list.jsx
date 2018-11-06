@@ -1,5 +1,6 @@
 import React from 'react'
 import PagedTable from './paged-table'
+import PropTypes from 'prop-types';
 
 require("./stylesheets/facilitator-list.scss");
 
@@ -19,7 +20,7 @@ export default class FacilitatorList extends React.Component {
 
     render(){
         let re = new RegExp(this.state.filterQuery, 'i');
-        let facilitators = this.props.facilitators.filter(f => 
+        let facilitators = this.props.facilitators.filter(f =>
             re.test(f.name + f.email)
         );
         let heading = <tr><th>{gettext("Name")}</th><th>{gettext("Email")}</th></tr>;
@@ -47,5 +48,5 @@ export default class FacilitatorList extends React.Component {
 }
 
 FacilitatorList.propTypes = {
-    facilitators: React.PropTypes.array
+    facilitators: PropTypes.array
 }
