@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types';
 import PagedTable from './paged-table'
 import moment from 'moment'
 import Promise from 'promise-polyfill'
@@ -85,5 +86,5 @@ export default class InvitationList extends React.Component {
 }
 
 InvitationList.propTypes = {
-    invitations: React.PropTypes.array
+    invitations: PropTypes.array
 }
