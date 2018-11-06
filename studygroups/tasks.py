@@ -12,7 +12,7 @@ from django.core.mail import send_mail, EmailMultiAlternatives
 from django.urls import reverse
 
 from studygroups.models import StudyGroup, Meeting, Reminder, Course, Application, Feedback, Team, TeamMembership
-from studygroups.models import report_data
+from studygroups.models import report_data, get_study_group_organizers
 from studygroups import charts
 from studygroups.sms import send_message
 from studygroups.email_helper import render_email_templates
@@ -215,7 +215,9 @@ def send_final_learning_circle_report(study_group):
         report_path = reverse('studygroups_final_report', kwargs={'study_group_id': study_group.id})
         report_url = domain + report_path
         recipients = study_group.application_set.values_list('email', flat=True)
-        to = list(recipients)
+        organizers = get_study_group_organizers(study_group)
+        organizers_emails = [organizer.email for organizer in organizers]
+        to = list(recipients) + organizers_emails
         to.append(study_group.facilitator.email)
 
         context = {
