@@ -29,7 +29,6 @@ class ExportLearnerSurveysView(ListView):
     def get_queryset(self, *args, **kwargs):
         query_set = LearnerSurveyResponse.objects.all()
         study_group_id = kwargs.get('study_group_id')
-        print(study_group_id)
         if kwargs.get('study_group_id'):
             study_group = get_object_or_404(StudyGroup, pk=study_group_id)
             query_set = query_set.filter(study_group=study_group)
@@ -37,7 +36,6 @@ class ExportLearnerSurveysView(ListView):
 
     def csv(self, **kwargs):
         data = get_all_results(self.object_list)
-
         response = http.HttpResponse(content_type="text/csv")
         ts = timezone.now().utcnow().isoformat()
         response['Content-Disposition'] = 'attachment; filename="learner-surveys-{}.csv"'.format(ts)
@@ -50,7 +48,6 @@ class ExportLearnerSurveysView(ListView):
     def get(self, request, *args, **kwargs):
         self.object_list = self.get_queryset(*args, **kwargs)
         return self.csv(**kwargs)
-
 
 
 
