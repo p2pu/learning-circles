@@ -632,10 +632,10 @@ class TestStudyGroupTasks(TestCase):
         # freeze time to 30 minutes after send time
         with freeze_time("2010-02-07 18:30:00"):
             send_final_learning_circle_report(sg)
-            self.assertIn(application.email, mail.outbox[0].to)
-            self.assertIn(facilitator.email, mail.outbox[0].to)
-            self.assertIn(organizer.email, mail.outbox[0].to)
-            self.assertEqual(len(mail.outbox[0].to), 3)
+            self.assertIn(application.email, mail.outbox[0].bcc)
+            self.assertIn(facilitator.email, mail.outbox[0].bcc)
+            self.assertIn(organizer.email, mail.outbox[0].bcc)
+            self.assertEqual(len(mail.outbox[0].bcc), 3)
             self.assertIn('https://example.net/en/studygroup/{0}/report/'.format(sg.id), mail.outbox[0].body)
 
 

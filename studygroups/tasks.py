@@ -238,7 +238,7 @@ def send_final_learning_circle_report(study_group):
             subject,
             txt,
             settings.DEFAULT_FROM_EMAIL,
-            to,
+            bcc=to,
             reply_to=[settings.DEFAULT_FROM_EMAIL]
         )
         notification.attach_alternative(html, 'text/html')
