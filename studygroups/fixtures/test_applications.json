@@ -1,0 +1,24 @@
+[{
+   "fields": {
+      "created_at": "2015-03-23T15:18:39.462Z",
+      "updated_at": "2015-03-23T15:18:39.462Z",
+      "name": "Learner1",
+      "email": "learner1@mail.com",
+      "signup_questions": "{\"computer_access\": \"Yes\",\"goals\": \"Personal interest\",\"support\": \"studying\"}",
+      "study_group": "1"
+   },
+   "model": "studygroups.application",
+   "pk": 1
+},
+{
+   "fields": {
+      "created_at": "2015-03-23T15:18:39.462Z",
+      "updated_at": "2015-03-23T15:18:39.462Z",
+      "name": "Learner2",
+      "email": "learner2@mail.com",
+      "signup_questions": "{\"computer_access\": \"Yes\",\"goals\": \"Social reasons\",\"support\": \"studying\"}",
+      "study_group": "1"
+   },
+   "model": "studygroups.application",
+   "pk": 2
+}]

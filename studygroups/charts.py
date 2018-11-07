@@ -19,12 +19,13 @@ from studygroups.forms import ApplicationForm
 
 STAR_RATING_STEPS = 5
 SKILLS_LEARNED_THRESHOLD = 3
+NO_DATA = "<p>No data</p>"
 
 theme_colors = ['#05C6B4', '#B7D500', '#FFBC1A', '#FC7100', '#e83e8c']
 
-s3 = boto3.resource('s3', aws_access_key_id=settings.P2PU_RESOURCES_AWS_ACCESS_KEY, aws_secret_access_key=settings.P2PU_RESOURCES_AWS_SECRET_KEY)
 
 def save_to_aws(file, filename):
+    s3 = boto3.resource('s3', aws_access_key_id=settings.P2PU_RESOURCES_AWS_ACCESS_KEY, aws_secret_access_key=settings.P2PU_RESOURCES_AWS_SECRET_KEY)
     response = s3.Object(settings.P2PU_RESOURCES_AWS_BUCKET, filename).put(Body=file)
     resource_url = "https://s3.amazonaws.com/{}/{}".format(settings.P2PU_RESOURCES_AWS_BUCKET, filename)
     return resource_url
@@ -80,7 +81,7 @@ def average(total, divisor):
     if divisor == 0:
         return 0
 
-    return round(total / divisor, 2)
+    return round(int(total) / divisor, 2)
 
 
 class LearnerGoalsChart():
@@ -94,6 +95,8 @@ class LearnerGoalsChart():
             data[choice[0]] = 0
 
         signup_questions = self.study_group.application_set.values_list('signup_questions', flat=True)
+        if len(signup_questions) == 0:
+            return None
 
         # check for responses for field id UXwfFPX0On3f in typeform responses
         # check if the email for those responses already exists in application_set
@@ -109,6 +112,10 @@ class LearnerGoalsChart():
 
     def generate(self, **opts):
         chart_data = self.get_data()
+
+        if chart_data is None:
+            return NO_DATA
+
         labels = chart_data.keys()
         serie = chart_data.values()
 
@@ -140,7 +147,7 @@ class GoalsMetChart():
         survey_responses = get_typeform_survey_learner_responses(self.study_group)
 
         if len(survey_responses) < 1:
-            return data
+            return None
 
         # G6AXyEuG2NRQ = "When you signed up for {{hidden:course}}, you said that your primary goal was: {{hidden:goal}}. To what extent did you meet your goal?"
         # IO9ALWvVYE3n = "To what extent did you meet your goal?"
@@ -158,6 +165,9 @@ class GoalsMetChart():
 
     def generate(self, **opts):
         chart_data = self.get_data()
+
+        if chart_data is None:
+            return NO_DATA
 
         for key, value in chart_data.items():
             self.chart.add(key, value)
@@ -193,7 +203,7 @@ class SkillsLearnedChart():
         survey_responses = get_typeform_survey_learner_responses(self.study_group)
 
         if len(survey_responses) < 1:
-            return data
+            return None
 
         for response_str in survey_responses:
             response = json.loads(response_str)
@@ -215,8 +225,11 @@ class SkillsLearnedChart():
 
         return data
 
-    def generate(self):
+    def generate(self, **opts):
         chart_data = self.get_data()
+
+        if chart_data is None:
+            return NO_DATA
 
         averages = []
         for key, value in chart_data.items():
@@ -225,6 +238,15 @@ class SkillsLearnedChart():
 
         self.chart.add('Number of learners', averages)
         self.chart.x_labels = list(chart_data)
+
+        if opts.get('output', None) == "png":
+            filename = "report-{}-skills_learned-chart.png".format(self.study_group.uuid)
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Skills learned chart')
 
         return self.chart.render(is_unicode=True)
 
@@ -244,7 +266,7 @@ class NewLearnersChart():
         survey_responses = get_typeform_survey_learner_responses(self.study_group)
 
         if len(survey_responses) < 1:
-            return data
+            return None
 
         first_timers = 0
         for response in survey_responses:
@@ -259,17 +281,28 @@ class NewLearnersChart():
 
         return data
 
-    def generate(self):
+    def generate(self, **opts):
         chart_data = self.get_data()
+
+        if chart_data is None:
+            return NO_DATA
 
         for key, value in chart_data.items():
             self.chart.add(key, value)
+
+        if opts.get('output', None) == "png":
+            filename = "report-{}-new-learners-chart.png".format(self.study_group.uuid)
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'New learners chart')
 
         return self.chart.render(is_unicode=True)
 
 
 class CompletionRateChart():
-
     def __init__(self, study_group, **kwargs):
         style = custom_style()
         style.value_font_size = 40
@@ -283,7 +316,7 @@ class CompletionRateChart():
         survey_responses = get_typeform_survey_learner_responses(self.study_group)
 
         if len(survey_responses) < 1:
-            return data
+            return None
 
         completed = 0
 
@@ -299,17 +332,28 @@ class CompletionRateChart():
 
         return data
 
-    def generate(self):
+    def generate(self, **opts):
         chart_data = self.get_data()
+
+        if chart_data is None:
+            return NO_DATA
 
         for key, value in chart_data.items():
             self.chart.add(key, value)
+
+        if opts.get('output', None) == "png":
+            filename = "report-{}-completion-rate-chart.png".format(self.study_group.uuid)
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Completion rate chart')
 
         return self.chart.render(is_unicode=True)
 
 
 class ReasonsForSuccessChart():
-
     def __init__(self, study_group, **kwargs):
         self.study_group = study_group
 
@@ -318,7 +362,7 @@ class ReasonsForSuccessChart():
         survey_responses = get_typeform_survey_learner_responses(self.study_group)
 
         if len(survey_responses) < 1:
-            return data
+            return None
 
         for response_str in survey_responses:
             field = get_response_field(response_str, "BBZ52adAzbGJ")
@@ -333,6 +377,9 @@ class ReasonsForSuccessChart():
     def generate(self):
         chart_data = self.get_data()
 
+        if chart_data is None:
+            return NO_DATA
+
         quotes = "<ul class='quote-list list-unstyled'>"
 
         for key, value in chart_data.items():
@@ -342,7 +389,6 @@ class ReasonsForSuccessChart():
 
 
 class NextStepsChart():
-
     def __init__(self, study_group, **kwargs):
         self.study_group = study_group
 
@@ -351,7 +397,7 @@ class NextStepsChart():
         survey_responses = get_typeform_survey_learner_responses(self.study_group)
 
         if len(survey_responses) < 1:
-            return data
+            return None
 
         for response_str in survey_responses:
             field = get_response_field(response_str, "qf8iCyr2dw4G")
@@ -366,6 +412,9 @@ class NextStepsChart():
     def generate(self):
         chart_data = self.get_data()
 
+        if chart_data is None:
+            return NO_DATA
+
         quotes = "<ul class='quote-list list-unstyled'>"
 
         for key, value in chart_data.items():
@@ -375,7 +424,6 @@ class NextStepsChart():
 
 
 class IdeasChart():
-
     def __init__(self, study_group, **kwargs):
         self.study_group = study_group
 
@@ -384,7 +432,7 @@ class IdeasChart():
         survey_responses = get_typeform_survey_learner_responses(self.study_group)
 
         if len(survey_responses) < 1:
-            return data
+            return None
 
         for response_str in survey_responses:
             field = get_response_field(response_str, "ll0ZbuEnCkiW")
@@ -398,6 +446,9 @@ class IdeasChart():
 
     def generate(self):
         chart_data = self.get_data()
+
+        if chart_data is None:
+            return NO_DATA
 
         quotes = "<ul class='quote-list list-unstyled'>"
 
@@ -425,7 +476,7 @@ class PromotionChart():
         survey_responses = get_typeform_survey_learner_responses(self.study_group)
 
         if len(survey_responses) < 1:
-            return data
+            return None
 
         for response_str in survey_responses:
             field = get_response_field(response_str, "lYX1qfcSKARQ")
@@ -443,13 +494,27 @@ class PromotionChart():
 
         return data
 
-    def generate(self):
+    def generate(self, **opts):
         chart_data = self.get_data()
+
+        if chart_data is None:
+            return NO_DATA
+
         serie = chart_data.values()
         labels = chart_data.keys()
 
         self.chart.add('Number of learners', serie)
         self.chart.x_labels = labels
+
+        if opts.get('output', None) == "png":
+            filename = "report-{}-promotion-chart.png".format(self.study_group.uuid)
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Promotion chart')
+
         return self.chart.render(is_unicode=True)
 
 
@@ -463,7 +528,7 @@ class LibraryUsageChart():
 
         survey_responses = get_typeform_survey_learner_responses(self.study_group)
         if len(survey_responses) < 1:
-            return data
+            return None
 
         question_field = get_question_field(self.study_group, "LQGB3S5v0rUk")
         # LQGB3S5v0rUk = "Aside from the learning circle, how often do you visit the library?"
@@ -483,8 +548,12 @@ class LibraryUsageChart():
 
         return data
 
-    def generate(self):
+    def generate(self, **opts):
         chart_data = self.get_data()
+
+        if chart_data is None:
+            return NO_DATA
+
         serie = chart_data.values()
         labels = chart_data.keys()
 
@@ -493,11 +562,20 @@ class LibraryUsageChart():
 
         self.chart.add('Number of learners', serie)
         self.chart.x_labels = labels
+
+        if opts.get('output', None) == "png":
+            filename = "report-{}-library-usage-chart.png".format(self.study_group.uuid)
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Library usage chart')
+
         return self.chart.render(is_unicode=True)
 
 
 class LearnerRatingChart():
-
     def __init__(self, study_group, **kwargs):
         self.study_group = study_group
 
@@ -506,7 +584,7 @@ class LearnerRatingChart():
         survey_responses = get_typeform_survey_learner_responses(self.study_group)
 
         if len(survey_responses) < 1:
-            return data
+            return None
 
         ratings = []
 
@@ -528,6 +606,9 @@ class LearnerRatingChart():
     def generate(self):
         chart_data = self.get_data()
 
+        if chart_data is None:
+            return NO_DATA
+
         remainder = chart_data['maximum'] - chart_data['average_rating']
 
         stars = "<div class='course-rating row justify-content-around text-warning'>"
@@ -542,7 +623,6 @@ class LearnerRatingChart():
 
 
 class FacilitatorRatingChart():
-
     def __init__(self, study_group, **kwargs):
         self.study_group = study_group
 
@@ -551,7 +631,7 @@ class FacilitatorRatingChart():
         response = self.study_group.facilitatorsurveyresponse_set.first()
 
         if response is None:
-            return data
+            return None
 
         survey_questions = response.survey
         survey_responses = get_typeform_survey_facilitator_responses(self.study_group)
@@ -586,8 +666,8 @@ class FacilitatorRatingChart():
     def generate(self):
         chart_data = self.get_data()
 
-        if chart_data['maximum'] == 0:
-            return "<p>No data</p>"
+        if chart_data is None:
+            return NO_DATA
 
         remainder = chart_data['maximum'] - chart_data['average_rating']
 
@@ -603,7 +683,6 @@ class FacilitatorRatingChart():
 
 
 class AdditionalResourcesChart():
-
     def __init__(self, study_group, **kwargs):
         self.study_group = study_group
 
@@ -612,7 +691,7 @@ class AdditionalResourcesChart():
         response = self.study_group.facilitatorsurveyresponse_set.first()
 
         if response is None:
-            return data
+            return None
 
         response_str = response.response
         field = get_response_field(response_str, "jB4WMEz4S6gt")
@@ -625,8 +704,8 @@ class AdditionalResourcesChart():
     def generate(self):
         chart_data = self.get_data()
 
-        if chart_data.get('text', None) is None:
-            return "<p>No data</p>"
+        if chart_data is None:
+            return NO_DATA
 
         return "<ul class='quote-list list-unstyled'><li class='pl-2 my-3 font-italic'>\"{}\"</li></ul>".format(chart_data.get('text'))
 
@@ -641,7 +720,7 @@ class FacilitatorNewSkillsChart():
         response = self.study_group.facilitatorsurveyresponse_set.first()
 
         if response is None:
-            return data
+            return None
 
         response_str = response.response
         field = get_response_field(response_str, "TYrhfYZxLH2p")
@@ -654,14 +733,13 @@ class FacilitatorNewSkillsChart():
     def generate(self):
         chart_data = self.get_data()
 
-        if chart_data.get('text', None) is None:
-            return "<p>No data</p>"
+        if chart_data is None:
+            return NO_DATA
 
         return "<ul class='quote-list list-unstyled'><li class='pl-2 my-3 font-italic'>\"{}\"</li></ul>".format(chart_data.get('text'))
 
 
 class FacilitatorTipsChart():
-
     def __init__(self, study_group, **kwargs):
         self.study_group = study_group
 
@@ -670,7 +748,7 @@ class FacilitatorTipsChart():
         response = self.study_group.facilitatorsurveyresponse_set.first()
 
         if response is None:
-            return data
+            return None
 
         response_str = response.response
         field = get_response_field(response_str, "dP7B4zDIZRcF")
@@ -683,7 +761,9 @@ class FacilitatorTipsChart():
     def generate(self):
         chart_data = self.get_data()
 
-        if chart_data.get('text', None) is None:
-            return "<p>No data</p>"
+        if chart_data is None:
+            return NO_DATA
 
         return "<ul class='quote-list list-unstyled'><li class='pl-2 my-3 font-italic'>\"{}\"</li></ul>".format(chart_data.get('text'))
+
+
