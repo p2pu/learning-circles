@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types';
 import Pager from './pager'
 
 export default class PagedTable extends React.Component {
@@ -29,9 +30,9 @@ export default class PagedTable extends React.Component {
                 <table>
                 <thead>{this.props.heading}</thead>
                 <tbody>{children}</tbody></table>
-                <Pager 
-                    pages={this.pageCount()} 
-                    activePage={page} 
+                <Pager
+                    pages={this.pageCount()}
+                    activePage={page}
                     onChange={this.handlePageChange}/>
             </div>
         );
@@ -39,5 +40,5 @@ export default class PagedTable extends React.Component {
 }
 
 PagedTable.propTypes = {
-    perPage: React.PropTypes.number
+    perPage: PropTypes.number
 }

@@ -524,7 +524,7 @@ class TestStudyGroupTasks(TestCase):
 
         last_meeting = sg.meeting_set.active().order_by('meeting_date', 'meeting_time').last()
         self.assertEqual(last_meeting.meeting_date, datetime.date(2010, 2, 5))
-        self.assertEqual(last_meeting.meeting_time, datetime.time(18,0))
+        self.assertEqual(last_meeting.meeting_time, datetime.time(18, 0))
         self.assertEqual(sg.meeting_set.active().count(), 6)
         self.assertEqual(Reminder.objects.all().count(), 0)
 
@@ -586,6 +586,14 @@ class TestStudyGroupTasks(TestCase):
     @patch('studygroups.charts.LearnerGoalsChart.generate', mock_generate)
     @patch('studygroups.charts.GoalsMetChart.generate', mock_generate)
     def test_send_final_learning_circle_report_email(self):
+        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
+        facilitator = User.objects.create_user('faci1@team.com', 'faci1@team.com', 'password')
+        StudyGroup.objects.filter(pk=1).update(facilitator=facilitator)
+
+        team = Team.objects.create(name='test team')
+        TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
+        TeamMembership.objects.create(team=team, user=facilitator, role=TeamMembership.MEMBER)
+
         now = timezone.now()
         sg = StudyGroup.objects.get(pk=1)
         sg.timezone = now.strftime("%Z")
@@ -625,11 +633,11 @@ class TestStudyGroupTasks(TestCase):
         # freeze time to 30 minutes after send time
         with freeze_time("2010-02-07 18:30:00"):
             send_final_learning_circle_report(sg)
-            self.assertIn('mail1@example.net', mail.outbox[0].to)
-            self.assertIn('facilitator@example.net', mail.outbox[0].to)
-            self.assertEqual(len(mail.outbox[0].to), 2)
-            self.assertIn('http://{0}/en/studygroup/{1}/report/'.format(settings.DOMAIN, sg.id), mail.outbox[0].body)
-            self.assertIn(sg.facilitator.email, mail.outbox[0].to)
+            self.assertIn(application.email, mail.outbox[0].bcc)
+            self.assertIn(facilitator.email, mail.outbox[0].bcc)
+            self.assertIn(organizer.email, mail.outbox[0].bcc)
+            self.assertEqual(len(mail.outbox[0].bcc), 3)
+            self.assertIn('https://example.net/en/studygroup/{0}/report/'.format(sg.id), mail.outbox[0].body)
 
 
     def test_generate_last_week_activity_email(self):
