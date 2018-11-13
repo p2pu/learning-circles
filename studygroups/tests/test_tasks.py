@@ -4,6 +4,8 @@ from django.core import mail
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.translation import get_language
+from django.conf import settings
+from django.urls import reverse
 
 from mock import patch
 from freezegun import freeze_time
@@ -17,22 +19,23 @@ from studygroups.models import Rsvp
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import accept_application
-from studygroups.tasks import generate_reminder
-from studygroups.tasks import send_reminder
 from studygroups.models import create_rsvp
 from studygroups.models import generate_all_meetings
+from studygroups.rsvp import gen_rsvp_querystring
+from studygroups.rsvp import check_rsvp_signature
+from studygroups.utils import gen_unsubscribe_querystring
+from studygroups.utils import check_unsubscribe_signature
+
+from studygroups.tasks import generate_reminder
+from studygroups.tasks import send_reminders
+from studygroups.tasks import send_reminder
+from studygroups.tasks import send_new_studygroup_emails
 from studygroups.tasks import send_weekly_update
 from studygroups.tasks import send_learner_surveys
 from studygroups.tasks import send_facilitator_survey
 from studygroups.tasks import send_facilitator_survey_reminder
 from studygroups.tasks import send_final_learning_circle_report
 from studygroups.tasks import send_last_week_group_activity
-from studygroups.rsvp import gen_rsvp_querystring
-from studygroups.rsvp import check_rsvp_signature
-from studygroups.utils import gen_unsubscribe_querystring
-from studygroups.utils import check_unsubscribe_signature
-
-from studygroups import tasks
 
 import calendar
 import datetime
@@ -41,9 +44,7 @@ import re
 import urllib.request, urllib.parse, urllib.error
 import json
 
-class MockChart():
-    def generate():
-        return "image"
+
 
 # Create your tests here.
 class TestStudyGroupTasks(TestCase):
@@ -61,6 +62,8 @@ class TestStudyGroupTasks(TestCase):
         'study_group': '1',
     }
 
+    def mock_generate(self, **opts):
+        return "image"
 
     def setUp(self):
         user = User.objects.create_user('admin', 'admin@test.com', 'password')
@@ -193,7 +196,7 @@ class TestStudyGroupTasks(TestCase):
 
         mail.outbox = []
         with freeze_time("2010-03-08 18:55:34"):
-            tasks.send_reminders()
+            send_reminders()
         self.assertEqual(len(mail.outbox), 2)
         self.assertEqual(mail.outbox[0].to[0], data['email'])
         self.assertEqual(mail.outbox[1].to[0], 'facilitator@example.net')
@@ -212,7 +215,7 @@ class TestStudyGroupTasks(TestCase):
 
         mail.outbox = []
         with freeze_time("2010-03-18 18:55:34"):
-            tasks.send_reminders()
+            send_reminders()
         self.assertEqual(len(mail.outbox), 0)
         self.assertEqual(Reminder.objects.filter(sent_at__isnull=True).count(), 1)
 
@@ -242,9 +245,9 @@ class TestStudyGroupTasks(TestCase):
         self.assertEqual(len(mail.outbox), 3) # should be sent to facilitator & application
         self.assertEqual(mail.outbox[1].to[0], data['email'])
         self.assertFalse(send_message.called)
-        self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=yes&sig='.format(get_language(), urllib.parse.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].alternatives[0][0])
-        self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=no&sig='.format(get_language(), urllib.parse.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].alternatives[0][0])
-        self.assertIn('https://example.net/{0}/optout/confirm/?user='.format(get_language()), mail.outbox[1].alternatives[0][0])
+        self.assertIn('{0}/{1}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={2}&attending=yes&sig='.format(settings.DOMAIN, get_language(), urllib.parse.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].alternatives[0][0])
+        self.assertIn('{0}/{1}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={2}&attending=no&sig='.format(settings.DOMAIN, get_language(), urllib.parse.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].alternatives[0][0])
+        self.assertIn('{0}/{1}/optout/confirm/?user='.format(settings.DOMAIN, get_language()), mail.outbox[1].alternatives[0][0])
 
 
     @patch('studygroups.tasks.send_message')
@@ -273,9 +276,9 @@ class TestStudyGroupTasks(TestCase):
         self.assertEqual(len(mail.outbox), 3) # should be sent to facilitator & application
         self.assertEqual(mail.outbox[1].to[0], data['email'])
         self.assertFalse(send_message.called)
-        self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=yes&sig='.format(get_language(), urllib.parse.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].alternatives[0][0])
-        self.assertIn('https://example.net/{0}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={1}&attending=no&sig='.format(get_language(), urllib.parse.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].alternatives[0][0])
-        self.assertIn('https://example.net/{0}/optout/confirm/?user='.format(get_language()), mail.outbox[1].alternatives[0][0])
+        self.assertIn('{0}/{1}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={2}&attending=yes&sig='.format(settings.DOMAIN, get_language(), urllib.parse.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].alternatives[0][0])
+        self.assertIn('{0}/{1}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={2}&attending=no&sig='.format(settings.DOMAIN, get_language(), urllib.parse.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].alternatives[0][0])
+        self.assertIn('{0}/{1}/optout/confirm/?user='.format(settings.DOMAIN, get_language()), mail.outbox[1].alternatives[0][0])
         self.assertIn('VEVENT', mail.outbox[1].attachments[0].get_payload())
 
 
@@ -343,9 +346,9 @@ class TestStudyGroupTasks(TestCase):
         self.assertEqual(mail.outbox[0].to[0], data['email'])
         self.assertEqual(mail.outbox[1].to[0], sg.facilitator.email)
         self.assertFalse(send_message.called)
-        self.assertNotIn('https://example.net/{0}/rsvp/'.format(get_language()), mail.outbox[1].alternatives[0][0])
-        self.assertIn('https://example.net/{0}/facilitator/'.format(get_language()), mail.outbox[1].alternatives[0][0])
-        self.assertNotIn('https://example.net/{0}/optout/confirm/?user='.format(get_language()), mail.outbox[1].alternatives[0][0])
+        self.assertNotIn('{0}/{1}/rsvp/'.format(settings.DOMAIN, get_language()), mail.outbox[1].alternatives[0][0])
+        self.assertIn('{0}/{1}/facilitator/'.format(settings.DOMAIN, get_language()), mail.outbox[1].alternatives[0][0])
+        self.assertNotIn('{0}/{1}/optout/confirm/?user='.format(settings.DOMAIN, get_language()), mail.outbox[1].alternatives[0][0])
 
 
     @patch('studygroups.tasks.send_message')
@@ -374,14 +377,14 @@ class TestStudyGroupTasks(TestCase):
 
 
     def test_send_new_studygroup_update(self):
-        tasks.send_new_studygroup_emails()
+        send_new_studygroup_emails()
         self.assertEqual(len(mail.outbox), 0)
 
         studygroup = StudyGroup.objects.get(pk=1)
         studygroup.created_at = timezone.now() - datetime.timedelta(days=7)
         studygroup.save()
 
-        tasks.send_new_studygroup_emails()
+        send_new_studygroup_emails()
         self.assertEqual(len(mail.outbox), 1)
 
 
@@ -498,7 +501,7 @@ class TestStudyGroupTasks(TestCase):
             self.assertIn('mail1@example.net', mail.outbox[0].to + mail.outbox[1].to)
             self.assertIn('mail2@example.net', mail.outbox[0].to + mail.outbox[1].to)
             a1 = Application.objects.get(email=mail.outbox[0].to[0])
-            self.assertIn('https://example.net/en/studygroup/{}/survey/?learner={}'.format(sg.uuid, a1.uuid), mail.outbox[0].body)
+            self.assertIn('{0}/en/studygroup/{1}/survey/?learner={2}'.format(settings.DOMAIN, sg.uuid, a1.uuid), mail.outbox[0].body)
 
         mail.outbox = []
         # 2 hours after send time
@@ -539,7 +542,7 @@ class TestStudyGroupTasks(TestCase):
         with freeze_time("2010-01-27 17:55:34"):
             send_facilitator_survey(sg)
             self.assertEqual(len(mail.outbox), 1)
-            self.assertIn('https://example.net/en/studygroup/{0}/facilitator_survey/'.format(sg.id), mail.outbox[0].body)
+            self.assertIn('{0}/en/studygroup/{1}/facilitator_survey/'.format(settings.DOMAIN, sg.id), mail.outbox[0].body)
             self.assertIn(sg.facilitator.email, mail.outbox[0].to)
 
 
@@ -575,12 +578,9 @@ class TestStudyGroupTasks(TestCase):
         with freeze_time("2010-02-03 18:30:00"):
             send_facilitator_survey_reminder(sg)
             self.assertEqual(len(mail.outbox), 1)
-            self.assertIn('https://example.net/en/studygroup/{0}/facilitator_survey/'.format(sg.id), mail.outbox[0].body)
+            self.assertIn('{0}/en/studygroup/{1}/facilitator_survey/'.format(settings.DOMAIN, sg.id), mail.outbox[0].body)
             self.assertIn(sg.facilitator.email, mail.outbox[0].to)
 
-
-    def mock_generate(self, **opts):
-        return "image"
 
     @patch('studygroups.charts.LearnerGoalsChart.generate', mock_generate)
     @patch('studygroups.charts.GoalsMetChart.generate', mock_generate)
@@ -627,7 +627,7 @@ class TestStudyGroupTasks(TestCase):
             self.assertIn('mail1@example.net', mail.outbox[0].to)
             self.assertIn('facilitator@example.net', mail.outbox[0].to)
             self.assertEqual(len(mail.outbox[0].to), 2)
-            self.assertIn('https://example.net/en/studygroup/{0}/report/'.format(sg.id), mail.outbox[0].body)
+            self.assertIn('https://{0}/en/studygroup/{1}/report/'.format(settings.DOMAIN, sg.id), mail.outbox[0].body)
             self.assertIn(sg.facilitator.email, mail.outbox[0].to)
 
 

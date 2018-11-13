@@ -283,7 +283,7 @@ class TestFacilitatorViews(TestCase):
         self.assertEqual(mail.outbox[0].subject, mail_data['email_subject'])
         self.assertEqual(mail.outbox[0].from_email, 'Facilitator1 <{}>'.format(settings.DEFAULT_FROM_EMAIL))
         self.assertFalse(send_message.called)
-        self.assertIn('https://example.net/en/optout/', mail.outbox[0].body)
+        self.assertIn('{}/en/optout/'.format(settings.DOMAIN), mail.outbox[0].body)
 
 
     @patch('studygroups.tasks.send_message')
