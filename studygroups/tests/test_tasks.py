@@ -637,7 +637,7 @@ class TestStudyGroupTasks(TestCase):
             self.assertIn(facilitator.email, mail.outbox[0].bcc)
             self.assertIn(organizer.email, mail.outbox[0].bcc)
             self.assertEqual(len(mail.outbox[0].bcc), 3)
-            self.assertIn('https://example.net/en/studygroup/{0}/report/'.format(sg.id), mail.outbox[0].body)
+            self.assertIn('{}/en/studygroup/{0}/report/'.format(settings.DOMAIN, sg.id), mail.outbox[0].body)
 
 
     def test_generate_last_week_activity_email(self):
