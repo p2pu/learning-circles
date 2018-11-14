@@ -679,7 +679,7 @@ class TestStudyGroupTasks(TestCase):
 
             today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
             end_date = today
-            start_date = end_date - datetime.timedelta(days=14)
+            start_date = end_date - datetime.timedelta(days=21)
 
             web_version_path = reverse('studygroups_community_digest', kwargs={'start_date': start_date.strftime("%d-%m-%Y"), 'end_date': end_date.strftime("%d-%m-%Y")})
             web_version_url = "http://{}".format(settings.DOMAIN) + web_version_path

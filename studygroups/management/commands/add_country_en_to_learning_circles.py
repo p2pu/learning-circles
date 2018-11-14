@@ -1,7 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
 
-from cities.google import google_places_api
-from cities import data
 from studygroups.models import StudyGroup
 import requests
 

@@ -572,7 +572,7 @@ def send_community_digest():
     iso_week = today.isocalendar()[1]
     if iso_week % 3 == 0:
         end_date = today
-        start_date = end_date - datetime.timedelta(days=14)
+        start_date = end_date - datetime.timedelta(days=21)
 
         context = community_digest_data(start_date, end_date)
 
