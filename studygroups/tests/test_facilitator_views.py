@@ -55,6 +55,7 @@ class TestFacilitatorViews(TestCase):
         'venue_address': 'Rosemary Street 6',
         'city': 'Johannesburg',
         'country': 'South Africa',
+        'country_en': 'South Africa',
         'region': 'Gauteng',
         'latitude': -26.205,
         'longitude': 28.0497,
