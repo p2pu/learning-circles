@@ -399,7 +399,7 @@ def _make_learning_circle_schema(request):
         "city": schema.text(required=True, length=256),
         "region": schema.text(required=True, length=256),
         "country": schema.text(required=True, length=256),
-        "country_en": schema.text(length=256),
+        "country_en": schema.text(required=True, length=256),
         "latitude": schema.floating_point(),
         "longitude": schema.floating_point(),
         "place_id": schema.text(length=256),
