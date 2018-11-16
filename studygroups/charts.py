@@ -29,11 +29,12 @@ SKILLS_LEARNED_THRESHOLD = 3
 
 theme_colors = ['#05C6B4', '#B7D500', '#FFBC1A', '#FC7100', '#e83e8c']
 
-s3 = boto3.resource('s3', aws_access_key_id=settings.P2PU_RESOURCES_AWS_ACCESS_KEY, aws_secret_access_key=settings.P2PU_RESOURCES_AWS_SECRET_KEY)
 
-def save_to_aws(file, filename):
-    response = s3.Object(settings.P2PU_RESOURCES_AWS_BUCKET, filename).put(Body=file,  ACL='public-read')
-    resource_url = "https://s3.amazonaws.com/{}/{}".format(settings.P2PU_RESOURCES_AWS_BUCKET, filename)
+def save_to_aws(file_, filename):
+    s3 = boto3.resource('s3', aws_access_key_id=settings.P2PU_RESOURCES_AWS_ACCESS_KEY, aws_secret_access_key=settings.P2PU_RESOURCES_AWS_SECRET_KEY)
+    key = '/'.join(['learning-circles', filename])
+    response = s3.Object(settings.P2PU_RESOURCES_AWS_BUCKET, key).put(Body=file_,  ACL='public-read')
+    resource_url = "https://s3.amazonaws.com/{}/{}".format(settings.P2PU_RESOURCES_AWS_BUCKET, key)
     return resource_url
 
 def rotate_colors():
