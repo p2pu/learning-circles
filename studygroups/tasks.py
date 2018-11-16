@@ -566,7 +566,7 @@ def send_weekly_update():
     update.attach_alternative(html_body, 'text/html')
     update.send()
 
-from django.utils.timezone import make_aware
+
 def send_community_digest():
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     iso_week = today.isocalendar()[1]
