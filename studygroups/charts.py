@@ -10,23 +10,31 @@ import pygal
 import json
 import os
 import boto3
+import datetime
 
+from dateutil.relativedelta import relativedelta
 from pygal.style import Style
 from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
 from django.conf import settings
+from collections import Counter
 
 from studygroups.forms import ApplicationForm
+from studygroups.forms import StudyGroup
+from studygroups.forms import Course
+from studygroups.forms import Meeting
 
 STAR_RATING_STEPS = 5
 SKILLS_LEARNED_THRESHOLD = 3
 
 theme_colors = ['#05C6B4', '#B7D500', '#FFBC1A', '#FC7100', '#e83e8c']
 
-s3 = boto3.resource('s3', aws_access_key_id=settings.P2PU_RESOURCES_AWS_ACCESS_KEY, aws_secret_access_key=settings.P2PU_RESOURCES_AWS_SECRET_KEY)
 
-def save_to_aws(file, filename):
-    response = s3.Object(settings.P2PU_RESOURCES_AWS_BUCKET, filename).put(Body=file)
-    resource_url = "https://s3.amazonaws.com/{}/{}".format(settings.P2PU_RESOURCES_AWS_BUCKET, filename)
+def save_to_aws(file_, filename):
+    s3 = boto3.resource('s3', aws_access_key_id=settings.P2PU_RESOURCES_AWS_ACCESS_KEY, aws_secret_access_key=settings.P2PU_RESOURCES_AWS_SECRET_KEY)
+    key = '/'.join(['learning-circles', filename])
+    response = s3.Object(settings.P2PU_RESOURCES_AWS_BUCKET, key).put(Body=file_,  ACL='public-read')
+    resource_url = "https://s3.amazonaws.com/{}/{}".format(settings.P2PU_RESOURCES_AWS_BUCKET, key)
     return resource_url
 
 def rotate_colors():
@@ -687,3 +695,191 @@ class FacilitatorTipsChart():
             return "<p>No data</p>"
 
         return "<ul class='quote-list list-unstyled'><li class='pl-2 my-3 font-italic'>\"{}\"</li></ul>".format(chart_data.get('text'))
+
+
+class LearningCircleMeetingsChart():
+
+    def __init__(self, report_date, **kwargs):
+        self.chart = pygal.Line(style=custom_style(), height=400, fill=True, show_legend=False, max_scale=10, order_min=0, y_title="Meetings", x_label_rotation=30, **kwargs)
+        self.report_date = report_date
+
+    def get_data(self):
+        data = { "meetings": [], "dates": [] }
+        start_date = datetime.date(2016, 1, 1)
+        end_date = datetime.date(2016, 1, 31)
+
+        while end_date <= self.report_date:
+            meetings_count = Meeting.objects.active().filter(meeting_date__gte=start_date, meeting_date__lt=end_date, study_group__deleted_at__isnull=True, study_group__draft=False).count()
+            if end_date.month % 3 == 1:
+                data["dates"].append(end_date.strftime("%b %Y"))
+            else:
+                data["dates"].append("")
+            data["meetings"].append(meetings_count)
+            end_date = end_date + relativedelta(months=+1)
+
+        return data
+
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+
+        self.chart.add('Number of meetings', chart_data["meetings"])
+        self.chart.x_labels = chart_data["dates"]
+
+        if opts.get('output', None) == "png":
+            filename = "community-digest-{}-meetings-chart.png".format(self.report_date.isoformat())
+            target_path = os.path.join('tmp', filename)
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Learner goals chart')
+
+        return self.chart.render(is_unicode=True)
+
+
+class LearningCircleCountriesChart():
+
+    def __init__(self, start_date, report_date, **kwargs):
+        self.chart = pygal.Pie(style=custom_style(), inner_radius=.4, **kwargs)
+        self.start_date = start_date
+        self.report_date = report_date
+
+    def get_data(self):
+        data = { "Not reported": 0 }
+
+        studygroups = StudyGroup.objects.published()
+
+        for sg in studygroups:
+            first_meeting = sg.first_meeting()
+            last_meeting = sg.last_meeting()
+
+            if first_meeting is not None and last_meeting is not None:
+                if (first_meeting.meeting_date >= self.start_date and first_meeting.meeting_date <= self.report_date)\
+                or (last_meeting.meeting_date >= self.start_date and last_meeting.meeting_date <= self.report_date)\
+                or (first_meeting.meeting_date <= self.start_date and last_meeting.meeting_date >= self.report_date):
+                    country = sg.country_en
+                    country = "USA" if country == "United States of America" else country
+
+                    country = "USA" if country == "United States of America" else country
+
+                    if country in data:
+                        data[country] += 1
+                    elif country is "" or country is None:
+                        data["Not reported"] += 1
+                    else:
+                        data[country] = 1
+
+        return data
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+
+        for key, value in chart_data.items():
+            if key != "Not reported":
+                self.chart.add(key, value)
+
+        self.chart.add("Not reported", chart_data["Not reported"])
+
+        if opts.get('output', None) == "png":
+            filename = "community-digest-{}-countries-chart.png".format(self.report_date.isoformat())
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Learner goals chart')
+
+        return self.chart.render(is_unicode=True)
+
+
+class NewLearnerGoalsChart():
+
+    def __init__(self, report_date, applications, **kwargs):
+        self.chart = pygal.HorizontalBar(style=custom_style(), height=400, show_legend=False, order_min=0, max_scale=10, x_title="Learners", **kwargs)
+        self.applications = applications
+        self.report_date = report_date
+
+    def get_data(self):
+        data = {}
+        for choice in reversed(ApplicationForm.GOAL_CHOICES):
+            data[choice[0]] = 0
+
+        signup_questions = self.applications.values_list('signup_questions', flat=True)
+
+        for answer_str in signup_questions:
+            answer = json.loads(answer_str)
+            goal = answer.get('goals', None)
+
+            if goal in data:
+                data[goal] += 1
+
+        return data
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+        labels = chart_data.keys()
+        serie = chart_data.values()
+
+        self.chart.add('Number of learners', serie)
+        self.chart.x_labels = labels
+
+        if opts.get('output', None) == "png":
+            filename = "community-digest-{}-learner-goals-chart.png".format(self.report_date.isoformat())
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Learner Goals')
+
+        return self.chart.render(is_unicode=True)
+
+
+class TopTopicsChart():
+
+    def __init__(self, report_date, study_group_ids, **kwargs):
+        self.chart = pygal.HorizontalBar(style=custom_style(), height=400, show_legend=False, max_scale=5, order_min=0, x_title="Courses with this topic", **kwargs)
+        self.study_group_ids = study_group_ids
+        self.report_date = report_date
+
+    def get_data(self):
+        data = {}
+        course_ids = StudyGroup.objects.filter(id__in=self.study_group_ids).values_list('course')
+        course_topics = Course.objects.filter(id__in=course_ids).exclude(topics="").values_list("topics")
+        topics = [
+            item.strip().lower().capitalize() for sublist in course_topics for item in sublist[0].split(',')
+        ]
+
+        top_topics = Counter(topics).most_common(10)
+        for topic in reversed(top_topics):
+            topic_name = topic[0]
+            if topic[0] == "Html":
+                topic_name = "HTML"
+            if topic[0] == "Css":
+                topic_name = "CSS"
+            data[topic_name] = topic[1]
+
+        return data
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+        labels = chart_data.keys()
+        serie = chart_data.values()
+
+        self.chart.add('Courses tagged', serie)
+        self.chart.x_labels = labels
+
+        if opts.get('output', None) == "png":
+            filename = "community-digest-{}-top_topics-chart.png".format(self.report_date.isoformat())
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Top 10 Topics')
+
+        return self.chart.render(is_unicode=True)

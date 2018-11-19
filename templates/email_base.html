@@ -1,38 +1,68 @@
-<html style="color: #515665; font-family: open-sans, Helvetica, sans-serif;">
-<head>
-  <meta charset="utf-8">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width">
-</head>
-<style>
+{% load static %}
+
+<html>
+<style type="text/css">
+  body.email {
+    color: #515665;
+    font-family: 'Open Sans', 'Helvetica', sans-serif;
+  }
+
+  table.email-layout {
+    width: 716px;
+  }
+
+  table tr td.email-header {
+    border-bottom: 1px solid #DDD;
+  }
+
+  table tr td.email-content {
+    background-color: #FFF;
+    padding-top: 10px;
+  }
+
+  body.email .email-layout a {
+    color: #05C6B4;
+    text-decoration: none;
+  }
+
+  body.email .email-layout a:hover {
+    color: #05C6B4;
+    text-decoration: underline;
+  }
+
   @media screen and (max-device-width: 716px), screen and (max-width: 716px) {
     table {
       width: 100% !important;
     }
 
     table small {
-      font-size: 1.6rem;
+      font-size: 18px;
     }
   }
 </style>
-<body>
-  {% if event_meta %}{% include "studygroups/email/event_metadata.html" %}{% endif %}
-<table align="center" style="width: 716px;" >
-<tbody>
-<tr style="height: 80px; ">
-<td style="border-bottom: 1px solid #DDD;">
-<img src="https://www.p2pu.org/assets/images/p2pu-logo.png"/>
-</td>
-</tr>
-<tr>
-<td style="background-color: #FFF; padding-top:10px; ">
-    {% block body %}{% endblock %}
-</td>
-</tr>
-<!-- TODO: insert message here about preferences for any email that is sent to a user, aka profile != None -->
-</tbody>
-</table>
-</body>
+  <head>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        rel="stylesheet">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width">
+  </head>
+  <body class="email">
+    {% if event_meta %}{% include "studygroups/email/event_metadata.html" %}{% endif %}
+    <table align="center" class="email-layout">
+      <tbody>
+        <tr style="height: 80px;">
+          <td class="email-header">
+            <img src="https://www.p2pu.org/assets/images/p2pu-logo.png"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="email-content">
+              {% block body %}{% endblock %}
+          </td>
+        </tr>
+      <!-- TODO: insert message here about preferences for any email that is sent to a user, aka profile != None -->
+      </tbody>
+    </table>
+  </body>
 </html>
