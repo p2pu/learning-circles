@@ -93,6 +93,43 @@
   .col-12 {
     padding: 0;
   }
+
+  .feedback-box {
+    padding: 20px;
+    background: #049487;
+    color: white;
+    font-weight: 700;
+  }
+
+  .feedback-box p {
+    margin-bottom: 10px;
+    margin-right: 10px;
+    line-height: 1.5;
+  }
+
+  .feedback-box > div {
+    display: inline-block;
+  }
+
+  .email-layout button.p2pu-btn.light {
+    border-radius: 2em;
+    text-transform: uppercase;
+    font-size: 0.8em;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 700;
+    padding: 5px 15px;
+    border: none;
+    box-shadow: 0 0 1px transparent;
+    position: relative;
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    background: #FFFFFF;
+    color: #515665;
+    margin-right: 5px;
+  }
+
 </style>
 
 {% if not web %}
@@ -275,6 +312,10 @@
     {% trans "Come chat with us on the" %} <a href="https://community.p2pu.org/" target="_blank">{% trans "forum" %}</a>
     <span class="emoji">👉</span>
   </p>
+</div>
+
+<div class="report-section">
+  {% include "studygroups/email/community_digest_feedback.html" %}
 </div>
 
 <div class="report-section">
