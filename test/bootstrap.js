@@ -6,6 +6,7 @@ const globalVariables = Object.assign({}, { browser: browser, expect: expect_ })
 // puppeteer options
 const opts = {
   timeout: 10000,
+  headless: true,
   args: ['--no-sandbox', '--disable-setuid-sandbox']
 };
 
