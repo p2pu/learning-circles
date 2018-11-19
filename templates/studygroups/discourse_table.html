@@ -1,0 +1,20 @@
+{% load extras %}
+
+<table class="inner-table">
+  <thead>
+    <tr>
+      <td>Topic</td>
+      <td>Category</td>
+      <td>Views</td>
+    </tr>
+  </thead>
+  <tbody>
+    {% for topic in top_discourse_topics.topics %}
+      <tr>
+        <td><a href="https://community.p2pu.org/t/{{ topic.slug }}">{{ topic.title }}</a></td>
+        <td>{{ topic.category_id|category_title:discourse_categories }}</td>
+        <td>{{ topic.views }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

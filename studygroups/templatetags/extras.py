@@ -1,5 +1,6 @@
 from django import template
 from django.utils.text import slugify
+from dateutil.parser import parse
 
 from studygroups.models import TeamMembership
 
@@ -30,3 +31,7 @@ def is_organizer(user):
     """
     return user.is_staff or TeamMembership.objects.filter(user=user, role=TeamMembership.ORGANIZER)
 
+@register.filter
+def category_title(id, categories):
+    category = next((category for category in categories if category["id"] == id), None)
+    return category["name"]

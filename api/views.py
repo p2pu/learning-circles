@@ -66,6 +66,7 @@ def _map_to_json(sg):
         "city": sg.city,
         "region": sg.region,
         "country": sg.country,
+        "country_en": sg.country_en,
         "latitude": sg.latitude,
         "longitude": sg.longitude,
         "place_id": sg.place_id,
@@ -398,6 +399,7 @@ def _make_learning_circle_schema(request):
         "city": schema.text(required=True, length=256),
         "region": schema.text(required=True, length=256),
         "country": schema.text(required=True, length=256),
+        "country_en": schema.text(required=True, length=256),
         "latitude": schema.floating_point(),
         "longitude": schema.floating_point(),
         "place_id": schema.text(length=256),
@@ -443,6 +445,7 @@ class LearningCircleCreateView(View):
             city=data.get('city'),
             region=data.get('region'),
             country=data.get('country'),
+            country_en=data.get('country_en'),
             latitude=data.get('latitude'),
             longitude=data.get('longitude'),
             place_id=data.get('place_id', ''),
@@ -502,6 +505,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         study_group.city = data.get('city')
         study_group.region = data.get('region')
         study_group.country = data.get('country')
+        study_group.country_en = data.get('country_en')
         study_group.latitude = data.get('latitude')
         study_group.longitude = data.get('longitude')
         study_group.place_id = data.get('place_id', '')

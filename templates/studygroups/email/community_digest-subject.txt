@@ -1,0 +1,1 @@
+{% load i18n %}{% blocktrans with from=start_date|date:"M j" to=end_date|date:"M j" %}P2PU Community Digest for {{ from }} to {{ to }}{% endblocktrans %}
