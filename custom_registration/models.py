@@ -6,6 +6,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.conf import settings
 from django.template.loader import render_to_string
+from studygroups.email_helper import render_html_with_css
 from django.core.mail import EmailMultiAlternatives, send_mail
 
 
@@ -78,7 +79,7 @@ def send_email_confirm_email(user):
 
     subject = render_to_string(subject_template, context).strip(' \n')
     text_body = render_to_string(email_template, context)
-    html_body = render_to_string(html_email_template, context)
+    html_body = render_html_with_css(html_email_template, context)
 
     to = [user.email]
     email = EmailMultiAlternatives(
@@ -102,7 +103,7 @@ def send_new_user_email(user):
     html_email_template = 'custom_registration/new_user_confirmed.html'
 
     subject = render_to_string(subject_template, context).strip(' \n')
-    html_body = render_to_string(html_email_template, context)
+    html_body = render_html_with_css(html_email_template, context)
     text_body = html_body_to_text(html_body)
 
     to = [user.email]

@@ -18,6 +18,7 @@ import re
 import json
 import urllib.request, urllib.parse, urllib.error
 import uuid
+import requests
 
 
 # TODO - remove this
@@ -164,6 +165,7 @@ class StudyGroup(LifeTimeTrackingModel):
     city = models.CharField(max_length=256)
     region = models.CharField(max_length=256, blank=True) # schema.org. Algolia => administrative
     country = models.CharField(max_length=256, blank=True)
+    country_en = models.CharField(max_length=256, blank=True)
     latitude = models.DecimalField(max_digits=8, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     place_id = models.CharField(max_length=256, blank=True) # Algolia place_id
@@ -182,8 +184,6 @@ class StudyGroup(LifeTimeTrackingModel):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     facilitator_rating = models.IntegerField(blank=True, null=True)
     attach_ics = models.BooleanField(default=True)
-
-
 
     objects = StudyGroupQuerySet.as_manager()
 
@@ -207,6 +207,16 @@ class StudyGroup(LifeTimeTrackingModel):
     def timezone_display(self):
         return self.local_start_date().strftime("%Z")
 
+    def last_meeting(self):
+        return self.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
+
+    def first_meeting(self):
+        return self.meeting_set.active().order_by('meeting_date', 'meeting_time').first()
+
+    def report_url(self):
+        domain = 'https://{0}'.format(settings.DOMAIN)
+        path = reverse('studygroups_final_report', kwargs={'study_group_id': self.id})
+        return domain + path
 
     @property
     def weeks(self):
@@ -526,7 +536,6 @@ def report_data(start_time, end_time, team=None):
     signups = Application.objects.active().filter(created_at__gte=start_time, created_at__lt=end_time)
     new_courses = Course.objects.active().filter(created_at__gte=start_time, created_at__lt=end_time)
 
-
     if team:
         members = team.teammembership_set.all().values('user')
         logins = logins.filter(pk__in=members)
@@ -567,4 +576,108 @@ def report_data(start_time, end_time, team=None):
     if team:
         report['team'] = team
     return report
+
+def get_json_response(url):
+    response = requests.get(url)
+    try:
+        return response.json()
+    except:
+        raise ConnectionError("Request to {} returned {}".format(url, response.status_code))
+
+
+def get_studygroups_with_meetings(start_time, end_time):
+    return StudyGroup.objects.published().filter(meeting__meeting_date__gte=start_time, meeting__meeting_date__lt=end_time, meeting__deleted_at__isnull=True).distinct()
+
+def get_new_studygroups(start_time, end_time):
+    return StudyGroup.objects.published().filter(created_at__gte=start_time, created_at__lt=end_time)
+
+def get_new_users(start_time, end_time):
+    return User.objects.filter(date_joined__gte=start_time, date_joined__lt=end_time)
+
+def get_new_applications(start_time, end_time):
+    return Application.objects.active().filter(created_at__gte=start_time, created_at__lt=end_time)
+
+def get_new_courses(start_time, end_time):
+    return Course.objects.active().filter(created_at__gte=start_time, created_at__lt=end_time, unlisted=False)
+
+def get_upcoming_studygroups(start_time):
+    end_time = start_time + datetime.timedelta(days=21)
+    return StudyGroup.objects.filter(start_date__gte=start_time, start_date__lt=end_time)
+
+def get_finished_studygroups(start_time, end_time):
+    study_groups = StudyGroup.objects.published()
+    finished_studygroups = []
+    for sg in study_groups:
+        last_meeting = sg.last_meeting()
+        if last_meeting and last_meeting.meeting_datetime() > start_time and last_meeting.meeting_datetime() < end_time:
+            finished_studygroups.append(last_meeting.study_group)
+
+    return finished_studygroups
+
+def filter_studygroups_with_survey_responses(study_groups):
+    with_responses = filter(lambda sg: sg.learnersurveyresponse_set.count() > 0, study_groups)
+    return sorted(with_responses, key=lambda sg: sg.learnersurveyresponse_set.count(), reverse=True)
+
+def get_new_user_intros(new_users, limit=5):
+    new_discourse_usernames = [ '{}_{}'.format(user.first_name, user.last_name) for user in new_users ]
+    latest_introduction_posts = get_json_response("https://community.p2pu.org/t/1571/last.json")
+
+    intros_from_new_users = []
+    for post in latest_introduction_posts['post_stream']['posts']:
+        discourse_username = post["username"]
+
+        if settings.DEBUG:
+            discourse_username = discourse_username.split("_")[0] + "_Lastname" # TODO remove this on production!!
+
+        if discourse_username in new_discourse_usernames and post["reply_to_post_number"] is None:
+            intros_from_new_users.append(post)
+
+    return intros_from_new_users[::-1][:limit]
+
+def get_discourse_categories():
+    site_json = get_json_response("https://community.p2pu.org/site.json")
+    return site_json['categories']
+
+def get_top_discourse_topics_and_users(limit=10):
+    top_posts_json = get_json_response("https://community.p2pu.org/top/monthly.json")
+    return { 'topics': top_posts_json['topic_list']['topics'][:limit], 'users': top_posts_json['users'] }
+
+def community_digest_data(start_time, end_time):
+    study_groups = StudyGroup.objects.published()
+
+    studygroups_that_met = get_studygroups_with_meetings(start_time, end_time)
+    learners_reached = Application.objects.active().filter(study_group__in=studygroups_that_met)
+    new_learning_circles = get_new_studygroups(start_time, end_time)
+    new_users = get_new_users(start_time, end_time)
+    new_applications = get_new_applications(start_time, end_time)
+    new_courses = get_new_courses(start_time, end_time)
+    upcoming_studygroups = get_upcoming_studygroups(end_time)
+    studygroups_that_ended = get_finished_studygroups(start_time, end_time)
+    studygroups_with_survey_responses = filter_studygroups_with_survey_responses(studygroups_that_ended)
+    intros_from_new_users = get_new_user_intros(new_users)
+    discourse_categories = get_discourse_categories()
+    top_discourse_topics = get_top_discourse_topics_and_users()
+    web_version_path = reverse('studygroups_community_digest', kwargs={'start_date': start_time.strftime("%d-%m-%Y"), 'end_date': end_time.strftime("%d-%m-%Y")})
+
+    return {
+        "start_date": start_time.date(),
+        "end_date": end_time.date(),
+        "studygroups_that_met": studygroups_that_met,
+        "studygroups_met_count": studygroups_that_met.count(),
+        "learners_reached_count": learners_reached.count(),
+        "new_users_count": new_users.count(),
+        "upcoming_studygroups": upcoming_studygroups,
+        "upcoming_studygroups_count": upcoming_studygroups.count(),
+        "finished_studygroups": studygroups_that_ended,
+        "finished_studygroups_count": len(studygroups_that_ended),
+        "studygroups_with_survey_responses": studygroups_with_survey_responses,
+        "new_applications": new_applications,
+        "new_learners_count": new_applications.count(),
+        "new_courses": new_courses,
+        "new_courses_count": new_courses.count(),
+        "top_discourse_topics": top_discourse_topics,
+        "discourse_categories": discourse_categories,
+        "intros_from_new_users": intros_from_new_users,
+        "web_version_path": web_version_path,
+    }
 

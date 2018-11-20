@@ -36,6 +36,7 @@ from studygroups.tasks import send_facilitator_survey
 from studygroups.tasks import send_facilitator_survey_reminder
 from studygroups.tasks import send_final_learning_circle_report
 from studygroups.tasks import send_last_week_group_activity
+from studygroups.tasks import send_community_digest
 
 import calendar
 import datetime
@@ -637,7 +638,7 @@ class TestStudyGroupTasks(TestCase):
             self.assertIn(facilitator.email, mail.outbox[0].bcc)
             self.assertIn(organizer.email, mail.outbox[0].bcc)
             self.assertEqual(len(mail.outbox[0].bcc), 3)
-            self.assertIn('https://example.net/en/studygroup/{0}/report/'.format(sg.id), mail.outbox[0].body)
+            self.assertIn('{0}/en/studygroup/{1}/report/'.format(settings.DOMAIN, sg.id), mail.outbox[0].body)
 
 
     def test_generate_last_week_activity_email(self):
@@ -666,6 +667,35 @@ class TestStudyGroupTasks(TestCase):
         # freeze time to less than 1 day before last meeting
         with freeze_time("2018-01-05 18:01:00"):
             send_last_week_group_activity(sg)
+            self.assertEqual(len(mail.outbox), 0)
+
+
+    @patch('studygroups.charts.LearningCircleMeetingsChart.generate', mock_generate)
+    @patch('studygroups.charts.LearningCircleCountriesChart.generate', mock_generate)
+    @patch('studygroups.charts.NewLearnerGoalsChart.generate', mock_generate)
+    @patch('studygroups.charts.TopTopicsChart.generate', mock_generate)
+    def test_send_community_digest_email(self):
+        with freeze_time("2018-01-15 11:00:00"):
+            send_community_digest()
+
+            today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+            end_date = today
+            start_date = end_date - datetime.timedelta(days=21)
+
+            web_version_path = reverse('studygroups_community_digest', kwargs={'start_date': start_date.strftime("%d-%m-%Y"), 'end_date': end_date.strftime("%d-%m-%Y")})
+            web_version_url = "http://{}".format(settings.DOMAIN) + web_version_path
+
+            self.assertEqual(len(mail.outbox), 1)
+            self.assertEqual(mail.outbox[0].to[0], settings.DEFAULT_COMMUNITY_MANAGER_EMAIL)
+            self.assertEqual(mail.outbox[0].subject, "P2PU Community Digest for {} to {}".format(start_date.strftime("%b %-d"), end_date.strftime("%b %-d")))
+            self.assertIn("Community Digest", mail.outbox[0].body)
+            self.assertIn(web_version_url, mail.outbox[0].body)
+
+
+    def test_do_not_send_community_digest_email(self):
+        with freeze_time("2018-01-08 11:00:00"):
+            send_community_digest()
+
             self.assertEqual(len(mail.outbox), 0)
 
 
