@@ -18,7 +18,7 @@ def send_announcement(sender, subject, body_text, body_html):
     """ Send message to all users that opted-in for the community email list """
 
     # Get list of users who opted-in to communications
-    users = User.objects.filter(profile__communication_opt_in=True)
+    users = User.objects.filter(is_active=True, profile__communication_opt_in=True)
     batch_size = 500
     # send in batches of batch_size
     url = 'https://api.mailgun.net/v3/{}/messages'.format(settings.MAILGUN_DOMAIN)

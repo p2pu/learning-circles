@@ -72,6 +72,14 @@ class CourseAdmin(admin.ModelAdmin):
     exclude = ('deleted_at',)
     inlines = [StudyGroupInline]
     search_fields = ['title', 'provider', 'topics', 'created_by__email', 'license']
+
+
+class ProfileAdmin(admin.ModelAdmin):
+    def user(profile):
+        return " ".join([profile.user.first_name, profile.user.last_name])
+    list_display = [user, 'mailing_list_signup', 'communication_opt_in']
+    search_fields = ['user__email']
+
  
 
 admin.site.register(Course, CourseAdmin)
@@ -81,4 +89,4 @@ admin.site.register(Application, ApplicationAdmin)
 admin.site.register(Reminder, ReminderAdmin)
 admin.site.register(Team, TeamAdmin)
 admin.site.register(TeamInvitation)
-admin.site.register(Profile)
+admin.site.register(Profile, ProfileAdmin)
