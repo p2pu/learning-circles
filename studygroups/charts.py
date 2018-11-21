@@ -968,7 +968,6 @@ class TopTopicsChart():
         return self.chart.render(is_unicode=True)
 
 
-
 class NewLearnersGoalsChart():
     def __init__(self, start_time, end_time, applications, team=None, **kwargs):
         self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, x_title="Learners", **kwargs)
@@ -1010,6 +1009,46 @@ class NewLearnersGoalsChart():
             filename = "weekly-update-{}-{}-learner-goals-chart.png".format(self.end_time.date().isoformat(), team)
             target_path = os.path.join('/tmp', filename)
             self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Learner goals chart')
+
+        return self.chart.render(is_unicode=True)
+
+class TotalLearnersChart():
+
+    def __init__(self, start_time, end_time, **kwargs):
+        self.chart = pygal.Line(style=custom_style(), height=400, fill=True, show_legend=False, max_scale=10, order_min=0, y_title="Learners", x_label_rotation=30, **kwargs)
+        self.report_date = report_date
+
+    def get_data(self):
+        data = { "meetings": [], "dates": [] }
+        start_date = datetime.date(2016, 1, 1)
+        end_date = datetime.date(2016, 1, 31)
+
+        while end_date <= self.report_date:
+            meetings_count = Meeting.objects.active().filter(meeting_date__gte=start_date, meeting_date__lt=end_date, study_group__deleted_at__isnull=True, study_group__draft=False).count()
+            if end_date.month % 3 == 1:
+                data["dates"].append(end_date.strftime("%b %Y"))
+            else:
+                data["dates"].append("")
+            data["meetings"].append(meetings_count)
+            end_date = end_date + relativedelta(months=+1)
+
+        return data
+
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+
+        self.chart.add('Number of meetings', chart_data["meetings"])
+        self.chart.x_labels = chart_data["dates"]
+
+        if opts.get('output', None) == "png":
+            filename = "community-digest-{}-meetings-chart.png".format(self.report_date.isoformat())
+            target_path = os.path.join('tmp', filename)
             self.chart.render_to_png(target_path)
             file = open(target_path, 'rb')
             img_url = save_to_aws(file, filename)

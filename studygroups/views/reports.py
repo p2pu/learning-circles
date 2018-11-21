@@ -4,10 +4,11 @@ from django.urls import reverse
 from django.conf import settings
 
 from django.utils.decorators import method_decorator
-from studygroups.decorators import user_is_group_facilitator
+from studygroups.decorators import user_is_staff
 
 from studygroups.models import StudyGroup
 from studygroups.models import community_digest_data
+from studygroups.models import stats_dash_data
 from studygroups import charts
 
 from datetime import datetime, timedelta
@@ -93,6 +94,28 @@ class CommunityDigestView(TemplateView):
         context.update(digest_data)
         context.update(chart_data)
         context.update({ "web": True })
+
+        return context
+
+
+
+@method_decorator(user_is_staff, name='dispatch')
+class StatsDashView(TemplateView):
+    template_name = 'studygroups/stats_dash.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(StatsDashView, self).get_context_data(**kwargs)
+        start_time = make_aware(datetime.strptime(kwargs.get('start_date'), "%d-%m-%Y"))
+        end_time = make_aware(datetime.strptime(kwargs.get('end_date'), "%d-%m-%Y"))
+        team = kwargs.get('team', None)
+
+        data = stats_dash_data(start_time, end_time, team)
+
+        # context.update(chart_data)
+        context.update(data)
+
+        if team:
+            context.update({ "team": team })
 
         return context
 

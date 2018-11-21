@@ -698,3 +698,16 @@ def community_digest_data(start_time, end_time):
         "total_studygroups_met_count": total_studygroups_met_count,
     }
 
+def stats_dash_data(start_time, end_time, team=None):
+    study_groups = StudyGroup.objects.published()
+    studygroups_that_met = get_studygroups_with_meetings(start_time, end_time)
+    learners_reached = Application.objects.active().filter(study_group__in=studygroups_that_met)
+
+    return {
+        "start_date": start_time.date(),
+        "end_date": end_time.date(),
+        "study_groups": study_groups,
+        "studygroups_met_count": studygroups_that_met.count(),
+        "learners_reached_count": learners_reached.count(),
+    }
+

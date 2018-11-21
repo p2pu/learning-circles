@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block content %}
+<div class="bg-light">
+  <div class="container" id="stats-dash">
+
+    <div class="row">
+      <div class="col-12">
+        <h1 class="mt-4">{% trans "Stats Dash" %}</h1>
+        <p class="my-0">{% trans "Reporting data from" %} {{ start_date }} {% trans "to" %} {{ end_date }}</p>
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-12 mb-4">
+          <h2>{% trans "Learning circles" %}</h2>
+          <p class="my-0">
+            {% blocktrans count studygroups_met_count=studygroups_met_count %}
+              {{ studygroups_met_count }} learning circle met,
+            {% plural %}
+              {{ studygroups_met_count }} learning circles met,
+            {% endblocktrans %}
+            {% blocktrans count learners_reached_count=learners_reached_count %}
+              reaching {{ learners_reached_count }} learner
+            {% plural %}
+              reaching {{ learners_reached_count }} learners
+            {% endblocktrans %}
+          </p>
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-12 mb-4">
+          <h2>{% trans "Facilitators" %}</h2>
+      </div>
+
+
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-12 mb-4">
+          <h2>{% trans "Courses" %}</h2>
+
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-12 mb-4">
+        <h2>{% trans "Learners" %}</h2>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+<script type="text/javascript" src="https://kozea.github.com/pygal.js/latest/pygal-tooltips.min.js"></script>
+{% endblock %}
