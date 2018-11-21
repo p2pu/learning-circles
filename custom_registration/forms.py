@@ -40,3 +40,12 @@ class CustomPasswordResetForm(PasswordResetForm):
             raise ValidationError(_("There is no user registered with the specified email address!"))
 
         return email
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['communication_opt_in']
+        labels = {
+            'communication_opt_in': _('Receive announcements')
+        }

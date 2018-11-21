@@ -12,7 +12,8 @@
           <header>
             <h1>{% trans "Account Settings" %}</h1>
           </header>
-          <p>Update your account settings</p>
+          <p>{% trans "If you create a learning circle, you will receive occasional messages from P2PU and learners related to that learning circle. You will also receive basic account-related emails, like when you reset your password." %} </p>
+          <p>{% trans "Additionally you can choose to receive announcements like community digests and newsletters. Update your preferences on this page." %}</p>
         </div>
         <div class="col-12 col-md-5" data-aos="fade-left">
           <div class="form">
@@ -20,8 +21,11 @@
             <form action="" method="POST" enctype="multipart/form-data">
               {% csrf_token %}
               {{ form|crispy }}
-              <button type="submit" class="btn p2pu-btn light">{% trans "Submit" %}</button>
+              <button type="submit" class="btn p2pu-btn light">{% trans "Save" %}</button>
             </form>
+            <h4>Delete account</h4>
+            <p>{% trans "This will permanently delete your P2PU account and also delete any future or active learning circles." %}</p>
+            <p><a href="{% url "account_delete" %}" class="btn p2pu-btn light">{% trans "Delete account" %}</a></p>
           </div>
         </div>
       </div>
