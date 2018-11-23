@@ -120,6 +120,7 @@ class StatsDashView(TemplateView):
             "participants_over_time_chart" : charts.ParticipantsOverTimeChart(start_time, end_time, data["studygroups_that_met"]).generate(),
             "learner_goals_percentage_chart" : charts.LearnerGoalsPercentageChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
             "skills_improved_percentage_chart" : charts.SkillsImprovedPercentageChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
+            # "top_courses_chart" : charts.TopCoursesChart(start_time, end_time, data["studygroups_that_met"]).generate(),
         }
 
         context.update(data)

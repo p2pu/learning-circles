@@ -7,6 +7,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.urls import reverse  # TODO ideally this shouldn't be in the model
+from collections import Counter
 
 from studygroups import rsvp
 from studygroups.utils import gen_unsubscribe_querystring
@@ -695,6 +696,9 @@ def stats_dash_data(start_time, end_time, team=None):
     studygroups_that_ended = get_studygroups_that_ended(start_time, end_time)
     studygroups_that_met = get_studygroups_with_meetings(start_time, end_time)
     learners_reached = Application.objects.active().filter(study_group__in=studygroups_that_met)
+    courses = studygroups_that_met.values_list('course', 'course__title')
+    ordered_courses = Counter(courses).most_common(10)
+    top_courses = [{ "title": course[0][1], "course_id": course[0][0], "count": course[1] } for course in ordered_courses]
 
     return {
         "start_date": start_time.date(),
@@ -703,5 +707,6 @@ def stats_dash_data(start_time, end_time, team=None):
         "studygroups_that_ended": studygroups_that_ended,
         "studygroups_met_count": studygroups_that_met.count(),
         "learners_reached_count": learners_reached.count(),
+        "top_courses": top_courses,
     }
 

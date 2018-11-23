@@ -56,7 +56,36 @@
 
         {% include "studygroups/measurement_card.html" with title='Course Approval Rating (Facilitators)' chart=facilitator_course_rating_percentage_chart web=True %}
         {% include "studygroups/measurement_card.html" with title='Course Approval Rating (Learners)' chart=learner_course_rating_percentage_chart web=True %}
+
+        <div class="col-12 avoid-page-break">
+          <div class="report-measurement bg-white p-4 mb-4 shadow">
+            <header>
+                <p class="bold text-uppercase mb-0">{% trans "Top 10 Courses" %}</p>
+            </header>
+            <div class="visualization">
+              <table class="inner-table">
+              <thead>
+                <tr>
+                  <td>{% trans "Course title" %}</td>
+                  <td>{% trans "Course ID" %}</td>
+                  <td>{% trans "Number of times used" %}</td>
+                </tr>
+              </thead>
+              <tbody>
+                {% for course in top_courses %}
+                  <tr>
+                    <td>{{ course.title }}</td>
+                    <td>{{ course.course_id }}</td>
+                    <td>{{ course.count }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
+
 
 
     <div class="row mt-4">

@@ -1493,3 +1493,48 @@ class SkillsImprovedPercentageChart():
 
         return self.chart.render(is_unicode=True)
 
+
+class TopCoursesChart():
+
+    def __init__(self, start_time, end_time, study_groups, **kwargs):
+        self.chart = pygal.HorizontalBar(style=custom_style(), height=400, show_legend=False, max_scale=5, order_min=0, x_title="Courses with this topic", **kwargs)
+        self.study_groups = study_groups
+        self.start_time = start_time
+        self.end_time = end_time
+
+    def get_data(self):
+        courses = self.study_groups.values_list('course', 'course__title')
+        top_courses = Counter(courses).most_common(10)
+
+        return top_courses
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+
+        if chart_data is None:
+            return NO_DATA
+
+        labels = []
+        serie = []
+
+        for item in reversed(chart_data):
+            labels.append(item[0][1])
+            serie.append(item[1])
+
+        print(labels)
+        print(serie)
+
+        self.chart.x_labels = labels
+        self.chart.add("Course", serie)
+
+        if opts.get('output', None) == "png":
+            filename = "stats-dash-{}-top-courses-chart.png".format(self.end_time.isoformat())
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Top courses chart')
+
+        return self.chart.render(is_unicode=True)
+

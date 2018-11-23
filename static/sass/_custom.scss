@@ -537,6 +537,25 @@ img.lc-about-image{
   }
 }
 
+table.inner-table {
+    line-height: 1.4;
+    border-collapse: collapse;
+  }
+
+  table.inner-table thead tr {
+    font-weight: bold;
+  }
+
+  table.inner-table thead td {
+    border-bottom: 1px solid #515665;
+    padding: 5px;
+  }
+
+  table.inner-table tbody td {
+    border-bottom: 1px solid #F3F4F8;
+    padding: 5px;
+  }
+
 @media print {
   nav.nav-collapsed, footer.home-footer {
     display: none;
