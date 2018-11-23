@@ -3,7 +3,8 @@
 {% load static %}
 
 {% block content %}
-<div class="bg-light">
+
+<div class="bg-light" id="learning-circle-report">
   <div class="container" id="stats-dash">
 
     <div class="row">
@@ -16,40 +17,55 @@
     <div class="row mt-4">
       <div class="col-12 mb-4">
           <h2>{% trans "Learning circles" %}</h2>
-          <p class="my-0">
-            {% blocktrans count studygroups_met_count=studygroups_met_count %}
-              {{ studygroups_met_count }} learning circle met,
-            {% plural %}
-              {{ studygroups_met_count }} learning circles met,
-            {% endblocktrans %}
-            {% blocktrans count learners_reached_count=learners_reached_count %}
-              reaching {{ learners_reached_count }} learner
-            {% plural %}
-              reaching {{ learners_reached_count }} learners
-            {% endblocktrans %}
-          </p>
+          <ul class='quote-list list-unstyled'>
+            <li>
+              <p class='pl-2 my-3'>
+                {% blocktrans count studygroups_met_count=studygroups_met_count %}
+                  <strong>{{ studygroups_met_count }}</strong> learning circle met
+                {% plural %}
+                  <strong>{{ studygroups_met_count }}</strong> learning circles met
+                {% endblocktrans %}
+              </p>
+            </li>
+            <li>
+              <p class='pl-2 my-3'>
+                {% blocktrans count learners_reached_count=learners_reached_count %}
+                  <strong>{{ learners_reached_count }}</strong> learner reached
+                {% plural %}
+                  <strong>{{ learners_reached_count }}</strong> learners reached
+                {% endblocktrans %}
+              </p>
+            </li>
+          </ul>
       </div>
     </div>
 
     <div class="row mt-4">
       <div class="col-12 mb-4">
-          <h2>{% trans "Facilitators" %}</h2>
+        <h2>{% trans "Facilitators" %}</h2>
       </div>
-
-
+          {% include "studygroups/measurement_card.html" with title='Positive Rating' chart=facilitator_rating_percentage_chart web=True %}
+          {% include "studygroups/measurement_card.html" with title='Top 10 Facilitators' chart=top_facilitators_chart web=True %}
+          {% include "studygroups/measurement_card.html" with title='Learning Circles Started' chart=facilitator_experience_chart web=True %}
     </div>
 
     <div class="row mt-4">
       <div class="col-12 mb-4">
-          <h2>{% trans "Courses" %}</h2>
+        <h2>{% trans "Courses" %}</h2>
+      </div>
 
+        {% include "studygroups/measurement_card.html" with title='Course Approval Rating (Facilitators)' chart=facilitator_course_rating_percentage_chart web=True %}
+        {% include "studygroups/measurement_card.html" with title='Course Approval Rating (Learners)' chart=learner_course_rating_percentage_chart web=True %}
     </div>
+
 
     <div class="row mt-4">
       <div class="col-12 mb-4">
         <h2>{% trans "Learners" %}</h2>
       </div>
-
+          {% include "studygroups/measurement_card.html" with title='Learners who met their goal' chart=learner_goals_percentage_chart web=True %}
+          {% include "studygroups/measurement_card.html" with title='Skills improvement' description="Percentage of learners who reported improvement" chart=skills_improved_percentage_chart web=True %}
+          {% include "studygroups/measurement_card.html" with title='Participants' chart=participants_over_time_chart web=True %}
     </div>
 
   </div>

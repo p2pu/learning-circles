@@ -20,12 +20,16 @@ from django.conf import settings
 from collections import Counter
 
 from studygroups.forms import ApplicationForm
-from studygroups.forms import StudyGroup
-from studygroups.forms import Course
-from studygroups.forms import Meeting
+from studygroups.models import StudyGroup
+from studygroups.models import Course
+from studygroups.models import Meeting
+from studygroups.models import Application
+from surveys.models import FacilitatorSurveyResponse
+from surveys.models import LearnerSurveyResponse
 
 STAR_RATING_STEPS = 5
 SKILLS_LEARNED_THRESHOLD = 3
+GOAL_MET_THRESHOLD = 4
 NO_DATA = "<p>No data</p>"
 
 theme_colors = ['#05C6B4', '#B7D500', '#FFBC1A', '#FC7100', '#e83e8c']
@@ -1054,6 +1058,438 @@ class TotalLearnersChart():
             img_url = save_to_aws(file, filename)
 
             return "<img src={} alt={} width='100%'>".format(img_url, 'Learner goals chart')
+
+        return self.chart.render(is_unicode=True)
+
+
+class FacilitatorRatingPercentageChart():
+    def __init__(self, report_date, study_groups, **kwargs):
+        style = custom_style()
+        style.value_font_size = 40
+        style.title_font_size = 24
+        self.chart = pygal.SolidGauge(style=style, inner_radius=0.70, show_legend = False, x_title="of facilitators rated their learning circle 'very good' or 'excellent'", **kwargs)
+        self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
+        self.study_groups = study_groups
+        self.report_date = report_date
+
+    def get_data(self):
+        data = { 'Percentage': [ {'value': 0, 'max_value': 100} ]}
+
+        ratings = self.study_groups.exclude(facilitator_rating=None).values_list('facilitator_rating', flat=True)
+
+        if ratings.count() < 1:
+            return None
+
+        positive_rating_count = 0
+
+        for rating in ratings:
+            if rating is not None and rating > 3:
+                positive_rating_count += 1
+
+        percentage = round((positive_rating_count / ratings.count()) * 100)
+        data['Percentage'][0]['value'] = percentage
+
+        return data
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+
+        if chart_data is None:
+            return NO_DATA
+
+        for key, value in chart_data.items():
+            self.chart.add(key, value)
+
+        if opts.get('output', None) == "png":
+            filename = "stats-dash-{}-postitive_facilitator_ratings.png".format(self.report_date.isoformat())
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Positive facilitator ratings')
+
+        return self.chart.render(is_unicode=True)
+
+
+
+class FacilitatorCourseRatingPercentageChart():
+    def __init__(self, report_date, study_groups, **kwargs):
+        style = custom_style()
+        style.value_font_size = 40
+        style.title_font_size = 24
+        self.chart = pygal.SolidGauge(style=style, inner_radius=0.70, show_legend = False, x_title="of facilitators said the online course worked very well", **kwargs)
+        self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
+        self.study_groups = study_groups
+        self.report_date = report_date
+
+    def get_data(self):
+        data = { 'Percentage': [ {'value': 0, 'max_value': 100} ]}
+
+        survey_responses = FacilitatorSurveyResponse.objects.filter(study_group__in=self.study_groups).values_list('response', flat=True)
+
+        if len(survey_responses) == 0:
+            return None
+
+        positive_rating_count = 0
+
+        for response_str in survey_responses:
+            field = get_response_field(response_str, "Zm9XlzKGKC66")
+            # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
+            if field is not None and field['number'] > 3:
+                positive_rating_count += 1
+
+        percentage = round((positive_rating_count / len(survey_responses)) * 100)
+        data['Percentage'][0]['value'] = percentage
+
+        return data
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+
+        if chart_data is None:
+            return NO_DATA
+
+        for key, value in chart_data.items():
+            self.chart.add(key, value)
+
+        if opts.get('output', None) == "png":
+            filename = "stats-dash-{}-postitive-facilitator-course-ratings.png".format(self.report_date.isoformat())
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Positive course ratings by facilitators')
+
+        return self.chart.render(is_unicode=True)
+
+
+class LearnerCourseRatingPercentageChart():
+    def __init__(self, report_date, study_groups, **kwargs):
+        style = custom_style()
+        style.value_font_size = 40
+        style.title_font_size = 24
+        self.chart = pygal.SolidGauge(style=style, inner_radius=0.70, show_legend = False, x_title="of learners said the online course worked very well", **kwargs)
+        self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
+        self.study_groups = study_groups
+        self.report_date = report_date
+
+    def get_data(self):
+        data = { 'Percentage': [ {'value': 0, 'max_value': 100} ]}
+
+        survey_responses = LearnerSurveyResponse.objects.filter(study_group__in=self.study_groups).values_list('response', flat=True)
+
+        if len(survey_responses) == 0:
+            return None
+
+        positive_rating_count = 0
+
+        for response_str in survey_responses:
+            field = get_response_field(response_str, "iGWRNCyniE7s")
+            # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
+            if field is not None and field['number'] > 3:
+                positive_rating_count += 1
+
+        percentage = round((positive_rating_count / len(survey_responses)) * 100)
+        data['Percentage'][0]['value'] = percentage
+
+        return data
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+
+        if chart_data is None:
+            return NO_DATA
+
+        for key, value in chart_data.items():
+            self.chart.add(key, value)
+
+        if opts.get('output', None) == "png":
+            filename = "stats-dash-{}-postitive-learner-course-ratings.png".format(self.report_date.isoformat())
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Positive course ratings by learners')
+
+        return self.chart.render(is_unicode=True)
+
+
+class FacilitatorExperienceChart():
+
+    def __init__(self, start_time, end_time, study_groups, **kwargs):
+        self.chart = pygal.StackedLine(style=custom_style(), height=400, fill=True, show_legend=False, max_scale=10, order_min=0, y_title="Learning circles started this month", x_label_rotation=30, **kwargs)
+        self.start_time = start_time
+        self.end_time = end_time
+        self.study_groups = study_groups
+
+    def get_data(self):
+        data = { "studygroups_with_veteran_facilitator": [], "studygroups_with_first_time_facilitator": [], "dates": [] }
+        window_start = self.start_time
+        window_end = window_start + relativedelta(months=+1)
+
+        while window_end <= self.end_time:
+            study_groups = self.study_groups.filter(start_date__gte=window_start, start_date__lt=window_end)
+            first_time_facilitator = 0
+            veteran_facilitator = 0
+
+            for sg in study_groups:
+                facilitator = sg.facilitator
+                if StudyGroup.objects.filter(start_date__lt=sg.start_date, facilitator=facilitator).count() > 0:
+                    veteran_facilitator += 1
+                else:
+                    first_time_facilitator += 1
+
+            data["studygroups_with_veteran_facilitator"].append(veteran_facilitator)
+            data["studygroups_with_first_time_facilitator"].append(first_time_facilitator)
+            data["dates"].append(window_end.strftime("%b %Y"))
+
+            window_start = window_start + relativedelta(months=+1)
+            window_end = window_start + relativedelta(months=+1)
+
+        return data
+
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+
+        self.chart.add('LCs with first time facilitator', chart_data["studygroups_with_first_time_facilitator"])
+        self.chart.add('LCs with a veteran facilitator', chart_data["studygroups_with_veteran_facilitator"])
+        self.chart.x_labels = chart_data["dates"]
+
+        if opts.get('output', None) == "png":
+            filename = "stats-dash-{}-facilitator-experience-chart.png".format(self.end_time.isoformat())
+            target_path = os.path.join('tmp', filename)
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Learning circles by facilitator experience')
+
+        return self.chart.render(is_unicode=True)
+
+
+class TopFacilitatorsChart():
+    def __init__(self, start_time, end_time, study_groups, **kwargs):
+        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, x_title="Number of learning circles", **kwargs)
+        self.start_time = start_time
+        self.end_time = end_time
+        self.study_groups = study_groups
+
+    def get_data(self):
+
+        if self.study_groups.count() == 0:
+            return None
+
+        facilitators = [
+            sg.facilitator for sg in self.study_groups
+        ]
+
+        top_facilitators = Counter(facilitators).most_common(10)
+
+        return top_facilitators
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+
+        if chart_data is None:
+            return NO_DATA
+
+        labels = []
+        serie = []
+
+        for item in reversed(chart_data):
+            facilitator_name = "{} {}".format(item[0].first_name, item[0].last_name)
+            labels.append(facilitator_name)
+            serie.append(item[1])
+
+        self.chart.x_labels = labels
+        self.chart.add("Facilitator", serie)
+
+        if opts.get('output', None) == "png":
+            filename = "stats-dash-{}-top-facilitators-chart.png".format(self.end_time.isoformat())
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Top facilitators chart')
+
+        return self.chart.render(is_unicode=True)
+
+
+class ParticipantsOverTimeChart():
+
+    def __init__(self, start_time, end_time, study_groups, **kwargs):
+        self.chart = pygal.Line(style=custom_style(), height=400, fill=True, show_legend=False, max_scale=10, order_min=0, y_title="Participants", x_label_rotation=30, **kwargs)
+        self.start_time = start_time
+        self.end_time = end_time
+        self.study_groups = study_groups
+
+    def get_data(self):
+        data = { "first_time_participants": [], "veteran_participants": [], "dates": [] }
+        window_start = self.start_time
+        window_end = window_start + relativedelta(months=+1)
+
+        while window_end <= self.end_time:
+            participants = Application.objects.active().filter(accepted_at__gte=window_start, accepted_at__lt=window_end)
+
+            first_time_participants = 0
+            veteran_participants = 0
+
+            for participant in participants:
+                if Application.objects.active().filter(accepted_at__lt=window_end, email=participant.email).count() > 1:
+                    veteran_participants += 1
+                else:
+                    first_time_participants += 1
+
+            data["veteran_participants"].append(veteran_participants)
+            data["first_time_participants"].append(first_time_participants)
+            data["dates"].append(window_end.strftime("%b %Y"))
+
+            window_start = window_start + relativedelta(months=+1)
+            window_end = window_start + relativedelta(months=+1)
+
+        return data
+
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+
+        self.chart.add('First time participants', chart_data["first_time_participants"])
+        self.chart.add('Returning participants', chart_data["veteran_participants"])
+        self.chart.x_labels = chart_data["dates"]
+
+        if opts.get('output', None) == "png":
+            filename = "stats-dash-{}-participants-chart.png".format(self.end_time.isoformat())
+            target_path = os.path.join('tmp', filename)
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Participants')
+
+        return self.chart.render(is_unicode=True)
+
+
+class LearnerGoalsPercentageChart():
+    def __init__(self, start_time, end_time, study_groups, **kwargs):
+        style = custom_style()
+        style.value_font_size = 40
+        style.title_font_size = 24
+        self.chart = pygal.SolidGauge(style=style, inner_radius=0.70, show_legend = False, x_title="of learners reached their goal", **kwargs)
+        self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
+        self.study_groups = study_groups
+        self.end_time = end_time
+
+    def get_data(self):
+        data = { 'Percentage': [ {'value': 0, 'max_value': 100} ]}
+
+        total_applications_count = Application.objects.active().exclude(goal_met=None).filter(study_group__in=self.study_groups).count()
+        goal_met_count = Application.objects.active().exclude(goal_met=None).filter(study_group__in=self.study_groups, goal_met__gte=GOAL_MET_THRESHOLD).count()
+
+        percentage = round((goal_met_count / total_applications_count) * 100)
+        data['Percentage'][0]['value'] = percentage
+
+        return data
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+
+        if chart_data is None:
+            return NO_DATA
+
+        for key, value in chart_data.items():
+            self.chart.add(key, value)
+
+        if opts.get('output', None) == "png":
+            filename = "stats-dash-{}-learner-goals-percentage.png".format(self.end_time.isoformat())
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Percentage of learners who met their goal')
+
+        return self.chart.render(is_unicode=True)
+
+
+class SkillsImprovedPercentageChart():
+
+    def __init__(self, start_time, end_time, study_groups, **kwargs):
+        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend = False, max_scale=5, order_min=0, x_title="Percentage of learners who reported improvement", **kwargs)
+        self.start_time = start_time
+        self.end_time = end_time
+        self.study_groups = study_groups
+
+    def get_data(self):
+        data = {
+            "skills": {
+                "Using the internet": [],
+                "Speaking in public": [],
+                "Feeling connected to my community": [],
+                "Working with others":[],
+                "Navigating online courses": [],
+                "Setting goals for myself": [],
+            },
+            "total_responses": 0
+        }
+
+
+        for study_group in self.study_groups:
+
+            survey_responses = get_typeform_survey_learner_responses(study_group)
+
+            if len(survey_responses) > 1:
+
+                data["total_responses"] += len(survey_responses)
+
+                for response_str in survey_responses:
+                    response = json.loads(response_str)
+                    answers = response['answers']
+
+                    questions = [
+                        ("QH6akGDy6aHK", "Using the internet"),
+                        ("itpQxFRlOsOe", "Working with others"),
+                        ("g0is1ZBXECbh", "Navigating online courses"),
+                        ("ycB6quFHzH85", "Setting goals for myself"),
+                        ("zH8IomUmmoaH", "Speaking in public"),
+                        ("tO3TFJDBmH60", "Feeling connected to my community")
+                    ]
+
+                    for question in questions:
+                        field = next((answer for answer in answers if answer["field"]["id"] == question[0]), None)
+                        if field is not None and field['number'] > SKILLS_LEARNED_THRESHOLD:
+                            data["skills"][question[1]].append(field['number'])
+
+        return data
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+
+        if chart_data is None:
+            return NO_DATA
+
+        percentages = []
+        total_responses = chart_data["total_responses"]
+        for key, value in chart_data["skills"].items():
+            improved_count = len(value)
+            percentage = round((improved_count / total_responses) * 100)
+            percentages.append(percentage)
+
+        self.chart.add('Percentage of learners', percentages)
+        self.chart.x_labels = list(chart_data["skills"])
+
+        if opts.get('output', None) == "png":
+            filename = "stats-dash-{}-skills-improved-chart.png".format(self.study_group.uuid)
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Skills improved chart')
 
         return self.chart.render(is_unicode=True)
 

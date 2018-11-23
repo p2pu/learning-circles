@@ -614,15 +614,8 @@ def get_upcoming_studygroups(start_time):
     end_time = start_time + datetime.timedelta(days=21)
     return StudyGroup.objects.filter(start_date__gte=start_time, start_date__lt=end_time)
 
-def get_finished_studygroups(start_time, end_time):
-    study_groups = StudyGroup.objects.published()
-    finished_studygroups = []
-    for sg in study_groups:
-        last_meeting = sg.last_meeting()
-        if last_meeting and last_meeting.meeting_datetime() > start_time and last_meeting.meeting_datetime() < end_time:
-            finished_studygroups.append(last_meeting.study_group)
-
-    return finished_studygroups
+def get_studygroups_that_ended(start_time, end_time):
+    return StudyGroup.objects.published().filter(end_date__gte=start_time, end_date__lt=end_time)
 
 def filter_studygroups_with_survey_responses(study_groups):
     with_responses = filter(lambda sg: sg.learnersurveyresponse_set.count() > 0, study_groups)
@@ -666,7 +659,7 @@ def community_digest_data(start_time, end_time):
     new_applications = get_new_applications(start_time, end_time)
     new_courses = get_new_courses(start_time, end_time)
     upcoming_studygroups = get_upcoming_studygroups(end_time)
-    studygroups_that_ended = get_finished_studygroups(start_time, end_time)
+    studygroups_that_ended = get_studygroups_that_ended(start_time, end_time)
     studygroups_with_survey_responses = filter_studygroups_with_survey_responses(studygroups_that_ended)
     intros_from_new_users = get_new_user_intros(new_users)
     discourse_categories = get_discourse_categories()
@@ -699,14 +692,15 @@ def community_digest_data(start_time, end_time):
     }
 
 def stats_dash_data(start_time, end_time, team=None):
-    study_groups = StudyGroup.objects.published()
+    studygroups_that_ended = get_studygroups_that_ended(start_time, end_time)
     studygroups_that_met = get_studygroups_with_meetings(start_time, end_time)
     learners_reached = Application.objects.active().filter(study_group__in=studygroups_that_met)
 
     return {
         "start_date": start_time.date(),
         "end_date": end_time.date(),
-        "study_groups": study_groups,
+        "studygroups_that_met": studygroups_that_met,
+        "studygroups_that_ended": studygroups_that_ended,
         "studygroups_met_count": studygroups_that_met.count(),
         "learners_reached_count": learners_reached.count(),
     }

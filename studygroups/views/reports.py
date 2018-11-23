@@ -111,8 +111,20 @@ class StatsDashView(TemplateView):
 
         data = stats_dash_data(start_time, end_time, team)
 
-        # context.update(chart_data)
+        chart_data = {
+            "facilitator_rating_percentage_chart" : charts.FacilitatorRatingPercentageChart(end_time.date(), data["studygroups_that_ended"]).generate(),
+            "facilitator_course_rating_percentage_chart" : charts.FacilitatorCourseRatingPercentageChart(end_time.date(), data["studygroups_that_ended"]).generate(),
+            "learner_course_rating_percentage_chart" : charts.LearnerCourseRatingPercentageChart(end_time.date(), data["studygroups_that_ended"]).generate(),
+            "facilitator_experience_chart" : charts.FacilitatorExperienceChart(start_time, end_time, data["studygroups_that_met"]).generate(),
+            "top_facilitators_chart" : charts.TopFacilitatorsChart(start_time, end_time, data["studygroups_that_met"]).generate(),
+            "participants_over_time_chart" : charts.ParticipantsOverTimeChart(start_time, end_time, data["studygroups_that_met"]).generate(),
+            "learner_goals_percentage_chart" : charts.LearnerGoalsPercentageChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
+            "skills_improved_percentage_chart" : charts.SkillsImprovedPercentageChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
+        }
+
         context.update(data)
+        context.update(chart_data)
+
 
         if team:
             context.update({ "team": team })
