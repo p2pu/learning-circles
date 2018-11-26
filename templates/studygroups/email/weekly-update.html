@@ -223,25 +223,34 @@
         </tbody>
       </table>
     {% endif %}
+  </div>
 
-    {% if feedback %}<h2>{% trans "Feedback from this week" %}</h2>
-      <ul>
-      {% for feedback_response in feedback %}
+  {% if feedback %}
+  <div class="report-section">
+    <h2>
+      <span class="section-header">
+        {% trans "Feedback from this week" %}
+      </span>
+    </h2>
+    <ul>
+    {% for feedback_response in feedback %}
+      {% with study_group=feedback_response.study_group_meeting.study_group %}
         <li>
-          {% with study_group=feedback_response.study_group_meeting.study_group %}
-          <h3>{% blocktrans with course=study_group.course.title venue=study_group.venue_name first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name email=study_group.facilitator.email %}
-            <strong><i>&quot;{{course}}&quot;</i></strong> at {{venue}} facilitated by {{first_name}} {{last_name}}.{% endblocktrans %}</h3>
-          {% endwith %}
-          <p>{% trans "Summary" %}:</p>
-          <p style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9; font-style: italic;">&quot;{{ feedback_response.feedback }}&quot;</p>
-          <p><strong>{% trans "Things worth sharing" %}:</strong></p>
-          <p style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9; font-style: italic;">&quot;{{ feedback_response.reflection }}&quot;</p>
-          <p><strong>{% trans "How many people attended?" %}</strong> {{ feedback_response.attendance }}</p>
+          <h3>{% blocktrans with course=study_group.course.title %}{{course}}{% endblocktrans %}</h3>
+          <p>
+            {% blocktrans with venue=study_group.venue_name first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name %}
+              Facilitated by {{first_name}} {{last_name}} at {{venue}}
+            {% endblocktrans %}
+          </p>
+          <p><strong>{% trans "Summary" %}:</strong> &quot;{{ feedback_response.feedback }}&quot;</p>
+          <p><strong>{% trans "Things worth sharing" %}:</strong> &quot;{{ feedback_response.reflection }}&quot;</p>
+          <p><strong>{% trans "Attendance" %}:</strong> {{ feedback_response.attendance }}</p>
           <p><strong>{% trans "Overall rating" %}:</strong> {{ feedback_response.get_rating_display }}</p>
         <li/>
-      {% endfor %}
-    {% endif %}
+      {% endwith %}
+    {% endfor %}
   </div>
+  {% endif %}
 
   <div class="report-section">
     <h2>
