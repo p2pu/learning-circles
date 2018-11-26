@@ -596,7 +596,11 @@ def get_json_response(url):
         raise ConnectionError("Request to {} returned {}".format(url, response.status_code))
 
 
-def get_studygroups_with_meetings(start_time, end_time):
+def get_studygroups_with_meetings(start_time, end_time, team=None):
+    if team:
+        team_memberships = team.teammembership_set.values('user')
+        return StudyGroup.objects.published().filter(facilitator__in=team_memberships, meeting__meeting_date__gte=start_time, meeting__meeting_date__lt=end_time, meeting__deleted_at__isnull=True).distinct()
+
     return StudyGroup.objects.published().filter(meeting__meeting_date__gte=start_time, meeting__meeting_date__lt=end_time, meeting__deleted_at__isnull=True).distinct()
 
 def get_new_studygroups(start_time, end_time):
@@ -615,7 +619,11 @@ def get_upcoming_studygroups(start_time):
     end_time = start_time + datetime.timedelta(days=21)
     return StudyGroup.objects.filter(start_date__gte=start_time, start_date__lt=end_time)
 
-def get_studygroups_that_ended(start_time, end_time):
+def get_studygroups_that_ended(start_time, end_time, team=None):
+    if team:
+        team_memberships = team.teammembership_set.values('user')
+        return StudyGroup.objects.published().filter(end_date__gte=start_time, end_date__lt=end_time, facilitator__in=team_memberships)
+
     return StudyGroup.objects.published().filter(end_date__gte=start_time, end_date__lt=end_time)
 
 def filter_studygroups_with_survey_responses(study_groups):
@@ -693,8 +701,8 @@ def community_digest_data(start_time, end_time):
     }
 
 def stats_dash_data(start_time, end_time, team=None):
-    studygroups_that_ended = get_studygroups_that_ended(start_time, end_time)
-    studygroups_that_met = get_studygroups_with_meetings(start_time, end_time)
+    studygroups_that_ended = get_studygroups_that_ended(start_time, end_time, team)
+    studygroups_that_met = get_studygroups_with_meetings(start_time, end_time, team)
     learners_reached = Application.objects.active().filter(study_group__in=studygroups_that_met)
     courses = studygroups_that_met.values_list('course', 'course__title')
     ordered_courses = Counter(courses).most_common(10)

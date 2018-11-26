@@ -1334,7 +1334,7 @@ class ParticipantsOverTimeChart():
         window_end = window_start + relativedelta(months=+1)
 
         while window_end <= self.end_time:
-            participants = Application.objects.active().filter(accepted_at__gte=window_start, accepted_at__lt=window_end)
+            participants = Application.objects.active().filter(accepted_at__gte=window_start, accepted_at__lt=window_end, study_group__in=self.study_groups)
 
             first_time_participants = 0
             veteran_participants = 0
@@ -1389,6 +1389,9 @@ class LearnerGoalsPercentageChart():
 
         total_applications_count = Application.objects.active().exclude(goal_met=None).filter(study_group__in=self.study_groups).count()
         goal_met_count = Application.objects.active().exclude(goal_met=None).filter(study_group__in=self.study_groups, goal_met__gte=GOAL_MET_THRESHOLD).count()
+
+        if total_applications_count == 0:
+            return None
 
         percentage = round((goal_met_count / total_applications_count) * 100)
         data['Percentage'][0]['value'] = percentage
@@ -1463,6 +1466,9 @@ class SkillsImprovedPercentageChart():
                         field = next((answer for answer in answers if answer["field"]["id"] == question[0]), None)
                         if field is not None and field['number'] > SKILLS_LEARNED_THRESHOLD:
                             data["skills"][question[1]].append(field['number'])
+
+        if data["total_responses"] == 0:
+            return None
 
         return data
 

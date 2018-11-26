@@ -7,6 +7,7 @@ from django.utils.decorators import method_decorator
 from studygroups.decorators import user_is_staff
 
 from studygroups.models import StudyGroup
+from studygroups.models import Team
 from studygroups.models import community_digest_data
 from studygroups.models import stats_dash_data
 from studygroups import charts
@@ -107,7 +108,8 @@ class StatsDashView(TemplateView):
         context = super(StatsDashView, self).get_context_data(**kwargs)
         start_time = make_aware(datetime.strptime(kwargs.get('start_date'), "%d-%m-%Y"))
         end_time = make_aware(datetime.strptime(kwargs.get('end_date'), "%d-%m-%Y"))
-        team = kwargs.get('team', None)
+        team_id = kwargs.get('team_id', None)
+        team = Team.objects.filter(pk=team_id).first()
 
         data = stats_dash_data(start_time, end_time, team)
 

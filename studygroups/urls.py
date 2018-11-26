@@ -120,6 +120,7 @@ urlpatterns = [
     url(r'^staff/dash/$', StaffDashView.as_view(), name='studygroups_staff_dash'),
     url(r'^digest/generate/$', DigestGenerateView.as_view(), name='studygroups_digest_generate'),
     url(r'^staff/dash/stats/(?P<start_date>[\w-]+)/(?P<end_date>[\w-]+)$', StatsDashView.as_view(), name='studygroups_staff_dash_stats'),
+    url(r'^staff/dash/stats/(?P<start_date>[\w-]+)/(?P<end_date>[\w-]+)/(?P<team_id>[\d]+)$', StatsDashView.as_view(), name='studygroups_staff_dash_stats'),
 
     url(r'^export/signups/$', ExportSignupsView.as_view(), name='studygroups_export_signups'),
     url(r'^export/facilitators/$', ExportFacilitatorsView.as_view(), name='studygroups_export_facilitators'),
