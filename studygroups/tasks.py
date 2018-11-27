@@ -518,6 +518,7 @@ def send_weekly_update():
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     start_time = today - datetime.timedelta(days=today.weekday()+7) #start of previous week
     end_time = start_time + datetime.timedelta(days=7)
+
     context = {
         'start_time': start_time,
         'end_time': end_time,
