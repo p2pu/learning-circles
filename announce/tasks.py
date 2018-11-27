@@ -35,11 +35,11 @@ def send_announcement(sender, subject, body_text, body_html):
         )
         # if there is a body tag, add link before the closing body tag
         if re.search('</body>', body_html):
-            settings_link = settings_link + '\n</body>'
+            settings_link = settings_link + '</body>'
             body_html = re.sub(r'</body>', settings_link, body_html)
         else:
             settings_link = settings_link
-            body_html = '{}\n{}'.format(body_html, settings_link)
+            body_html = body_html + settings_link
 
     # check if account settings URL is in text body
     if not re.search(account_settings_url, body_text):
