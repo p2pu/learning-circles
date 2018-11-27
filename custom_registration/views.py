@@ -36,7 +36,7 @@ from .forms import ProfileForm
 from .decorators import user_is_not_logged_in
 from discourse_sso.utils import anonymize_discourse_user
 
-# TODO make sure user is not signed in!!
+
 @method_decorator(user_is_not_logged_in, name='dispatch')
 class SignupView(FormView):
     form_class = SignupForm

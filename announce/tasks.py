@@ -2,11 +2,15 @@ from celery import shared_task
 
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.urls import reverse
+from django.template.loader import render_to_string
+from django.utils.translation import ugettext_lazy as _
 
 from studygroups.models import Profile
 
 import requests
 from requests.auth import HTTPBasicAuth
+import re
 import json
 import logging
 
@@ -16,10 +20,28 @@ logger = logging.getLogger(__name__)
 @shared_task
 def send_announcement(sender, subject, body_text, body_html):
     """ Send message to all users that opted-in for the community email list """
+    
+    # Check that account settings link is present in message
+    account_settings_url = ''.join([settings.DOMAIN, reverse('account_settings')])
+
+    # check if account settings URL is in HTML body
+    if not re.search(account_settings_url, body_html):
+        settings_link = render_to_string(
+            'announce/account_settings_email_link.html',
+            { 'domain': settings.DOMAIN }
+        )
+        settings_link = settings_link + '\n</body>'
+        body_html = re.sub(r'</body>', settings_link, body_html)
+
+    # check if account settings URL is in text body
+    if not re.search(account_settings_url, body_text):
+        settings_link = _('If you would no longer like to receive announcements from P2PU, you can update your account preferences at {url}').format(url=account_settings_url)
+        body_text = '\n'.join([body_text, settings_link])
 
     # Get list of users who opted-in to communications
     users = User.objects.filter(is_active=True, profile__communication_opt_in=True)
     batch_size = 500
+
     # send in batches of batch_size
     url = 'https://api.mailgun.net/v3/{}/messages'.format(settings.MAILGUN_DOMAIN)
     auth = HTTPBasicAuth('api', settings.MAILGUN_API_KEY)
