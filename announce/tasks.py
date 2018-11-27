@@ -63,7 +63,7 @@ def send_announcement(sender, subject, body_text, body_html):
             ('text', body_text),
             ('html', body_html),
             ('o:tracking', 'yes'),
-            ('o:tracking-clicks', 'htmlonly'),
+            ('o:tracking-clicks', 'no'),
             ('o:tracking-opens', 'yes'),
             ('o:tag', 'announce'),
         ]
