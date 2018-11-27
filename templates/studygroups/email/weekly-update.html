@@ -138,7 +138,7 @@
     <h1>{% trans "Weekly learning circles update" %}</h1>
   {% endif %}
 
-  <p>{% blocktrans with start_date=start_time|date:"l, F j" %}For the week of {{start_date}}.{% endblocktrans %}</p>
+  <p>{% blocktrans with start_date=start_time|date:"l, F j, Y" %}For the week starting {{start_date}}.{% endblocktrans %}</p>
   {% url 'studygroups_weekly_report_date' start_time.year start_time.month start_time.day as report_url %}
   {% if protocol and domain %}<p>{% blocktrans %}You can also view this report <a href="{{protocol}}://{{domain}}{{report_url}}">online</a>.{% endblocktrans %}</p>{% endif %}
 
@@ -160,7 +160,7 @@
           <td>{% trans "Facilitator" %}</td>
           <td>{% trans "Course" %}</td>
           <td>{% trans "Venue" %}</td>
-          <td>{% trans "Final report (if available)" %}</td>
+          <td>{% trans "Final report" %}</td>
         </tr>
       </thead>
       <tbody>
@@ -169,7 +169,11 @@
             <td>{{ studygroup.facilitator.first_name | title }}</td>
             <td><a href="{{ studygroup.course.link }}">{{ studygroup.course.title }}</a></td>
             <td>{{ studygroup.venue_name | title }}</td>
+            {% if studygroup in studygroups_with_survey_responses %}
             <td><a href="{{ studygroup.report_url }}">Learning Circle Insights</a></td>
+            {% else %}
+            <td>N/A</td>
+            {% endif %}
           </tr>
         {% endfor %}
       </tbody>
