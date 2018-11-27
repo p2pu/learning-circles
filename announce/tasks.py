@@ -22,16 +22,24 @@ def send_announcement(sender, subject, body_text, body_html):
     """ Send message to all users that opted-in for the community email list """
     
     # Check that account settings link is present in message
-    account_settings_url = ''.join([settings.DOMAIN, reverse('account_settings')])
+    account_settings_url = 'https://' + settings.DOMAIN + reverse('account_settings')
 
     # check if account settings URL is in HTML body
     if not re.search(account_settings_url, body_html):
         settings_link = render_to_string(
             'announce/account_settings_email_link.html',
-            { 'domain': settings.DOMAIN }
+            { 
+                'domain': settings.DOMAIN,
+                'protocol': 'https'
+            }
         )
-        settings_link = settings_link + '\n</body>'
-        body_html = re.sub(r'</body>', settings_link, body_html)
+        # if there is a body tag, add link before the closing body tag
+        if re.search('</body>', body_html):
+            settings_link = settings_link + '\n</body>'
+            body_html = re.sub(r'</body>', settings_link, body_html)
+        else:
+            settings_link = settings_link
+            body_html = '{}\n{}'.format(body_html, settings_link)
 
     # check if account settings URL is in text body
     if not re.search(account_settings_url, body_text):
