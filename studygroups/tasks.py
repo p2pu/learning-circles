@@ -353,7 +353,7 @@ def send_learner_surveys(study_group):
 
 def send_meeting_reminder(reminder):
     to = [su.email for su in reminder.study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')]
-    sender = '{0} <{1}>'.format(reminder.study_group.facilitator.first_name, settings.DEFAULT_FROM_EMAIL)
+    sender = 'P2PU <{0}>'.format(settings.DEFAULT_FROM_EMAIL)
 
     for email in to:
         yes_link = reminder.study_group_meeting.rsvp_yes_link(email)
@@ -384,7 +384,7 @@ def send_meeting_reminder(reminder):
                 reply_to=[reminder.study_group.facilitator.email]
             )
             reminder_email.attach_alternative(html_body, 'text/html')
-            # TODO attach icalendar event
+            # attach icalendar event
             if reminder.study_group.attach_ics:
                 ical = make_meeting_ics(reminder.study_group_meeting)
                 part = MIMEText(ical, 'calendar')
@@ -458,7 +458,7 @@ def send_reminder(reminder):
             context
         )
         to += [reminder.study_group.facilitator.email]
-        sender = '{0} <{1}>'.format(reminder.study_group.facilitator.first_name, settings.DEFAULT_FROM_EMAIL)
+        sender = 'P2PU <{0}>'.format(settings.DEFAULT_FROM_EMAIL)
         try:
             reminder_email = EmailMultiAlternatives(
                 reminder.email_subject.strip('\n'),

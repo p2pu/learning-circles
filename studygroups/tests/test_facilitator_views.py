@@ -282,7 +282,7 @@ class TestFacilitatorViews(TestCase):
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, mail_data['email_subject'])
-        self.assertEqual(mail.outbox[0].from_email, 'Facilitator1 <{}>'.format(settings.DEFAULT_FROM_EMAIL))
+        self.assertEqual(mail.outbox[0].from_email, 'P2PU <{}>'.format(settings.DEFAULT_FROM_EMAIL))
         self.assertFalse(send_message.called)
         self.assertIn('{}/en/optout/'.format(settings.DOMAIN), mail.outbox[0].body)
 
