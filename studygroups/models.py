@@ -528,51 +528,59 @@ def report_data(start_time, end_time, team=None):
     meetings = Meeting.objects.active()\
             .filter(meeting_date__gte=start_time, meeting_date__lt=end_time)\
             .filter(study_group__in=study_groups)
+    studygroups_that_ended = get_finished_studygroups(start_time, end_time)
+    studygroups_that_met = get_studygroups_with_meetings(start_time, end_time)
+    upcoming_studygroups = get_upcoming_studygroups(end_time)
+    new_applications = get_new_applications(start_time, end_time)
+    new_users = get_new_users(start_time, end_time)
+    new_courses = get_new_courses(start_time, end_time)
 
-    new_study_groups = StudyGroup.objects.published()\
-            .filter(created_at__gte=start_time, created_at__lt=end_time)
-    new_facilitators = User.objects.filter(date_joined__gte=start_time, date_joined__lt=end_time)
-    logins = User.objects.filter(last_login__gte=start_time, last_login__lt=end_time)
-    signups = Application.objects.active().filter(created_at__gte=start_time, created_at__lt=end_time)
-    new_courses = Course.objects.active().filter(created_at__gte=start_time, created_at__lt=end_time)
 
     if team:
-        members = team.teammembership_set.all().values('user')
-        logins = logins.filter(pk__in=members)
+        members = team.teammembership_set.all().values_list('user', flat=True)
         new_courses = new_courses.filter(created_by__in=members)
-        new_study_groups = new_study_groups.filter(facilitator__in=members)
-        signups = signups.filter(study_group__facilitator__in=members)
+        new_applications = new_applications.filter(study_group__facilitator__in=members)
         meetings = meetings.filter(study_group__facilitator__in=members)
         study_groups = study_groups.filter(facilitator__in=members)
 
-
-    meeting_check = lambda mtg: mtg and mtg.meeting_date >= start_time.date() and mtg.meeting_date < end_time.date()
-
-    finished_study_groups = [sg for sg in study_groups if meeting_check(sg.meeting_set.active().order_by('-meeting_date').first())]
+        studygroups_that_ended = [sg for sg in studygroups_that_ended if sg.facilitator.id in members]
+        studygroups_that_met = studygroups_that_met.filter(facilitator__in=members)
+        new_users = new_users.filter(id__in=members)
+        upcoming_studygroups = upcoming_studygroups.filter(facilitator__in=members)
 
     feedback = Feedback.objects.filter(study_group_meeting__in=meetings)
+    studygroups_with_survey_responses = filter_studygroups_with_survey_responses(studygroups_that_ended)
+    intros_from_new_users = get_new_user_intros(new_users)
+    learners_reached = Application.objects.active().filter(study_group__in=studygroups_that_met)
 
     active = any([
         len(meetings) > 0,
         len(feedback) > 0,
-        len(new_study_groups) > 0,
-        len(finished_study_groups) > 0,
-        len(new_facilitators) > 0,
+        len(studygroups_that_ended) > 0,
+        len(new_users) > 0,
         len(new_courses) > 0,
-        len(signups) > 0,
+        len(new_applications) > 0,
     ])
 
     report = {
         'active': active,
         'meetings': meetings,
         'feedback': feedback,
-        'study_groups': new_study_groups,
-        'finished_study_groups': finished_study_groups,
-        'facilitators': new_facilitators,
-        'courses': new_courses,
-        'logins': logins,
-        'signups': signups,
+        "finished_studygroups": studygroups_that_ended,
+        "finished_studygroups_count": len(studygroups_that_ended),
+        "studygroups_with_survey_responses": studygroups_with_survey_responses,
+        "studygroups_met_count": studygroups_that_met.count(),
+        "learners_reached_count": learners_reached.count(),
+        "upcoming_studygroups": upcoming_studygroups,
+        "upcoming_studygroups_count": upcoming_studygroups.count(),
+        "new_applications": new_applications,
+        "new_learners_count": new_applications.count(),
+        "intros_from_new_users": intros_from_new_users,
+        "new_users_count": new_users.count(),
+        "new_courses": new_courses,
+        "new_courses_count": new_courses.count(),
     }
+
     if team:
         report['team'] = team
     return report
@@ -625,6 +633,7 @@ def get_new_user_intros(new_users, limit=5):
     intros_from_new_users = []
     for post in latest_introduction_posts['post_stream']['posts']:
         discourse_username = post["username"]
+
 
         if settings.DEBUG:
             discourse_username = discourse_username.split("_")[0] + "_Lastname" # TODO remove this on production!!
