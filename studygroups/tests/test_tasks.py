@@ -36,7 +36,7 @@ from studygroups.tasks import send_facilitator_survey
 from studygroups.tasks import send_facilitator_survey_reminder
 from studygroups.tasks import send_final_learning_circle_report
 from studygroups.tasks import send_last_week_group_activity
-from studygroups.tasks import send_community_digest
+from studygroups.tasks import send_out_community_digest
 
 import calendar
 import datetime
@@ -676,7 +676,7 @@ class TestStudyGroupTasks(TestCase):
     @patch('studygroups.charts.TopTopicsChart.generate', mock_generate)
     def test_send_community_digest_email(self):
         with freeze_time("2018-01-15 11:00:00"):
-            send_community_digest()
+            send_out_community_digest()
 
             today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
             end_date = today
@@ -694,7 +694,7 @@ class TestStudyGroupTasks(TestCase):
 
     def test_do_not_send_community_digest_email(self):
         with freeze_time("2018-01-08 11:00:00"):
-            send_community_digest()
+            send_out_community_digest()
 
             self.assertEqual(len(mail.outbox), 0)
 

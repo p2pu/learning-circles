@@ -570,29 +570,28 @@ def send_weekly_update():
 def send_community_digest():
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     iso_week = today.isocalendar()[1]
-    if iso_week % 3 == 0:
-        end_date = today
-        start_date = end_date - datetime.timedelta(days=21)
+    end_date = today
+    start_date = end_date - datetime.timedelta(days=21)
 
-        context = community_digest_data(start_date, end_date)
+    context = community_digest_data(start_date, end_date)
 
-        chart_data = {
-            "meetings_chart": charts.LearningCircleMeetingsChart(end_date.date()).generate(output="png"),
-            "countries_chart": charts.LearningCircleCountriesChart(start_date.date(), end_date.date()).generate(output="png"),
-            "learner_goals_chart": charts.NewLearnerGoalsChart(end_date.date(), context['new_applications']).generate(output="png"),
-            "top_topics_chart": charts.TopTopicsChart(end_date.date(), context['studygroups_that_met']).generate(output="png"),
-        }
+    chart_data = {
+        "meetings_chart": charts.LearningCircleMeetingsChart(end_date.date()).generate(output="png"),
+        "countries_chart": charts.LearningCircleCountriesChart(start_date.date(), end_date.date()).generate(output="png"),
+        "learner_goals_chart": charts.NewLearnerGoalsChart(end_date.date(), context['new_applications']).generate(output="png"),
+        "top_topics_chart": charts.TopTopicsChart(end_date.date(), context['studygroups_that_met']).generate(output="png"),
+    }
 
-        context.update(chart_data)
+    context.update(chart_data)
 
-        subject = render_to_string('studygroups/email/community_digest-subject.txt', context)
-        html_body = render_html_with_css('studygroups/email/community_digest.html', context)
-        text_body = html_body_to_text(html_body)
-        to = [settings.COMMUNITY_DIGEST_EMAIL]
+    subject = render_to_string('studygroups/email/community_digest-subject.txt', context)
+    html_body = render_html_with_css('studygroups/email/community_digest.html', context)
+    text_body = html_body_to_text(html_body)
+    to = [settings.COMMUNITY_DIGEST_EMAIL]
 
-        msg = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
-        msg.attach_alternative(html_body, 'text/html')
-        msg.send()
+    msg = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
+    msg.attach_alternative(html_body, 'text/html')
+    msg.send()
 
 
 @shared_task
@@ -671,4 +670,8 @@ def send_all_learning_circle_reports():
 @shared_task
 def send_out_community_digest():
     translation.activate(settings.LANGUAGE_CODE)
-    send_community_digest()
+    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    iso_week = today.isocalendar()[1]
+
+    if iso_week % 3 == 0:
+        send_community_digest()
