@@ -481,7 +481,7 @@ def send_reminder(reminder):
         for to in tos:
             try:
                 send_message(to, reminder.sms_body)
-            except TwilioRestException:
+            except TwilioRestException as e:
                 logger.exception("Could not send text message to %s", to, exc_info=e)
 
 
