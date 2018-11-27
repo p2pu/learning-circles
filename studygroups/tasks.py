@@ -528,10 +528,14 @@ def send_weekly_update():
 
     for team in Team.objects.all():
         report_context = report_data(start_time, end_time, team)
+        report_charts = {
+            "learner_goals_chart": charts.NewLearnersGoalsChart(start_time, end_time, report_context["new_applications"], team).generate(output="png")
+        }
         # If there wasn't any activity during this period discard the update
         if report_context['active'] is False:
             continue
         report_context.update(context)
+        report_context.update(report_charts)
         timezone.activate(pytz.timezone(settings.TIME_ZONE)) #TODO not sure what this influences anymore?
         translation.activate(settings.LANGUAGE_CODE)
         html_body = render_html_with_css('studygroups/email/weekly-update.html', report_context)
@@ -550,7 +554,11 @@ def send_weekly_update():
 
     # send weekly update to staff
     report_context = report_data(start_time, end_time)
+    report_charts = {
+        "learner_goals_chart": charts.NewLearnersGoalsChart(start_time, end_time, report_context["new_applications"]).generate(output="png")
+    }
     report_context.update(context)
+    report_context.update(report_charts)
     timezone.activate(pytz.timezone(settings.TIME_ZONE))
     translation.activate(settings.LANGUAGE_CODE)
     html_body = render_html_with_css('studygroups/email/weekly-update.html', report_context)
