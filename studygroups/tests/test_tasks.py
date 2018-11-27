@@ -686,7 +686,7 @@ class TestStudyGroupTasks(TestCase):
             web_version_url = "http://{}".format(settings.DOMAIN) + web_version_path
 
             self.assertEqual(len(mail.outbox), 1)
-            self.assertEqual(mail.outbox[0].to[0], settings.DEFAULT_COMMUNITY_MANAGER_EMAIL)
+            self.assertEqual(mail.outbox[0].to[0], settings.COMMUNITY_DIGEST_EMAIL)
             self.assertEqual(mail.outbox[0].subject, "P2PU Community Digest for {} to {}".format(start_date.strftime("%b %-d"), end_date.strftime("%b %-d")))
             self.assertIn("Community Digest", mail.outbox[0].body)
             self.assertIn(web_version_url, mail.outbox[0].body)

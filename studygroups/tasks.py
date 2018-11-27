@@ -588,7 +588,7 @@ def send_community_digest():
         subject = render_to_string('studygroups/email/community_digest-subject.txt', context)
         html_body = render_html_with_css('studygroups/email/community_digest.html', context)
         text_body = html_body_to_text(html_body)
-        to = [settings.DEFAULT_COMMUNITY_MANAGER_EMAIL]
+        to = [settings.COMMUNITY_DIGEST_EMAIL]
 
         msg = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
         msg.attach_alternative(html_body, 'text/html')

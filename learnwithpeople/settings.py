@@ -166,8 +166,8 @@ if DEBUG is True and EMAIL_HOST is None:
 # Default email sender
 DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
 
-# Default community manager email for community digest
-DEFAULT_COMMUNITY_MANAGER_EMAIL = env('COMMUNITY_MANAGER_EMAIL', 'team@p2pu.org')
+# email for sending the community digest to
+COMMUNITY_DIGEST_EMAIL = env('COMMUNITY_DIGEST_EMAIL', 'digest@localhost')
 
 # Used for error messages to admin/staff
 SERVER_EMAIL = env('SERVER_EMAIL', 'no-reply@p2pu.org')
