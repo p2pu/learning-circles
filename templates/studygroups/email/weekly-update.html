@@ -1,119 +1,378 @@
 {% extends 'email_base.html' %}
 {% load humanize %}
 {% load i18n %}
-
 {% block body %}
-  <h1>{% trans "Learning circles update" %}</h1>
-  <p>{% blocktrans with start_date=start_time|date:"l, j F" end_date=end_time|date:"l, j F" %}for the time period starting {{start_date}} and ending {{end_date}}.{% endblocktrans %}</p>
+
+<style type="text/css">
+  .email-content {
+    color: #515665;
+  }
+
+  .email-content h1, .email-content h2, .email-content h3, .email-content h4, .email-content h5 {
+    font-family: 'Open Sans', 'Helvetica', sans-serif;
+    line-height: normal;
+  }
+
+  .email-content h1 {
+    font-size: 2em;
+  }
+
+  .email-content h2 {
+    font-size: 1.5em;
+  }
+
+  table.inner-table {
+    line-height: 1.4;
+    border-collapse: collapse;
+  }
+
+  table.inner-table thead tr {
+    font-weight: bold;
+  }
+
+  table.inner-table thead td {
+    border-bottom: 1px solid #515665;
+    padding: 5px;
+  }
+
+  table.inner-table tbody td {
+    border-bottom: 1px solid #F3F4F8;
+    padding: 5px;
+  }
+
+  table.chart-table {
+    width: 100%;
+  }
+
+  .section-header {
+    background-color: #515665;
+    color: #FFFFFF;
+    padding: 5px;
+  }
+
+  .report-section {
+    margin-bottom: 40px;
+  }
+
+  .title-section {
+    overflow: auto;
+  }
+
+  .title-section h1 {
+    float: left;
+    margin-top: 0;
+  }
+
+  .title-section p {
+    float: right;
+    margin-top: 8px;
+    vertical-align: middle;
+    border-left: 6px solid #515665;
+    padding-left: 10px;
+    line-height: 1.4;
+  }
+
+  .email-content ul {
+    padding-left: 0;
+    padding-bottom: 10px;
+    list-style: none;
+    margin-top: 1em;
+  }
+
+  .email-content ul li {
+    margin: 10px 0;
+    border-left: 6px solid #515665;
+    padding-left: 10px;
+    line-height: 1.4;
+  }
+
+  .emoji {
+    font-size: 26px;
+    vertical-align: middle;
+  }
+
+  .col-12 {
+    padding: 0;
+  }
+
+  .feedback-box {
+    padding: 20px;
+    background: #049487;
+    color: white;
+    font-weight: 700;
+  }
+
+  .feedback-box p {
+    margin-bottom: 10px;
+    margin-right: 10px;
+    line-height: 1.5;
+  }
+
+  .feedback-box > div {
+    display: inline-block;
+  }
+
+  .email-layout button.p2pu-btn.light {
+    border-radius: 2em;
+    text-transform: uppercase;
+    font-size: 0.8em;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-weight: 700;
+    padding: 5px 15px;
+    border: none;
+    box-shadow: 0 0 1px transparent;
+    position: relative;
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    background: #FFFFFF;
+    color: #515665;
+    margin-right: 5px;
+  }
+</style>
+
+  {% if team %}
+    <h1>{% blocktrans with team_name=team.name %} This week at {{ team_name }} {% endblocktrans %}</h1>
+  {% else %}
+    <h1>{% trans "Weekly learning circles update" %}</h1>
+  {% endif %}
+
+  <p>{% blocktrans with start_date=start_time|date:"l, F j, Y" %}For the week starting {{start_date}}.{% endblocktrans %}</p>
   {% url 'studygroups_weekly_report_date' start_time.year start_time.month start_time.day as report_url %}
   {% if protocol and domain %}<p>{% blocktrans %}You can also view this report <a href="{{protocol}}://{{domain}}{{report_url}}">online</a>.{% endblocktrans %}</p>{% endif %}
-  <p><strong>{% trans "This week" %}</strong></p>
-  <ul>
-    <li>
-        {% blocktrans count meeting_count=meetings|length %}
-          {{meeting_count}} learning circle met!
+
+  <div class="report-section">
+    <h2>
+      <span class="section-header">
+        {% blocktrans count finished_studygroups_count=finished_studygroups_count %}
+          {{ finished_studygroups_count }} learning circle wrapped up
         {% plural %}
-          {{meeting_count}} learning circles met!
+          {{ finished_studygroups_count }} learning circles wrapped up
         {% endblocktrans %}
-    </li>
-    <li>
-        {% blocktrans count feedback_count=feedback|length %}
-          {{feedback_count}} facilitator recorded feedback!
-        {% plural %}
-          {{feedback_count}} facilitators recorded feedback!
-        {% endblocktrans %}
-    </li>
-    {% if not team %}
-      <li>
-        {% blocktrans count facilitator_count=facilitators|length %}
-          {{facilitator_count}} facilitator signed up!
-        {% plural %}
-          {{facilitator_count}} facilitators signed up!
-        {% endblocktrans %}
-      </li>
+      </span>
+    </h2>
+
+    {% if finished_studygroups_count > 0 %}
+    <table class="inner-table">
+      <thead>
+        <tr>
+          <td>{% trans "Facilitator" %}</td>
+          <td>{% trans "Course" %}</td>
+          <td>{% trans "Venue" %}</td>
+          <td>{% trans "Final report" %}</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% for studygroup in finished_studygroups %}
+          <tr>
+            <td>{{ studygroup.facilitator.first_name | title }}</td>
+            <td><a href="{{ studygroup.course.link }}">{{ studygroup.course.title }}</a></td>
+            <td>{{ studygroup.venue_name | title }}</td>
+            {% if studygroup in studygroups_with_survey_responses %}
+            <td><a href="{{ studygroup.report_url }}">Learning Circle Insights</a></td>
+            {% else %}
+            <td>N/A</td>
+            {% endif %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
     {% endif %}
-    <li>
-      {% blocktrans count login_count=logins|length%}
-        {{login_count}} facilitator logged in.
-      {% plural %}
-        {{login_count}} facilitators logged in.
-      {% endblocktrans %}
-    </li>
-    <li>
-      {% blocktrans count study_group_count=study_groups|length %}
-        {{study_group_count}} learning circle was created.
-      {% plural %}
-        {{study_group_count}} learning circles were created.
-      {% endblocktrans %}
-    </li>
-    <li>
-      {% blocktrans count signup_count=signups|length %}
-        {{signup_count}} learner applied to join a learning circle.
-      {% plural %}
-        {{signup_count}} learners applied to join a learning circle.
-      {% endblocktrans %}
-    </li>
-    <li>
-      {% blocktrans count course_count=courses|length %}
-        {{course_count}} course was added.
-      {% plural %}
-        {{course_count}} courses were added.
-      {% endblocktrans %}
-    </li>
-  </ul>
-  
-  {% if feedback %}<h2>{% trans "Feedback from this week" %}</h2>{% endif %}
-  {% for feedback_response in feedback %}
-    {% with study_group=feedback_response.study_group_meeting.study_group %}
-    <h3>{% blocktrans with course=study_group.course.title venue=study_group.venue_name first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name email=study_group.facilitator.email %}
-      <strong><i>&quot;{{course}}&quot;</i></strong> at {{venue}} facilitated by <a href="mailto:{{email}}">{{first_name}} {{last_name}}</a>.{% endblocktrans %}</h3>
-    {% endwith %}
-    <p>{% trans "Summary" %}:</p>
-    <p style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9; font-style: italic;">&quot;{{ feedback_response.feedback }}&quot;</p>
-    <p><strong>{% trans "Things worth sharing" %}:</strong></p>
-    <p style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9; font-style: italic;">&quot;{{ feedback_response.reflection }}&quot;</p>
-    <p><strong>{% trans "How many people attended?" %}</strong> {{ feedback_response.attendance }}</p>
-    <p><strong>{% trans "Overall rating" %}:</strong> {{ feedback_response.get_rating_display }}</p>
-    <hr/>
-  {% endfor %}
+  </div>
 
-  {% if courses %}<h2>{% trans "Courses added this week" %}</h2>{% endif %}
-  {% for course in courses %}
-    <ul style="list-style:none; padding: 1em; background-color: #E9E9E9;">
-      <li><strong>{% trans "Title" %}</strong>: {{course.title}}</li>
-      <li><strong>{% trans "Creator" %}</strong>: {{course.provider}}</li>
-      <li><strong>{% trans "Website" %}</strong>: <a href="{{course.link}}">{{course.link}}</a></li>
-      <li><strong>{% trans "Description" %}</strong>: {{course.caption}}</li>
-      <li><strong>{% trans "Availability" %}</strong>: {% if course.on_demand %}{% trans "On demand" %}{% else %}{% trans "Check website" %}{% endif %}</li>
-      <li><strong>{% trans "Topics" %}</strong>: {{course.topics}}</li>
+  <div class="report-section">
+    <h2>
+      <span class="section-header">
+        {% blocktrans count studygroups_met_count=studygroups_met_count %}
+          {{ studygroups_met_count }} learning circle met,
+        {% plural %}
+          {{ studygroups_met_count }} learning circles met,
+        {% endblocktrans %}
+        {% blocktrans count learners_reached_count=learners_reached_count %}
+          reaching {{ learners_reached_count }} learner
+        {% plural %}
+          reaching {{ learners_reached_count }} learners
+        {% endblocktrans %}
+      </span>
+    </h2>
+
+    {% if meetings %}
+      <h3>{% trans "Meetings this week" %}</h3>
+
+       <table class="inner-table">
+        <thead>
+          <tr>
+            <td>{% trans "Facilitator" %}</td>
+            <td>{% trans "Course" %}</td>
+            <td>{% trans "Venue" %}</td>
+            <td>{% trans "Meeting date" %}</td>
+            <td>{% trans "Meeting number" %}</td>
+          </tr>
+        </thead>
+        <tbody>
+          {% for meeting in meetings|dictsort:"meeting_datetime" %}
+            {% with study_group=meeting.study_group %}
+            {% blocktrans with meeting_date=meeting.meeting_datetime|date:"fA, l, M j" meeting_number=meeting.meeting_number course=study_group.course.title venue=study_group.venue_name first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name email=study_group.facilitator.email meeting_count=study_group.meeting_set.active.count %}
+            <tr>
+              <td><a href="mailto:{{email}}">{{first_name}} {{last_name}}</a></td>
+              <td>{{course}}</td>
+              <td>{{venue}}</td>
+              <td>{{ meeting_date }}</td>
+              <td>{{meeting_number}} of {{meeting_count}}</td>
+            </tr>
+            {% endblocktrans %}
+            {% endwith %}
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+  </div>
+
+  {% if feedback %}
+  <div class="report-section">
+    <h2>
+      <span class="section-header">
+        {% trans "Feedback from this week" %}
+      </span>
+    </h2>
+    <ul>
+    {% for feedback_response in feedback %}
+      {% with study_group=feedback_response.study_group_meeting.study_group %}
+        <li>
+          <h3>{% blocktrans with course=study_group.course.title %}{{course}}{% endblocktrans %}</h3>
+          <p>
+            {% blocktrans with venue=study_group.venue_name first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name %}
+              Facilitated by {{first_name}} {{last_name}} at {{venue}}
+            {% endblocktrans %}
+          </p>
+          <p><strong>{% trans "Summary" %}:</strong> &quot;{{ feedback_response.feedback }}&quot;</p>
+          <p><strong>{% trans "Things worth sharing" %}:</strong> &quot;{{ feedback_response.reflection }}&quot;</p>
+          <p><strong>{% trans "Attendance" %}:</strong> {{ feedback_response.attendance }}</p>
+          <p><strong>{% trans "Overall rating" %}:</strong> {{ feedback_response.get_rating_display }}</p>
+        <li/>
+      {% endwith %}
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="report-section">
+    <h2>
+      <span class="section-header">
+        {% blocktrans count upcoming_studygroups_count=upcoming_studygroups_count %}
+          {{ upcoming_studygroups_count }} learning circle will begin in the next 3 weeks
+        {% plural %}
+          {{ upcoming_studygroups_count }} learning circles will begin in the next 3 weeks
+        {% endblocktrans %}
+      </span>
+    </h2>
+
+    {% if upcoming_studygroups_count > 0 %}
+    <table class="inner-table">
+      <thead>
+        <tr>
+          <td>{% trans "Facilitator" %}</td>
+          <td>{% trans "Course" %}</td>
+          <td>{% trans "Venue" %}</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% for studygroup in upcoming_studygroups %}
+          <tr>
+            <td>{{ studygroup.facilitator.first_name | title }}</td>
+            <td><a href="{{ studygroup.course.link }}">{{ studygroup.course.title }}</a></td>
+            <td>{{ studygroup.venue_name | title }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+
+  <div class="report-section">
+    <h2>
+      <span class="section-header">
+        {% blocktrans count new_learners_count=new_learners_count %}
+          {{ new_learners_count }} learner signed up for a learning circle
+        {% plural %}
+          {{ new_learners_count }} learners signed up for a learning circle
+        {% endblocktrans %}
+      </span>
+    </h2>
+    {% if new_learners_count > 0 %}
+      {% if protocol and domain %}
+        {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart web=False%}
+      {% else %}
+        {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart web=True %}
+      {% endif %}
+    {% endif %}
+  </div>
+
+  {% if new_users_count > 0 %}
+  <div class="report-section">
+    <h2>
+      <span class="section-header">
+        {% blocktrans count new_users_count=new_users_count %}
+          {{ new_users_count }} new team member joined
+        {% plural %}
+          {{ new_users_count }} new team members joined
+        {% endblocktrans %}
+      </span>
+    </h2>
+      <table class="inner-table">
+      <thead>
+        <tr>
+          <td>{% trans "Name" %}</td>
+          <td>{% trans "Email" %}</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in new_users %}
+          <tr>
+            <td>{{ user.first_name | title }} {{ user.last_name | title }}</td>
+            <td>{{ user.email }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  {% if new_courses_count > 0 %}
+  <div class="report-section">
+  <h2>
+    <span class="section-header">
+    {% blocktrans count new_courses_count=new_courses_count %}
+      {{ new_courses_count }} course was added to the P2PU database
+    {% plural %}
+      {{ new_courses_count }} courses were added to the P2PU database
+    {% endblocktrans %}
+    </span>
+  </h2>
+
+    <ul>
+    {% for course in new_courses %}
+        <li>{{ course.created_by.first_name }} {% trans "added" %} <a href="{{ course.link }}">{{ course.title }}</a></li>
+      {% endfor %}
     </ul>
-  {% endfor %}
-
-  {% if finished_study_groups %}<h2>{% trans "Learning circles that finished this week" %}</h2>
-  <ol>
-  {% for study_group in finished_study_groups %}
-      <li>
-      {% blocktrans with course=study_group.course.title venue=study_group.venue_name first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name email=study_group.facilitator.email%}
-        <strong><i>&quot;{{course}}&quot;</i></strong> at {{venue}} facilitated by <a href="mailto:{{email}}">{{first_name}} {{last_name}}</a>.
-      {% endblocktrans %}
-      </li>
-
-  {% endfor %}
-  </ol>
+    <p>
+      {% trans "To see all the courses, check out the" %} <a href="https://www.p2pu.org/en/courses/" target="_blank">{% trans "courses page" %}</a>
+      <span class="emoji">👉</span>
+    </p>
+  </div>
   {% endif %}
 
-  {% if meetings %}
-  <h2>{% trans "Meetings this week" %}</h2>
-  <ol>
-  {% for meeting in meetings|dictsort:"meeting_datetime" %}
-    {% with study_group=meeting.study_group %}
-    <li>
-      {% blocktrans with meeting_date=meeting.meeting_datetime|date:"fA, l, j F" meeting_number=meeting.meeting_number course=study_group.course.title venue=study_group.venue_name first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name email=study_group.facilitator.email meeting_count=study_group.meeting_set.active.count %}
-      <strong><i>&quot;{{course}}&quot;</i></strong> at {{venue}} facilitated by <a href="mailto:{{email}}">{{first_name}} {{last_name}}</a> met {{meeting_date}} for meeting {{meeting_number}} of {{meeting_count}}.
-      {% endblocktrans %}
-    </li>
-    {% endwith %}
-  {% endfor %}
-  </ol>
-  {% endif %}
+  <div class="feedback-box">
+    <div><p>What do you think of our new weekly update?</p></div>
+    <div>
+        <a href="https://p2pu.typeform.com/to/EabZiz?first_impression=like">
+            <button class="p2pu-btn light">😍 I like it!</button>
+        </a>
+        <a href="https://p2pu.typeform.com/to/EabZiz?first_impression=unlike">
+            <button class="p2pu-btn light">😕 Meh</button>
+        </a>
+    </div>
+  </div>
+
+
 {% endblock %}

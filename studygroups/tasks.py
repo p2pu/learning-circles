@@ -353,7 +353,7 @@ def send_learner_surveys(study_group):
 
 def send_meeting_reminder(reminder):
     to = [su.email for su in reminder.study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')]
-    sender = '{0} <{1}>'.format(reminder.study_group.facilitator.first_name, settings.DEFAULT_FROM_EMAIL)
+    sender = 'P2PU <{0}>'.format(settings.DEFAULT_FROM_EMAIL)
 
     for email in to:
         yes_link = reminder.study_group_meeting.rsvp_yes_link(email)
@@ -384,7 +384,7 @@ def send_meeting_reminder(reminder):
                 reply_to=[reminder.study_group.facilitator.email]
             )
             reminder_email.attach_alternative(html_body, 'text/html')
-            # TODO attach icalendar event
+            # attach icalendar event
             if reminder.study_group.attach_ics:
                 ical = make_meeting_ics(reminder.study_group_meeting)
                 part = MIMEText(ical, 'calendar')
@@ -458,7 +458,7 @@ def send_reminder(reminder):
             context
         )
         to += [reminder.study_group.facilitator.email]
-        sender = '{0} <{1}>'.format(reminder.study_group.facilitator.first_name, settings.DEFAULT_FROM_EMAIL)
+        sender = 'P2PU <{0}>'.format(settings.DEFAULT_FROM_EMAIL)
         try:
             reminder_email = EmailMultiAlternatives(
                 reminder.email_subject.strip('\n'),
@@ -481,7 +481,7 @@ def send_reminder(reminder):
         for to in tos:
             try:
                 send_message(to, reminder.sms_body)
-            except TwilioRestException:
+            except TwilioRestException as e:
                 logger.exception("Could not send text message to %s", to, exc_info=e)
 
 
@@ -518,6 +518,7 @@ def send_weekly_update():
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     start_time = today - datetime.timedelta(days=today.weekday()+7) #start of previous week
     end_time = start_time + datetime.timedelta(days=7)
+
     context = {
         'start_time': start_time,
         'end_time': end_time,
@@ -527,10 +528,14 @@ def send_weekly_update():
 
     for team in Team.objects.all():
         report_context = report_data(start_time, end_time, team)
+        report_charts = {
+            "learner_goals_chart": charts.NewLearnersGoalsChart(start_time, end_time, report_context["new_applications"], team).generate(output="png")
+        }
         # If there wasn't any activity during this period discard the update
         if report_context['active'] is False:
             continue
         report_context.update(context)
+        report_context.update(report_charts)
         timezone.activate(pytz.timezone(settings.TIME_ZONE)) #TODO not sure what this influences anymore?
         translation.activate(settings.LANGUAGE_CODE)
         html_body = render_html_with_css('studygroups/email/weekly-update.html', report_context)
@@ -549,7 +554,11 @@ def send_weekly_update():
 
     # send weekly update to staff
     report_context = report_data(start_time, end_time)
+    report_charts = {
+        "learner_goals_chart": charts.NewLearnersGoalsChart(start_time, end_time, report_context["new_applications"]).generate(output="png")
+    }
     report_context.update(context)
+    report_context.update(report_charts)
     timezone.activate(pytz.timezone(settings.TIME_ZONE))
     translation.activate(settings.LANGUAGE_CODE)
     html_body = render_html_with_css('studygroups/email/weekly-update.html', report_context)
@@ -570,29 +579,28 @@ def send_weekly_update():
 def send_community_digest():
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     iso_week = today.isocalendar()[1]
-    if iso_week % 3 == 0:
-        end_date = today
-        start_date = end_date - datetime.timedelta(days=21)
+    end_date = today
+    start_date = end_date - datetime.timedelta(days=21)
 
-        context = community_digest_data(start_date, end_date)
+    context = community_digest_data(start_date, end_date)
 
-        chart_data = {
-            "meetings_chart": charts.LearningCircleMeetingsChart(end_date.date()).generate(output="png"),
-            "countries_chart": charts.LearningCircleCountriesChart(start_date.date(), end_date.date()).generate(output="png"),
-            "learner_goals_chart": charts.NewLearnerGoalsChart(end_date.date(), context['new_applications']).generate(output="png"),
-            "top_topics_chart": charts.TopTopicsChart(end_date.date(), context['studygroups_that_met']).generate(output="png"),
-        }
+    chart_data = {
+        "meetings_chart": charts.LearningCircleMeetingsChart(end_date.date()).generate(output="png"),
+        "countries_chart": charts.LearningCircleCountriesChart(start_date.date(), end_date.date()).generate(output="png"),
+        "learner_goals_chart": charts.NewLearnerGoalsChart(end_date.date(), context['new_applications']).generate(output="png"),
+        "top_topics_chart": charts.TopTopicsChart(end_date.date(), context['studygroups_that_met']).generate(output="png"),
+    }
 
-        context.update(chart_data)
+    context.update(chart_data)
 
-        subject = render_to_string('studygroups/email/community_digest-subject.txt', context)
-        html_body = render_html_with_css('studygroups/email/community_digest.html', context)
-        text_body = html_body_to_text(html_body)
-        to = [settings.DEFAULT_COMMUNITY_MANAGER_EMAIL]
+    subject = render_to_string('studygroups/email/community_digest-subject.txt', context)
+    html_body = render_html_with_css('studygroups/email/community_digest.html', context)
+    text_body = html_body_to_text(html_body)
+    to = [settings.COMMUNITY_DIGEST_EMAIL]
 
-        msg = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
-        msg.attach_alternative(html_body, 'text/html')
-        msg.send()
+    msg = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
+    msg.attach_alternative(html_body, 'text/html')
+    msg.send()
 
 
 @shared_task
@@ -671,4 +679,8 @@ def send_all_learning_circle_reports():
 @shared_task
 def send_out_community_digest():
     translation.activate(settings.LANGUAGE_CODE)
-    send_community_digest()
+    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    iso_week = today.isocalendar()[1]
+
+    if iso_week % 3 == 0:
+        send_community_digest()
