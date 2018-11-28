@@ -30,7 +30,7 @@ def send_announcement(sender, subject, body_text, body_html):
             'announce/account_settings_email_link.html',
             { 
                 'domain': settings.DOMAIN,
-                'protocol': 'https'
+                'protocol': 'https://'
             }
         )
         # if there is a body tag, add link before the closing body tag
@@ -63,7 +63,7 @@ def send_announcement(sender, subject, body_text, body_html):
             ('text', body_text),
             ('html', body_html),
             ('o:tracking', 'yes'),
-            ('o:tracking-clicks', 'no'),
+            ('o:tracking-clicks', 'htmlonly'),
             ('o:tracking-opens', 'yes'),
             ('o:tag', 'announce'),
         ]
