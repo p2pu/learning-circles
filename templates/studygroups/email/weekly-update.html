@@ -300,7 +300,11 @@
       </span>
     </h2>
     {% if new_learners_count > 0 %}
-    {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart fullwidth=web%}
+      {% if protocol and domain %}
+        {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart web=False%}
+      {% else %}
+        {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart web=True %}
+      {% endif %}
     {% endif %}
   </div>
 
