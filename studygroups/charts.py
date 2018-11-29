@@ -132,7 +132,7 @@ class LearnerGoalsChart():
 
         if opts.get('output', None) == "png":
             filename = "report-{}-learner-goals-chart.png".format(self.study_group.uuid)
-            target_path = os.path.join('tmp', filename)
+            target_path = os.path.join('/tmp', filename)
             self.chart.height = 400
             self.chart.render_to_png(target_path)
             file = open(target_path, 'rb')
@@ -182,7 +182,7 @@ class GoalsMetChart():
 
         if opts.get('output', None) == "png":
             filename = "report-{}-goals-met-chart.png".format(self.study_group.uuid)
-            target_path = os.path.join('tmp', filename)
+            target_path = os.path.join('/tmp', filename)
             self.chart.height = 400
             self.chart.render_to_png(target_path)
             file = open(target_path, 'rb')
@@ -249,7 +249,7 @@ class SkillsLearnedChart():
 
         if opts.get('output', None) == "png":
             filename = "report-{}-skills_learned-chart.png".format(self.study_group.uuid)
-            target_path = os.path.join('tmp', filename)
+            target_path = os.path.join('/tmp', filename)
             self.chart.height = 400
             self.chart.render_to_png(target_path)
             file = open(target_path, 'rb')
@@ -300,7 +300,7 @@ class NewLearnersChart():
 
         if opts.get('output', None) == "png":
             filename = "report-{}-new-learners-chart.png".format(self.study_group.uuid)
-            target_path = os.path.join('tmp', filename)
+            target_path = os.path.join('/tmp', filename)
             self.chart.height = 400
             self.chart.render_to_png(target_path)
             file = open(target_path, 'rb')
@@ -351,7 +351,7 @@ class CompletionRateChart():
 
         if opts.get('output', None) == "png":
             filename = "report-{}-completion-rate-chart.png".format(self.study_group.uuid)
-            target_path = os.path.join('tmp', filename)
+            target_path = os.path.join('/tmp', filename)
             self.chart.height = 400
             self.chart.render_to_png(target_path)
             file = open(target_path, 'rb')
@@ -516,7 +516,7 @@ class PromotionChart():
 
         if opts.get('output', None) == "png":
             filename = "report-{}-promotion-chart.png".format(self.study_group.uuid)
-            target_path = os.path.join('tmp', filename)
+            target_path = os.path.join('/tmp', filename)
             self.chart.height = 400
             self.chart.render_to_png(target_path)
             file = open(target_path, 'rb')
@@ -573,7 +573,7 @@ class LibraryUsageChart():
 
         if opts.get('output', None) == "png":
             filename = "report-{}-library-usage-chart.png".format(self.study_group.uuid)
-            target_path = os.path.join('tmp', filename)
+            target_path = os.path.join('/tmp', filename)
             self.chart.height = 400
             self.chart.render_to_png(target_path)
             file = open(target_path, 'rb')
@@ -806,7 +806,7 @@ class LearningCircleMeetingsChart():
 
         if opts.get('output', None) == "png":
             filename = "community-digest-{}-meetings-chart.png".format(self.report_date.isoformat())
-            target_path = os.path.join('tmp', filename)
+            target_path = os.path.join('/tmp', filename)
             self.chart.render_to_png(target_path)
             file = open(target_path, 'rb')
             img_url = save_to_aws(file, filename)
@@ -861,7 +861,7 @@ class LearningCircleCountriesChart():
 
         if opts.get('output', None) == "png":
             filename = "community-digest-{}-countries-chart.png".format(self.report_date.isoformat())
-            target_path = os.path.join('tmp', filename)
+            target_path = os.path.join('/tmp', filename)
             self.chart.height = 400
             self.chart.render_to_png(target_path)
 
@@ -906,7 +906,7 @@ class NewLearnerGoalsChart():
 
         if opts.get('output', None) == "png":
             filename = "community-digest-{}-learner-goals-chart.png".format(self.report_date.isoformat())
-            target_path = os.path.join('tmp', filename)
+            target_path = os.path.join('/tmp', filename)
             self.chart.height = 400
             self.chart.render_to_png(target_path)
             file = open(target_path, 'rb')
@@ -952,7 +952,7 @@ class TopTopicsChart():
 
         if opts.get('output', None) == "png":
             filename = "community-digest-{}-top_topics-chart.png".format(self.report_date.isoformat())
-            target_path = os.path.join('tmp', filename)
+            target_path = os.path.join('/tmp', filename)
             self.chart.height = 400
             self.chart.render_to_png(target_path)
             file = open(target_path, 'rb')
@@ -1003,7 +1003,7 @@ class NewLearnersGoalsChart():
         if opts.get('output', None) == "png":
             team = self.team.id if self.team else 'staff'
             filename = "weekly-update-{}-{}-learner-goals-chart.png".format(self.end_time.isoformat(), team)
-            target_path = os.path.join('tmp', filename)
+            target_path = os.path.join('/tmp', filename)
             self.chart.height = 400
             self.chart.render_to_png(target_path)
             file = open(target_path, 'rb')
