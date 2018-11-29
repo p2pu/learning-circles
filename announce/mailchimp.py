@@ -8,9 +8,39 @@ import hashlib
 
 logger = logging.getLogger(__name__)
 
+def list_members():
+    api_url = '{0}lists/{1}/members'.format(
+        settings.MAILCHIMP_API_ROOT, settings.MAILCHIMP_LIST_ID
+    )
+    count = 500
+    params = {
+        'count': count,
+        'sort_field': 'timestamp_signup',
+        'sort_dir': 'ASC',
+        'fields': 'total_items,members.email_address,members.status'
+    }
 
-def add_member_to_list(user):
+    response = requests.get(
+        api_url, 
+        auth=('apikey', settings.MAILCHIMP_API_KEY),
+        params=params
+    )
+    members = response.json().get('members',[])
+    total = response.json().get('total_items')
 
+    for offset in range(count, total, count):
+        print('Fetching members {} to {}'.format(offset, offset+count))
+        params['offset'] = offset
+        response = requests.get(
+            api_url, 
+            auth=('apikey', settings.MAILCHIMP_API_KEY),
+            params=params
+        )
+        members += response.json().get('members',[])
+    return members
+
+
+def add_member(user):
     api_url = '{0}lists/{1}/members'.format(
         settings.MAILCHIMP_API_ROOT, settings.MAILCHIMP_LIST_ID
     )
