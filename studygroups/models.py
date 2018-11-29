@@ -576,6 +576,7 @@ def report_data(start_time, end_time, team=None):
         "new_applications": new_applications,
         "new_learners_count": new_applications.count(),
         "intros_from_new_users": intros_from_new_users,
+        "new_users": new_users,
         "new_users_count": new_users.count(),
         "new_courses": new_courses,
         "new_courses_count": new_courses.count(),

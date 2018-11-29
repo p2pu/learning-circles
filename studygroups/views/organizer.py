@@ -29,6 +29,7 @@ from studygroups.models import get_user_team
 from studygroups.tasks import send_team_invitation_email
 from studygroups.decorators import user_is_organizer
 from studygroups.decorators import user_is_team_organizer
+from studygroups.charts import NewLearnersGoalsChart
 
 
 @user_is_organizer
@@ -202,5 +203,12 @@ def weekly_report(request, year=None, month=None, day=None):
     if membership:
         team = membership.team
 
-    context.update(report_data(start_time, end_time, team))
+    data = report_data(start_time, end_time, team)
+    report_charts = {
+        "learner_goals_chart": NewLearnersGoalsChart(start_time, end_time, data["new_applications"], team).generate()
+    }
+
+    context.update(data)
+    context.update(report_charts)
+
     return render(request, 'studygroups/email/weekly-update.html', context)
