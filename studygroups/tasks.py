@@ -582,11 +582,8 @@ def send_weekly_update():
     update.send()
 
 
-def send_community_digest():
-    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    iso_week = today.isocalendar()[1]
-    end_date = today
-    start_date = end_date - datetime.timedelta(days=21)
+@shared_task
+def send_community_digest(start_date, end_date):
 
     context = community_digest_data(start_date, end_date)
 
@@ -687,6 +684,9 @@ def send_out_community_digest():
     translation.activate(settings.LANGUAGE_CODE)
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     iso_week = today.isocalendar()[1]
+    end_date = today
+    start_date = end_date - datetime.timedelta(days=21)
+
 
     if iso_week % 3 == 0:
-        send_community_digest()
+        send_community_digest(start_date, end_date)

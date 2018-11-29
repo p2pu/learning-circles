@@ -21,6 +21,8 @@
     <li><a href="{% url 'admin:studygroups_studygroup_changelist' %}">{% trans "Learning circles" %}</a></li>
   </ul>
 
+  <p><a class="btn btn-primary" href="{% url 'studygroups_digest_generate' %}">{% trans "Generate digest" %}</a></p>
+
   <h3>{% trans "Version" %}</h3>
   <ul>
     <li><p>Version: {{ version }}</p></li>
