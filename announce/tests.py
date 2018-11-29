@@ -114,7 +114,7 @@ class TestAnnounceViews(TestCase):
         send_announcement('Tester <test@example.net>', 'Subject', 'This is a message', '<html><body><h1>HTML message</h1></body></html>')
         self.assertTrue(requests.post.called)
 
-        account_settings_url = ''.join([settings.DOMAIN, reverse('account_settings')])
+        account_settings_url = 'https://' + settings.DOMAIN + reverse('account_settings')
         post_data = requests.post.call_args[1].get('data')
         self.assertEquals('text', post_data[2][0])
         self.assertIn(account_settings_url, post_data[2][1])

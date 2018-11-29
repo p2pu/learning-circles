@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 
 <html>
 <style type="text/css">
@@ -61,7 +62,11 @@
               {% block body %}{% endblock %}
           </td>
         </tr>
-      <!-- TODO: insert message here about preferences for any email that is sent to a user, aka profile != None -->
+      <!-- TODO get domain part of link from template tag -->
+      {% if team or facilitator or user %}
+        {% url 'account_settings' as account_settings_url %}
+        <p>{% blocktrans %}You can manage your message preferences from <a href="https://leearningcircles.p2pu.org{{account_settings_url}}">your dashboard</a>{% endblocktrans %}.</p>
+      {% endif %}
       </tbody>
     </table>
   </body>

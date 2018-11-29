@@ -39,6 +39,7 @@ def generate_reminder(study_group):
             reminder.study_group = study_group
             reminder.study_group_meeting = next_meeting
             context = {
+                'facilitator': study_group.facilitator,
                 'study_group': study_group,
                 'next_meeting': next_meeting,
                 'reminder': reminder,
@@ -112,6 +113,7 @@ def send_facilitator_survey(study_group):
         survey_url = domain + path
 
         context = {
+            "facilitator": study_group.facilitator,
             'facilitator_name': facilitator_name,
             'survey_url': survey_url,
             'course_title': study_group.course.title,
@@ -166,6 +168,7 @@ def send_facilitator_survey_reminder(study_group):
         learners_without_survey_responses = study_group.application_set.active().filter(goal_met=None)
 
         context = {
+            "facilitator": study_group.facilitator,
             'facilitator_name': facilitator_name,
             'learner_survey_url': learner_survey_url,
             'facilitator_survey_url': facilitator_survey_url,
@@ -397,6 +400,7 @@ def send_meeting_reminder(reminder):
     # Send to organizer without RSVP & unsubscribe links
     try:
         context = {
+            "facilitator": reminder.study_group.facilitator,
             "reminder": reminder,
             "facilitator_message": reminder.email_body,
             "domain":'https://{0}'.format(settings.DOMAIN),
@@ -421,7 +425,8 @@ def send_meeting_reminder(reminder):
 
 def send_new_studygroup_email(studygroup):
     context = {
-        'studygroup': studygroup
+        'studygroup': studygroup,
+        'facilitator': studygroup.facilitator
     }
 
     timezone.activate(pytz.timezone(settings.TIME_ZONE))
@@ -452,6 +457,7 @@ def send_reminder(reminder):
             "reminder": reminder,
             "facilitator_message": reminder.email_body,
             "domain":'https://{0}'.format(settings.DOMAIN),
+            "facilitator": reminder.study_group.facilitator
         }
         subject, text_body, html_body = render_email_templates(
             'studygroups/email/facilitator_message',
@@ -576,11 +582,8 @@ def send_weekly_update():
     update.send()
 
 
-def send_community_digest():
-    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    iso_week = today.isocalendar()[1]
-    end_date = today
-    start_date = end_date - datetime.timedelta(days=21)
+@shared_task
+def send_community_digest(start_date, end_date):
 
     context = community_digest_data(start_date, end_date)
 
@@ -681,6 +684,9 @@ def send_out_community_digest():
     translation.activate(settings.LANGUAGE_CODE)
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     iso_week = today.isocalendar()[1]
+    end_date = today
+    start_date = end_date - datetime.timedelta(days=21)
+
 
     if iso_week % 3 == 0:
-        send_community_digest()
+        send_community_digest(start_date, end_date)

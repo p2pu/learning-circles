@@ -38,6 +38,7 @@ from studygroups.views import ExportCoursesView
 from studygroups.views import StaffDashView
 from studygroups.views import StudyGroupFinalReport
 from studygroups.views import CommunityDigestView
+from studygroups.views import DigestGenerateView
 
 from . import views
 
@@ -116,6 +117,7 @@ urlpatterns = [
     url(r'^(?P<slug>[\w-]+)/$', TeamPage.as_view(), name='studygroups_team_page'),
 
     url(r'^staff/dash/$', StaffDashView.as_view(), name='studygroups_staff_dash'),
+    url(r'^digest/generate/$', DigestGenerateView.as_view(), name='studygroups_digest_generate'),
     url(r'^export/signups/$', ExportSignupsView.as_view(), name='studygroups_export_signups'),
     url(r'^export/facilitators/$', ExportFacilitatorsView.as_view(), name='studygroups_export_facilitators'),
     url(r'^export/studygroups/$', ExportStudyGroupsView.as_view(), name='studygroups_export_studygroups'),
