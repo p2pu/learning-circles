@@ -30,7 +30,7 @@ def send_announcement(sender, subject, body_text, body_html):
             'announce/account_settings_email_link.html',
             { 
                 'domain': settings.DOMAIN,
-                'protocol': 'https://'
+                'protocol': 'https'
             }
         )
         # if there is a body tag, add link before the closing body tag
