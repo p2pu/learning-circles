@@ -25,6 +25,7 @@
   table.inner-table {
     line-height: 1.4;
     border-collapse: collapse;
+    width: 100%;
   }
 
   table.inner-table thead tr {
@@ -166,14 +167,16 @@
       </thead>
       <tbody>
         {% for studygroup in finished_studygroups %}
+          {% blocktrans with first_name=studygroup.facilitator.first_name last_name=studygroup.facilitator.last_name email=studygroup.facilitator.email venue=studygroup.venue_name|title studygroup_url=studygroup.course.link course=studygroup.course.title report_url=studygroup.report_url %}
           <tr>
-            <td>{{ studygroup.facilitator.first_name | title }}</td>
-            <td><a href="{{ studygroup.course.link }}">{{ studygroup.course.title }}</a></td>
-            <td>{{ studygroup.venue_name | title }}</td>
+            <td><a href="mailto:{{email}}">{{first_name}} {{last_name}}</a></td>
+            <td><a href="{{ studygroup_url }}">{{ course }}</a></td>
+            <td>{{ venue }}</td>
+          {% endblocktrans %}
             {% if studygroup in studygroups_with_survey_responses %}
-            <td><a href="{{ studygroup.report_url }}">Learning Circle Insights</a></td>
+            <td><a href="{{ studygroup.report_url }}">{% trans "Learning Circle Insights" %}</a></td>
             {% else %}
-            <td>N/A</td>
+            <td>{% trans "N/A" %}</td>
             {% endif %}
           </tr>
         {% endfor %}
@@ -200,8 +203,7 @@
 
     {% if meetings %}
       <h3>{% trans "Meetings this week" %}</h3>
-
-       <table class="inner-table">
+      <table class="inner-table">
         <thead>
           <tr>
             <td>{% trans "Facilitator" %}</td>
@@ -279,11 +281,13 @@
       </thead>
       <tbody>
         {% for studygroup in upcoming_studygroups %}
+          {% blocktrans with first_name=studygroup.facilitator.first_name|title last_name=studygroup.facilitator.last_name|title email=studygroup.facilitator.email venue=studygroup.venue_name|title studygroup_url=studygroup.course.link course_url=studygroup.course.link course=studygroup.course.title report_url=studygroup.report_url %}
           <tr>
-            <td>{{ studygroup.facilitator.first_name | title }}</td>
-            <td><a href="{{ studygroup.course.link }}">{{ studygroup.course.title }}</a></td>
-            <td>{{ studygroup.venue_name | title }}</td>
+            <td><a href="mailto:{{email}}">{{first_name}} {{last_name}}</a></td>
+            <td><a href="{{ course_url }}">{{ course }}</a></td>
+            <td>{{ venue }}</td>
           </tr>
+          {% endblocktrans %}
         {% endfor %}
       </tbody>
     </table>
@@ -320,7 +324,7 @@
         {% endblocktrans %}
       </span>
     </h2>
-      <table class="inner-table">
+    <table class="inner-table">
       <thead>
         <tr>
           <td>{% trans "Name" %}</td>
