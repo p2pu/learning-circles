@@ -1,5 +1,6 @@
 {% extends 'email_base.html' %}
 {% load humanize %}
+{% load static %}
 {% load i18n %}
 {% block body %}
 
@@ -373,6 +374,10 @@
         </a>
     </div>
   </div>
+
+{% block scripts %}
+    <script src="{% static 'js/vendor/pygal-tooltips.min.js' %}"></script>
+{% endblock %}
 
 
 {% endblock %}
