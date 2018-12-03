@@ -44,9 +44,37 @@
       <div class="col-12 mb-4">
         <h2>{% trans "Facilitators" %}</h2>
       </div>
-          {% include "studygroups/measurement_card.html" with title='Positive Rating' chart=facilitator_rating_percentage_chart web=True %}
-          {% include "studygroups/measurement_card.html" with title='Top 10 Facilitators' chart=top_facilitators_chart web=True %}
-          {% include "studygroups/measurement_card.html" with title='Learning Circles Started' chart=facilitator_experience_chart web=True %}
+
+      {% include "studygroups/measurement_card.html" with title='Meetings over time' chart=meetings_over_time_chart web=True %}
+      {% include "studygroups/measurement_card.html" with title='Facilitator Rating Over Time' chart=facilitator_rating_percentage_chart web=True %}
+      {% include "studygroups/measurement_card.html" with title='Top 10 Facilitators' chart=top_facilitators_chart web=True %}
+      {% include "studygroups/measurement_card.html" with title='Learning Circles Started' description="by number of LCs the facilitator has run" chart=facilitator_experience_chart web=True %}
+
+      <div class="col-12 col-md-6 avoid-page-break">
+        <div class="report-measurement bg-white p-4 mb-4 shadow">
+          <header>
+              <p class="bold text-uppercase mb-0">{% trans "Active teams" %}</p>
+          </header>
+          <div class="visualization">
+            <table class="inner-table">
+              <thead>
+                <tr>
+                  <td>{% trans "Team name" %}</td>
+                  <td>{% trans "Organizer dash" %}</td>
+                </tr>
+              </thead>
+              <tbody>
+                {% for team in active_teams %}
+                  <tr>
+                    <td>{{ team.name }}</td>
+                    <td><a href="/en/organize/{{ team.id }}">Team dash</a></td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="row mt-4">
@@ -64,27 +92,27 @@
             </header>
             <div class="visualization">
               <table class="inner-table">
-              <thead>
-                <tr>
-                  <td>{% trans "Course title" %}</td>
-                  <td>{% trans "Course ID" %}</td>
-                  <td>{% trans "Number of times used" %}</td>
-                </tr>
-              </thead>
-              <tbody>
-                {% for course in top_courses %}
+                <thead>
                   <tr>
-                    <td>{{ course.title }}</td>
-                    <td>{{ course.course_id }}</td>
-                    <td>{{ course.count }}</td>
+                    <td>{% trans "Course title" %}</td>
+                    <td>{% trans "Course ID" %}</td>
+                    <td>{% trans "Number of times used" %}</td>
                   </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {% for course in top_courses %}
+                    <tr>
+                      <td>{{ course.title }}</td>
+                      <td>{{ course.course_id }}</td>
+                      <td>{{ course.count }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
 
 

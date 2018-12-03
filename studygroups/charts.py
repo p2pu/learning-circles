@@ -1062,32 +1062,39 @@ class TotalLearnersChart():
         return self.chart.render(is_unicode=True)
 
 
-class FacilitatorRatingPercentageChart():
-    def __init__(self, report_date, study_groups, **kwargs):
+class FacilitatorRatingOverTimeChart():
+    def __init__(self, start_time, end_time, study_groups, **kwargs):
         style = custom_style()
         style.value_font_size = 40
         style.title_font_size = 24
-        self.chart = pygal.SolidGauge(style=style, inner_radius=0.70, show_legend = False, x_title="of facilitators rated their learning circle 'very good' or 'excellent'", **kwargs)
-        self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
+        self.chart = pygal.Bar(style=style, order_min=0, y_title="Number of LCs to receive rating", x_label_rotation=30, **kwargs)
         self.study_groups = study_groups
-        self.report_date = report_date
+        self.start_time = start_time
+        self.end_time = end_time
 
     def get_data(self):
-        data = { 'Percentage': [ {'value': 0, 'max_value': 100} ]}
+        data = { "dates": [] }
+        for i in range(1,6):
+            data[i] = []
 
-        ratings = self.study_groups.exclude(facilitator_rating=None).values_list('facilitator_rating', flat=True)
+        window_start = self.start_time
+        window_end = window_start + relativedelta(months=+1)
 
-        if ratings.count() < 1:
-            return None
+        while window_end <= self.end_time:
 
-        positive_rating_count = 0
+            ratings = self.study_groups.exclude(facilitator_rating=None).filter(end_date__gte=window_start, end_date__lt=window_end).values_list('facilitator_rating', flat=True)
+            print(ratings)
 
-        for rating in ratings:
-            if rating is not None and rating > 3:
-                positive_rating_count += 1
+            ratings_counter = Counter(ratings)
 
-        percentage = round((positive_rating_count / ratings.count()) * 100)
-        data['Percentage'][0]['value'] = percentage
+            for i in range(1,6):
+                data[i].append(ratings_counter[i])
+
+            data["dates"].append(window_start.strftime("%b %Y"))
+
+            window_start = window_end
+            window_end = window_start + relativedelta(months=+1)
+
 
         return data
 
@@ -1098,10 +1105,13 @@ class FacilitatorRatingPercentageChart():
             return NO_DATA
 
         for key, value in chart_data.items():
-            self.chart.add(key, value)
+            if key is not "dates":
+                self.chart.add(str(key), value)
+
+        self.chart.x_labels = chart_data["dates"]
 
         if opts.get('output', None) == "png":
-            filename = "stats-dash-{}-postitive_facilitator_ratings.png".format(self.report_date.isoformat())
+            filename = "stats-dash-{}-postitive_facilitator_ratings.png".format(self.end_time.isoformat())
             target_path = os.path.join('tmp', filename)
             self.chart.height = 400
             self.chart.render_to_png(target_path)
@@ -1166,11 +1176,11 @@ class FacilitatorCourseRatingPercentageChart():
 
 
 class LearnerCourseRatingPercentageChart():
-    def __init__(self, report_date, study_groups, **kwargs):
+    def __init__(self, start_time, end_time, study_groups, **kwargs):
         style = custom_style()
         style.value_font_size = 40
         style.title_font_size = 24
-        self.chart = pygal.SolidGauge(style=style, inner_radius=0.70, show_legend = False, x_title="of learners said the online course worked very well", **kwargs)
+        self.chart = pygal.Line(style=style, x_title="of learners said the online course worked very well", **kwargs)
         self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
         self.study_groups = study_groups
         self.report_date = report_date
@@ -1218,33 +1228,50 @@ class LearnerCourseRatingPercentageChart():
 
 
 class FacilitatorExperienceChart():
-
     def __init__(self, start_time, end_time, study_groups, **kwargs):
-        self.chart = pygal.StackedLine(style=custom_style(), height=400, fill=True, show_legend=False, max_scale=10, order_min=0, y_title="Learning circles started this month", x_label_rotation=30, **kwargs)
+        self.chart = pygal.StackedLine(style=custom_style(), height=400, fill=True, max_scale=10, order_min=0, y_title="Learning circles started", x_label_rotation=30, **kwargs)
         self.start_time = start_time
         self.end_time = end_time
         self.study_groups = study_groups
 
     def get_data(self):
-        data = { "studygroups_with_veteran_facilitator": [], "studygroups_with_first_time_facilitator": [], "dates": [] }
+        data = { "dates": [] }
+
+        for i in range(1, 5):
+            data[i] = []
+
+        data["5+"] = []
+
         window_start = self.start_time
         window_end = window_start + relativedelta(months=+1)
 
         while window_end <= self.end_time:
             study_groups = self.study_groups.filter(start_date__gte=window_start, start_date__lt=window_end)
-            first_time_facilitator = 0
-            veteran_facilitator = 0
+
+            counts = []
 
             for sg in study_groups:
                 facilitator = sg.facilitator
-                if StudyGroup.objects.filter(start_date__lt=sg.start_date, facilitator=facilitator).count() > 0:
-                    veteran_facilitator += 1
-                else:
-                    first_time_facilitator += 1
+                sg_count = StudyGroup.objects.published().filter(start_date__lte=sg.start_date, facilitator=facilitator).count()
+                counts.append(sg_count)
 
-            data["studygroups_with_veteran_facilitator"].append(veteran_facilitator)
-            data["studygroups_with_first_time_facilitator"].append(first_time_facilitator)
-            data["dates"].append(window_end.strftime("%b %Y"))
+            counter = Counter(counts)
+
+            over_5 = 0
+
+            for count in counter.items():
+                label = count[0]
+                value = count[1]
+
+                if label > 4:
+                    over_5 += value
+
+            for i in range(1, 5):
+                value = counter[i]
+                data[i].append(value)
+
+            data["5+"].append(over_5)
+            data["dates"].append(window_start.strftime("%b %Y"))
 
             window_start = window_start + relativedelta(months=+1)
             window_end = window_start + relativedelta(months=+1)
@@ -1255,8 +1282,10 @@ class FacilitatorExperienceChart():
     def generate(self, **opts):
         chart_data = self.get_data()
 
-        self.chart.add('LCs with first time facilitator', chart_data["studygroups_with_first_time_facilitator"])
-        self.chart.add('LCs with a veteran facilitator', chart_data["studygroups_with_veteran_facilitator"])
+        for key, value in chart_data.items():
+            if key is not "dates":
+                self.chart.add(str(key), value)
+
         self.chart.x_labels = chart_data["dates"]
 
         if opts.get('output', None) == "png":
@@ -1385,7 +1414,14 @@ class LearnerGoalsPercentageChart():
         self.end_time = end_time
 
     def get_data(self):
-        data = { 'Percentage': [ {'value': 0, 'max_value': 100} ]}
+        data = {}
+        dates = []
+
+        window_start = self.start_time
+        window_end = window_start + relativedelta(months=+1)
+
+        while window_end <= self.end_time:
+            study_groups = self.study_groups.filter(start_date__gte=window_start, start_date__lt=window_end)
 
         total_applications_count = Application.objects.active().exclude(goal_met=None).filter(study_group__in=self.study_groups).count()
         goal_met_count = Application.objects.active().exclude(goal_met=None).filter(study_group__in=self.study_groups, goal_met__gte=GOAL_MET_THRESHOLD).count()
@@ -1396,7 +1432,7 @@ class LearnerGoalsPercentageChart():
         percentage = round((goal_met_count / total_applications_count) * 100)
         data['Percentage'][0]['value'] = percentage
 
-        return data
+        return { "data": data, "dates": dates }
 
     def generate(self, **opts):
         chart_data = self.get_data()
@@ -1543,4 +1579,64 @@ class TopCoursesChart():
             return "<img src={} alt={} width='100%'>".format(img_url, 'Top courses chart')
 
         return self.chart.render(is_unicode=True)
+
+
+class MeetingsOverTimeChart():
+
+    def __init__(self, start_time, end_time, **kwargs):
+        self.chart = pygal.Line(style=custom_style(), height=400, max_scale=10, order_min=0, y_title="Meetings", x_label_rotation=30, **kwargs)
+        self.start_time = start_time
+        self.end_time = end_time
+        self.current_year = end_time.year
+        self.previous_year = end_time.year - 1
+
+    def get_data(self):
+        data = { "current_year": [], "previous_year": [], "dates": [] }
+
+        window_start = datetime.datetime(self.previous_year, 1, 1)
+        window_end = window_start + relativedelta(months=+1)
+        end_date = datetime.datetime(self.previous_year, 12, 31)
+
+        while window_start <= end_date:
+            meetings_count = Meeting.objects.active().filter(meeting_date__gte=window_start, meeting_date__lt=window_end, study_group__deleted_at__isnull=True, study_group__draft=False).count()
+
+            data["dates"].append(window_start.strftime("%b"))
+            data["previous_year"].append(meetings_count)
+
+            window_start = window_end
+            window_end = window_start + relativedelta(months=+1)
+
+
+        window_start = self.end_time.replace(month=1, day=1)
+        window_end = window_start + relativedelta(months=+1)
+
+        while window_start <= self.end_time:
+            meetings_count = Meeting.objects.active().filter(meeting_date__gte=window_start, meeting_date__lt=window_end, study_group__deleted_at__isnull=True, study_group__draft=False).count()
+
+            data["current_year"].append(meetings_count)
+
+            window_start = window_end
+            window_end = window_start + relativedelta(months=+1)
+
+        return data
+
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+
+        self.chart.add(str(self.previous_year), chart_data["previous_year"])
+        self.chart.add(str(self.current_year), chart_data["current_year"], allow_interruptions=True)
+        self.chart.x_labels = chart_data["dates"]
+
+        if opts.get('output', None) == "png":
+            filename = "stats-dash-{}-meetings-chart.png".format(self.end_time.isoformat())
+            target_path = os.path.join('tmp', filename)
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Number of meetings over time')
+
+        return self.chart.render(is_unicode=True)
+
 

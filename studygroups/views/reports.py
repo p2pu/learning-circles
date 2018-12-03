@@ -114,7 +114,8 @@ class StatsDashView(TemplateView):
         data = stats_dash_data(start_time, end_time, team)
 
         chart_data = {
-            "facilitator_rating_percentage_chart" : charts.FacilitatorRatingPercentageChart(end_time.date(), data["studygroups_that_ended"]).generate(),
+            "meetings_over_time_chart": charts.MeetingsOverTimeChart(start_time, end_time).generate(),
+            "facilitator_rating_percentage_chart" : charts.FacilitatorRatingOverTimeChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
             "facilitator_course_rating_percentage_chart" : charts.FacilitatorCourseRatingPercentageChart(end_time.date(), data["studygroups_that_ended"]).generate(),
             "learner_course_rating_percentage_chart" : charts.LearnerCourseRatingPercentageChart(end_time.date(), data["studygroups_that_ended"]).generate(),
             "facilitator_experience_chart" : charts.FacilitatorExperienceChart(start_time, end_time, data["studygroups_that_met"]).generate(),

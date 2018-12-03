@@ -655,6 +655,12 @@ def get_top_discourse_topics_and_users(limit=10):
     top_posts_json = get_json_response("https://community.p2pu.org/top/monthly.json")
     return { 'topics': top_posts_json['topic_list']['topics'][:limit], 'users': top_posts_json['users'] }
 
+def get_active_teams(start_time, end_time):
+    memberships = get_studygroups_with_meetings(start_time, end_time).values_list('facilitator__teammembership', flat=True)
+    active_teams = Team.objects.filter(teammembership__in=memberships).distinct()
+    return active_teams
+
+
 def community_digest_data(start_time, end_time):
     study_groups = StudyGroup.objects.published()
     origin_date = datetime.date(2016, 1, 1)
@@ -707,6 +713,7 @@ def stats_dash_data(start_time, end_time, team=None):
     courses = studygroups_that_met.values_list('course', 'course__title')
     ordered_courses = Counter(courses).most_common(10)
     top_courses = [{ "title": course[0][1], "course_id": course[0][0], "count": course[1] } for course in ordered_courses]
+    active_teams = get_active_teams(start_time, end_time)
 
     return {
         "start_date": start_time.date(),
@@ -716,5 +723,6 @@ def stats_dash_data(start_time, end_time, team=None):
         "studygroups_met_count": studygroups_that_met.count(),
         "learners_reached_count": learners_reached.count(),
         "top_courses": top_courses,
+        "active_teams": active_teams,
     }
 
