@@ -628,18 +628,18 @@ def filter_studygroups_with_survey_responses(study_groups):
     return sorted(with_responses, key=lambda sg: sg.learnersurveyresponse_set.count(), reverse=True)
 
 def get_new_user_intros(new_users, limit=5):
-    new_discourse_usernames = [ '{}_{}'.format(user.first_name, user.last_name) for user in new_users ]
+    new_discourse_users = [ '{} {}'.format(user.first_name, user.last_name) for user in new_users ]
     latest_introduction_posts = get_json_response("https://community.p2pu.org/t/1571/last.json")
 
     intros_from_new_users = []
     for post in latest_introduction_posts['post_stream']['posts']:
-        discourse_username = post["username"]
+        discourse_user = post["name"]
 
 
         if settings.DEBUG:
-            discourse_username = discourse_username.split("_")[0] + "_Lastname" # TODO remove this on production!!
+            discourse_user = discourse_user.split(" ")[0] + " Lastname" # TODO remove this on production!!
 
-        if discourse_username in new_discourse_usernames and post["reply_to_post_number"] is None:
+        if discourse_user in new_discourse_users and post["reply_to_post_number"] is None:
             intros_from_new_users.append(post)
 
     return intros_from_new_users[::-1][:limit]

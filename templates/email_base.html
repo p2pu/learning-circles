@@ -65,7 +65,11 @@
       <!-- TODO get domain part of link from template tag -->
       {% if team or facilitator or user %}
         {% url 'account_settings' as account_settings_url %}
-        <p>{% blocktrans %}You can manage your message preferences from <a href="https://leearningcircles.p2pu.org{{account_settings_url}}">your dashboard</a>{% endblocktrans %}.</p>
+        <tr>
+          <td>
+            <p>{% blocktrans %}You can manage your message preferences from <a href="https://learningcircles.p2pu.org{{account_settings_url}}">your dashboard</a>{% endblocktrans %}.</p>
+          </td>
+        </tr>
       {% endif %}
       </tbody>
     </table>
