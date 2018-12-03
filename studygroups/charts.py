@@ -855,7 +855,8 @@ class LearningCircleCountriesChart():
 
         for key, value in chart_data.items():
             if key != "Not reported":
-                self.chart.add(key, value)
+                label = "{} ({})".format(key, value)
+                self.chart.add(label, value)
 
         self.chart.add("Not reported", chart_data["Not reported"])
 
