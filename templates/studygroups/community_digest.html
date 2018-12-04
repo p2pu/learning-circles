@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load i18n %}
 
 {% block content %}
@@ -6,5 +7,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script type="text/javascript" src="https://kozea.github.com/pygal.js/latest/pygal-tooltips.min.js"></script>
+    <script src="{% static 'js/vendor/pygal-tooltips.min.js' %}"></script>
 {% endblock %}

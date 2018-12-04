@@ -819,7 +819,7 @@ class LearningCircleMeetingsChart():
 class LearningCircleCountriesChart():
 
     def __init__(self, start_date, report_date, **kwargs):
-        self.chart = pygal.Pie(style=custom_style(), inner_radius=.4, **kwargs)
+        self.chart = pygal.Pie(style=custom_style(), inner_radius=.4, truncate_label=-1, **kwargs)
         self.start_date = start_date
         self.report_date = report_date
 
@@ -939,6 +939,10 @@ class TopTopicsChart():
                 topic_name = "HTML"
             if topic[0] == "Css":
                 topic_name = "CSS"
+            if topic[0] == "Esol":
+                topic_name == "ESOL"
+            if topic[0] == "Esl":
+                topic_name == "ESL"
             data[topic_name] = topic[1]
 
         return data
@@ -1003,7 +1007,7 @@ class NewLearnersGoalsChart():
 
         if opts.get('output', None) == "png":
             team = self.team.id if self.team else 'staff'
-            filename = "weekly-update-{}-{}-learner-goals-chart.png".format(self.end_time.isoformat(), team)
+            filename = "weekly-update-{}-{}-learner-goals-chart.png".format(self.end_time.date().isoformat(), team)
             target_path = os.path.join('/tmp', filename)
             self.chart.height = 400
             self.chart.render_to_png(target_path)

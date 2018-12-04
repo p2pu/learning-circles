@@ -654,9 +654,12 @@ def get_top_discourse_topics_and_users(limit=10):
 
 def community_digest_data(start_time, end_time):
     study_groups = StudyGroup.objects.published()
+    origin_date = datetime.date(2016, 1, 1)
 
     studygroups_that_met = get_studygroups_with_meetings(start_time, end_time)
     learners_reached = Application.objects.active().filter(study_group__in=studygroups_that_met)
+    total_learners_reached_count = Application.objects.active().filter(accepted_at__gte=origin_date, accepted_at__lt=end_time).count()
+    total_studygroups_met_count = get_studygroups_with_meetings(origin_date, end_time).count()
     new_learning_circles = get_new_studygroups(start_time, end_time)
     new_users = get_new_users(start_time, end_time)
     new_applications = get_new_applications(start_time, end_time)
@@ -668,6 +671,7 @@ def community_digest_data(start_time, end_time):
     discourse_categories = get_discourse_categories()
     top_discourse_topics = get_top_discourse_topics_and_users()
     web_version_path = reverse('studygroups_community_digest', kwargs={'start_date': start_time.strftime("%d-%m-%Y"), 'end_date': end_time.strftime("%d-%m-%Y")})
+
 
     return {
         "start_date": start_time.date(),
@@ -689,5 +693,7 @@ def community_digest_data(start_time, end_time):
         "discourse_categories": discourse_categories,
         "intros_from_new_users": intros_from_new_users,
         "web_version_path": web_version_path,
+        "total_learners_reached_count": total_learners_reached_count,
+        "total_studygroups_met_count": total_studygroups_met_count,
     }
 
