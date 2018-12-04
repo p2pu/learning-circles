@@ -24,6 +24,7 @@ from studygroups.models import StudyGroup
 from studygroups.models import Course
 from studygroups.models import Meeting
 from studygroups.models import Application
+from studygroups.models import get_studygroups_with_meetings
 from surveys.models import FacilitatorSurveyResponse
 from surveys.models import LearnerSurveyResponse
 
@@ -1073,30 +1074,32 @@ class FacilitatorRatingOverTimeChart():
         self.end_time = end_time
 
     def get_data(self):
-        data = { "dates": [] }
+        data = {}
+        dates = []
         for i in range(1,6):
             data[i] = []
+
+        if self.study_groups.count() < 1:
+            return None
 
         window_start = self.start_time
         window_end = window_start + relativedelta(months=+1)
 
-        while window_end <= self.end_time:
+        while window_start <= self.end_time:
 
             ratings = self.study_groups.exclude(facilitator_rating=None).filter(end_date__gte=window_start, end_date__lt=window_end).values_list('facilitator_rating', flat=True)
-            print(ratings)
-
             ratings_counter = Counter(ratings)
 
-            for i in range(1,6):
-                data[i].append(ratings_counter[i])
+            for rating, collection in data.items():
+                collection.append(ratings_counter[rating])
 
-            data["dates"].append(window_start.strftime("%b %Y"))
+            dates.append(window_start.strftime("%b %Y"))
 
             window_start = window_end
             window_end = window_start + relativedelta(months=+1)
 
 
-        return data
+        return { "data": data, "dates": dates }
 
     def generate(self, **opts):
         chart_data = self.get_data()
@@ -1104,14 +1107,13 @@ class FacilitatorRatingOverTimeChart():
         if chart_data is None:
             return NO_DATA
 
-        for key, value in chart_data.items():
-            if key is not "dates":
-                self.chart.add(str(key), value)
+        for key, value in chart_data["data"].items():
+            self.chart.add(str(key), value)
 
         self.chart.x_labels = chart_data["dates"]
 
         if opts.get('output', None) == "png":
-            filename = "stats-dash-{}-postitive_facilitator_ratings.png".format(self.end_time.isoformat())
+            filename = "stats-dash-{}-postitive_facilitator_ratings.png".format(self.end_time.date().isoformat())
             target_path = os.path.join('tmp', filename)
             self.chart.height = 400
             self.chart.render_to_png(target_path)
@@ -1123,88 +1125,48 @@ class FacilitatorRatingOverTimeChart():
 
 
 
-class FacilitatorCourseRatingPercentageChart():
-    def __init__(self, report_date, study_groups, **kwargs):
-        style = custom_style()
-        style.value_font_size = 40
-        style.title_font_size = 24
-        self.chart = pygal.SolidGauge(style=style, inner_radius=0.70, show_legend = False, x_title="of facilitators said the online course worked very well", **kwargs)
-        self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
-        self.study_groups = study_groups
-        self.report_date = report_date
-
-    def get_data(self):
-        data = { 'Percentage': [ {'value': 0, 'max_value': 100} ]}
-
-        survey_responses = FacilitatorSurveyResponse.objects.filter(study_group__in=self.study_groups).values_list('response', flat=True)
-
-        if len(survey_responses) == 0:
-            return None
-
-        positive_rating_count = 0
-
-        for response_str in survey_responses:
-            field = get_response_field(response_str, "Zm9XlzKGKC66")
-            # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
-            if field is not None and field['number'] > 3:
-                positive_rating_count += 1
-
-        percentage = round((positive_rating_count / len(survey_responses)) * 100)
-        data['Percentage'][0]['value'] = percentage
-
-        return data
-
-    def generate(self, **opts):
-        chart_data = self.get_data()
-
-        if chart_data is None:
-            return NO_DATA
-
-        for key, value in chart_data.items():
-            self.chart.add(key, value)
-
-        if opts.get('output', None) == "png":
-            filename = "stats-dash-{}-postitive-facilitator-course-ratings.png".format(self.report_date.isoformat())
-            target_path = os.path.join('tmp', filename)
-            self.chart.height = 400
-            self.chart.render_to_png(target_path)
-            file = open(target_path, 'rb')
-            img_url = save_to_aws(file, filename)
-            return "<img src={} alt={} width='100%'>".format(img_url, 'Positive course ratings by facilitators')
-
-        return self.chart.render(is_unicode=True)
-
-
-class LearnerCourseRatingPercentageChart():
+class FacilitatorCourseApprovalChart():
     def __init__(self, start_time, end_time, study_groups, **kwargs):
         style = custom_style()
         style.value_font_size = 40
         style.title_font_size = 24
-        self.chart = pygal.Line(style=style, x_title="of learners said the online course worked very well", **kwargs)
+        self.chart = pygal.Line(style=style, x_label_rotation=30, range=(0, 100), show_legend=False, **kwargs)
         self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
         self.study_groups = study_groups
-        self.report_date = report_date
+        self.start_time = start_time
+        self.end_time = end_time
 
     def get_data(self):
-        data = { 'Percentage': [ {'value': 0, 'max_value': 100} ]}
+        data = []
+        dates = []
 
-        survey_responses = LearnerSurveyResponse.objects.filter(study_group__in=self.study_groups).values_list('response', flat=True)
-
-        if len(survey_responses) == 0:
+        if self.study_groups.count() < 1:
             return None
 
-        positive_rating_count = 0
+        window_start = self.start_time
+        window_end = window_start + relativedelta(months=+1)
 
-        for response_str in survey_responses:
-            field = get_response_field(response_str, "iGWRNCyniE7s")
-            # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
-            if field is not None and field['number'] > 3:
-                positive_rating_count += 1
+        while window_start <= self.end_time:
+            survey_responses = FacilitatorSurveyResponse.objects.filter(study_group__in=self.study_groups, responded_at__gte=window_start, responded_at__lt=window_end).values_list('response', flat=True)
 
-        percentage = round((positive_rating_count / len(survey_responses)) * 100)
-        data['Percentage'][0]['value'] = percentage
+            positive_rating_count = 0
 
-        return data
+            for response_str in survey_responses:
+                field = get_response_field(response_str, "Zm9XlzKGKC66")
+                # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
+                if field is not None and field['number'] > 3:
+                    positive_rating_count += 1
+
+
+            percentage = round((positive_rating_count / len(survey_responses)) * 100)
+            data.append(percentage)
+            dates.append(window_start.strftime("%b %Y"))
+
+            window_start = window_end
+            window_end = window_start + relativedelta(months=+1)
+
+
+        return { "data": data, "dates": dates }
 
     def generate(self, **opts):
         chart_data = self.get_data()
@@ -1212,17 +1174,80 @@ class LearnerCourseRatingPercentageChart():
         if chart_data is None:
             return NO_DATA
 
-        for key, value in chart_data.items():
-            self.chart.add(key, value)
+        self.chart.add("Facilitators", chart_data["data"])
+        self.chart.x_labels = chart_data["dates"]
 
         if opts.get('output', None) == "png":
-            filename = "stats-dash-{}-postitive-learner-course-ratings.png".format(self.report_date.isoformat())
+            filename = "stats-dash-{}-facilitator-course-approval.png".format(self.end_time.date().isoformat())
             target_path = os.path.join('tmp', filename)
             self.chart.height = 400
             self.chart.render_to_png(target_path)
             file = open(target_path, 'rb')
             img_url = save_to_aws(file, filename)
-            return "<img src={} alt={} width='100%'>".format(img_url, 'Positive course ratings by learners')
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Facilitator course approval')
+
+        return self.chart.render(is_unicode=True)
+
+class LearnerCourseApprovalChart():
+    def __init__(self, start_time, end_time, study_groups, **kwargs):
+        style = custom_style()
+        style.value_font_size = 40
+        style.title_font_size = 24
+        self.chart = pygal.Line(style=style, x_label_rotation=30, range=(0, 100), show_legend=False, **kwargs)
+        self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
+        self.study_groups = study_groups
+        self.start_time = start_time
+        self.end_time = end_time
+
+    def get_data(self):
+        data = []
+        dates = []
+
+        if self.study_groups.count() < 1:
+            return None
+
+        window_start = self.start_time
+        window_end = window_start + relativedelta(months=+1)
+
+        while window_start <= self.end_time:
+            survey_responses = LearnerSurveyResponse.objects.filter(study_group__in=self.study_groups, responded_at__gte=window_start, responded_at__lt=window_end).values_list('response', flat=True)
+
+            positive_rating_count = 0
+
+            for response_str in survey_responses:
+                field = get_response_field(response_str, "iGWRNCyniE7s")
+                # iGWRNCyniE7s = "How well did the online course {{hidden:course}} work as a learning circle?"
+                if field is not None and field['number'] > 3:
+                    positive_rating_count += 1
+
+
+            percentage = round((positive_rating_count / len(survey_responses)) * 100)
+            data.append(percentage)
+            dates.append(window_start.strftime("%b %Y"))
+
+            window_start = window_end
+            window_end = window_start + relativedelta(months=+1)
+
+
+        return { "data": data, "dates": dates }
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+
+        if chart_data is None:
+            return NO_DATA
+
+        self.chart.add("Learners", chart_data["data"])
+        self.chart.x_labels = chart_data["dates"]
+
+        if opts.get('output', None) == "png":
+            filename = "stats-dash-{}-learner-course-approval.png".format(self.end_time.date().isoformat())
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Learner course approval')
 
         return self.chart.render(is_unicode=True)
 
@@ -1412,6 +1437,7 @@ class LearnerGoalsPercentageChart():
         self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
         self.study_groups = study_groups
         self.end_time = end_time
+        self.start_time = start_time
 
     def get_data(self):
         data = {}
@@ -1640,3 +1666,116 @@ class MeetingsOverTimeChart():
         return self.chart.render(is_unicode=True)
 
 
+# class DraftLearningCirclesChart():
+#     def __init__(self, start_time, end_time, **kwargs):
+#         self.chart = pygal.Line(style=custom_style(), height=400, max_scale=10, order_min=0, y_title="Draft learning circles", x_label_rotation=30, **kwargs)
+#         self.start_time = start_time
+#         self.end_time = end_time
+
+#     def get_data(self):
+#         data = { "current_year": [], "previous_year": [], "dates": [] }
+
+#         window_start = self.start_time
+#         window_end = window_start + relativedelta(months=+1)
+
+#         while window_start <= self.end_time:
+#             three_months_ago = window_start - relativedelta(months=+3)
+#             current_published_studygroups = StudyGroup.objects.published()
+#             draft_learning_circles = Meeting.objects.active().filter(meeting_date__gte=window_start, meeting_date__lt=window_end, study_group__deleted_at__isnull=True, study_group__draft=False).count()
+
+#             data["dates"].append(window_start.strftime("%b"))
+#             data["previous_year"].append(meetings_count)
+
+#             window_start = window_end
+#             window_end = window_start + relativedelta(months=+1)
+
+
+#         window_start = self.end_time.replace(month=1, day=1)
+#         window_end = window_start + relativedelta(months=+1)
+
+#         while window_start <= self.end_time:
+#             meetings_count = Meeting.objects.active().filter(meeting_date__gte=window_start, meeting_date__lt=window_end, study_group__deleted_at__isnull=True, study_group__draft=False).count()
+
+#             data["current_year"].append(meetings_count)
+
+#             window_start = window_end
+#             window_end = window_start + relativedelta(months=+1)
+
+#         return data
+
+
+#     def generate(self, **opts):
+#         chart_data = self.get_data()
+
+#         self.chart.add(str(self.previous_year), chart_data["previous_year"])
+#         self.chart.add(str(self.current_year), chart_data["current_year"], allow_interruptions=True)
+#         self.chart.x_labels = chart_data["dates"]
+
+#         if opts.get('output', None) == "png":
+#             filename = "stats-dash-{}-meetings-chart.png".format(self.end_time.isoformat())
+#             target_path = os.path.join('tmp', filename)
+#             self.chart.render_to_png(target_path)
+#             file = open(target_path, 'rb')
+#             img_url = save_to_aws(file, filename)
+
+#             return "<img src={} alt={} width='100%'>".format(img_url, 'Number of meetings over time')
+
+#         return self.chart.render(is_unicode=True)
+
+class StudygroupsByCountryOverTimeChart():
+
+    def __init__(self, start_time, end_time, study_groups, **kwargs):
+        self.chart = pygal.StackedLine(style=custom_style(), fill=True, truncate_label=-1, x_label_rotation=30, **kwargs)
+        self.start_time = start_time
+        self.end_time = end_time
+        self.study_groups = study_groups
+
+    def get_data(self):
+        data = { "Not reported": [] }
+        dates = []
+
+        countries = self.study_groups.exclude(country_en="").values_list('country_en', flat=True)
+
+        for country in countries:
+            data[country] = []
+
+        window_start = self.start_time
+        window_end = window_start + relativedelta(months=+1)
+
+        while window_start <= self.end_time:
+            studygroups_that_met = get_studygroups_with_meetings(window_start, window_end)
+
+            for country, collection in data.items():
+                if country == "Not reported":
+                    sgs_count = studygroups_that_met.filter(country_en=None).count()
+                else:
+                    sgs_count = studygroups_that_met.filter(country_en=country).count()
+
+                data[country].append(sgs_count)
+
+            dates.append(window_start.strftime("%b %Y"))
+            window_start = window_end
+            window_end = window_start + relativedelta(months=+1)
+
+        return { "data": data, "dates": dates }
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+
+        for key, value in chart_data["data"].items():
+            self.chart.add(key, value)
+
+        self.chart.x_labels = chart_data["dates"]
+
+        if opts.get('output', None) == "png":
+            filename = "stats-dash-{}-countries-chart.png".format(self.end_time.date().isoformat())
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Learning circles by country over time')
+
+        return self.chart.render(is_unicode=True)

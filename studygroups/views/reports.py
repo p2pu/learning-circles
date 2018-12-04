@@ -12,7 +12,10 @@ from studygroups.models import community_digest_data
 from studygroups.models import stats_dash_data
 from studygroups import charts
 
+from surveys.models import FacilitatorSurveyResponse
+
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from django.utils.timezone import make_aware
 
 import requests
@@ -98,6 +101,19 @@ class CommunityDigestView(TemplateView):
 
         return context
 
+def get_low_rated_courses(study_groups):
+    survey_responses = FacilitatorSurveyResponse.objects.filter(study_group__in=study_groups)
+
+    low_rated_courses = []
+
+    for response in survey_responses:
+        field = charts.get_response_field(response.response, "Zm9XlzKGKC66")
+        # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
+        if field is not None and field['number'] < 3:
+            if response.study_group.course.unlisted is False:
+                low_rated_courses.append((response.study_group.course, field['number']))
+
+    return low_rated_courses
 
 
 @method_decorator(user_is_staff, name='dispatch')
@@ -106,27 +122,39 @@ class StatsDashView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(StatsDashView, self).get_context_data(**kwargs)
-        start_time = make_aware(datetime.strptime(kwargs.get('start_date'), "%d-%m-%Y"))
-        end_time = make_aware(datetime.strptime(kwargs.get('end_date'), "%d-%m-%Y"))
+        start_time = make_aware(datetime.strptime(kwargs.get('start_date'), "%m-%Y"))
+        end_time = make_aware(datetime.strptime(kwargs.get('end_date'), "%m-%Y")) + relativedelta(day=31)
+        minimum_start_time = end_time - relativedelta(months=+2, day=1)
+        start_time = minimum_start_time if start_time > minimum_start_time else start_time
+
         team_id = kwargs.get('team_id', None)
         team = Team.objects.filter(pk=team_id).first()
 
         data = stats_dash_data(start_time, end_time, team)
 
+        # this doesn't belong here
+        # it should be in stats_dash_data
+        # but importing surveys.models into studygroups.models creates a circular dependency :(
+        low_rated_courses = get_low_rated_courses(data["studygroups_that_ended"])
+        print(low_rated_courses)
+
         chart_data = {
             "meetings_over_time_chart": charts.MeetingsOverTimeChart(start_time, end_time).generate(),
             "facilitator_rating_percentage_chart" : charts.FacilitatorRatingOverTimeChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
-            "facilitator_course_rating_percentage_chart" : charts.FacilitatorCourseRatingPercentageChart(end_time.date(), data["studygroups_that_ended"]).generate(),
-            "learner_course_rating_percentage_chart" : charts.LearnerCourseRatingPercentageChart(end_time.date(), data["studygroups_that_ended"]).generate(),
+            "studygroups_by_country_chart": charts.StudygroupsByCountryOverTimeChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
+            "facilitator_course_approval_chart" : charts.FacilitatorCourseApprovalChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
+            "learner_course_approval_chart" : charts.LearnerCourseApprovalChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
+            # "learner_course_rating_percentage_chart" : charts.LearnerCourseRatingPercentageChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
             "facilitator_experience_chart" : charts.FacilitatorExperienceChart(start_time, end_time, data["studygroups_that_met"]).generate(),
-            "top_facilitators_chart" : charts.TopFacilitatorsChart(start_time, end_time, data["studygroups_that_met"]).generate(),
-            "participants_over_time_chart" : charts.ParticipantsOverTimeChart(start_time, end_time, data["studygroups_that_met"]).generate(),
-            "learner_goals_percentage_chart" : charts.LearnerGoalsPercentageChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
-            "skills_improved_percentage_chart" : charts.SkillsImprovedPercentageChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
+            # "top_facilitators_chart" : charts.TopFacilitatorsChart(start_time, end_time, data["studygroups_that_met"]).generate(),
+            # "participants_over_time_chart" : charts.ParticipantsOverTimeChart(start_time, end_time, data["studygroups_that_met"]).generate(),
+            # "learner_goals_percentage_chart" : charts.LearnerGoalsPercentageChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
+            # "skills_improved_percentage_chart" : charts.SkillsImprovedPercentageChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
             # "top_courses_chart" : charts.TopCoursesChart(start_time, end_time, data["studygroups_that_met"]).generate(),
         }
 
         context.update(data)
+        context.update({ "low_rated_courses": low_rated_courses })
         context.update(chart_data)
 
 

@@ -660,7 +660,6 @@ def get_active_teams(start_time, end_time):
     active_teams = Team.objects.filter(teammembership__in=memberships).distinct()
     return active_teams
 
-
 def community_digest_data(start_time, end_time):
     study_groups = StudyGroup.objects.published()
     origin_date = datetime.date(2016, 1, 1)

@@ -41,13 +41,9 @@
     </div>
 
     <div class="row mt-4">
-      <div class="col-12 mb-4">
-        <h2>{% trans "Facilitators" %}</h2>
-      </div>
-
-      {% include "studygroups/measurement_card.html" with title='Meetings over time' chart=meetings_over_time_chart web=True %}
-      {% include "studygroups/measurement_card.html" with title='Facilitator Rating Over Time' chart=facilitator_rating_percentage_chart web=True %}
-      {% include "studygroups/measurement_card.html" with title='Top 10 Facilitators' chart=top_facilitators_chart web=True %}
+      {% include "studygroups/measurement_card.html" with title='Meetings' chart=meetings_over_time_chart web=True %}
+      {% include "studygroups/measurement_card.html" with title='Facilitator Rating' chart=facilitator_rating_percentage_chart web=True %}
+      {% include "studygroups/measurement_card.html" with title='Learning Circles by Country' chart=studygroups_by_country_chart web=True %}
       {% include "studygroups/measurement_card.html" with title='Learning Circles Started' description="by number of LCs the facilitator has run" chart=facilitator_experience_chart web=True %}
 
       <div class="col-12 col-md-6 avoid-page-break">
@@ -82,30 +78,30 @@
         <h2>{% trans "Courses" %}</h2>
       </div>
 
-        {% include "studygroups/measurement_card.html" with title='Course Approval Rating (Facilitators)' chart=facilitator_course_rating_percentage_chart web=True %}
-        {% include "studygroups/measurement_card.html" with title='Course Approval Rating (Learners)' chart=learner_course_rating_percentage_chart web=True %}
+        {% include "studygroups/measurement_card.html" with title='Course Approval Rating (Facilitators)' description="Percentage of facilitators that rated the course either 4 or 5" chart=facilitator_course_approval_chart web=True %}
+        {% include "studygroups/measurement_card.html" with title='Course Approval Rating (Learners)' chart=learner_course_approval_chart description="Percentage of learners that rated the course either 4 or 5" web=True %}
 
-        <div class="col-12 avoid-page-break">
+        <div class="col-12 col-md-6 avoid-page-break">
           <div class="report-measurement bg-white p-4 mb-4 shadow">
             <header>
-                <p class="bold text-uppercase mb-0">{% trans "Top 10 Courses" %}</p>
+                <p class="bold text-uppercase mb-0">{% trans "Low Rated Courses" %}</p>
             </header>
             <div class="visualization">
               <table class="inner-table">
                 <thead>
                   <tr>
-                    <td>{% trans "Course title" %}</td>
-                    <td>{% trans "Course ID" %}</td>
-                    <td>{% trans "Number of times used" %}</td>
+                    <td>{% trans "Course" %}</td>
+                    <td>{% trans "Facilitator rating" %}</td>
                   </tr>
                 </thead>
                 <tbody>
-                  {% for course in top_courses %}
+                  {% for item in low_rated_courses %}
+                    {% with course=item.0 rating=item.1 %}
                     <tr>
-                      <td>{{ course.title }}</td>
-                      <td>{{ course.course_id }}</td>
-                      <td>{{ course.count }}</td>
+                      <td><a href="{{course.link}}">{{ course.title }}</a></td>
+                      <td>{{ rating }}</td>
                     </tr>
+                    {% endwith %}
                   {% endfor %}
                 </tbody>
               </table>
