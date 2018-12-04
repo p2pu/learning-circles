@@ -120,7 +120,16 @@ class ExportFacilitatorsView(ListView):
         response = http.HttpResponse(content_type="text/csv")
         ts = timezone.now().utcnow().isoformat()
         response['Content-Disposition'] = 'attachment; filename="facilitators-{}.csv"'.format(ts)
-        field_names = ['name', 'email', 'date joined', 'last login', 'learning circles run', 'last learning circle date', 'last learning circle course', 'last learning circle venue']
+        field_names = ['name',
+            'email',
+            'date joined',
+            'last login',
+            'communication opt-in',
+            'learning circles run',
+            'last learning circle date',
+            'last learning circle course',
+            'last learning circle venue',
+        ]
         writer = csv.writer(response)
         writer.writerow(field_names)
         for user in self.object_list:
@@ -129,6 +138,7 @@ class ExportFacilitatorsView(ListView):
                 user.email,
                 user.date_joined,
                 user.last_login,
+                user.profile.communication_opt_in if user.profile else False,
                 user.studygroup_set.active().count()
             ]
             last_study_group = user.studygroup_set.active().order_by('start_date').last()
