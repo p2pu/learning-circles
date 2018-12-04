@@ -21,6 +21,7 @@
   }
 
   table.inner-table {
+    width: 100%;
     line-height: 1.4;
     border-collapse: collapse;
   }
@@ -175,7 +176,9 @@
       <tr>
         <td>
           {% trans 'Total number of learning circle meetings' as chart_title %}
-          {% include "studygroups/measurement_card.html" with title=chart_title chart=meetings_chart fullwidth=web %}
+          {% with total_studygroups_met=total_studygroups_met_count|stringformat:'i' total_learners_reached=total_learners_reached_count|stringformat:'i' %}
+          {% include "studygroups/measurement_card.html" with title=chart_title chart=meetings_chart description="Since January 2016, "|add:total_studygroups_met|add:" learning circles met, reaching "|add:total_learners_reached|add:" learners" fullwidth=web %}
+          {% endwith %}
         </td>
       </tr>
       <tr>
