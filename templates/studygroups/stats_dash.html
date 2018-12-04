@@ -45,32 +45,6 @@
       {% include "studygroups/measurement_card.html" with title='Facilitator Rating' chart=facilitator_rating_percentage_chart web=True %}
       {% include "studygroups/measurement_card.html" with title='Learning Circles by Country' chart=studygroups_by_country_chart web=True %}
       {% include "studygroups/measurement_card.html" with title='Learning Circles Started' description="by number of LCs the facilitator has run" chart=facilitator_experience_chart web=True %}
-
-      <div class="col-12 col-md-6 avoid-page-break">
-        <div class="report-measurement bg-white p-4 mb-4 shadow">
-          <header>
-              <p class="bold text-uppercase mb-0">{% trans "Active teams" %}</p>
-          </header>
-          <div class="visualization">
-            <table class="inner-table">
-              <thead>
-                <tr>
-                  <td>{% trans "Team name" %}</td>
-                  <td>{% trans "Organizer dash" %}</td>
-                </tr>
-              </thead>
-              <tbody>
-                {% for team in active_teams %}
-                  <tr>
-                    <td>{{ team.name }}</td>
-                    <td><a href="/en/organize/{{ team.id }}">Team dash</a></td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
     </div>
 
     <div class="row mt-4">
@@ -119,6 +93,102 @@
           {% include "studygroups/measurement_card.html" with title='Learners who met their goal' chart=learner_goal_reached_chart web=True %}
           {% include "studygroups/measurement_card.html" with title='Skills improvement' description="Percentage of learners who reported improvement" chart=skills_improved_chart web=True %}
           {% include "studygroups/measurement_card.html" with title='Participants' chart=participants_over_time_chart web=True %}
+          {% include "studygroups/measurement_card.html" with title='Learner survey response rate' chart=learner_response_rate_chart web=True %}
+    </div>
+
+
+    <div class="row mt-4">
+      <div class="col-12 mb-4">
+        <h2>{% trans "People Stuff" %}</h2>
+      </div>
+
+      <div class="col-12 col-md-6 avoid-page-break">
+        <div class="report-measurement bg-white p-4 mb-4 shadow">
+          <header>
+              <p class="bold text-uppercase mb-0">{% trans "Active teams" %}</p>
+          </header>
+          <div class="visualization table-container">
+            <table class="inner-table">
+              <thead>
+                <tr>
+                  <td>{% trans "Team name" %}</td>
+                  <td>{% trans "Organizer dash" %}</td>
+                </tr>
+              </thead>
+              <tbody>
+                {% for team in active_teams %}
+                  <tr>
+                    <td>{{ team.name }}</td>
+                    <td><a href="/en/organize/{{ team.id }}">Team dash</a></td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6 avoid-page-break">
+        <div class="report-measurement bg-white p-4 mb-4 shadow">
+          <header>
+              <p class="bold text-uppercase mb-0">{% trans "Unrated Learning Circles" %}</p>
+          </header>
+          <div class="visualization table-container">
+            <table class="inner-table">
+              <thead>
+                <tr>
+                  <td>{% trans "Facilitator" %}</td>
+                  <td>{% trans "Learning Circle" %}</td>
+                  <td>{% trans "Last meeting" %}</td>
+                </tr>
+              </thead>
+              <tbody>
+                {% for studygroup in unrated_studygroups %}
+                  <tr>
+                    <td><a href="mailto:{{studygroup.facilitator.email}}">{{studygroup.facilitator.first_name}} {{studygroup.facilitator.last_name}}</a></td>
+                    <td>{{studygroup.course.title}}</td>
+                    <td>{{studygroup.end_date}}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 avoid-page-break">
+        <div class="report-measurement bg-white p-4 mb-4 shadow">
+          <header>
+            <p class="bold text-uppercase mb-0">{% trans "Active facilitators" %}</p>
+          </header>
+          <div class="visualization table-container">
+            <table class="inner-table">
+              <thead>
+                <tr>
+                  <td>{% trans "Facilitator" %}</td>
+                  <td>{% trans "Team" %}</td>
+                  <td>{% trans "# of LCs" %}</td>
+                  <td>{% trans "# of learners" %}</td>
+                  <td>{% trans "Last LC end date" %}</td>
+                  <td>{% trans "ID" %}</td>
+                </tr>
+              </thead>
+              <tbody>
+                {% for facilitator in active_facilitators %}
+                  <tr>
+                    <td><a href="mailto:{{facilitator.email}}">{{facilitator.first_name}} {{facilitator.last_name}}</a></td>
+                    <td>{{facilitator.teammembership.team.name}}</td>
+                    <td>{{facilitator.studygroup_set.count}}</td>
+                    <td>{{facilitator.learners_count}}</td>
+                    <td>{{facilitator.latest_end_date}}</td>
+                    <td>{{facilitator.id}}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
 
   </div>

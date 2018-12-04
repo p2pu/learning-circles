@@ -1,6 +1,8 @@
 # coding=utf-8
 from django.db import models
+from django.db.models import Count, Max, Q
 from django.utils import timezone
+from dateutil.relativedelta import relativedelta
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
 from django.core.serializers.json import DjangoJSONEncoder
@@ -660,6 +662,22 @@ def get_active_teams(start_time, end_time):
     active_teams = Team.objects.filter(teammembership__in=memberships).distinct()
     return active_teams
 
+def get_active_facilitators():
+    # why don't these filters work?!
+    # https://docs.djangoproject.com/en/2.0/ref/models/conditional-expressions/#conditional-aggregation
+    facilitators = User.objects.annotate(\
+        studygroup_count=Count('studygroup', filter=Q(studygroup__draft=False, studygroup__deleted_at__isnull=True), distinct=True),\
+        latest_end_date=Max('studygroup__end_date', filter=Q(studygroup__deleted_at__isnull=True, studygroup__draft=False)),\
+        learners_count=Count('studygroup__application', filter=Q(studygroup__application__deleted_at__isnull=True, studygroup__application__accepted_at__isnull=False), distinct=True)\
+        ).filter(studygroup_count__gte=2).order_by('-studygroup_count')
+
+    return facilitators
+
+def get_unrated_studygroups():
+    two_months_ago = datetime.datetime.now() - relativedelta(months=+2)
+    unrated_studygroups = StudyGroup.objects.annotate(models.Count('application', filter=Q(application__deleted_at__isnull=True, application__accepted_at__isnull=False))).filter(application__count__gte=1, end_date__gte=two_months_ago, facilitator_rating__isnull=True)
+    return unrated_studygroups
+
 def community_digest_data(start_time, end_time):
     study_groups = StudyGroup.objects.published()
     origin_date = datetime.date(2016, 1, 1)
@@ -713,6 +731,8 @@ def stats_dash_data(start_time, end_time, team=None):
     ordered_courses = Counter(courses).most_common(10)
     top_courses = [{ "title": course[0][1], "course_id": course[0][0], "count": course[1] } for course in ordered_courses]
     active_teams = get_active_teams(start_time, end_time)
+    active_facilitators = get_active_facilitators()
+    unrated_studygroups = get_unrated_studygroups()
 
     return {
         "start_date": start_time.date(),
@@ -723,5 +743,7 @@ def stats_dash_data(start_time, end_time, team=None):
         "learners_reached_count": learners_reached.count(),
         "top_courses": top_courses,
         "active_teams": active_teams,
+        "active_facilitators": active_facilitators,
+        "unrated_studygroups": unrated_studygroups,
     }
 

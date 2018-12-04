@@ -1330,55 +1330,6 @@ class FacilitatorExperienceChart():
         return self.chart.render(is_unicode=True)
 
 
-class TopFacilitatorsChart():
-    def __init__(self, start_time, end_time, study_groups, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, x_title="Number of learning circles", **kwargs)
-        self.start_time = start_time
-        self.end_time = end_time
-        self.study_groups = study_groups
-
-    def get_data(self):
-
-        if self.study_groups.count() == 0:
-            return None
-
-        facilitators = [
-            sg.facilitator for sg in self.study_groups
-        ]
-
-        top_facilitators = Counter(facilitators).most_common(10)
-
-        return top_facilitators
-
-    def generate(self, **opts):
-        chart_data = self.get_data()
-
-        if chart_data is None:
-            return NO_DATA
-
-        labels = []
-        serie = []
-
-        for item in reversed(chart_data):
-            facilitator_name = "{} {}".format(item[0].first_name, item[0].last_name)
-            labels.append(facilitator_name)
-            serie.append(item[1])
-
-        self.chart.x_labels = labels
-        self.chart.add("Facilitator", serie)
-
-        if opts.get('output', None) == "png":
-            filename = "stats-dash-{}-top-facilitators-chart.png".format(self.end_time.isoformat())
-            target_path = os.path.join('tmp', filename)
-            self.chart.height = 400
-            self.chart.render_to_png(target_path)
-            file = open(target_path, 'rb')
-            img_url = save_to_aws(file, filename)
-            return "<img src={} alt={} width='100%'>".format(img_url, 'Top facilitators chart')
-
-        return self.chart.render(is_unicode=True)
-
-
 class ParticipantsOverTimeChart():
 
     def __init__(self, start_time, end_time, study_groups, **kwargs):
@@ -1873,6 +1824,61 @@ class LearnerGoalReachedChart():
             return "<img src={} alt={} width='100%'>".format(img_url, 'Rate of learners that met their goals')
 
         return self.chart.render(is_unicode=True)
+
+
+class LearnerResponseRateChart():
+    def __init__(self, start_time, end_time, study_groups, **kwargs):
+        style = custom_style()
+        self.chart = pygal.Line(style=style, x_label_rotation=30, range=(0, 100), show_legend=False, **kwargs)
+        self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
+        self.study_groups = study_groups
+        self.start_time = start_time
+        self.end_time = end_time
+
+    def get_data(self):
+        data = []
+        dates = []
+
+        if self.study_groups.count() < 1:
+            return None
+
+        window_start = self.start_time
+        window_end = window_start + relativedelta(months=+1)
+
+        while window_start <= self.end_time:
+            applications = Application.objects.filter(study_group__in=self.study_groups, study_group__end_date__gte=window_start, study_group__end_date__lt=window_end)
+            applications_with_responses = applications.filter(goal_met__isnull=False)
+
+            value = percentage(applications_with_responses.count(), applications_with_responses.count())
+            data.append(value)
+            dates.append(window_start.strftime("%b %Y"))
+
+            window_start = window_end
+            window_end = window_start + relativedelta(months=+1)
+
+
+        return { "data": data, "dates": dates }
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+
+        if chart_data is None:
+            return NO_DATA
+
+        self.chart.add("Responded to survey", chart_data["data"])
+        self.chart.x_labels = chart_data["dates"]
+
+        if opts.get('output', None) == "png":
+            filename = "stats-dash-{}-learner-response-rate.png".format(self.end_time.date().isoformat())
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Learner response rate')
+
+        return self.chart.render(is_unicode=True)
+
 
 
 

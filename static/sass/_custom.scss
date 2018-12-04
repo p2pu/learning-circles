@@ -543,19 +543,24 @@ table.inner-table {
     border-collapse: collapse;
   }
 
-  table.inner-table thead tr {
-    font-weight: bold;
-  }
+table.inner-table thead tr {
+  font-weight: bold;
+}
 
-  table.inner-table thead td {
-    border-bottom: 1px solid #515665;
-    padding: 5px;
-  }
+table.inner-table thead td {
+  border-bottom: 1px solid #515665;
+  padding: 5px;
+}
 
-  table.inner-table tbody td {
-    border-bottom: 1px solid #F3F4F8;
-    padding: 5px;
-  }
+table.inner-table tbody td {
+  border-bottom: 1px solid #F3F4F8;
+  padding: 5px;
+}
+
+.table-container {
+  max-height: 75vh;
+  overflow-y: auto;
+}
 
 @media print {
   nav.nav-collapsed, footer.home-footer {

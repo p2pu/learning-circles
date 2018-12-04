@@ -25,7 +25,6 @@ services:
     - COMMUNITY_MANAGER=user@mail.com
     - DEFAULT_FROM_EMAIL=notify@mail.com
     - DEBUG=true
-    - DJANGO_SETTINGS_MODULE=learnwithpeople.settings_local
   frontend:
     image: p2pu/js-build:carbon-alpine
     volumes:

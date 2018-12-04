@@ -143,13 +143,11 @@ class StatsDashView(TemplateView):
             "studygroups_by_country_chart": charts.StudygroupsByCountryOverTimeChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
             "facilitator_course_approval_chart" : charts.FacilitatorCourseApprovalChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
             "learner_course_approval_chart" : charts.LearnerCourseApprovalChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
-            # "learner_course_rating_percentage_chart" : charts.LearnerCourseRatingPercentageChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
             "facilitator_experience_chart" : charts.FacilitatorExperienceChart(start_time, end_time, data["studygroups_that_met"]).generate(),
-            # "top_facilitators_chart" : charts.TopFacilitatorsChart(start_time, end_time, data["studygroups_that_met"]).generate(),
             "participants_over_time_chart" : charts.ParticipantsOverTimeChart(start_time, end_time, data["studygroups_that_met"]).generate(),
             "learner_goal_reached_chart" : charts.LearnerGoalReachedChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
             "skills_improved_chart" : charts.SkillsImprovedChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
-            # "top_courses_chart" : charts.TopCoursesChart(start_time, end_time, data["studygroups_that_met"]).generate(),
+            "learner_response_rate_chart" : charts.LearnerResponseRateChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
         }
 
         context.update(data)
