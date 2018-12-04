@@ -16,7 +16,7 @@ import string
 from studygroups.models import Profile
 from studygroups.utils import html_body_to_text
 
-def create_user(email, first_name, last_name, password, communication_opt_in=False, interested_in_learning=None):
+def create_user(email, first_name, last_name, password, communication_opt_in=False, interested_in_learning=''):
     """ Create a new user using the email as the username  """
 
     if password == None:
