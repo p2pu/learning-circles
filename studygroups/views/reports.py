@@ -101,8 +101,8 @@ class CommunityDigestView(TemplateView):
 
         return context
 
-def get_low_rated_courses(study_groups):
-    survey_responses = FacilitatorSurveyResponse.objects.filter(study_group__in=study_groups)
+def get_low_rated_courses():
+    survey_responses = FacilitatorSurveyResponse.objects.all()
 
     low_rated_courses = []
 
@@ -135,8 +135,7 @@ class StatsDashView(TemplateView):
         # this doesn't belong here
         # it should be in stats_dash_data
         # but importing surveys.models into studygroups.models creates a circular dependency :(
-        low_rated_courses = get_low_rated_courses(data["studygroups_that_ended"])
-        print(low_rated_courses)
+        low_rated_courses = get_low_rated_courses()
 
         chart_data = {
             "meetings_over_time_chart": charts.MeetingsOverTimeChart(start_time, end_time).generate(),
@@ -147,9 +146,9 @@ class StatsDashView(TemplateView):
             # "learner_course_rating_percentage_chart" : charts.LearnerCourseRatingPercentageChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
             "facilitator_experience_chart" : charts.FacilitatorExperienceChart(start_time, end_time, data["studygroups_that_met"]).generate(),
             # "top_facilitators_chart" : charts.TopFacilitatorsChart(start_time, end_time, data["studygroups_that_met"]).generate(),
-            # "participants_over_time_chart" : charts.ParticipantsOverTimeChart(start_time, end_time, data["studygroups_that_met"]).generate(),
-            # "learner_goals_percentage_chart" : charts.LearnerGoalsPercentageChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
-            # "skills_improved_percentage_chart" : charts.SkillsImprovedPercentageChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
+            "participants_over_time_chart" : charts.ParticipantsOverTimeChart(start_time, end_time, data["studygroups_that_met"]).generate(),
+            "learner_goal_reached_chart" : charts.LearnerGoalReachedChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
+            "skills_improved_chart" : charts.SkillsImprovedChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
             # "top_courses_chart" : charts.TopCoursesChart(start_time, end_time, data["studygroups_that_met"]).generate(),
         }
 

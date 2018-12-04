@@ -96,6 +96,11 @@ def average(total, divisor):
 
     return round(int(total) / divisor, 2)
 
+def percentage(total, divisor):
+    if divisor == 0:
+        return 0
+
+    return round((total / divisor) * 100)
 
 class LearnerGoalsChart():
     def __init__(self, study_group, **kwargs):
@@ -1377,7 +1382,7 @@ class TopFacilitatorsChart():
 class ParticipantsOverTimeChart():
 
     def __init__(self, start_time, end_time, study_groups, **kwargs):
-        self.chart = pygal.Line(style=custom_style(), height=400, fill=True, show_legend=False, max_scale=10, order_min=0, y_title="Participants", x_label_rotation=30, **kwargs)
+        self.chart = pygal.Line(style=custom_style(), height=400, fill=True, max_scale=10, order_min=0, y_title="Participants", x_label_rotation=30, **kwargs)
         self.start_time = start_time
         self.end_time = end_time
         self.study_groups = study_groups
@@ -1387,7 +1392,7 @@ class ParticipantsOverTimeChart():
         window_start = self.start_time
         window_end = window_start + relativedelta(months=+1)
 
-        while window_end <= self.end_time:
+        while window_start <= self.end_time:
             participants = Application.objects.active().filter(accepted_at__gte=window_start, accepted_at__lt=window_end, study_group__in=self.study_groups)
 
             first_time_participants = 0
@@ -1403,7 +1408,7 @@ class ParticipantsOverTimeChart():
             data["first_time_participants"].append(first_time_participants)
             data["dates"].append(window_end.strftime("%b %Y"))
 
-            window_start = window_start + relativedelta(months=+1)
+            window_start = window_end
             window_end = window_start + relativedelta(months=+1)
 
         return data
@@ -1481,58 +1486,82 @@ class LearnerGoalsPercentageChart():
         return self.chart.render(is_unicode=True)
 
 
-class SkillsImprovedPercentageChart():
+class SkillsImprovedChart():
 
     def __init__(self, start_time, end_time, study_groups, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend = False, max_scale=5, order_min=0, x_title="Percentage of learners who reported improvement", **kwargs)
+        self.chart = pygal.Line(style=custom_style(), range=(0,100), x_label_rotation=30, **kwargs)
         self.start_time = start_time
         self.end_time = end_time
         self.study_groups = study_groups
 
     def get_data(self):
         data = {
-            "skills": {
-                "Using the internet": [],
-                "Speaking in public": [],
-                "Feeling connected to my community": [],
-                "Working with others":[],
-                "Navigating online courses": [],
-                "Setting goals for myself": [],
-            },
-            "total_responses": 0
+            "Using the internet": [],
+            "Speaking in public": [],
+            "Feeling connected to my community": [],
+            "Working with others":[],
+            "Navigating online courses": [],
+            "Setting goals for myself": [],
         }
 
+        dates = []
 
-        for study_group in self.study_groups:
+        if self.study_groups.count() < 1:
+            return
 
-            survey_responses = get_typeform_survey_learner_responses(study_group)
+        window_start = self.start_time
+        window_end = window_start + relativedelta(months=+1)
 
-            if len(survey_responses) > 1:
+        while window_start <= self.end_time:
+            survey_responses = LearnerSurveyResponse.objects.filter(study_group__in=self.study_groups, responded_at__gte=window_start, responded_at__lt=window_end).values_list('response', flat=True)
 
-                data["total_responses"] += len(survey_responses)
+            skills_improved = {
+                "Using the internet": 0,
+                "Working with others": 0,
+                "Navigating online courses": 0,
+                "Setting goals for myself": 0,
+                "Speaking in public": 0,
+                "Feeling connected to my community": 0,
+            }
 
-                for response_str in survey_responses:
-                    response = json.loads(response_str)
-                    answers = response['answers']
+            response_count = 0
 
-                    questions = [
-                        ("QH6akGDy6aHK", "Using the internet"),
-                        ("itpQxFRlOsOe", "Working with others"),
-                        ("g0is1ZBXECbh", "Navigating online courses"),
-                        ("ycB6quFHzH85", "Setting goals for myself"),
-                        ("zH8IomUmmoaH", "Speaking in public"),
-                        ("tO3TFJDBmH60", "Feeling connected to my community")
-                    ]
+            for response_str in survey_responses:
+                response = json.loads(response_str)
+                answers = response['answers']
 
-                    for question in questions:
-                        field = next((answer for answer in answers if answer["field"]["id"] == question[0]), None)
-                        if field is not None and field['number'] > SKILLS_LEARNED_THRESHOLD:
-                            data["skills"][question[1]].append(field['number'])
+                questions = [
+                    ("QH6akGDy6aHK", "Using the internet"),
+                    ("itpQxFRlOsOe", "Working with others"),
+                    ("g0is1ZBXECbh", "Navigating online courses"),
+                    ("ycB6quFHzH85", "Setting goals for myself"),
+                    ("zH8IomUmmoaH", "Speaking in public"),
+                    ("tO3TFJDBmH60", "Feeling connected to my community")
+                ]
 
-        if data["total_responses"] == 0:
-            return None
+                responded = False
 
-        return data
+                for question in questions:
+
+                    field = next((answer for answer in answers if answer["field"]["id"] == question[0]), None)
+                    if field is not None:
+                        responded = True
+
+                    if field is not None and field['number'] > SKILLS_LEARNED_THRESHOLD:
+                        skills_improved[question[1]] += 1
+
+                if responded:
+                    response_count += 1
+
+            for skill, count in skills_improved.items():
+                value = percentage(count, response_count)
+                data[skill].append(value)
+
+            dates.append(window_start.strftime("%b %Y"))
+            window_start = window_end
+            window_end = window_start + relativedelta(months=+1)
+
+        return { "data": data, "dates": dates }
 
     def generate(self, **opts):
         chart_data = self.get_data()
@@ -1540,15 +1569,10 @@ class SkillsImprovedPercentageChart():
         if chart_data is None:
             return NO_DATA
 
-        percentages = []
-        total_responses = chart_data["total_responses"]
-        for key, value in chart_data["skills"].items():
-            improved_count = len(value)
-            percentage = round((improved_count / total_responses) * 100)
-            percentages.append(percentage)
+        for key, value in chart_data["data"].items():
+            self.chart.add(key, value)
 
-        self.chart.add('Percentage of learners', percentages)
-        self.chart.x_labels = list(chart_data["skills"])
+        self.chart.x_labels = chart_data["dates"]
 
         if opts.get('output', None) == "png":
             filename = "stats-dash-{}-skills-improved-chart.png".format(self.study_group.uuid)
@@ -1588,9 +1612,6 @@ class TopCoursesChart():
         for item in reversed(chart_data):
             labels.append(item[0][1])
             serie.append(item[1])
-
-        print(labels)
-        print(serie)
 
         self.chart.x_labels = labels
         self.chart.add("Course", serie)
@@ -1779,3 +1800,79 @@ class StudygroupsByCountryOverTimeChart():
             return "<img src={} alt={} width='100%'>".format(img_url, 'Learning circles by country over time')
 
         return self.chart.render(is_unicode=True)
+
+
+class LearnerGoalReachedChart():
+    def __init__(self, start_time, end_time, study_groups, **kwargs):
+        style = custom_style()
+        style.value_font_size = 40
+        style.title_font_size = 24
+        self.chart = pygal.Line(style=style, x_label_rotation=30, range=(0, 100), show_legend=False, **kwargs)
+        self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
+        self.study_groups = study_groups
+        self.start_time = start_time
+        self.end_time = end_time
+
+    def get_data(self):
+        data = []
+        dates = []
+
+        if self.study_groups.count() < 1:
+            return None
+
+        window_start = self.start_time
+        window_end = window_start + relativedelta(months=+1)
+
+        while window_start <= self.end_time:
+            survey_responses = LearnerSurveyResponse.objects.filter(study_group__in=self.study_groups, responded_at__gte=window_start, responded_at__lt=window_end).values_list('response', flat=True)
+
+            goal_met_count = 0
+            responses_count = 0
+
+            # G6AXyEuG2NRQ = "When you signed up for {{hidden:course}}, you said that your primary goal was: {{hidden:goal}}. To what extent did you meet your goal?"
+            # IO9ALWvVYE3n = "To what extent did you meet your goal?"
+
+            for response in survey_responses:
+                field = get_response_field(response, "G6AXyEuG2NRQ")
+
+                if field is None:
+                    field = get_response_field(response, "IO9ALWvVYE3n")
+
+                if field is not None:
+                    responses_count += 1
+
+                if field is not None and field["number"] > 3:
+                    goal_met_count += 1
+
+            value = percentage(goal_met_count, responses_count)
+            data.append(value)
+            dates.append(window_start.strftime("%b %Y"))
+
+            window_start = window_end
+            window_end = window_start + relativedelta(months=+1)
+
+
+        return { "data": data, "dates": dates }
+
+    def generate(self, **opts):
+        chart_data = self.get_data()
+
+        if chart_data is None:
+            return NO_DATA
+
+        self.chart.add("Goal met", chart_data["data"])
+        self.chart.x_labels = chart_data["dates"]
+
+        if opts.get('output', None) == "png":
+            filename = "stats-dash-{}-learner-goals-met.png".format(self.end_time.date().isoformat())
+            target_path = os.path.join('tmp', filename)
+            self.chart.height = 400
+            self.chart.render_to_png(target_path)
+            file = open(target_path, 'rb')
+            img_url = save_to_aws(file, filename)
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Rate of learners that met their goals')
+
+        return self.chart.render(is_unicode=True)
+
+
+

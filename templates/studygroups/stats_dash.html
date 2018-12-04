@@ -116,8 +116,8 @@
       <div class="col-12 mb-4">
         <h2>{% trans "Learners" %}</h2>
       </div>
-          {% include "studygroups/measurement_card.html" with title='Learners who met their goal' chart=learner_goals_percentage_chart web=True %}
-          {% include "studygroups/measurement_card.html" with title='Skills improvement' description="Percentage of learners who reported improvement" chart=skills_improved_percentage_chart web=True %}
+          {% include "studygroups/measurement_card.html" with title='Learners who met their goal' chart=learner_goal_reached_chart web=True %}
+          {% include "studygroups/measurement_card.html" with title='Skills improvement' description="Percentage of learners who reported improvement" chart=skills_improved_chart web=True %}
           {% include "studygroups/measurement_card.html" with title='Participants' chart=participants_over_time_chart web=True %}
     </div>
 
