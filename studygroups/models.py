@@ -1,6 +1,6 @@
 # coding=utf-8
 from django.db import models
-from django.db.models import Count, Max, Q
+from django.db.models import Count, Max, Q, Sum, Case, When, IntegerField
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 from django.utils.translation import ugettext_lazy as _
@@ -657,26 +657,35 @@ def get_top_discourse_topics_and_users(limit=10):
     top_posts_json = get_json_response("https://community.p2pu.org/top/monthly.json")
     return { 'topics': top_posts_json['topic_list']['topics'][:limit], 'users': top_posts_json['users'] }
 
-def get_active_teams(start_time, end_time):
-    memberships = get_studygroups_with_meetings(start_time, end_time).values_list('facilitator__teammembership', flat=True)
+def get_active_teams():
+    today = datetime.datetime.now()
+    two_weeks_ago = today - relativedelta(days=+14)
+    memberships = StudyGroup.objects.published().filter(Q(start_date__gte=today) | Q(start_date__lte=today, end_date__gte=today) | Q(end_date__gt=two_weeks_ago, end_date__lte=today)).values_list('facilitator__teammembership', flat=True)
     active_teams = Team.objects.filter(teammembership__in=memberships).distinct()
     return active_teams
 
 def get_active_facilitators():
-    # why don't these filters work?!
-    # https://docs.djangoproject.com/en/2.0/ref/models/conditional-expressions/#conditional-aggregation
+    # it's not filtering out deleted studygroups
+    # it's not filtering users by the studygroup_count
+    # and it's not ordering correctly
+    # lajf;ajdf;jah;khak;gjha
     facilitators = User.objects.annotate(\
-        studygroup_count=Count('studygroup', filter=Q(studygroup__draft=False, studygroup__deleted_at__isnull=True), distinct=True),\
-        latest_end_date=Max('studygroup__end_date', filter=Q(studygroup__deleted_at__isnull=True, studygroup__draft=False)),\
-        learners_count=Count('studygroup__application', filter=Q(studygroup__application__deleted_at__isnull=True, studygroup__application__accepted_at__isnull=False), distinct=True)\
+        studygroup_count=Sum(Case(When(studygroup__draft=False, studygroup__deleted_at__isnull=True, then=1), output_field=IntegerField())),\
+        latest_end_date=Max(Case(When(studygroup__draft=False, studygroup__deleted_at__isnull=True, then='studygroup__end_date'))),\
+        learners_count=Sum(Case(When(studygroup__draft=False, studygroup__deleted_at__isnull=True, studygroup__application__deleted_at__isnull=True, studygroup__application__accepted_at__isnull=False, then=1), output_field=IntegerField()))\
         ).filter(studygroup_count__gte=2).order_by('-studygroup_count')
 
     return facilitators
 
 def get_unrated_studygroups():
-    two_months_ago = datetime.datetime.now() - relativedelta(months=+2)
-    unrated_studygroups = StudyGroup.objects.annotate(models.Count('application', filter=Q(application__deleted_at__isnull=True, application__accepted_at__isnull=False))).filter(application__count__gte=1, end_date__gte=two_months_ago, facilitator_rating__isnull=True)
+    today = datetime.datetime.now()
+    two_months_ago = today - relativedelta(months=+2)
+    unrated_studygroups = StudyGroup.objects.published().annotate(models.Count('application', filter=Q(application__deleted_at__isnull=True, application__accepted_at__isnull=False))).filter(application__count__gte=1, end_date__gte=two_months_ago, end_date__lt=today, facilitator_rating__isnull=True).order_by('-end_date')
     return unrated_studygroups
+
+def get_unpublished_studygroups(start_time, end_time):
+    return StudyGroup.objects.filter(draft=True, created_at__lt=end_time, created_at__gte=start_time).order_by('created_at')
+
 
 def community_digest_data(start_time, end_time):
     study_groups = StudyGroup.objects.published()
@@ -726,11 +735,12 @@ def community_digest_data(start_time, end_time):
 def stats_dash_data(start_time, end_time, team=None):
     studygroups_that_ended = get_studygroups_that_ended(start_time, end_time, team)
     studygroups_that_met = get_studygroups_with_meetings(start_time, end_time, team)
+    unpublished_studygroups = get_unpublished_studygroups(start_time, end_time)
     learners_reached = Application.objects.active().filter(study_group__in=studygroups_that_met)
     courses = studygroups_that_met.values_list('course', 'course__title')
     ordered_courses = Counter(courses).most_common(10)
     top_courses = [{ "title": course[0][1], "course_id": course[0][0], "count": course[1] } for course in ordered_courses]
-    active_teams = get_active_teams(start_time, end_time)
+    active_teams = get_active_teams()
     active_facilitators = get_active_facilitators()
     unrated_studygroups = get_unrated_studygroups()
 
@@ -745,5 +755,6 @@ def stats_dash_data(start_time, end_time, team=None):
         "active_teams": active_teams,
         "active_facilitators": active_facilitators,
         "unrated_studygroups": unrated_studygroups,
+        "unpublished_studygroups": unpublished_studygroups,
     }
 

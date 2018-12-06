@@ -1071,9 +1071,7 @@ class TotalLearnersChart():
 class FacilitatorRatingOverTimeChart():
     def __init__(self, start_time, end_time, study_groups, **kwargs):
         style = custom_style()
-        style.value_font_size = 40
-        style.title_font_size = 24
-        self.chart = pygal.Bar(style=style, order_min=0, y_title="Number of LCs to receive rating", x_label_rotation=30, **kwargs)
+        self.chart = pygal.Bar(style=style, order_min=0, y_title="Number of ratings", x_label_rotation=30, **kwargs)
         self.study_groups = study_groups
         self.start_time = start_time
         self.end_time = end_time
@@ -1084,6 +1082,8 @@ class FacilitatorRatingOverTimeChart():
         for i in range(1,6):
             data[i] = []
 
+        data[None] = []
+
         if self.study_groups.count() < 1:
             return None
 
@@ -1092,7 +1092,7 @@ class FacilitatorRatingOverTimeChart():
 
         while window_start <= self.end_time:
 
-            ratings = self.study_groups.exclude(facilitator_rating=None).filter(end_date__gte=window_start, end_date__lt=window_end).values_list('facilitator_rating', flat=True)
+            ratings = self.study_groups.filter(end_date__gte=window_start, end_date__lt=window_end).values_list('facilitator_rating', flat=True)
             ratings_counter = Counter(ratings)
 
             for rating, collection in data.items():
@@ -1118,13 +1118,13 @@ class FacilitatorRatingOverTimeChart():
         self.chart.x_labels = chart_data["dates"]
 
         if opts.get('output', None) == "png":
-            filename = "stats-dash-{}-postitive_facilitator_ratings.png".format(self.end_time.date().isoformat())
+            filename = "stats-dash-{}-facilitator-ratings.png".format(self.end_time.date().isoformat())
             target_path = os.path.join('tmp', filename)
             self.chart.height = 400
             self.chart.render_to_png(target_path)
             file = open(target_path, 'rb')
             img_url = save_to_aws(file, filename)
-            return "<img src={} alt={} width='100%'>".format(img_url, 'Positive facilitator ratings')
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Facilitator learning circle ratings')
 
         return self.chart.render(is_unicode=True)
 
@@ -1133,17 +1133,16 @@ class FacilitatorRatingOverTimeChart():
 class FacilitatorCourseApprovalChart():
     def __init__(self, start_time, end_time, study_groups, **kwargs):
         style = custom_style()
-        style.value_font_size = 40
-        style.title_font_size = 24
-        self.chart = pygal.Line(style=style, x_label_rotation=30, range=(0, 100), show_legend=False, **kwargs)
-        self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
+        self.chart = pygal.Bar(style=style, order_min=0, y_title="Number of ratings", x_label_rotation=30, **kwargs)
         self.study_groups = study_groups
         self.start_time = start_time
         self.end_time = end_time
 
     def get_data(self):
-        data = []
+        data = {}
         dates = []
+        for i in range(1,6):
+            data[i] = []
 
         if self.study_groups.count() < 1:
             return None
@@ -1154,17 +1153,20 @@ class FacilitatorCourseApprovalChart():
         while window_start <= self.end_time:
             survey_responses = FacilitatorSurveyResponse.objects.filter(study_group__in=self.study_groups, responded_at__gte=window_start, responded_at__lt=window_end).values_list('response', flat=True)
 
-            positive_rating_count = 0
+            ratings = []
 
             for response_str in survey_responses:
                 field = get_response_field(response_str, "Zm9XlzKGKC66")
                 # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
-                if field is not None and field['number'] > 3:
-                    positive_rating_count += 1
+                if field is not None:
+                    ratings.append(field['number'])
 
 
-            percentage = round((positive_rating_count / len(survey_responses)) * 100)
-            data.append(percentage)
+            ratings_counter = Counter(ratings)
+
+            for rating, collection in data.items():
+                collection.append(ratings_counter[rating])
+
             dates.append(window_start.strftime("%b %Y"))
 
             window_start = window_end
@@ -1179,7 +1181,9 @@ class FacilitatorCourseApprovalChart():
         if chart_data is None:
             return NO_DATA
 
-        self.chart.add("Facilitators", chart_data["data"])
+        for key, value in chart_data["data"].items():
+            self.chart.add(str(key), value)
+
         self.chart.x_labels = chart_data["dates"]
 
         if opts.get('output', None) == "png":
@@ -1189,24 +1193,23 @@ class FacilitatorCourseApprovalChart():
             self.chart.render_to_png(target_path)
             file = open(target_path, 'rb')
             img_url = save_to_aws(file, filename)
-            return "<img src={} alt={} width='100%'>".format(img_url, 'Facilitator course approval')
+            return "<img src={} alt={} width='100%'>".format(img_url, 'Facilitator course ratings')
 
         return self.chart.render(is_unicode=True)
 
 class LearnerCourseApprovalChart():
     def __init__(self, start_time, end_time, study_groups, **kwargs):
         style = custom_style()
-        style.value_font_size = 40
-        style.title_font_size = 24
-        self.chart = pygal.Line(style=style, x_label_rotation=30, range=(0, 100), show_legend=False, **kwargs)
-        self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
+        self.chart = pygal.Bar(style=style, order_min=0, y_title="Number of ratings", x_label_rotation=30, **kwargs)
         self.study_groups = study_groups
         self.start_time = start_time
         self.end_time = end_time
 
     def get_data(self):
-        data = []
+        data = {}
         dates = []
+        for i in range(1,6):
+            data[i] = []
 
         if self.study_groups.count() < 1:
             return None
@@ -1217,17 +1220,20 @@ class LearnerCourseApprovalChart():
         while window_start <= self.end_time:
             survey_responses = LearnerSurveyResponse.objects.filter(study_group__in=self.study_groups, responded_at__gte=window_start, responded_at__lt=window_end).values_list('response', flat=True)
 
-            positive_rating_count = 0
+            ratings = []
 
             for response_str in survey_responses:
                 field = get_response_field(response_str, "iGWRNCyniE7s")
                 # iGWRNCyniE7s = "How well did the online course {{hidden:course}} work as a learning circle?"
-                if field is not None and field['number'] > 3:
-                    positive_rating_count += 1
+                if field is not None:
+                    ratings.append(field['number'])
 
 
-            percentage = round((positive_rating_count / len(survey_responses)) * 100)
-            data.append(percentage)
+            ratings_counter = Counter(ratings)
+
+            for rating, collection in data.items():
+                collection.append(ratings_counter[rating])
+
             dates.append(window_start.strftime("%b %Y"))
 
             window_start = window_end
@@ -1236,13 +1242,16 @@ class LearnerCourseApprovalChart():
 
         return { "data": data, "dates": dates }
 
+
     def generate(self, **opts):
         chart_data = self.get_data()
 
         if chart_data is None:
             return NO_DATA
 
-        self.chart.add("Learners", chart_data["data"])
+        for key, value in chart_data["data"].items():
+            self.chart.add(str(key), value)
+
         self.chart.x_labels = chart_data["dates"]
 
         if opts.get('output', None) == "png":
@@ -1265,7 +1274,8 @@ class FacilitatorExperienceChart():
         self.study_groups = study_groups
 
     def get_data(self):
-        data = { "dates": [] }
+        data = {}
+        dates = []
 
         for i in range(1, 5):
             data[i] = []
@@ -1275,7 +1285,7 @@ class FacilitatorExperienceChart():
         window_start = self.start_time
         window_end = window_start + relativedelta(months=+1)
 
-        while window_end <= self.end_time:
+        while window_start <= self.end_time:
             study_groups = self.study_groups.filter(start_date__gte=window_start, start_date__lt=window_end)
 
             counts = []
@@ -1301,21 +1311,23 @@ class FacilitatorExperienceChart():
                 data[i].append(value)
 
             data["5+"].append(over_5)
-            data["dates"].append(window_start.strftime("%b %Y"))
+            dates.append(window_start.strftime("%b %Y"))
 
             window_start = window_start + relativedelta(months=+1)
             window_end = window_start + relativedelta(months=+1)
 
-        return data
+        return { "data": data, "dates": dates }
 
 
     def generate(self, **opts):
         chart_data = self.get_data()
 
-        for key, value in chart_data.items():
-            if key is not "dates":
-                self.chart.add(str(key), value)
+        for key, value in chart_data["data"].items():
+            self.chart.add(str(key), value)
 
+        max_values = [sum(col) for col in zip(*chart_data["data"].values())]
+
+        self.chart.range = (0, max(max_values))
         self.chart.x_labels = chart_data["dates"]
 
         if opts.get('output', None) == "png":
@@ -1703,13 +1715,15 @@ class StudygroupsByCountryOverTimeChart():
         self.study_groups = study_groups
 
     def get_data(self):
-        data = { "Not reported": [] }
+        data = {}
         dates = []
 
         countries = self.study_groups.exclude(country_en="").values_list('country_en', flat=True)
 
         for country in countries:
             data[country] = []
+
+        data["Not reported"] = []
 
         window_start = self.start_time
         window_end = window_start + relativedelta(months=+1)
@@ -1756,17 +1770,16 @@ class StudygroupsByCountryOverTimeChart():
 class LearnerGoalReachedChart():
     def __init__(self, start_time, end_time, study_groups, **kwargs):
         style = custom_style()
-        style.value_font_size = 40
-        style.title_font_size = 24
-        self.chart = pygal.Line(style=style, x_label_rotation=30, range=(0, 100), show_legend=False, **kwargs)
-        self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
+        self.chart = pygal.Bar(style=style, order_min=0, y_title="Number of ratings", x_label_rotation=30, **kwargs)
         self.study_groups = study_groups
         self.start_time = start_time
         self.end_time = end_time
 
     def get_data(self):
-        data = []
+        data = {}
         dates = []
+        for i in range(1,6):
+            data[i] = []
 
         if self.study_groups.count() < 1:
             return None
@@ -1777,8 +1790,7 @@ class LearnerGoalReachedChart():
         while window_start <= self.end_time:
             survey_responses = LearnerSurveyResponse.objects.filter(study_group__in=self.study_groups, responded_at__gte=window_start, responded_at__lt=window_end).values_list('response', flat=True)
 
-            goal_met_count = 0
-            responses_count = 0
+            ratings = []
 
             # G6AXyEuG2NRQ = "When you signed up for {{hidden:course}}, you said that your primary goal was: {{hidden:goal}}. To what extent did you meet your goal?"
             # IO9ALWvVYE3n = "To what extent did you meet your goal?"
@@ -1790,13 +1802,13 @@ class LearnerGoalReachedChart():
                     field = get_response_field(response, "IO9ALWvVYE3n")
 
                 if field is not None:
-                    responses_count += 1
+                    ratings.append(field['number'])
 
-                if field is not None and field["number"] > 3:
-                    goal_met_count += 1
+            ratings_counter = Counter(ratings)
 
-            value = percentage(goal_met_count, responses_count)
-            data.append(value)
+            for rating, collection in data.items():
+                collection.append(ratings_counter[rating])
+
             dates.append(window_start.strftime("%b %Y"))
 
             window_start = window_end
@@ -1811,7 +1823,9 @@ class LearnerGoalReachedChart():
         if chart_data is None:
             return NO_DATA
 
-        self.chart.add("Goal met", chart_data["data"])
+        for key, value in chart_data["data"].items():
+            self.chart.add(str(key), value)
+
         self.chart.x_labels = chart_data["dates"]
 
         if opts.get('output', None) == "png":
@@ -1824,6 +1838,7 @@ class LearnerGoalReachedChart():
             return "<img src={} alt={} width='100%'>".format(img_url, 'Rate of learners that met their goals')
 
         return self.chart.render(is_unicode=True)
+
 
 
 class LearnerResponseRateChart():
@@ -1849,7 +1864,7 @@ class LearnerResponseRateChart():
             applications = Application.objects.filter(study_group__in=self.study_groups, study_group__end_date__gte=window_start, study_group__end_date__lt=window_end)
             applications_with_responses = applications.filter(goal_met__isnull=False)
 
-            value = percentage(applications_with_responses.count(), applications_with_responses.count())
+            value = percentage(applications_with_responses.count(), applications.count())
             data.append(value)
             dates.append(window_start.strftime("%b %Y"))
 

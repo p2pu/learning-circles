@@ -45,6 +45,36 @@
       {% include "studygroups/measurement_card.html" with title='Facilitator Rating' chart=facilitator_rating_percentage_chart web=True %}
       {% include "studygroups/measurement_card.html" with title='Learning Circles by Country' chart=studygroups_by_country_chart web=True %}
       {% include "studygroups/measurement_card.html" with title='Learning Circles Started' description="by number of LCs the facilitator has run" chart=facilitator_experience_chart web=True %}
+
+      <div class="col-12 avoid-page-break">
+        <div class="report-measurement bg-white p-4 mb-4 shadow">
+          <header>
+              <p class="bold text-uppercase mb-0">{% trans "Draft Learning Circles" %}</p>
+          </header>
+          <div class="visualization table-container">
+            <table class="inner-table">
+              <thead>
+                <tr>
+                  <td>{% trans "Facilitator" %}</td>
+                  <td>{% trans "Course" %}</td>
+                  <td>{% trans "Date created" %}</td>
+                  <td>{% trans "Start date" %}</td>
+                </tr>
+              </thead>
+              <tbody>
+                {% for studygroup in unpublished_studygroups %}
+                  <tr>
+                    <td><a href="mailto:{{studygroup.facilitator.email}}">{{studygroup.facilitator.first_name}} {{studygroup.facilitator.last_name}}</a></td>
+                    <td>{{ studygroup.course.title }}</td>
+                    <td>{{ studygroup.created_at|date }}</td>
+                    <td>{{ studygroup.start_date|date }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="row mt-4">
@@ -52,15 +82,15 @@
         <h2>{% trans "Courses" %}</h2>
       </div>
 
-        {% include "studygroups/measurement_card.html" with title='Course Approval Rating (Facilitators)' description="Percentage of facilitators that rated the course either 4 or 5" chart=facilitator_course_approval_chart web=True %}
-        {% include "studygroups/measurement_card.html" with title='Course Approval Rating (Learners)' chart=learner_course_approval_chart description="Percentage of learners that rated the course either 4 or 5" web=True %}
+        {% include "studygroups/measurement_card.html" with title='Course Ratings (Facilitators)' chart=facilitator_course_approval_chart web=True %}
+        {% include "studygroups/measurement_card.html" with title='Course Ratings (Learners)' chart=learner_course_approval_chart web=True %}
 
-        <div class="col-12 col-md-6 avoid-page-break">
+        <div class="col-12 avoid-page-break">
           <div class="report-measurement bg-white p-4 mb-4 shadow">
             <header>
                 <p class="bold text-uppercase mb-0">{% trans "Low Rated Courses" %}</p>
             </header>
-            <div class="visualization">
+            <div class="visualization table-container">
               <table class="inner-table">
                 <thead>
                   <tr>
