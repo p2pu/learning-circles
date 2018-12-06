@@ -237,6 +237,7 @@ class StudyGroup(LifeTimeTrackingModel):
             "city": sg.city,
             "region": sg.region,
             "country": sg.country,
+            "country_en": sg.country_en,
             "latitude": sg.latitude,
             "longitude": sg.longitude,
             "place_id": sg.place_id,
