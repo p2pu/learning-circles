@@ -16,6 +16,7 @@ const LocationSection = (props) => {
           city={props.learningCircle.city}
           region={props.learningCircle.region}
           country={props.learningCircle.country}
+          country_en={props.learningCircle.country_en}
           handleSelect={props.updateFormData}
           errorMessage={props.errors.city}
         />
