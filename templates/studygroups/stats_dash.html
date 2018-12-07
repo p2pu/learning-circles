@@ -1,16 +1,25 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 
 <div class="bg-light" id="learning-circle-report">
   <div class="container" id="stats-dash">
 
+
     <div class="row">
       <div class="col-12">
         <h1 class="mt-4">{% trans "Stats Dash" %}</h1>
         <p class="my-0">{% trans "Reporting data from" %} {{ start_date }} {% trans "to" %} {{ end_date }}</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <h4>{% trans "Select dates" %}</h4>
+        {% crispy form %}
       </div>
     </div>
 
@@ -195,6 +204,7 @@
             <table class="inner-table">
               <thead>
                 <tr>
+                  <td></td>
                   <td>{% trans "Facilitator" %}</td>
                   <td>{% trans "Team" %}</td>
                   <td>{% trans "# of LCs" %}</td>
@@ -206,6 +216,7 @@
               <tbody>
                 {% for facilitator in active_facilitators %}
                   <tr>
+                    <td>{{forloop.counter}}</td>
                     <td><a href="mailto:{{facilitator.email}}">{{facilitator.first_name}} {{facilitator.last_name}}</a></td>
                     <td>{{facilitator.teammembership.team.name}}</td>
                     <td>{{facilitator.studygroup_set.count}}</td>
@@ -223,5 +234,19 @@
 
   </div>
 </div>
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'css/datepicker.css' %}" charset="utf-8">
+{% endblock %}
+
+
+{% block scripts %}
+<script src="{% static 'js/vendor/bootstrap-datepicker.js' %}"></script>
+<script>
+$(document).ready(function(){
+  $('.dateinput').datepicker({'format':'yyyy-mm-dd'});
+});
+</script>
 <script type="text/javascript" src="https://kozea.github.com/pygal.js/latest/pygal-tooltips.min.js"></script>
+{% endblock %}
+
 {% endblock %}

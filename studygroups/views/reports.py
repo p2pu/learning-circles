@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.base import TemplateView
+from django.views.generic.edit import FormView
 from django.urls import reverse
 from django.conf import settings
 
@@ -17,6 +18,9 @@ from surveys.models import FacilitatorSurveyResponse
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from django.utils.timezone import make_aware
+
+from studygroups.forms import StatsDashForm
+from django.urls import reverse_lazy
 
 import requests
 
@@ -117,13 +121,26 @@ def get_low_rated_courses():
 
 
 @method_decorator(user_is_staff, name='dispatch')
-class StatsDashView(TemplateView):
+class StatsDashView(FormView):
     template_name = 'studygroups/stats_dash.html'
+    form_class = StatsDashForm
+    success_url = reverse_lazy('studygroups_staff_dash_stats')
+
+    def form_valid(self, form):
+        start_date = form.cleaned_data['start_date']
+        end_date = form.cleaned_data['end_date']
+        base_url = reverse_lazy('studygroups_staff_dash_stats')
+        self.success_url = "{}?start_date={}&end_date={}".format(base_url, start_date, end_date)
+        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super(StatsDashView, self).get_context_data(**kwargs)
-        start_time = make_aware(datetime.strptime(kwargs.get('start_date'), "%m-%Y"))
-        end_time = make_aware(datetime.strptime(kwargs.get('end_date'), "%m-%Y")) + relativedelta(day=31)
+        start_date = self.request.GET.get('start_date', None)
+        end_date = self.request.GET.get('end_date', None)
+        today = datetime.now()
+        end_time = make_aware(datetime.strptime(end_date, "%Y-%m-%d")) + relativedelta(day=31) if end_date else today
+        start_time = make_aware(datetime.strptime(start_date, "%Y-%m-%d")) + relativedelta(day=1) if start_date else end_time - relativedelta(months=+3, day=1)
+
         minimum_start_time = end_time - relativedelta(months=+2, day=1)
         start_time = minimum_start_time if start_time > minimum_start_time else start_time
 
