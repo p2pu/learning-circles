@@ -281,7 +281,7 @@ class NewLearnersChart():
             field = get_response_field(response, "Sj4fL5I6GEei")
             # Sj4fL5I6GEei = "Was this your first learning circle?"
 
-            if field["boolean"] == True:
+            if field is not None and field["boolean"] == True:
                 first_timers += 1
 
         percentage = round((first_timers / len(survey_responses)) * 100)
