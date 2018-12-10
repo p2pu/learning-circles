@@ -532,7 +532,7 @@ def report_data(start_time, end_time, team=None):
     meetings = Meeting.objects.active()\
             .filter(meeting_date__gte=start_time, meeting_date__lt=end_time)\
             .filter(study_group__in=study_groups)
-    studygroups_that_ended = get_finished_studygroups(start_time, end_time)
+    studygroups_that_ended = get_studygroups_that_ended(start_time, end_time)
     studygroups_that_met = get_studygroups_with_meetings(start_time, end_time)
     upcoming_studygroups = get_upcoming_studygroups(end_time)
     new_applications = get_new_applications(start_time, end_time)
