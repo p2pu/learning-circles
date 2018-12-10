@@ -466,7 +466,7 @@ def create_rsvp(contact, study_group, meeting_datetime, attending):
 
 
 def generate_all_meetings(study_group):
-    if Meeting.objects.filter(study_group=study_group).exists():
+    if Meeting.objects.active().filter(study_group=study_group).exists():
         raise Exception(_('Meetings already exist for this study group'))
 
     meeting_date = study_group.start_date

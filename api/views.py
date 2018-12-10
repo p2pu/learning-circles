@@ -472,6 +472,24 @@ class LearningCircleCreateView(View):
         return json_response(request, { "status": "created", "url": study_group_url });
 
 
+def _can_update_date(study_group):
+    # if it's still a draft, you can edit
+    if study_group.draft == True:
+        return True
+
+    # if there are no meetings, you can edit
+    meeting_list = study_group.meeting_set.active().order_by('meeting_date', 'meeting_time')
+    if meeting_list.count() == 0:
+        return True
+
+    # if the first meeting is more than 4 days from now, you can edit
+    four_days_from_now = timezone.now() + datetime.timedelta(days=4)
+    if meeting_list.first().meeting_datetime() > four_days_from_now:
+        return True
+
+    return False
+
+
 @method_decorator(user_is_group_facilitator, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class LearningCircleUpdateView(SingleObjectMixin, View):
@@ -486,9 +504,18 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        # update learning circle
         end_date = data.get('start_date') + datetime.timedelta(weeks=data.get('weeks') - 1)
 
+        # if the date is changed, check if that is okay?
+        date_changed = any([
+            study_group.start_date != data.get('start_date'),
+            study_group.end_date != end_date,
+            study_group.meeting_time != data.get('meeting_time'),
+        ])
+        if date_changed and not _can_update_date(study_group):
+            return json_response(request, {"status": "error", "errors": {"_": "cannot update date"}})
+
+        # update learning circle
         published = False
         # only publish a learning circle for a user with a verified email address
         draft = data.get('draft', True)
@@ -522,6 +549,10 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
 
         # generate all meetings if the learning circle has been published
         if published:
+            generate_all_meetings(study_group)
+        elif date_changed:
+            # if the lc was already published and the date was changed, update meetings
+            study_group.meeting_set.delete()
             generate_all_meetings(study_group)
 
         study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name, allow_unicode=True), study_group.id,))
