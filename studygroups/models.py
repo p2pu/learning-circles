@@ -218,6 +218,26 @@ class StudyGroup(LifeTimeTrackingModel):
         path = reverse('studygroups_final_report', kwargs={'study_group_id': self.id})
         return domain + path
 
+
+    def can_update_meeting_datetime(self):
+        """ check to see if you can update the date """
+        # if it's still a draft, you can edit
+        if self.draft == True:
+            return True
+
+        # if there are no meetings, you can edit
+        meeting_list = self.meeting_set.active().order_by('meeting_date', 'meeting_time')
+        if meeting_list.count() == 0:
+            return True
+
+        # if the first meeting is more than 4 days from now, you can edit
+        four_days_from_now = timezone.now() + datetime.timedelta(days=4)
+        if meeting_list.first().meeting_datetime() > four_days_from_now:
+            return True
+
+        return False
+
+
     @property
     def weeks(self):
         return (self.end_date - self.start_date).days//7 + 1

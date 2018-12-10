@@ -472,24 +472,6 @@ class LearningCircleCreateView(View):
         return json_response(request, { "status": "created", "url": study_group_url });
 
 
-def _can_update_date(study_group):
-    # if it's still a draft, you can edit
-    if study_group.draft == True:
-        return True
-
-    # if there are no meetings, you can edit
-    meeting_list = study_group.meeting_set.active().order_by('meeting_date', 'meeting_time')
-    if meeting_list.count() == 0:
-        return True
-
-    # if the first meeting is more than 4 days from now, you can edit
-    four_days_from_now = timezone.now() + datetime.timedelta(days=4)
-    if meeting_list.first().meeting_datetime() > four_days_from_now:
-        return True
-
-    return False
-
-
 @method_decorator(user_is_group_facilitator, name='dispatch')
 @method_decorator(login_required, name='dispatch')
 class LearningCircleUpdateView(SingleObjectMixin, View):
@@ -512,7 +494,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
             study_group.end_date != end_date,
             study_group.meeting_time != data.get('meeting_time'),
         ])
-        if date_changed and not _can_update_date(study_group):
+        if date_changed and not study_group.can_update_meeting_datetime():
             return json_response(request, {"status": "error", "errors": {"_": "cannot update date"}})
 
         # update learning circle
