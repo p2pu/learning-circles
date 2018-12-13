@@ -95,7 +95,7 @@ class ApplicationForm(forms.ModelForm):
             'mobile',
         )
         self.helper.add_input(Submit('submit', 'Submit'))
-        super(ApplicationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['email'].required = True
         study_group = kwargs.get('initial', {}).get('study_group')
         if study_group and study_group.country == 'United States of America':
@@ -108,7 +108,7 @@ class ApplicationForm(forms.ModelForm):
 
 
     def clean(self):
-        cleaned_data = super(ApplicationForm, self).clean()
+        cleaned_data = super().clean()
         # TODO - if mobile format is wrong, show error with example format for region
         if self.cleaned_data['goals'] == 'Other':
             if not self.cleaned_data.get('goals_other'):
@@ -128,7 +128,7 @@ class ApplicationForm(forms.ModelForm):
         if self.instance.study_group.signup_question:
             signup_questions['custom_question'] = self.cleaned_data['custom_question']
         self.instance.signup_questions = json.dumps(signup_questions)
-        return super(ApplicationForm, self).save(commit)
+        return super().save(commit)
 
 
     class Meta:
@@ -142,7 +142,7 @@ class OptOutForm(forms.Form):
     mobile = PhoneNumberField(required=False, label=_('Phone Number for SMS'), help_text=_('Phone number used to sign up.'))
 
     def clean(self):
-        cleaned_data = super(OptOutForm, self).clean()
+        cleaned_data = super().clean()
         email = cleaned_data.get('email')
         mobile = cleaned_data.get('mobile')
 
@@ -213,7 +213,7 @@ class CourseForm(forms.ModelForm):
 
 
     def __init__(self, *args, **kwargs):
-        super(CourseForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         if self.instance:
             self.helper.add_input(Submit('submit', 'Save'))
@@ -266,7 +266,7 @@ class StudyGroupForm(forms.ModelForm):
     longitude = forms.DecimalField(required=False, widget=forms.HiddenInput)
 
     def __init__(self, *args, **kwargs):
-        super(StudyGroupForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         if self.instance and self.instance.pk:
             self.helper.add_input(Submit('submit', 'Save'))
@@ -285,9 +285,26 @@ class StudyGroupForm(forms.ModelForm):
         if self.instance.pk:
             self.fields['weeks'].initial = self.instance.meeting_set.active().count()
 
+
+    def clean(self):
+        cleaned_data = super().clean()
+        # If date is changed, see if we can
+        end_date = self.cleaned_data['start_date'] + datetime.timedelta(weeks=self.cleaned_data['weeks'] - 1)
+        date_changed = any([
+            self.cleaned_data['start_date'] != self.instance.start_date,
+            self.cleaned_data['meeting_time'] != self.instance.meeting_time,
+            end_date != self.instance.end_date,
+        ])
+        if date_changed and not self.instance.can_update_meeting_datetime():
+            msg = _('Cannot update learning circle date or time less than 4 days before the first meeting')
+            self.add_error('start_date', msg)
+        # TODO
+        raise Exception()
+
+
     def save(self, commit=True):
         self.instance.end_date = self.cleaned_data['start_date'] + datetime.timedelta(weeks=self.cleaned_data['weeks'] - 1)
-        return super(StudyGroupForm, self).save(commit)
+        return super().save(commit)
 
     class Meta:
         model = StudyGroup
