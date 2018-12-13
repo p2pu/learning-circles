@@ -91,6 +91,11 @@ def average(total, divisor):
 
     return round(int(total) / divisor, 2)
 
+def percentage(total, divisor):
+    if divisor == 0:
+        return 0
+
+    return round((total / divisor) * 100)
 
 class LearnerGoalsChart():
     def __init__(self, study_group, **kwargs):
@@ -281,11 +286,11 @@ class NewLearnersChart():
             field = get_response_field(response, "Sj4fL5I6GEei")
             # Sj4fL5I6GEei = "Was this your first learning circle?"
 
-            if field["boolean"] == True:
+            if field is not None and field["boolean"] == True:
                 first_timers += 1
 
-        percentage = round((first_timers / len(survey_responses)) * 100)
-        data['New learners'][0]['value'] = percentage
+        value = percentage(first_timers, len(survey_responses))
+        data['New learners'][0]['value'] = value
 
         return data
 
@@ -335,8 +340,8 @@ class CompletionRateChart():
             if field is not None and field["choice"]["label"] == "I completed the learning circle":
                 completed += 1
 
-        percentage = round((completed / len(survey_responses)) * 100)
-        data['Completed'][0]['value'] = percentage
+        value = percentage(completed, len(survey_responses))
+        data['Completed'][0]['value'] = value
 
         return data
 
