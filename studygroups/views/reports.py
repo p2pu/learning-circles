@@ -1,17 +1,26 @@
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.base import TemplateView
+from django.views.generic.edit import FormView
 from django.urls import reverse
 from django.conf import settings
 
 from django.utils.decorators import method_decorator
-from studygroups.decorators import user_is_group_facilitator
+from studygroups.decorators import user_is_staff
 
 from studygroups.models import StudyGroup
+from studygroups.models import Team
 from studygroups.models import community_digest_data
+from studygroups.models import stats_dash_data
 from studygroups import charts
 
+from surveys.models import FacilitatorSurveyResponse
+
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from django.utils.timezone import make_aware
+
+from studygroups.forms import StatsDashForm
+from django.urls import reverse_lazy
 
 import requests
 
@@ -93,6 +102,78 @@ class CommunityDigestView(TemplateView):
         context.update(digest_data)
         context.update(chart_data)
         context.update({ "web": True })
+
+        return context
+
+def get_low_rated_courses():
+    survey_responses = FacilitatorSurveyResponse.objects.all()
+
+    low_rated_courses = []
+
+    for response in survey_responses:
+        field = charts.get_response_field(response.response, "Zm9XlzKGKC66")
+        # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
+        if field is not None and field['number'] < 3:
+            if response.study_group.course.unlisted is False:
+                low_rated_courses.append((response.study_group.course, field['number']))
+
+    return low_rated_courses
+
+
+@method_decorator(user_is_staff, name='dispatch')
+class StatsDashView(FormView):
+    template_name = 'studygroups/stats_dash.html'
+    form_class = StatsDashForm
+    success_url = reverse_lazy('studygroups_staff_dash_stats')
+
+    def form_valid(self, form):
+        start_date = form.cleaned_data['start_date']
+        end_date = form.cleaned_data['end_date']
+        base_url = reverse_lazy('studygroups_staff_dash_stats')
+        self.success_url = "{}?start_date={}&end_date={}".format(base_url, start_date, end_date)
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super(StatsDashView, self).get_context_data(**kwargs)
+        start_date = self.request.GET.get('start_date', None)
+        end_date = self.request.GET.get('end_date', None)
+        today = datetime.now()
+        end_time = make_aware(datetime.strptime(end_date, "%Y-%m-%d")) + relativedelta(day=31) if end_date else today
+        start_time = make_aware(datetime.strptime(start_date, "%Y-%m-%d")) + relativedelta(day=1) if start_date else end_time - relativedelta(months=+3, day=1)
+
+        minimum_start_time = end_time - relativedelta(months=+2, day=1)
+        start_time = minimum_start_time if start_time > minimum_start_time else start_time
+
+        team_id = kwargs.get('team_id', None)
+        team = Team.objects.filter(pk=team_id).first()
+
+        data = stats_dash_data(start_time, end_time, team)
+
+        # this doesn't belong here
+        # it should be in stats_dash_data
+        # but importing surveys.models into studygroups.models creates a circular dependency :(
+        low_rated_courses = get_low_rated_courses()
+
+        chart_data = {
+            "meetings_over_time_chart": charts.MeetingsOverTimeChart(start_time, end_time).generate(),
+            "facilitator_rating_percentage_chart" : charts.FacilitatorRatingOverTimeChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
+            "studygroups_by_country_chart": charts.StudygroupsByCountryOverTimeChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
+            "facilitator_course_approval_chart" : charts.FacilitatorCourseApprovalChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
+            "learner_course_approval_chart" : charts.LearnerCourseApprovalChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
+            "facilitator_experience_chart" : charts.FacilitatorExperienceChart(start_time, end_time, data["studygroups_that_met"]).generate(),
+            "participants_over_time_chart" : charts.ParticipantsOverTimeChart(start_time, end_time, data["studygroups_that_met"]).generate(),
+            "learner_goal_reached_chart" : charts.LearnerGoalReachedChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
+            "skills_improved_chart" : charts.SkillsImprovedChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
+            "learner_response_rate_chart" : charts.LearnerResponseRateChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
+        }
+
+        context.update(data)
+        context.update({ "low_rated_courses": low_rated_courses })
+        context.update(chart_data)
+
+
+        if team:
+            context.update({ "team": team })
 
         return context
 

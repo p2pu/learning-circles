@@ -104,5 +104,3 @@ def get_all_results(query_set):
         'data': data
     }
 
-
-
