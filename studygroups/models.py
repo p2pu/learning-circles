@@ -1,6 +1,7 @@
 # coding=utf-8
 from django.db import models
-from django.db.models import Count, Max, Q, Sum, Case, When, IntegerField
+from django.db.models import Count, Max, Q, Sum, Case, When, IntegerField, Value
+from django.db.models import F
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 from django.utils.translation import ugettext_lazy as _
@@ -665,15 +666,41 @@ def get_active_teams():
     return active_teams
 
 def get_active_facilitators():
-    # it's not filtering out deleted studygroups
-    # it's not filtering users by the studygroup_count
-    # and it's not ordering correctly
-    # lajf;ajdf;jah;khak;gjha
+    # TODO studygroup_count will include any deleted or draft studygroups once
+    # iow, actual count might be off by 1, but total won't be over inflated
     facilitators = User.objects.annotate(\
-        studygroup_count=Sum(Case(When(studygroup__draft=False, studygroup__deleted_at__isnull=True, then=1), output_field=IntegerField())),\
-        latest_end_date=Max(Case(When(studygroup__draft=False, studygroup__deleted_at__isnull=True, then='studygroup__end_date'))),\
-        learners_count=Sum(Case(When(studygroup__draft=False, studygroup__deleted_at__isnull=True, studygroup__application__deleted_at__isnull=True, studygroup__application__accepted_at__isnull=False, then=1), output_field=IntegerField()))\
-        ).filter(studygroup_count__gte=2).order_by('-studygroup_count')
+        studygroup_count=Count(
+            Case(
+                When(
+                    studygroup__draft=False, studygroup__deleted_at__isnull=True,
+                    then=F('studygroup__id')
+                ),
+                default=Value(0),
+                output_field=IntegerField()
+            ),
+            distinct=True
+        ),
+        latest_end_date=Max(
+            Case(
+                When(
+                    studygroup__draft=False,
+                    studygroup__deleted_at__isnull=True,
+                    then='studygroup__end_date'
+                )
+            )
+        ),
+        learners_count=Sum(
+            Case(
+                When(
+                    studygroup__draft=False,
+                    studygroup__deleted_at__isnull=True,
+                    studygroup__application__deleted_at__isnull=True,
+                    studygroup__application__accepted_at__isnull=False, then=1
+                ),
+                output_field=IntegerField()
+            )
+        )
+    ).filter(studygroup_count__gte=2).order_by('-studygroup_count')
 
     return facilitators
 
