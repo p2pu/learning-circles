@@ -57,6 +57,7 @@ pytz==2017.2
 requests==2.18.4
 s3-backup-rotate==0.3.3
 s3transfer==0.1.13
+selenium==3.141.0
 six==1.11.0
 tinycss2==0.6.1
 transifex-client==0.12.4

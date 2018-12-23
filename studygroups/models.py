@@ -88,7 +88,6 @@ class Course(LifeTimeTrackingModel):
     unlisted = models.BooleanField(default=False)
     license = models.CharField(max_length=128, blank=True)
 
-
     def __str__(self):
         return self.title
 
