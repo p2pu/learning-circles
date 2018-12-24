@@ -147,7 +147,7 @@ class TeamInvitation(models.Model):
     joined = models.NullBooleanField(null=True)
 
     def __str__(self):
-        return 'Invatation <{} to join {}>'.format(self.email, self.team.name)
+        return 'Invitation <{} to join {}>'.format(self.email, self.team.name)
 
 
 class StudyGroupQuerySet(SoftDeleteQuerySet):
