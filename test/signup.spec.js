@@ -3,7 +3,7 @@ describe('user signup', function () {
 
   before (async function () {
     page = await browser.newPage();
-    await page.goto('http://localhost:8000/en/accounts/register/', {timeout: 0, waitUntil: 'domcontentloaded'});
+    await page.goto('http://learningcircles/en/accounts/register/', {timeout: 0, waitUntil: 'domcontentloaded'});
   });
 
   after (async function () {
