@@ -28,6 +28,8 @@ class LearningCircleCreation(StaticLiveServerTestCase):
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument('--disable-web-security')
         chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-gpu')
         cls.driver = webdriver.Remote(
           command_executor='http://selenium:4444/wd/hub',
           desired_capabilities=DesiredCapabilities.CHROME,

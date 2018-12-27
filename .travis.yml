@@ -1,5 +1,7 @@
 sudo: required
 dist: trusty
+addons:
+  chrome: stable
 before_install:
 - |
   curl -sSL "https://get.docker.com/gpg" |
