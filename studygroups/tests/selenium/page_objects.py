@@ -19,10 +19,7 @@ class BasePage(object):
 class LearningCircleCreationPage(BasePage):
 
     def fill_out_form_correctly(self):
-        self.wait.until(expected_conditions.presence_of_all_elements_located(LearningCircleCreationPageLocators.COURSE_CARDS))
-        course_select_buttons = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.FIRST_COURSE_BUTTON))
-        course_select_buttons.click()
-        self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.REMOVE_COURSE_SELECTION_LINK))
+        self.select_first_course()
 
         self.click_next_button()
 
@@ -49,6 +46,13 @@ class LearningCircleCreationPage(BasePage):
 
         self.fill_text_field(LearningCircleCreationPageLocators.FACILITATOR_GOAL_FIELD, "Have a great learning circle")
         self.fill_text_field(LearningCircleCreationPageLocators.FACILITATOR_CONCERNS_FIELD, "Nothing really")
+
+    def select_first_course(self):
+        self.wait.until(expected_conditions.presence_of_all_elements_located(LearningCircleCreationPageLocators.COURSE_CARDS))
+        course_select_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.FIRST_COURSE_BUTTON))
+        self.driver.execute_script("return arguments[0].scrollIntoView();", course_select_button)
+        course_select_button.click()
+
 
     def fill_city_select_field(self, location):
         city_select = self.wait.until(expected_conditions.presence_of_element_located(LearningCircleCreationPageLocators.CITY_SELECT_INPUT))

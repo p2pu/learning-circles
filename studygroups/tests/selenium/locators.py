@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 class LearningCircleCreationPageLocators(object):
     FIRST_COURSE_BUTTON = (By.CSS_SELECTOR, ".result-item .primary-cta button:first-of-type")
     REMOVE_COURSE_SELECTION_LINK = (By.LINK_TEXT, "Remove selection")
-    NEXT_TAB_BUTTON = (By.CSS_SELECTOR, ".action-bar button:last-of-type")
+    NEXT_TAB_BUTTON = (By.CSS_SELECTOR, ".action-bar button.next-tab")
     CITY_SELECT = (By.CSS_SELECTOR, ".city-select .Select-input input")
     CITY_SELECT_INPUT = (By.CSS_SELECTOR, ".city-select .Select-input input")
     CITY_SELECT_OPTION = (By.CSS_SELECTOR, ".Select-menu-outer .Select-option")
