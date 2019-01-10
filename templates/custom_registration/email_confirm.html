@@ -1,11 +1,30 @@
 {% extends 'email_base.html' %}
-{% block body %}
 {% load i18n %}
+{% block body %}
+<style>
+    .confirm-email {
+        display: block;
+        padding: 0.6em 2em;
+        margin-bottom: 1em;
+        background-color: #DDF6F4;
+        color: #05C6B4;
+        border: 1px solid #05C6B4;
+        border-radius: 4px;
+        text-align:center;
+        text-decoration: none;
+    }
+</style>
+
+
 <p>{% trans "Hi there" %}</p>
 
 {% url 'email_confirm' uidb64=uid token=token as email_confirm_url %}
 
-<p>{% blocktrans with email=user.email %}Welcome to the P2PU learning circle community! To use your account, please confirm your email by following <a href="{{ protocol}}://{{ domain }}{{ email_confirm_url }}">this link</a>. Your username is {{ email }}.{% endblocktrans %}</p>
+<p>{% trans "Welcome to the P2PU learning circle community! To use your account, please confirm your email address by clicking the button below." %}</p>
+
+<div><a class="confirm-email" href="{{ protocol}}://{{ domain }}{{ email_confirm_url }}">{% trans "Confirm your email address" %}</a></div>
+
+<p>{% blocktrans with email=user.email %}Your username is {{ email }}.{% endblocktrans %}</p>
 
 <p>{% trans "Cheers" %}</p>
 <p>P2PU</p>

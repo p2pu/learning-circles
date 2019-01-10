@@ -55,6 +55,7 @@ class TestFacilitatorViews(TestCase):
         'venue_address': 'Rosemary Street 6',
         'city': 'Johannesburg',
         'country': 'South Africa',
+        'country_en': 'South Africa',
         'region': 'Gauteng',
         'latitude': -26.205,
         'longitude': 28.0497,
@@ -281,9 +282,9 @@ class TestFacilitatorViews(TestCase):
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, mail_data['email_subject'])
-        self.assertEqual(mail.outbox[0].from_email, 'Facilitator1 <{}>'.format(settings.DEFAULT_FROM_EMAIL))
+        self.assertEqual(mail.outbox[0].from_email, 'P2PU <{}>'.format(settings.DEFAULT_FROM_EMAIL))
         self.assertFalse(send_message.called)
-        self.assertIn('https://example.net/en/optout/', mail.outbox[0].body)
+        self.assertIn('{}/en/optout/'.format(settings.DOMAIN), mail.outbox[0].body)
 
 
     @patch('studygroups.tasks.send_message')

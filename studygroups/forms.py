@@ -6,6 +6,7 @@ from django.utils.translation import ugettext as _
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
+from studygroups.email_helper import render_html_with_css
 from django.core.mail import EmailMultiAlternatives
 
 from phonenumber_field.formfields import PhoneNumberField
@@ -133,7 +134,7 @@ class ApplicationForm(forms.ModelForm):
     class Meta:
         model = Application
         fields = ['study_group', 'name', 'email', 'mobile']
-        widgets = {'study_group': forms.HiddenInput} 
+        widgets = {'study_group': forms.HiddenInput}
 
 
 class OptOutForm(forms.Form):
@@ -164,12 +165,12 @@ class OptOutForm(forms.Form):
                 # send opt-out email
                 context = { 'application': application }
                 subject = render_to_string('studygroups/email/optout_confirm-subject.txt', context).strip('\n')
-                html_body = render_to_string('studygroups/email/optout_confirm.html', context)
+                html_body = render_html_with_css('studygroups/email/optout_confirm.html', context)
                 text_body = render_to_string('studygroups/email/optout_confirm.txt', context)
                 notification = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, [application.email])
                 notification.attach_alternative(html_body, 'text/html')
                 notification.send()
- 
+
 
         # Find all signups with mobile with email and delete
         if mobile:
@@ -178,7 +179,7 @@ class OptOutForm(forms.Form):
                 # don't send text to applications with a valid email in opt out form
                 applications = applications.exclude(email__iexact=email)
             for application in applications:
-                # This remains for old signups without email address 
+                # This remains for old signups without email address
                 context = { 'application': application }
                 message = render_to_string('studygroups/email/optout_confirm_text.txt', context)
                 try:
@@ -347,7 +348,7 @@ class StudyGroupForm(forms.ModelForm):
             'place_id': forms.HiddenInput,
             'country': forms.HiddenInput,
             'region': forms.HiddenInput,
-        } 
+        }
 
 
 class MeetingForm(forms.ModelForm):
@@ -355,7 +356,26 @@ class MeetingForm(forms.ModelForm):
     class Meta:
         model = Meeting
         fields = ['meeting_date', 'meeting_time', 'study_group']
-        widgets = {'study_group': forms.HiddenInput} 
+        widgets = {'study_group': forms.HiddenInput}
+
+
+class DigestGenerateForm(forms.Form):
+    start_date = forms.DateField()
+    end_date = forms.DateField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.add_input(Submit('submit', 'Generate'))
+
+class StatsDashForm(forms.Form):
+    start_date = forms.DateField()
+    end_date = forms.DateField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.add_input(Submit('submit', 'Generate'))
 
 
 class FeedbackForm(forms.ModelForm):
@@ -372,4 +392,4 @@ class FeedbackForm(forms.ModelForm):
             'feedback': _('You may want to include your impressions of how it went, plus/delta feedback, and anything the group agreed on having completed before the next meeting. This will be automatically sent to learners two days before next week\'s meeting.'),
             'reflection': _('What went well this week? What surprised you? Any funny stories? We\'ll pull what you write here into our community newsletters and updates.'),
         }
-        widgets = {'study_group_meeting': forms.HiddenInput} 
+        widgets = {'study_group_meeting': forms.HiddenInput}

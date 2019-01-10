@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+
+    <div class="col-md-12 col-sm-12">
+      <h2>{% trans "Generate a digest" %}</h2>
+      {% crispy form %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'css/datepicker.css' %}" charset="utf-8">
+<link type="text/css" rel="stylesheet" href="{% static 'css/jquery.timepicker.css' %}" charset="utf-8">
+{% endblock %}
+
+
+{% block scripts %}
+<script src="{% static 'js/vendor/bootstrap-datepicker.js' %}"></script>
+<script src="{% static 'js/vendor/jquery.timepicker.js' %}"></script>
+<script>
+$(document).ready(function(){
+  $('.dateinput').datepicker({'format':'yyyy-mm-dd'});
+  $('.timeinput').timepicker({ 'step': 15, 'timeFormat': 'h:i A' });
+});
+</script>
+{% endblock %}

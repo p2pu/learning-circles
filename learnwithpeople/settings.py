@@ -164,10 +164,13 @@ if DEBUG is True and EMAIL_HOST is None:
     EMAIL_FILE_PATH = path('mailbox')
 
 # Default email sender
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
+
+# email for sending the community digest to
+COMMUNITY_DIGEST_EMAIL = env('COMMUNITY_DIGEST_EMAIL', 'digest@localhost')
 
 # Used for error messages to admin/staff
-SERVER_EMAIL = os.environ.get('SERVER_EMAIL', 'no-reply@p2pu.org')
+SERVER_EMAIL = env('SERVER_EMAIL', 'no-reply@p2pu.org')
 
 ##### Database config
 import dj_database_url
@@ -189,13 +192,13 @@ TWILIO_NUMBER = os.environ.get('TWILIO_NUMBER')
 
 LOGIN_REDIRECT_URL = '/login_redirect/'
 LOGOUT_REDIRECT_URL = 'https://www.p2pu.org/en/facilitate/'
-DOMAIN = os.environ.get('DOMAIN', 'example.net')
+DOMAIN = env('DOMAIN', 'localhost:8000')
 
 ####### Google analytics tracking info #######
-GA_TRACKING_ID = os.environ.get('GA_TRACKING_ID', 'UA-0000000-00')
+GA_TRACKING_ID = env('GA_TRACKING_ID', 'UA-0000000-00')
 
 ####### Celery config #######
-BROKER_URL = os.environ.get('BROKER_URL', 'amqp://guest:guest@localhost//')
+BROKER_URL = env('BROKER_URL', 'amqp://guest:guest@localhost//')
 
 
 from celery.schedules import crontab
@@ -253,6 +256,10 @@ CELERYBEAT_SCHEDULE = {
         'task': 'studygroups.tasks.send_all_learning_circle_reports',
         'schedule': crontab(minute='30'),
     },
+    'send_community_digest': {
+        'task': 'studygroups.tasks.send_out_community_digest',
+        'schedule': crontab(day_of_week='monday', hour=11, minute=0),
+    },
 }
 
 LOGGING = {
@@ -299,6 +306,8 @@ MAILCHIMP_API_ROOT = env('MAILCHIMP_API_ROOT', 'https://??.api.mailchimp.com/3.0
 
 DISCOURSE_BASE_URL = env('DISCOURSE_BASE_URL', '')
 DISCOURSE_SSO_SECRET = env('DISCOURSE_SSO_SECRET', '')
+DISCOURSE_API_KEY = env('DISCOURSE_API_KEY', '')
+DISCOURSE_API_USERNAME = env('DISCOURSE_API_USERNAME', '')
 
 TYPEFORM_ACCESS_TOKEN = env('TYPEFORM_ACCESS_TOKEN', '')
 TYPEFORM_FACILITATOR_SURVEY_FORM = env('TYPEFORM_FACILITATOR_SURVEY_FORM', '')

@@ -13,9 +13,12 @@ from django.urls import reverse
 
 from studygroups.models import StudyGroup, Meeting, Reminder, Course, Application, Feedback, Team, TeamMembership
 from studygroups.models import report_data
+from studygroups.models import community_digest_data
+from studygroups.models import get_study_group_organizers
 from studygroups import charts
 from studygroups.sms import send_message
 from studygroups.email_helper import render_email_templates
+from studygroups.email_helper import render_html_with_css
 from .utils import html_body_to_text
 from .events import make_meeting_ics
 
@@ -36,6 +39,7 @@ def generate_reminder(study_group):
             reminder.study_group = study_group
             reminder.study_group_meeting = next_meeting
             context = {
+                'facilitator': study_group.facilitator,
                 'study_group': study_group,
                 'next_meeting': next_meeting,
                 'reminder': reminder,
@@ -68,7 +72,7 @@ def generate_reminder(study_group):
             reminder.save()
 
             facilitator_notification_subject = 'A reminder for {0} was generated'.format(study_group.course.title)
-            facilitator_notification_html = render_to_string(
+            facilitator_notification_html = render_html_with_css(
                 'studygroups/email/reminder_notification.html',
                 context
             )
@@ -109,6 +113,7 @@ def send_facilitator_survey(study_group):
         survey_url = domain + path
 
         context = {
+            "facilitator": study_group.facilitator,
             'facilitator_name': facilitator_name,
             'survey_url': survey_url,
             'course_title': study_group.course.title,
@@ -163,6 +168,7 @@ def send_facilitator_survey_reminder(study_group):
         learners_without_survey_responses = study_group.application_set.active().filter(goal_met=None)
 
         context = {
+            "facilitator": study_group.facilitator,
             'facilitator_name': facilitator_name,
             'learner_survey_url': learner_survey_url,
             'facilitator_survey_url': facilitator_survey_url,
@@ -211,16 +217,16 @@ def send_final_learning_circle_report(study_group):
 
         learner_goals_chart = charts.LearnerGoalsChart(study_group)
         goals_met_chart = charts.GoalsMetChart(study_group)
-        domain = 'https://{}'.format(settings.DOMAIN)
         report_path = reverse('studygroups_final_report', kwargs={'study_group_id': study_group.id})
-        report_url = domain + report_path
         recipients = study_group.application_set.values_list('email', flat=True)
-        to = list(recipients)
+        organizers = get_study_group_organizers(study_group)
+        organizers_emails = [organizer.email for organizer in organizers]
+        to = list(recipients) + organizers_emails
         to.append(study_group.facilitator.email)
 
         context = {
             'study_group': study_group,
-            'report_url': report_url,
+            'report_path': report_path,
             'facilitator_name': study_group.facilitator.first_name,
             'registrations': study_group.application_set.active().count(),
             'survey_responses': study_group.learnersurveyresponse_set.count(),
@@ -229,14 +235,14 @@ def send_final_learning_circle_report(study_group):
         }
 
         subject = render_to_string('studygroups/email/learning_circle_final_report-subject.txt', context).strip('\n')
-        html = render_to_string('studygroups/email/learning_circle_final_report.html', context)
-        txt = render_to_string('studygroups/email/learning_circle_final_report.txt', context)
+        html = render_html_with_css('studygroups/email/learning_circle_final_report.html', context)
+        txt = html_body_to_text(html)
 
         notification = EmailMultiAlternatives(
             subject,
             txt,
             settings.DEFAULT_FROM_EMAIL,
-            to,
+            bcc=to,
             reply_to=[settings.DEFAULT_FROM_EMAIL]
         )
         notification.attach_alternative(html, 'text/html')
@@ -275,7 +281,7 @@ def send_last_week_group_activity(study_group):
             'studygroups/email/last_week_group_activity-subject.txt',
             context
         ).strip('\n')
-        html = render_to_string(
+        html = render_html_with_css(
             'studygroups/email/last_week_group_activity.html',
             context
         )
@@ -350,7 +356,7 @@ def send_learner_surveys(study_group):
 
 def send_meeting_reminder(reminder):
     to = [su.email for su in reminder.study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')]
-    sender = '{0} <{1}>'.format(reminder.study_group.facilitator.first_name, settings.DEFAULT_FROM_EMAIL)
+    sender = 'P2PU <{0}>'.format(settings.DEFAULT_FROM_EMAIL)
 
     for email in to:
         yes_link = reminder.study_group_meeting.rsvp_yes_link(email)
@@ -381,7 +387,7 @@ def send_meeting_reminder(reminder):
                 reply_to=[reminder.study_group.facilitator.email]
             )
             reminder_email.attach_alternative(html_body, 'text/html')
-            # TODO attach icalendar event
+            # attach icalendar event
             if reminder.study_group.attach_ics:
                 ical = make_meeting_ics(reminder.study_group_meeting)
                 part = MIMEText(ical, 'calendar')
@@ -394,6 +400,7 @@ def send_meeting_reminder(reminder):
     # Send to organizer without RSVP & unsubscribe links
     try:
         context = {
+            "facilitator": reminder.study_group.facilitator,
             "reminder": reminder,
             "facilitator_message": reminder.email_body,
             "domain":'https://{0}'.format(settings.DOMAIN),
@@ -418,13 +425,14 @@ def send_meeting_reminder(reminder):
 
 def send_new_studygroup_email(studygroup):
     context = {
-        'studygroup': studygroup
+        'studygroup': studygroup,
+        'facilitator': studygroup.facilitator
     }
 
     timezone.activate(pytz.timezone(settings.TIME_ZONE))
     translation.activate(settings.LANGUAGE_CODE)
     subject = render_to_string('studygroups/email/new_studygroup_update-subject.txt', context).strip('\n')
-    html_body = render_to_string('studygroups/email/new_studygroup_update.html', context)
+    html_body = render_html_with_css('studygroups/email/new_studygroup_update.html', context)
     text_body = html_body_to_text(html_body)
     timezone.deactivate()
     to = [studygroup.facilitator.email]
@@ -449,13 +457,14 @@ def send_reminder(reminder):
             "reminder": reminder,
             "facilitator_message": reminder.email_body,
             "domain":'https://{0}'.format(settings.DOMAIN),
+            "facilitator": reminder.study_group.facilitator
         }
         subject, text_body, html_body = render_email_templates(
             'studygroups/email/facilitator_message',
             context
         )
         to += [reminder.study_group.facilitator.email]
-        sender = '{0} <{1}>'.format(reminder.study_group.facilitator.first_name, settings.DEFAULT_FROM_EMAIL)
+        sender = 'P2PU <{0}>'.format(settings.DEFAULT_FROM_EMAIL)
         try:
             reminder_email = EmailMultiAlternatives(
                 reminder.email_subject.strip('\n'),
@@ -478,7 +487,7 @@ def send_reminder(reminder):
         for to in tos:
             try:
                 send_message(to, reminder.sms_body)
-            except TwilioRestException:
+            except TwilioRestException as e:
                 logger.exception("Could not send text message to %s", to, exc_info=e)
 
 
@@ -495,12 +504,12 @@ def send_team_invitation_email(team, email, organizer):
     if user_qs.count() == 0:
         # invite user to join
         subject = render_to_string('studygroups/email/new_facilitator_invite-subject.txt', context).strip('\n')
-        html_body = render_to_string('studygroups/email/new_facilitator_invite.html', context)
+        html_body = render_html_with_css('studygroups/email/new_facilitator_invite.html', context)
         text_body = render_to_string('studygroups/email/new_facilitator_invite.txt', context)
     else:
         context['user'] = user_qs.get()
         subject = render_to_string('studygroups/email/team_invite-subject.txt', context).strip('\n')
-        html_body = render_to_string('studygroups/email/team_invite.html', context)
+        html_body = render_html_with_css('studygroups/email/team_invite.html', context)
         text_body = render_to_string('studygroups/email/team_invite.txt', context)
 
     to = [email]
@@ -515,6 +524,7 @@ def send_weekly_update():
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     start_time = today - datetime.timedelta(days=today.weekday()+7) #start of previous week
     end_time = start_time + datetime.timedelta(days=7)
+
     context = {
         'start_time': start_time,
         'end_time': end_time,
@@ -524,13 +534,17 @@ def send_weekly_update():
 
     for team in Team.objects.all():
         report_context = report_data(start_time, end_time, team)
+        report_charts = {
+            "learner_goals_chart": charts.NewLearnersGoalsChart(start_time, end_time, report_context["new_applications"], team).generate(output="png")
+        }
         # If there wasn't any activity during this period discard the update
         if report_context['active'] is False:
             continue
         report_context.update(context)
+        report_context.update(report_charts)
         timezone.activate(pytz.timezone(settings.TIME_ZONE)) #TODO not sure what this influences anymore?
         translation.activate(settings.LANGUAGE_CODE)
-        html_body = render_to_string('studygroups/email/weekly-update.html', report_context)
+        html_body = render_html_with_css('studygroups/email/weekly-update.html', report_context)
         text_body = render_to_string('studygroups/email/weekly-update.txt', report_context)
         timezone.deactivate()
 
@@ -546,10 +560,14 @@ def send_weekly_update():
 
     # send weekly update to staff
     report_context = report_data(start_time, end_time)
+    report_charts = {
+        "learner_goals_chart": charts.NewLearnersGoalsChart(start_time, end_time, report_context["new_applications"]).generate(output="png")
+    }
     report_context.update(context)
+    report_context.update(report_charts)
     timezone.activate(pytz.timezone(settings.TIME_ZONE))
     translation.activate(settings.LANGUAGE_CODE)
-    html_body = render_to_string('studygroups/email/weekly-update.html', report_context)
+    html_body = render_html_with_css('studygroups/email/weekly-update.html', report_context)
     text_body = render_to_string('studygroups/email/weekly-update.txt', report_context)
     timezone.deactivate()
 
@@ -562,6 +580,30 @@ def send_weekly_update():
     )
     update.attach_alternative(html_body, 'text/html')
     update.send()
+
+
+@shared_task
+def send_community_digest(start_date, end_date):
+
+    context = community_digest_data(start_date, end_date)
+
+    chart_data = {
+        "meetings_chart": charts.LearningCircleMeetingsChart(end_date.date()).generate(output="png"),
+        "countries_chart": charts.LearningCircleCountriesChart(start_date.date(), end_date.date()).generate(output="png"),
+        "learner_goals_chart": charts.NewLearnerGoalsChart(end_date.date(), context['new_applications']).generate(output="png"),
+        "top_topics_chart": charts.TopTopicsChart(end_date.date(), context['studygroups_that_met']).generate(output="png"),
+    }
+
+    context.update(chart_data)
+
+    subject = render_to_string('studygroups/email/community_digest-subject.txt', context)
+    html_body = render_html_with_css('studygroups/email/community_digest.html', context)
+    text_body = html_body_to_text(html_body)
+    to = [settings.COMMUNITY_DIGEST_EMAIL]
+
+    msg = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
+    msg.attach_alternative(html_body, 'text/html')
+    msg.send()
 
 
 @shared_task
@@ -636,3 +678,15 @@ def send_all_learning_circle_reports():
     for study_group in StudyGroup.objects.published():
         translation.activate(settings.LANGUAGE_CODE)
         send_final_learning_circle_report(study_group)
+
+@shared_task
+def send_out_community_digest():
+    translation.activate(settings.LANGUAGE_CODE)
+    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    iso_week = today.isocalendar()[1]
+    end_date = today
+    start_date = end_date - datetime.timedelta(days=21)
+
+
+    if iso_week % 3 == 0:
+        send_community_digest(start_date, end_date)

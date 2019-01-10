@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.test import Client
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.urls import reverse
 
 from mock import patch
 
@@ -33,6 +34,9 @@ class TestReportViews(TestCase):
         }),
         'study_group': '1',
     }
+
+    def mock_generate(self, **opts):
+        return "image"
 
     def setUp(self):
         user = User.objects.create_user('admin', 'admin@test.com', 'password')
@@ -87,9 +91,6 @@ class TestReportViews(TestCase):
         self.assertNotIn('courses', response.context_data)
 
 
-    def mock_generate(self, **opts):
-        return "image"
-
     @patch('studygroups.charts.LearnerGoalsChart.generate', mock_generate)
     @patch('studygroups.charts.NewLearnersChart.generate', mock_generate)
     @patch('studygroups.charts.CompletionRateChart.generate', mock_generate)
@@ -133,7 +134,7 @@ class TestReportViews(TestCase):
         self.create_learner_survey_response(sg, application)
 
         c = Client()
-        report = '/en/studygroup/{}/report/'.format(sg.pk)
+        report = reverse('studygroups_final_report', kwargs={'study_group_id': sg.pk })
         response = c.get(report)
 
         self.assertEqual(response.status_code, 200)
@@ -144,4 +145,30 @@ class TestReportViews(TestCase):
         self.assertEqual(response.context_data['learner_goals_chart'], "image")
         self.assertEqual(response.context_data['goals_met_chart'], "image")
 
+
+    @patch('studygroups.charts.LearningCircleMeetingsChart.generate')
+    @patch('studygroups.charts.LearningCircleCountriesChart.generate')
+    @patch('studygroups.charts.NewLearnerGoalsChart.generate')
+    @patch('studygroups.charts.TopTopicsChart.generate')
+    @patch('studygroups.views.reports.community_digest_data')
+    def test_community_digest(self, community_digest_data, topics_chart_generate, goals_chart_generate, countries_chart_generate, meetings_chart_generate):
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date = today
+        start_date = end_date - datetime.timedelta(days=21)
+
+        c = Client()
+        community_digest = reverse('studygroups_community_digest', kwargs={'start_date': start_date.strftime("%d-%m-%Y"), 'end_date': end_date.strftime("%d-%m-%Y")})
+        response = c.get(community_digest)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context_data['web'], True)
+        self.assertIsNotNone(response.context_data['meetings_chart'])
+        self.assertIsNotNone(response.context_data['countries_chart'])
+        self.assertIsNotNone(response.context_data['learner_goals_chart'])
+        self.assertIsNotNone(response.context_data['top_topics_chart'])
+        community_digest_data.assert_called_with(start_date, end_date)
+        topics_chart_generate.assert_called()
+        goals_chart_generate.assert_called()
+        countries_chart_generate.assert_called()
+        meetings_chart_generate.assert_called()
 

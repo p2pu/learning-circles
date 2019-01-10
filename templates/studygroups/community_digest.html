@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+    {% include 'studygroups/email/community_digest.html' with web=web %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'js/vendor/pygal-tooltips.min.js' %}"></script>
+{% endblock %}

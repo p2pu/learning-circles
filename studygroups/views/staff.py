@@ -1,8 +1,9 @@
-import datetime
+from datetime import datetime, time
 import json
 import unicodecsv as csv
 
 from django import http
+from django.urls import reverse_lazy
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -14,6 +15,7 @@ from django.utils.translation import ugettext as _
 from django.views.generic.base import View
 from django.views.generic import ListView
 from django.views.generic import TemplateView
+from django.views.generic.edit import FormView
 
 
 from studygroups.models import Application
@@ -23,6 +25,9 @@ from studygroups.models import TeamMembership
 from ..decorators import user_is_staff
 from learnwithpeople import __version__ as VERSION
 from learnwithpeople import GIT_REVISION
+from ..tasks import send_community_digest
+
+from studygroups.forms import DigestGenerateForm
 
 
 @method_decorator(user_is_staff, name='dispatch')
@@ -35,6 +40,23 @@ class StaffDashView(TemplateView):
         context['git_revision'] = GIT_REVISION
         return context
 
+
+@method_decorator(user_is_staff, name='dispatch')
+class DigestGenerateView(FormView):
+    form_class = DigestGenerateForm
+    template_name = 'studygroups/digest_form.html'
+    success_url = reverse_lazy('studygroups_staff_dash')
+
+    def form_valid(self, form):
+        # Find all signups with email and send opt out confirmation
+        print('boom')
+        messages.info(self.request, _('You will shortly receive the community digest.'))
+        start_date = datetime.combine(form.cleaned_data['start_date'], time(0,0,0))
+        start_date = timezone.utc.localize(start_date)
+        end_date = datetime.combine(form.cleaned_data['end_date'], time(0,0,0))
+        end_date = timezone.utc.localize(end_date)
+        send_community_digest.delay(start_date, end_date)
+        return super().form_valid(form)
 
 
 @method_decorator(user_is_staff, name='dispatch')
@@ -98,7 +120,16 @@ class ExportFacilitatorsView(ListView):
         response = http.HttpResponse(content_type="text/csv")
         ts = timezone.now().utcnow().isoformat()
         response['Content-Disposition'] = 'attachment; filename="facilitators-{}.csv"'.format(ts)
-        field_names = ['name', 'email', 'date joined', 'last login', 'learning circles run', 'last learning circle date', 'last learning circle course', 'last learning circle venue']
+        field_names = ['name',
+            'email',
+            'date joined',
+            'last login',
+            'communication opt-in',
+            'learning circles run',
+            'last learning circle date',
+            'last learning circle course',
+            'last learning circle venue',
+        ]
         writer = csv.writer(response)
         writer.writerow(field_names)
         for user in self.object_list:
@@ -107,6 +138,7 @@ class ExportFacilitatorsView(ListView):
                 user.email,
                 user.date_joined,
                 user.last_login,
+                user.profile.communication_opt_in if user.profile else False,
                 user.studygroup_set.active().count()
             ]
             last_study_group = user.studygroup_set.active().order_by('start_date').last()

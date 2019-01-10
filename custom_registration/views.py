@@ -1,6 +1,7 @@
 from django import http
 from django.views import View
 from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import ugettext as _
 from django.utils.encoding import force_text
@@ -9,6 +10,7 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.cache import never_cache
 from django.views.generic.edit import FormView
 from django.views.generic.edit import UpdateView
+from django.views.generic.edit import DeleteView
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth.forms import AuthenticationForm
@@ -18,6 +20,8 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 
 import json
+import string
+import random
 
 from studygroups.models import TeamMembership
 from studygroups.models import Profile
@@ -28,9 +32,11 @@ from .models import check_user_token
 from .models import confirm_user_email
 from .models import send_email_confirm_email
 from .forms import SignupForm
+from .forms import ProfileForm
 from .decorators import user_is_not_logged_in
+from discourse_sso.utils import anonymize_discourse_user
 
-# TODO make sure user is not signed in!!
+
 @method_decorator(user_is_not_logged_in, name='dispatch')
 class SignupView(FormView):
     form_class = SignupForm
@@ -194,9 +200,10 @@ class EmailConfirmView(View):
 @method_decorator(login_required, name='dispatch')
 class AccountSettingsView(UpdateView):
     model = Profile
-    fields = ['communication_opt_in']
+    #fields = ['communication_opt_in']
     template_name = 'custom_registration/settings.html'
     success_url = reverse_lazy('studygroups_facilitator')
+    form_class = ProfileForm
 
     def get_object(self):
         return self.request.user.profile
@@ -204,3 +211,39 @@ class AccountSettingsView(UpdateView):
     def form_valid(self, form):
         messages.success(self.request, _('Your account settings have been saved.'))
         return super().form_valid(form)
+
+
+@method_decorator(login_required, name='dispatch')
+class AccountDeleteView(DeleteView):
+    model = User
+    success_url = reverse_lazy('studygroups_facilitator')
+
+    def get_object(self):
+        return self.request.user
+
+    def delete(self, request, *args, **kwargs):
+        user = self.request.user
+
+        # mark user account as deleted
+        user.is_active = False
+
+        # anonymize user details - email, username, first name, last name and password
+        user.first_name = 'Anonymous'
+        user.last_name = random.choice(['Penguin', 'Albatross', 'Elephant', 'Dassie', 'Lion', 'Sponge', 'Giraffe', 'Hippo', 'Leopard', 'Buffalo']) 
+        user.password = '-'
+        random_username = "".join([random.choice(string.digits+string.ascii_letters) for i in range(12)])
+        while User.objects.filter(username=random_username).exists():
+            random_username = "".join([random.choice(string.digits+string.ascii_letters) for i in range(12)])
+        user.email = 'devnull.{}@localhost'.format(random_username)
+        user.username = random_username
+        user.save()
+
+        # delete any active or future learning circles
+        user.studygroup_set.update(deleted_at=timezone.now())
+
+        # delete discourse user if any
+        anonymize_discourse_user(user)
+
+        messages.success(self.request, _('Your account have been deleted.'))
+        # log user out
+        return http.HttpResponseRedirect(reverse('logout'))

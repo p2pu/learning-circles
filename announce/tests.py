@@ -6,6 +6,7 @@ from django.core import mail
 from django.contrib.auth.models import User, Group
 from django.utils import timezone
 from django.utils.translation import get_language
+from django.urls import reverse
 
 from mock import patch, MagicMock
 
@@ -112,4 +113,11 @@ class TestAnnounceViews(TestCase):
         requests.post.return_value.status_code = 200
         send_announcement('Tester <test@example.net>', 'Subject', 'This is a message', '<html><body><h1>HTML message</h1></body></html>')
         self.assertTrue(requests.post.called)
+
+        account_settings_url = 'https://' + settings.DOMAIN + reverse('account_settings')
+        post_data = requests.post.call_args[1].get('data')
+        self.assertEquals('text', post_data[2][0])
+        self.assertIn(account_settings_url, post_data[2][1])
+        self.assertEquals('html', post_data[3][0])
+        self.assertIn(account_settings_url, post_data[3][1])
 

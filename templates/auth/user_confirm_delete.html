@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+{% load extras %}
+
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+
+      <form method="post">{% csrf_token %}
+        <p>{% trans "Are you sure you want to delete your P2PU account?" %}</p>
+        <p><input class="btn btn-primary" type="submit" value="{% trans "Confirm" %}" /></p>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

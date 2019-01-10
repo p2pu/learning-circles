@@ -22,6 +22,8 @@ RUN apk --no-cache add --virtual .python-rundeps \
         cairo-tools \
         openjpeg-dev \
         tiff-dev \
+        libxslt-dev \
+        libxml2-dev \
     && apk --no-cache add --virtual .build-deps \
         gcc \
         make \
@@ -35,6 +37,7 @@ RUN apk --no-cache add --virtual .python-rundeps \
         lcms2-dev \
         tk-dev \
         tcl-dev \
+        py-lxml \
     && python3 -m venv /opt/django-venv \
     && /opt/django-venv/bin/pip install -r /opt/app/requirements.txt \
     && apk del .build-deps

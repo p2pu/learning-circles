@@ -32,8 +32,8 @@ def find_field(field_id, typeform_survey):
         return fields[0]
 
     # check if field is part of a group?
-    group_fields = [ 
-        field.get('properties', {}).get('fields') for field in survey.get('fields') if field.get('type') == 'group' 
+    group_fields = [
+        field.get('properties', {}).get('fields') for field in survey.get('fields') if field.get('type') == 'group'
     ]
     # group_fields = [ [field, field, field], [field, field]]
     # flatten list
@@ -52,7 +52,7 @@ def normalize_data(typeform_response):
     survey = json.loads(typeform_response.survey)
     response = json.loads(typeform_response.response)
     answers = {}
-    for answer in response.get('answers'):
+    for answer in response.get('answers', {}):
         field_id = answer.get('field').get('id')
         value_key = answer.get('type')
         value = json.dumps(answer.get(value_key))
@@ -87,7 +87,7 @@ def get_all_results(query_set):
     fields = {} # dict of all fields
     for response in query_set:
         data = normalize_data(response)
-        # update headins 
+        # update headins
         for field_id, value in data.items():
             fields[field_id] = value.get('field_title')
 
@@ -103,6 +103,4 @@ def get_all_results(query_set):
         'heading': heading,
         'data': data
     }
-            
-
 

@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.test import Client
 from django.core import mail
 from django.utils import timezone
+from django.conf import settings
 
 from mock import patch
 
@@ -35,6 +36,7 @@ class TestLearningCircleApi(TestCase):
             "venue_address": "75 Harrington",
             "city": "Cape Town",
             "country": "South Africa",
+            "country_en": "South Africa",
             "region": "Western Cape",
             "latitude": 3.1,
             "longitude": "1.3",
@@ -53,7 +55,7 @@ class TestLearningCircleApi(TestCase):
         lc = StudyGroup.objects.all().last()
         self.assertEqual(resp.json(), {
             "status": "created",
-            "url": "example.net/en/signup/75-harrington-{}/".format(lc.pk)
+            "url": "{}/en/signup/75-harrington-{}/".format(settings.DOMAIN, lc.pk)
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
         self.assertEqual(lc.course.id, 3)
@@ -80,6 +82,7 @@ class TestLearningCircleApi(TestCase):
             "venue_address": "75 Harrington",
             "city": "Cape Town",
             "country": "South Africa",
+            "country_en": "South Africa",
             "region": "Western Cape",
             "latitude": 3.1,
             "longitude": "1.3",
@@ -99,7 +102,7 @@ class TestLearningCircleApi(TestCase):
         lc = StudyGroup.objects.all().last()
         self.assertEqual(resp.json(), {
             "status": "created",
-            "url": "example.net/en/signup/75-harrington-{}/".format(lc.pk)
+            "url": "{}/en/signup/75-harrington-{}/".format(settings.DOMAIN, lc.pk)
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
         self.assertEqual(lc.course.id, 3)
@@ -125,6 +128,7 @@ class TestLearningCircleApi(TestCase):
             "venue_address": "75 Harrington",
             "city": "Cape Town",
             "country": "South Africa",
+            "country_en": "South Africa",
             "region": "Western Cape",
             "latitude": 3.1,
             "longitude": "1.3",
@@ -158,6 +162,7 @@ class TestLearningCircleApi(TestCase):
             "venue_address": "75 Harrington",
             "city": "Cape Town",
             "country": "South Africa",
+            "country_en": "South Africa",
             "region": "Western Cape",
             "latitude": 3.1,
             "longitude": "1.3",
@@ -176,7 +181,7 @@ class TestLearningCircleApi(TestCase):
         lc = StudyGroup.objects.all().last()
         self.assertEqual(resp.json(), {
             "status": "created",
-            "url": "example.net/en/signup/75-harrington-{}/".format(lc.pk)
+            "url": "{}/en/signup/75-harrington-{}/".format(settings.DOMAIN, lc.pk)
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
         data['start_date'] = '2018-01-01'
@@ -205,6 +210,7 @@ class TestLearningCircleApi(TestCase):
             "venue_address": "75 Harrington",
             "city": "Cape Town",
             "country": "South Africa",
+            "country_en": "South Africa",
             "region": "Western Cape",
             "latitude": 3.1,
             "longitude": "1.3",
@@ -223,7 +229,7 @@ class TestLearningCircleApi(TestCase):
         lc = StudyGroup.objects.all().last()
         self.assertEqual(resp.json(), {
             "status": "created",
-            "url": "example.net/en/signup/75-harrington-{}/".format(lc.pk)
+            "url": "{}/en/signup/75-harrington-{}/".format(settings.DOMAIN, lc.pk)
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
         self.assertEqual(lc.meeting_set.all().count(), 0)
@@ -258,6 +264,7 @@ class TestLearningCircleApi(TestCase):
             "venue_address": "75 Harrington",
             "city": "Cape Town",
             "country": "South Africa",
+            "country_en": "South Africa",
             "region": "Western Cape",
             "latitude": 3.1,
             "longitude": "1.3",
@@ -277,7 +284,7 @@ class TestLearningCircleApi(TestCase):
         lc = StudyGroup.objects.all().last()
         self.assertEqual(resp.json(), {
             "status": "created",
-            "url": "example.net/en/signup/%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%A7%D9%84%D9%86%D9%81%D8%B3%D9%8A%D8%A9-%D9%84%D9%84%D8%B7%D9%81%D9%84-{}/".format(lc.pk)
+            "url": "{}/en/signup/%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%A7%D9%84%D9%86%D9%81%D8%B3%D9%8A%D8%A9-%D9%84%D9%84%D8%B7%D9%81%D9%84-{}/".format(settings.DOMAIN, lc.pk)
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
 
