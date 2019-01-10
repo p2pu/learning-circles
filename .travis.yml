@@ -1,5 +1,7 @@
 sudo: required
 dist: trusty
+addons:
+  chrome: stable
 before_install:
 - |
   curl -sSL "https://get.docker.com/gpg" |
@@ -20,13 +22,8 @@ before_script:
 
 script:
 - docker run -d --name=postgres -e POSTGRES_PASSWORD=password postgres:9.3
-- docker run --rm -it --link postgres -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost p2pu/learning-circles dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
-- docker exec -it postgres psql -U postgres -c "create user lc WITH PASSWORD 'password'"
-- docker exec -it postgres psql -U postgres -c "create database lc with owner lc;"
-- docker run --rm -it --link postgres -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost -e DEBUG=true p2pu/learning-circles dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py migrate --noinput
-- docker run --rm -it --link postgres -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost -e DEBUG=true p2pu/learning-circles dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py collectstatic --noinput
-- docker run -d --name=learningcircles --link postgres -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost -e DEBUG=true p2pu/learning-circles dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py runserver 0.0.0.0:80
-- docker run --rm -it --volume `pwd`:/opt/app/  --link postgres --link learningcircles -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost -w /opt/app p2pu/puppeteer-docker sh -c "npm i && npm test"
+- docker run -d --name=selenium selenium/standalone-chrome-debug:3.7.1
+- docker run --rm -it --link postgres --link selenium -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost p2pu/learning-circles dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
 
 
 after_success:
