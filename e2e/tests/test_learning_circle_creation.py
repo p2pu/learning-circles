@@ -35,8 +35,8 @@ class LearningCircleCreation(StaticLiveServerTestCase):
           desired_capabilities=DesiredCapabilities.CHROME,
           options=chrome_options
         )
-        timeout = 20
-        cls.driver.implicitly_wait(timeout)
+        timeout = 10
+        #cls.driver.implicitly_wait(timeout)
         cls.wait = WebDriverWait(cls.driver, timeout)
 
     @classmethod
