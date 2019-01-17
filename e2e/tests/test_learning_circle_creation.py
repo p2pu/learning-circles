@@ -27,7 +27,7 @@ class LearningCircleCreation(StaticLiveServerTestCase):
         cls.host = socket.gethostbyname(socket.gethostname())
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument('--disable-web-security')
-        chrome_options.add_argument('--headless')
+        #chrome_options.add_argument('--headless')
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-gpu')
         cls.driver = webdriver.Remote(
@@ -175,7 +175,7 @@ class LearningCircleCreation(StaticLiveServerTestCase):
 
         creation_page.click_save_button()
 
-        self.wait.until(expected_conditions.url_changes('{}{}'.format(self.live_server_url, '/en/studygroup/create/')))
+        self.wait.until(expected_conditions.url_changes('{}/en/studygroup/create/'.format(self.live_server_url)))
         self.assertTrue(expected_conditions.url_matches('{}/en/facilitator/'.format(self.live_server_url)))
 
         saved_studygroup = StudyGroup.objects.filter(draft=True).last()
