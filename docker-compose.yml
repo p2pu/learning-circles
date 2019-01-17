@@ -26,6 +26,7 @@ services:
     - EMAIL_HOST=email
     - COMMUNITY_MANAGER=user@mail.com
     - DEFAULT_FROM_EMAIL=notify@mail.com
+    - ADMIN_EMAIL=admin@localhost
     - DEBUG=true
   frontend:
     image: p2pu/js-build:carbon-alpine
@@ -36,6 +37,5 @@ services:
   selenium:
     image: selenium/standalone-chrome-debug:3.7.1
     ports:
-      - 4444:4444
       - 5900:5900
 
