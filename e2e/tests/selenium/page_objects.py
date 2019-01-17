@@ -31,7 +31,7 @@ class LearningCircleCreationPage(BasePage):
         self.click_next_button()
 
         self.fill_text_field(LearningCircleCreationPageLocators.START_DATE_FIELD, "01/06/2019", Keys.ENTER)
-        self.fill_text_field(LearningCircleCreationPageLocators.WEEKS_FIELD, Keys.DELETE, "8")
+        self.fill_text_field(LearningCircleCreationPageLocators.WEEKS_FIELD, Keys.BACKSPACE, "8")
 
         self.fill_meeting_time_field("7:00 pm")
         self.fill_text_field(LearningCircleCreationPageLocators.DURATION_FIELD, "60")
