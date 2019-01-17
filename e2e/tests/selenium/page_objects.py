@@ -2,8 +2,8 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
-from studygroups.tests.selenium.locators import LearningCircleCreationPageLocators
-from studygroups.tests.selenium.locators import RegistrationModalLocators
+from e2e.tests.selenium.locators import LearningCircleCreationPageLocators
+from e2e.tests.selenium.locators import RegistrationModalLocators
 
 class BasePage(object):
 
