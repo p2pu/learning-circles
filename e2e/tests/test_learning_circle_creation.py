@@ -10,9 +10,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from studygroups.models import Course
 from studygroups.models import StudyGroup
 from custom_registration.models import create_user, confirm_user_email
-from studygroups.tests.selenium.page_objects import LearningCircleCreationPage
-from studygroups.tests.selenium.locators import LearningCircleCreationPageLocators
-from studygroups.tests.selenium.locators import RegistrationModalLocators
+from e2e.tests.selenium.page_objects import LearningCircleCreationPage
+from e2e.tests.selenium.locators import LearningCircleCreationPageLocators
+from e2e.tests.selenium.locators import RegistrationModalLocators
 
 import socket
 
