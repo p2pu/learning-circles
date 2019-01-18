@@ -284,7 +284,7 @@ class Application(LifeTimeTrackingModel):
     mobile = models.CharField(max_length=20, blank=True)
     mobile_opt_out_at = models.DateTimeField(blank=True, null=True)
     signup_questions = models.TextField(default='{}')
-    goal_met = models.SmallIntegerField(null=True)
+    goal_met = models.SmallIntegerField(blank=True, null=True)
     accepted_at = models.DateTimeField(blank=True, null=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
