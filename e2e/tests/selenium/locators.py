@@ -2,6 +2,7 @@ from selenium.webdriver.common.by import By
 
 class LearningCircleCreationPageLocators(object):
     FIRST_COURSE_BUTTON = (By.CSS_SELECTOR, ".result-item .primary-cta button:first-of-type")
+    FIRST_COURSE_TITLE = (By.CSS_SELECTOR, ".result-item .title")
     REMOVE_COURSE_SELECTION_LINK = (By.LINK_TEXT, "Remove selection")
     NEXT_TAB_BUTTON = (By.CSS_SELECTOR, ".action-bar button.next-tab")
     CITY_SELECT = (By.CSS_SELECTOR, ".city-select .Select-input input")

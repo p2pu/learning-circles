@@ -49,9 +49,13 @@ class LearningCircleCreationPage(BasePage):
 
     def select_first_course(self):
         self.wait.until(expected_conditions.presence_of_all_elements_located(LearningCircleCreationPageLocators.COURSE_CARDS))
+
+        self.wait.until(expected_conditions.text_to_be_present_in_element(LearningCircleCreationPageLocators.FIRST_COURSE_TITLE, "Academic Writing"))
+
         course_select_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.FIRST_COURSE_BUTTON))
         self.driver.execute_script("return arguments[0].scrollIntoView();", course_select_button)
         course_select_button.click()
+        #self.wait.until(expected_conditions.presence_of_element_located(LearningCircleCreationPageLocators. REMOVE_COURSE_SELECTION_LINK))
 
 
     def fill_city_select_field(self, location):
