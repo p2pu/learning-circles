@@ -47,28 +47,35 @@ class LearningCircleCreationPage(BasePage):
         self.fill_text_field(LearningCircleCreationPageLocators.FACILITATOR_GOAL_FIELD, "Have a great learning circle")
         self.fill_text_field(LearningCircleCreationPageLocators.FACILITATOR_CONCERNS_FIELD, "Nothing really")
 
-    def select_first_course(self):
-        self.wait.until(expected_conditions.presence_of_all_elements_located(LearningCircleCreationPageLocators.COURSE_CARDS))
 
+    def select_first_course(self):
+        course_cards = self.wait.until(expected_conditions.visibility_of_all_elements_located(LearningCircleCreationPageLocators.COURSE_CARDS))
         self.wait.until(expected_conditions.text_to_be_present_in_element(LearningCircleCreationPageLocators.FIRST_COURSE_TITLE, "Academic Writing"))
 
         course_select_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.FIRST_COURSE_BUTTON))
-        self.driver.execute_script("return arguments[0].scrollIntoView();", course_select_button)
+        #self.driver.execute_script("return arguments[0].scrollIntoView();", course_select_button)
+        #import time
+        #time.sleep(1)
         course_select_button.click()
-        #self.wait.until(expected_conditions.presence_of_element_located(LearningCircleCreationPageLocators. REMOVE_COURSE_SELECTION_LINK))
+        # ensure search container is gone
+        self.wait.until_not(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, '.search-container')))
+        remove_link = self.wait.until(expected_conditions.visibility_of_element_located(LearningCircleCreationPageLocators. REMOVE_COURSE_SELECTION_LINK))
+        assert 'Remove selection' in remove_link.text
 
 
     def fill_city_select_field(self, location):
-        city_select = self.wait.until(expected_conditions.presence_of_element_located(LearningCircleCreationPageLocators.CITY_SELECT_INPUT))
+        city_select = self.wait.until(expected_conditions.visibility_of_element_located(LearningCircleCreationPageLocators.CITY_SELECT_INPUT))
         city_select.send_keys(location)
         self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.CITY_SELECT_OPTION))
         city_select.send_keys(Keys.ARROW_DOWN, Keys.ENTER)
 
+
     def fill_meeting_time_field(self, time):
         meeting_time_field = self.driver.find_element(*LearningCircleCreationPageLocators.MEETING_TIME_FIELD)
         meeting_time_field.click()
-        meeting_time_input = self.wait.until(expected_conditions.presence_of_element_located(LearningCircleCreationPageLocators.MEETING_TIME_INPUT))
+        meeting_time_input = self.wait.until(expected_conditions.visibility_of_element_located(LearningCircleCreationPageLocators.MEETING_TIME_INPUT))
         meeting_time_input.send_keys(time)
+
 
     def click_next_button(self):
         next_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.NEXT_TAB_BUTTON))
