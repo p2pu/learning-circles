@@ -385,6 +385,15 @@ class DigestGenerateForm(forms.Form):
         self.helper = FormHelper(self)
         self.helper.add_input(Submit('submit', 'Generate'))
 
+class StatsDashForm(forms.Form):
+    start_date = forms.DateField()
+    end_date = forms.DateField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.add_input(Submit('submit', 'Generate'))
+
 
 class FeedbackForm(forms.ModelForm):
     class Meta:
