@@ -17,6 +17,9 @@ from django.contrib.postgres.search import SearchQuery
 import json
 import datetime
 import re
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 from studygroups.decorators import user_is_group_facilitator
@@ -430,6 +433,7 @@ class LearningCircleCreateView(View):
         data = json.loads(request.body)
         data, errors = schema.validate(post_schema, data)
         if errors != {}:
+            logger.error('schema error {0}'.format(json.dumps(errors)))
             return json_response(request, {"status": "error", "errors": errors})
 
         # create learning circle
