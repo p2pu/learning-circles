@@ -53,11 +53,9 @@ class LearningCircleCreationPage(BasePage):
         self.wait.until(expected_conditions.text_to_be_present_in_element(LearningCircleCreationPageLocators.FIRST_COURSE_TITLE, "Academic Writing"))
 
         course_select_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.FIRST_COURSE_BUTTON))
-        #self.driver.execute_script("return arguments[0].scrollIntoView();", course_select_button)
-        #import time
-        #time.sleep(1)
-        course_select_button.click()
-        # ensure search container is gone
+        self.driver.execute_script("return arguments[0].click();", course_select_button)
+        # course_select_button.click()
+        # wait until search container is gone
         self.wait.until_not(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, '.search-container')))
         remove_link = self.wait.until(expected_conditions.visibility_of_element_located(LearningCircleCreationPageLocators. REMOVE_COURSE_SELECTION_LINK))
         assert 'Remove selection' in remove_link.text
@@ -71,7 +69,7 @@ class LearningCircleCreationPage(BasePage):
 
 
     def fill_meeting_time_field(self, time):
-        meeting_time_field = self.driver.find_element(*LearningCircleCreationPageLocators.MEETING_TIME_FIELD)
+        meeting_time_field = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.MEETING_TIME_FIELD))
         meeting_time_field.click()
         meeting_time_input = self.wait.until(expected_conditions.visibility_of_element_located(LearningCircleCreationPageLocators.MEETING_TIME_INPUT))
         meeting_time_input.send_keys(time)
@@ -98,25 +96,25 @@ class LearningCircleCreationPage(BasePage):
         self.driver.find_element(*RegistrationModalLocators.SUBMIT_BUTTON).click()
 
     def go_to_tab_1(self):
-        tab_button = self.driver.find_element(*LearningCircleCreationPageLocators.TAB_1)
+        tab_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.TAB_1))
         tab_button.click()
 
     def go_to_tab_2(self):
-        tab_button = self.driver.find_element(*LearningCircleCreationPageLocators.TAB_2)
+        tab_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.TAB_2))
         tab_button.click()
 
     def go_to_tab_3(self):
-        tab_button = self.driver.find_element(*LearningCircleCreationPageLocators.TAB_3)
+        tab_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.TAB_3))
         tab_button.click()
 
     def go_to_tab_4(self):
-        tab_button = self.driver.find_element(*LearningCircleCreationPageLocators.TAB_4)
+        tab_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.TAB_4))
         tab_button.click()
 
     def go_to_tab_5(self):
-        tab_button = self.driver.find_element(*LearningCircleCreationPageLocators.TAB_5)
+        tab_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.TAB_5))
         tab_button.click()
 
     def close_alert(self):
-        close_button = self.driver.find_element(*LearningCircleCreationPageLocators.ALERT_CLOSE_BUTTON)
+        close_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.ALERT_CLOSE_BUTTON))
         close_button.click()
