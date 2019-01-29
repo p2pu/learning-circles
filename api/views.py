@@ -17,6 +17,7 @@ from django.contrib.postgres.search import SearchQuery
 import json
 import datetime
 import re
+import pytz
 import logging
 
 logger = logging.getLogger(__name__)
@@ -426,15 +427,31 @@ def _make_learning_circle_schema(request):
     return post_schema
 
 
+def _date_check(date):
+    now = timezone.now().date()
+
 @method_decorator(login_required, name='dispatch')
 class LearningCircleCreateView(View):
     def post(self, request):
         post_schema = _make_learning_circle_schema(request)
+        #post_scheme['start_date'] = schema.chain([
+        #    post_scheme['start_date'],
+        #    lambda value: None, 'Error'
+        #])
         data = json.loads(request.body)
         data, errors = schema.validate(post_schema, data)
         if errors != {}:
             logger.error('schema error {0}'.format(json.dumps(errors)))
             return json_response(request, {"status": "error", "errors": errors})
+
+        start_datetime = datetime.datetime.combine(
+            data.get('start_date'),
+            data.get('meeting_time')
+        )
+        tz = pytz.timezone(data.get('timezone'))
+        start_datetime = tz.localize(start_datetime)
+        if start_datetime < timezone.now() + datetime.timedelta(days=4):
+            return json_response(request, {"status": "error", "errors": {"start_date": "The start date must be at least 4 days from today"}})
 
         # create learning circle
         end_date = data.get('start_date') + datetime.timedelta(weeks=data.get('weeks') - 1)
@@ -499,7 +516,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
             study_group.meeting_time != data.get('meeting_time'),
         ])
         if date_changed and not study_group.can_update_meeting_datetime():
-            return json_response(request, {"status": "error", "errors": {"_": "cannot update date"}})
+            return json_response(request, {"status": "error", "errors": {"start_date": "cannot update date"}})
 
         # update learning circle
         published = False

@@ -224,7 +224,7 @@ class StudyGroup(LifeTimeTrackingModel):
 
     def can_update_meeting_datetime(self):
         """ check to see if you can update the date """
-        # if it's still a draft, you can edit
+        # if it's a draft, you can edit
         if self.draft == True:
             return True
 
