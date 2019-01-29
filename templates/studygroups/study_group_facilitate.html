@@ -74,7 +74,10 @@
                 {% if meeting.feedback_set.all.first %}
                 {% with feedback=meeting.feedback_set.all.first %}
                 {{feedback.feedback | truncatewords:10 }}
-                <a href="{% url 'studygroups_feedback_detail' lc.id meeting.id feedback.id %}">{% trans "View feedback" %}</a>
+                <div class="pull-right">
+                <a class="btn btn-primary" href="{% url 'studygroups_feedback_detail' lc.id meeting.id feedback.id %}"><i class="fa fa-eye"></i> {% trans "View" %}</a>
+                <a class="btn btn-primary" href="{% url 'studygroups_feedback_edit' lc.id meeting.id feedback.id %}"><i class="fa fa-edit"></i> {% trans "Edit" %}</a>
+                </div>
                 {% endwith %}
                 {% else %}
                 {% if meeting.meeting_datetime < today %}
@@ -161,7 +164,10 @@
                 {% if dl.web_safety %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.web_safety.question_text}}: {{dl.web_safety.answer_text}}"><i class="fa fa-lock level-{{dl.web_safety.answer}}"></i></button>{% endif %}
                 {% endwith %}
               </td>
-              <td><a class="btn btn-primary" href="{% url 'studygroups_application_delete' lc.id learner.id %}">{% trans "Remove" %}</a></td>
+              <td>
+                <a class="btn btn-primary" href="{% url 'studygroups_application_delete' lc.id learner.id %}">{% trans "Remove" %}</a>
+                <a class="btn btn-primary" href="{% url 'studygroups_application_edit' lc.id learner.id %}">{% trans "Edit" %}</a>
+              </td>
               </td>
             </tr>
             {% endfor %}
