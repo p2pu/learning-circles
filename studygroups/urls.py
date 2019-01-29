@@ -9,7 +9,9 @@ from studygroups.views import MeetingUpdate
 from studygroups.views import MeetingDelete
 from studygroups.views import FeedbackDetail
 from studygroups.views import FeedbackCreate
+from studygroups.views import FeedbackUpdate
 from studygroups.views import ApplicationDelete
+from studygroups.views import ApplicationUpdate
 from studygroups.views import SignupSuccess
 from studygroups.views import CourseCreate
 from studygroups.views import CourseUpdate
@@ -71,6 +73,7 @@ urlpatterns = [
     url(r'^studygroup/(?P<study_group_id>[\d]+)/message/edit/(?P<message_id>[\d]+)/$', views.message_edit, name='studygroups_message_edit'),
 
     url(r'^studygroup/(?P<study_group_id>[\d]+)/member/add/$', views.add_member, name='studygroups_add_member'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/member/(?P<pk>[0-9]+)/edit/$', ApplicationUpdate.as_view(), name='studygroups_application_edit'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/member/(?P<pk>[0-9]+)/delete/$', ApplicationDelete.as_view(), name='studygroups_application_delete'),
     url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/feedback/$', StudyGroupLearnerSurvey.as_view()), #TODO remove after Aug 2018
     url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/survey/$', StudyGroupLearnerSurvey.as_view(), name='studygroups_learner_survey'),
@@ -88,6 +91,7 @@ urlpatterns = [
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[0-9]+)/delete/$', MeetingDelete.as_view(), name='studygroups_meeting_delete'),
 
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/(?P<pk>[\d]+)/$', FeedbackDetail.as_view(), name='studygroups_feedback_detail'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/(?P<pk>[\d]+)/edit/$', FeedbackUpdate.as_view(), name='studygroups_feedback_edit'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/create/$', FeedbackCreate.as_view(), name='studygroups_feedback'),
 
     url(r'^course/create/$', CourseCreate.as_view(), name='studygroups_course_create'),

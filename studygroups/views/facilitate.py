@@ -170,6 +170,19 @@ class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
+class FeedbackUpdate(FacilitatorRedirectMixin, UpdateView):
+    model = Feedback
+    form_class = FeedbackForm
+
+
+@method_decorator(user_is_group_facilitator, name="dispatch")
+class ApplicationUpdate(FacilitatorRedirectMixin, UpdateView):
+    model = Application
+    form_class =  modelform_factory(Application, fields=['study_group', 'name', 'email', 'mobile'], widgets={'study_group': HiddenInput})
+    template_name = 'studygroups/add_member.html'
+
+
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class ApplicationDelete(FacilitatorRedirectMixin, DeleteView):
     model = Application
     success_url = reverse_lazy('studygroups_facilitator')
