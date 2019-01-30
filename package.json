@@ -38,7 +38,7 @@
     "lodash": "^4.17.11",
     "moment": "^2.18.1",
     "node-sass": "^4.9.3",
-    "p2pu-input-fields": "^0.5.17",
+    "p2pu-input-fields": "^0.5.21",
     "p2pu-search-cards": "^0.8.12",
     "p2pu-theme": "^1.0.5",
     "places.js": "^1.4.18",

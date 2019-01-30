@@ -4,11 +4,16 @@ import InputWithLabel from 'p2pu-input-fields/dist/InputWithLabel'
 import TimePickerWithLabel from 'p2pu-input-fields/dist/TimePickerWithLabel'
 import DatePickerWithLabel from 'p2pu-input-fields/dist/DatePickerWithLabel'
 import TimeZoneSelect from 'p2pu-input-fields/dist/TimeZoneSelect'
+import moment from 'moment'
 
 const DayTimeSection = (props) => {
+  let in4Days = moment().add(4, 'days');
+  let disabled = props.learningCircle.draft == false && moment(props.learningCircle.start_date).isBefore(in4Days, 'days');
+
   return (
     <div>
       <DatePickerWithLabel
+        disabled={disabled}
         label={'What is the date of the first learning circle?'}
         value={props.learningCircle.start_date}
         placeholder={'Eg. 6 January, 2018'}
@@ -18,6 +23,7 @@ const DayTimeSection = (props) => {
         type={'date'}
         errorMessage={props.errors.start_date}
         required={true}
+        minDate={in4Days}
       />
       <InputWithLabel
         label={'How many weeks will the learning circle run for?'}
