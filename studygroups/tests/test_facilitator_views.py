@@ -61,7 +61,7 @@ class TestFacilitatorViews(TestCase):
         'longitude': 28.0497,
         'place_id': '342432',
         'description': 'We will complete the course about motorcycle maintenance together',
-        'start_date': '2016-07-25',
+        'start_date': '2018-07-25',
         'weeks': '6',
         'meeting_time': '19:00',
         'duration': '90',
@@ -132,10 +132,11 @@ class TestFacilitatorViews(TestCase):
         c = Client()
         c.login(username='bob123', password='password')
         data = self.STUDY_GROUP_DATA.copy()
-        data['start_date'] = '07/25/2016',
+        data['start_date'] = '07/25/2018',
         data['meeting_time'] = '07:00 PM',
-        resp = c.post('/en/studygroup/create/legacy/', data)
-        self.assertRedirects(resp, '/en/facilitator/')
+        with freeze_time('2018-07-20'):
+            resp = c.post('/en/studygroup/create/legacy/', data)
+            self.assertRedirects(resp, '/en/facilitator/')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
         lc = study_groups.first()
@@ -152,9 +153,10 @@ class TestFacilitatorViews(TestCase):
         confirm_user_email(user)
         c = Client()
         c.login(username='bob@example.net', password='password')
-
-        resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
-        self.assertEqual(resp.json()['status'], 'created')
+        
+        with freeze_time('2018-07-20'):
+            resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
+            self.assertEqual(resp.json()['status'], 'created')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEqual(study_groups.count(), 1)
         self.assertEqual(study_groups.first().meeting_set.count(), 0)
@@ -172,8 +174,9 @@ class TestFacilitatorViews(TestCase):
         c = Client()
         c.login(username='bob@example.net', password='password')
 
-        resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
-        self.assertEqual(resp.json()['status'], 'created')
+        with freeze_time('2018-07-20'):
+            resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
+            self.assertEqual(resp.json()['status'], 'created')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEqual(study_groups.count(), 1)
 
@@ -189,9 +192,10 @@ class TestFacilitatorViews(TestCase):
         confirm_user_email(user)
         c = Client()
         c.login(username='bob@example.net', password='password')
-
-        resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
-        self.assertEqual(resp.json()['status'], 'created')
+    
+        with freeze_time('2018-07-20'):
+            resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
+            self.assertEqual(resp.json()['status'], 'created')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEqual(study_groups.count(), 1)
         self.assertEqual(study_groups.first().meeting_set.count(), 0)
@@ -244,8 +248,9 @@ class TestFacilitatorViews(TestCase):
         data = self.STUDY_GROUP_DATA.copy()
         data['start_date'] = '12/25/2018'
         data['meeting_time'] = '07:00 PM'
-        resp = c.post('/en/studygroup/create/legacy/', data)
-        self.assertRedirects(resp, '/en/facilitator/')
+        with freeze_time("2018-12-20"):
+            resp = c.post('/en/studygroup/create/legacy/', data)
+            self.assertRedirects(resp, '/en/facilitator/')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
         lc = study_groups.first()
