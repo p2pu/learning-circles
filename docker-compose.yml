@@ -2,6 +2,8 @@ version: '3'
 services:
   postgres:
     image: postgres
+    ports:
+    - "5432:5432"
   email:
     image: djfarrelly/maildev
     ports:
