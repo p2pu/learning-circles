@@ -21,6 +21,7 @@ class StudyGroupAdmin(admin.ModelAdmin):
 
 class TeamMembershipInline(admin.TabularInline):
     model = TeamMembership
+    raw_id_fields = ("user",)
 
 class TeamAdmin(admin.ModelAdmin):
     list_display = ('name', 'page_slug')
