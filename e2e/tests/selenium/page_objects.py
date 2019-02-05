@@ -5,6 +5,8 @@ from selenium.webdriver.common.keys import Keys
 from e2e.tests.selenium.locators import LearningCircleCreationPageLocators
 from e2e.tests.selenium.locators import RegistrationModalLocators
 
+import datetime
+
 class BasePage(object):
 
     def __init__(self, driver, wait):
@@ -18,6 +20,11 @@ class BasePage(object):
 
 class LearningCircleCreationPage(BasePage):
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Date needs to be 4 days in the future - UI disables earlier dates
+        self.start_date = (datetime.datetime.now() + datetime.timedelta(days=5)).date().strftime("%m/%d/%Y")
+
     def fill_out_form_correctly(self):
         self.select_first_course()
 
@@ -30,7 +37,7 @@ class LearningCircleCreationPage(BasePage):
 
         self.click_next_button()
 
-        self.fill_text_field(LearningCircleCreationPageLocators.START_DATE_FIELD, "01/06/2019", Keys.ENTER)
+        self.fill_text_field(LearningCircleCreationPageLocators.START_DATE_FIELD, self.start_date, Keys.ENTER)
         self.fill_text_field(LearningCircleCreationPageLocators.WEEKS_FIELD, Keys.BACKSPACE, "8")
 
         self.fill_meeting_time_field("7:00 pm")
