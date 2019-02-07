@@ -163,7 +163,7 @@ class ExportFacilitatorsView(ListView):
 class ExportStudyGroupsView(ListView):
 
     def get_queryset(self):
-        return StudyGroup.objects.active().prefetch_related('course', 'facilitator', 'meeting_set')
+        return StudyGroup.objects.all().prefetch_related('course', 'facilitator', 'meeting_set')
 
     def csv(self, **kwargs):
         response = http.HttpResponse(content_type="text/csv")
@@ -173,6 +173,8 @@ class ExportStudyGroupsView(ListView):
             'id',
             'uuid',
             'date created',
+            'date deleted',
+            'draft',
             'course id',
             'course title',
             'facilitator',
@@ -197,6 +199,8 @@ class ExportStudyGroupsView(ListView):
                 sg.pk,
                 sg.uuid,
                 sg.created_at,
+                sg.deleted_at,
+                'yes' if sg.draft else 'no',
                 sg.course.id,
                 sg.course.title,
                 ' '.join([sg.facilitator.first_name, sg.facilitator.last_name]),
