@@ -183,7 +183,7 @@ class ExportStudyGroupsView(ListView):
             'day',
             'last meeting',
             'first meeting',
-            'singups',
+            'signups',
             'team',
             'facilitator survey',
             'facilitator survey completed',
