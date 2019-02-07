@@ -50,4 +50,23 @@ class ExportLearnerSurveysView(ListView):
         return self.csv(**kwargs)
 
 
+@method_decorator(user_is_staff, name='dispatch')
+class ExportFacilitatorSurveysView(ListView):
 
+    def get_queryset(self, *args, **kwargs):
+        return FacilitatorSurveyResponse.objects.all()
+
+    def csv(self, **kwargs):
+        data = get_all_results(self.object_list)
+        response = http.HttpResponse(content_type="text/csv")
+        ts = timezone.now().utcnow().isoformat()
+        response['Content-Disposition'] = 'attachment; filename="facilitator-surveys-{}.csv"'.format(ts)
+        writer = csv.writer(response)
+        writer.writerow(data['heading'])
+        for row in data['data']:
+            writer.writerow(row)
+        return response
+
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset(*args, **kwargs)
+        return self.csv(**kwargs)

@@ -7,13 +7,14 @@
   <h2>{% trans "Nico's dash" %}</h2>
 
   <h3>{% trans "Export" %}<h3>
-    <p><a class="btn btn-primary" href="{% url 'studygroups_export_facilitators' %}">{% trans "Facilitators" %}</a></p>
+    <p><a class="btn btn-primary" href="{% url 'studygroups_export_facilitators' %}">{% trans "Users" %}</a></p>
     <p><a class="btn btn-primary" href="{% url 'studygroups_export_signups' %}">{% trans "Signups" %}</a></p>
     <p><a class="btn btn-primary" href="{% url 'studygroups_export_studygroups' %}">{% trans "Learning circles" %}</a></p>
 
   <p><a class="btn btn-primary" href="{% url 'studygroups_export_courses' %}">{% trans "Courses" %}</a></p>
 
   <p><a class="btn btn-primary" href="{% url 'survey_learner_responses_csv' %}">{% trans "Learning circle surveys" %}</a></p>
+  <p><a class="btn btn-primary" href="{% url 'survey_facilitator_responses_csv' %}">{% trans "Facilitator surveys" %}</a></p>
 
   <h3>{% trans "Links" %}</h3>
   <ul>
