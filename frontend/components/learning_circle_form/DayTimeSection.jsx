@@ -8,12 +8,12 @@ import moment from 'moment'
 
 const DayTimeSection = (props) => {
   let in4Days = moment().add(4, 'days');
-  let disabled = props.learningCircle.draft == false && moment(props.learningCircle.start_date).isBefore(in4Days, 'days');
+  let dateTimeDisabled = props.learningCircle.draft == false && moment(props.learningCircle.start_date).isBefore(in4Days, 'days');
 
   return (
     <div>
       <DatePickerWithLabel
-        disabled={disabled}
+        disabled={dateTimeDisabled}
         label={'What is the date of the first learning circle?'}
         value={props.learningCircle.start_date}
         placeholder={'Eg. 6 January, 2018'}
@@ -26,6 +26,7 @@ const DayTimeSection = (props) => {
         minDate={in4Days}
       />
       <InputWithLabel
+        disabled={dateTimeDisabled}
         label={'How many weeks will the learning circle run for?'}
         value={props.learningCircle.weeks}
         handleChange={props.updateFormData}
@@ -37,6 +38,7 @@ const DayTimeSection = (props) => {
         required={true}
       />
       <TimePickerWithLabel
+        disabled={dateTimeDisabled}
         label={'What time will your learning circle meet each week?'}
         open={true}
         handleChange={props.updateFormData}
