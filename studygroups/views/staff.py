@@ -164,7 +164,7 @@ class ExportFacilitatorsView(ListView):
 class ExportStudyGroupsView(ListView):
 
     def get_queryset(self):
-        return StudyGroup.objects.all().prefetch_related('course', 'facilitator', 'meeting_set').annotate(
+        return StudyGroup.objects.all().prefetch_related('course', 'facilitator', 'meeting_set', 'facilitator__teammembership', 'facilitator__teammembership__team').annotate(
             learning_circle_number=RawSQL("RANK() OVER(PARTITION BY facilitator_id ORDER BY created_at ASC)", [])
         )
 
@@ -227,12 +227,10 @@ class ExportStudyGroupsView(ListView):
 
             data += [sg.application_set.count()]
             # team
-            team_membership = TeamMembership.objects.filter(user=sg.facilitator)
-            if team_membership.count() == 1:
-                data += [team_membership.get().team.name]
+            if hasattr(sg.facilitator, 'teammembership'):
+                data += [sg.facilitator.teammembership.team.name]
             else:
                 data += ['']
-
 
             domain = 'https://{0}'.format(settings.DOMAIN)
             facilitator_survey =  '{}{}'.format(
