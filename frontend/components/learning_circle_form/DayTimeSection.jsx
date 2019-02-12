@@ -10,10 +10,20 @@ const DayTimeSection = (props) => {
   let in4Days = moment().add(4, 'days');
   let dateTimeDisabled = props.learningCircle.draft == false && moment(props.learningCircle.start_date).isBefore(in4Days, 'days');
 
+  if (dateTimeDisabled) {
+    return (
+      <div className='help-text'>
+        <div className='content'>
+          <p>Your learning circle has already started and you cannot set the date for the whole learning circle anymore. You can still add individual meetings or edit the date or time for meetings that are scheduled in the future. To do this, go back to your dashboard and add or edit meetings to the learning circle from there.</p>
+        </div>
+      </div>
+    );
+  }
+
+
   return (
     <div>
       <DatePickerWithLabel
-        disabled={dateTimeDisabled}
         label={'What is the date of the first learning circle?'}
         value={props.learningCircle.start_date}
         placeholder={'Eg. 6 January, 2018'}
@@ -23,10 +33,8 @@ const DayTimeSection = (props) => {
         type={'date'}
         errorMessage={props.errors.start_date}
         required={true}
-        minDate={in4Days}
       />
       <InputWithLabel
-        disabled={dateTimeDisabled}
         label={'How many weeks will the learning circle run for?'}
         value={props.learningCircle.weeks}
         handleChange={props.updateFormData}
@@ -38,7 +46,6 @@ const DayTimeSection = (props) => {
         required={true}
       />
       <TimePickerWithLabel
-        disabled={dateTimeDisabled}
         label={'What time will your learning circle meet each week?'}
         open={true}
         handleChange={props.updateFormData}
