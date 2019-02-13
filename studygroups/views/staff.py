@@ -16,6 +16,7 @@ from django.views.generic.base import View
 from django.views.generic import ListView
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
+from django.db.models.expressions import RawSQL
 
 
 from studygroups.models import Application
@@ -163,7 +164,9 @@ class ExportFacilitatorsView(ListView):
 class ExportStudyGroupsView(ListView):
 
     def get_queryset(self):
-        return StudyGroup.objects.active().prefetch_related('course', 'facilitator', 'meeting_set')
+        return StudyGroup.objects.all().prefetch_related('course', 'facilitator', 'meeting_set', 'facilitator__teammembership', 'facilitator__teammembership__team').annotate(
+            learning_circle_number=RawSQL("RANK() OVER(PARTITION BY facilitator_id ORDER BY created_at ASC)", [])
+        )
 
     def csv(self, **kwargs):
         response = http.HttpResponse(content_type="text/csv")
@@ -173,17 +176,20 @@ class ExportStudyGroupsView(ListView):
             'id',
             'uuid',
             'date created',
+            'date deleted',
+            'draft',
             'course id',
             'course title',
             'facilitator',
             'faciltator email',
+            'learning_circle_number',
             'location',
             'city',
             'time',
             'day',
             'last meeting',
             'first meeting',
-            'singups',
+            'signups',
             'team',
             'facilitator survey',
             'facilitator survey completed',
@@ -197,10 +203,13 @@ class ExportStudyGroupsView(ListView):
                 sg.pk,
                 sg.uuid,
                 sg.created_at,
+                sg.deleted_at,
+                'yes' if sg.draft else 'no',
                 sg.course.id,
                 sg.course.title,
                 ' '.join([sg.facilitator.first_name, sg.facilitator.last_name]),
                 sg.facilitator.email,
+                sg.learning_circle_number,
                 ' ' .join([sg.venue_name, sg.venue_address]),
                 sg.city,
                 sg.meeting_time,
@@ -218,12 +227,10 @@ class ExportStudyGroupsView(ListView):
 
             data += [sg.application_set.count()]
             # team
-            team_membership = TeamMembership.objects.filter(user=sg.facilitator)
-            if team_membership.count() == 1:
-                data += [team_membership.get().team.name]
+            if hasattr(sg.facilitator, 'teammembership'):
+                data += [sg.facilitator.teammembership.team.name]
             else:
                 data += ['']
-
 
             domain = 'https://{0}'.format(settings.DOMAIN)
             facilitator_survey =  '{}{}'.format(

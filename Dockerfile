@@ -8,7 +8,7 @@ RUN apk --no-cache add --virtual native-deps \
 COPY . /opt/app/
 RUN npm run build:production
 
-FROM python:3.6-alpine
+FROM python:3.6-alpine3.8
 WORKDIR /opt/app/
 COPY requirements.txt /opt/app/
 RUN apk --no-cache add --virtual .python-rundeps \
@@ -21,6 +21,7 @@ RUN apk --no-cache add --virtual .python-rundeps \
         cairo \
         cairo-tools \
         openjpeg-dev \
+        openssl \
         tiff-dev \
         libxslt-dev \
         libxml2-dev \
@@ -45,15 +46,14 @@ COPY . /opt/app/
 # Copy CSS & compiled JavaScript
 COPY --from=frontend /opt/app/assets assets
 COPY config/docker-entry.sh /docker-entry.sh
-RUN mkdir -p /var/lib/celery && \
-    addgroup -g 1000 -S celery && \
-    adduser -u 1000 -S celery -G celery && \
-    chown celery:celery /var/lib/celery/
-RUN apk add --no-cache openssl
 ENV DOCKERIZE_VERSION v0.6.0
 RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+RUN mkdir -p /var/lib/celery && \
+    addgroup -g 1000 -S celery && \
+    adduser -u 1000 -S celery -G celery && \
+    chown celery:celery /var/lib/celery/
 ENV DATABASE_URL="sqlite:////var/app/db.sqlite3" \
     ADMIN_EMAIL="" \
     SECRET_KEY="" \
