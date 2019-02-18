@@ -252,7 +252,7 @@ class LearningCircleTopicListView(View):
         return json_response(request, data)
 
 
-def _map_studygroups_to_json(sg):
+def _studygroup_object_for_map(sg):
     active = sg.end_date > datetime.date.today()
     report_available = sg.learnersurveyresponse_set.count() > 0
 
@@ -277,7 +277,7 @@ class LearningCirclesMapView(View):
     def get(self, request):
         study_groups = StudyGroup.objects.published().select_related('course').prefetch_related("learnersurveyresponse_set")
         data = {}
-        data['items'] = [ _map_studygroups_to_json(sg) for sg in study_groups ]
+        data['items'] = [ _studygroup_object_for_map(sg) for sg in study_groups ]
         return json_response(request, data)
 
 
