@@ -256,20 +256,21 @@ def _studygroup_object_for_map(sg):
     active = sg.end_date > datetime.date.today()
     report_available = sg.learnersurveyresponse_set.count() > 0
 
-    if active:
-        url = 'https://' + settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,))
-    else:
-        url = sg.report_url() if report_available else None
-
     data = {
+        "id": sg.id,
         "title": sg.course.title,
         "latitude": sg.latitude,
         "longitude": sg.longitude,
         "city": sg.city,
         "start_date": sg.start_date,
-        "active": active,
-        "url": url,
+        "active": active
     }
+
+    if active:
+        data["url"] = 'https://' + settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,))
+    elif report_available:
+        data["report_url"] = sg.report_url()
+
     return data
 
 
