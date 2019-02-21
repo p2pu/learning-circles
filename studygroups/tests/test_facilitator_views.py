@@ -263,7 +263,7 @@ class TestFacilitatorViews(TestCase):
         self.assertEqual(study_group.meeting_set.count(), 6)
 
         # update not allowed
-        with freeze_time("2018-12-22"):
+        with freeze_time("2018-12-24"):
             data['start_date'] = '12/24/2018'
             data['meeting_time'] = '07:00 PM'
             edit_url = '/en/studygroup/{}/edit/'.format(study_group.pk)
@@ -273,7 +273,7 @@ class TestFacilitatorViews(TestCase):
             self.assertEqual(study_group.start_date, datetime.date(2018, 12, 25))
 
         # update allowed
-        with freeze_time("2018-12-19"):
+        with freeze_time("2018-12-22"):
             data['start_date'] = '12/24/2018'
             data['meeting_time'] = '07:00 PM'
             edit_url = '/en/studygroup/{}/edit/'.format(study_group.pk)
