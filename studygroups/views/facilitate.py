@@ -123,6 +123,14 @@ class MeetingUpdate(FacilitatorRedirectMixin, UpdateView):
     model = Meeting
     form_class = MeetingForm
 
+    def form_valid(self, form):
+        # TODO check if update meeting has an unsent reminder associated?
+        if self.object.reminder_set.count() == 1:
+            reminder = self.object.reminder_set.first()
+            if not reminder.sent_at:
+                raise Exception('not yet implemented')
+        return super().form_valid(form)
+
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
 @method_decorator(study_group_is_published, name='dispatch')
