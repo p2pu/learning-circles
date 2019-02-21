@@ -11,6 +11,8 @@ services:
   learning-circles:
     build: .
     image: learning-circles
+    links:
+    - selenium
     ports:
     - "8000:8000"
     volumes:
@@ -34,3 +36,8 @@ services:
     - .:/opt/app
     working_dir: /opt/app
     command: sh -c "npm i && npm run watch"
+  selenium:
+    image: selenium/standalone-chrome-debug:3.7.1
+    ports:
+      - 5900:5900
+
