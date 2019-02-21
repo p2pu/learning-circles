@@ -233,9 +233,9 @@ class StudyGroup(LifeTimeTrackingModel):
         if meeting_list.count() == 0:
             return True
 
-        # if the first meeting is more than 4 days from now, you can edit
-        four_days_from_now = timezone.now() + datetime.timedelta(days=4)
-        if meeting_list.first().meeting_datetime() > four_days_from_now:
+        # if the first meeting is more than 2 days from now, you can edit
+        two_days_from_now = timezone.now() + datetime.timedelta(days=2)
+        if meeting_list.first().meeting_datetime() > two_days_from_now:
             return True
 
         return False

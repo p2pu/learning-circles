@@ -266,8 +266,8 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(StudyGroup.objects.all().count(), 5)
         self.assertEqual(lc.meeting_set.active().count(), 2)
 
-        # update a few days before
-        with freeze_time("2018-12-12"):
+        # update less than 2 days before
+        with freeze_time("2018-12-14"):
             data['start_date'] = '2018-12-20'
             data['weeks'] = 6
             url = '/api/learning-circle/{}/'.format(lc.pk)
@@ -282,8 +282,8 @@ class TestLearningCircleApi(TestCase):
             self.assertEqual(lc.start_date, datetime.date(2018, 12, 15))
             self.assertEqual(lc.meeting_set.active().count(), 2)
 
-        # update more than 4 days before
-        with freeze_time("2018-12-10"):
+        # update more than 2 days before
+        with freeze_time("2018-12-12"):
             data['start_date'] = '2018-12-19'
             data['weeks'] = 6
             url = '/api/learning-circle/{}/'.format(lc.pk)
