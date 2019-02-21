@@ -209,12 +209,12 @@ class TestLearningCircleApi(TestCase):
         url = '/api/learning-circle/{}/'.format(lc.pk)
 
         # test that it doesn't update
-        with freeze_time('2018-12-10'):
+        with freeze_time('2018-12-11'):
             resp = c.post(url, data=json.dumps(data), content_type='application/json')
             self.assertEqual(resp.status_code, 200)
             self.assertEqual(resp.json(), {'errors': {'start_date': 'cannot update date'}, 'status': 'error'})
 
-        with freeze_time('2018-12-06'):
+        with freeze_time('2018-12-09'):
             resp = c.post(url, data=json.dumps(data), content_type='application/json')
             self.assertEqual(resp.status_code, 200)
             self.assertEqual(resp.json()['status'], 'updated')
