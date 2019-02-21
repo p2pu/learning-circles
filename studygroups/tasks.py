@@ -33,6 +33,7 @@ logger = logging.getLogger(__name__)
 def generate_reminder(study_group):
     now = timezone.now()
     next_meeting = study_group.next_meeting()
+    # TODO reminder generation code should be moved to models, only sending facilitator notification should be here
     if next_meeting and next_meeting.meeting_datetime() - now < datetime.timedelta(days=4):
         # check if a notifcation already exists for this meeting
         if not Reminder.objects.filter(study_group=study_group, study_group_meeting=next_meeting).exists():
