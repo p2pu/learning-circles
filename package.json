@@ -37,6 +37,7 @@
     "jsonp": "^0.2.1",
     "lodash": "^4.17.11",
     "moment": "^2.18.1",
+    "moment-timezone": "^0.5.23",
     "node-sass": "^4.9.3",
     "p2pu-input-fields": "^0.5.22",
     "p2pu-search-cards": "^0.8.12",

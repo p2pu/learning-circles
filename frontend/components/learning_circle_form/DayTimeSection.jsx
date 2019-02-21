@@ -5,80 +5,115 @@ import TimePickerWithLabel from 'p2pu-input-fields/dist/TimePickerWithLabel'
 import DatePickerWithLabel from 'p2pu-input-fields/dist/DatePickerWithLabel'
 import TimeZoneSelect from 'p2pu-input-fields/dist/TimeZoneSelect'
 import moment from 'moment'
+import 'moment-timezone'
 
-const DayTimeSection = (props) => {
-  let in4Days = moment().add(4, 'days');
-  let dateTimeDisabled = props.learningCircle.draft == false && moment(props.learningCircle.start_date).isBefore(in4Days, 'days');
+export default class  DayTimeSection extends React.Component {
+  constructor(props){
+    super(props);
+    this.initialProps = {
+      start_date: props.learningCircle.start_date,
+      meeting_time: props.learningCircle.meeting_time,
+      timezome: props.learningCircle.timezome,
+    }
+  }
 
-  if (dateTimeDisabled) {
+  render(){
+    const props = this.props;
+    let reminderWarning = null;
+    let minDate = null;
+    let minTime = null;
+
+    if (props.learningCircle.draft == false ){
+      let {start_date, meeting_time, timezone} = this.initialProps;
+      let start_datetime = moment.tz(`${start_date} ${meeting_time}`, timezone);
+      console.log(start_datetime);
+      let plus4Days = moment().add(4, 'days');
+      let plus2Days = moment().add(2, 'days');
+
+      if (start_datetime.isBefore(plus2Days)) {
+        return (
+          <div className='help-text'>
+            <div className='content'>
+              <p>Your learning circle has already started and you cannot set the date for the whole learning circle anymore. You can still add individual meetings or edit the date or time for meetings that are scheduled in the future. To do this, go back to your dashboard and add or edit meetings to the learning circle from there.</p>
+            </div>
+          </div>
+        );
+      }
+
+      if (start_datetime.isBefore(plus4Days)){
+        reminderWarning = (
+          <div className="form-group">
+            <p className="alert alert-warning">Your learning circle is starting in less that 4 days. If a reminder has already been generated for the first meeting it will be regenerated and any edits you have made to it will be lost.</p>
+          </div>
+        );
+      }
+
+      minDate = plus2Days;
+      if (start_datetime.isSame(plus2Days, 'days')){
+        minTime = meeting_time;
+        // TODO time input doesn't support a range
+      }
+
+    }
     return (
-      <div className='help-text'>
-        <div className='content'>
-          <p>Your learning circle has already started and you cannot set the date for the whole learning circle anymore. You can still add individual meetings or edit the date or time for meetings that are scheduled in the future. To do this, go back to your dashboard and add or edit meetings to the learning circle from there.</p>
+      <div>
+        {reminderWarning}
+        <DatePickerWithLabel
+          label={'What is the date of the first learning circle?'}
+          value={props.learningCircle.start_date}
+          placeholder={'Eg. 6 January, 2018'}
+          handleChange={props.updateFormData}
+          name={'start_date'}
+          id={'id_start_date'}
+          type={'date'}
+          errorMessage={props.errors.start_date}
+          required={true}
+          minDate={minDate}
+        />
+        <InputWithLabel
+          label={'How many weeks will the learning circle run for?'}
+          value={props.learningCircle.weeks}
+          handleChange={props.updateFormData}
+          name={'weeks'}
+          id={'id_weeks'}
+          type={'number'}
+          min={1}
+          errorMessage={props.errors.weeks}
+          required={true}
+        />
+        <TimePickerWithLabel
+          label={'What time will your learning circle meet each week?'}
+          open={true}
+          handleChange={props.updateFormData}
+          name={'meeting_time'}
+          id={'id_meeting_time'}
+          value={props.learningCircle.meeting_time}
+          errorMessage={props.errors.meeting_time}
+          required={true}
+        />
+        <div className={`input-with-label form-group`} >
+          <label htmlFor={props.timezone}>What time zone are you in? *</label>
+          <TimeZoneSelect
+            value={props.learningCircle.timezone}
+            latitude={props.learningCircle.latitude}
+            longitude={props.learningCircle.longitude}
+            handleChange={props.updateFormData}
+            name={'timezone'}
+            id={'id_timezone'}
+            errorMessage={props.errors.timezone}
+          />
         </div>
+        <InputWithLabel
+          label={'How long will each session last (in minutes)?'}
+          value={props.learningCircle.duration}
+          handleChange={props.updateFormData}
+          name={'duration'}
+          id={'id_duration'}
+          type={'number'}
+          errorMessage={props.errors.duration}
+          required={true}
+        />
       </div>
     );
   }
-
-
-  return (
-    <div>
-      <DatePickerWithLabel
-        label={'What is the date of the first learning circle?'}
-        value={props.learningCircle.start_date}
-        placeholder={'Eg. 6 January, 2018'}
-        handleChange={props.updateFormData}
-        name={'start_date'}
-        id={'id_start_date'}
-        type={'date'}
-        errorMessage={props.errors.start_date}
-        required={true}
-      />
-      <InputWithLabel
-        label={'How many weeks will the learning circle run for?'}
-        value={props.learningCircle.weeks}
-        handleChange={props.updateFormData}
-        name={'weeks'}
-        id={'id_weeks'}
-        type={'number'}
-        min={1}
-        errorMessage={props.errors.weeks}
-        required={true}
-      />
-      <TimePickerWithLabel
-        label={'What time will your learning circle meet each week?'}
-        open={true}
-        handleChange={props.updateFormData}
-        name={'meeting_time'}
-        id={'id_meeting_time'}
-        value={props.learningCircle.meeting_time}
-        errorMessage={props.errors.meeting_time}
-        required={true}
-      />
-      <div className={`input-with-label form-group`} >
-        <label htmlFor={props.timezone}>What time zone are you in? *</label>
-        <TimeZoneSelect
-          value={props.learningCircle.timezone}
-          latitude={props.learningCircle.latitude}
-          longitude={props.learningCircle.longitude}
-          handleChange={props.updateFormData}
-          name={'timezone'}
-          id={'id_timezone'}
-          errorMessage={props.errors.timezone}
-        />
-      </div>
-      <InputWithLabel
-        label={'How long will each session last (in minutes)?'}
-        value={props.learningCircle.duration}
-        handleChange={props.updateFormData}
-        name={'duration'}
-        id={'id_duration'}
-        type={'number'}
-        errorMessage={props.errors.duration}
-        required={true}
-      />
-    </div>
-  );
-}
-
-export default DayTimeSection;
+};
