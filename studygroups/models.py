@@ -405,7 +405,7 @@ class Meeting(LifeTimeTrackingModel):
 
 class Reminder(models.Model):
     study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE)
-    study_group_meeting = models.ForeignKey('studygroups.Meeting', blank=True, null=True, on_delete=models.CASCADE) #TODO check this makes sense
+    study_group_meeting = models.ForeignKey('studygroups.Meeting', blank=True, null=True, on_delete=models.CASCADE) # TODO rename to meeting. Make OneToOne?
     email_subject = models.CharField(max_length=256)
     email_body = models.TextField()
     sms_body = models.CharField(verbose_name=_('SMS (Text)'), max_length=160, blank=True)
@@ -415,7 +415,7 @@ class Reminder(models.Model):
 
 
 class Rsvp(models.Model):
-    study_group_meeting = models.ForeignKey('studygroups.Meeting', on_delete=models.CASCADE)
+    study_group_meeting = models.ForeignKey('studygroups.Meeting', on_delete=models.CASCADE) # TODO rename to meeting
     application = models.ForeignKey('studygroups.Application', on_delete=models.CASCADE)
     attending = models.BooleanField()
 
@@ -778,6 +778,7 @@ def community_digest_data(start_time, end_time):
         "total_studygroups_met_count": total_studygroups_met_count,
     }
 
+
 def stats_dash_data(start_time, end_time, team=None):
     studygroups_that_ended = get_studygroups_that_ended(start_time, end_time, team)
     studygroups_that_met = get_studygroups_with_meetings(start_time, end_time, team)
@@ -803,4 +804,3 @@ def stats_dash_data(start_time, end_time, team=None):
         "unrated_studygroups": unrated_studygroups,
         "unpublished_studygroups": unpublished_studygroups,
     }
-
