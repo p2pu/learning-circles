@@ -124,11 +124,14 @@ class MeetingUpdate(FacilitatorRedirectMixin, UpdateView):
     form_class = MeetingForm
 
     def form_valid(self, form):
-        # TODO check if update meeting has an unsent reminder associated?
+        # check if update meeting has an unsent reminder associated?
         if self.object.reminder_set.count() == 1:
             reminder = self.object.reminder_set.first()
             if not reminder.sent_at:
-                raise Exception('not yet implemented')
+                # The reminder will be generated again if the meeting is still in the future
+                # This should only happen between 2 days and 4 days before the original start date.
+                # TODO Q: should meetings with reminders that is moved into the future have their old reminder deleted / orphaned?
+                reminder.delete()
         return super().form_valid(form)
 
 
