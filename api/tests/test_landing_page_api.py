@@ -89,20 +89,36 @@ class TestLandingPageApi(TestCase):
 
             active_item = next(item for item in data["items"] if item["id"] == active_studygroup.id)
             self.assertEqual(active_item["active"], True)
-            self.assertIn("/en/signup/", active_item["url"])
-            expected_keys = ["id", "title", "latitude", "longitude", "city", "start_date", "active", "url"]
-            item_keys = list(active_item.keys())
-            self.assertEqual(expected_keys, item_keys)
-
+            self.assertEqual(active_item, {
+                'active': True,
+                'city': 'Chicago',
+                'id': 1,
+                'latitude': '41.850030',
+                'longitude': '-87.650050',
+                'start_date': '2015-03-23',
+                'title': 'Public Speaking',
+                'url': 'https://localhost:8000/en/signup/harold-washington-1/'
+            })
+            
             finished_item = next(item for item in data["items"] if item["id"] == finished_studygroup.id)
-            self.assertIn("/en/studygroup/{}/report/".format(finished_studygroup.id), finished_item["report_url"])
-            expected_keys = ["id", "title", "latitude", "longitude", "city", "start_date", "active", "report_url"]
-            item_keys = list(finished_item.keys())
-            self.assertEqual(expected_keys, item_keys)
+            self.assertEqual(finished_item, {
+                'active': False,
+                'city': 'Chicago',
+                'id': 2,
+                "latitude" : "41.850030",
+                "longitude" : "-87.650050",
+                'report_url': 'https://localhost:8000/en/studygroup/2/report/',
+                'start_date': '2015-03-23',
+                'title': 'Academic Writing',
+            })
 
             other_item = next(item for item in data["items"] if item["id"] == 4)
-            expected_keys = ["id", "title", "latitude", "longitude", "city", "start_date", "active"]
-            item_keys = list(other_item.keys())
-
-
-
+            self.assertEqual(other_item, {
+                'active': False,
+                'city': 'Chicago',
+                'id': 4,
+                'latitude': '41.850030',
+                'longitude': '-87.650050',
+                'start_date': '2015-03-23',
+                'title': 'Programming with Python'
+            })
