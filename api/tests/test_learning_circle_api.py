@@ -53,29 +53,24 @@ class TestLearningCircleApi(TestCase):
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
 
-        with freeze_time("2018-02-09"):
-            resp = c.post(url, data=json.dumps(data), content_type='application/json')
-            self.assertEqual(resp.status_code, 200)
+        resp = c.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
 
-        with freeze_time("2018-02-07"):
-            resp = c.post(url, data=json.dumps(data), content_type='application/json')
-            self.assertEqual(resp.status_code, 200)
-
-            lc = StudyGroup.objects.all().last()
-            self.assertEqual(resp.json(), {
-                "status": "created",
-                "url": "{}/en/signup/75-harrington-{}/".format(settings.DOMAIN, lc.pk)
-            })
-            self.assertEqual(StudyGroup.objects.all().count(), 5)
-            self.assertEqual(lc.course.id, 3)
-            self.assertEqual(lc.description, 'Lets learn something')
-            self.assertEqual(lc.start_date, datetime.date(2018,2,12))
-            self.assertEqual(lc.meeting_time, datetime.time(17,1))
-            self.assertEqual(lc.meeting_set.all().count(), 0)
-            self.assertEqual(len(mail.outbox), 1)
-            self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.course.title, lc.city))
-            self.assertIn('faci@example.net', mail.outbox[0].to)
-            self.assertIn('community@localhost', mail.outbox[0].cc)
+        lc = StudyGroup.objects.all().last()
+        self.assertEqual(resp.json(), {
+            "status": "created",
+            "url": "{}/en/signup/75-harrington-{}/".format(settings.DOMAIN, lc.pk)
+        })
+        self.assertEqual(StudyGroup.objects.all().count(), 5)
+        self.assertEqual(lc.course.id, 3)
+        self.assertEqual(lc.description, 'Lets learn something')
+        self.assertEqual(lc.start_date, datetime.date(2018,2,12))
+        self.assertEqual(lc.meeting_time, datetime.time(17,1))
+        self.assertEqual(lc.meeting_set.all().count(), 0)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.course.title, lc.city))
+        self.assertIn('faci@example.net', mail.outbox[0].to)
+        self.assertIn('community@localhost', mail.outbox[0].cc)
 
 
     @freeze_time('2018-01-20')
