@@ -829,7 +829,7 @@ class LearningCircleMeetingsChart():
 class LearningCircleCountriesChart():
 
     def __init__(self, start_date, report_date, **kwargs):
-        self.chart = pygal.Pie(style=custom_style(), inner_radius=.4, truncate_label=-1, **kwargs)
+        self.chart = pygal.Pie(style=custom_style(), inner_radius=.4, truncate_legend=-1, **kwargs)
         self.start_date = start_date
         self.report_date = report_date
 
