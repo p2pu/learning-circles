@@ -8,6 +8,7 @@ from dateutil import parser
 
 from studygroups.models import StudyGroup
 from studygroups.models import Application
+from studygroups.models import Course
 
 from .models import FacilitatorSurveyResponse
 from .models import LearnerSurveyResponse
@@ -45,6 +46,11 @@ def get_all_responses(form_id, after=None):
         logger.error('Typeform request failed')
         return {}
     return response.json()
+
+
+def update_course_community_feedback(studygroup):
+    studygroup.course.calculate_ratings()
+    studygroup.course.calculate_tagdorsements()
 
 
 def sync_facilitator_responses():
@@ -85,6 +91,8 @@ def sync_facilitator_responses():
             for attr, value in data.items():
                 setattr(survey_response, attr, value)
             survey_response.save()
+
+        update_course_community_feedback(study_group)
 
 
 def sync_learner_responses():
@@ -133,3 +141,5 @@ def sync_learner_responses():
             for attr, value in data.items():
                 setattr(survey_response, attr, value)
             survey_response.save()
+
+        update_course_community_feedback(study_group)

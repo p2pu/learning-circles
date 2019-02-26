@@ -230,6 +230,7 @@ class CourseForm(forms.ModelForm):
         fields = [
             'title',
             'provider',
+            'platform',
             'link',
             'caption',
             'on_demand',
@@ -240,6 +241,7 @@ class CourseForm(forms.ModelForm):
         labels = {
             'title': _('Course title'),
             'provider': _('Course creator'),
+            'platform': _('Course platform'),
             'link': _('Course website'),
             'caption': _('Course description (200 character limit)'),
             'topic': _('Course topics'),
@@ -248,6 +250,7 @@ class CourseForm(forms.ModelForm):
         }
         help_texts = {
              'provider': _('e.g. MIT, University of Michigan, Khan Academy.'),
+             'platform': _('e.g. Coursera, edX, FutureLearn, Udacity.'),
              'link': _('Paste full URL above.'),
              'caption': _('Write 1-2 sentences that describe what people will accomplish if they take this course. This description is what learners will see when signing up for learning circles, and what facilitators will see when selecting a course.'),
              'topics': _('Select or create a few topics that will help learners and future facilitators find this course.'),

@@ -1906,11 +1906,10 @@ class OverallRatingBarChart():
 
     def generate(self, **opts):
 
-        for key, value in self.chart_data["steps"].items():
+        for key, value in self.chart_data.items():
             self.chart.add("{} ★".format(key), value)
 
         self.chart.x_value_formatter = lambda x:  '%s%%' % x
-        # self.chart.x_labels = self.chart_data["steps"].keys()
 
         return self.chart.render(is_unicode=True)
 

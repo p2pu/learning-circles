@@ -38,7 +38,11 @@
           {% trans "Platform" %}
         </div>
         <div class="info">
-          Coursera.org
+          {% if course.platform %}
+            {{ course.platform }}
+          {% else %}
+            {% trans "Unknown" %}
+          {% endif %}
         </div>
 
         <div class="label">
@@ -93,7 +97,7 @@
           {% trans "Course website" %}
         </div>
         <div class="info">
-          <a href="{{ course.link }}">{% trans "Course URL" %}</a>
+          <a href="{{ course.link }}">{% trans "Visit the course website" %}</a>
         </div>
       </div>
     </div>
@@ -104,27 +108,27 @@
       <h2 class="subtitle">{% trans "Community feedback" %}</h2>
       <div class="grid-wrapper community-feedback ratings-section mb-5">
         <div class="label grid-item">
-          <div class="overall-rating">{{ overall_rating }}</div>
+          <div class="overall-rating">{{ course.overall_rating }}</div>
           <div>{% trans "Overall rating" %}</div>
         </div>
         <div class="grid-item mr-3">
           {{ rating_counts_chart|safe }}
         </div>
         <div class="grid-item">
-          {% blocktrans count rating_counts_total=rating_counts_total %}
-            {{ rating_counts_total }} rating
+          {% blocktrans count total_ratings=course.total_ratings %}
+            {{ total_ratings }} rating
           {% plural %}
-            {{ rating_counts_total }} ratings
+            {{ total_ratings }} ratings
           {% endblocktrans %}
         </div>
       </div>
 
       <div class="grid-wrapper community-feedback">
 
-        {% for label, value in tagdorsements.tags.items %}
+        {% for label, value in tagdorsement_counts.items %}
         {% with width=0 %}
-        {% if tagdorsements.total_reviewers %}
-          {% widthratio value tagdorsements.total_reviewers 100 as width %}
+        {% if course.total_reviewers %}
+          {% widthratio value course.total_reviewers 100 as width %}
         {% endif %}
 
           <div class="label grid-item">
@@ -136,7 +140,7 @@
             </div>
           </div>
           <div class="grid-item">
-            {% blocktrans count total_reviewers=tagdorsements.total_reviewers %}
+            {% blocktrans count total_reviewers=course.total_reviewers %}
               {{ value }}/{{ total_reviewers }} reviewer
             {% plural %}
               {{ value }}/{{ total_reviewers }} reviewers
@@ -159,17 +163,20 @@
 
   <section class="bg-secondary">
     <div class="container text-center">
-      <button class="btn p2pu-btn blue">{% trans "Use this course" %}</button>
+      <a class="btn p2pu-btn blue" href="{{create_studygroup_url}}">{% trans "Use this course" %}</a>
     </div>
   </section>
 
   <section>
     <div class="container">
       <h2 class="subtitle">{% trans "Similar courses" %}</h2>
+      <div class="row">
 
-      {% for course in similar_courses %}
-        {% include 'studygroups/course_card.html' %}
-      {% endfor %}
+        {% for course in similar_courses %}
+          {% include 'studygroups/course_card.html' %}
+        {% endfor %}
+
+      </div>
     </div>
   </section>
 </div>

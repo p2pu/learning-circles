@@ -198,14 +198,16 @@ class CoursePage(DetailView):
     def get_context_data(self, **kwargs):
         context = super(CoursePage, self).get_context_data(**kwargs)
         usage = StudyGroup.objects.filter(course=self.object.id).count()
-        rating_step_counts = self.object.rating_step_counts()
+        rating_step_counts = json.loads(self.object.rating_step_counts)
+        tagdorsement_counts = json.loads(self.object.tagdorsement_counts)
+        create_studygroup_url = reverse('studygroups_facilitator_studygroup_create') + "?course_id={}".format(self.object.id)
 
         context['usage'] = usage
-        context['overall_rating'] = self.object.overall_rating()
-        context['rating_counts_total'] = rating_step_counts["total"]
         context['rating_counts_chart'] = OverallRatingBarChart(rating_step_counts).generate()
-        context['tagdorsements'] = self.object.tagdorsements()
+        context['tagdorsement_counts'] = tagdorsement_counts
+        context['rating_step_counts'] = rating_step_counts
         context['similar_courses'] = self.object.similar_courses()
+        context['create_studygroup_url'] = create_studygroup_url
 
         return context
 
