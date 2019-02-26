@@ -82,8 +82,10 @@
           {% trans "Popularity" %}
         </div>
         <div class="info">
-          {% blocktrans %}
-            Used in {{ usage }} learning circle{{ usage|pluralize }}
+          {% blocktrans count usage=usage %}
+            Used in {{ usage }} learning circle
+          {% plural %}
+            Used in {{ usage }} learning circles
           {% endblocktrans %}
         </div>
 
@@ -109,8 +111,10 @@
           {{ rating_counts_chart|safe }}
         </div>
         <div class="grid-item">
-          {% blocktrans %}
-            {{ rating_counts_total }} rating{{ rating_counts_total|pluralize }}
+          {% blocktrans count rating_counts_total=rating_counts_total %}
+            {{ rating_counts_total }} rating
+          {% plural %}
+            {{ rating_counts_total }} ratings
           {% endblocktrans %}
         </div>
       </div>
@@ -132,8 +136,10 @@
             </div>
           </div>
           <div class="grid-item">
-            {% blocktrans %}
-              {{ value }}/{{ tagdorsements.total_reviewers }} reviewer{{ tagdorsements.total_reviewers|pluralize}}
+            {% blocktrans count total_reviewers=tagdorsements.total_reviewers %}
+              {{ value }}/{{ total_reviewers }} reviewer
+            {% plural %}
+              {{ value }}/{{ total_reviewers }} reviewers
             {% endblocktrans %}
           </div>
 
