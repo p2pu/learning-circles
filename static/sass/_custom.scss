@@ -483,6 +483,67 @@ img.lc-about-image{
   }
 }
 
+.course-page {
+  section {
+    padding-bottom: 2rem;
+  }
+
+  .subtitle {
+    font-family: $font-family-sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .grid-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    grid-template-areas:
+      "label info" ;
+
+    .label {
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 1rem;
+
+      .overall-rating {
+        font-size: 5rem;
+        font-weight: normal;
+      }
+    }
+
+    &.community-feedback {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      grid-template-areas:
+        "label info reviews" ;
+      align-items: center;
+
+      .label {
+        line-height: 1.4;
+      }
+    }
+
+    &.ratings-section {
+      align-items: end;
+    }
+
+    .grid-item {
+      padding: 0.5rem;
+    }
+  }
+
+
+  .progress {
+    background-color: $white;
+    border-radius: 1rem;
+    border: 1px solid $gray-darker;
+
+    .progress-bar {
+      border-radius: 1rem;
+    }
+  }
+}
+
 @media (max-width: map-get($grid-breakpoints, "sm")) {
   .feedback-done {
     .actions {

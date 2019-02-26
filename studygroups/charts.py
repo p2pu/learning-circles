@@ -1895,5 +1895,24 @@ class LearnerResponseRateChart():
         return self.chart.render(is_unicode=True)
 
 
+class OverallRatingBarChart():
+    def __init__(self, chart_data, **kwargs):
+        style = custom_style()
+        style.plot_background = "#F3F4F8"
+        style.colors = ["#05C6B4", "#B7D500", "#FFBC1A", "#FC7100", "#4c7e80"]
+        style.legend_font_size = 24
+        self.chart = pygal.Bar(style=style, height=260, order_min=0, max_scale=5, show_legend=False, legend_at_bottom=True, legend_at_bottom_columns=5, show_y_guides=True, show_y_labels=True, print_values=True, print_values_position='top', **kwargs)
+        self.chart_data = chart_data
+
+    def generate(self, **opts):
+
+        for key, value in self.chart_data["steps"].items():
+            self.chart.add("{} ★".format(key), value)
+
+        self.chart.x_value_formatter = lambda x:  '%s%%' % x
+        # self.chart.x_labels = self.chart_data["steps"].keys()
+
+        return self.chart.render(is_unicode=True)
+
 
 

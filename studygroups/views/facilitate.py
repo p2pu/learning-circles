@@ -44,6 +44,7 @@ from studygroups.models import generate_all_meetings
 from studygroups.models import get_study_group_organizers
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import study_group_is_published
+from studygroups.charts import OverallRatingBarChart
 
 @login_required
 def login_redirect(request):
@@ -187,6 +188,26 @@ class ApplicationDelete(FacilitatorRedirectMixin, DeleteView):
     model = Application
     success_url = reverse_lazy('studygroups_facilitator')
     template_name = 'studygroups/confirm_delete.html'
+
+
+class CoursePage(DetailView):
+    model = Course
+    template_name = 'studygroups/course_page.html'
+    context_object_name = 'course'
+
+    def get_context_data(self, **kwargs):
+        context = super(CoursePage, self).get_context_data(**kwargs)
+        usage = StudyGroup.objects.filter(course=self.object.id).count()
+        rating_step_counts = self.object.rating_step_counts()
+
+        context['usage'] = usage
+        context['overall_rating'] = self.object.overall_rating()
+        context['rating_counts_total'] = rating_step_counts["total"]
+        context['rating_counts_chart'] = OverallRatingBarChart(rating_step_counts).generate()
+        context['tagdorsements'] = self.object.tagdorsements()
+        context['similar_courses'] = self.object.similar_courses()
+
+        return context
 
 
 @method_decorator(login_required, name="dispatch")

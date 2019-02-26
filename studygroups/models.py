@@ -24,6 +24,8 @@ import urllib.request, urllib.parse, urllib.error
 import uuid
 import requests
 
+STAR_RATING_STEPS = 5
+
 
 # TODO - remove this
 STUDY_GROUP_NAMES = [
@@ -90,6 +92,137 @@ class Course(LifeTimeTrackingModel):
 
     def __str__(self):
         return self.title
+
+    def studygroups_prefetch_survey_responses(self):
+        return StudyGroup.objects.filter(course=self.id).prefetch_related("facilitatorsurveyresponse_set", "learnersurveyresponse_set")
+
+    def overall_rating(self):
+        studygroups = self.studygroups_prefetch_survey_responses()
+        numerator = 0
+        denominator = 0
+        for sg in studygroups:
+            learner_surveys = sg.learnersurveyresponse_set.all()
+            facilitator_surveys = sg.facilitatorsurveyresponse_set.all()
+            for survey in learner_surveys:
+                rating_question = survey.get_survey_field("iGWRNCyniE7s")
+                rating_answer = survey.get_response_field("iGWRNCyniE7s")
+                # iGWRNCyniE7s = "How well did the online course {{hidden:course}} work as a learning circle?"
+                if rating_answer is not None:
+                    numerator += rating_answer['number']
+
+                if rating_question is not None:
+                    denominator += rating_question['properties']['steps']
+
+            for survey in facilitator_surveys:
+                rating_question = survey.get_survey_field("Zm9XlzKGKC66")
+                rating_answer = survey.get_response_field("Zm9XlzKGKC66")
+                # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
+                if rating_answer is not None:
+                    numerator += rating_answer['number']
+
+                if rating_question is not None:
+                    denominator += rating_question['properties']['steps']
+
+
+        if denominator == 0:
+            return "--"
+
+        average = round(int(numerator) / denominator, 2)
+
+        return round((STAR_RATING_STEPS * average), 1)
+
+
+    def rating_step_counts(self):
+        data = {
+            "steps": {
+                5: 0,
+                4: 0,
+                3: 0,
+                2: 0,
+                1: 0,
+            },
+            "total": 0
+        }
+
+        studygroups = self.studygroups_prefetch_survey_responses()
+
+        for sg in studygroups:
+            learner_surveys = sg.learnersurveyresponse_set.all()
+            facilitator_surveys = sg.facilitatorsurveyresponse_set.all()
+            for survey in learner_surveys:
+                rating_question = survey.get_survey_field("iGWRNCyniE7s")
+                rating_answer = survey.get_response_field("iGWRNCyniE7s")
+                # iGWRNCyniE7s = "How well did the online course {{hidden:course}} work as a learning circle?"
+                if rating_answer is not None:
+                    data["steps"][rating_answer['number']] += 1
+                    data["total"] += 1
+
+            for survey in facilitator_surveys:
+                rating_question = survey.get_survey_field("Zm9XlzKGKC66")
+                rating_answer = survey.get_response_field("Zm9XlzKGKC66")
+                # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
+                if rating_answer is not None:
+                    facilitator_rating = rating_answer['number']
+
+                if rating_question is not None:
+                    facilitator_steps = rating_question['properties']['steps']
+
+                # Make sure rating is out of 5
+                if facilitator_steps > STAR_RATING_STEPS:
+                    multiplier = STAR_RATING_STEPS / facilitator_steps
+                    steps = STAR_RATING_STEPS
+                    facilitator_rating = int(round(facilitator_rating * multiplier))
+
+                data["steps"][facilitator_rating] += 1
+                data["total"] += 1
+
+        return data
+
+    def tagdorsements(self):
+
+        tagdorsements = {
+            'tags': {
+                'Easy to use': 0,
+                'Good for first time facilitators': 0,
+                'Great for beginners': 0,
+                'Engaging material': 0,
+                'Learners were very satisfied': 0,
+                'Led to great discussions': 0,
+            },
+            'total_reviewers': 0
+        }
+
+        studygroups = self.studygroups_prefetch_survey_responses()
+
+        for sg in studygroups:
+            facilitator_surveys = sg.facilitatorsurveyresponse_set.all()
+
+            for survey in facilitator_surveys:
+                response = survey.get_response_field("cNH3Ck0SHspB")
+                # cNH3Ck0SHspB = "How would you characterize the online course?"
+
+                if response is not None:
+                    labels = response["choices"]["labels"]
+                    tagdorsements["total_reviewers"] += 1
+
+                    for label in labels:
+                        try:
+                            tagdorsements["tags"][label] += 1
+                        except KeyError:
+                            tagdorsements["tags"][label] = 1
+
+        return tagdorsements
+
+
+    def similar_courses(self):
+        topics = self.topics.split(',')
+        query = Q(topics__icontains=topics[0])
+        for topic in topics[1:]:
+            query = Q(topics__icontains=topic) | query
+
+        courses = Course.objects.filter(query).exclude(id=self.id)[:3]
+
+        return courses
 
 
 # TODO move to custom_registration/models.py

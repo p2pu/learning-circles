@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<div class="course-page">
+  <section>
+    <div class="container text-center">
+      <h1>{{ course.title }}</h1>
+    </div>
+  </section>
+
+  <section class="bg-secondary">
+    <div class="container">
+      <p>{{ course.caption }}</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <h2 class="subtitle">{% trans "About the course" %}</h2>
+      <div class="grid-wrapper">
+        <div class="label">
+          {% trans "Topics" %}
+        </div>
+        <div class="info">
+          {{ course.topics }}
+        </div>
+
+        <div class="label">
+          {% trans "Provider" %}
+        </div>
+        <div class="info">
+          {{ course.provider }}
+        </div>
+
+        <div class="label">
+          {% trans "Platform" %}
+        </div>
+        <div class="info">
+          Coursera.org
+        </div>
+
+        <div class="label">
+          {% trans "Access" %}
+        </div>
+        <div class="info">
+          {% if course.on_demand %}
+            {% trans "Always available" %}
+          {% else %}
+            {% trans "Check availability" %}
+          {% endif %}
+        </div>
+
+        <div class="label">
+          {% trans "License" %}
+        </div>
+        <div class="info">
+          {{ course.license }}
+        </div>
+
+        <div class="label">
+          {% trans "Added by" %}
+        </div>
+        <div class="info">
+          {% if course.created_by.first_name %}
+            {{ course.created_by.first_name }} {{ course.created_by.last_name }} {% trans "on" %} {{ course.created_at|date:"j M, Y" }}
+          {% else %}
+            {% trans "Anonymous on" %} {{ course.created_at|date:"j M, Y" }}
+          {% endif%}
+        </div>
+
+        <div class="label">
+          {% trans "Language" %}
+        </div>
+        <div class="info">
+          {% get_language_info for course.language as lang %}
+          {{ lang.name_local }}
+        </div>
+
+        <div class="label">
+          {% trans "Popularity" %}
+        </div>
+        <div class="info">
+          {% blocktrans %}
+            Used in {{ usage }} learning circle{{ usage|pluralize }}
+          {% endblocktrans %}
+        </div>
+
+        <div class="label">
+          {% trans "Course website" %}
+        </div>
+        <div class="info">
+          <a href="{{ course.link }}">{% trans "Course URL" %}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-secondary">
+    <div class="container">
+      <h2 class="subtitle">{% trans "Community feedback" %}</h2>
+      <div class="grid-wrapper community-feedback ratings-section mb-5">
+        <div class="label grid-item">
+          <div class="overall-rating">{{ overall_rating }}</div>
+          <div>{% trans "Overall rating" %}</div>
+        </div>
+        <div class="grid-item">
+          {{ rating_counts_chart|safe }}
+        </div>
+        <div class="grid-item">
+          {% blocktrans %}
+            {{ rating_counts_total }} rating{{ rating_counts_total|pluralize }}
+          {% endblocktrans %}
+        </div>
+      </div>
+
+      <div class="grid-wrapper community-feedback">
+
+        {% for label, value in tagdorsements.tags.items %}
+        {% with width=0 %}
+        {% if tagdorsements.total_reviewers %}
+          {% widthratio value tagdorsements.total_reviewers 100 as width %}
+        {% endif %}
+
+          <div class="label grid-item">
+            {{ label }}
+          </div>
+          <div class="grid-item">
+            <div class="progress">
+              <div class="progress-bar" role="progressbar" style="width: {{width}}%" aria-valuenow="{{width}}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+          <div class="grid-item">
+            {% blocktrans %}
+              {{ value }}/{{ tagdorsements.total_reviewers }} reviewer{{ tagdorsements.total_reviewers|pluralize}}
+            {% endblocktrans %}
+          </div>
+
+        {% endwith %}
+        {% endfor %}
+
+
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <h2 class="subtitle">{% trans "Discussion" %}</h2>
+    </div>
+  </section>
+
+  <section class="bg-secondary">
+    <div class="container text-center">
+      <button class="btn p2pu-btn blue">{% trans "Use this course" %}</button>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <h2 class="subtitle">{% trans "Similar courses" %}</h2>
+
+      {% for course in similar_courses %}
+        {% include 'studygroups/course_card.html' %}
+      {% endfor %}
+    </div>
+  </section>
+</div>
+<script src="{% static 'js/vendor/pygal-tooltips.min.js' %}"></script>
+
+{% endblock %}

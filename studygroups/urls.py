@@ -13,6 +13,7 @@ from studygroups.views import FeedbackUpdate
 from studygroups.views import ApplicationDelete
 from studygroups.views import ApplicationUpdate
 from studygroups.views import SignupSuccess
+from studygroups.views import CoursePage
 from studygroups.views import CourseCreate
 from studygroups.views import CourseUpdate
 from studygroups.views import CourseDelete
@@ -95,6 +96,7 @@ urlpatterns = [
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/create/$', FeedbackCreate.as_view(), name='studygroups_feedback'),
 
     url(r'^course/create/$', CourseCreate.as_view(), name='studygroups_course_create'),
+    url(r'^course/(?P<pk>[\d]+)$', CoursePage.as_view(), name='studygroups_course_page'),
     url(r'^course/(?P<pk>[\d]+)/edit/$', CourseUpdate.as_view(), name='studygroups_course_edit'),
     url(r'^course/(?P<pk>[\d]+)/delete/$', CourseDelete.as_view(), name='studygroups_course_delete'),
 
