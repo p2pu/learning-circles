@@ -265,6 +265,7 @@ class StudyGroup(LifeTimeTrackingModel):
             "longitude": sg.longitude,
             "place_id": sg.place_id,
             "start_date": sg.start_date,
+            "start_datetime": self.local_start_date(),
             "weeks": sg.weeks,
             "meeting_time": sg.meeting_time.strftime('%H:%M'),
             "duration": sg.duration,

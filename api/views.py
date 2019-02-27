@@ -76,6 +76,7 @@ def _map_to_json(sg):
         "place_id": sg.place_id,
         "day": sg.day(),
         "start_date": sg.start_date,
+        "start_datetime": sg.local_start_date(),
         "meeting_time": sg.meeting_time,
         "time_zone": sg.timezone_display(),
         "end_time": sg.end_time(),
