@@ -5,7 +5,6 @@ import TimePickerWithLabel from 'p2pu-input-fields/dist/TimePickerWithLabel'
 import DatePickerWithLabel from 'p2pu-input-fields/dist/DatePickerWithLabel'
 import TimeZoneSelect from 'p2pu-input-fields/dist/TimeZoneSelect'
 import moment from 'moment'
-import 'moment-timezone'
 
 export default class  DayTimeSection extends React.Component {
   constructor(props){
@@ -13,7 +12,6 @@ export default class  DayTimeSection extends React.Component {
     this.initialProps = {
       start_date: props.learningCircle.start_date,
       meeting_time: props.learningCircle.meeting_time,
-      timezome: props.learningCircle.timezome,
     }
   }
 
@@ -24,13 +22,12 @@ export default class  DayTimeSection extends React.Component {
     let minTime = null;
 
     if (props.learningCircle.draft == false ){
-      let {start_date, meeting_time, timezone} = this.initialProps;
-      let start_datetime = moment.tz(`${start_date} ${meeting_time}`, timezone);
-      console.log(start_datetime);
+      let {start_date, meeting_time} = this.initialProps;
+      let start_datetime = moment(this.props.learningCircle.start_datetime);
       let plus4Days = moment().add(4, 'days');
       let plus2Days = moment().add(2, 'days');
 
-      if (start_datetime.isBefore(plus2Days)) {
+      if (start_datetime && start_datetime.isBefore(plus2Days)) {
         return (
           <div className='help-text'>
             <div className='content'>
@@ -40,7 +37,7 @@ export default class  DayTimeSection extends React.Component {
         );
       }
 
-      if (start_datetime.isBefore(plus4Days)){
+      if (start_datetime && start_datetime.isBefore(plus4Days)){
         reminderWarning = (
           <div className="form-group">
             <p className="alert alert-warning">Your learning circle is starting in less that 4 days. If a reminder has already been generated for the first meeting it will be regenerated and any edits you have made to it will be lost.</p>
@@ -49,7 +46,7 @@ export default class  DayTimeSection extends React.Component {
       }
 
       minDate = plus2Days;
-      if (start_datetime.isSame(plus2Days, 'days')){
+      if (start_datetime && start_datetime.isSame(plus2Days, 'days')){
         minTime = meeting_time;
         // TODO time input doesn't support a range
       }
