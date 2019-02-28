@@ -294,6 +294,79 @@ class TestLearningCircleApi(TestCase):
             self.assertEqual(lc.meeting_set.active().count(), 6)
 
 
+    def test_update_draft_learning_circle_date(self):
+        c = Client()
+        c.login(username='faci@example.net', password='password')
+        self.facilitator.profile.email_confirmed_at = timezone.now()
+        self.facilitator.profile.save()
+        data = {
+            "course": 3,
+            "description": "Lets learn something",
+            "venue_name": "75 Harrington",
+            "venue_details": "top floor",
+            "venue_address": "75 Harrington",
+            "city": "Cape Town",
+            "country": "South Africa",
+            "country_en": "South Africa",
+            "region": "Western Cape",
+            "latitude": 3.1,
+            "longitude": "1.3",
+            "place_id": "4",
+            "start_date": "2018-12-15",
+            "weeks": 2,
+            "meeting_time": "17:01",
+            "duration": 50,
+            "timezone": "UTC",
+            "image": "/media/image.png",
+            "draft": True
+        }
+        url = '/api/learning-circle/'
+        self.assertEqual(StudyGroup.objects.all().count(), 4)
+        with freeze_time('2018-12-01'):
+            resp = c.post(url, data=json.dumps(data), content_type='application/json')
+            self.assertEqual(resp.status_code, 200)
+
+        lc = StudyGroup.objects.all().last()
+        self.assertEqual(resp.json(), {
+            "status": "created",
+            "url": "{}/en/signup/75-harrington-{}/".format(settings.DOMAIN, lc.pk)
+        })
+        self.assertEqual(StudyGroup.objects.all().count(), 5)
+        self.assertEqual(lc.meeting_set.active().count(), 0)
+
+        # update less than 2 days before
+        with freeze_time("2018-12-14"):
+            data['start_date'] = '2018-12-20'
+            data['weeks'] = 6
+            url = '/api/learning-circle/{}/'.format(lc.pk)
+            resp = c.post(url, data=json.dumps(data), content_type='application/json')
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.json(), {
+                "status": "updated",
+                "url": "{}/en/signup/75-harrington-{}/".format(settings.DOMAIN, lc.pk)
+            })
+            lc = StudyGroup.objects.all().last()
+            self.assertEqual(StudyGroup.objects.all().count(), 5)
+            self.assertEqual(lc.start_date, datetime.date(2018, 12, 20))
+            self.assertEqual(lc.meeting_set.active().count(), 0)
+
+        # update more than 2 days before
+        with freeze_time("2018-12-12"):
+            data['start_date'] = '2018-12-19'
+            data['weeks'] = 6
+            url = '/api/learning-circle/{}/'.format(lc.pk)
+            resp = c.post(url, data=json.dumps(data), content_type='application/json')
+            self.assertEqual(resp.json(), {
+                "status": "updated",
+                "url": "{}/en/signup/75-harrington-{}/".format(settings.DOMAIN, lc.pk)
+            })
+            lc = StudyGroup.objects.all().last()
+            self.assertEqual(StudyGroup.objects.all().count(), 5)
+            self.assertEqual(lc.start_date, datetime.date(2018, 12, 19))
+            self.assertEqual(lc.meeting_set.active().count(), 0)
+
+
+
     @freeze_time('2018-01-20')
     def test_publish_learning_circle(self):
         self.facilitator.profile.email_confirmed_at = timezone.now()

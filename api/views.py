@@ -551,7 +551,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         # generate all meetings if the learning circle has been published
         if published:
             generate_all_meetings(study_group)
-        elif date_changed:
+        elif study_group.draft is False and date_changed:
             # if the lc was already published and the date was changed, update meetings
             study_group.meeting_set.delete()
             generate_all_meetings(study_group)
