@@ -44,6 +44,21 @@ STUDY_GROUP_NAMES = [
     "The Eternal Lovers"
 ]
 
+KNOWN_COURSE_PLATFORMS = {
+    "www.edx.org/": "edX",
+    "www.futurelearn.com/": "FutureLearn",
+    "ocw.mit.edu/": "MIT OpenCourseWare",
+    "www.coursera.org/": "Coursera",
+    "www.khanacademy.org/": "Khan Academy",
+    "www.lynda.com/": "Lynda",
+    "oli.cmu.edu/": "Open Learning Initiative",
+    "www.udemy.com/": "Udemy",
+    "www.udacity.com/": "Udacity",
+    "course.oeru.org/": "OERu",
+    "www.open.edu/openlearn/": "OpenLearn",
+    "www.codecademy.com/": "CodeAcademy",
+}
+
 
 def _study_group_name():
     idx = 1 + StudyGroup.objects.count()
@@ -215,6 +230,12 @@ class Course(LifeTimeTrackingModel):
         courses = Course.objects.filter(query).exclude(id=self.id)[:3]
 
         return courses
+
+    def detect_platform_from_link(self):
+        for domain in KNOWN_COURSE_PLATFORMS.keys():
+            if domain in self.link:
+                self.platform = KNOWN_COURSE_PLATFORMS[domain]
+                self.save()
 
 
 # TODO move to custom_registration/models.py

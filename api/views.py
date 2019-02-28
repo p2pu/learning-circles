@@ -297,12 +297,19 @@ def _course_to_json(course):
         "id": course.id,
         "title": course.title,
         "provider": course.provider,
+        "platform": course.platform,
         "link": course.link,
         "caption": course.caption,
         "on_demand": course.on_demand,
         "learning_circles": course.num_learning_circles,
         "topics": [t.strip() for t in course.topics.split(',')] if course.topics else [],
         "language": course.language,
+        "overall_rating": course.overall_rating,
+        "total_ratings": course.total_ratings,
+        "rating_step_counts": course.rating_step_counts,
+        "tagdorsements": course.tagdorsements,
+        "tagdorsement_counts": course.tagdorsement_counts,
+        "course_page_url": settings.DOMAIN + reverse("studygroups_course_page", args=(course.id,))
     }
 
 class CourseListView(View):
