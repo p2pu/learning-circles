@@ -243,7 +243,7 @@ class TestFacilitatorViews(TestCase):
         self.assertEqual(StudyGroup.objects.last().application_set.count(), 0)
 
 
-    def test_update_study_group(self):
+    def test_update_study_group_legacy_view(self):
         user = create_user('bob@example.net', 'bob', 'test', 'password', False)
         confirm_user_email(user)
         c = Client()
@@ -257,33 +257,56 @@ class TestFacilitatorViews(TestCase):
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
         lc = study_groups.first()
-        self.assertEquals(study_groups.first().meeting_set.count(), 0)
+        self.assertEquals(study_groups.first().meeting_set.active().count(), 0)
+
+        # updates allowed for drafts
+        with freeze_time("2018-12-28"):
+            data['start_date'] = '12/25/2018'
+            data['meeting_time'] = '07:10 PM'
+            edit_url = '/en/studygroup/{}/edit/legacy/'.format(lc.pk)
+            resp = c.post(edit_url, data)
+            self.assertRedirects(resp, '/en/facilitator/')
+            study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
+            self.assertEqual(study_group.start_date, datetime.date(2018, 12, 25))
+            self.assertEqual(study_group.meeting_time, datetime.time(19, 10))
+            self.assertEqual(study_group.meeting_set.active().count(), 0)
 
         resp = c.post('/en/studygroup/{0}/publish/'.format(study_groups.first().pk))
         self.assertRedirects(resp, '/en/facilitator/')
         study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
         self.assertEqual(study_group.draft, False)
-        self.assertEqual(study_group.meeting_set.count(), 6)
+        self.assertEqual(study_group.meeting_set.active().count(), 6)
 
         # update not allowed
         with freeze_time("2018-12-24"):
             data['start_date'] = '12/24/2018'
             data['meeting_time'] = '07:00 PM'
-            edit_url = '/en/studygroup/{}/edit/'.format(study_group.pk)
+            data['weeks'] = 4
+            edit_url = '/en/studygroup/{}/edit/legacy/'.format(study_group.pk)
             resp = c.post(edit_url, data)
             self.assertEqual(resp.status_code, 200)
             study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
             self.assertEqual(study_group.start_date, datetime.date(2018, 12, 25))
+            self.assertEqual(study_group.meeting_set.active().count(), 6)
 
         # update allowed
         with freeze_time("2018-12-22"):
             data['start_date'] = '12/24/2018'
             data['meeting_time'] = '07:00 PM'
-            edit_url = '/en/studygroup/{}/edit/'.format(study_group.pk)
+            data['weeks'] = 3
+            edit_url = '/en/studygroup/{}/edit/legacy/'.format(study_group.pk)
             resp = c.post(edit_url, data)
             self.assertRedirects(resp, '/en/facilitator/')
             study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
             self.assertEqual(study_group.start_date, datetime.date(2018, 12, 24))
+            self.assertEqual(study_group.meeting_set.active().count(), 3)
+
+        meeting_times = [(meeting.meeting_date, meeting.meeting_time) for meeting in study_group.meeting_set.active().all()]
+        self.assertEqual(meeting_times, [
+            (datetime.date(2018,12,24), datetime.time(19,0)),
+            (datetime.date(2018,12,31), datetime.time(19,0)),
+            (datetime.date(2019,1,7), datetime.time(19,0)),
+        ])
 
 
     @patch('custom_registration.signals.handle_new_facilitator')

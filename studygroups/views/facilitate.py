@@ -321,6 +321,7 @@ class StudyGroupCreateLegacy(CreateView):
         return http.HttpResponseRedirect(self.success_url)
 
 
+# TODO this should be a TemplateView
 @method_decorator(user_is_group_facilitator, name="dispatch")
 class StudyGroupUpdate(FacilitatorRedirectMixin, UpdateView):
     model = StudyGroup
@@ -340,6 +341,14 @@ class StudyGroupUpdateLegacy(FacilitatorRedirectMixin, UpdateView):
     form_class =  StudyGroupForm
     pk_url_kwarg = 'study_group_id'
     template_name = 'studygroups/studygroup_form_legacy.html'
+
+    def form_valid(self, form):
+        return_value = super().form_valid(form)
+        # TODO delete meetings if the date was changed
+        if form.date_changed and self.object.draft == False:
+            self.object.meeting_set.delete()
+            generate_all_meetings(self.object)
+        return return_value
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")

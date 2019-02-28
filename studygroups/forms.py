@@ -295,6 +295,7 @@ class StudyGroupForm(forms.ModelForm):
             self.cleaned_data['meeting_time'] != self.instance.meeting_time,
             end_date != self.instance.end_date,
         ])
+        self.date_changed = date_changed
         if date_changed and not self.instance.can_update_meeting_datetime():
             msg = _('Cannot update learning circle date or time less than 4 days before the first meeting')
             self.add_error('start_date', msg)
