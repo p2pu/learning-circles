@@ -145,7 +145,12 @@ def send_facilitator_survey_reminder(study_group):
     end_of_window = now.replace(minute=0, second=0, microsecond=0)
     start_of_window = end_of_window - datetime.timedelta(hours=1)
 
+    # a learning circle could have no meetings and be published
     last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
+    if not last_meeting:
+        logger.warning('Published learning circle does not have any associated meetings. StudyGroup.id={0}'.format(study_group.id))
+        return
+
     time_to_send = last_meeting.meeting_datetime() - datetime.timedelta(days=2)
 
     if time_to_send and time_to_send > start_of_window and time_to_send <= end_of_window:
@@ -210,6 +215,10 @@ def send_final_learning_circle_report(study_group):
     start_of_window = end_of_window - datetime.timedelta(hours=1)
 
     last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
+    if not last_meeting:
+        logger.warning('Published learning circle does not have any associated meetings. StudyGroup.id={0}'.format(study_group.id))
+        return
+
     time_to_send = last_meeting.meeting_datetime() + datetime.timedelta(days=2)
 
     if time_to_send and time_to_send > start_of_window and time_to_send <= end_of_window:
