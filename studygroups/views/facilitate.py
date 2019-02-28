@@ -321,16 +321,15 @@ class StudyGroupCreateLegacy(CreateView):
         return http.HttpResponseRedirect(self.success_url)
 
 
-# TODO this should be a TemplateView
 @method_decorator(user_is_group_facilitator, name="dispatch")
-class StudyGroupUpdate(FacilitatorRedirectMixin, UpdateView):
+class StudyGroupUpdate(SingleObjectMixin, TemplateView):
     model = StudyGroup
-    form_class =  StudyGroupForm
     pk_url_kwarg = 'study_group_id'
+    template_name = 'studygroups/studygroup_form.html'
 
     def get_context_data(self, **kwargs):
-        study_group = self.get_object()
-        context = super(StudyGroupUpdate, self).get_context_data(**kwargs)
+        self.object = self.get_object()
+        context = super().get_context_data(**kwargs)
         context['hide_footer'] = True
         return context
 
