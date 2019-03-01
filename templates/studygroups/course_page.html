@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
 {% load static %}
 {% load i18n %}
 
@@ -20,21 +21,21 @@
     <div class="container">
       <h2 class="subtitle">{% trans "About the course" %}</h2>
       <div class="grid-wrapper">
-        <div class="label">
+        <div class="label minicaps">
           {% trans "Topics" %}
         </div>
         <div class="info">
           {{ course.topics }}
         </div>
 
-        <div class="label">
+        <div class="label minicaps">
           {% trans "Provider" %}
         </div>
         <div class="info">
           {{ course.provider }}
         </div>
 
-        <div class="label">
+        <div class="label minicaps">
           {% trans "Platform" %}
         </div>
         <div class="info">
@@ -45,7 +46,7 @@
           {% endif %}
         </div>
 
-        <div class="label">
+        <div class="label minicaps">
           {% trans "Access" %}
         </div>
         <div class="info">
@@ -56,14 +57,14 @@
           {% endif %}
         </div>
 
-        <div class="label">
+        <div class="label minicaps">
           {% trans "License" %}
         </div>
         <div class="info">
           {{ course.license }}
         </div>
 
-        <div class="label">
+        <div class="label minicaps">
           {% trans "Added by" %}
         </div>
         <div class="info">
@@ -74,7 +75,7 @@
           {% endif%}
         </div>
 
-        <div class="label">
+        <div class="label minicaps">
           {% trans "Language" %}
         </div>
         <div class="info">
@@ -82,7 +83,7 @@
           {{ lang.name_local }}
         </div>
 
-        <div class="label">
+        <div class="label minicaps">
           {% trans "Popularity" %}
         </div>
         <div class="info">
@@ -93,7 +94,7 @@
           {% endblocktrans %}
         </div>
 
-        <div class="label">
+        <div class="label minicaps">
           {% trans "Course website" %}
         </div>
         <div class="info">
@@ -107,8 +108,12 @@
     <div class="container">
       <h2 class="subtitle">{% trans "Community feedback" %}</h2>
       <div class="grid-wrapper community-feedback ratings-section mb-5">
-        <div class="label grid-item">
-          <div class="overall-rating">{{ course.overall_rating }}</div>
+        <div class="label minicaps grid-item">
+          {% if course.overall_rating %}
+            <div class="overall-rating">{{ course.overall_rating }}</div>
+          {% else %}
+            <div class="overall-rating">--</div>
+          {% endif %}
           <div>{% trans "Overall rating" %}</div>
         </div>
         <div class="grid-item mr-3">
@@ -131,7 +136,7 @@
           {% widthratio value course.total_reviewers 100 as width %}
         {% endif %}
 
-          <div class="label grid-item">
+          <div class="label minicaps grid-item">
             {{ label }}
           </div>
           <div class="grid-item mr-3">
@@ -158,6 +163,9 @@
   <section>
     <div class="container">
       <h2 class="subtitle">{% trans "Discussion" %}</h2>
+      <div id="course-discussion-preview">
+        <div class="loader"></div>
+      </div>
     </div>
   </section>
 
@@ -170,16 +178,17 @@
   <section>
     <div class="container">
       <h2 class="subtitle">{% trans "Similar courses" %}</h2>
-      <div class="row">
-
-        {% for course in similar_courses %}
-          {% include 'studygroups/course_card.html' %}
-        {% endfor %}
-
+      <div id="similar-courses" data-courses="{{ similar_courses }}">
+        <div class="loader"></div>
       </div>
     </div>
   </section>
 </div>
+{% endblock %}
+
+{% block scripts %}
 <script src="{% static 'js/vendor/pygal-tooltips.min.js' %}"></script>
+{% render_bundle 'common' %}
+{% render_bundle 'course-page' %}
 
 {% endblock %}

@@ -4,7 +4,7 @@ html {
   font-size: 100%;
 }
 
-button.p2pu-btn {
+.p2pu-btn {
   margin: 4px;
   padding: 0.2em 1em;
 }
@@ -45,6 +45,7 @@ button.p2pu-btn {
     .search-results {
       .result-item {
         width: 100%;
+        max-width: 100%;
       }
     }
   }

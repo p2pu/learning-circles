@@ -293,7 +293,7 @@ def _course_check(course_id):
 
 
 def _course_to_json(course):
-    return {
+    data = {
         "id": course.id,
         "title": course.title,
         "provider": course.provider,
@@ -301,7 +301,6 @@ def _course_to_json(course):
         "link": course.link,
         "caption": course.caption,
         "on_demand": course.on_demand,
-        "learning_circles": course.num_learning_circles,
         "topics": [t.strip() for t in course.topics.split(',')] if course.topics else [],
         "language": course.language,
         "overall_rating": course.overall_rating,
@@ -311,6 +310,13 @@ def _course_to_json(course):
         "tagdorsement_counts": course.tagdorsement_counts,
         "course_page_url": settings.DOMAIN + reverse("studygroups_course_page", args=(course.id,))
     }
+
+    try:
+        data["learning_circles"] = course.num_learning_circles
+    except AttributeError:
+        pass
+
+    return data
 
 class CourseListView(View):
     def get(self, request):

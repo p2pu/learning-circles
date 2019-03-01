@@ -22,6 +22,7 @@ from django.utils.decorators import method_decorator
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.core import serializers
+from django.core.serializers.json import DjangoJSONEncoder
 
 import json
 import datetime
@@ -45,6 +46,7 @@ from studygroups.models import get_study_group_organizers
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import study_group_is_published
 from studygroups.charts import OverallRatingBarChart
+from api.views import _course_to_json
 
 @login_required
 def login_redirect(request):
@@ -201,12 +203,13 @@ class CoursePage(DetailView):
         rating_step_counts = json.loads(self.object.rating_step_counts)
         tagdorsement_counts = json.loads(self.object.tagdorsement_counts)
         create_studygroup_url = reverse('studygroups_facilitator_studygroup_create') + "?course_id={}".format(self.object.id)
+        similar_courses = [ _course_to_json(course) for course in self.object.similar_courses()]
 
         context['usage'] = usage
         context['rating_counts_chart'] = OverallRatingBarChart(rating_step_counts).generate()
         context['tagdorsement_counts'] = tagdorsement_counts
         context['rating_step_counts'] = rating_step_counts
-        context['similar_courses'] = self.object.similar_courses()
+        context['similar_courses'] = json.dumps(similar_courses, cls=DjangoJSONEncoder)
         context['create_studygroup_url'] = create_studygroup_url
 
         return context
