@@ -186,39 +186,32 @@ class TestLearningCircleApi(TestCase):
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
         
-        with freeze_time('2018-12-01'):
-            resp = c.post(url, data=json.dumps(data), content_type='application/json')
-            self.assertEqual(resp.status_code, 200)
-            lc = StudyGroup.objects.all().last()
-            self.assertEqual(resp.json(), {
-                "status": "created",
-                "url": "{}/en/signup/75-harrington-{}/".format(settings.DOMAIN, lc.pk)
-            })
+        resp = c.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        lc = StudyGroup.objects.all().last()
+        self.assertEqual(resp.json(), {
+            "status": "created",
+            "url": "{}/en/signup/75-harrington-{}/".format(settings.DOMAIN, lc.pk)
+        })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
 
-        data['start_date'] = '2018-12-18'
         data['course'] = 1
+        data["description"] = "Lets learn something else"
         # Update learning circle
         lc = StudyGroup.objects.all().last()
         self.assertFalse(lc.draft)
         url = '/api/learning-circle/{}/'.format(lc.pk)
 
-        # test that it doesn't update
-        with freeze_time('2018-12-11'):
-            resp = c.post(url, data=json.dumps(data), content_type='application/json')
-            self.assertEqual(resp.status_code, 200)
-            self.assertEqual(resp.json(), {'errors': {'start_date': 'cannot update date'}, 'status': 'error'})
-
-        with freeze_time('2018-12-09'):
+        # date shouldn't matter, but lets make it after the lc started
+        with freeze_time('2019-03-01'):
             resp = c.post(url, data=json.dumps(data), content_type='application/json')
             self.assertEqual(resp.status_code, 200)
             self.assertEqual(resp.json()['status'], 'updated')
 
-
         lc = StudyGroup.objects.all().last()
         self.assertEqual(StudyGroup.objects.all().count(), 5)
-        self.assertEqual(lc.start_date, datetime.date(2018, 12, 18))
         self.assertEqual(lc.course.id, 1)
+        self.assertEqual(lc.description, "Lets learn something else")
 
 
     def test_update_learning_circle_date(self):
@@ -249,9 +242,8 @@ class TestLearningCircleApi(TestCase):
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
-        with freeze_time('2018-12-01'):
-            resp = c.post(url, data=json.dumps(data), content_type='application/json')
-            self.assertEqual(resp.status_code, 200)
+        resp = c.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
 
         lc = StudyGroup.objects.all().last()
         self.assertEqual(resp.json(), {
@@ -261,7 +253,7 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(StudyGroup.objects.all().count(), 5)
         self.assertEqual(lc.meeting_set.active().count(), 2)
 
-        # update less than 2 days before
+        # update less than 2 days before start
         with freeze_time("2018-12-14"):
             data['start_date'] = '2018-12-20'
             data['weeks'] = 6
@@ -277,7 +269,7 @@ class TestLearningCircleApi(TestCase):
             self.assertEqual(lc.start_date, datetime.date(2018, 12, 15))
             self.assertEqual(lc.meeting_set.active().count(), 2)
 
-        # update more than 2 days before
+        # update more than 2 days before start
         with freeze_time("2018-12-12"):
             data['start_date'] = '2018-12-19'
             data['weeks'] = 6
