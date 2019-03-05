@@ -343,7 +343,6 @@ class StudyGroupUpdateLegacy(FacilitatorRedirectMixin, UpdateView):
 
     def form_valid(self, form):
         return_value = super().form_valid(form)
-        # TODO delete meetings if the date was changed
         if form.date_changed and self.object.draft == False:
             self.object.meeting_set.delete()
             generate_all_meetings(self.object)
