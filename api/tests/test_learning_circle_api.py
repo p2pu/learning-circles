@@ -195,12 +195,12 @@ class TestLearningCircleApi(TestCase):
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
 
-        data['course'] = 1
-        data["description"] = "Lets learn something else"
         # Update learning circle
         lc = StudyGroup.objects.all().last()
         self.assertFalse(lc.draft)
         url = '/api/learning-circle/{}/'.format(lc.pk)
+        data['course'] = 1
+        data["description"] = "Lets learn something else"
 
         # date shouldn't matter, but lets make it after the lc started
         with freeze_time('2019-03-01'):
