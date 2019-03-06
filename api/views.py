@@ -257,6 +257,36 @@ class LearningCircleTopicListView(View):
         return json_response(request, data)
 
 
+def _studygroup_object_for_map(sg):
+    active = sg.end_date > datetime.date.today()
+    report_available = sg.learnersurveyresponse_set.count() > 0
+
+    data = {
+        "id": sg.id,
+        "title": sg.course.title,
+        "latitude": sg.latitude,
+        "longitude": sg.longitude,
+        "city": sg.city,
+        "start_date": sg.start_date,
+        "active": active
+    }
+
+    if active:
+        data["url"] = 'https://' + settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,))
+    elif report_available:
+        data["report_url"] = sg.report_url()
+
+    return data
+
+
+class LearningCirclesMapView(View):
+    def get(self, request):
+        study_groups = StudyGroup.objects.published().select_related('course').prefetch_related("learnersurveyresponse_set")
+        data = {}
+        data['items'] = [ _studygroup_object_for_map(sg) for sg in study_groups ]
+        return json_response(request, data)
+
+
 def _course_check(course_id):
     if not Course.objects.filter(pk=int(course_id)).exists():
         return None, 'Course matching ID not found'

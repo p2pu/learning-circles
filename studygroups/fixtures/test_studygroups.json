@@ -21,13 +21,17 @@
       "end_date": "2015-04-23",
       "duration": 120,
       "timezone": "US/Central",
+      "latitude" : "41.850030",
+      "longitude" : "-87.650050",
+      "place_id" : "",
       "facilitator": 1,
       "venue_name": "Harold Washington",
       "venue_address": "123 Street",
       "venue_details": "3rd floor",
       "city": "Chicago",
       "image": "http://image-url.png",
-      "draft": false
+      "draft": false,
+      "signup_open" : true
    },
    "model": "studygroups.studygroup",
    "pk": 1
@@ -48,6 +52,8 @@
       "venue_address": "123 Street",
       "venue_details": "3rd floor",
       "city": "Chicago",
+      "latitude" : "41.850030",
+      "longitude" : "-87.650050",
       "image": "http://image-url.png",
       "draft": false
    },
@@ -70,6 +76,8 @@
       "venue_address": "123 Street",
       "venue_details": "3rd floor",
       "city": "Chicago",
+      "latitude" : "41.850030",
+      "longitude" : "-87.650050",
       "image": "http://image-url.png",
       "draft": false
    },
@@ -92,6 +100,8 @@
       "venue_address": "123 Street",
       "venue_details": "3rd floor",
       "city": "Chicago",
+      "latitude" : "41.850030",
+      "longitude" : "-87.650050",
       "image": "http://image-url.png",
       "draft": false
    },
