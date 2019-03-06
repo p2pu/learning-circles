@@ -227,7 +227,7 @@ class Course(LifeTimeTrackingModel):
         for topic in topics[1:]:
             query = Q(topics__icontains=topic) | query
 
-        courses = Course.objects.filter(query).exclude(id=self.id)[:3]
+        courses = Course.objects.filter(unlisted=False, deleted_at__isnull=True).filter(query).exclude(id=self.id)[:3]
 
         return courses
 

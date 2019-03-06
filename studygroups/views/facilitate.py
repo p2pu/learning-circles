@@ -26,6 +26,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 
 import json
 import datetime
+import requests
 
 
 from studygroups.models import TeamMembership
@@ -211,8 +212,41 @@ class CoursePage(DetailView):
         context['rating_step_counts'] = rating_step_counts
         context['similar_courses'] = json.dumps(similar_courses, cls=DjangoJSONEncoder)
         context['create_studygroup_url'] = create_studygroup_url
+        context['generate_discourse_topic_url'] = reverse('studygroups_generate_course_discourse_topic', args=(self.object.id,))
 
         return context
+
+def generate_course_discourse_topic(request, course_id):
+    course = Course.objects.get(pk=course_id);
+    create_topic_url = '{}/posts.json'.format(settings.DISCOURSE_BASE_URL)
+    request_data = {
+        'api_key': settings.DISCOURSE_BOT_API_KEY,
+        'api_username': settings.DISCOURSE_BOT_API_USERNAME,
+        'title': "{} provided by {}".format(course.title, course.provider),
+        'category': 69, # courses-and-topics,
+        'raw': "Have you used this course in a learning circle? Please leave your review for other facilitators! What did you like or not like about it? If you have any questions about the course, feel free to ask.",
+    }
+
+    request_headers = {
+        'Content-Type': 'multipart/form-data'
+    }
+
+    response = requests.post(create_topic_url, data=request_data, headers=request_headers)
+
+    if response.status_code == requests.codes.ok:
+        topic_slug = response.json().get('topic_slug', None)
+        topic_id = response.json().get('topic_id', None)
+        topic_url = "{}/t/{}/{}".format(settings.DISCOURSE_BASE_URL, topic_slug, topic_id)
+        course.discourse_topic_url = topic_url
+        course.save()
+
+        return http.HttpResponseRedirect(topic_url)
+
+    else:
+        print(response.status_code)
+        print(response.text)
+        return http.HttpResponseRedirect("{}/c/learning-circles/courses-and-topics".format(settings.DISCOURSE_BASE_URL))
+
 
 
 @method_decorator(login_required, name="dispatch")

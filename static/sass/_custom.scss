@@ -543,6 +543,15 @@ img.lc-about-image{
       border-radius: 1rem;
     }
   }
+
+  .discourse-preview {
+    .post {
+      .post-text p {
+        border-left: 6px solid $p2pu-light-blue;
+        padding-left: 1rem;
+      }
+    }
+  }
 }
 
 @media (max-width: map-get($grid-breakpoints, "sm")) {

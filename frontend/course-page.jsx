@@ -7,7 +7,9 @@ import SimilarCoursesPreview from './components/similar-courses-preview'
 const discussion = document.getElementById('course-discussion-preview')
 const similarCourses = document.getElementById('similar-courses')
 const courses = similarCourses.dataset.courses
+const topicUrl = discussion.dataset.topicUrl;
+console.log('topic_url', topicUrl)
 
 
-ReactDOM.render(<DiscourseTopicPreview thread={"abc"} />, discussion)
+ReactDOM.render(<DiscourseTopicPreview topicUrl={topicUrl} />, discussion)
 ReactDOM.render(<SimilarCoursesPreview courses={courses} />, similarCourses)
