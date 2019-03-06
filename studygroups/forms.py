@@ -299,7 +299,7 @@ class StudyGroupForm(forms.ModelForm):
         ])
         self.date_changed = date_changed
         if date_changed and not self.instance.can_update_meeting_datetime():
-            msg = _('Cannot update learning circle date or time less than 2 days before the first meeting')
+            msg = _('Cannot update the date or time less than 2 days before the first meeting.')
             self.add_error('start_date', msg)
             return
 
@@ -313,7 +313,7 @@ class StudyGroupForm(forms.ModelForm):
         tz = pytz.timezone(self.cleaned_data['timezone'])
         start_datetime = tz.localize(start_datetime)
         if date_changed and start_datetime < timezone.now() + datetime.timedelta(days=2):
-            msg = _("The start date must be at least 2 days from today")
+            msg = _("The start date must be at least 48 hours from now.")
             self.add_error("start_date", msg)
 
 
