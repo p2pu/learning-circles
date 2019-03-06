@@ -31,7 +31,7 @@ export default class  DayTimeSection extends React.Component {
         return (
           <div className='help-text'>
             <div className='content'>
-              <p>Your learning circle has already started and you cannot set the date for the whole learning circle anymore. You can still add individual meetings or edit the date or time for meetings that are scheduled in the future. To do this, go back to your dashboard and add or edit meetings to the learning circle from there.</p>
+              <p>Your learning circle has already started and you cannot set the date for the whole learning circle anymore. You can still add individual meetings or edit the date and time for meetings. To do this, go to your dashboard to add or edit meetings.</p>
             </div>
           </div>
         );
@@ -40,7 +40,7 @@ export default class  DayTimeSection extends React.Component {
       if (start_datetime && start_datetime.isBefore(plus4Days)){
         reminderWarning = (
           <div className="form-group">
-            <p className="alert alert-warning">Your learning circle is starting in less that 4 days. If a reminder has already been generated for the first meeting it will be regenerated and any edits you have made to it will be lost.</p>
+            <p className="alert alert-warning">Your learning circle is starting in less that 4 days. A reminder has already been generated for the first meeting and will be regenerated if you update the date and/or time. Any edits you have made to the reminder will be lost.</p>
           </div>
         );
       }
