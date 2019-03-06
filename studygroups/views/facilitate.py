@@ -125,6 +125,8 @@ class MeetingUpdate(FacilitatorRedirectMixin, UpdateView):
 
     def form_valid(self, form):
         # check if update meeting has an unsent reminder associated?
+        # self.object contains updated values, but not yet saved
+        # self.object have been updated by the form :(
         if self.object.reminder_set.count() == 1:
             reminder = self.object.reminder_set.first()
             if not reminder.sent_at:
@@ -135,6 +137,8 @@ class MeetingUpdate(FacilitatorRedirectMixin, UpdateView):
                 # orphan reminder if a reminder was sent but the meeting is now in the future.
                 reminder.study_group_meeting = None
                 reminder.save()
+                # TODO we should check if the previous datetime was in the future, in 
+                # which case we should let the learner know the details have changed
         return super().form_valid(form)
 
 
@@ -179,7 +183,6 @@ class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
         notification = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
         notification.attach_alternative(html_body, 'text/html')
         notification.send()
-
         return super(FeedbackCreate, self).form_valid(form)
 
 
@@ -221,14 +224,12 @@ class CourseCreate(CreateView):
         context['topics'] = list(set(topics))
         return context
 
-
     def form_valid(self, form):
         # courses created by staff will be global
         messages.success(self.request, _('Your course has been created. You can now create a learning circle using it.'))
         self.object = form.save(commit=False)
         self.object.created_by = self.request.user
         self.object.save()
-
         return http.HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
@@ -245,7 +246,6 @@ class CourseUpdate(UpdateView):
     model = Course
     form_class = CourseForm
 
-
     def dispatch(self, request, *args, **kwargs):
         course = self.get_object()
         if not request.user.is_staff and course.created_by != request.user:
@@ -257,7 +257,6 @@ class CourseUpdate(UpdateView):
             url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
         return super(CourseUpdate, self).dispatch(request, *args, **kwargs)
-
 
     def get_context_data(self, **kwargs):
         context = super(CourseUpdate, self).get_context_data(**kwargs)
@@ -271,7 +270,6 @@ class CourseUpdate(UpdateView):
         context['topics'] = list(set(topics))
         return context
 
-
     def form_valid(self, form):
         # courses created by staff will be global
         messages.success(self.request, _('Your course has been created. You can now create a learning circle using it.'))
@@ -280,9 +278,7 @@ class CourseUpdate(UpdateView):
         self.object = form.save(commit=False)
         self.object.created_by = self.request.user
         self.object.save()
-
         return http.HttpResponseRedirect(self.get_success_url())
-
 
     def get_success_url(self):
         url = reverse('studygroups_facilitator')
@@ -310,7 +306,6 @@ class StudyGroupCreateLegacy(CreateView):
         if course_id:
             initial['course'] = get_object_or_404(Course, pk=course_id)
         return initial
-
 
     def form_valid(self, form):
         study_group = form.save(commit=False)
@@ -393,7 +388,6 @@ class StudyGroupPublish(SingleObjectMixin, View):
             study_group.draft = False
             study_group.save()
             generate_all_meetings(study_group)
-
 
         url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
         if self.get_object().facilitator == self.request.user:
@@ -539,7 +533,6 @@ class InvitationConfirm(FormView):
             if current_membership_qs.exists():
                 current_membership_qs.delete()
             TeamMembership.objects.create(team=invitation.team, user=self.request.user, role=invitation.role)
-
         return super(InvitationConfirm, self).form_valid(form)
 
 
@@ -552,9 +545,7 @@ class StudyGroupFacilitatorSurvey(TemplateView):
         study_group.facilitator_rating = request.GET.get('rating', None)
         study_group.save()
         response = super().get(request, *args, **kwargs)
-
         return response
-
 
     def get_context_data(self, **kwargs):
         context = super(StudyGroupFacilitatorSurvey, self).get_context_data(**kwargs)
@@ -565,5 +556,4 @@ class StudyGroupFacilitatorSurvey(TemplateView):
         context['facilitator_name'] = self.request.user.first_name
         context['rating'] = self.request.GET.get('rating', None)
         context['no_studygroup'] = self.request.GET.get('nostudygroup', False)
-
         return context

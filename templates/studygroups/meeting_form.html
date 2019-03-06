@@ -14,7 +14,7 @@
             <div class="form-group">
             {% with reminder=meeting.reminder_set.all|first %}
               {% if reminder.sent_at %}
-              <p class="alert alert-warning">{% trans "A reminder has already been sent for this meeting. Updating the meeting will not send a new reminder. If you are making a last minute change, be sure to inform participants of this learning circle that the meeting has changed. If you wish to move a meeting that didn't happen to a future date, consider creating a new meeting" %}</p>
+              <p class="alert alert-warning">{% trans "A reminder has already been sent for this meeting. If you update the meeting, a new reminder will be generated and sent two days before the new meeting time. Consider sending learners a message telling them about the change." %}</p>
               {% else %}
               <p class="alert alert-warning">{% trans "A reminder has already been generated for this meeting. Updating this meeting will regenerate the reminder and you will loose any edits you may have made to the message." %}</p>
               {% endif %}

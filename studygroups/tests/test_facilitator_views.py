@@ -366,6 +366,7 @@ class TestFacilitatorViews(TestCase):
         # update meeting with unsent reminder
         reminder = Reminder.objects.filter(study_group=study_group).first()
         meeting = reminder.study_group_meeting
+        meeting_id = meeting.pk
         update = {
             "meeting_date": "2018-12-27",
             "meeting_time": "07:00 PM",
@@ -391,16 +392,20 @@ class TestFacilitatorViews(TestCase):
 
         # and then update it afterwards to be in the future again
         with freeze_time('2018-12-28'):
+            meeting.refresh_from_db()
+            self.assertTrue(meeting.meeting_datetime() < timezone.now())
+            self.assertEquals(Reminder.objects.count(), 1)
             update['meeting_date'] = '2018-12-30'
             resp = c.post('/en/studygroup/{0}/meeting/{1}/edit/'.format(study_group.pk, meeting.pk), update)
             self.assertRedirects(resp, '/en/facilitator/')
-            meeting = Meeting.objects.get(study_group=study_group, meeting_date=datetime.date(2018, 12, 30))
+            meeting.refresh_from_db()
             # old reminder should be orphaned - not linked to this meeting
             self.assertEquals(meeting.reminder_set.count(), 0)
             generate_reminder(study_group)
             # now generate a reminder again
             meeting.refresh_from_db()
             self.assertEquals(meeting.reminder_set.count(), 1)
+            self.assertEquals(Reminder.objects.count(), 2)
 
 
     @patch('studygroups.tasks.send_message')
