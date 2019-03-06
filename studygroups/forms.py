@@ -229,9 +229,9 @@ class CourseForm(forms.ModelForm):
         model = Course
         fields = [
             'title',
-            'provider',
-            'platform',
             'link',
+            'platform',
+            'provider',
             'caption',
             'on_demand',
             'topics',

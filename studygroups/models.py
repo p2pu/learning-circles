@@ -94,6 +94,9 @@ class LifeTimeTrackingModel(models.Model):
 
 
 class Course(LifeTimeTrackingModel):
+    COURSES_AND_TOPICS_DISCOURSE_CATEGORY_ID = 69
+    DISCOURSE_TOPIC_DEFAULT_TEXT = _("Have you used this course in a learning circle? Please leave your review for other facilitators! What did you like or not like about it? If you have any questions about the course, feel free to ask.")
+
     title = models.CharField(max_length=128)
     provider = models.CharField(max_length=256)
     link = models.URLField()

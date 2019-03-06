@@ -223,8 +223,8 @@ def generate_course_discourse_topic(request, course_id):
         'api_key': settings.DISCOURSE_BOT_API_KEY,
         'api_username': settings.DISCOURSE_BOT_API_USERNAME,
         'title': "{} provided by {}".format(course.title, course.provider),
-        'category': 69, # courses-and-topics,
-        'raw': "Have you used this course in a learning circle? Please leave your review for other facilitators! What did you like or not like about it? If you have any questions about the course, feel free to ask.",
+        'category': Course.COURSES_AND_TOPICS_DISCOURSE_CATEGORY_ID,
+        'raw': Course.DISCOURSE_TOPIC_DEFAULT_TEXT,
     }
 
     request_headers = {
@@ -265,6 +265,7 @@ class CourseCreate(CreateView):
             item.strip().lower() for sublist in topics for item in sublist[0].split(',')
         ]
         context['topics'] = list(set(topics))
+        context['detect_platform_url'] = reverse("api_course_detect_platform")
         return context
 
 

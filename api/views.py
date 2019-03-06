@@ -29,6 +29,7 @@ from studygroups.models import Application
 from studygroups.models import Meeting
 from studygroups.models import Team
 from studygroups.models import generate_all_meetings
+from studygroups.models import KNOWN_COURSE_PLATFORMS
 
 from uxhelpers.utils import json_response
 
@@ -687,3 +688,14 @@ class ImageUploadView(View):
             return json_response(request, {"image_url": image_url})
         else:
             return json_response(request, {'error': 'not a valid image'})
+
+def detect_platform_from_url(request):
+    url = request.GET.get('url', "")
+    platform = ""
+
+    for domain in KNOWN_COURSE_PLATFORMS.keys():
+        if domain in url:
+            platform = KNOWN_COURSE_PLATFORMS[domain]
+
+    return json_response(request, { "platform": platform })
+
