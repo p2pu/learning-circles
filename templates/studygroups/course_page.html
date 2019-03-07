@@ -21,84 +21,103 @@
     <div class="container">
       <h2 class="subtitle">{% trans "About the course" %}</h2>
       <div class="grid-wrapper">
-        <div class="label minicaps">
-          {% trans "Topics" %}
-        </div>
-        <div class="info">
-          {{ course.topics }}
-        </div>
-
-        <div class="label minicaps">
-          {% trans "Provider" %}
-        </div>
-        <div class="info">
-          {{ course.provider }}
+        <div class="my-3 row">
+          <div class="label minicaps col-12 col-sm-4">
+            {% trans "Topics" %}
+          </div>
+          <div class="info col-12 col-sm-8">
+            {{ course.topics }}
+          </div>
         </div>
 
-        <div class="label minicaps">
-          {% trans "Platform" %}
-        </div>
-        <div class="info">
-          {% if course.platform %}
-            {{ course.platform }}
-          {% else %}
-            {% trans "Unknown" %}
-          {% endif %}
+        <div class="my-3 row">
+          <div class="label minicaps col-12 col-sm-4">
+            {% trans "Provider" %}
+          </div>
+          <div class="info col-12 col-sm-8">
+            {{ course.provider }}
+          </div>
         </div>
 
-        <div class="label minicaps">
-          {% trans "Access" %}
-        </div>
-        <div class="info">
-          {% if course.on_demand %}
-            {% trans "Always available" %}
-          {% else %}
-            {% trans "Check availability" %}
-          {% endif %}
-        </div>
-
-        <div class="label minicaps">
-          {% trans "License" %}
-        </div>
-        <div class="info">
-          {{ course.license }}
+        <div class="my-3 row">
+          <div class="label minicaps col-12 col-sm-4">
+            {% trans "Platform" %}
+          </div>
+          <div class="info col-12 col-sm-8">
+            {% if course.platform %}
+              {{ course.platform }}
+            {% else %}
+              {% trans "Unknown" %}
+            {% endif %}
+          </div>
         </div>
 
-        <div class="label minicaps">
-          {% trans "Added by" %}
-        </div>
-        <div class="info">
-          {% if course.created_by.first_name %}
-            {{ course.created_by.first_name }} {{ course.created_by.last_name }} {% trans "on" %} {{ course.created_at|date:"j M, Y" }}
-          {% else %}
-            {% trans "Anonymous on" %} {{ course.created_at|date:"j M, Y" }}
-          {% endif%}
-        </div>
-
-        <div class="label minicaps">
-          {% trans "Language" %}
-        </div>
-        <div class="info">
-          {% get_language_info for course.language as lang %}
-          {{ lang.name_local }}
+        <div class="my-3 row">
+          <div class="label minicaps col-12 col-sm-4">
+            {% trans "Access" %}
+          </div>
+          <div class="info col-12 col-sm-8">
+            {% if course.on_demand %}
+              {% trans "Always available" %}
+            {% else %}
+              {% trans "Check availability" %}
+            {% endif %}
+          </div>
         </div>
 
-        <div class="label minicaps">
-          {% trans "Popularity" %}
-        </div>
-        <div class="info">
-          {% blocktrans count usage=usage %}
-            Used in {{ usage }} learning circle
-          {% plural %}
-            Used in {{ usage }} learning circles
-          {% endblocktrans %}
+        <div class="my-3 row">
+          <div class="label minicaps col-12 col-sm-4">
+            {% trans "License" %}
+          </div>
+          <div class="info col-12 col-sm-8">
+            {{ course.license }}
+          </div>
         </div>
 
-        <div class="label minicaps">
-          {% trans "Course website" %}
+
+        <div class="my-3 row">
+          <div class="label minicaps col-12 col-sm-4">
+            {% trans "Added by" %}
+          </div>
+          <div class="info col-12 col-sm-8">
+            {% if course.created_by.first_name %}
+              {{ course.created_by.first_name }} {{ course.created_by.last_name }} {% trans "on" %} {{ course.created_at|date:"j M, Y" }}
+            {% else %}
+              {% trans "Anonymous on" %} {{ course.created_at|date:"j M, Y" }}
+            {% endif%}
+          </div>
         </div>
-        <div class="info">
-          <a href="{{ course.link }}">{% trans "Visit the course website" %}</a>
+
+        <div class="my-3 row">
+          <div class="label minicaps col-12 col-sm-4">
+            {% trans "Language" %}
+          </div>
+          <div class="info col-12 col-sm-8">
+            {% get_language_info for course.language as lang %}
+            {{ lang.name_local }}
+          </div>
+        </div>
+
+        <div class="my-3 row">
+          <div class="label minicaps col-12 col-sm-4">
+            {% trans "Popularity" %}
+          </div>
+          <div class="info col-12 col-sm-8">
+            {% blocktrans count usage=usage %}
+              Used in {{ usage }} learning circle
+            {% plural %}
+              Used in {{ usage }} learning circles
+            {% endblocktrans %}
+          </div>
+        </div>
+
+        <div class="my-3 row">
+          <div class="label minicaps col-12 col-sm-4">
+            {% trans "Course website" %}
+          </div>
+          <div class="info col-12 col-sm-8">
+            <a href="{{ course.link }}">{% trans "Visit the course website" %}</a>
+          </div>
         </div>
       </div>
     </div>
@@ -107,19 +126,21 @@
   <section class="bg-secondary">
     <div class="container">
       <h2 class="subtitle">{% trans "Community feedback" %}</h2>
-      <div class="grid-wrapper community-feedback ratings-section mb-5">
-        <div class="label minicaps grid-item">
-          {% if course.overall_rating %}
+      <div class="row grid-wrapper community-feedback ratings-section mb-5">
+        <div class="label minicaps col-12 col-md-3">
+          <div>
+            {% if course.overall_rating %}
             <div class="overall-rating">{{ course.overall_rating }}</div>
-          {% else %}
+            {% else %}
             <div class="overall-rating">--</div>
-          {% endif %}
-          <div>{% trans "Overall rating" %}</div>
+            {% endif %}
+            <div>{% trans "Overall rating" %}</div>
+          </div>
         </div>
-        <div class="grid-item mr-3">
+        <div class="col-12 col-md-6">
           {{ rating_counts_chart|safe }}
         </div>
-        <div class="grid-item">
+        <div class="col-12 col-md-3 ratings-count">
           {% blocktrans count total_ratings=course.total_ratings %}
             {{ total_ratings }} rating
           {% plural %}
@@ -136,21 +157,23 @@
           {% widthratio value course.total_reviewers 100 as width %}
         {% endif %}
 
-          <div class="label minicaps grid-item">
+        <div class="row my-3">
+          <div class="label minicaps col-12 col-md-3">
             {{ label }}
           </div>
-          <div class="grid-item mr-3">
+          <div class="grid-item col-12 col-md-6">
             <div class="progress">
               <div class="progress-bar" role="progressbar" style="width: {{width}}%" aria-valuenow="{{width}}" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
           </div>
-          <div class="grid-item">
+          <div class="grid-item col-12 col-md-3">
             {% blocktrans count total_reviewers=course.total_reviewers %}
               {{ value }}/{{ total_reviewers }} reviewer
             {% plural %}
               {{ value }}/{{ total_reviewers }} reviewers
             {% endblocktrans %}
           </div>
+        </div>
 
         {% endwith %}
         {% endfor %}
