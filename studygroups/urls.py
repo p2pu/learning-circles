@@ -96,7 +96,7 @@ urlpatterns = [
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/create/$', FeedbackCreate.as_view(), name='studygroups_feedback'),
 
     url(r'^course/create/$', CourseCreate.as_view(), name='studygroups_course_create'),
-    url(r'^course/(?P<pk>[\d]+)$', CoursePage.as_view(), name='studygroups_course_page'),
+    url(r'^course/(?P<pk>[\d]+)/$', CoursePage.as_view(), name='studygroups_course_page'),
     url(r'^course/(?P<pk>[\d]+)/edit/$', CourseUpdate.as_view(), name='studygroups_course_edit'),
     url(r'^course/(?P<pk>[\d]+)/delete/$', CourseDelete.as_view(), name='studygroups_course_delete'),
     url(r'^course/(?P<course_id>[\d]+)/discourse_topic/$', views.generate_course_discourse_topic, name='studygroups_generate_course_discourse_topic'),

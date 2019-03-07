@@ -554,4 +554,16 @@ class TestFacilitatorViews(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertNotIn(sg, resp.context['current_study_groups'])
 
+    def test_course_page(self):
+        course = Course.objects.get(pk=3)
+
+        c = Client()
+        response = c.get('/en/course/{}/'.format(course.id))
+
+        self.assertEqual(resp.status_code, 200)
+        print(response.context_data)
+
+        self.assertEqual(response.context_data['usage'], 1)
+
+
 
