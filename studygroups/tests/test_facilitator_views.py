@@ -560,7 +560,7 @@ class TestFacilitatorViews(TestCase):
         c = Client()
         response = c.get('/en/course/{}/'.format(course.id))
 
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         print(response.context_data)
 
         self.assertEqual(response.context_data['usage'], 1)

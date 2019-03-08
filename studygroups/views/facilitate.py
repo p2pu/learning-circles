@@ -199,7 +199,7 @@ class CoursePage(DetailView):
     context_object_name = 'course'
 
     def get_context_data(self, **kwargs):
-        context = super(CoursePage, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         usage = StudyGroup.objects.filter(course=self.object.id).count()
         rating_step_counts = json.loads(self.object.rating_step_counts)
         tagdorsement_counts = json.loads(self.object.tagdorsement_counts)

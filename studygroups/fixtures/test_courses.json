@@ -4,6 +4,7 @@
       "title": "Programming with Python",
       "provider": "MIT OCW via P2PU",
       "link": "http://python.p2pu.org/",
+      "language": "en",
       "caption": "Slither into computer programming with Python. UniqueCaption1",
       "on_demand": 1,
       "topics": "math,science,uniqueTopic1",
@@ -20,6 +21,7 @@
       "on_demand": 1,
       "topics": "writing,uniqueTopic2",
       "link": "https://www.futurelearn.com/courses/english-for-study",
+      "language": "en",
       "title": "Academic Writing",
       "created_at": "2015-03-23T15:18:02.190Z",
       "updated_at": "2015-03-23T15:17:01.880Z"
@@ -30,6 +32,7 @@
 {
    "fields": {
       "provider": "University of Washington via Coursera",
+      "language": "en",
       "caption": "dd",
       "on_demand": 1,
       "link": "https://www.coursera.org/learn/public-speaking",
@@ -46,6 +49,7 @@
       "caption": "you don\u2019t have to do it alone. This course will build you.",
       "on_demand": 1,
       "link": "https://www.khanacademy.org/math",
+      "language": "en",
       "title": "GED\u00ae Prep Math",
       "created_at": "2015-04-07T20:50:04.287Z",
       "updated_at": "2015-03-23T15:17:01.880Z"
