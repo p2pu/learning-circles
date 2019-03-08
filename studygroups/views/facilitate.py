@@ -141,7 +141,7 @@ class MeetingUpdate(FacilitatorRedirectMixin, UpdateView):
                 # orphan reminder if a reminder was sent but the meeting is now in the future.
                 reminder.study_group_meeting = None
                 reminder.save()
-                # TODO we should check if the previous datetime was in the future, in 
+                # TODO we should check if the previous datetime was in the future, in
                 # which case we should let the learner know the details have changed
         return super().form_valid(form)
 
@@ -234,15 +234,16 @@ class CoursePage(DetailView):
 
         return context
 
-def generate_course_discourse_topic(request, course_id):
-    course = Course.objects.get(pk=course_id);
+
+def create_discourse_topic(title, category, raw):
     create_topic_url = '{}/posts.json'.format(settings.DISCOURSE_BASE_URL)
+
     request_data = {
         'api_key': settings.DISCOURSE_BOT_API_KEY,
         'api_username': settings.DISCOURSE_BOT_API_USERNAME,
-        'title': "{} provided by {}".format(course.title, course.provider),
-        'category': Course.COURSES_AND_TOPICS_DISCOURSE_CATEGORY_ID,
-        'raw': Course.DISCOURSE_TOPIC_DEFAULT_TEXT,
+        'title': title,
+        'category': category,
+        'raw': raw,
     }
 
     request_headers = {
@@ -252,8 +253,24 @@ def generate_course_discourse_topic(request, course_id):
     response = requests.post(create_topic_url, data=request_data, headers=request_headers)
 
     if response.status_code == requests.codes.ok:
-        topic_slug = response.json().get('topic_slug', None)
-        topic_id = response.json().get('topic_id', None)
+        return response.json()
+    else:
+        print(response.status_code)
+        print(response.text)
+        return None
+
+def generate_course_discourse_topic(request, course_id):
+    course = Course.objects.get(pk=course_id);
+
+    post_title = "{} provided by {}".format(course.title, course.provider)
+    post_category = Course.COURSES_AND_TOPICS_DISCOURSE_CATEGORY_ID
+    post_raw = Course.DISCOURSE_TOPIC_DEFAULT_TEXT
+
+    response_json = create_discourse_topic(post_title, post_category, post_raw)
+
+    if response_json is not None:
+        topic_slug = response_json.get('topic_slug', None)
+        topic_id = response_json.get('topic_id', None)
         topic_url = "{}/t/{}/{}".format(settings.DISCOURSE_BASE_URL, topic_slug, topic_id)
         course.discourse_topic_url = topic_url
         course.save()
@@ -261,10 +278,8 @@ def generate_course_discourse_topic(request, course_id):
         return http.HttpResponseRedirect(topic_url)
 
     else:
-        print(response.status_code)
-        print(response.text)
-        return http.HttpResponseRedirect("{}/c/learning-circles/courses-and-topics".format(settings.DISCOURSE_BASE_URL))
-
+        courses_and_topics_category_url = "{}/c/learning-circles/courses-and-topics".format(settings.DISCOURSE_BASE_URL)
+        return http.HttpResponseRedirect(courses_and_topics_category_url)
 
 
 @method_decorator(login_required, name="dispatch")
