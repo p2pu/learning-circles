@@ -17,6 +17,7 @@ from django.contrib.postgres.search import SearchQuery
 import json
 import datetime
 import re
+import pytz
 import logging
 
 logger = logging.getLogger(__name__)
@@ -76,6 +77,7 @@ def _map_to_json(sg):
         "place_id": sg.place_id,
         "day": sg.day(),
         "start_date": sg.start_date,
+        "start_datetime": sg.local_start_date(),
         "meeting_time": sg.meeting_time,
         "time_zone": sg.timezone_display(),
         "end_time": sg.end_time(),
@@ -534,9 +536,31 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        # update learning circle
         end_date = data.get('start_date') + datetime.timedelta(weeks=data.get('weeks') - 1)
 
+        # if the date is changed, check if that is okay?
+        date_changed = any([
+            study_group.start_date != data.get('start_date'),
+            study_group.end_date != end_date,
+            study_group.meeting_time != data.get('meeting_time'),
+        ])
+
+        # check based on current value for start date
+        if date_changed and not study_group.can_update_meeting_datetime():
+            return json_response(request, {"status": "error", "errors": {"start_date": "cannot update date"}})
+        
+        # check based on new value for start date
+        start_datetime = datetime.datetime.combine(
+            data.get('start_date'),
+            data.get('meeting_time')
+        )
+        tz = pytz.timezone(data.get('timezone'))
+        start_datetime = tz.localize(start_datetime)
+        if date_changed and start_datetime < timezone.now() + datetime.timedelta(days=2):
+            return json_response(request, {"status": "error", "errors": {"start_date": "The start date must be at least 2 days from today"}})
+
+
+        # update learning circle
         published = False
         # only publish a learning circle for a user with a verified email address
         draft = data.get('draft', True)
@@ -570,6 +594,10 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
 
         # generate all meetings if the learning circle has been published
         if published:
+            generate_all_meetings(study_group)
+        elif study_group.draft is False and date_changed:
+            # if the lc was already published and the date was changed, update meetings
+            study_group.meeting_set.delete()
             generate_all_meetings(study_group)
 
         study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name, allow_unicode=True), study_group.id,))
