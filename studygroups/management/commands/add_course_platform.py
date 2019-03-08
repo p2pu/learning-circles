@@ -6,7 +6,7 @@ class Command(BaseCommand):
     help = 'Detect and save the course platform from the course URL'
 
     def handle(self, *args, **options):
-        courses = Course.objects.filter(unlisted=False)
+        courses = Course.objects.all()
         for course in courses:
           if course.platform is None:
             course.detect_platform_from_link()

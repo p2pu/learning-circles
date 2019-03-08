@@ -30,7 +30,7 @@ from studygroups.models import Application
 from studygroups.models import Meeting
 from studygroups.models import Team
 from studygroups.models import generate_all_meetings
-from studygroups.models import KNOWN_COURSE_PLATFORMS
+from studygroups.models import course_platform_from_url
 
 from uxhelpers.utils import json_response
 
@@ -548,7 +548,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         # check based on current value for start date
         if date_changed and not study_group.can_update_meeting_datetime():
             return json_response(request, {"status": "error", "errors": {"start_date": "cannot update date"}})
-        
+
         # check based on new value for start date
         start_datetime = datetime.datetime.combine(
             data.get('start_date'),
@@ -719,11 +719,7 @@ class ImageUploadView(View):
 
 def detect_platform_from_url(request):
     url = request.GET.get('url', "")
-    platform = ""
-
-    for domain in KNOWN_COURSE_PLATFORMS.keys():
-        if domain in url:
-            platform = KNOWN_COURSE_PLATFORMS[domain]
+    platform = course_platform_from_url(url)
 
     return json_response(request, { "platform": platform })
 

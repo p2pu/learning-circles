@@ -240,13 +240,9 @@ CELERYBEAT_SCHEDULE = {
         'task': 'backup.tasks.make_backup',
         'schedule': crontab(hour=1, minute=0),
     },
-    'sync_facilitator_surveys': {
-        'task': 'surveys.tasks.sync_facilitator_surveys',
+    'sync_typeform_surveys': {
+        'task': 'surveys.tasks.sync_surveys',
         'schedule': crontab(minute='10'),
-    },
-    'sync_learner_surveys': {
-        'task': 'surveys.tasks.sync_learner_surveys',
-        'schedule': crontab(minute='20'),
     },
     'send_facilitator_survey_reminder': {
         'task': 'studygroups.tasks.send_all_facilitator_survey_reminders',

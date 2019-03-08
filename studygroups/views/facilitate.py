@@ -27,7 +27,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 import json
 import datetime
 import requests
-
+import logging
 
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
@@ -48,6 +48,8 @@ from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import study_group_is_published
 from studygroups.charts import OverallRatingBarChart
 from api.views import _course_to_json
+
+logger = logging.getLogger(__name__)
 
 @login_required
 def login_redirect(request):
@@ -255,8 +257,7 @@ def create_discourse_topic(title, category, raw):
     if response.status_code == requests.codes.ok:
         return response.json()
     else:
-        print(response.status_code)
-        print(response.text)
+        logger.error('Request to Discourse API failed with status code {}. Response text: {}'.format(response.status_code, response.text))
         return None
 
 def generate_course_discourse_topic(request, course_id):

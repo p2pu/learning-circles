@@ -59,6 +59,15 @@ KNOWN_COURSE_PLATFORMS = {
     "www.codecademy.com/": "CodeAcademy",
 }
 
+def course_platform_from_url(url):
+    platform = ""
+
+    for domain in KNOWN_COURSE_PLATFORMS.keys():
+        if domain in url:
+            platform = KNOWN_COURSE_PLATFORMS[domain]
+
+    return platform
+
 
 def _study_group_name():
     idx = 1 + StudyGroup.objects.count()
@@ -114,7 +123,7 @@ class Course(LifeTimeTrackingModel):
     tagdorsements = models.CharField(max_length=256, blank=True)
     tagdorsement_counts =  models.TextField(default="{}") # JSON value
     total_reviewers = models.SmallIntegerField(blank=True, null=True)
-    discourse_topic_url = models.URLField(blank=True, null=True)
+    discourse_topic_url = models.URLField(blank=True)
 
     def __str__(self):
         return self.title
@@ -204,10 +213,7 @@ class Course(LifeTimeTrackingModel):
                     total_reviewers += 1
 
                     for label in labels:
-                        try:
-                            tag_counts[label] += 1
-                        except KeyError:
-                            tag_counts[label] = 1
+                        tag_counts[label] = tag_counts.get(label, 0) + 1
 
         tagdorsements_list = []
         if total_reviewers > 0:
@@ -235,10 +241,10 @@ class Course(LifeTimeTrackingModel):
         return courses
 
     def detect_platform_from_link(self):
-        for domain in KNOWN_COURSE_PLATFORMS.keys():
-            if domain in self.link:
-                self.platform = KNOWN_COURSE_PLATFORMS[domain]
-                self.save()
+        platform = course_platform_from_url(self.link)
+
+        self.platform = platform
+        self.save()
 
 
 # TODO move to custom_registration/models.py

@@ -48,11 +48,6 @@ def get_all_responses(form_id, after=None):
     return response.json()
 
 
-def update_course_community_feedback(studygroup):
-    studygroup.course.calculate_ratings()
-    studygroup.course.calculate_tagdorsements()
-
-
 def sync_facilitator_responses():
     form_id = settings.TYPEFORM_FACILITATOR_SURVEY_FORM
     form = get_form(form_id)
@@ -64,6 +59,7 @@ def sync_facilitator_responses():
         after = last_response.typeform_key
 
     r = get_all_responses(form_id, after=after)
+    survey_responses = []
 
     for survey in r.get('items', []):
         study_group_id = survey.get('hidden').get('studygroup')
@@ -92,7 +88,10 @@ def sync_facilitator_responses():
                 setattr(survey_response, attr, value)
             survey_response.save()
 
-        update_course_community_feedback(study_group)
+        survey_responses.append(survey_response)
+
+    return survey_responses
+
 
 
 def sync_learner_responses():
@@ -105,6 +104,7 @@ def sync_learner_responses():
         after = last_response.typeform_key
 
     r = get_all_responses(form_id, after=after)
+    survey_responses = []
 
     for survey in r.get('items', []):
 
@@ -142,4 +142,6 @@ def sync_learner_responses():
                 setattr(survey_response, attr, value)
             survey_response.save()
 
-        update_course_community_feedback(study_group)
+        survey_responses.append(survey_response)
+
+    return survey_responses
