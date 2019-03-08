@@ -221,6 +221,26 @@ class StudyGroup(LifeTimeTrackingModel):
         path = reverse('studygroups_final_report', kwargs={'study_group_id': self.id})
         return domain + path
 
+
+    def can_update_meeting_datetime(self):
+        """ check to see if you can update the date """
+        # if it's a draft, you can edit
+        if self.draft == True:
+            return True
+
+        # if there are no meetings, you can edit
+        meeting_list = self.meeting_set.active().order_by('meeting_date', 'meeting_time')
+        if meeting_list.count() == 0:
+            return True
+
+        # if the first meeting is more than 2 days from now, you can edit
+        two_days_from_now = timezone.now() + datetime.timedelta(days=2)
+        if meeting_list.first().meeting_datetime() > two_days_from_now:
+            return True
+
+        return False
+
+
     @property
     def weeks(self):
         return (self.end_date - self.start_date).days//7 + 1
@@ -245,6 +265,7 @@ class StudyGroup(LifeTimeTrackingModel):
             "longitude": sg.longitude,
             "place_id": sg.place_id,
             "start_date": sg.start_date,
+            "start_datetime": self.local_start_date(),
             "weeks": sg.weeks,
             "meeting_time": sg.meeting_time.strftime('%H:%M'),
             "duration": sg.duration,
@@ -385,7 +406,7 @@ class Meeting(LifeTimeTrackingModel):
 
 class Reminder(models.Model):
     study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE)
-    study_group_meeting = models.ForeignKey('studygroups.Meeting', blank=True, null=True, on_delete=models.CASCADE) #TODO check this makes sense
+    study_group_meeting = models.ForeignKey('studygroups.Meeting', blank=True, null=True, on_delete=models.CASCADE) # TODO rename to meeting. Make OneToOne?
     email_subject = models.CharField(max_length=256)
     email_body = models.TextField()
     sms_body = models.CharField(verbose_name=_('SMS (Text)'), max_length=160, blank=True)
@@ -395,7 +416,7 @@ class Reminder(models.Model):
 
 
 class Rsvp(models.Model):
-    study_group_meeting = models.ForeignKey('studygroups.Meeting', on_delete=models.CASCADE)
+    study_group_meeting = models.ForeignKey('studygroups.Meeting', on_delete=models.CASCADE) # TODO rename to meeting
     application = models.ForeignKey('studygroups.Application', on_delete=models.CASCADE)
     attending = models.BooleanField()
 
@@ -469,7 +490,7 @@ def create_rsvp(contact, study_group, meeting_datetime, attending):
 
 
 def generate_all_meetings(study_group):
-    if Meeting.objects.filter(study_group=study_group).exists():
+    if Meeting.objects.active().filter(study_group=study_group).exists():
         raise Exception(_('Meetings already exist for this study group'))
 
     meeting_date = study_group.start_date
@@ -758,6 +779,7 @@ def community_digest_data(start_time, end_time):
         "total_studygroups_met_count": total_studygroups_met_count,
     }
 
+
 def stats_dash_data(start_time, end_time, team=None):
     studygroups_that_ended = get_studygroups_that_ended(start_time, end_time, team)
     studygroups_that_met = get_studygroups_with_meetings(start_time, end_time, team)
@@ -783,4 +805,3 @@ def stats_dash_data(start_time, end_time, team=None):
         "unrated_studygroups": unrated_studygroups,
         "unpublished_studygroups": unpublished_studygroups,
     }
-

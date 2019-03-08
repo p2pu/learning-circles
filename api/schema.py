@@ -13,9 +13,9 @@ def _required(func):
         if 'required' in kwargs:
             del kwargs['required']
         def required_validator(data):
-            if required and data is None:
+            if required and not data and data is not False:
                 return None, 'Field is required'
-            if not required and data is None:
+            if not required and not data and data is not False:
                 return None, None
             # actual validator is now only created during validation
             return func(*args, **kwargs)(data)

@@ -8,10 +8,10 @@ from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
-from django.core.mail import send_mail, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives
 from django.urls import reverse
 
-from studygroups.models import StudyGroup, Meeting, Reminder, Course, Application, Feedback, Team, TeamMembership
+from studygroups.models import StudyGroup, Meeting, Reminder, Team, TeamMembership
 from studygroups.models import report_data
 from studygroups.models import community_digest_data
 from studygroups.models import get_study_group_organizers
@@ -29,9 +29,11 @@ import pytz
 
 logger = logging.getLogger(__name__)
 
+
 def generate_reminder(study_group):
     now = timezone.now()
     next_meeting = study_group.next_meeting()
+    # TODO reminder generation code should be moved to models, only sending facilitator notification should be here
     if next_meeting and next_meeting.meeting_datetime() - now < datetime.timedelta(days=4):
         # check if a notifcation already exists for this meeting
         if not Reminder.objects.filter(study_group=study_group, study_group_meeting=next_meeting).exists():
@@ -49,10 +51,8 @@ def generate_reminder(study_group):
             previous_meeting = study_group.meeting_set.filter(meeting_date__lt=next_meeting.meeting_date).order_by('meeting_date').last()
             if previous_meeting and previous_meeting.feedback_set.first():
                 context['feedback'] = previous_meeting.feedback_set.first()
-            # send PDF survey if this is the final weeks meeting
-            last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
             timezone.activate(pytz.timezone(study_group.timezone))
-            #TODO do I need to activate a locale?
+            # TODO do I need to activate a locale?
             reminder.email_subject = render_to_string(
                 'studygroups/email/reminder-subject.txt',
                 context
@@ -64,7 +64,7 @@ def generate_reminder(study_group):
             reminder.sms_body = render_to_string(
                 'studygroups/email/sms.txt',
                 context
-                )
+            )
             # TODO - handle SMS reminders that are too long
             if len(reminder.sms_body) > 160:
                 logger.error('SMS body too long: ' + reminder.sms_body)
@@ -285,7 +285,6 @@ def send_last_week_group_activity(study_group):
             context['city'] = next_study_group.city
             context['course_title'] = next_study_group.course.title
 
-
         subject = render_to_string(
             'studygroups/email/last_week_group_activity-subject.txt',
             context
@@ -379,7 +378,7 @@ def send_meeting_reminder(reminder):
             "rsvp_yes_link": yes_link,
             "rsvp_no_link": no_link,
             "unsubscribe_link": unsubscribe_link,
-            "domain":'https://{0}'.format(settings.DOMAIN),
+            "domain": 'https://{0}'.format(settings.DOMAIN),
             "event_meta": True,
         }
         subject, text_body, html_body = render_email_templates(
@@ -412,7 +411,7 @@ def send_meeting_reminder(reminder):
             "facilitator": reminder.study_group.facilitator,
             "reminder": reminder,
             "facilitator_message": reminder.email_body,
-            "domain":'https://{0}'.format(settings.DOMAIN),
+            "domain": 'https://{0}'.format(settings.DOMAIN),
         }
         subject, text_body, html_body = render_email_templates(
             'studygroups/email/facilitator_meeting_reminder',
@@ -465,7 +464,7 @@ def send_reminder(reminder):
         context = {
             "reminder": reminder,
             "facilitator_message": reminder.email_body,
-            "domain":'https://{0}'.format(settings.DOMAIN),
+            "domain": 'https://{0}'.format(settings.DOMAIN),
             "facilitator": reminder.study_group.facilitator
         }
         subject, text_body, html_body = render_email_templates(
@@ -531,7 +530,7 @@ def send_team_invitation_email(team, email, organizer):
 
 def send_weekly_update():
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    start_time = today - datetime.timedelta(days=today.weekday()+7) #start of previous week
+    start_time = today - datetime.timedelta(days=today.weekday() + 7) #start of previous week
     end_time = start_time + datetime.timedelta(days=7)
 
     context = {
@@ -695,7 +694,6 @@ def send_out_community_digest():
     iso_week = today.isocalendar()[1]
     end_date = today
     start_date = end_date - datetime.timedelta(days=21)
-
 
     if iso_week % 3 == 0:
         send_community_digest(start_date, end_date)
