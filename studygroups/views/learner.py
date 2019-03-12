@@ -34,6 +34,7 @@ from studygroups.forms import OptOutForm
 from studygroups.rsvp import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
 
+import string
 import cities
 import json
 
