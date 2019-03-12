@@ -41,7 +41,8 @@ def announce_webhook(request):
         logger.warn('Message sent to announce email from non-staff user')
         return http.HttpResponse(status=406)
 
-    from_ = formataddr((user.first_name, settings.ANNOUNCE_EMAIL))
+    from_name = '{0} from P2PU'.format(user.first_name)
+    from_ = formataddr((from_name, settings.ANNOUNCE_EMAIL))
 
     # Send announcement message to all users that opted in
     send_announcement.delay(from_, subject, body_text, body_html)
