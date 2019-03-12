@@ -152,7 +152,8 @@ WEBPACK_LOADER = {
     },
 }
 
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
+#CRISPY_TEMPLATE_PACK = 'bootstrap3'
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = os.environ.get('EMAIL_PORT', 25)
