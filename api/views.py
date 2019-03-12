@@ -376,6 +376,9 @@ class CourseListView(View):
             languages = request.GET.get('languages').split(',')
             courses = courses.filter(language__in=languages)
 
+        if 'oer' in request.GET and request.GET.get('oer', False) == 'true':
+            courses = courses.filter(license__in=Course.OER_LICENSES)
+
         if 'active' in request.GET:
             active = request.GET.get('active') == 'true'
             study_group_ids = Meeting.objects.active().filter(

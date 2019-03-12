@@ -101,6 +101,8 @@ class LifeTimeTrackingModel(models.Model):
 
 
 class Course(LifeTimeTrackingModel):
+    OER_LICENSES = ['CC-BY', 'CC-BY-SA', 'CC-BY-NC', 'CC-BY-NC-SA', 'Public Domain']
+
     title = models.CharField(max_length=128)
     provider = models.CharField(max_length=256)
     link = models.URLField()
