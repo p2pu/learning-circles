@@ -8,6 +8,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         courses = Course.objects.all()
         for course in courses:
-          if course.platform is None:
+          if course.platform is "":
             course.detect_platform_from_link()
             print("Detected and saved platform for {}".format(course.title))

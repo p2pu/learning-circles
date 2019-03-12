@@ -13,6 +13,7 @@ from django.core.files.storage import get_storage_class
 from django.conf import settings
 from django.views.generic.detail import SingleObjectMixin
 from django.contrib.postgres.search import SearchQuery
+from django.utils.translation import get_language_info
 
 import json
 import datetime
@@ -353,11 +354,11 @@ class CourseListView(View):
         if order in ['title', None]:
             courses = courses.order_by('title')
         elif order == 'overall_rating':
-            courses = courses.filter(overall_rating__isnull=False).order_by('-overall_rating')
+            courses = courses.order_by('-overall_rating', '-total_ratings', 'title')
         elif order == 'created_at':
             courses = courses.order_by('-created_at')
         else:
-            courses = courses.order_by('-num_learning_circles')
+            courses = courses.order_by('-num_learning_circles', 'title')
 
         query = request.GET.get('q', None)
         if query:
@@ -373,9 +374,9 @@ class CourseListView(View):
                 query = Q(topics__icontains=topic) | query
             courses = courses.filter(query)
 
-        if 'language' in request.GET:
-            language = request.GET.get('language', None)
-            courses = courses.filter(language=language)
+        if 'languages' in request.GET:
+            languages = request.GET.get('languages').split(',')
+            courses = courses.filter(language__in=languages)
 
         if 'active' in request.GET:
             active = request.GET.get('active') == 'true'
@@ -731,4 +732,18 @@ def detect_platform_from_url(request):
     platform = course_platform_from_url(url)
 
     return json_response(request, { "platform": platform })
+
+
+
+class CourseLanguageListView(View):
+    """ Return langugages for listed courses """
+    def get(self, request):
+        languages = Course.objects.active().filter(unlisted=False).values_list('language', flat=True)
+        languages = set(languages)
+        languages_dict = [
+            get_language_info(language) for language in languages
+        ]
+
+        data = { "languages": languages_dict }
+        return json_response(request, data)
 

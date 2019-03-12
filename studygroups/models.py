@@ -104,7 +104,6 @@ class LifeTimeTrackingModel(models.Model):
 
 class Course(LifeTimeTrackingModel):
     COURSES_AND_TOPICS_DISCOURSE_CATEGORY_ID = 69
-    DISCOURSE_TOPIC_DEFAULT_TEXT = _("Have you used this course in a learning circle? Please leave your review for other facilitators! What did you like or not like about it? If you have any questions about the course, feel free to ask.")
 
     title = models.CharField(max_length=128)
     provider = models.CharField(max_length=256)
@@ -117,7 +116,7 @@ class Course(LifeTimeTrackingModel):
     unlisted = models.BooleanField(default=False)
     license = models.CharField(max_length=128, blank=True)
     platform = models.CharField(max_length=256, blank=True)
-    overall_rating = models.FloatField(null=True, blank=True)
+    overall_rating = models.FloatField(default=0)
     total_ratings = models.SmallIntegerField(blank=True, null=True)
     rating_step_counts = models.TextField(default="{}") # JSON value
     tagdorsements = models.CharField(max_length=256, blank=True)
@@ -245,6 +244,9 @@ class Course(LifeTimeTrackingModel):
 
         self.platform = platform
         self.save()
+
+    def discourse_topic_default_body(self):
+        return _("Have you used \"{}\" in a learning circle? Please leave your review for other facilitators! What did you like or not like about it? If you have any questions about the course, feel free to ask.".format(self.title))
 
 
 # TODO move to custom_registration/models.py

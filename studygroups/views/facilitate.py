@@ -265,7 +265,7 @@ def generate_course_discourse_topic(request, course_id):
 
     post_title = "{} provided by {}".format(course.title, course.provider)
     post_category = Course.COURSES_AND_TOPICS_DISCOURSE_CATEGORY_ID
-    post_raw = Course.DISCOURSE_TOPIC_DEFAULT_TEXT
+    post_raw = "{}".format(course.discourse_topic_default_body())
 
     response_json = create_discourse_topic(post_title, post_category, post_raw)
 
