@@ -95,7 +95,7 @@ class LearningCircleCreationPage(BasePage):
         publish_button.click()
 
     def click_login_link(self):
-        self.driver.find_element_by_link_text('log in.').click()
+        self.driver.find_element_by_css_selector('.registration-modal-content button:first-child').click()
 
     def fill_out_login_modal(self, user_data):
         self.fill_text_field(RegistrationModalLocators.EMAIL_FIELD, user_data["email"])
