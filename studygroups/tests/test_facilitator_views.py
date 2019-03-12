@@ -16,12 +16,15 @@ from studygroups.models import StudyGroup
 from studygroups.models import Meeting
 from studygroups.models import Application
 from studygroups.models import Rsvp
+from studygroups.models import Reminder
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 from studygroups.models import Feedback
 from studygroups.models import generate_all_meetings
 from studygroups.rsvp import gen_rsvp_querystring
+from studygroups.tasks import generate_reminder
+from studygroups.tasks import send_reminders
 from custom_registration.models import create_user
 from custom_registration.models import confirm_user_email
 
@@ -61,7 +64,7 @@ class TestFacilitatorViews(TestCase):
         'longitude': 28.0497,
         'place_id': '342432',
         'description': 'We will complete the course about motorcycle maintenance together',
-        'start_date': '2016-07-25',
+        'start_date': '2018-07-25',
         'weeks': '6',
         'meeting_time': '19:00',
         'duration': '90',
@@ -132,10 +135,11 @@ class TestFacilitatorViews(TestCase):
         c = Client()
         c.login(username='bob123', password='password')
         data = self.STUDY_GROUP_DATA.copy()
-        data['start_date'] = '07/25/2016',
+        data['start_date'] = '07/25/2018',
         data['meeting_time'] = '07:00 PM',
-        resp = c.post('/en/studygroup/create/legacy/', data)
-        self.assertRedirects(resp, '/en/facilitator/')
+        with freeze_time('2018-07-20'):
+            resp = c.post('/en/studygroup/create/legacy/', data)
+            self.assertRedirects(resp, '/en/facilitator/')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
         lc = study_groups.first()
@@ -152,9 +156,10 @@ class TestFacilitatorViews(TestCase):
         confirm_user_email(user)
         c = Client()
         c.login(username='bob@example.net', password='password')
-
-        resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
-        self.assertEqual(resp.json()['status'], 'created')
+        
+        with freeze_time('2018-07-20'):
+            resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
+            self.assertEqual(resp.json()['status'], 'created')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEqual(study_groups.count(), 1)
         self.assertEqual(study_groups.first().meeting_set.count(), 0)
@@ -172,8 +177,9 @@ class TestFacilitatorViews(TestCase):
         c = Client()
         c.login(username='bob@example.net', password='password')
 
-        resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
-        self.assertEqual(resp.json()['status'], 'created')
+        with freeze_time('2018-07-20'):
+            resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
+            self.assertEqual(resp.json()['status'], 'created')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEqual(study_groups.count(), 1)
 
@@ -184,14 +190,15 @@ class TestFacilitatorViews(TestCase):
 
 
     @patch('custom_registration.signals.handle_new_facilitator')
-    def test_draf_study_group_actions_disabled(self, handle_new_facilitator):
+    def test_draft_study_group_actions_disabled(self, handle_new_facilitator):
         user = create_user('bob@example.net', 'bob', 'test', 'password', False)
         confirm_user_email(user)
         c = Client()
         c.login(username='bob@example.net', password='password')
-
-        resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
-        self.assertEqual(resp.json()['status'], 'created')
+    
+        with freeze_time('2018-07-20'):
+            resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
+            self.assertEqual(resp.json()['status'], 'created')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEqual(study_groups.count(), 1)
         self.assertEqual(study_groups.first().meeting_set.count(), 0)
@@ -236,6 +243,72 @@ class TestFacilitatorViews(TestCase):
         self.assertEqual(StudyGroup.objects.last().application_set.count(), 0)
 
 
+    def test_update_study_group_legacy_view(self):
+        user = create_user('bob@example.net', 'bob', 'test', 'password', False)
+        confirm_user_email(user)
+        c = Client()
+        c.login(username='bob@example.net', password='password')
+        data = self.STUDY_GROUP_DATA.copy()
+        data['start_date'] = '12/25/2018'
+        data['meeting_time'] = '07:00 PM'
+        with freeze_time("2018-12-20"):
+            resp = c.post('/en/studygroup/create/legacy/', data)
+            self.assertRedirects(resp, '/en/facilitator/')
+        study_groups = StudyGroup.objects.filter(facilitator=user)
+        self.assertEquals(study_groups.count(), 1)
+        lc = study_groups.first()
+        self.assertEquals(study_groups.first().meeting_set.active().count(), 0)
+
+        # updates allowed for drafts
+        with freeze_time("2018-12-28"):
+            data['start_date'] = '12/25/2018'
+            data['meeting_time'] = '07:10 PM'
+            edit_url = '/en/studygroup/{}/edit/legacy/'.format(lc.pk)
+            resp = c.post(edit_url, data)
+            self.assertRedirects(resp, '/en/facilitator/')
+            study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
+            self.assertEqual(study_group.start_date, datetime.date(2018, 12, 25))
+            self.assertEqual(study_group.meeting_time, datetime.time(19, 10))
+            self.assertEqual(study_group.meeting_set.active().count(), 0)
+
+        resp = c.post('/en/studygroup/{0}/publish/'.format(study_groups.first().pk))
+        self.assertRedirects(resp, '/en/facilitator/')
+        study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
+        self.assertEqual(study_group.draft, False)
+        self.assertEqual(study_group.meeting_set.active().count(), 6)
+
+        # update not allowed
+        with freeze_time("2018-12-24"):
+            data['start_date'] = '12/24/2018'
+            data['meeting_time'] = '07:00 PM'
+            data['weeks'] = 4
+            edit_url = '/en/studygroup/{}/edit/legacy/'.format(study_group.pk)
+            resp = c.post(edit_url, data)
+            self.assertEqual(resp.status_code, 200)
+            study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
+            self.assertEqual(study_group.start_date, datetime.date(2018, 12, 25))
+            self.assertEqual(study_group.meeting_set.active().count(), 6)
+
+        # update allowed
+        with freeze_time("2018-12-22"):
+            data['start_date'] = '12/24/2018'
+            data['meeting_time'] = '07:00 PM'
+            data['weeks'] = 3
+            edit_url = '/en/studygroup/{}/edit/legacy/'.format(study_group.pk)
+            resp = c.post(edit_url, data)
+            self.assertRedirects(resp, '/en/facilitator/')
+            study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
+            self.assertEqual(study_group.start_date, datetime.date(2018, 12, 24))
+            self.assertEqual(study_group.meeting_set.active().count(), 3)
+
+        meeting_times = [(meeting.meeting_date, meeting.meeting_time) for meeting in study_group.meeting_set.active().all()]
+        self.assertEqual(meeting_times, [
+            (datetime.date(2018,12,24), datetime.time(19,0)),
+            (datetime.date(2018,12,31), datetime.time(19,0)),
+            (datetime.date(2019,1,7), datetime.time(19,0)),
+        ])
+
+
     @patch('custom_registration.signals.handle_new_facilitator')
     def test_study_group_unicode_venue_name(self, handle_new_facilitator):
         user = create_user('bob@example.net', 'bob', 'test', 'password', False)
@@ -256,6 +329,83 @@ class TestFacilitatorViews(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertIn('/en/signup/%D0%B1%D1%8B%D1%81%D1%82%D1%80%D0%B5%D0%B5-%D0%B8-%D0%BB%D1%83%D1%87%D1%88%D0%B5-', resp.content.decode("utf-8"))
 
+
+    def test_edit_meeting(self):
+        # Create studygroup
+        # generate reminder
+        # edit meeting
+        # make sure reminder was deleted
+        # send reminders
+        # edit meeting in the past to be in the future now
+        # test reminder in now orphaned
+
+        user = create_user('bob@example.net', 'bob', 'test', 'password', False)
+        confirm_user_email(user)
+        c = Client()
+        c.login(username='bob@example.net', password='password')
+        data = self.STUDY_GROUP_DATA.copy()
+        data['start_date'] = '12/25/2018'
+        data['meeting_time'] = '07:00 PM'
+        resp = c.post('/en/studygroup/create/legacy/', data)
+        self.assertRedirects(resp, '/en/facilitator/')
+        study_groups = StudyGroup.objects.filter(facilitator=user)
+        self.assertEquals(study_groups.count(), 1)
+        lc = study_groups.first()
+        self.assertEquals(study_groups.first().meeting_set.count(), 0)
+        resp = c.post('/en/studygroup/{0}/publish/'.format(study_groups.first().pk))
+        self.assertRedirects(resp, '/en/facilitator/')
+        study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
+        self.assertEqual(study_group.draft, False)
+        self.assertEqual(study_group.meeting_set.count(), 6)
+
+        # generate reminder for first meeting (< 4 days before 25 Dec)
+        with freeze_time('2018-12-22'):
+            generate_reminder(study_group)
+            self.assertEqual(Reminder.objects.filter(study_group=study_group).count(), 1)
+
+        # update meeting with unsent reminder
+        reminder = Reminder.objects.filter(study_group=study_group).first()
+        meeting = reminder.study_group_meeting
+        meeting_id = meeting.pk
+        update = {
+            "meeting_date": "2018-12-27",
+            "meeting_time": "07:00 PM",
+            "study_group": study_group.pk,
+        }
+        resp = c.post('/en/studygroup/{0}/meeting/{1}/edit/'.format(study_group.pk, meeting.pk), update)
+        self.assertRedirects(resp, '/en/facilitator/')
+        meeting.refresh_from_db()
+        self.assertEqual(meeting.meeting_date, datetime.date(2018, 12, 27))
+        # make sure the reminder was deleted
+        self.assertEqual(Reminder.objects.filter(study_group=study_group).count(), 0)
+        
+        # generate a reminder for the updated meeting
+        with freeze_time('2018-12-24'):
+            generate_reminder(study_group)
+            self.assertEqual(Reminder.objects.filter(study_group=study_group).count(), 1)
+
+        # send it
+        with freeze_time('2018-12-26'):
+            self.assertEqual(Reminder.objects.filter(study_group=study_group, sent_at__isnull=False).count(), 0)
+            send_reminders()
+            self.assertEqual(Reminder.objects.filter(study_group=study_group, sent_at__isnull=False).count(), 1)
+
+        # and then update it afterwards to be in the future again
+        with freeze_time('2018-12-28'):
+            meeting.refresh_from_db()
+            self.assertTrue(meeting.meeting_datetime() < timezone.now())
+            self.assertEquals(Reminder.objects.count(), 1)
+            update['meeting_date'] = '2018-12-30'
+            resp = c.post('/en/studygroup/{0}/meeting/{1}/edit/'.format(study_group.pk, meeting.pk), update)
+            self.assertRedirects(resp, '/en/facilitator/')
+            meeting.refresh_from_db()
+            # old reminder should be orphaned - not linked to this meeting
+            self.assertEquals(meeting.reminder_set.count(), 0)
+            generate_reminder(study_group)
+            # now generate a reminder again
+            meeting.refresh_from_db()
+            self.assertEquals(meeting.reminder_set.count(), 1)
+            self.assertEquals(Reminder.objects.count(), 2)
 
 
     @patch('studygroups.tasks.send_message')
@@ -344,7 +494,6 @@ class TestFacilitatorViews(TestCase):
         TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
         TeamMembership.objects.create(team=team, user=faci1, role=TeamMembership.MEMBER)
 
-
         c = Client()
         c.login(username='faci1@team.com', password='1234')
         study_group = StudyGroup.objects.get(pk=1)
@@ -392,7 +541,7 @@ class TestFacilitatorViews(TestCase):
         self.assertFalse(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email__iexact=faci1.email).responded_at is None)
 
 
-    def test_user_rejept_invitation(self):
+    def test_user_reject_invitation(self):
         organizer = User.objects.create_user('organ@team.com', 'organ@team.com', '1234')
         faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', '1234')
         StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
@@ -520,6 +669,7 @@ class TestFacilitatorViews(TestCase):
         self.assertEqual(response.context_data['study_group_name'], course.title)
         self.assertEqual(response.context_data['facilitator'], facilitator)
         self.assertEqual(response.context_data['facilitator_name'], facilitator.first_name)
+
 
     def test_facilitator_active_learning_circles(self):
         facilitator = User.objects.create_user('bowie', 'hi@example.net', 'password')
