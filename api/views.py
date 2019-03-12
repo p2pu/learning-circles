@@ -326,7 +326,7 @@ class CourseListView(View):
         query_schema = {
             "offset": schema.integer(),
             "limit": schema.integer(),
-            "order": lambda v: (v, None) if v in ['title', 'usage', None] else (None, "must be 'title' or 'usage'")
+            "order": lambda v: (v, None) if v in ['title', 'usage', 'overall_rating', 'created_at', None] else (None, "must be 'title', 'usage', 'created_at', or 'overall_rating'")
         }
         data = schema.django_get_to_dict(request.GET)
         clean_data, errors = schema.validate(query_schema, data)
@@ -349,8 +349,13 @@ class CourseListView(View):
             course_id = request.GET.get('course_id')
             courses = courses.filter(pk=int(course_id))
 
-        if request.GET.get('order', None) in ['title', None]:
+        order = request.GET.get('order', None)
+        if order in ['title', None]:
             courses = courses.order_by('title')
+        elif order == 'overall_rating':
+            courses = courses.filter(overall_rating__isnull=False).order_by('-overall_rating')
+        elif order == 'created_at':
+            courses = courses.order_by('-created_at')
         else:
             courses = courses.order_by('-num_learning_circles')
 
@@ -367,6 +372,10 @@ class CourseListView(View):
             for topic in topics[1:]:
                 query = Q(topics__icontains=topic) | query
             courses = courses.filter(query)
+
+        if 'language' in request.GET:
+            language = request.GET.get('language', None)
+            courses = courses.filter(language=language)
 
         if 'active' in request.GET:
             active = request.GET.get('active') == 'true'

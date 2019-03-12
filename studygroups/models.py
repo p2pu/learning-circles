@@ -117,7 +117,7 @@ class Course(LifeTimeTrackingModel):
     unlisted = models.BooleanField(default=False)
     license = models.CharField(max_length=128, blank=True)
     platform = models.CharField(max_length=256, blank=True)
-    overall_rating = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True)
+    overall_rating = models.FloatField(null=True, blank=True)
     total_ratings = models.SmallIntegerField(blank=True, null=True)
     rating_step_counts = models.TextField(default="{}") # JSON value
     tagdorsements = models.CharField(max_length=256, blank=True)
