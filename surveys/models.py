@@ -5,6 +5,8 @@ from studygroups.models import Application
 
 import json
 
+STAR_RATING_STEPS = 5
+
 
 class FacilitatorSurveyResponse(models.Model):
     typeform_key = models.CharField(max_length=64, unique=True) #Called token in the JSON response

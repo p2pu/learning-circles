@@ -33,6 +33,7 @@ import urllib.request, urllib.parse, urllib.error
 import json
 
 
+
 """
 Tests for when facilitators interact with the system
 """
@@ -745,6 +746,29 @@ class TestFacilitatorViews(TestCase):
         response = c.get(url)
 
         self.assertRedirects(response, mock_url, fetch_redirect_response=False)
+
+
+    @patch('studygroups.views.facilitate.create_discourse_topic')
+    def test_generate_course_discourse_topic_failure(self, mock_request):
+        course = Course.objects.get(pk=3)
+        url = reverse('studygroups_generate_course_discourse_topic', args=(course.id,))
+
+        mock_slug = "test-slug"
+        mock_id = "123"
+        mock_url = "{}/t/{}/{}".format("https://community.p2pu.org", mock_slug, mock_id)
+        mock_response = {
+            "topic_slug": mock_slug,
+            "topic_id": mock_id
+        }
+        mock_request.configure_mock(return_value=mock_response)
+        mock_request.side_effect = Exception('Mock Exception')
+
+        expected_redirect_url = "{}/c/learning-circles/courses-and-topics".format(settings.DISCOURSE_BASE_URL)
+
+        c = Client()
+        response = c.get(url)
+
+        self.assertRedirects(response, expected_redirect_url, fetch_redirect_response=False)
 
 
 

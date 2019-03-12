@@ -315,10 +315,8 @@ def _course_to_json(course):
         "course_page_url": settings.DOMAIN + reverse("studygroups_course_page", args=(course.id,))
     }
 
-    try:
+    if hasattr(course, 'num_learning_circles'):
         data["learning_circles"] = course.num_learning_circles
-    except AttributeError:
-        pass
 
     return data
 

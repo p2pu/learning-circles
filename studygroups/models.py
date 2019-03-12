@@ -24,8 +24,6 @@ import urllib.request, urllib.parse, urllib.error
 import uuid
 import requests
 
-STAR_RATING_STEPS = 5
-
 
 # TODO - remove this
 STUDY_GROUP_NAMES = [
@@ -103,8 +101,6 @@ class LifeTimeTrackingModel(models.Model):
 
 
 class Course(LifeTimeTrackingModel):
-    COURSES_AND_TOPICS_DISCOURSE_CATEGORY_ID = 69
-
     title = models.CharField(max_length=128)
     provider = models.CharField(max_length=256)
     link = models.URLField()
@@ -126,108 +122,6 @@ class Course(LifeTimeTrackingModel):
 
     def __str__(self):
         return self.title
-
-    def studygroups_prefetch_survey_responses(self):
-        return StudyGroup.objects.filter(course=self.id).prefetch_related("facilitatorsurveyresponse_set", "learnersurveyresponse_set")
-
-
-    def calculate_ratings(self):
-        step_counts = {
-            5: 0,
-            4: 0,
-            3: 0,
-            2: 0,
-            1: 0,
-        }
-
-        ratings_sum = 0
-        total_ratings = 0
-
-        studygroups = self.studygroups_prefetch_survey_responses()
-
-        for sg in studygroups:
-            learner_surveys = sg.learnersurveyresponse_set.all()
-            facilitator_surveys = sg.facilitatorsurveyresponse_set.all()
-            for survey in learner_surveys:
-                rating_question = survey.get_survey_field("iGWRNCyniE7s")
-                rating_answer = survey.get_response_field("iGWRNCyniE7s")
-                # iGWRNCyniE7s = "How well did the online course {{hidden:course}} work as a learning circle?"
-                if rating_answer is not None:
-                    step_counts[rating_answer['number']] += 1
-                    ratings_sum += rating_answer['number']
-                    total_ratings += 1
-
-            for survey in facilitator_surveys:
-                rating_question = survey.get_survey_field("Zm9XlzKGKC66")
-                rating_answer = survey.get_response_field("Zm9XlzKGKC66")
-                # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
-                if rating_answer is not None:
-                    facilitator_rating = rating_answer['number']
-
-                if rating_question is not None:
-                    facilitator_steps = rating_question['properties']['steps']
-
-                # Make sure rating is out of 5
-                if facilitator_steps > STAR_RATING_STEPS:
-                    multiplier = STAR_RATING_STEPS / facilitator_steps
-                    steps = STAR_RATING_STEPS
-                    facilitator_rating = int(round(facilitator_rating * multiplier))
-
-                step_counts[facilitator_rating] += 1
-                ratings_sum += facilitator_rating
-                total_ratings += 1
-
-        overall_rating = round((ratings_sum / total_ratings), 2) if (total_ratings > 0) else None
-        rating_step_counts_json = json.dumps(step_counts, cls=DjangoJSONEncoder)
-
-        self.total_ratings=total_ratings
-        self.rating_step_counts=rating_step_counts_json
-        self.overall_rating=overall_rating
-        self.save()
-
-
-    def calculate_tagdorsements(self):
-        tag_counts = {
-            'Easy to use': 0,
-            'Good for first time facilitators': 0,
-            'Great for beginners': 0,
-            'Engaging material': 0,
-            'Learners were very satisfied': 0,
-            'Led to great discussions': 0,
-        }
-
-        total_reviewers = 0
-
-        studygroups = self.studygroups_prefetch_survey_responses()
-
-        for sg in studygroups:
-            facilitator_surveys = sg.facilitatorsurveyresponse_set.all()
-
-            for survey in facilitator_surveys:
-                response = survey.get_response_field("cNH3Ck0SHspB")
-                # cNH3Ck0SHspB = "How would you characterize the online course?"
-
-                if response is not None:
-                    labels = response["choices"]["labels"]
-                    total_reviewers += 1
-
-                    for label in labels:
-                        tag_counts[label] = tag_counts.get(label, 0) + 1
-
-        tagdorsements_list = []
-        if total_reviewers > 0:
-            for tag, count in tag_counts.items():
-                if (count / total_reviewers) > 0.66:
-                    tagdorsements_list.append(tag)
-
-        tagdorsement_counts = json.dumps(tag_counts, cls=DjangoJSONEncoder)
-        tagdorsements = ", ".join(tagdorsements_list)
-
-        self.tagdorsement_counts=tagdorsement_counts
-        self.tagdorsements=tagdorsements
-        self.total_reviewers=total_reviewers
-        self.save()
-
 
     def similar_courses(self):
         topics = self.topics.split(',')

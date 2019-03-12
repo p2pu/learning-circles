@@ -258,18 +258,18 @@ def create_discourse_topic(title, category, raw):
         return response.json()
     else:
         logger.error('Request to Discourse API failed with status code {}. Response text: {}'.format(response.status_code, response.text))
-        return None
+        raise
+
 
 def generate_course_discourse_topic(request, course_id):
     course = Course.objects.get(pk=course_id);
 
     post_title = "{} provided by {}".format(course.title, course.provider)
-    post_category = Course.COURSES_AND_TOPICS_DISCOURSE_CATEGORY_ID
+    post_category = settings.DISCOURSE_COURSES_AND_TOPICS_CATEGORY_ID
     post_raw = "{}".format(course.discourse_topic_default_body())
 
-    response_json = create_discourse_topic(post_title, post_category, post_raw)
-
-    if response_json is not None:
+    try:
+        response_json = create_discourse_topic(post_title, post_category, post_raw)
         topic_slug = response_json.get('topic_slug', None)
         topic_id = response_json.get('topic_id', None)
         topic_url = "{}/t/{}/{}".format(settings.DISCOURSE_BASE_URL, topic_slug, topic_id)
@@ -278,7 +278,7 @@ def generate_course_discourse_topic(request, course_id):
 
         return http.HttpResponseRedirect(topic_url)
 
-    else:
+    except:
         courses_and_topics_category_url = "{}/c/learning-circles/courses-and-topics".format(settings.DISCOURSE_BASE_URL)
         return http.HttpResponseRedirect(courses_and_topics_category_url)
 
