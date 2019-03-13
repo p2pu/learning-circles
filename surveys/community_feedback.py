@@ -37,22 +37,23 @@ def calculate_course_ratings(course):
     for survey in facilitator_surveys:
         rating_question = survey.get_survey_field("Zm9XlzKGKC66")
         rating_answer = survey.get_response_field("Zm9XlzKGKC66")
+
         # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
         if rating_answer and 'number' in rating_answer:
             facilitator_rating = rating_answer['number']
 
-        if rating_question and 'properties' in rating_answer:
-            facilitator_steps = rating_question['properties'].get('steps', STAR_RATING_STEPS)
+        if rating_question and 'properties' in rating_question:
+            facilitator_steps = rating_question['properties']['steps']
 
-        # Make sure rating is out of 5
-        if facilitator_steps > STAR_RATING_STEPS:
-            multiplier = STAR_RATING_STEPS / facilitator_steps
-            steps = STAR_RATING_STEPS
-            facilitator_rating = int(round(facilitator_rating * multiplier))
+            # Make sure rating is out of 5
+            if facilitator_steps > STAR_RATING_STEPS:
+                multiplier = STAR_RATING_STEPS / facilitator_steps
+                steps = STAR_RATING_STEPS
+                facilitator_rating = int(round(facilitator_rating * multiplier))
 
-        step_counts[facilitator_rating] += 1
-        ratings_sum += facilitator_rating
-        total_ratings += 1
+            step_counts[facilitator_rating] += 1
+            ratings_sum += facilitator_rating
+            total_ratings += 1
 
     overall_rating = round((ratings_sum / total_ratings), 2) if (total_ratings > 0) else 0
     rating_step_counts_json = json.dumps(step_counts, cls=DjangoJSONEncoder)
