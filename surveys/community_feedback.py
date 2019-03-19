@@ -70,7 +70,6 @@ def calculate_course_tagdorsements(course):
         'Good for first time facilitators': 0,
         'Great for beginners': 0,
         'Engaging material': 0,
-        'Learners were very satisfied': 0,
         'Led to great discussions': 0,
     }
 
@@ -89,7 +88,8 @@ def calculate_course_tagdorsements(course):
             total_reviewers += 1
 
             for label in labels:
-                tag_counts[label] = tag_counts.get(label, 0) + 1
+                if label in tag_counts:
+                    tag_counts[label] += 1
 
     tagdorsements_list = []
     if total_reviewers > 0:

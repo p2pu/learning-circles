@@ -233,6 +233,7 @@ class CoursePage(DetailView):
         context['similar_courses'] = json.dumps(similar_courses, cls=DjangoJSONEncoder)
         context['create_studygroup_url'] = create_studygroup_url
         context['generate_discourse_topic_url'] = generate_discourse_topic_url
+        context['default_discourse_text'] = self.object.discourse_topic_default_body()
 
         return context
 
@@ -264,7 +265,7 @@ def create_discourse_topic(title, category, raw):
 def generate_course_discourse_topic(request, course_id):
     course = Course.objects.get(pk=course_id);
 
-    post_title = "{} provided by {}".format(course.title, course.provider)
+    post_title = "{} ({})".format(course.title, course.provider)
     post_category = settings.DISCOURSE_COURSES_AND_TOPICS_CATEGORY_ID
     post_raw = "{}".format(course.discourse_topic_default_body())
 

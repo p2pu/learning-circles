@@ -8,6 +8,9 @@ const discussion = document.getElementById('course-discussion-preview')
 const similarCourses = document.getElementById('similar-courses')
 const courses = similarCourses.dataset.courses
 const topicUrl = discussion.dataset.topicUrl;
+const discourseText = discussion.dataset.discourseText
 
-ReactDOM.render(<DiscourseTopicPreview topicUrl={topicUrl} />, discussion)
+console.log(discourseText)
+
+ReactDOM.render(<DiscourseTopicPreview topicUrl={topicUrl} discourseText={discourseText} />, discussion)
 ReactDOM.render(<SimilarCoursesPreview courses={courses} />, similarCourses)

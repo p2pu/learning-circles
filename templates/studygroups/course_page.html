@@ -186,7 +186,7 @@
   <section>
     <div class="container">
       <h2 class="subtitle">{% trans "Discussion" %}</h2>
-      <div id="course-discussion-preview" data-topic-url="{{ course.discourse_topic_url }}">
+      <div id="course-discussion-preview" data-topic-url="{{ course.discourse_topic_url }}" data-discourse-text="{{ default_discourse_text }}">
         <div class="loader"></div>
       </div>
       {% if course.discourse_topic_url %}

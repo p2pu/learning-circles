@@ -13,9 +13,19 @@ const defaultPost = {
 
 
 export default class DiscourseTopicPreview extends React.Component {
-    state = {
-      posts: [ defaultPost ]
+  constructor(props) {
+    super(props)
+    this.state = {
+      posts: [
+        {
+          id: 123,
+          name: "Learning Circles Bot",
+          created_at: new Date(),
+          cooked: this.props.discourseText,
+        }
+      ]
     }
+  }
 
     componentDidMount() {
       console.log(this.props.topicUrl)
