@@ -5,15 +5,26 @@
 
 {% block content %}
 <div class="container">
-<div class="row">
-  <div class="col-md-8 col-sm-12">
-	  <form action="" method="POST">
-	    {% csrf_token %}
-        {{ form|crispy }}
-        <p><button type="submit" class="btn btn-default">{% trans "Save" %}</button></p>
-	  </form>
+  <div class="row">
+    <div class="col-md-8 col-sm-12">
+      <form action="" method="POST">
+        {% csrf_token %}
+          {{ form|crispy }}
+          {% if meeting and meeting.reminder_set.count %}
+            <div class="form-group">
+            {% with reminder=meeting.reminder_set.all|first %}
+              {% if reminder.sent_at %}
+              <p class="alert alert-warning">{% trans "A reminder has already been sent for this meeting. If you update the meeting, a new reminder will be generated and sent two days before the new meeting time. Consider sending learners a message telling them about the change." %}</p>
+              {% else %}
+              <p class="alert alert-warning">{% trans "A reminder has already been generated for this meeting. Updating this meeting will regenerate the reminder and you will loose any edits you may have made to the message." %}</p>
+              {% endif %}
+            {% endwith %}
+            </div>
+          {% endif %}
+          <p><button type="submit" class="btn btn-primary">{% trans "Save" %}</button></p>
+      </form>
+    </div>
   </div>
-</div>
 </div>
 {% endblock %}
 

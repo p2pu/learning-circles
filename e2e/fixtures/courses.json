@@ -1,0 +1,104 @@
+[
+{
+   "fields": {
+      "created_at": "2015-03-23T15:18:02.190Z",
+      "description": "-",
+      "title": "Beginner's Guide to Academic Writing",
+      "image": " ",
+      "caption": "Learn how to use English for study at university or college and develop your writing skills, vocabulary and grammar.",
+      "link": "https://www.futurelearn.com/courses/english-for-study",
+      "provider": "University of Reading via FutureLearn",
+      "duration": "6 weeks",
+      "time_required": "3 hours/week",
+      "start_date": "2015-06-07",
+      "prerequisite": "High school level English (TOEFL 32 or higher)"
+   },
+   "model": "studygroups.course",
+   "pk": 1
+},
+{
+   "fields": {
+      "created_at": "2015-08-05T18:08:13.949Z",
+      "description": "No description",
+      "title": "Introduction to Public Speaking",
+      "image": "",
+      "caption": "Learn the principles of public speaking by critically examining your own and others\u2019 speeches through interactive practice.",
+      "link": "https://www.coursera.org/learn/public-speaking",
+      "provider": "UW via Coursera",
+      "duration": "6 weeks",
+      "time_required": "3 hours/week",
+      "start_date": "2015-09-07",
+      "prerequisite": "None"
+   },
+   "model": "studygroups.course",
+   "pk": 2
+},
+{
+   "fields": {
+      "created_at": "2015-08-05T18:12:04.230Z",
+      "description": "None",
+      "title": "Resume Writing and Interview Skills",
+      "image": "",
+      "caption": "Learn how to effectively develop employment application materials for today's job market by honing your resume writing skills, developing an effective cover letter, and showcasing your personality, strengths, interests, and abilities to potential employers.",
+      "link": "https://learn.saylor.org/course/view.php?id=60",
+      "provider": "Saylor",
+      "duration": "6 weeks",
+      "time_required": "2 hours / week",
+      "start_date": "2015-09-07",
+      "prerequisite": "None"
+   },
+   "model": "studygroups.course",
+   "pk": 3
+},
+{
+   "fields": {
+      "created_at": "2015-08-05T18:15:47.627Z",
+      "description": "None",
+      "title": "Intro to HTML and CSS",
+      "image": "",
+      "caption": "Learn how to convert digital design mockups into static web pages by perfecting page layout, breaking down a design mockup into page elements, and implementing that in HTML and CSS.",
+      "link": "https://www.udacity.com/course/intro-to-html-and-css--ud304",
+      "provider": "Udacity",
+      "duration": "6 weeks",
+      "time_required": "6 hours / week",
+      "start_date": "2015-09-07",
+      "prerequisite": "None"
+   },
+   "model": "studygroups.course",
+   "pk": 4
+},
+{
+   "fields": {
+      "created_at": "2015-08-05T18:17:23.328Z",
+      "description": "None",
+      "title": "NCLEX-Registered Nurses Test Prep",
+      "image": "",
+      "caption": "Prepare for the National Council Licensing Examination for Registered Nurses (NCLEX-RN) with content developed specifically for nursing students getting ready for the test.",
+      "link": "https://www.khanacademy.org/test-prep/nclex-rn",
+      "provider": "Khan Academy",
+      "duration": "6 weeks",
+      "time_required": "2 hours / week",
+      "start_date": "2015-09-07",
+      "prerequisite": "None"
+   },
+   "model": "studygroups.course",
+   "pk": 5
+},
+{
+   "fields": {
+      "created_at": "2015-08-05T18:18:50.620Z",
+      "description": "None",
+      "title": "Start Writing Fiction",
+      "image": "",
+      "caption": "Learn how to get started with your own fiction writing, focusing first on the central skill of creating characters.",
+      "link": "https://www.futurelearn.com/courses/start-writing-fiction",
+      "provider": "The Open University via Futurelearn",
+      "duration": "8 weeks",
+      "time_required": "3 hours/week",
+      "start_date": "2015-10-12",
+      "prerequisite": "None"
+   },
+   "model": "studygroups.course",
+   "pk": 6
+}
+]

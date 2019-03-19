@@ -34,6 +34,7 @@ from studygroups.forms import OptOutForm
 from studygroups.rsvp import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
 
+import string
 import cities
 import json
 
@@ -228,13 +229,14 @@ def receive_sms(request):
     message = request.POST.get('Body')
 
     STOP_LIST = ['STOP', 'STOPALL', 'UNSUBSCRIBE', 'CANCEL', 'END', 'QUIT']
-    opt_out = message.strip().upper() in STOP_LIST
+    command = message.strip(string.punctuation + string.whitespace).upper() 
+    opt_out = command in STOP_LIST
     if opt_out:
         application_mobile_opt_out(sender)
         return http.HttpResponse(status=200)
 
     START_LIST = ['START', 'YES', 'UNSTOP']
-    opt_in = message.strip().upper() in START_LIST
+    opt_in = command in START_LIST
     if opt_in:
         application_mobile_opt_out_revert(sender)
         return http.HttpResponse(status=200)

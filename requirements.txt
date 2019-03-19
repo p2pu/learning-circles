@@ -22,7 +22,7 @@ defusedxml==0.5.0
 dj-database-url==0.4.2
 Django==1.11.6
 django-appconf==1.0.1
-django-crispy-forms==1.6.1
+django-crispy-forms==1.7.2
 django-inlinecss==0.1.2
 django-phonenumber-field==1.1.0
 django-webpack-loader==0.5.0
@@ -57,6 +57,7 @@ pytz==2017.2
 requests==2.18.4
 s3-backup-rotate==0.3.3
 s3transfer==0.1.13
+selenium==3.141.0
 six==1.11.0
 tinycss2==0.6.1
 transifex-client==0.12.4

@@ -18,7 +18,7 @@
         <form action="" method="POST">
           {% csrf_token %}
           {{ form|crispy }}
-          <p><button type="submit" class="btn btn-default">{% if object %}{% trans "Save"%}{% else %}{% trans "Add" %}{% endif %}</button></p>
+          <p><button type="submit" class="btn btn-primary">{% if object %}{% trans "Save"%}{% else %}{% trans "Add" %}{% endif %}</button></p>
         </form>
     </div>
   </div>

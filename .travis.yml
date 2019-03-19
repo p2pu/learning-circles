@@ -20,7 +20,9 @@ before_script:
 
 script:
 - docker run -d --name=postgres -e POSTGRES_PASSWORD=password postgres:9.3
-- docker run --rm -it --link postgres -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost p2pu/learning-circles dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
+- docker run -d --name=selenium selenium/standalone-chrome
+- docker run --rm -it --link postgres --link selenium -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost p2pu/learning-circles dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
+
 
 after_success:
 - echo "Push image to hub.docker.com"

@@ -2,13 +2,13 @@ import React from 'react'
 import ReactLoading from 'react-loading';
 
 const NextButton = (props) => (
-  <button className="p2pu-btn blue" onClick={props.onClick}>
+  <button className="p2pu-btn blue next-tab" onClick={props.onClick}>
     Next<i className="fa fa-arrow-right" aria-hidden="true"></i>
   </button>
 )
 
 const BackButton = (props) => (
-  <button className="p2pu-btn blue" onClick={props.onClick}>
+  <button className="p2pu-btn blue prev-tab" onClick={props.onClick}>
     <i className="fa fa-arrow-left" aria-hidden="true"></i>Back
   </button>
 )
