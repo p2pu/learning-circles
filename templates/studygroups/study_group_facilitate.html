@@ -25,25 +25,29 @@
       {% else %}
       <div class="col-md-12">
         <p>
-        <a class="btn btn-primary" href="{% url 'studygroups_edit_study_group' lc.id %}">{% trans "edit" %}</a>
-        <a class="btn btn-primary" href="{% url 'studygroups_studygroup_delete' lc.id %}">{% trans "delete" %}</a>
+        <a class="btn btn-primary" href="{% url 'studygroups_edit_study_group' lc.id %}">{% trans "Edit" %}</a>
+        <a class="btn btn-primary" href="{% url 'studygroups_studygroup_delete' lc.id %}">{% trans "Delete" %}</a>
         {% if lc.draft %}{% else %}
         {% if lc.signup_open %}
-        <a class="btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' lc.id %}">{% trans "close signup" %}</a>
+        <a class="btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' lc.id %}">{% trans "Close signup" %}</a>
         {% else %}
-        <a class="btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' lc.id %}">{% trans "open signup" %}</a>
+        <a class="btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' lc.id %}">{% trans "Open signup" %}</a>
         {% endif %}
         {% endif %}
-        <a class="btn btn-primary" href="{% url 'studygroups_signup' location=lc.venue_name|unicode_slugify study_group_id=lc.pk %}">{% trans "view webpage" %}</a>
-        <a class="btn btn-primary" href="{% url 'studygroups_final_report' study_group_id=lc.pk %}">{% trans "view final report" %}</a>
+        <a class="btn btn-primary" href="{% url 'studygroups_signup' location=lc.venue_name|unicode_slugify study_group_id=lc.pk %}">{% trans "View webpage" %}</a>
+        <a class="btn btn-primary" href="{% url 'studygroups_final_report' study_group_id=lc.pk %}">{% trans "View final report" %}</a>
         </p>
+        {% if lc.facilitatorsurveyresponse_set.count == 0 %}
+          <p><a class="btn btn-primary" href="{% url 'studygroups_facilitator_survey' lc.id %}">{% trans "Facilitator survey" %}</a></p>
+        {% endif %}
+        <p><strong>{% trans "Learner survey link:" %} <strong><a href="https://learningcircles.p2pu.org{% url 'studygroups_learner_survey' lc.uuid %}">https://learningcircles.p2pu.org/en/studygroup/189aa35a-76ca-461a-b3b8-a9e3509987fd/survey/</a></p>
         {% if lc.draft %}
           <div class="alert alert-info" role="alert">
             <p>{% trans "This learning circle is currently a draft and users won't be able to find it on www.p2pu.org or sign up." %}</p>
             <form action="{% url 'studygroups_studygroup_publish' study_group_id=lc.pk %}" method="POST">{% csrf_token %}<button type="submit" class="btn btn-primary" href="">{% trans "publish" %}</button></form>
           </div>
         {% endif %}
-        {% if not lc.signup_open %}
+        {% if not lc.signup_open and lc.last_meeting.meeting_datetime > today %}
           <div class="alert alert-info" role="alert">
             <p>{% trans "Signup is currently closed and your learning circle will not be listed on the landing page." %}</p>
           </div>
