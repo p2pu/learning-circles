@@ -32,6 +32,6 @@ class TestCommunityFeedback(TestCase):
 
         calculate_course_tagdorsements(course)
 
-        self.assertEqual(course.tagdorsement_counts, '{"Easy to use": 1, "Good for first time facilitators": 0, "Great for beginners": 1, "Engaging material": 1, "Learners were very satisfied": 1, "Led to great discussions": 1}')
-        self.assertEqual(course.tagdorsements, 'Easy to use, Great for beginners, Engaging material, Learners were very satisfied, Led to great discussions')
+        self.assertEqual(course.tagdorsement_counts, '{"Easy to use": 1, "Good for first time facilitators": 0, "Great for beginners": 1, "Engaging material": 1, "Led to great discussions": 1}')
+        self.assertEqual(course.tagdorsements, 'Easy to use, Great for beginners, Engaging material, Led to great discussions')
         self.assertEqual(course.total_reviewers, 1)
