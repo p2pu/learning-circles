@@ -27,8 +27,8 @@ from studygroups.models import Application
 from studygroups.models import get_studygroups_with_meetings
 from surveys.models import FacilitatorSurveyResponse
 from surveys.models import LearnerSurveyResponse
+from surveys.models import STAR_RATING_STEPS
 
-STAR_RATING_STEPS = 5
 SKILLS_LEARNED_THRESHOLD = 3
 GOAL_MET_THRESHOLD = 4
 NO_DATA = "<p>No data</p>"
@@ -1894,6 +1894,26 @@ class LearnerResponseRateChart():
 
         return self.chart.render(is_unicode=True)
 
+
+class OverallRatingBarChart():
+    def __init__(self, chart_data, **kwargs):
+        style = custom_style()
+        style.plot_background = "#F3F4F8"
+        style.colors = ["#05C6B4", "#B7D500", "#FFBC1A", "#FC7100", "#4c7e80"]
+        style.legend_font_size = 24
+        self.chart = pygal.Bar(style=style, height=260, show_legend=False, legend_at_bottom=True, legend_at_bottom_columns=5, show_y_labels=False, **kwargs)
+        self.chart_data = chart_data
+
+    def generate(self, **opts):
+
+        colours = ["#05C6B4", "#B7D500", "#FFBC1A", "#FC7100", "#4c7e80"]
+        serie = [ { "value": value, "color": colours.pop(0) } for value in self.chart_data.values() ]
+        labels = [ "{} ★".format(key) for key in self.chart_data.keys() ]
+
+        self.chart.add("Rating", serie)
+        self.chart.x_labels = labels
+
+        return self.chart.render(is_unicode=True)
 
 
 

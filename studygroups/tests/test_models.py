@@ -21,6 +21,8 @@ from studygroups.rsvp import gen_rsvp_querystring
 from studygroups.rsvp import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
 
+from studygroups.models import KNOWN_COURSE_PLATFORMS
+
 import calendar
 import datetime
 import pytz
@@ -187,5 +189,21 @@ class TestSignupModels(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn('the_facilitator_goal', mail.outbox[0].body)
         self.assertIn('the_facilitators_concerns', mail.outbox[0].body)
+[""]
+
+class TestCourseModel(TestCase):
+    fixtures = ['test_courses.json', 'test_studygroups.json', 'test_applications.json', 'test_survey_responses.json']
+
+    def test_detect_platform_from_link(self):
+        course = Course.objects.get(pk=4)
+
+        self.assertEqual(course.platform, "")
+
+        course.detect_platform_from_link()
+
+        self.assertEqual(course.platform, KNOWN_COURSE_PLATFORMS["www.khanacademy.org/"])
+
+
+
 
 

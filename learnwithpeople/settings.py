@@ -241,13 +241,9 @@ CELERYBEAT_SCHEDULE = {
         'task': 'backup.tasks.make_backup',
         'schedule': crontab(hour=1, minute=0),
     },
-    'sync_facilitator_surveys': {
-        'task': 'surveys.tasks.sync_facilitator_surveys',
+    'sync_typeform_surveys': {
+        'task': 'surveys.tasks.sync_surveys',
         'schedule': crontab(minute='10'),
-    },
-    'sync_learner_surveys': {
-        'task': 'surveys.tasks.sync_learner_surveys',
-        'schedule': crontab(minute='20'),
     },
     'send_facilitator_survey_reminder': {
         'task': 'studygroups.tasks.send_all_facilitator_survey_reminders',
@@ -305,10 +301,13 @@ MAILCHIMP_API_KEY = env('MAILCHIMP_API_KEY', '')
 MAILCHIMP_LIST_ID = env('MAILCHIMP_LIST_ID', '')
 MAILCHIMP_API_ROOT = env('MAILCHIMP_API_ROOT', 'https://??.api.mailchimp.com/3.0/')
 
-DISCOURSE_BASE_URL = env('DISCOURSE_BASE_URL', '')
+DISCOURSE_BASE_URL = env('DISCOURSE_BASE_URL', 'https://community.p2pu.org')
 DISCOURSE_SSO_SECRET = env('DISCOURSE_SSO_SECRET', '')
 DISCOURSE_API_KEY = env('DISCOURSE_API_KEY', '')
 DISCOURSE_API_USERNAME = env('DISCOURSE_API_USERNAME', '')
+DISCOURSE_BOT_API_KEY = env('DISCOURSE_BOT_API_KEY', '')
+DISCOURSE_BOT_API_USERNAME = env('DISCOURSE_BOT_API_USERNAME', '')
+DISCOURSE_COURSES_AND_TOPICS_CATEGORY_ID = env('DISCOURSE_COURSES_AND_TOPICS_CATEGORY_ID', 69)
 
 TYPEFORM_ACCESS_TOKEN = env('TYPEFORM_ACCESS_TOKEN', '')
 TYPEFORM_FACILITATOR_SURVEY_FORM = env('TYPEFORM_FACILITATOR_SURVEY_FORM', '')

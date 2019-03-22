@@ -5,6 +5,8 @@ from studygroups.models import Application
 
 import json
 
+STAR_RATING_STEPS = 5
+
 
 class FacilitatorSurveyResponse(models.Model):
     typeform_key = models.CharField(max_length=64, unique=True) #Called token in the JSON response
@@ -12,6 +14,17 @@ class FacilitatorSurveyResponse(models.Model):
     survey = models.TextField()
     response = models.TextField() #This will be a JSON value
     responded_at = models.DateTimeField()
+
+    def get_response_field(self, question_id):
+        response = json.loads(self.response)
+        answers = response['answers']
+        return next((answer for answer in answers if answer["field"]["id"] == question_id), None)
+
+    def get_survey_field(self, field_id):
+        survey = json.loads(self.survey)
+        survey_fields = survey['fields']
+        return next((field for field in survey_fields if field["id"] == field_id), None)
+
 
 
 class LearnerSurveyResponse(models.Model):
@@ -21,6 +34,16 @@ class LearnerSurveyResponse(models.Model):
     survey = models.TextField()
     response = models.TextField() #This will be a JSON value
     responded_at = models.DateTimeField()
+
+    def get_response_field(self, question_id):
+        response = json.loads(self.response)
+        answers = response['answers']
+        return next((answer for answer in answers if answer["field"]["id"] == question_id), None)
+
+    def get_survey_field(self, field_id):
+        survey = json.loads(self.survey)
+        survey_fields = survey['fields']
+        return next((field for field in survey_fields if field["id"] == field_id), None)
 
 
 def find_field(field_id, typeform_survey):

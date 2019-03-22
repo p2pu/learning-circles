@@ -63,6 +63,6 @@ tinycss2==0.6.1
 transifex-client==0.12.4
 twilio==6.8.0
 unicodecsv==0.14.1
-urllib3==1.22
+urllib3==1.24.1
 vine==1.1.3
 webencodings==0.5.1

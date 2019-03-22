@@ -1,7 +1,52 @@
 {% load i18n %}
-<div>
-  <h3 class="">{{course.title}}</h3>
-  <p class="">{{course.caption}}</p>
-  <p><a class="" href="{{course.link}}" target="_blank">{% trans "Course homepage" %}</a></p>
+<div class="result-item grid-item col-md-4">
+  <div class="card border-0">
+    <div class="card-title mb-0">
+      <h4 class="title">{{ course.title }}</h4>
+    </div>
+    <div class="card-body">
+      <p class="caption">{{ course.caption }}</p>
+
+      <table>
+        <tbody>
+          <tr>
+            <td>Topics</td>
+            <td>{{ course.topics }}</td>
+          </tr>
+
+          <tr>
+            <td>Provider</td>
+            <td>{{ course.provider }}</td>
+          </tr>
+
+          <tr>
+            <td>Platform</td>
+            <td>{{ course.platform }}</td>
+          </tr>
+
+          <tr>
+            <td>Access</td>
+            <td>
+              {% if course.on_demand %}
+                {% trans "Always available" %}
+              {% else %}
+                {% trans "Check availability" %}
+              {% endif %}
+            </td>
+          </tr>
+
+          <tr>
+            <td>Community feedback</td>
+            <td>{{ course.tagdorsements }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="primary-cta">
+        <button class="btn p2pu-btn transparent blue">More details</button>
+        <button class="btn p2pu-btn blue">Use this course</button>
+      </div>
+    </div>
+  </div>
 </div>
 

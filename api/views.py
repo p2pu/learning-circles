@@ -13,6 +13,7 @@ from django.core.files.storage import get_storage_class
 from django.conf import settings
 from django.views.generic.detail import SingleObjectMixin
 from django.contrib.postgres.search import SearchQuery
+from django.utils.translation import get_language_info
 
 import json
 import datetime
@@ -30,6 +31,7 @@ from studygroups.models import Application
 from studygroups.models import Meeting
 from studygroups.models import Team
 from studygroups.models import generate_all_meetings
+from studygroups.models import course_platform_from_url
 
 from uxhelpers.utils import json_response
 
@@ -295,24 +297,35 @@ def _course_check(course_id):
 
 
 def _course_to_json(course):
-    return {
+    data = {
         "id": course.id,
         "title": course.title,
         "provider": course.provider,
+        "platform": course.platform,
         "link": course.link,
         "caption": course.caption,
         "on_demand": course.on_demand,
-        "learning_circles": course.num_learning_circles,
         "topics": [t.strip() for t in course.topics.split(',')] if course.topics else [],
         "language": course.language,
+        "overall_rating": course.overall_rating,
+        "total_ratings": course.total_ratings,
+        "rating_step_counts": course.rating_step_counts,
+        "tagdorsements": course.tagdorsements,
+        "tagdorsement_counts": course.tagdorsement_counts,
+        "course_page_url": settings.DOMAIN + reverse("studygroups_course_page", args=(course.id,))
     }
+
+    if hasattr(course, 'num_learning_circles'):
+        data["learning_circles"] = course.num_learning_circles
+
+    return data
 
 class CourseListView(View):
     def get(self, request):
         query_schema = {
             "offset": schema.integer(),
             "limit": schema.integer(),
-            "order": lambda v: (v, None) if v in ['title', 'usage', None] else (None, "must be 'title' or 'usage'")
+            "order": lambda v: (v, None) if v in ['title', 'usage', 'overall_rating', 'created_at', None] else (None, "must be 'title', 'usage', 'created_at', or 'overall_rating'")
         }
         data = schema.django_get_to_dict(request.GET)
         clean_data, errors = schema.validate(query_schema, data)
@@ -335,10 +348,15 @@ class CourseListView(View):
             course_id = request.GET.get('course_id')
             courses = courses.filter(pk=int(course_id))
 
-        if request.GET.get('order', None) in ['title', None]:
+        order = request.GET.get('order', None)
+        if order in ['title', None]:
             courses = courses.order_by('title')
+        elif order == 'overall_rating':
+            courses = courses.order_by('-overall_rating', '-total_ratings', 'title')
+        elif order == 'created_at':
+            courses = courses.order_by('-created_at')
         else:
-            courses = courses.order_by('-num_learning_circles')
+            courses = courses.order_by('-num_learning_circles', 'title')
 
         query = request.GET.get('q', None)
         if query:
@@ -353,6 +371,13 @@ class CourseListView(View):
             for topic in topics[1:]:
                 query = Q(topics__icontains=topic) | query
             courses = courses.filter(query)
+
+        if 'languages' in request.GET:
+            languages = request.GET.get('languages').split(',')
+            courses = courses.filter(language__in=languages)
+
+        if 'oer' in request.GET and request.GET.get('oer', False) == 'true':
+            courses = courses.filter(license__in=Course.OER_LICENSES)
 
         if 'active' in request.GET:
             active = request.GET.get('active') == 'true'
@@ -534,7 +559,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         # check based on current value for start date
         if date_changed and not study_group.can_update_meeting_datetime():
             return json_response(request, {"status": "error", "errors": {"start_date": "cannot update date"}})
-        
+
         # check based on new value for start date
         start_datetime = datetime.datetime.combine(
             data.get('start_date'),
@@ -702,3 +727,24 @@ class ImageUploadView(View):
             return json_response(request, {"image_url": image_url})
         else:
             return json_response(request, {'error': 'not a valid image'})
+
+def detect_platform_from_url(request):
+    url = request.GET.get('url', "")
+    platform = course_platform_from_url(url)
+
+    return json_response(request, { "platform": platform })
+
+
+
+class CourseLanguageListView(View):
+    """ Return langugages for listed courses """
+    def get(self, request):
+        languages = Course.objects.active().filter(unlisted=False).values_list('language', flat=True)
+        languages = set(languages)
+        languages_dict = [
+            get_language_info(language) for language in languages
+        ]
+
+        data = { "languages": languages_dict }
+        return json_response(request, data)
+
