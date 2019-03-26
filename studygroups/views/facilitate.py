@@ -222,8 +222,6 @@ class CoursePage(DetailView):
         usage = StudyGroup.objects.filter(course=self.object.id).count()
         rating_step_counts = json.loads(self.object.rating_step_counts)
         tagdorsement_counts = json.loads(self.object.tagdorsement_counts)
-        create_studygroup_url = reverse('studygroups_facilitator_studygroup_create') + "?course_id={}".format(self.object.id)
-        generate_discourse_topic_url = reverse('studygroups_generate_course_discourse_topic', args=(self.object.id,))
         similar_courses = [ _course_to_json(course) for course in self.object.similar_courses()]
 
         context['usage'] = usage
@@ -231,8 +229,6 @@ class CoursePage(DetailView):
         context['tagdorsement_counts'] = tagdorsement_counts
         context['rating_step_counts'] = rating_step_counts
         context['similar_courses'] = json.dumps(similar_courses, cls=DjangoJSONEncoder)
-        context['create_studygroup_url'] = create_studygroup_url
-        context['generate_discourse_topic_url'] = generate_discourse_topic_url
         context['default_discourse_text'] = self.object.discourse_topic_default_body()
 
         return context

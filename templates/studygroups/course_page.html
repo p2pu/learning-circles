@@ -192,14 +192,14 @@
       {% if course.discourse_topic_url %}
         <a href="{{ course.discourse_topic_url }}" class="btn p2pu-btn blue secondary">View the full thread</a>
       {% else %}
-        <a href="{{ generate_discourse_topic_url }}" class="btn p2pu-btn blue secondary">View the full thread</a>
+        <a href="{% url 'studygroups_generate_course_discourse_topic' course.pk %}" class="btn p2pu-btn blue secondary">View the full thread</a>
       {% endif %}
     </div>
   </section>
 
   <section class="bg-secondary">
     <div class="container text-center">
-      <a class="btn p2pu-btn blue" href="{{create_studygroup_url}}">{% trans "Use this course" %}</a>
+      <a class="btn p2pu-btn blue" href="{% url 'studygroups_facilitator_studygroup_create' %}?course_id={{course.id}}">{% trans "Use this course" %}</a>
     </div>
   </section>
 
