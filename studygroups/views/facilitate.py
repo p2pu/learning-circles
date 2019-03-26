@@ -300,7 +300,6 @@ class CourseCreate(CreateView):
             item.strip().lower() for sublist in topics for item in sublist[0].split(',')
         ]
         context['topics'] = list(set(topics))
-        context['detect_platform_url'] = reverse("api_course_detect_platform")
         return context
 
     def form_valid(self, form):

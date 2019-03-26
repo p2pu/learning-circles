@@ -48,7 +48,7 @@ window.reactData.topics = [
 $(document).ready(function(){
   $('#id_link').blur(function(e) {
     var url = e.currentTarget.value;
-    var apiEndpoint = "{{ detect_platform_url }}?url=" + url;
+    var apiEndpoint = "{% url 'api_course_detect_platform' %}?url=" + url;
 
     $.ajax(apiEndpoint, {
       success: function(data) {
