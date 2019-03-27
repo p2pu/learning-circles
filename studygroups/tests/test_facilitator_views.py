@@ -724,8 +724,8 @@ class TestFacilitatorViews(TestCase):
         self.assertEqual(response.context_data['tagdorsement_counts'], expected_tagdorsement_counts)
         self.assertEqual(response.context_data['rating_step_counts'], expected_rating_step_counts)
         self.assertEqual(len(json.loads(response.context_data['similar_courses'])), 3)
-        self.assertEqual(response.context_data['create_studygroup_url'], expected_create_studygroup_url)
-        self.assertEqual(response.context_data['generate_discourse_topic_url'], expected_generate_discourse_topic_url)
+        self.assertIn(expected_create_studygroup_url, str(response.content))
+        self.assertIn(expected_generate_discourse_topic_url, str(response.content))
 
 
     @patch('studygroups.views.facilitate.create_discourse_topic')
