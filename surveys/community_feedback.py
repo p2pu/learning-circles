@@ -2,7 +2,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 
 from .models import FacilitatorSurveyResponse
 from .models import LearnerSurveyResponse
-from .models import STAR_RATING_STEPS
+from .models import MAX_STAR_RATING
 
 from studygroups.models import StudyGroup
 
@@ -47,11 +47,11 @@ def calculate_course_ratings(course):
         if rating_question and 'properties' in rating_question:
             facilitator_steps = rating_question['properties']['steps']
 
-            # Normalize the rating if it doesn't match STAR_RATING_STEPS
-            if facilitator_steps != STAR_RATING_STEPS:
-                facilitator_rating = round(facilitator_rating/facilitator_steps * STAR_RATING_STEPS)
-        elif facilitator_rating > STAR_RATING_STEPS:
-            # if we don't know how many steps the rating has and it exceeds STAR_RATING_STEPS
+            # Normalize the rating if it doesn't match MAX_STAR_RATING
+            if facilitator_steps != MAX_STAR_RATING:
+                facilitator_rating = round(facilitator_rating/facilitator_steps * MAX_STAR_RATING)
+        elif facilitator_rating > MAX_STAR_RATING:
+            # if we don't know how many steps the rating has and it exceeds MAX_STAR_RATING
             # ignore this rating
             continue
 

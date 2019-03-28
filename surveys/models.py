@@ -5,7 +5,7 @@ from studygroups.models import Application
 
 import json
 
-STAR_RATING_STEPS = 5
+MAX_STAR_RATING = 5
 
 
 class FacilitatorSurveyResponse(models.Model):

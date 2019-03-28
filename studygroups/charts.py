@@ -27,7 +27,7 @@ from studygroups.models import Application
 from studygroups.models import get_studygroups_with_meetings
 from surveys.models import FacilitatorSurveyResponse
 from surveys.models import LearnerSurveyResponse
-from surveys.models import STAR_RATING_STEPS
+from surveys.models import MAX_STAR_RATING
 
 SKILLS_LEARNED_THRESHOLD = 3
 GOAL_MET_THRESHOLD = 4
@@ -669,9 +669,9 @@ class FacilitatorRatingChart():
         steps = selected_field['properties']['steps']
 
         # Make sure rating is out of 5
-        if steps > STAR_RATING_STEPS:
-            multiplier = STAR_RATING_STEPS / steps
-            steps = STAR_RATING_STEPS
+        if steps > MAX_STAR_RATING:
+            multiplier = MAX_STAR_RATING / steps
+            steps = MAX_STAR_RATING
             average_rating = average_rating * multiplier
 
         data = {
