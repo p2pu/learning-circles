@@ -21,7 +21,6 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
-from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
 
 import json
