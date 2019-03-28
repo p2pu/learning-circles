@@ -62,14 +62,15 @@ def sync_facilitator_responses():
     survey_responses = []
 
     for survey in r.get('items', []):
-        study_group_id = survey.get('hidden').get('studygroup')
+        study_group_id = survey.get('hidden', {}).get('studygroup')
         study_group = None
-        try:
-            study_group = StudyGroup.objects.get(uuid=study_group_id)
-        except ObjectDoesNotExist as e:
-            logger.debug('Study group with ID does not exist', e)
-        except ValidationError as e:
-            logger.debug('UUID is not valid', e)
+        if study_group_id:
+            try:
+                study_group = StudyGroup.objects.get(uuid=study_group_id)
+            except ObjectDoesNotExist as e:
+                logger.debug('Study group with ID does not exist', e)
+            except ValidationError as e:
+                logger.debug('UUID is not valid', e)
 
         responded_at = parser.parse(survey.get('submitted_at'))
 
