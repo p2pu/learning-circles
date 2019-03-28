@@ -33,6 +33,13 @@ class TestCourseApi(TestCase):
             'provider',
             'id',
             'on_demand',
+            'platform',
+            'overall_rating',
+            'total_ratings',
+            'rating_step_counts',
+            'tagdorsements',
+            'tagdorsement_counts',
+            'course_page_url'
         ]
         resp_keys = list(resp.json()["items"][0].keys())
         for key in resp_keys:
@@ -99,3 +106,23 @@ class TestCourseApi(TestCase):
     def test_search_by_active(self):
         # TODO
         pass
+
+    def test_detect_platform(self):
+        c = Client()
+
+        # detect Coursera
+        resp = c.get('/api/courses/detect-platform/', {'url': 'https://www.coursera.org/learn/interactive-python-2'})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["platform"], "Coursera")
+
+        # detect edx
+        resp = c.get('/api/courses/detect-platform/', {'url': 'https://www.edx.org/micromasters/data-science'})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["platform"], "edX")
+
+        # no match
+        resp = c.get('/api/courses/detect-platform/', {'url': 'http://example.com/'})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["platform"], "")
+
+

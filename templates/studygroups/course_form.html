@@ -43,6 +43,26 @@ window.reactData.topics = [
 ];
 
 </script>
+
+<script>
+$(document).ready(function(){
+  $('#id_link').blur(function(e) {
+    var url = e.currentTarget.value;
+    var apiEndpoint = "{% url 'api_course_detect_platform' %}?url=" + url;
+
+    $.ajax(apiEndpoint, {
+      success: function(data) {
+        $("#id_platform").val(data.platform)
+      },
+      error: function(err) {
+        console.log(err);
+      }
+    })
+  });
+});
+
+</script>
+
 {% render_bundle 'common' %}
 {% render_bundle 'course-form' %}
 {% endblock %}

@@ -8,6 +8,7 @@ from dateutil import parser
 
 from studygroups.models import StudyGroup
 from studygroups.models import Application
+from studygroups.models import Course
 
 from .models import FacilitatorSurveyResponse
 from .models import LearnerSurveyResponse
@@ -58,16 +59,18 @@ def sync_facilitator_responses():
         after = last_response.typeform_key
 
     r = get_all_responses(form_id, after=after)
+    survey_responses = []
 
     for survey in r.get('items', []):
-        study_group_id = survey.get('hidden').get('studygroup')
+        study_group_id = survey.get('hidden', {}).get('studygroup')
         study_group = None
-        try:
-            study_group = StudyGroup.objects.get(uuid=study_group_id)
-        except ObjectDoesNotExist as e:
-            logger.debug('Study group with ID does not exist', e)
-        except ValidationError as e:
-            logger.debug('UUID is not valid', e)
+        if study_group_id:
+            try:
+                study_group = StudyGroup.objects.get(uuid=study_group_id)
+            except ObjectDoesNotExist as e:
+                logger.debug('Study group with ID does not exist', e)
+            except ValidationError as e:
+                logger.debug('UUID is not valid', e)
 
         responded_at = parser.parse(survey.get('submitted_at'))
 
@@ -86,6 +89,11 @@ def sync_facilitator_responses():
                 setattr(survey_response, attr, value)
             survey_response.save()
 
+        survey_responses.append(survey_response)
+
+    return survey_responses
+
+
 
 def sync_learner_responses():
     form_id = settings.TYPEFORM_LEARNER_SURVEY_FORM
@@ -97,6 +105,7 @@ def sync_learner_responses():
         after = last_response.typeform_key
 
     r = get_all_responses(form_id, after=after)
+    survey_responses = []
 
     for survey in r.get('items', []):
 
@@ -133,3 +142,7 @@ def sync_learner_responses():
             for attr, value in data.items():
                 setattr(survey_response, attr, value)
             survey_response.save()
+
+        survey_responses.append(survey_response)
+
+    return survey_responses

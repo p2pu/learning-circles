@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<div class="course-page">
+  <section>
+    <div class="container text-center">
+      <h1>{{ course.title }}</h1>
+    </div>
+  </section>
+
+  <section class="bg-secondary">
+    <div class="container">
+      <p>{{ course.caption }}</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <h2 class="subtitle">{% trans "About the course" %}</h2>
+      <div class="grid-wrapper">
+        <div class="my-3 row">
+          <div class="label minicaps col-12 col-sm-4">
+            {% trans "Topics" %}
+          </div>
+          <div class="info col-12 col-sm-8">
+            {{ course.topics }}
+          </div>
+        </div>
+
+        <div class="my-3 row">
+          <div class="label minicaps col-12 col-sm-4">
+            {% trans "Provider" %}
+          </div>
+          <div class="info col-12 col-sm-8">
+            {{ course.provider }}
+          </div>
+        </div>
+
+        <div class="my-3 row">
+          <div class="label minicaps col-12 col-sm-4">
+            {% trans "Platform" %}
+          </div>
+          <div class="info col-12 col-sm-8">
+            {% if course.platform %}
+              {{ course.platform }}
+            {% else %}
+              {% trans "Unknown" %}
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="my-3 row">
+          <div class="label minicaps col-12 col-sm-4">
+            {% trans "Access" %}
+          </div>
+          <div class="info col-12 col-sm-8">
+            {% if course.on_demand %}
+              {% trans "Always available" %}
+            {% else %}
+              {% trans "Check availability" %}
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="my-3 row">
+          <div class="label minicaps col-12 col-sm-4">
+            {% trans "License" %}
+          </div>
+          <div class="info col-12 col-sm-8">
+            {{ course.license }}
+          </div>
+        </div>
+
+
+        <div class="my-3 row">
+          <div class="label minicaps col-12 col-sm-4">
+            {% trans "Added by" %}
+          </div>
+          <div class="info col-12 col-sm-8">
+            {% if course.created_by.first_name %}
+              {{ course.created_by.first_name }} {{ course.created_by.last_name }} {% trans "on" %} {{ course.created_at|date:"j M, Y" }}
+            {% else %}
+              {% trans "Anonymous on" %} {{ course.created_at|date:"j M, Y" }}
+            {% endif%}
+          </div>
+        </div>
+
+        <div class="my-3 row">
+          <div class="label minicaps col-12 col-sm-4">
+            {% trans "Language" %}
+          </div>
+          <div class="info col-12 col-sm-8">
+            {% get_language_info for course.language as lang %}
+            {{ lang.name_local }}
+          </div>
+        </div>
+
+        <div class="my-3 row">
+          <div class="label minicaps col-12 col-sm-4">
+            {% trans "Popularity" %}
+          </div>
+          <div class="info col-12 col-sm-8">
+            {% blocktrans count usage=usage %}
+              Used in {{ usage }} learning circle
+            {% plural %}
+              Used in {{ usage }} learning circles
+            {% endblocktrans %}
+          </div>
+        </div>
+
+        <div class="my-3 row">
+          <div class="label minicaps col-12 col-sm-4">
+            {% trans "Course website" %}
+          </div>
+          <div class="info col-12 col-sm-8">
+            <a href="{{ course.link }}">{% trans "Visit the course website" %}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-secondary">
+    <div class="container">
+      <h2 class="subtitle">{% trans "Community feedback" %}</h2>
+      <div class="row grid-wrapper community-feedback ratings-section mb-5">
+        <div class="label minicaps col-12 col-md-3">
+          <div>
+            {% if course.overall_rating %}
+            <div class="overall-rating">{{ course.overall_rating }}</div>
+            {% else %}
+            <div class="overall-rating">--</div>
+            {% endif %}
+            <div>{% trans "Overall rating" %}</div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          {{ rating_counts_chart|safe }}
+        </div>
+        <div class="col-12 col-md-3 ratings-count">
+          {% blocktrans count total_ratings=course.total_ratings %}
+            {{ total_ratings }} rating
+          {% plural %}
+            {{ total_ratings }} ratings
+          {% endblocktrans %}
+        </div>
+      </div>
+
+      <div class="grid-wrapper community-feedback">
+
+        {% for label, value in tagdorsement_counts.items %}
+        {% with width=0 %}
+        {% if course.total_reviewers %}
+          {% widthratio value course.total_reviewers 100 as width %}
+        {% endif %}
+
+        <div class="row my-3">
+          <div class="label minicaps col-12 col-md-3">
+            {{ label }}
+          </div>
+          <div class="grid-item col-12 col-md-6">
+            <div class="progress">
+              <div class="progress-bar" role="progressbar" style="width: {{width}}%" aria-valuenow="{{width}}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+          <div class="grid-item col-12 col-md-3">
+            {% blocktrans count total_reviewers=course.total_reviewers %}
+              {{ value }}/{{ total_reviewers }} reviewer
+            {% plural %}
+              {{ value }}/{{ total_reviewers }} reviewers
+            {% endblocktrans %}
+          </div>
+        </div>
+
+        {% endwith %}
+        {% endfor %}
+
+
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <h2 class="subtitle">{% trans "Discussion" %}</h2>
+      <div id="course-discussion-preview" data-topic-url="{{ course.discourse_topic_url }}" data-discourse-text="{{ default_discourse_text }}">
+        <div class="loader"></div>
+      </div>
+      {% if course.discourse_topic_url %}
+        <a href="{{ course.discourse_topic_url }}" class="btn p2pu-btn blue secondary">View the full thread</a>
+      {% else %}
+        <a href="{% url 'studygroups_generate_course_discourse_topic' course.pk %}" class="btn p2pu-btn blue secondary">View the full thread</a>
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="bg-secondary">
+    <div class="container text-center">
+      <a class="btn p2pu-btn blue" href="{% url 'studygroups_facilitator_studygroup_create' %}?course_id={{course.id}}">{% trans "Use this course" %}</a>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <h2 class="subtitle">{% trans "Similar courses" %}</h2>
+      <div id="similar-courses" data-courses="{{ similar_courses }}">
+        <div class="loader"></div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/vendor/pygal-tooltips.min.js' %}"></script>
+{% render_bundle 'common' %}
+{% render_bundle 'course-page' %}
+
+{% endblock %}

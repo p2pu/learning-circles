@@ -1,6 +1,5 @@
 from django.core.urlresolvers import reverse
 from django.views import View
-from django.views.generic.edit import FormView
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.text import slugify
@@ -13,15 +12,14 @@ from django.core.files.storage import get_storage_class
 from django.conf import settings
 from django.views.generic.detail import SingleObjectMixin
 from django.contrib.postgres.search import SearchQuery
+from django.utils.translation import get_language_info
 
+from collections import Counter
 import json
 import datetime
 import re
 import pytz
 import logging
-
-logger = logging.getLogger(__name__)
-
 
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.models import Course
@@ -30,12 +28,16 @@ from studygroups.models import Application
 from studygroups.models import Meeting
 from studygroups.models import Team
 from studygroups.models import generate_all_meetings
+from studygroups.models import course_platform_from_url
 
 from uxhelpers.utils import json_response
 
 from .geo import getLatLonDelta
 from . import schema
 from .forms import ImageForm
+
+logger = logging.getLogger(__name__)
+
 
 class CustomSearchQuery(SearchQuery):
     """ use to_tsquery to support partial matches """
@@ -250,10 +252,8 @@ class LearningCircleTopicListView(View):
         topics = [
             item.strip().lower() for sublist in topics for item in sublist[0].split(',')
         ]
-        from collections import Counter
         data = {}
-        #data['items'] = list(set(topics))
-        data['topics'] = { k:v for k,v in list(Counter(topics).items()) }
+        data['topics'] = { k: v for k, v in list(Counter(topics).items()) }
         return json_response(request, data)
 
 
@@ -295,24 +295,36 @@ def _course_check(course_id):
 
 
 def _course_to_json(course):
-    return {
+    data = {
         "id": course.id,
         "title": course.title,
         "provider": course.provider,
+        "platform": course.platform,
         "link": course.link,
         "caption": course.caption,
         "on_demand": course.on_demand,
-        "learning_circles": course.num_learning_circles,
         "topics": [t.strip() for t in course.topics.split(',')] if course.topics else [],
         "language": course.language,
+        "overall_rating": course.overall_rating,
+        "total_ratings": course.total_ratings,
+        "rating_step_counts": course.rating_step_counts,
+        "tagdorsements": course.tagdorsements,
+        "tagdorsement_counts": course.tagdorsement_counts,
+        "course_page_url": settings.DOMAIN + reverse("studygroups_course_page", args=(course.id,))
     }
+
+    if hasattr(course, 'num_learning_circles'):
+        data["learning_circles"] = course.num_learning_circles
+
+    return data
+
 
 class CourseListView(View):
     def get(self, request):
         query_schema = {
             "offset": schema.integer(),
             "limit": schema.integer(),
-            "order": lambda v: (v, None) if v in ['title', 'usage', None] else (None, "must be 'title' or 'usage'")
+            "order": lambda v: (v, None) if v in ['title', 'usage', 'overall_rating', 'created_at', None] else (None, "must be 'title', 'usage', 'created_at', or 'overall_rating'")
         }
         data = schema.django_get_to_dict(request.GET)
         clean_data, errors = schema.validate(query_schema, data)
@@ -335,10 +347,15 @@ class CourseListView(View):
             course_id = request.GET.get('course_id')
             courses = courses.filter(pk=int(course_id))
 
-        if request.GET.get('order', None) in ['title', None]:
+        order = request.GET.get('order', None)
+        if order in ['title', None]:
             courses = courses.order_by('title')
+        elif order == 'overall_rating':
+            courses = courses.order_by('-overall_rating', '-total_ratings', 'title')
+        elif order == 'created_at':
+            courses = courses.order_by('-created_at')
         else:
-            courses = courses.order_by('-num_learning_circles')
+            courses = courses.order_by('-num_learning_circles', 'title')
 
         query = request.GET.get('q', None)
         if query:
@@ -353,6 +370,13 @@ class CourseListView(View):
             for topic in topics[1:]:
                 query = Q(topics__icontains=topic) | query
             courses = courses.filter(query)
+
+        if 'languages' in request.GET:
+            languages = request.GET.get('languages').split(',')
+            courses = courses.filter(language__in=languages)
+
+        if 'oer' in request.GET and request.GET.get('oer', False) == 'true':
+            courses = courses.filter(license__in=Course.OER_LICENSES)
 
         if 'active' in request.GET:
             active = request.GET.get('active') == 'true'
@@ -391,8 +415,7 @@ class CourseTopicListView(View):
         ]
         from collections import Counter
         data = {}
-        #data['items'] = list(set(topics))
-        data['topics'] = { k:v for k,v in list(Counter(topics).items()) }
+        data['topics'] = { k: v for k, v in list(Counter(topics).items()) }
         return json_response(request, data)
 
 
@@ -407,8 +430,8 @@ def _image_check():
 
 def _user_check(user):
     def _validate(value):
-        if value == False:
-            if user.profile.email_confirmed_at == None:
+        if value is False:
+            if user.profile.email_confirmed_at is None:
                 return None, 'Users with unconfirmed email addresses cannot publish courses'
         return value, None
     return _validate
@@ -419,6 +442,7 @@ def _studygroup_check(studygroup_id):
         return None, 'Learning circle matching ID not found'
     else:
         return StudyGroup.objects.get(pk=int(studygroup_id)), None
+
 
 def _make_learning_circle_schema(request):
     post_schema = {
@@ -496,16 +520,16 @@ class LearningCircleCreateView(View):
             facilitator_concerns=data.get('facilitator_concerns', '')
         )
         # only update value for draft if the use verified their email address
-        if request.user.profile.email_confirmed_at != None:
+        if request.user.profile.email_confirmed_at is not None:
             study_group.draft = data.get('draft', True)
         study_group.save()
 
         # generate all meetings if the learning circle has been published
-        if study_group.draft == False:
+        if study_group.draft is False:
             generate_all_meetings(study_group)
 
         study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name, allow_unicode=True), study_group.id,))
-        return json_response(request, { "status": "created", "url": study_group_url });
+        return json_response(request, { "status": "created", "url": study_group_url })
 
 
 @method_decorator(user_is_group_facilitator, name='dispatch')
@@ -534,7 +558,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         # check based on current value for start date
         if date_changed and not study_group.can_update_meeting_datetime():
             return json_response(request, {"status": "error", "errors": {"start_date": "cannot update date"}})
-        
+
         # check based on new value for start date
         start_datetime = datetime.datetime.combine(
             data.get('start_date'),
@@ -545,13 +569,12 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         if date_changed and start_datetime < timezone.now() + datetime.timedelta(days=2):
             return json_response(request, {"status": "error", "errors": {"start_date": "The start date must be at least 2 days from today"}})
 
-
         # update learning circle
         published = False
         # only publish a learning circle for a user with a verified email address
         draft = data.get('draft', True)
-        if draft == False and request.user.profile.email_confirmed_at != None:
-            published = study_group.draft == True
+        if draft is False and request.user.profile.email_confirmed_at is not None:
+            published = study_group.draft is True
             study_group.draft = False
 
         study_group.course = data.get('course')
@@ -587,7 +610,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
             generate_all_meetings(study_group)
 
         study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name, allow_unicode=True), study_group.id,))
-        return json_response(request, { "status": "updated", "url": study_group_url });
+        return json_response(request, { "status": "updated", "url": study_group_url })
 
 
 class SignupView(View):
@@ -630,7 +653,7 @@ class SignupView(View):
         if data.get('mobile'):
             application.mobile = data.get('mobile')
         application.save()
-        return json_response(request, {"status": "created"});
+        return json_response(request, {"status": "created"})
 
 
 class LandingPageLearningCirclesView(View):
@@ -646,7 +669,7 @@ class LandingPageLearningCirclesView(View):
 
         # if there are less than 3 with upcoming meetings and an image
         if study_groups.count() < 3:
-            #pad with learning circles with the most recent meetings
+            # pad with learning circles with the most recent meetings
             past_study_groups = StudyGroup.objects.published().filter(
                 meeting__meeting_date__lt=timezone.now(),
             ).annotate(
@@ -682,7 +705,6 @@ class LandingPageStatsView(View):
         cities_s = list(set([c['city'].split(',')[0].strip() for c in cities]))
         data = {
             "active_learning_circles": study_groups.count(),
-            #"city_list": [v['city'] for v in cities],
             "cities": len(cities_s),
             "facilitators": facilitators.count(),
             "learning_circle_count": learning_circle_count
@@ -702,3 +724,23 @@ class ImageUploadView(View):
             return json_response(request, {"image_url": image_url})
         else:
             return json_response(request, {'error': 'not a valid image'})
+
+
+def detect_platform_from_url(request):
+    url = request.GET.get('url', "")
+    platform = course_platform_from_url(url)
+
+    return json_response(request, { "platform": platform })
+
+
+class CourseLanguageListView(View):
+    """ Return langugages for listed courses """
+    def get(self, request):
+        languages = Course.objects.active().filter(unlisted=False).values_list('language', flat=True)
+        languages = set(languages)
+        languages_dict = [
+            get_language_info(language) for language in languages
+        ]
+
+        data = { "languages": languages_dict }
+        return json_response(request, data)

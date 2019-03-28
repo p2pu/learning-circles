@@ -21,11 +21,12 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
-from django.core import serializers
+from django.core.serializers.json import DjangoJSONEncoder
 
 import json
 import datetime
-
+import requests
+import logging
 
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
@@ -44,6 +45,10 @@ from studygroups.models import generate_all_meetings
 from studygroups.models import get_study_group_organizers
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import study_group_is_published
+from studygroups.charts import OverallRatingBarChart
+from api.views import _course_to_json
+
+logger = logging.getLogger(__name__)
 
 @login_required
 def login_redirect(request):
@@ -137,7 +142,7 @@ class MeetingUpdate(FacilitatorRedirectMixin, UpdateView):
                 # orphan reminder if a reminder was sent but the meeting is now in the future.
                 reminder.study_group_meeting = None
                 reminder.save()
-                # TODO we should check if the previous datetime was in the future, in 
+                # TODO we should check if the previous datetime was in the future, in
                 # which case we should let the learner know the details have changed
         return super().form_valid(form)
 
@@ -204,6 +209,74 @@ class ApplicationDelete(FacilitatorRedirectMixin, DeleteView):
     model = Application
     success_url = reverse_lazy('studygroups_facilitator')
     template_name = 'studygroups/confirm_delete.html'
+
+
+class CoursePage(DetailView):
+    model = Course
+    template_name = 'studygroups/course_page.html'
+    context_object_name = 'course'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        usage = StudyGroup.objects.filter(course=self.object.id).count()
+        rating_step_counts = json.loads(self.object.rating_step_counts)
+        tagdorsement_counts = json.loads(self.object.tagdorsement_counts)
+        similar_courses = [ _course_to_json(course) for course in self.object.similar_courses()]
+
+        context['usage'] = usage
+        context['rating_counts_chart'] = OverallRatingBarChart(rating_step_counts).generate()
+        context['tagdorsement_counts'] = tagdorsement_counts
+        context['rating_step_counts'] = rating_step_counts
+        context['similar_courses'] = json.dumps(similar_courses, cls=DjangoJSONEncoder)
+        context['default_discourse_text'] = self.object.discourse_topic_default_body()
+
+        return context
+
+
+def create_discourse_topic(title, category, raw):
+    create_topic_url = '{}/posts.json'.format(settings.DISCOURSE_BASE_URL)
+
+    request_data = {
+        'api_key': settings.DISCOURSE_BOT_API_KEY,
+        'api_username': settings.DISCOURSE_BOT_API_USERNAME,
+        'title': title,
+        'category': category,
+        'raw': raw,
+    }
+
+    request_headers = {
+        'Content-Type': 'multipart/form-data'
+    }
+
+    response = requests.post(create_topic_url, data=request_data, headers=request_headers)
+
+    if response.status_code == requests.codes.ok:
+        return response.json()
+    else:
+        logger.error('Request to Discourse API failed with status code {}. Response text: {}'.format(response.status_code, response.text))
+        raise
+
+
+def generate_course_discourse_topic(request, course_id):
+    course = Course.objects.get(pk=course_id);
+
+    post_title = "{} ({})".format(course.title, course.provider)
+    post_category = settings.DISCOURSE_COURSES_AND_TOPICS_CATEGORY_ID
+    post_raw = "{}".format(course.discourse_topic_default_body())
+
+    try:
+        response_json = create_discourse_topic(post_title, post_category, post_raw)
+        topic_slug = response_json.get('topic_slug', None)
+        topic_id = response_json.get('topic_id', None)
+        topic_url = "{}/t/{}/{}".format(settings.DISCOURSE_BASE_URL, topic_slug, topic_id)
+        course.discourse_topic_url = topic_url
+        course.save()
+
+        return http.HttpResponseRedirect(topic_url)
+
+    except:
+        courses_and_topics_category_url = "{}/c/learning-circles/courses-and-topics".format(settings.DISCOURSE_BASE_URL)
+        return http.HttpResponseRedirect(courses_and_topics_category_url)
 
 
 @method_decorator(login_required, name="dispatch")

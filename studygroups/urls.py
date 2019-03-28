@@ -13,6 +13,7 @@ from studygroups.views import FeedbackUpdate
 from studygroups.views import ApplicationDelete
 from studygroups.views import ApplicationUpdate
 from studygroups.views import SignupSuccess
+from studygroups.views import CoursePage
 from studygroups.views import CourseCreate
 from studygroups.views import CourseUpdate
 from studygroups.views import CourseDelete
@@ -77,11 +78,11 @@ urlpatterns = [
     url(r'^studygroup/(?P<study_group_id>[\d]+)/member/(?P<pk>[0-9]+)/delete/$', ApplicationDelete.as_view(), name='studygroups_application_delete'),
     url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/feedback/$', StudyGroupLearnerSurvey.as_view()), #TODO remove after Aug 2018
     url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/survey/$', StudyGroupLearnerSurvey.as_view(), name='studygroups_learner_survey'),
-    url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/survey/done$', TemplateView.as_view(template_name='studygroups/learner_survey_done.html'), name='studygroups_learnear_survey_done'),
+    url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/survey/done/$', TemplateView.as_view(template_name='studygroups/learner_survey_done.html'), name='studygroups_learnear_survey_done'),
     url(r'^studygroup/(?P<study_group_id>[\w-]+)/facilitator_feedback/$', StudyGroupFacilitatorSurvey.as_view()), #TODO remove after Aug 2018
     url(r'^studygroup/(?P<study_group_id>[\w-]+)/facilitator_survey/$', StudyGroupFacilitatorSurvey.as_view(), name='studygroups_facilitator_survey'),
     url(r'^facilitator_survey/$', TemplateView.as_view(template_name='studygroups/anonymous_facilitator_survey.html'), name='anonymous_facilitator_survey'),
-    url(r'^facilitator_survey/done$', TemplateView.as_view(template_name='studygroups/facilitator_survey_done.html'), name='studygroups_facilitator_survey_done'),
+    url(r'^facilitator_survey/done/$', TemplateView.as_view(template_name='studygroups/facilitator_survey_done.html'), name='studygroups_facilitator_survey_done'),
 
     url(r'^studygroup/(?P<study_group_id>[\w-]+)/report/$', StudyGroupFinalReport.as_view(), name='studygroups_final_report'),
 
@@ -95,8 +96,10 @@ urlpatterns = [
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/create/$', FeedbackCreate.as_view(), name='studygroups_feedback'),
 
     url(r'^course/create/$', CourseCreate.as_view(), name='studygroups_course_create'),
+    url(r'^course/(?P<pk>[\d]+)/$', CoursePage.as_view(), name='studygroups_course_page'),
     url(r'^course/(?P<pk>[\d]+)/edit/$', CourseUpdate.as_view(), name='studygroups_course_edit'),
     url(r'^course/(?P<pk>[\d]+)/delete/$', CourseDelete.as_view(), name='studygroups_course_delete'),
+    url(r'^course/(?P<course_id>[\d]+)/discourse_topic/$', views.generate_course_discourse_topic, name='studygroups_generate_course_discourse_topic'),
 
     url(r'^facilitator/$', views.facilitator, name='studygroups_facilitator'),
     url(r'^facilitator/team-invitation/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm'),
@@ -130,6 +133,6 @@ urlpatterns = [
     url(r'^export/studygroups/$', ExportStudyGroupsView.as_view(), name='studygroups_export_studygroups'),
     url(r'^export/courses/$', ExportCoursesView.as_view(), name='studygroups_export_courses'),
 
-    url(r'^community_digest/(?P<start_date>[\w-]+)/(?P<end_date>[\w-]+)$', CommunityDigestView.as_view(), name='studygroups_community_digest'),
+    url(r'^community_digest/(?P<start_date>[\w-]+)/(?P<end_date>[\w-]+)/$', CommunityDigestView.as_view(), name='studygroups_community_digest'),
 ]
 

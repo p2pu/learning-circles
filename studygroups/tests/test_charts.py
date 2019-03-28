@@ -29,6 +29,7 @@ from studygroups.charts import FacilitatorRatingChart
 from studygroups.charts import AdditionalResourcesChart
 from studygroups.charts import FacilitatorNewSkillsChart
 from studygroups.charts import FacilitatorTipsChart
+from studygroups.charts import OverallRatingBarChart
 from studygroups.charts import NO_DATA
 
 import json
@@ -578,3 +579,18 @@ class TestCharts(TestCase):
         study_group = StudyGroup.objects.get(pk=2)
         result = FacilitatorTipsChart(study_group).generate()
         self.assertEqual(result, NO_DATA)
+
+
+    def test_overall_rating_bar_chart(self):
+        chart_data = {
+            5: 0,
+            4: 0,
+            3: 0,
+            2: 0,
+            1: 0,
+        }
+
+        chart_object = OverallRatingBarChart(chart_data)
+        result = chart_object.generate()
+        self.assertIn('svg xmlns:xlink="http://www.w3.org/1999/xlink"', result)
+

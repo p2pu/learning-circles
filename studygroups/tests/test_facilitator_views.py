@@ -8,7 +8,7 @@ from django.utils.translation import get_language
 from django.urls import reverse
 from django.conf import settings
 
-from mock import patch
+from mock import patch, Mock
 from freezegun import freeze_time
 
 from studygroups.models import Course
@@ -31,6 +31,7 @@ from custom_registration.models import confirm_user_email
 import datetime
 import urllib.request, urllib.parse, urllib.error
 import json
+
 
 
 """
@@ -156,7 +157,7 @@ class TestFacilitatorViews(TestCase):
         confirm_user_email(user)
         c = Client()
         c.login(username='bob@example.net', password='password')
-        
+
         with freeze_time('2018-07-20'):
             resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
             self.assertEqual(resp.json()['status'], 'created')
@@ -195,7 +196,7 @@ class TestFacilitatorViews(TestCase):
         confirm_user_email(user)
         c = Client()
         c.login(username='bob@example.net', password='password')
-    
+
         with freeze_time('2018-07-20'):
             resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
             self.assertEqual(resp.json()['status'], 'created')
@@ -378,7 +379,7 @@ class TestFacilitatorViews(TestCase):
         self.assertEqual(meeting.meeting_date, datetime.date(2018, 12, 27))
         # make sure the reminder was deleted
         self.assertEqual(Reminder.objects.filter(study_group=study_group).count(), 0)
-        
+
         # generate a reminder for the updated meeting
         with freeze_time('2018-12-24'):
             generate_reminder(study_group)
@@ -703,5 +704,71 @@ class TestFacilitatorViews(TestCase):
             resp = c.get('/en/facilitator/')
             self.assertEqual(resp.status_code, 200)
             self.assertNotIn(sg, resp.context['current_study_groups'])
+
+
+    def test_course_page(self):
+        course = Course.objects.get(pk=3)
+
+        c = Client()
+        response = c.get('/en/course/{}/'.format(course.id))
+
+        self.assertEqual(response.status_code, 200)
+
+        expected_create_studygroup_url = reverse('studygroups_facilitator_studygroup_create') + "?course_id={}".format(course.id)
+        expected_tagdorsement_counts = json.loads(course.tagdorsement_counts)
+        expected_rating_step_counts = json.loads(course.rating_step_counts)
+        expected_generate_discourse_topic_url = reverse('studygroups_generate_course_discourse_topic', args=(course.id,))
+
+        self.assertEqual(response.context_data['usage'], 1)
+        self.assertIsNotNone(response.context_data['rating_counts_chart'])
+        self.assertEqual(response.context_data['tagdorsement_counts'], expected_tagdorsement_counts)
+        self.assertEqual(response.context_data['rating_step_counts'], expected_rating_step_counts)
+        self.assertEqual(len(json.loads(response.context_data['similar_courses'])), 3)
+        self.assertIn(expected_create_studygroup_url, str(response.content))
+        self.assertIn(expected_generate_discourse_topic_url, str(response.content))
+
+
+    @patch('studygroups.views.facilitate.create_discourse_topic')
+    def test_generate_course_discourse_topic(self, mock_request):
+        course = Course.objects.get(pk=3)
+        url = reverse('studygroups_generate_course_discourse_topic', args=(course.id,))
+
+        mock_slug = "test-slug"
+        mock_id = "123"
+        mock_url = "{}/t/{}/{}".format("https://community.p2pu.org", mock_slug, mock_id)
+        mock_response = {
+            "topic_slug": mock_slug,
+            "topic_id": mock_id
+        }
+        mock_request.configure_mock(return_value=mock_response)
+
+        c = Client()
+        response = c.get(url)
+
+        self.assertRedirects(response, mock_url, fetch_redirect_response=False)
+
+
+    @patch('studygroups.views.facilitate.create_discourse_topic')
+    def test_generate_course_discourse_topic_failure(self, mock_request):
+        course = Course.objects.get(pk=3)
+        url = reverse('studygroups_generate_course_discourse_topic', args=(course.id,))
+
+        mock_slug = "test-slug"
+        mock_id = "123"
+        mock_url = "{}/t/{}/{}".format("https://community.p2pu.org", mock_slug, mock_id)
+        mock_response = {
+            "topic_slug": mock_slug,
+            "topic_id": mock_id
+        }
+        mock_request.configure_mock(return_value=mock_response)
+        mock_request.side_effect = Exception('Mock Exception')
+
+        expected_redirect_url = "{}/c/learning-circles/courses-and-topics".format(settings.DISCOURSE_BASE_URL)
+
+        c = Client()
+        response = c.get(url)
+
+        self.assertRedirects(response, expected_redirect_url, fetch_redirect_response=False)
+
 
 
