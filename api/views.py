@@ -310,7 +310,7 @@ def _course_to_json(course):
         "rating_step_counts": course.rating_step_counts,
         "tagdorsements": course.tagdorsements,
         "tagdorsement_counts": course.tagdorsement_counts,
-        "course_page_url": settings.DOMAIN + reverse("studygroups_course_page", args=(course.id,))
+        "course_page_url": 'https://' + settings.DOMAIN + reverse("studygroups_course_page", args=(course.id,))
     }
 
     if hasattr(course, 'num_learning_circles'):
