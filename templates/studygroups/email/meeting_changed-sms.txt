@@ -1,0 +1,1 @@
+{% load i18n %}{% blocktrans with meeting_date=old_meeting.meeting_datetime|date:"l, j N, fA" %}Your learning circle on {{meeting_date}} has been rescheduled. Reply STOP to unsubscribe.{% endblocktrans %}

@@ -41,6 +41,7 @@ from studygroups.forms import StudyGroupForm
 from studygroups.forms import MeetingForm
 from studygroups.forms import FeedbackForm
 from studygroups.tasks import send_reminder
+from studygroups.tasks import send_meeting_change_notification
 from studygroups.models import generate_all_meetings
 from studygroups.models import get_study_group_organizers
 from studygroups.decorators import user_is_group_facilitator
@@ -138,12 +139,19 @@ class MeetingUpdate(FacilitatorRedirectMixin, UpdateView):
                 # The reminder will be generated again if the meeting is still in the future
                 # This should only happen between 2 days and 4 days before the original start date.
                 reminder.delete()
-            elif self.object.meeting_datetime() > timezone.now():
-                # orphan reminder if a reminder was sent but the meeting is now in the future.
-                reminder.study_group_meeting = None
-                reminder.save()
-                # TODO we should check if the previous datetime was in the future, in
-                # which case we should let the learner know the details have changed
+            else:
+                # a reminder was sent already
+                # orphan reminder if the meeting is now in the future.
+                if self.object.meeting_datetime() > timezone.now():
+                    reminder.study_group_meeting = None
+                    reminder.save()
+                
+                # if meeting was scheduled for a date in the future 
+                # let learners know the details have changed
+                original_meeting = Meeting.objects.get(pk=self.object.pk)
+                if original_meeting.meeting_datetime() > timezone.now():
+                    send_meeting_change_notification.delay(original_meeting, self.object)
+
         return super().form_valid(form)
 
 

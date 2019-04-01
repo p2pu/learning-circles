@@ -1,0 +1,13 @@
+{% extends 'email_base.html' %}
+{% load i18n %}
+{% block body %}
+
+<p>{% blocktrans with course_title=learning_circle.course.title|safe old_date=old_meeting.meeting_datetime|date:"l, j N, fA" new_date=new_meeting.meeting_datetime|date:"l, j N, fA"%}Your {{course_title}} learning circle meeting scheduled for {{ old_date }} has been moved to {{ new_date }}.{% endblocktrans %}</p>
+
+<p>{% trans "You will receive a new reminder 2 days before the new scheduled meeting time" %}</p>
+
+<p>{% trans "See you soon." %}</p>
+
+{% url 'studygroups_optout' as unsubscribe_link %}
+<p>{% blocktrans with link=unsubscribe_link|safe %}To leave this learning circle and stop receiving messages, <a href="{{link}}">click here</a>{% endblocktrans %}</p>
+{% endblock %}
