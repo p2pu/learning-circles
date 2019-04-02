@@ -152,7 +152,7 @@ class Course(LifeTimeTrackingModel):
         self.save()
 
     def discourse_topic_default_body(self):
-        return _("<p>What recommendations do you have for other facilitators who are using \"{}\"? Consider sharing additional resources you found helpful, activities that worked particularly well, and some reflections on who this course is best suited for. For more information, see this course on <a href='{}'>P2PU’s course page</a>.</p>".format(self.title, reverse('studygroups_course_page', args=(self.id,))))
+        return _("<p>What recommendations do you have for other facilitators who are using \"{}\"? Consider sharing additional resources you found helpful, activities that worked particularly well, and some reflections on who this course is best suited for. For more information, see this course on <a href='https://www.p2pu.org{}'>P2PU’s course page</a>.</p>".format(self.title, reverse('studygroups_course_page', args=(self.id,))))
 
 
 # TODO move to custom_registration/models.py
