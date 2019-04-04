@@ -2,12 +2,14 @@ from django.template.loader import render_to_string
 from premailer import Premailer
 from django.conf import settings
 
+
 def render_html_with_css(template, context):
     html = render_to_string(template, context)
     base_url = "http://{}".format(settings.DOMAIN)
     html_with_inlined_css = Premailer(html, base_url=base_url, disable_validation=True).transform()
 
     return html_with_inlined_css
+
 
 def render_email_templates(template_base, context):
     """ use template_base to render subject, text and html for email """
@@ -25,5 +27,3 @@ def render_email_templates(template_base, context):
         context
     )
     return subject, txt, html
-
-
