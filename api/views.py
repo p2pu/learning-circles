@@ -28,7 +28,7 @@ from studygroups.models import Application
 from studygroups.models import Meeting
 from studygroups.models import Team
 from studygroups.models import generate_all_meetings
-from studygroups.models import course_platform_from_url
+from studygroups.models.course import course_platform_from_url
 
 from uxhelpers.utils import json_response
 

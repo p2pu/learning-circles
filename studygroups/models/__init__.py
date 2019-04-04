@@ -15,6 +15,12 @@ from collections import Counter
 from studygroups import rsvp
 from studygroups.utils import gen_unsubscribe_querystring
 
+from .base import SoftDeleteQuerySet
+from .base import LifeTimeTrackingModel
+from .course import Course
+from .team import *
+from .profile import Profile
+
 import calendar
 import datetime
 import pytz
@@ -42,129 +48,11 @@ STUDY_GROUP_NAMES = [
     "The Eternal Lovers"
 ]
 
-KNOWN_COURSE_PLATFORMS = {
-    "www.edx.org/": "edX",
-    "www.futurelearn.com/": "FutureLearn",
-    "ocw.mit.edu/": "MIT OpenCourseWare",
-    "www.coursera.org/": "Coursera",
-    "www.khanacademy.org/": "Khan Academy",
-    "www.lynda.com/": "Lynda",
-    "oli.cmu.edu/": "Open Learning Initiative",
-    "www.udemy.com/": "Udemy",
-    "www.udacity.com/": "Udacity",
-    "course.oeru.org/": "OERu",
-    "www.open.edu/openlearn/": "OpenLearn",
-    "www.codecademy.com/": "CodeAcademy",
-}
-
-def course_platform_from_url(url):
-    platform = ""
-
-    for domain in KNOWN_COURSE_PLATFORMS.keys():
-        if domain in url:
-            platform = KNOWN_COURSE_PLATFORMS[domain]
-
-    return platform
-
 
 def _study_group_name():
     idx = 1 + StudyGroup.objects.count()
     num_names = len(STUDY_GROUP_NAMES)
     return ' '.join([STUDY_GROUP_NAMES[idx % num_names], "I"*(idx//num_names)])
-
-
-class SoftDeleteQuerySet(models.QuerySet):
-
-    def active(self):
-        return self.filter(deleted_at__isnull=True)
-
-    def delete(self, *args, **kwargs):
-        # Stop bulk deletes
-        self.update(deleted_at=timezone.now())
-        #TODO: check if we need to set any flags on the query set after the delete
-
-
-class LifeTimeTrackingModel(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(null=True, blank=True)
-
-    objects = SoftDeleteQuerySet.as_manager()
-
-    def delete(self, *args, **kwargs):
-        # Don't actually delete the object, affects django admin also
-        self.deleted_at = timezone.now()
-        self.save()
-
-    class Meta:
-        abstract = True
-
-
-class Course(LifeTimeTrackingModel):
-    OER_LICENSES = ['CC-BY', 'CC-BY-SA', 'CC-BY-NC', 'CC-BY-NC-SA', 'Public Domain']
-
-    title = models.CharField(max_length=128)
-    provider = models.CharField(max_length=256)
-    link = models.URLField()
-    caption = models.CharField(max_length=200)
-    on_demand = models.BooleanField()
-    topics = models.CharField(max_length=500)
-    language = models.CharField(max_length=6)
-    created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
-    unlisted = models.BooleanField(default=False)
-    license = models.CharField(max_length=128, blank=True)
-    platform = models.CharField(max_length=256, blank=True)
-    overall_rating = models.FloatField(default=0)
-    total_ratings = models.SmallIntegerField(blank=True, null=True)
-    rating_step_counts = models.TextField(default="{}") # JSON value
-    tagdorsements = models.CharField(max_length=256, blank=True)
-    tagdorsement_counts =  models.TextField(default="{}") # JSON value
-    total_reviewers = models.SmallIntegerField(blank=True, null=True)
-    discourse_topic_url = models.URLField(blank=True)
-
-    def __str__(self):
-        return self.title
-
-    def similar_courses(self):
-        topics = self.topics.split(',')
-        query = Q(topics__icontains=topics[0])
-        for topic in topics[1:]:
-            query = Q(topics__icontains=topic) | query
-
-        courses = Course.objects.filter(unlisted=False, deleted_at__isnull=True).filter(query).exclude(id=self.id).annotate(
-            num_learning_circles=Sum(
-                Case(
-                    When(
-                        studygroup__deleted_at__isnull=True, then=Value(1),
-                        studygroup__course__id=F('id')
-                    ),
-                    default=Value(0), output_field=models.IntegerField()
-                )
-            )
-        )[:3]
-
-        return courses
-
-    def detect_platform_from_link(self):
-        platform = course_platform_from_url(self.link)
-
-        self.platform = platform
-        self.save()
-
-    def discourse_topic_default_body(self):
-        return _("<p>What recommendations do you have for other facilitators who are using \"{}\"? Consider sharing additional resources you found helpful, activities that worked particularly well, and some reflections on who this course is best suited for. For more information, see this course on <a href='https://learningcircles.p2pu.org{}'>P2PU’s course page</a>.</p>".format(self.title, reverse('studygroups_course_page', args=(self.id,))))
-
-
-# TODO move to custom_registration/models.py
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    mailing_list_signup = models.BooleanField(default=False) # TODO remove this
-    email_confirmed_at = models.DateTimeField(null=True, blank=True)
-    interested_in_learning = models.CharField(max_length=500, blank=True)
-    communication_opt_in = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.user.__str__()
 
 
 # TODO remove organizer model - only use Facilitator model + Team Membership
@@ -173,44 +61,6 @@ class Organizer(models.Model):
 
     def __str__(self):
         return self.user.__str__()
-
-
-class Team(models.Model):
-    name = models.CharField(max_length=128)
-    page_slug = models.SlugField(max_length=256, blank=True)
-    page_image = models.ImageField(blank=True)
-
-    def __str__(self):
-        return self.name
-
-
-class TeamMembership(models.Model):
-    ORGANIZER = 'ORGANIZER'
-    MEMBER = 'MEMBER'
-    ROLES = (
-        (ORGANIZER, _('Organizer')),
-        (MEMBER, _('Member')),
-    )
-    team = models.ForeignKey('studygroups.Team', on_delete=models.CASCADE)
-    user = models.OneToOneField(User, on_delete=models.CASCADE) # TODO should this be a OneToOneField?
-    role = models.CharField(max_length=256, choices=ROLES)
-
-    def __str__(self):
-        return 'Team membership: {}'.format(self.user.__str__())
-
-
-class TeamInvitation(models.Model):
-    """ invittion for users to join a team """
-    team = models.ForeignKey('studygroups.Team', on_delete=models.CASCADE)
-    organizer = models.ForeignKey(User, on_delete=models.CASCADE) # organizer who invited the user
-    email = models.EmailField()
-    role = models.CharField(max_length=256, choices=TeamMembership.ROLES)
-    created_at = models.DateTimeField(auto_now_add=True)
-    responded_at = models.DateTimeField(null=True, blank=True)
-    joined = models.NullBooleanField(null=True)
-
-    def __str__(self):
-        return 'Invitation <{} to join {}>'.format(self.email, self.team.name)
 
 
 class StudyGroupQuerySet(SoftDeleteQuerySet):
@@ -579,32 +429,6 @@ def get_all_meeting_times(study_group):
         meetings += [next_meeting]
         meeting_date += datetime.timedelta(days=7)
     return meetings
-
-
-def get_study_group_organizers(study_group):
-    """ Return the organizers for the study group """
-    team_membership = TeamMembership.objects.filter(user=study_group.facilitator)
-    if team_membership.count() == 1:
-        organizers = team_membership.first().team.teammembership_set.filter(role=TeamMembership.ORGANIZER).values('user')
-        return User.objects.filter(pk__in=organizers)
-    return []
-
-
-def get_team_users(user):
-    """ Return the team members for a user """
-    # TODO this function doesn't make sense - only applies for logged in users
-    # change functionality or rename to get_team_mates
-    team_membership = TeamMembership.objects.filter(user=user)
-    if team_membership.count() == 1:
-        members = team_membership.first().team.teammembership_set.values('user')
-        return User.objects.filter(pk__in=members)
-    return []
-
-
-""" Return the team a user belongs to """
-def get_user_team(user):
-    team_membership = TeamMembership.objects.filter(user=user).get()
-    return team_membership.team
 
 
 def report_data(start_time, end_time, team=None):

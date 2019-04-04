@@ -21,7 +21,7 @@ from studygroups.rsvp import gen_rsvp_querystring
 from studygroups.rsvp import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
 
-from studygroups.models import KNOWN_COURSE_PLATFORMS
+from studygroups.models.course import KNOWN_COURSE_PLATFORMS
 
 import calendar
 import datetime
