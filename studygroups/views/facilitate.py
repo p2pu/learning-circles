@@ -46,6 +46,7 @@ from studygroups.models import get_study_group_organizers
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import study_group_is_published
 from studygroups.charts import OverallRatingBarChart
+from studygroups.discourse import create_discourse_topic
 from api.views import _course_to_json
 
 logger = logging.getLogger(__name__)
@@ -233,30 +234,6 @@ class CoursePage(DetailView):
         return context
 
 
-def create_discourse_topic(title, category, raw):
-    create_topic_url = '{}/posts.json'.format(settings.DISCOURSE_BASE_URL)
-
-    request_data = {
-        'api_key': settings.DISCOURSE_BOT_API_KEY,
-        'api_username': settings.DISCOURSE_BOT_API_USERNAME,
-        'title': title,
-        'category': category,
-        'raw': raw,
-    }
-
-    request_headers = {
-        'Content-Type': 'multipart/form-data'
-    }
-
-    response = requests.post(create_topic_url, data=request_data, headers=request_headers)
-
-    if response.status_code == requests.codes.ok:
-        return response.json()
-    else:
-        logger.error('Request to Discourse API failed with status code {}. Response text: {}'.format(response.status_code, response.text))
-        raise
-
-
 def generate_course_discourse_topic(request, course_id):
     course = Course.objects.get(pk=course_id);
 
@@ -298,17 +275,13 @@ class CourseCreate(CreateView):
         return context
 
     def form_valid(self, form):
-        # courses created by staff will be global
-        messages.success(self.request, _('Your course has been created. You can now create a learning circle using it.'))
         self.object = form.save(commit=False)
         self.object.created_by = self.request.user
         self.object.save()
+        messages.success(self.request, _('Your course has been created. You can now create a learning circle using it.'))
         return http.HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
-        #if self.request.user.is_staff: #TeamMembership.objects.filter(user=self.request.user, role=TeamMembership.ORGANIZER).exists():
-        #    return reverse_lazy('studygroups_organize')
-        #else:
         url = reverse('studygroups_facilitator_studygroup_create')
         return url + "?course_id={}".format(self.object.id)
 
