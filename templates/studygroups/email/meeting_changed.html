@@ -4,7 +4,7 @@
 
 <p>{% blocktrans with course_title=learning_circle.course.title|safe old_date=old_meeting.meeting_datetime|date:"l, j N, fA" new_date=new_meeting.meeting_datetime|date:"l, j N, fA"%}Your {{course_title}} learning circle meeting scheduled for {{ old_date }} has been moved to {{ new_date }}.{% endblocktrans %}</p>
 
-<p>{% trans "You will receive a new reminder 2 days before the new scheduled meeting time" %}</p>
+<p>{% trans "You will receive a reminder 2 days before the new scheduled meeting time" %}</p>
 
 <p>{% trans "See you soon." %}</p>
 
