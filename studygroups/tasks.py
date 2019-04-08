@@ -20,7 +20,7 @@ from studygroups.sms import send_message
 from studygroups.email_helper import render_email_templates
 from studygroups.email_helper import render_html_with_css
 from .utils import html_body_to_text
-from .events import make_meeting_ics
+from .ics import make_meeting_ics
 
 import datetime
 import logging
