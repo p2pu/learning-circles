@@ -289,14 +289,12 @@ def get_unpublished_studygroups(start_time, end_time):
 
 
 def community_digest_data(start_time, end_time):
-    study_groups = StudyGroup.objects.published()
     origin_date = datetime.date(2016, 1, 1)
 
     studygroups_that_met = get_studygroups_with_meetings(start_time, end_time)
     learners_reached = Application.objects.active().filter(study_group__in=studygroups_that_met)
     total_learners_reached_count = Application.objects.active().filter(accepted_at__gte=origin_date, accepted_at__lt=end_time).count()
     total_studygroups_met_count = get_studygroups_with_meetings(origin_date, end_time).count()
-    new_learning_circles = get_new_studygroups(start_time, end_time)
     new_users = get_new_users(start_time, end_time)
     new_applications = get_new_applications(start_time, end_time)
     new_courses = get_new_courses(start_time, end_time)
