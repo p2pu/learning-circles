@@ -1071,18 +1071,17 @@ class TotalLearnersChart():
 class FacilitatorRatingOverTimeChart():
     def __init__(self, start_time, end_time, study_groups, **kwargs):
         style = custom_style()
-        self.chart = pygal.Bar(style=style, order_min=0, y_title="Number of ratings", x_label_rotation=30, **kwargs)
+        style.colors = ["#D3D8E6", "#4c7e80", "#FC7100", "#FFBC1A", "#B7D500", "#05C6B4"]
+        self.chart = pygal.StackedBar(style=style, order_min=0, y_title="Number of ratings", x_label_rotation=30, **kwargs)
         self.study_groups = study_groups
         self.start_time = start_time
         self.end_time = end_time
 
     def get_data(self):
-        data = {}
+        data = { None: [] }
         dates = []
         for i in range(1,6):
             data[i] = []
-
-        data[None] = []
 
         if self.study_groups.count() < 1:
             return None
@@ -1113,6 +1112,8 @@ class FacilitatorRatingOverTimeChart():
             return NO_DATA
 
         for key, value in chart_data["data"].items():
+            if key is not None:
+                key = "{} ★".format(key)
             self.chart.add(str(key), value)
 
         self.chart.x_labels = chart_data["dates"]
@@ -1133,7 +1134,8 @@ class FacilitatorRatingOverTimeChart():
 class FacilitatorCourseApprovalChart():
     def __init__(self, start_time, end_time, study_groups, **kwargs):
         style = custom_style()
-        self.chart = pygal.Bar(style=style, order_min=0, y_title="Number of ratings", x_label_rotation=30, **kwargs)
+        style.colors = ["#4c7e80", "#FC7100", "#FFBC1A", "#B7D500", "#05C6B4"]
+        self.chart = pygal.StackedBar(style=style, order_min=0, y_title="Number of ratings", x_label_rotation=30, **kwargs)
         self.study_groups = study_groups
         self.start_time = start_time
         self.end_time = end_time
@@ -1182,6 +1184,7 @@ class FacilitatorCourseApprovalChart():
             return NO_DATA
 
         for key, value in chart_data["data"].items():
+            key = "{} ★".format(key)
             self.chart.add(str(key), value)
 
         self.chart.x_labels = chart_data["dates"]
@@ -1197,10 +1200,12 @@ class FacilitatorCourseApprovalChart():
 
         return self.chart.render(is_unicode=True)
 
+
 class LearnerCourseApprovalChart():
     def __init__(self, start_time, end_time, study_groups, **kwargs):
         style = custom_style()
-        self.chart = pygal.Bar(style=style, order_min=0, y_title="Number of ratings", x_label_rotation=30, **kwargs)
+        style.colors = ["#4c7e80", "#FC7100", "#FFBC1A", "#B7D500", "#05C6B4"]
+        self.chart = pygal.StackedBar(style=style, order_min=0, y_title="Number of ratings", x_label_rotation=30, **kwargs)
         self.study_groups = study_groups
         self.start_time = start_time
         self.end_time = end_time
@@ -1250,6 +1255,7 @@ class LearnerCourseApprovalChart():
             return NO_DATA
 
         for key, value in chart_data["data"].items():
+            key = "{} ★".format(key)
             self.chart.add(str(key), value)
 
         self.chart.x_labels = chart_data["dates"]
@@ -1345,7 +1351,7 @@ class FacilitatorExperienceChart():
 class ParticipantsOverTimeChart():
 
     def __init__(self, start_time, end_time, study_groups, **kwargs):
-        self.chart = pygal.Line(style=custom_style(), height=400, fill=True, max_scale=10, order_min=0, y_title="Participants", x_label_rotation=30, **kwargs)
+        self.chart = pygal.StackedLine(style=custom_style(), height=400, fill=True, max_scale=10, order_min=0, y_title="Participants", x_label_rotation=30, **kwargs)
         self.start_time = start_time
         self.end_time = end_time
         self.study_groups = study_groups
@@ -1638,6 +1644,9 @@ class MeetingsOverTimeChart():
         self.chart.add(str(self.current_year), chart_data["current_year"], allow_interruptions=True)
         self.chart.x_labels = chart_data["dates"]
 
+        max_range = max([max(chart_data["previous_year"]), max(chart_data["current_year"])])
+        self.chart.range = (0, max_range)
+
         if opts.get('output', None) == "png":
             filename = "stats-dash-{}-meetings-chart.png".format(self.end_time.isoformat())
             target_path = os.path.join('tmp', filename)
@@ -1752,6 +1761,14 @@ class StudygroupsByCountryOverTimeChart():
             self.chart.add(key, value)
 
         self.chart.x_labels = chart_data["dates"]
+
+        all_values = chart_data["data"].values()
+        print(all_values)
+
+        months = len(chart_data["dates"])
+        monthly_values = [sum([row[i] for row in all_values]) for i in range(months)]
+        max_range = max(monthly_values)
+        self.chart.range = (0, max_range)
 
         if opts.get('output', None) == "png":
             filename = "stats-dash-{}-countries-chart.png".format(self.end_time.date().isoformat())
