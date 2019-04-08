@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'phonenumber_field',
     # own
     'studygroups',
-    'api',
     'backup',
     'analytics',
     'uxhelpers',
