@@ -318,6 +318,7 @@ def send_learner_survey(application):
     )
     querystring = '?learner={}'.format(application.uuid)
     survey_url = domain + path + querystring
+    facilitator_email = application.study_group.facilitator.email
 
     context = {
         'learner_name': application.name,
@@ -335,7 +336,8 @@ def send_learner_survey(application):
         subject.strip(),
         txt,
         settings.DEFAULT_FROM_EMAIL,
-        to
+        to,
+        reply_to=[facilitator_email, settings.DEFAULT_FROM_EMAIL]
     )
     notification.attach_alternative(html, 'text/html')
     notification.send()
