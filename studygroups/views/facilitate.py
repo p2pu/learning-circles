@@ -47,7 +47,7 @@ from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import study_group_is_published
 from studygroups.charts import OverallRatingBarChart
 from studygroups.discourse import create_discourse_topic
-from api.views import _course_to_json
+from studygroups.views.api import _course_to_json
 
 logger = logging.getLogger(__name__)
 
