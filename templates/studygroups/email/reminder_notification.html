@@ -22,7 +22,7 @@
 </div>
 
 {% url 'studygroups_message_edit' reminder.study_group.id reminder.id as message_edit_url %}
-<p>{% blocktrans %}If you wish to edit the reminder, you can follow <a href="{{protocol}}://{{domain}}{{message_edit_url}}">this link</a>.{% endblocktrans %}</p>
+<p>{% blocktrans %}If you wish to edit the reminder, you can follow <a href="{{PROTOCOL}}://{{DOMAIN}}{{message_edit_url}}">this link</a>.{% endblocktrans %}</p>
 
 <p>{% trans "Regards" %}</p>
 <p>P2PU</p>

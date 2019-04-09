@@ -8,7 +8,7 @@
 
 >  {{ facilitator_message }}
 
-{% url 'studygroups_facilitator' as dash_url %}{% blocktrans %}To see how many learners RSVP-ed or to record feedback after the meeting, you can visit your dashboard ({{domain}}{{dash_url}}).{% endblocktrans %}</p>
+{% url 'studygroups_facilitator' as dash_url %}{% blocktrans %}To see how many learners RSVP-ed or to record feedback after the meeting, you can visit your dashboard ({{PROTOCOL}}://{{DOMAIN}}{{dash_url}}).{% endblocktrans %}</p>
 
 {% trans "Cheers" %}
 P2PU

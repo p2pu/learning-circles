@@ -6,7 +6,7 @@ from django.urls import reverse
 from django import http
 from django.utils.translation import ugettext as _
 
-from studygroups.models import StudyGroup, Organizer
+from studygroups.models import StudyGroup
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import get_study_group_organizers

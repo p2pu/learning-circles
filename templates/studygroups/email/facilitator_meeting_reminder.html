@@ -11,7 +11,7 @@
 </div>
 
 {% url 'studygroups_facilitator' as dash_url %}
-<p>{% blocktrans %}To see how many learners RSVPed or to record feedback after the meeting, you can visit <a href="{{domain}}{{dash_url}}">your dashboard</a>.{% endblocktrans %}</p>
+<p>{% blocktrans %}To see how many learners RSVPed or to record feedback after the meeting, you can visit <a href="{{PROTOCOL}}://{{DOMAIN}}{{dash_url}}">your dashboard</a>.{% endblocktrans %}</p>
 
 <p>{% trans "Cheers" %}</p>
 <p>P2PU</p>

@@ -5,7 +5,7 @@ from django.conf.global_settings import LANGUAGES
 from django.utils.translation import ugettext as _
 from django.utils import timezone
 from django.contrib.auth.models import User
-from django.template.loader import render_to_string
+from studygroups.utils import render_to_string_ctx
 from studygroups.email_helper import render_html_with_css
 from django.core.mail import EmailMultiAlternatives
 
@@ -164,9 +164,9 @@ class OptOutForm(forms.Form):
             for application in Application.objects.active().filter(email__iexact=email):
                 # send opt-out email
                 context = { 'application': application }
-                subject = render_to_string('studygroups/email/optout_confirm-subject.txt', context).strip('\n')
+                subject = render_to_string_ctx('studygroups/email/optout_confirm-subject.txt', context).strip('\n')
                 html_body = render_html_with_css('studygroups/email/optout_confirm.html', context)
-                text_body = render_to_string('studygroups/email/optout_confirm.txt', context)
+                text_body = render_to_string_ctx('studygroups/email/optout_confirm.txt', context)
                 notification = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, [application.email])
                 notification.attach_alternative(html_body, 'text/html')
                 notification.send()
@@ -181,7 +181,7 @@ class OptOutForm(forms.Form):
             for application in applications:
                 # This remains for old signups without email address
                 context = { 'application': application }
-                message = render_to_string('studygroups/email/optout_confirm_text.txt', context)
+                message = render_to_string_ctx('studygroups/email/optout_confirm_text.txt', context)
                 try:
                     send_message(application.mobile, message)
                 except twilio.TwilioRestException as e:

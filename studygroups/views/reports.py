@@ -31,12 +31,15 @@ class StudyGroupFinalReport(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(StudyGroupFinalReport, self).get_context_data(**kwargs)
         study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
+        learner_survey_responses = study_group.learnersurveyresponse_set.count()
+        facilitator_survey_responses = study_group.facilitatorsurveyresponse_set.count()
 
-        if study_group.learnersurveyresponse_set.count() == 0:
+        if learner_survey_responses == 0 and facilitator_survey_responses == 0:
             context = {
                 'study_group': study_group,
                 'registrations': study_group.application_set.active().count(),
-                'survey_responses': study_group.learnersurveyresponse_set.count()
+                'learner_survey_responses': learner_survey_responses,
+                'facilitator_survey_responses': facilitator_survey_responses,
             }
 
             return context
@@ -60,7 +63,8 @@ class StudyGroupFinalReport(TemplateView):
         context = {
             'study_group': study_group,
             'registrations': study_group.application_set.active().count(),
-            'survey_responses': study_group.learnersurveyresponse_set.count(),
+            'learner_survey_responses': study_group.learnersurveyresponse_set.count(),
+            'facilitator_survey_responses': study_group.facilitatorsurveyresponse_set.count(),
             'course': study_group.course,
             'learner_goals_chart': learner_goals_chart.generate(),
             'goals_met_chart': goals_met_chart.generate(),

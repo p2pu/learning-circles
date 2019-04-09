@@ -2,7 +2,7 @@ import datetime
 import dateutil.parser
 
 from django.shortcuts import render, get_object_or_404
-from django.template.loader import render_to_string
+from studygroups.utils import render_to_string_ctx
 from django.urls import reverse, reverse_lazy
 from django.core.mail import EmailMultiAlternatives
 from django.contrib import messages
@@ -273,8 +273,8 @@ def receive_sms(request):
             context['rsvp_yes'] = next_meeting.rsvp_yes_link(sender)
             context['rsvp_no'] = next_meeting.rsvp_no_link(sender)
 
-    text_body = render_to_string('studygroups/email/incoming_sms.txt', context)
-    html_body = render_to_string('studygroups/email/incoming_sms.html', context)
+    text_body = render_to_string_ctx('studygroups/email/incoming_sms.txt', context)
+    html_body = render_to_string_ctx('studygroups/email/incoming_sms.html', context)
     if len(to) == 0:
         to = [ a[1] for a in settings.ADMINS ]
     else:
