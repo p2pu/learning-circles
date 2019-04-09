@@ -1,1 +1,1 @@
-{%load i18n %}{% blocktrans with meeting_date=next_meeting.meeting_datetime|date:"l, j N, fA" course_title=study_group.course.title|safe %}Your learning circle is meeting {{meeting_date}}. Reply STOP to unsubscribe.{% endblocktrans %}
+{%load i18n %}{% blocktrans with meeting_date=next_meeting.meeting_datetime|date:"l, j N, fA" %}Your learning circle is meeting {{meeting_date}}. Reply STOP to unsubscribe.{% endblocktrans %}

@@ -59,10 +59,10 @@ def studygroups(request):
             "time_zone": sg.timezone_display(),
             "end_time": sg.end_time(),
             "weeks": sg.meeting_set.active().count(),
-            "url": "https://learningcircles.p2pu.org" + reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
+            "url": f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
         }
         if sg.image:
-            data["image_url"] = "https://learningcircles.p2pu.org" + sg.image.url
+            data["image_url"] = f"{settings.PROTOCOL}://{settings.DOMAIN}" + sg.image.url
         #TODO else set default image URL
         return data
 
@@ -114,10 +114,10 @@ def _map_to_json(sg):
         "time_zone": sg.timezone_display(),
         "end_time": sg.end_time(),
         "weeks": sg.meeting_set.active().count(),
-        "url": 'https://' + settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
+        "url": settings.DOMAIN + '://' + settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
     }
     if sg.image:
-        data["image_url"] = 'https://' + settings.DOMAIN + sg.image.url
+        data["image_url"] = settings.DOMAIN + '://' + settings.DOMAIN + sg.image.url
     # TODO else set default image URL
     if hasattr(sg, 'next_meeting_date'):
         data["next_meeting_date"] = sg.next_meeting_date
@@ -303,7 +303,7 @@ def _studygroup_object_for_map(sg):
     }
 
     if active:
-        data["url"] = 'https://' + settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,))
+        data["url"] = settings.PROTOCOL + '://' + settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,))
     elif report_available:
         data["report_url"] = sg.report_url()
 
@@ -341,7 +341,7 @@ def _course_to_json(course):
         "rating_step_counts": course.rating_step_counts,
         "tagdorsements": course.tagdorsements,
         "tagdorsement_counts": course.tagdorsement_counts,
-        "course_page_url": 'https://' + settings.DOMAIN + reverse("studygroups_course_page", args=(course.id,))
+        "course_page_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_course_page", args=(course.id,))
     }
 
     if hasattr(course, 'num_learning_circles'):

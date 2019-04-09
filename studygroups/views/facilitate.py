@@ -3,7 +3,7 @@ from django.urls import reverse, reverse_lazy
 from django import http
 from django import forms
 from django.forms import modelform_factory, HiddenInput
-from django.template.loader import render_to_string
+from studygroups.utils import render_to_string_ctx
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.generic.base import View
 from django.views.generic.base import RedirectView
@@ -183,9 +183,9 @@ class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
             'feedback': form.save(commit=False),
             'study_group_meeting': self.get_initial()['study_group_meeting']
         }
-        subject = render_to_string('studygroups/email/feedback-submitted-subject.txt', context).strip('\n')
-        html_body = render_to_string('studygroups/email/feedback-submitted.html', context)
-        text_body = render_to_string('studygroups/email/feedback-submitted.txt', context)
+        subject = render_to_string_ctx('studygroups/email/feedback-submitted-subject.txt', context).strip('\n')
+        html_body = render_to_string_ctx('studygroups/email/feedback-submitted.html', context)
+        text_body = render_to_string_ctx('studygroups/email/feedback-submitted.txt', context)
         notification = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
         notification.attach_alternative(html_body, 'text/html')
         notification.send()

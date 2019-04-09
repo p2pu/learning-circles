@@ -121,9 +121,9 @@ class StudyGroup(LifeTimeTrackingModel):
         return self.meeting_set.active().order_by('meeting_date', 'meeting_time').first()
 
     def report_url(self):
-        domain = 'https://{0}'.format(settings.DOMAIN)
+        base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
         path = reverse('studygroups_final_report', kwargs={'study_group_id': self.id})
-        return domain + path
+        return base_url + path
 
 
     def can_update_meeting_datetime(self):
@@ -216,10 +216,10 @@ class Application(LifeTimeTrackingModel):
         return "{0} <{1}>".format(self.name, self.email if self.email else self.mobile)
 
     def unapply_link(self):
-        domain = 'https://{0}'.format(settings.DOMAIN)
+        base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
         url = reverse('studygroups_leave')
         qs = gen_unsubscribe_querystring(self.pk)
-        return '{0}{1}?{2}'.format(domain, url, qs)
+        return '{0}{1}?{2}'.format(base_url, url, qs)
 
     def get_signup_questions(self):
         return json.loads(self.signup_questions)
@@ -273,7 +273,7 @@ class Meeting(LifeTimeTrackingModel):
         }
 
     def rsvp_yes_link(self, email):
-        domain = 'https://{0}'.format(settings.DOMAIN)
+        base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
         url = reverse('studygroups_rsvp')
         yes_qs = rsvp.gen_rsvp_querystring(
             email,
@@ -281,10 +281,10 @@ class Meeting(LifeTimeTrackingModel):
             self.meeting_datetime(),
             'yes'
         )
-        return '{0}{1}?{2}'.format(domain, url, yes_qs)
+        return '{0}{1}?{2}'.format(base_url, url, yes_qs)
 
     def rsvp_no_link(self, email):
-        domain = 'https://{0}'.format(settings.DOMAIN)
+        base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
         url = reverse('studygroups_rsvp')
         no_qs = rsvp.gen_rsvp_querystring(
             email,
@@ -292,7 +292,7 @@ class Meeting(LifeTimeTrackingModel):
             self.meeting_datetime(),
             'no'
         )
-        return '{0}{1}?{2}'.format(domain,url,no_qs)
+        return '{0}{1}?{2}'.format(base_url, url, no_qs)
 
     def __str__(self):
         # TODO i18n

@@ -133,6 +133,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'studygroups.context_processors.domain',
             ]
         }
     },
@@ -193,6 +194,7 @@ TWILIO_NUMBER = os.environ.get('TWILIO_NUMBER')
 LOGIN_REDIRECT_URL = '/login_redirect/'
 LOGOUT_REDIRECT_URL = 'https://www.p2pu.org/en/facilitate/'
 DOMAIN = env('DOMAIN', 'localhost:8000')
+PROTOCOL = env('PROTOCOL', 'https')
 
 ####### Google analytics tracking info #######
 GA_TRACKING_ID = env('GA_TRACKING_ID', 'UA-0000000-00')

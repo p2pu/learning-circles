@@ -3,7 +3,7 @@ from celery import shared_task
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.urls import reverse
-from django.template.loader import render_to_string
+from studygroups.utils import render_to_string_ctx
 from django.utils.translation import ugettext_lazy as _
 
 from studygroups.models import Profile
@@ -26,13 +26,7 @@ def send_announcement(sender, subject, body_text, body_html):
 
     # check if account settings URL is in HTML body
     if not re.search(account_settings_url, body_html):
-        settings_link = render_to_string(
-            'announce/account_settings_email_link.html',
-            { 
-                'domain': settings.DOMAIN,
-                'protocol': 'https'
-            }
-        )
+        settings_link = render_to_string_ctx('announce/account_settings_email_link.html')
         # if there is a body tag, add link before the closing body tag
         if re.search('</body>', body_html):
             settings_link = settings_link + '</body>'
