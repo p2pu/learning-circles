@@ -22,7 +22,7 @@
 
 <p>{% trans "Welcome to the P2PU learning circle community! To use your account, please confirm your email address by clicking the button below." %}</p>
 
-<div><a class="confirm-email" href="{{ protocol}}://{{ domain }}{{ email_confirm_url }}">{% trans "Confirm your email address" %}</a></div>
+<div><a class="confirm-email" href="{{ PROTOCOL }}://{{ DOMAIN }}{{ email_confirm_url }}">{% trans "Confirm your email address" %}</a></div>
 
 <p>{% blocktrans with email=user.email %}Your username is {{ email }}.{% endblocktrans %}</p>
 

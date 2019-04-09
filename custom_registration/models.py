@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.conf import settings
-from django.template.loader import render_to_string
+from studygroups.utils import render_to_string_ctx
 from studygroups.email_helper import render_html_with_css
 from django.core.mail import EmailMultiAlternatives, send_mail
 
@@ -69,16 +69,14 @@ def send_email_confirm_email(user):
         "profile": user.profile,
         "uid": urlsafe_base64_encode(force_bytes(user.pk)),
         "token": generate_user_token(user),
-        "protocol": "https",
-        "domain": settings.DOMAIN
     }
 
     subject_template = 'custom_registration/email_confirm-subject.txt'
     email_template = 'custom_registration/email_confirm.txt'
     html_email_template = 'custom_registration/email_confirm.html'
 
-    subject = render_to_string(subject_template, context).strip(' \n')
-    text_body = render_to_string(email_template, context)
+    subject = render_to_string_ctx(subject_template, context).strip(' \n')
+    text_body = render_to_string_ctx(email_template, context)
     html_body = render_html_with_css(html_email_template, context)
 
     to = [user.email]
@@ -95,14 +93,12 @@ def send_email_confirm_email(user):
 def send_new_user_email(user):
     context = {
         "user": user,
-        "protocol": "https",
-        "domain": settings.DOMAIN
     }
 
     subject_template = 'custom_registration/new_user_confirmed-subject.txt'
     html_email_template = 'custom_registration/new_user_confirmed.html'
 
-    subject = render_to_string(subject_template, context).strip(' \n')
+    subject = render_to_string_ctx(subject_template, context).strip(' \n')
     html_body = render_html_with_css(html_email_template, context)
     text_body = html_body_to_text(html_body)
 

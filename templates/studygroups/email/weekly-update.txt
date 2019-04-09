@@ -12,7 +12,7 @@
 
   {% blocktrans with start_date=start_time|date:"l, F j" %}For the week of {{start_date}}.{% endblocktrans %}
   {% url 'studygroups_weekly_report_date' start_time.year start_time.month start_time.day as report_url %}
-  {% if protocol and domain %}{% blocktrans %}You can also view this report online: {{protocol}}://{{domain}}{{report_url}}{% endblocktrans %}{% endif %}
+  {% if email %}{% blocktrans %}You can also view this report online: {{PROTOCOL}}://{{DOMAIN}}{{report_url}}{% endblocktrans %}{% endif %}
 
 
   {% blocktrans count finished_studygroups_count=finished_studygroups_count %}

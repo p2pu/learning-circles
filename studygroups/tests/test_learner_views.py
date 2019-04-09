@@ -12,7 +12,6 @@ from mock import patch
 from studygroups.models import StudyGroup
 from studygroups.models import Meeting
 from studygroups.models import Application
-from studygroups.models import Organizer
 from studygroups.models import Rsvp
 from studygroups.models import Team
 from studygroups.models import TeamMembership

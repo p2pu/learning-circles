@@ -1,8 +1,12 @@
 from django.conf import settings
+from django.template.loader import render_to_string
 
 import urllib.request, urllib.parse, urllib.error
 import hmac
 import hashlib
+import re
+import bleach
+
 
 def gen_unsubscribe_querystring(user):
     qs = [
@@ -24,8 +28,13 @@ def check_unsubscribe_signature(user, sig):
     return sig == hmac.new(key, data, hashlib.sha256).hexdigest()
 
 
-import re
-import bleach
+def render_to_string_ctx(template, context={}):
+    context.update({
+        'DOMAIN': settings.DOMAIN,
+        'PROTOCOL': settings.PROTOCOL,
+    })
+    return render_to_string(template, context)
+
 
 def html_body_to_text(html):
     """ Convern HTML email body to text """

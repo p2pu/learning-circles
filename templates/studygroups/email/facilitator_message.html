@@ -5,5 +5,5 @@
 {{ facilitator_message | linebreaks}}
 
 {% url 'studygroups_optout' as unsubscribe_link %}
-<p>{% blocktrans with link=unsubscribe_link|safe %}To leave this learning circle and stop receiving messages, <a href="{{domain}}{{link}}">click here</a>{% endblocktrans %}</p>
+<p>{% blocktrans with link=unsubscribe_link|safe %}To leave this learning circle and stop receiving messages, <a href="{{PROTOCOL}}://{{DOMAIN}}{{link}}">click here</a>{% endblocktrans %}</p>
 {% endblock %}

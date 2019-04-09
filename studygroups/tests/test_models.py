@@ -18,7 +18,7 @@ from studygroups.rsvp import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
 from studygroups.tasks import send_meeting_change_notification
 
-from studygroups.models import KNOWN_COURSE_PLATFORMS
+from studygroups.models.course import KNOWN_COURSE_PLATFORMS
 
 from unittest.mock import patch
 import datetime
