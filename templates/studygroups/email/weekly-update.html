@@ -142,7 +142,7 @@
 
   <p>{% blocktrans with start_date=start_time|date:"l, F j, Y" %}For the week starting {{start_date}}.{% endblocktrans %}</p>
   {% url 'studygroups_weekly_report_date' start_time.year start_time.month start_time.day as report_url %}
-  {% if protocol and domain %}<p>{% blocktrans %}You can also view this report <a href="{{protocol}}://{{domain}}{{report_url}}">online</a>.{% endblocktrans %}</p>{% endif %}
+  {% if email %}<p>{% blocktrans %}You can also view this report <a href="{{PROTOCOL}}://{{DOMAIN}}{{report_url}}">online</a>.{% endblocktrans %}</p>{% endif %}
 
   <div class="report-section">
     <h2>
@@ -305,7 +305,7 @@
       </span>
     </h2>
     {% if new_learners_count > 0 %}
-      {% if protocol and domain %}
+      {% if email %}
         {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart web=False%}
       {% else %}
         {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart web=True %}

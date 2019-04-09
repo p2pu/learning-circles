@@ -232,15 +232,15 @@ class ExportStudyGroupsView(ListView):
             else:
                 data += ['']
 
-            domain = 'https://{0}'.format(settings.DOMAIN)
+            base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
             facilitator_survey =  '{}{}'.format(
-                domain,
+                base_url,
                 reverse('studygroups_facilitator_survey', args=(sg.pk,))
             )
             data += [facilitator_survey]
             data += ['yes' if sg.facilitatorsurveyresponse_set.count() else 'no']
             learner_survey = '{}{}'.format(
-                domain,
+                base_url,
                 reverse('studygroups_learner_survey', args=(sg.uuid,))
             )
             data += [learner_survey]

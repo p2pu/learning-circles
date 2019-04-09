@@ -3,7 +3,7 @@ from django.urls import reverse, reverse_lazy
 from django import http
 from django import forms
 from django.forms import modelform_factory, HiddenInput
-from django.template.loader import render_to_string
+from studygroups.utils import render_to_string_ctx
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.generic.base import View
 from django.views.generic.base import RedirectView
@@ -41,13 +41,14 @@ from studygroups.forms import StudyGroupForm
 from studygroups.forms import MeetingForm
 from studygroups.forms import FeedbackForm
 from studygroups.tasks import send_reminder
+from studygroups.tasks import send_meeting_change_notification
 from studygroups.models import generate_all_meetings
 from studygroups.models import get_study_group_organizers
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import study_group_is_published
 from studygroups.charts import OverallRatingBarChart
 from studygroups.discourse import create_discourse_topic
-from api.views import _course_to_json
+from studygroups.views.api import _course_to_json
 
 logger = logging.getLogger(__name__)
 
@@ -139,12 +140,19 @@ class MeetingUpdate(FacilitatorRedirectMixin, UpdateView):
                 # The reminder will be generated again if the meeting is still in the future
                 # This should only happen between 2 days and 4 days before the original start date.
                 reminder.delete()
-            elif self.object.meeting_datetime() > timezone.now():
-                # orphan reminder if a reminder was sent but the meeting is now in the future.
-                reminder.study_group_meeting = None
-                reminder.save()
-                # TODO we should check if the previous datetime was in the future, in
-                # which case we should let the learner know the details have changed
+            else:
+                # a reminder was sent already
+                # orphan reminder if the meeting is now in the future.
+                if self.object.meeting_datetime() > timezone.now():
+                    reminder.study_group_meeting = None
+                    reminder.save()
+                
+                # if meeting was scheduled for a date in the future 
+                # let learners know the details have changed
+                original_meeting = Meeting.objects.get(pk=self.object.pk)
+                if original_meeting.meeting_datetime() > timezone.now():
+                    send_meeting_change_notification.delay(original_meeting, self.object)
+
         return super().form_valid(form)
 
 
@@ -183,9 +191,9 @@ class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
             'feedback': form.save(commit=False),
             'study_group_meeting': self.get_initial()['study_group_meeting']
         }
-        subject = render_to_string('studygroups/email/feedback-submitted-subject.txt', context).strip('\n')
-        html_body = render_to_string('studygroups/email/feedback-submitted.html', context)
-        text_body = render_to_string('studygroups/email/feedback-submitted.txt', context)
+        subject = render_to_string_ctx('studygroups/email/feedback-submitted-subject.txt', context).strip('\n')
+        html_body = render_to_string_ctx('studygroups/email/feedback-submitted.html', context)
+        text_body = render_to_string_ctx('studygroups/email/feedback-submitted.txt', context)
         notification = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
         notification.attach_alternative(html_body, 'text/html')
         notification.send()

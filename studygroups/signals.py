@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.template.loader import render_to_string
+from studygroups.utils import render_to_string_ctx
 from django.core.mail import EmailMultiAlternatives, send_mail
 from django.conf import settings
 from django.utils import timezone
@@ -31,7 +31,7 @@ def handle_new_application(sender, instance, created, **kwargs):
     # activitate timezone for message reminder
     with timezone.override(pytz.timezone(application.study_group.timezone)):
         # Send welcome message to learner
-        learner_signup_subject = render_to_string(
+        learner_signup_subject = render_to_string_ctx(
             'studygroups/email/learner_signup-subject.txt', {
                 'application': application,
                 'advice': advice,
@@ -68,10 +68,8 @@ def handle_new_study_group_creation(sender, instance, created, **kwargs):
     study_group = instance
     context = {
         'study_group': study_group,
-        'protocol': 'https',
-        'domain': settings.DOMAIN,
     }
-    subject = render_to_string('studygroups/email/learning_circle_created-subject.txt', context).strip(' \n')
+    subject = render_to_string_ctx('studygroups/email/learning_circle_created-subject.txt', context).strip(' \n')
     html_body = render_html_with_css('studygroups/email/learning_circle_created.html', context)
     text_body = html_body_to_text(html_body)
 

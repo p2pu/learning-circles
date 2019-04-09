@@ -13,11 +13,11 @@
     Congratulations! You created a learning circle on “{{course_title}}” in {{city}}.
   {% endblocktrans %}
   {% if study_group.draft %}
-    {% blocktrans %}You can view a draft signup page at  <a href="{{protocol}}://{{domain}}{{study_group_url}}">{{protocol}}://{{domain}}{{study_group_url}}</a>
+    {% blocktrans %}You can view a draft signup page at  <a href="{{PROTOCOL}}://{{DOMAIN}}{{study_group_url}}">{{PROTOCOL}}://{{DOMAIN}}{{study_group_url}}</a>
     {% endblocktrans %}
   {% else %}
     {% blocktrans %}
-      Your signup page is live at: <a href="{{protocol}}://{{domain}}{{study_group_url}}">{{protocol}}://{{domain}}{{study_group_url}}</a></p>
+      Your signup page is live at: <a href="{{PROTOCOL}}://{{DOMAIN}}{{study_group_url}}">{{PROTOCOL}}://{{DOMAIN}}{{study_group_url}}</a></p>
     {% endblocktrans %}
   {% endif %}
 </p>
