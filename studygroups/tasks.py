@@ -494,6 +494,47 @@ def send_reminder(reminder):
                 logger.exception("Could not send text message to %s", to, exc_info=e)
 
 
+@shared_task
+def send_meeting_change_notification(old_meeting, new_meeting):
+    study_group = new_meeting.study_group
+    to = [su.email for su in study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')]
+    context = {
+        'old_meeting': old_meeting,
+        'new_meeting': new_meeting,
+        'learning_circle': study_group,
+    }
+    timezone.activate(pytz.timezone(study_group.timezone))
+    subject = render_to_string('studygroups/email/meeting_changed-subject.txt', context).strip('\n')
+    html_body = render_to_string('studygroups/email/meeting_changed.html', context)
+    text_body = html_body_to_text(html_body)
+    sms_body = render_to_string('studygroups/email/meeting_changed-sms.txt', context).strip('\n')
+    timezone.deactivate()
+    notification = EmailMultiAlternatives(
+        subject, 
+        text_body, 
+        settings.DEFAULT_FROM_EMAIL,
+        bcc=to
+    )
+    notification.attach_alternative(html_body, 'text/html')
+    try:
+        notification.send()
+    except Exceptoin as e:
+        logger.exception('Could not send meeting change notification', exc_info=e)
+
+    applications = study_group.application_set.active().filter(accepted_at__isnull=False).exclude(mobile='')
+    applications = applications.filter(mobile_opt_out_at__isnull=True)
+    tos = [su.mobile for su in applications]
+    for to in tos:
+        try:
+            send_message(to, sms_body)
+        except TwilioRestException as e:
+            logger.exception("Could not send text message to %s", to, exc_info=e)
+
+
+
+
+
+
 def send_team_invitation_email(team, email, organizer):
     """ Send email to new or existing facilitators """
     """ organizer should be a User object """
