@@ -28,7 +28,7 @@ def check_unsubscribe_signature(user, sig):
     return sig == hmac.new(key, data, hashlib.sha256).hexdigest()
 
 
-def render_to_string_ctx(template, context):
+def render_to_string_ctx(template, context={}):
     context.update({
         'DOMAIN': settings.DOMAIN,
         'PROTOCOL': settings.PROTOCOL,
