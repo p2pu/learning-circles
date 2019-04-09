@@ -194,7 +194,7 @@ def get_new_courses(start_time, end_time):
 
 def get_upcoming_studygroups(start_time):
     end_time = start_time + datetime.timedelta(days=21)
-    return StudyGroup.objects.filter(start_date__gte=start_time, start_date__lt=end_time)
+    return StudyGroup.objects.published().filter(start_date__gte=start_time, start_date__lt=end_time)
 
 def get_studygroups_that_ended(start_time, end_time, team=None):
     if team:
