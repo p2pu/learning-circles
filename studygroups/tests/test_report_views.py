@@ -13,6 +13,7 @@ from studygroups.models import Course
 from studygroups.models import accept_application
 
 from surveys.models import LearnerSurveyResponse
+from surveys.models import FacilitatorSurveyResponse
 
 import datetime
 import json
@@ -55,6 +56,16 @@ class TestReportViews(TestCase):
         )
         return LearnerSurveyResponse.objects.create(**survey_data)
 
+    def create_facilitator_survey_response(self, study_group):
+        survey_data = dict(
+            typeform_key="123",
+            study_group=study_group,
+            survey="[]",
+            response="[]",
+            responded_at=timezone.now()
+        )
+        return FacilitatorSurveyResponse.objects.create(**survey_data)
+
     def test_study_group_final_report_with_no_responses(self):
         facilitator = User.objects.create_user('bowie', 'hi@example.net', 'password')
         course_data = dict(
@@ -87,8 +98,66 @@ class TestReportViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context_data['study_group'], sg)
         self.assertEqual(response.context_data['registrations'], 1)
-        self.assertEqual(response.context_data['survey_responses'], 0)
+        self.assertEqual(response.context_data['learner_survey_responses'], 0)
+        self.assertEqual(response.context_data['facilitator_survey_responses'], 0)
         self.assertNotIn('courses', response.context_data)
+
+
+
+    @patch('studygroups.charts.LearnerGoalsChart.generate', mock_generate)
+    @patch('studygroups.charts.NewLearnersChart.generate', mock_generate)
+    @patch('studygroups.charts.CompletionRateChart.generate', mock_generate)
+    @patch('studygroups.charts.GoalsMetChart.generate', mock_generate)
+    @patch('studygroups.charts.SkillsLearnedChart.generate', mock_generate)
+    @patch('studygroups.charts.ReasonsForSuccessChart.generate', mock_generate)
+    @patch('studygroups.charts.NextStepsChart.generate', mock_generate)
+    @patch('studygroups.charts.IdeasChart.generate', mock_generate)
+    @patch('studygroups.charts.FacilitatorRatingChart.generate', mock_generate)
+    @patch('studygroups.charts.LearnerRatingChart.generate', mock_generate)
+    @patch('studygroups.charts.PromotionChart.generate', mock_generate)
+    @patch('studygroups.charts.LibraryUsageChart.generate', mock_generate)
+    @patch('studygroups.charts.AdditionalResourcesChart.generate', mock_generate)
+    @patch('studygroups.charts.FacilitatorNewSkillsChart.generate', mock_generate)
+    @patch('studygroups.charts.FacilitatorTipsChart.generate', mock_generate)
+    def test_study_group_final_report_with_only_facilitator_response(self):
+        facilitator = User.objects.create_user('bowie', 'hi@example.net', 'password')
+        course_data = dict(
+            title='Course 1011',
+            provider='CourseMagick',
+            link='https://course.magick/test',
+            caption='learn by means of magic',
+            on_demand=True,
+            topics='html,test',
+            language='en',
+            created_by=facilitator
+        )
+        course = Course.objects.create(**course_data)
+        sg = StudyGroup.objects.get(pk=1)
+        sg.course = course
+        sg.facilitator = facilitator
+        sg.save()
+
+        data = dict(self.APPLICATION_DATA)
+        data['study_group'] = sg
+        data['email'] = 'mail1@example.net'
+        application = Application(**data)
+        application.save()
+        accept_application(application)
+
+        self.create_facilitator_survey_response(sg)
+
+        c = Client()
+        report = reverse('studygroups_final_report', kwargs={'study_group_id': sg.pk })
+        response = c.get(report)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context_data['study_group'], sg)
+        self.assertEqual(response.context_data['registrations'], 1)
+        self.assertEqual(response.context_data['learner_survey_responses'], 0)
+        self.assertEqual(response.context_data['facilitator_survey_responses'], 1)
+        self.assertEqual(response.context_data['course'], course)
+        self.assertEqual(response.context_data['learner_goals_chart'], "image")
+        self.assertEqual(response.context_data['goals_met_chart'], "image")
 
 
     @patch('studygroups.charts.LearnerGoalsChart.generate', mock_generate)
@@ -140,7 +209,8 @@ class TestReportViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context_data['study_group'], sg)
         self.assertEqual(response.context_data['registrations'], 1)
-        self.assertEqual(response.context_data['survey_responses'], 1)
+        self.assertEqual(response.context_data['learner_survey_responses'], 1)
+        self.assertEqual(response.context_data['facilitator_survey_responses'], 0)
         self.assertEqual(response.context_data['course'], course)
         self.assertEqual(response.context_data['learner_goals_chart'], "image")
         self.assertEqual(response.context_data['goals_met_chart'], "image")
