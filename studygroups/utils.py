@@ -12,8 +12,7 @@ def signed_querystring(params):
     key = bytes(settings.SECRET_KEY, 'latin-1')
     data = bytes(urllib.parse.urlencode(params), 'latin-1')
     sig = hmac.new(key, data, hashlib.sha256).hexdigest()
-    qs.append( ('sig', sig) )
-    return urllib.parse.urlencode(qs)
+    return urllib.parse.urlencode(params + [('sig', sig)])
 
 
 def check_signed_querystring(params, sig):

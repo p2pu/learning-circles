@@ -212,7 +212,7 @@ def rsvp(request):
 
     if all(conditions()):
         rsvp = create_rsvp(user, int(study_group), meeting_date, attending)
-        url = reverse('studygroups.utils_success')
+        url = reverse('studygroups_rsvp_success')
         return http.HttpResponseRedirect(url)
     else:
         messages.error(request, 'Bad RSVP code')

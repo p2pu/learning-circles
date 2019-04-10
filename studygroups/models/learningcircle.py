@@ -8,8 +8,8 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.urls import reverse  # TODO ideally this shouldn't be in the model
 
-from studygroups import rsvp
 from studygroups.utils import gen_unsubscribe_querystring
+from studygroups.utils import gen_rsvp_querystring
 
 from .base import SoftDeleteQuerySet
 from .base import LifeTimeTrackingModel
@@ -275,7 +275,7 @@ class Meeting(LifeTimeTrackingModel):
     def rsvp_yes_link(self, email):
         base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
         url = reverse('studygroups_rsvp')
-        yes_qs = rsvp.gen_rsvp_querystring(
+        yes_qs = gen_rsvp_querystring(
             email,
             self.study_group.pk,
             self.meeting_datetime(),
@@ -286,7 +286,7 @@ class Meeting(LifeTimeTrackingModel):
     def rsvp_no_link(self, email):
         base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
         url = reverse('studygroups_rsvp')
-        no_qs = rsvp.gen_rsvp_querystring(
+        no_qs = gen_rsvp_querystring(
             email,
             self.study_group.pk,
             self.meeting_datetime(),
