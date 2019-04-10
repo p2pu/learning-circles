@@ -13,8 +13,8 @@ from studygroups.models import Rsvp
 from studygroups.models import accept_application
 from studygroups.models import create_rsvp
 from studygroups.models import generate_all_meetings
-from studygroups.rsvp import gen_rsvp_querystring
-from studygroups.rsvp import check_rsvp_signature
+from studygroups.utils import gen_rsvp_querystring
+from studygroups.utils import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
 from studygroups.tasks import send_meeting_change_notification
 

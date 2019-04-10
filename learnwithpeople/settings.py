@@ -183,7 +183,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Allow all host headers
 ALLOWED_HOSTS = ['*']
 
-AUTHENTICATION_BACKENDS = ['studygroups.backend.CaseInsensitiveBackend']
+AUTHENTICATION_BACKENDS = ['custom_registration.backend.CaseInsensitiveBackend']
 
 ##### Twilio config
 

@@ -17,7 +17,7 @@ from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import Feedback
 from studygroups.models import generate_all_meetings
-from studygroups.rsvp import gen_rsvp_querystring
+from studygroups.utils import gen_rsvp_querystring
 
 from freezegun import freeze_time
 

@@ -22,7 +22,7 @@ from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 from studygroups.models import Feedback
 from studygroups.models import generate_all_meetings
-from studygroups.rsvp import gen_rsvp_querystring
+from studygroups.utils import gen_rsvp_querystring
 from studygroups.tasks import generate_reminder
 from studygroups.tasks import send_reminders
 from custom_registration.models import create_user

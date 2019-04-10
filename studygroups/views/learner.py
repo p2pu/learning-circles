@@ -31,7 +31,7 @@ from studygroups.models import application_mobile_opt_out
 from studygroups.models import application_mobile_opt_out_revert
 from studygroups.forms import ApplicationForm
 from studygroups.forms import OptOutForm
-from studygroups.rsvp import check_rsvp_signature
+from studygroups.utils import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
 
 import string
@@ -212,7 +212,7 @@ def rsvp(request):
 
     if all(conditions()):
         rsvp = create_rsvp(user, int(study_group), meeting_date, attending)
-        url = reverse('studygroups_rsvp_success')
+        url = reverse('studygroups.utils_success')
         return http.HttpResponseRedirect(url)
     else:
         messages.error(request, 'Bad RSVP code')
