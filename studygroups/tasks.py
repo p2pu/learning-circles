@@ -7,7 +7,6 @@ from django.utils import timezone
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
-from studygroups.utils import render_to_string_ctx
 from django.core.mail import EmailMultiAlternatives
 from django.urls import reverse
 
@@ -17,6 +16,7 @@ from studygroups.models import community_digest_data
 from studygroups.models import get_study_group_organizers
 from studygroups import charts
 from studygroups.sms import send_message
+from studygroups.utils import render_to_string_ctx
 from studygroups.email_helper import render_email_templates
 from studygroups.email_helper import render_html_with_css
 from .utils import html_body_to_text
@@ -531,10 +531,6 @@ def send_meeting_change_notification(old_meeting, new_meeting):
             send_message(to, sms_body)
         except TwilioRestException as e:
             logger.exception("Could not send text message to %s", to, exc_info=e)
-
-
-
-
 
 
 def send_team_invitation_email(team, email, organizer):
