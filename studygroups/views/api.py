@@ -45,7 +45,7 @@ def studygroups(request):
     study_groups = StudyGroup.objects.published()
     if 'course_id' in request.GET:
         study_groups = study_groups.filter(course_id=request.GET.get('course_id'))
-    
+
     def to_json(sg):
         data = {
             "course_title": sg.course.title,
@@ -97,6 +97,7 @@ def _map_to_json(sg):
             "provider": sg.course.provider,
             "link": sg.course.link
         },
+        "id": sg.id,
         "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
         "venue": sg.venue_name,
         "venue_address": sg.venue_address + ", " + sg.city,
@@ -114,10 +115,10 @@ def _map_to_json(sg):
         "time_zone": sg.timezone_display(),
         "end_time": sg.end_time(),
         "weeks": sg.meeting_set.active().count(),
-        "url": settings.DOMAIN + '://' + settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
+        "url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
     }
     if sg.image:
-        data["image_url"] = settings.DOMAIN + '://' + settings.DOMAIN + sg.image.url
+        data["image_url"] = settings.PROTOCOL + '://' + settings.DOMAIN + sg.image.url
     # TODO else set default image URL
     if hasattr(sg, 'next_meeting_date'):
         data["next_meeting_date"] = sg.next_meeting_date
@@ -158,6 +159,8 @@ class LearningCircleListView(View):
             "offset": schema.integer(),
             "limit": schema.integer(),
             "weekdays": _intCommaList,
+            "user": schema.text(),
+            "scope": schema.text(),
         }
         data = schema.django_get_to_dict(request.GET)
         clean_data, errors = schema.validate(query_schema, data)
@@ -169,6 +172,20 @@ class LearningCircleListView(View):
         if 'id' in request.GET:
             id = request.GET.get('id')
             study_groups = StudyGroup.objects.filter(pk=int(id))
+
+        if 'user' in request.GET:
+            user_id = request.user.id
+            study_groups = study_groups.filter(facilitator=user_id)
+
+        if 'scope' in request.GET:
+            scope = request.GET.get('scope')
+            today = datetime.date.today()
+            if scope == "upcoming":
+                study_groups = study_groups.filter(start_date__gt=today)
+            elif scope == "current":
+                study_groups = study_groups.filter(start_date__lte=today, end_date__gt=today)
+            elif scope == "completed":
+                study_gropus = study_groups.filter(end_date__lt=today)
 
         if 'q' in request.GET:
             q = request.GET.get('q')
@@ -341,7 +358,10 @@ def _course_to_json(course):
         "rating_step_counts": course.rating_step_counts,
         "tagdorsements": course.tagdorsements,
         "tagdorsement_counts": course.tagdorsement_counts,
-        "course_page_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_course_page", args=(course.id,))
+        "course_page_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_course_page", args=(course.id,)),
+        "course_edit_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_course_edit", args=(course.id,)),
+        "created_at": course.created_at,
+        "unlisted": course.unlisted,
     }
 
     if hasattr(course, 'num_learning_circles'):
@@ -355,14 +375,21 @@ class CourseListView(View):
         query_schema = {
             "offset": schema.integer(),
             "limit": schema.integer(),
-            "order": lambda v: (v, None) if v in ['title', 'usage', 'overall_rating', 'created_at', None] else (None, "must be 'title', 'usage', 'created_at', or 'overall_rating'")
+            "order": lambda v: (v, None) if v in ['title', 'usage', 'overall_rating', 'created_at', None] else (None, "must be 'title', 'usage', 'created_at', or 'overall_rating'"),
+            "user": schema.text(),
+            "include_unlisted": schema.text(),
         }
         data = schema.django_get_to_dict(request.GET)
         clean_data, errors = schema.validate(query_schema, data)
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        courses = Course.objects.active().filter(unlisted=False).annotate(
+        courses = Course.objects.active()
+
+        if request.GET.get('include_unlisted', "false") == "false":
+            courses = courses.filter(unlisted=False)
+
+        courses = courses.annotate(
             num_learning_circles=Sum(
                 Case(
                     When(
@@ -373,6 +400,10 @@ class CourseListView(View):
                 )
             )
         )
+
+        if 'user' in request.GET:
+            user_id = request.user.id
+            courses = courses.filter(created_by=user_id)
 
         if 'course_id' in request.GET:
             course_id = request.GET.get('course_id')

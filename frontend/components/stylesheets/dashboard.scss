@@ -1,0 +1,57 @@
+@import 'variables';
+@import 'mixins';
+
+.card {
+  padding: $padding-sm;
+  border-radius: 0;
+  border: none;
+  margin-bottom: $padding-sm;
+  @include drop-shadow;
+  font-size: $font-size-small;
+
+  .card-title {
+    font-size: $font-size-base;
+    font-weight: 700;
+  }
+
+  .text-xs {
+    font-size: $font-size-xs;
+  }
+}
+
+.react-tabs__tab-list {
+  border-bottom: 1px solid $gray-light;
+
+  .react-tabs__tab {
+    padding: 0 $padding-xs;
+    margin-right: $padding-sm;
+    border: none;
+  }
+
+  .react-tabs__tab--selected {
+    border: none;
+    border-radius: 0;
+    border-bottom: 5px solid $p2pu-blue;
+    color: inherit;
+  }
+}
+
+.bg-dark {
+  background: #049487 !important;
+}
+
+table.table {
+  thead {
+    tr {
+      td {
+        border-bottom: 2px solid $gray-darker;
+        border-top: none;
+        font-weight: 700;
+      }
+    }
+  }
+
+  td {
+    padding: 0.5em;
+  }
+}

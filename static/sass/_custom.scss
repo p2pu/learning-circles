@@ -643,6 +643,20 @@ table.inner-table tbody td {
   overflow-y: auto;
 }
 
+.card {
+  .table-container {
+    max-height: 360px;
+  }
+
+  .meeting-card {
+    border-bottom: 1px solid $gray-light;
+
+    .material-icons {
+      font-size: 18px;
+    }
+  }
+}
+
 @media print {
   nav.nav-collapsed, footer.home-footer {
     display: none;

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<div id='facilitator-dashboard' data-user="{{ request.user }}">
+  <div class="loader"></div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{% render_bundle 'common' %}
+{% render_bundle 'facilitator-dashboard' %}
+{% endblock %}
