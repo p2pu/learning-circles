@@ -646,6 +646,12 @@ table.inner-table tbody td {
 .card {
   .table-container {
     max-height: 360px;
+
+    table {
+      td {
+        white-space: nowrap;
+      }
+    }
   }
 
   .meeting-card {

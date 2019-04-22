@@ -111,12 +111,19 @@ def _map_to_json(sg):
         "day": sg.day(),
         "start_date": sg.start_date,
         "start_datetime": sg.local_start_date(),
+        "end_date": sg.end_date,
         "meeting_time": sg.meeting_time,
         "time_zone": sg.timezone_display(),
         "end_time": sg.end_time(),
         "weeks": sg.meeting_set.active().count(),
         "url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
+        "facilitator_survey_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse('studygroups_facilitator_survey', args=(sg.id,)),
+        "signup_count": sg.application_set.count(),
+        "report_url": sg.report_url(),
+        "edit_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse('studygroups_edit_study_group', args=(sg.id,)),
+        "draft": sg.draft,
     }
+
     if sg.image:
         data["image_url"] = settings.PROTOCOL + '://' + settings.DOMAIN + sg.image.url
     # TODO else set default image URL
@@ -273,6 +280,7 @@ class LearningCircleListView(View):
         data = {
             'count': len(study_groups)
         }
+
         if 'offset' in request.GET or 'limit' in request.GET:
             limit, offset = _limit_offset(request)
             data['offset'] = offset
@@ -362,6 +370,7 @@ def _course_to_json(course):
         "course_edit_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_course_edit", args=(course.id,)),
         "created_at": course.created_at,
         "unlisted": course.unlisted,
+        "discourse_topic_url": course.discourse_topic_url,
     }
 
     if hasattr(course, 'num_learning_circles'):

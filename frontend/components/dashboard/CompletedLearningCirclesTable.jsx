@@ -21,18 +21,15 @@ export default class LearningCirclesTable extends Component {
 
   _populateResources() {
     const api = new ApiHelper('learningCircles');
-    const userEmail = this.props.userEmail || null;
 
     const onSuccess = (data) => {
       this.setState({ learningCircles: data.items })
     }
 
-    api.fetchResource({ callback: onSuccess, params: { limit: 10, user: true, scope: this.props.scope } })
+    api.fetchResource({ callback: onSuccess, params: { limit: 10, user: true, scope: "completed" } })
   }
 
   render() {
-    console.log(this.state)
-
     return (
       <div className="table-container">
         <table className="table">
@@ -41,23 +38,27 @@ export default class LearningCirclesTable extends Component {
               <td>Course</td>
               <td>Venue</td>
               <td>Signups</td>
-              <td>Start date</td>
+              <td>End date</td>
               <td>Actions</td>
             </tr>
           </thead>
           <tbody>
             {
               this.state.learningCircles.map(lc => {
-                const startDate = moment(lc.start_date).format('MMM D, YYYY')
+                const date = moment(lc.end_date).format('MMM D, YYYY')
                 const classes = lc.draft ? 'bg-secondary' : '';
 
                 return(
-                  <tr key={lc.id} className={`${classes}`}>
-                    <td><a href={"/"}>{`${lc.draft ? "[DRAFT] " : ""}${lc.course.title}`}</a></td>
-                    <td>{lc.venue}</td>
-                    <td>{"0"}</td>
-                    <td>{startDate}</td>
-                    <td><a href={lc.url} className="p2pu-btn btn-small dark">edit</a></td>
+                  <tr key={ lc.id } className={`${classes}`}>
+                    <td><a href={ lc.url }>{`${lc.draft ? "[DRAFT] " : ""}${lc.course.title}`}</a></td>
+                    <td>{ lc.venue }</td>
+                    <td>{ lc.signup_count }</td>
+                    <td>{ date }</td>
+                    <td>
+                      <a href={ lc.edit_url } className="p2pu-btn btn-small dark">manage</a>
+                      <a href={ lc.report_url } className="p2pu-btn btn-small dark">final report</a>
+                      <a href={ lc.facilitator_survey_url } className="p2pu-btn btn-small dark">facilitator survey</a>
+                    </td>
                   </tr>
                 )
               })

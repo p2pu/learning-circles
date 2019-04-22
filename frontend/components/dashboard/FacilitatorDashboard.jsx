@@ -7,7 +7,9 @@ import Alert from '../learning_circle_form/Alert';
 import Card from './Card';
 import DiscourseTable from './DiscourseTable';
 import CoursesTable from './CoursesTable';
-import LearningCirclesTable from './LearningCirclesTable';
+import UpcomingLearningCirclesTable from './UpcomingLearningCirclesTable';
+import CurrentLearningCirclesTable from './CurrentLearningCirclesTable';
+import CompletedLearningCirclesTable from './CompletedLearningCirclesTable';
 import UpcomingMeetings from './UpcomingMeetings';
 import Title from './Title';
 
@@ -91,13 +93,13 @@ export default class FacilitatorDashboard extends React.Component {
                   <Tab><span className="minicaps bold text-xs">Completed</span></Tab>
                 </TabList>
                 <TabPanel>
-                  <LearningCirclesTable userEmail={this.props.user} scope={"upcoming"} />
+                  <UpcomingLearningCirclesTable />
                 </TabPanel>
                 <TabPanel>
-                  <LearningCirclesTable userEmail={this.props.user} scope={"current"} />
+                  <CurrentLearningCirclesTable />
                 </TabPanel>
                 <TabPanel>
-                  <LearningCirclesTable userEmail={this.props.user} scope={"completed"} />
+                  <CompletedLearningCirclesTable />
                 </TabPanel>
               </Tabs>
             </Card>
