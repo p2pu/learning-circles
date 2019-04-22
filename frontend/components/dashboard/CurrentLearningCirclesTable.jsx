@@ -27,7 +27,7 @@ export default class LearningCirclesTable extends Component {
       this.setState({ learningCircles: data.items })
     }
 
-    api.fetchResource({ callback: onSuccess, params: { limit: 10, user: true, scope: "current" } })
+    api.fetchResource({ callback: onSuccess, params: { limit: 10, user: true, scope: "current", draft: true } })
   }
 
   render() {

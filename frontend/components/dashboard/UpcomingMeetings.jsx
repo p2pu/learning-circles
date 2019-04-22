@@ -82,7 +82,7 @@ export default class UpcomingMeetings extends Component {
                       <span className="bold">{formattedCity}</span>
                     </div>
 
-                    <a href={meeting.course.link}>
+                    <a href={meeting.course.discourse_topic_url}>
                       <div className="minicaps text-xs d-flex align-items-center mr-3">
                         <i className="material-icons pr-1">launch</i>
                         <span className="bold">Course thread</span>

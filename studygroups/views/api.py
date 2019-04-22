@@ -97,7 +97,8 @@ def _map_to_json(sg):
             "id": sg.course.pk,
             "title": sg.course.title,
             "provider": sg.course.provider,
-            "link": sg.course.link
+            "link": sg.course.link,
+            "discourse_topic_url": sg.course.discourse_topic_url if sg.course.discourse_topic_url else settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_generate_course_discourse_topic", args=(sg.course.id,)),
         },
         "id": sg.id,
         "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
@@ -170,6 +171,7 @@ class LearningCircleListView(View):
             "weekdays": _intCommaList,
             "user": schema.text(),
             "scope": schema.text(),
+            "draft": schema.text(),
         }
         data = schema.django_get_to_dict(request.GET)
         clean_data, errors = schema.validate(query_schema, data)
@@ -177,6 +179,9 @@ class LearningCircleListView(View):
             return json_response(request, {"status": "error", "errors": errors})
 
         study_groups = StudyGroup.objects.published().order_by('id')
+
+        if 'draft' in request.GET:
+            study_groups = StudyGroup.objects.active().order_by('id')
 
         if 'id' in request.GET:
             id = request.GET.get('id')
@@ -194,7 +199,7 @@ class LearningCircleListView(View):
             elif scope == "current":
                 study_groups = study_groups.filter(start_date__lte=today, end_date__gt=today)
             elif scope == "completed":
-                study_gropus = study_groups.filter(end_date__lt=today)
+                study_groups = study_groups.filter(end_date__lt=today)
 
         if 'q' in request.GET:
             q = request.GET.get('q')
@@ -372,7 +377,7 @@ def _course_to_json(course):
         "course_edit_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_course_edit", args=(course.id,)),
         "created_at": course.created_at,
         "unlisted": course.unlisted,
-        "discourse_topic_url": course.discourse_topic_url,
+        "discourse_topic_url": course.discourse_topic_url if course.discourse_topic_url else settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_generate_course_discourse_topic", args=(course.id,)),
     }
 
     if hasattr(course, 'num_learning_circles'):
