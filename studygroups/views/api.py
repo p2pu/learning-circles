@@ -27,8 +27,10 @@ from studygroups.models import StudyGroup
 from studygroups.models import Application
 from studygroups.models import Meeting
 from studygroups.models import Team
+from studygroups.models import TeamMembership
 from studygroups.models import generate_all_meetings
 from studygroups.models.course import course_platform_from_url
+from studygroups.models.team import get_user_team
 
 from uxhelpers.utils import json_response
 
@@ -731,8 +733,28 @@ class LandingPageLearningCirclesView(View):
     """ return upcoming learning circles for landing page """
     def get(self, request):
 
+        query_schema = {
+            "scope": schema.text(),
+        }
+        data = schema.django_get_to_dict(request.GET)
+        clean_data, errors = schema.validate(query_schema, data)
+        if errors != {}:
+            return json_response(request, {"status": "error", "errors": errors})
+
+        study_groups_unfiltered = StudyGroup.objects.published()
+
+        if 'scope' in request.GET and request.GET.get('scope') == "team":
+            user = request.user
+            team_ids = TeamMembership.objects.filter(user=user).values("team")
+
+            if team_ids.count() == 0:
+                return json_response(request, { "status": "error", "errors": ["You are not on a team."] })
+
+            team_members = TeamMembership.objects.filter(team__in=team_ids).values("user")
+            study_groups_unfiltered = study_groups_unfiltered.filter(facilitator__in=team_members)
+
         # get learning circles with image & upcoming meetings
-        study_groups = StudyGroup.objects.published().filter(
+        study_groups = study_groups_unfiltered.filter(
             meeting__meeting_date__gte=timezone.now(),
         ).annotate(
             next_meeting_date=Min('meeting__meeting_date')
@@ -741,7 +763,7 @@ class LandingPageLearningCirclesView(View):
         # if there are less than 3 with upcoming meetings and an image
         if study_groups.count() < 3:
             # pad with learning circles with the most recent meetings
-            past_study_groups = StudyGroup.objects.published().filter(
+            past_study_groups = study_groups_unfiltered.filter(
                 meeting__meeting_date__lt=timezone.now(),
             ).annotate(
                 next_meeting_date=Max('meeting__meeting_date')

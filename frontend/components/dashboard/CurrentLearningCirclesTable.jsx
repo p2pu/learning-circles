@@ -31,6 +31,15 @@ export default class LearningCirclesTable extends Component {
   }
 
   render() {
+    if (this.state.learningCircles.length === 0) {
+      return(
+        <div className="py-2">
+          <div>You don't have any current learning circles.</div>
+          <a href={"/en/studygroup/create"} className="p2pu-btn dark btn-small ml-0">Create a learning circle</a>
+        </div>
+      )
+    };
+
     return (
       <div className="table-container">
         <table className="table">

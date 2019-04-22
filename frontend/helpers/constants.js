@@ -55,7 +55,7 @@ export const API_ENDPOINTS = {
   },
   landingPage: {
     baseUrl: '/api/landing-page-learning-circles/?',
-    searchParams: ['team']
+    searchParams: ['team', 'scope']
   },
   images: {
     postUrl: '/api/upload_image/'
@@ -78,3 +78,7 @@ export const NO_STUDYGROUP_SURVEY = 'iVldef';
 export const LEARNER_SURVEY = 'VA1aVz';
 
 export const DISCOURSE_API_URL = 'https://community.p2pu.org';
+export const FACILITATOR_RESOURCE_TYPES = [
+  'video', 'activity', 'blog', 'template', 'thread'
+]
+

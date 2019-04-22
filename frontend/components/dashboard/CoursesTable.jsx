@@ -30,8 +30,14 @@ export default class CoursesTable extends Component {
   }
 
   render() {
-    console.log(this.state)
-
+    if (this.state.courses.length === 0) {
+      return(
+        <div className="py-2">
+          <div>You haven't added any courses.</div>
+          <a href={"/en/course/create"} className="p2pu-btn dark btn-small ml-0">Add a course</a>
+        </div>
+      )
+    };
     return (
       <div className="table-container">
         <table className="table">

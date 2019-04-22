@@ -11,6 +11,7 @@ import UpcomingLearningCirclesTable from './UpcomingLearningCirclesTable';
 import CurrentLearningCirclesTable from './CurrentLearningCirclesTable';
 import CompletedLearningCirclesTable from './CompletedLearningCirclesTable';
 import UpcomingMeetings from './UpcomingMeetings';
+import RecommendedResources from "./RecommendedResources";
 import Title from './Title';
 
 import 'react-tabs/style/react-tabs.css';
@@ -108,14 +109,14 @@ export default class FacilitatorDashboard extends React.Component {
               <div className="card-title">What's Happening This Week</div>
               <Tabs defaultIndex={0}>
                 <TabList>
-                  <Tab><span className="minicaps bold text-xs">My Team</span></Tab>
                   <Tab><span className="minicaps bold text-xs">Globally</span></Tab>
+                  <Tab><span className="minicaps bold text-xs">My Team</span></Tab>
                 </TabList>
                 <TabPanel>
-                  <UpcomingMeetings scope="team" />
+                  <UpcomingMeetings scope="global" />
                 </TabPanel>
                 <TabPanel>
-                  <UpcomingMeetings scope="global" />
+                  <UpcomingMeetings scope="team" />
                 </TabPanel>
               </Tabs>
               <div className="text-right">
@@ -141,6 +142,10 @@ export default class FacilitatorDashboard extends React.Component {
 
             <Card>
               <div className="card-title">Recommended Resources</div>
+              <RecommendedResources />
+              <div className="text-right">
+                <a href={"https://community.p2pu.org/c/learning-circles/"}>See all resources</a>
+              </div>
             </Card>
           </div>
 

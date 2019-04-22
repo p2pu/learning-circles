@@ -10,7 +10,8 @@ export default class UpcomingMeetings extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      meetings: []
+      meetings: [],
+      errors: []
     };
     this.populateResources = () => this._populateResources();
   }
@@ -23,6 +24,10 @@ export default class UpcomingMeetings extends Component {
     const api = new ApiHelper('landingPage');
 
     const onSuccess = (data) => {
+      if (data.status && data.status === "error") {
+        return this.setState({ errors: data.errors })
+      }
+
       this.setState({ meetings: data.items })
     }
 
@@ -40,7 +45,13 @@ export default class UpcomingMeetings extends Component {
   }
 
   render() {
-    console.log(this.state)
+    if (this.state.meetings.length === 0) {
+      return(
+        <div className="py-2">
+          <div>{this.state.errors}</div>
+        </div>
+      )
+    };
 
     return (
       <div className="">
