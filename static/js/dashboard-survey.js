@@ -42,7 +42,7 @@ function dashboardSurvey(){
         <div class="text-center">
           <p>We're designing a new Facilitator Dashboard and we need your feedback! Are there any changes you'd like to see?</p>
           <div>
-            <a href="https://p2pu.typeform.com/to/weIA87" class="p2pu-btn btn-sm light" target="_blank" rel="noopener noreferrer">Yes!</a>
+            <a href="https://p2pu.typeform.com/to/weIA87" id="go-to-survey" class="p2pu-btn btn-sm light" target="_blank" rel="noopener noreferrer">Yes!</a>
             <button id="go-away" class="p2pu-btn btn-sm light transparent">No, leave me alone.</button>
           </div>
         </div>
@@ -63,6 +63,7 @@ var callback = function(){
   var deprecationAlert = document.getElementById('deprecated-site-alert');
   var deprecationAlertCloseButton = document.getElementById('deprecated-alert-close');
   var goAwayButton = document.getElementById('go-away');
+  var goToSurveyButton = document.getElementById('go-to-survey');
   var preventAlert = window.localStorage.getItem('prevent-survey-alert') === 'true';
 
   function showDeprecationAlert(alert) {
@@ -92,6 +93,11 @@ var callback = function(){
   goAwayButton.addEventListener('click', function() {
     hideDeprecationAlert(deprecationAlert);
     savePreferences(deprecationAlert)
+  })
+
+  goToSurveyButton.addEventListener('click', function() {
+    hideDeprecationAlert(deprecationAlert);
+    savePreferences(deprecationAlert);
   })
 
 }
