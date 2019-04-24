@@ -259,7 +259,7 @@
       {% for studygroup in upcoming_studygroups %}
         <tr>
           <td>{{ studygroup.facilitator.first_name | title }}</td>
-          <td><a href="{{ studygroup.course.link }}">{{ studygroup.course.title }}</a></td>
+          <td><a href="{% url 'studygroups_course_page' studygroup.course.pk %}">{{ studygroup.course.title }}</a></td>
           <td>{{ studygroup.city | title }}</td>
         </tr>
       {% endfor %}
@@ -297,7 +297,8 @@
   </h2>
   <ul>
   {% for course in new_courses %}
-      <li>{{ course.created_by.first_name }} {% trans "added" %} <a href="{{ course.link }}">{{ course.title }}</a></li>
+      {% url 'studygroups_course_page' course.pk as course_url %}
+      <li>{{ course.created_by.first_name }} {% trans "added" %} <a href="{{ course_url }}">{{ course.title }}</a></li>
     {% endfor %}
   </ul>
   <p>

@@ -21,8 +21,8 @@ from studygroups.models import TeamMembership
 from studygroups.models import accept_application
 from studygroups.models import create_rsvp
 from studygroups.models import generate_all_meetings
-from studygroups.rsvp import gen_rsvp_querystring
-from studygroups.rsvp import check_rsvp_signature
+from studygroups.utils import gen_rsvp_querystring
+from studygroups.utils import check_rsvp_signature
 from studygroups.utils import gen_unsubscribe_querystring
 from studygroups.utils import check_unsubscribe_signature
 
@@ -683,7 +683,7 @@ class TestStudyGroupTasks(TestCase):
             start_date = end_date - datetime.timedelta(days=21)
 
             web_version_path = reverse('studygroups_community_digest', kwargs={'start_date': start_date.strftime("%d-%m-%Y"), 'end_date': end_date.strftime("%d-%m-%Y")})
-            web_version_url = "http://{}".format(settings.DOMAIN) + web_version_path
+            web_version_url = "https://{}".format(settings.DOMAIN) + web_version_path
 
             self.assertEqual(len(mail.outbox), 1)
             self.assertEqual(mail.outbox[0].to[0], settings.COMMUNITY_DIGEST_EMAIL)

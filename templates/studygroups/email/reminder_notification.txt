@@ -12,7 +12,7 @@
 
 {{ reminder.sms_body | safe }}
 
-{% url 'studygroups_message_edit' reminder.study_group.id reminder.id as message_edit_url %}{% blocktrans %}If you wish to edit the reminder, you can follow this link: {{protocol}}://{{domain}}{{message_edit_url}}.{% endblocktrans %}
+{% url 'studygroups_message_edit' reminder.study_group.id reminder.id as message_edit_url %}{% blocktrans %}If you wish to edit the reminder, you can follow this link: {{PROTOCOL}}://{{DOMAIN}}{{message_edit_url}}.{% endblocktrans %}
 
 {% trans "Regards" %}
 P2PU

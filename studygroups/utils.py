@@ -1,31 +1,68 @@
 from django.conf import settings
+from django.template.loader import render_to_string
 
 import urllib.request, urllib.parse, urllib.error
 import hmac
 import hashlib
+import re
+import bleach
 
-def gen_unsubscribe_querystring(user):
-    qs = [
-        ('user', user),
-    ]
+
+def signed_querystring(params):
     key = bytes(settings.SECRET_KEY, 'latin-1')
-    data = bytes(urllib.parse.urlencode(qs), 'latin-1')
+    data = bytes(urllib.parse.urlencode(params), 'latin-1')
     sig = hmac.new(key, data, hashlib.sha256).hexdigest()
-    qs.append( ('sig', sig) )
-    return urllib.parse.urlencode(qs)
+    return urllib.parse.urlencode(params + [('sig', sig)])
 
 
-def check_unsubscribe_signature(user, sig):
-    qs = [
-        ('user', user),
-    ]
+def check_signed_querystring(params, sig):
     key = bytes(settings.SECRET_KEY, 'latin-1')
-    data = bytes(urllib.parse.urlencode(qs), 'latin-1')
+    data = bytes(urllib.parse.urlencode(params), 'latin-1')
     return sig == hmac.new(key, data, hashlib.sha256).hexdigest()
 
 
-import re
-import bleach
+def gen_unsubscribe_querystring(user):
+    params = [
+        ('user', user),
+    ]
+    return signed_querystring(params)
+
+
+def check_unsubscribe_signature(user, sig):
+    params = [
+        ('user', user),
+    ]
+    return check_signed_querystring(params, sig)
+
+
+# contact - email or mobile depending on contact preference
+def gen_rsvp_querystring(contact, study_group, meeting_date, rsvp):
+    params = [
+        ('user', contact),
+        ('study_group', study_group),
+        ('meeting_date', meeting_date.isoformat()),
+        ('attending', rsvp)
+    ]
+    return signed_querystring(params)
+
+
+def check_rsvp_signature(contact, study_group, meeting_date, rsvp, sig):
+    params = [
+        ('user', contact),
+        ('study_group', study_group),
+        ('meeting_date', meeting_date.isoformat()),
+        ('attending', rsvp)
+    ]
+    return check_signed_querystring(params, sig)
+
+
+def render_to_string_ctx(template, context={}):
+    context.update({
+        'DOMAIN': settings.DOMAIN,
+        'PROTOCOL': settings.PROTOCOL,
+    })
+    return render_to_string(template, context)
+
 
 def html_body_to_text(html):
     """ Convern HTML email body to text """
