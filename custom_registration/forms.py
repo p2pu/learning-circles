@@ -10,7 +10,7 @@ from studygroups.models import Profile
 
 
 class SignupForm(UserCreationForm):
-    communication_opt_in = forms.BooleanField(required=False, initial=True, label=_('P2PU can contact me.'), help_text=_('Joining the community comes with an expectation that you would like to learn about upcoming events, new features, and updates from around the world. If you do not want to receive any of these messages, uncheck this box.'))
+    communication_opt_in = forms.BooleanField(required=False, initial=False, label=_('P2PU can contact me.'), help_text=_('Joining the community comes with an expectation that you would like to learn about upcoming events, new features, and updates from around the world. If you do not want to receive any of these messages, uncheck this box.'))
     interested_in_learning = forms.CharField(required=False, label=_('What are you interested in learning?'))
 
     def __init__(self, *args, **kwargs):
