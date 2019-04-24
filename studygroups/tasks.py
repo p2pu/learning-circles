@@ -585,7 +585,7 @@ def send_weekly_update():
         timezone.activate(pytz.timezone(settings.TIME_ZONE)) #TODO not sure what this influences anymore?
         translation.activate(settings.LANGUAGE_CODE)
         html_body = render_html_with_css('studygroups/email/weekly-update.html', report_context)
-        text_body = render_to_string_ctx('studygroups/email/weekly-update.txt', report_context)
+        text_body = html_body_to_text(html_body)
         timezone.deactivate()
 
         to = [o.user.email for o in team.teammembership_set.filter(role=TeamMembership.ORGANIZER)]
