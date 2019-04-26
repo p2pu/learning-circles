@@ -114,10 +114,10 @@ def _map_to_json(sg):
         "time_zone": sg.timezone_display(),
         "end_time": sg.end_time(),
         "weeks": sg.meeting_set.active().count(),
-        "url": settings.DOMAIN + '://' + settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
+        "url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
     }
     if sg.image:
-        data["image_url"] = settings.DOMAIN + '://' + settings.DOMAIN + sg.image.url
+        data["image_url"] = settings.PROTOCOL + '://' + settings.DOMAIN + sg.image.url
     # TODO else set default image URL
     if hasattr(sg, 'next_meeting_date'):
         data["next_meeting_date"] = sg.next_meeting_date
