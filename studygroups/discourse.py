@@ -1,8 +1,10 @@
 import requests
-import json
 import re
+import logging
 
 from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 def _get_auth():
     return {
@@ -15,7 +17,7 @@ def create_discourse_topic(title, category, raw):
     create_topic_url = f'{settings.DISCOURSE_BASE_URL}/posts.json'
 
     request_data = _get_auth()
-    request_date.update({
+    request_data.update({
         'title': title,
         'category': category,
         'raw': raw,
