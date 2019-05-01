@@ -243,7 +243,10 @@ class CoursePage(DetailView):
 
 
 def generate_course_discourse_topic(request, course_id):
-    course = Course.objects.get(pk=course_id);
+    course = get_object_or_404(Course, pk=course_id)
+
+    if course.discourse_topic_url:
+        return http.HttpResponseRedirect(course.discourse_topic_url)
 
     post_title = "{} ({})".format(course.title, course.provider)
     post_category = settings.DISCOURSE_COURSES_AND_TOPICS_CATEGORY_ID

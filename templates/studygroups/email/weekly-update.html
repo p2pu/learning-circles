@@ -167,10 +167,11 @@
       </thead>
       <tbody>
         {% for studygroup in finished_studygroups %}
-          {% blocktrans with first_name=studygroup.facilitator.first_name last_name=studygroup.facilitator.last_name email=studygroup.facilitator.email venue=studygroup.venue_name|title studygroup_url=studygroup.course.link course=studygroup.course.title report_url=studygroup.report_url %}
+          {% url 'studygroups_course_page' studygroup.course.pk as course_url %}
+          {% blocktrans with first_name=studygroup.facilitator.first_name last_name=studygroup.facilitator.last_name email=studygroup.facilitator.email venue=studygroup.venue_name|title course=studygroup.course.title report_url=studygroup.report_url %}
           <tr>
             <td><a href="mailto:{{email}}">{{first_name}} {{last_name}}</a></td>
-            <td><a href="{{ studygroup_url }}">{{ course }}</a></td>
+            <td><a href="{{ course_url }}">{{ course }}</a></td>
             <td>{{ venue }}</td>
           {% endblocktrans %}
             {% if studygroup in studygroups_with_survey_responses %}
@@ -216,10 +217,11 @@
         <tbody>
           {% for meeting in meetings|dictsort:"meeting_datetime" %}
             {% with study_group=meeting.study_group %}
+            {% url 'studygroups_course_page' study_group.course.pk as course_url %}
             {% blocktrans with meeting_date=meeting.meeting_datetime|date:"fA, l, M j" meeting_number=meeting.meeting_number course=study_group.course.title venue=study_group.venue_name first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name email=study_group.facilitator.email meeting_count=study_group.meeting_set.active.count %}
             <tr>
               <td><a href="mailto:{{email}}">{{first_name}} {{last_name}}</a></td>
-              <td>{{course}}</td>
+              <td><a href="{{course_url}}">{{course}}</a></td>
               <td>{{venue}}</td>
               <td>{{ meeting_date }}</td>
               <td>{{meeting_number}} of {{meeting_count}}</td>
@@ -281,7 +283,8 @@
       </thead>
       <tbody>
         {% for studygroup in upcoming_studygroups %}
-          {% blocktrans with first_name=studygroup.facilitator.first_name|title last_name=studygroup.facilitator.last_name|title email=studygroup.facilitator.email venue=studygroup.venue_name|title studygroup_url=studygroup.course.link course_url=studygroup.course.link course=studygroup.course.title report_url=studygroup.report_url %}
+          {% url 'studygroups_course_page' studygroup.course.pk as course_url %}
+          {% blocktrans with first_name=studygroup.facilitator.first_name|title last_name=studygroup.facilitator.last_name|title email=studygroup.facilitator.email venue=studygroup.venue_name|title studygroup_url=studygroup.course.link course=studygroup.course.title report_url=studygroup.report_url %}
           <tr>
             <td><a href="mailto:{{email}}">{{first_name}} {{last_name}}</a></td>
             <td><a href="{{ course_url }}">{{ course }}</a></td>
@@ -357,7 +360,7 @@
 
     <ul>
     {% for course in new_courses %}
-        <li>{{ course.created_by.first_name }} {% trans "added" %} <a href="{{ course.link }}">{{ course.title }}</a></li>
+        <li>{{ course.created_by.first_name }} {% trans "added" %} <a href="{% url 'studygroups_course_page' course.pk %}">{{ course.title }}</a></li>
       {% endfor %}
     </ul>
     <p>

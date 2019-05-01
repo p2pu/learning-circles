@@ -219,7 +219,7 @@ class CourseForm(forms.ModelForm):
             self.helper.add_input(Submit('submit', 'Save'))
         else:
             self.helper.add_input(Submit('submit', 'Create course'))
-        self.helper.layout.insert(4, HTML("""
+        self.helper.layout.insert(5, HTML("""
             <p><label class="from-control requiredField">
                 Availability<span class="asteriskField">*</span>
             </label></p>
@@ -402,6 +402,7 @@ class DigestGenerateForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.add_input(Submit('submit', 'Generate'))
+
 
 class StatsDashForm(forms.Form):
     start_date = forms.DateField()

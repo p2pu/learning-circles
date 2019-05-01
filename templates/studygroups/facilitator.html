@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load static %}
 
 {% block content %}
 
@@ -76,4 +77,5 @@
     $('[data-toggle="popover"]').popover();
   });
 </script>
+<script src="{% static 'js/dashboard-survey.js' %}"></script>
 {% endblock %}
