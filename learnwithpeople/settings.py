@@ -194,7 +194,7 @@ TWILIO_NUMBER = os.environ.get('TWILIO_NUMBER')
 LOGIN_REDIRECT_URL = '/login_redirect/'
 LOGOUT_REDIRECT_URL = 'https://www.p2pu.org/en/facilitate/'
 DOMAIN = env('DOMAIN', 'localhost:8000')
-PROTOCOL = env('PROTOCOL', 'http')
+PROTOCOL = env('PROTOCOL', 'https')
 
 ####### Google analytics tracking info #######
 GA_TRACKING_ID = env('GA_TRACKING_ID', 'UA-0000000-00')
@@ -323,4 +323,7 @@ P2PU_RESOURCES_AWS_BUCKET = env('RESOURCES_AWS_BUCKET', '')
 MAILGUN_API_KEY = env('MAILGUN_API_KEY', '')
 MAILGUN_DOMAIN = env('MAILGUN_DOMAIN', '')
 ANNOUNCE_EMAIL = env('ANNOUNCE_EMAIL', 'announce@localhost')
+
+# Instagram token
+INSTAGRAM_TOKEN = env('INSTAGRAM_TOKEN', '')
 

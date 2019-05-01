@@ -1,8 +1,8 @@
 import React from 'react';
 import axios from 'axios';
+import AOS from 'aos';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
-import RegistrationModal from '../learning_circle_form/RegistrationModal';
 import Alert from '../learning_circle_form/Alert';
 import Card from './Card';
 import DiscourseTable from './DiscourseTable';
@@ -12,9 +12,12 @@ import CurrentLearningCirclesTable from './CurrentLearningCirclesTable';
 import CompletedLearningCirclesTable from './CompletedLearningCirclesTable';
 import UpcomingMeetings from './UpcomingMeetings';
 import RecommendedResources from "./RecommendedResources";
+import GlobalSuccesses from "./GlobalSuccesses";
+import InstagramFeed from "./InstagramFeed";
 import Title from './Title';
 
 import 'react-tabs/style/react-tabs.css';
+import 'aos/dist/aos.css';
 import '../stylesheets/dashboard.scss';
 
 
@@ -25,23 +28,17 @@ export default class FacilitatorDashboard extends React.Component {
     this.state = {
       user: this.props.user,
       errors: {},
-      alert: { show: false },
-      showModal: false,
+      alert: { show: false }
     };
-    this.showModal = () => this._showModal();
-    this.closeModal = () => this._closeModal();
     this.showAlert = (msg, type) => this._showAlert(msg, type);
     this.closeAlert = () => this._closeAlert();
-    this.registerUser = () => this._registerUser();
-    this.onLogin = (user) => this._onLogin(user);
   }
 
-  _showModal() {
-    this.setState({ showModal: true })
-  }
-
-  _closeModal() {
-    this.setState({ showModal: false })
+  componentDidMount(){
+    AOS.init({
+      duration: 500,
+      delay: 100
+    })
   }
 
   _showAlert(message, type) {
@@ -56,16 +53,6 @@ export default class FacilitatorDashboard extends React.Component {
 
   _closeAlert() {
     this.setState({ alert: { show: false }})
-  }
-
-  _onLogin(user) {
-    this.setState({ user });
-    this.showAlert("You're logged in! You can now save or publish your learning circle.", 'success')
-
-    // TODO: remove this when we switch to the React component for the account in the navbar
-    const accountLink = document.querySelector('nav .nav-items .account a');
-    accountLink.setAttribute('href', '/en/accounts/logout');
-    accountLink.innerText = 'Log out';
   }
 
   render() {
@@ -84,100 +71,132 @@ export default class FacilitatorDashboard extends React.Component {
         </div>
 
         <div className="row">
-          <div className="col-8">
-            <Card>
-              <div className="card-title">My Learning Circles</div>
-              <Tabs defaultIndex={0}>
-                <TabList>
-                  <Tab><span className="minicaps bold text-xs">Upcoming</span></Tab>
-                  <Tab><span className="minicaps bold text-xs">Current</span></Tab>
-                  <Tab><span className="minicaps bold text-xs">Completed</span></Tab>
-                </TabList>
-                <TabPanel>
-                  <UpcomingLearningCirclesTable />
-                </TabPanel>
-                <TabPanel>
-                  <CurrentLearningCirclesTable />
-                </TabPanel>
-                <TabPanel>
-                  <CompletedLearningCirclesTable />
-                </TabPanel>
-              </Tabs>
-            </Card>
+          <div className="col-12 col-lg-8">
 
-            <Card>
-              <div className="card-title">What's Happening This Week</div>
-              <Tabs defaultIndex={0}>
-                <TabList>
-                  <Tab><span className="minicaps bold text-xs">Globally</span></Tab>
-                  <Tab><span className="minicaps bold text-xs">My Team</span></Tab>
-                </TabList>
-                <TabPanel>
-                  <UpcomingMeetings scope="global" />
-                </TabPanel>
-                <TabPanel>
-                  <UpcomingMeetings scope="team" />
-                </TabPanel>
-              </Tabs>
-              <div className="text-right">
-                <a href={"https://www.p2pu.org/en/learning-circles/"}>See all learning circles</a>
-              </div>
-            </Card>
+            <div data-aos='fade'>
+              <Card>
+                <div className="card-title">My Learning Circles</div>
+                {
+                  !this.state.user &&
+                  <p>You must be logged in to see your learning circles. <a className="p2pu-btn btn-dark btn-sm" href={"/en/login_redirect/"}>Log in or register</a></p>
+                }
+                {
+                  this.state.user &&
+                  <Tabs defaultIndex={0}>
+                    <TabList>
+                      <Tab><span className="minicaps bold text-xs">Upcoming</span></Tab>
+                      <Tab><span className="minicaps bold text-xs">Current</span></Tab>
+                      <Tab><span className="minicaps bold text-xs">Completed</span></Tab>
+                    </TabList>
+                    <TabPanel>
+                      <div data-aos='fade'>
+                        <UpcomingLearningCirclesTable />
+                      </div>
+                    </TabPanel>
+                    <TabPanel>
+                      <div data-aos='fade'>
+                        <CurrentLearningCirclesTable />
+                      </div>
+                    </TabPanel>
+                    <TabPanel>
+                      <div data-aos='fade'>
+                        <CompletedLearningCirclesTable />
+                      </div>
+                    </TabPanel>
+                  </Tabs>
+                }
+                <div className="text-right">
+                  <a href={"/en/studygroup/create/"}>Start a learning circle</a>
+                </div>
+              </Card>
+            </div>
 
-            <Card>
-              <div className="card-title">My Courses</div>
-              <CoursesTable userEmail={this.state.user} />
-              <div className="text-right">
-                <a href={"https://www.p2pu.org/en/courses/"}>See all courses</a>
-              </div>
-            </Card>
+            <div data-aos='fade'>
+              <Card>
+                <div className="card-title">What's Happening This Week</div>
+                <Tabs defaultIndex={0}>
+                  <TabList>
+                    <Tab><span className="minicaps bold text-xs">Globally</span></Tab>
+                    <Tab><span className="minicaps bold text-xs">My Team</span></Tab>
+                  </TabList>
+                  <TabPanel>
+                    <UpcomingMeetings scope="global" />
+                  </TabPanel>
+                  <TabPanel>
+                    <UpcomingMeetings scope="team" />
+                  </TabPanel>
+                </Tabs>
+                <div className="text-right">
+                  <a href={"https://www.p2pu.org/en/learning-circles/"}>See all learning circles</a>
+                </div>
+              </Card>
+            </div>
 
-            <Card>
-              <div className="card-title">Latest Discussion</div>
-              <DiscourseTable />
-              <div className="text-right">
-                <a href={"https://community.p2pu.org/"}>Go to the forum</a>
-              </div>
-            </Card>
+            <div data-aos='fade'>
+              <Card>
+                <div className="card-title">My Courses</div>
+                {
+                  !this.state.user &&
+                  <p>You must be logged in to see your learning circles. <a className="p2pu-btn btn-dark btn-sm" href={"/en/login_redirect/"}>Log in or register</a></p>
+                }
+                {
+                  this.state.user &&
+                  <CoursesTable userEmail={this.state.user} />
+                }
+                <div className="text-right">
+                  <a href={"https://www.p2pu.org/en/courses/"}>See all courses</a>
+                </div>
+              </Card>
+            </div>
 
-            <Card>
-              <div className="card-title">Recommended Resources</div>
-              <RecommendedResources />
-              <div className="text-right">
-                <a href={"https://community.p2pu.org/c/learning-circles/"}>See all resources</a>
-              </div>
-            </Card>
+            <div data-aos='fade'>
+              <Card>
+                <div className="card-title">Latest Discussion</div>
+                <DiscourseTable />
+                <div className="text-right">
+                  <a href={"https://community.p2pu.org/"}>Go to the forum</a>
+                </div>
+              </Card>
+            </div>
+
+            <div data-aos='fade'>
+              <Card>
+                <div className="card-title">Activities for your Learning Circle</div>
+                <RecommendedResources />
+                <div className="text-right">
+                  <a href={"https://community.p2pu.org/tags/activity/"}>See all activities</a>
+                </div>
+              </Card>
+            </div>
           </div>
 
-          <div className="col-4">
-            <Card>
-              <div className="card-title">Global Successes</div>
-            </Card>
+          <div className="col-12 col-lg-4">
 
-            <Card>
-              <div className="card-title">Instagram</div>
-            </Card>
+            <div data-aos='fade'>
+              <Card>
+                <div className="card-title">Recent Successes</div>
+                <GlobalSuccesses />
+              </Card>
+            </div>
 
-            <Card className="bg-dark">
-              <div className="bold text-center text-white">What do you think about your new learning circles dashboard?</div>
-              <div className="text-center mt-3">
-                <a href="#">
-                  <button className="p2pu-btn light">😍 I like it!</button>
-                </a>
-                <a href="#">
-                  <button className="p2pu-btn light">😕 Meh</button>
-                </a>
-              </div>
-            </Card>
+            <div data-aos='fade'>
+              <Card>
+                <div className="card-title">Latest Posts on Instagram</div>
+                <InstagramFeed />
+              </Card>
+            </div>
+
+            <div data-aos='fade'>
+              <Card className="bg-dark">
+                <div className="bold text-center text-white">What do you think about your new learning circles dashboard?</div>
+                <div className="text-center mt-3">
+                  <a href="#" className="p2pu-btn light btn-sm">😍 I like it!</a>
+                  <a href="#" className="p2pu-btn light btn-sm">😕 Meh</a>
+                </div>
+              </Card>
+            </div>
           </div>
         </div>
-        <RegistrationModal
-          open={this.state.showModal}
-          closeModal={this.closeModal}
-          user={this.props.user}
-          onLogin={this.onLogin}
-          showAlert={this.showAlert}
-        />
       </div>
     );
   }

@@ -29,6 +29,9 @@ from studygroups.models import Meeting
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import generate_all_meetings
+from studygroups.models import filter_studygroups_with_survey_responses
+from studygroups.models import filter_studygroups_with_survey_responses
+from studygroups.models import get_json_response
 from studygroups.models.course import course_platform_from_url
 from studygroups.models.team import get_user_team
 
@@ -98,10 +101,11 @@ def _map_to_json(sg):
             "title": sg.course.title,
             "provider": sg.course.provider,
             "link": sg.course.link,
+            "course_page_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse('studygroups_course_page', args=(sg.course.id,)),
             "discourse_topic_url": sg.course.discourse_topic_url if sg.course.discourse_topic_url else settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_generate_course_discourse_topic", args=(sg.course.id,)),
         },
         "id": sg.id,
-        "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
+        "facilitator": sg.facilitator.first_name,
         "venue": sg.venue_name,
         "venue_address": sg.venue_address + ", " + sg.city,
         "city": sg.city,
@@ -124,6 +128,7 @@ def _map_to_json(sg):
         "signup_count": sg.application_set.count(),
         "report_url": sg.report_url(),
         "edit_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse('studygroups_edit_study_group', args=(sg.id,)),
+        "manage_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse('studygroups_view_study_group', args=(sg.id,)),
         "draft": sg.draft,
     }
 
@@ -132,6 +137,8 @@ def _map_to_json(sg):
     # TODO else set default image URL
     if hasattr(sg, 'next_meeting_date'):
         data["next_meeting_date"] = sg.next_meeting_date
+    if hasattr(sg, 'last_meeting_date'):
+        data["last_meeting_date"] = sg.last_meeting_date
     return data
 
 
@@ -195,11 +202,20 @@ class LearningCircleListView(View):
             scope = request.GET.get('scope')
             today = datetime.date.today()
             if scope == "upcoming":
-                study_groups = study_groups.filter(start_date__gt=today)
+                study_groups = study_groups.filter(start_date__gt=today)\
+                .annotate(
+                    next_meeting_date=Min('meeting__meeting_date')
+                )
             elif scope == "current":
-                study_groups = study_groups.filter(start_date__lte=today, end_date__gt=today)
+                study_groups = study_groups.filter(start_date__lte=today, end_date__gt=today)\
+                .annotate(
+                    next_meeting_date=Min('meeting__meeting_date')
+                )
             elif scope == "completed":
-                study_groups = study_groups.filter(end_date__lt=today)
+                study_groups = study_groups.filter(end_date__lt=today)\
+                .annotate(
+                    last_meeting_date=Max('meeting__meeting_date')
+                )
 
         if 'q' in request.GET:
             q = request.GET.get('q')
@@ -753,7 +769,7 @@ class LandingPageLearningCirclesView(View):
             team_ids = TeamMembership.objects.filter(user=user).values("team")
 
             if team_ids.count() == 0:
-                return json_response(request, { "status": "error", "errors": ["You are not on a team."] })
+                return json_response(request, { "status": "error", "errors": ["User is not on a team."] })
 
             team_members = TeamMembership.objects.filter(team__in=team_ids).values("user")
             study_groups_unfiltered = study_groups_unfiltered.filter(facilitator__in=team_members)
@@ -842,3 +858,31 @@ class CourseLanguageListView(View):
 
         data = { "languages": languages_dict }
         return json_response(request, data)
+
+
+class FinalReportListView(View):
+    def get(self, request):
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        studygroups = StudyGroup.objects.published().filter(end_date__lt=today)
+        studygroups = filter_studygroups_with_survey_responses(studygroups)
+        data = {}
+
+        if 'offset' in request.GET or 'limit' in request.GET:
+            limit, offset = _limit_offset(request)
+            data['offset'] = offset
+            data['limit'] = limit
+            studygroups = studygroups[offset:offset+limit]
+
+        data['items'] = [ _map_to_json(sg) for sg in studygroups ]
+
+        return json_response(request, data)
+
+
+class InstagramFeed(View):
+    def get(self, request):
+        url = "https://api.instagram.com/v1/users/self/media/recent/?access_token={}".format(settings.INSTAGRAM_TOKEN)
+        latest_posts = get_json_response(url)
+
+        return json_response(request, { "items": latest_posts["data"] })
+
+

@@ -1,30 +1,43 @@
 import React, { Component } from "react";
 import ApiHelper from "../../helpers/ApiHelper";
+import AOS from 'aos';
 
-const PAGE_LIMIT = 5;
+const PAGE_LIMIT = 3;
+const TOTAL_LIMIT = 9;
 
-export default class GenericTable extends Component {
+
+export default class GlobalSuccesses extends Component {
   constructor(props) {
     super(props);
     this.state = {
       items: [],
+      errors: [],
       limit: PAGE_LIMIT,
-      count: 0
+      offset: 0,
     };
   }
 
   componentDidMount() {
     this.populateResources();
+    AOS.init();
+  }
+
+  componentDidUpdate() {
+    AOS.refresh();
   }
 
   populateResources = (params={}) => {
-    const api = new ApiHelper('learningCircles');
+    const api = new ApiHelper('learningCircleSuccesses');
 
     const onSuccess = (data) => {
-      this.setState({ items: data.items, count: data.count, offset: data.offset, limit: data.limit })
+      if (data.status && data.status === "error") {
+        return this.setState({ errors: data.errors })
+      }
+
+      this.setState({ items: data.items,  offset: data.offset, limit: data.limit })
     }
 
-    const defaultParams = { limit: this.state.limit, offset: this.state.offset, user: true, draft: true, scope: "completed" }
+    const defaultParams = { limit: this.state.limit, offset: this.state.offset }
 
     api.fetchResource({ callback: onSuccess, params: { ...defaultParams, ...params } })
   }
@@ -42,13 +55,46 @@ export default class GenericTable extends Component {
   }
 
   render() {
-    const totalPages = Math.ceil(this.state.count / PAGE_LIMIT);
+    const totalPages = Math.ceil(TOTAL_LIMIT / PAGE_LIMIT);
     const currentPage = Math.ceil((this.state.offset + this.state.items.length) / PAGE_LIMIT);
-    const { Table } = this.props;
+
+    if (this.state.errors.length > 0) {
+      return(
+        <div className="py-2">
+          <div>{ this.state.errors }</div>
+        </div>
+      )
+    };
 
     return (
-      <div className="generic-table">
-        <Table items={this.state.items} />
+      <div className="global-successes">
+        {
+          this.state.items.map((lc, index) => {
+            const formattedCity = lc.city.replace(/United States of America/, 'USA');
+            const delay = index * 100;
+
+            return(
+              <div className="meeting-card py-3 row" key={lc.id} data-aos='fade-up' data-aos-delay={delay}>
+                { lc.image_url &&
+                  <div className="col-4 image-thumbnail">
+                    <img src={lc.image_url} />
+                  </div>
+                }
+
+                <div className={`content ${lc.image_url ? 'col-8' : 'col-12'}`}>
+
+                  <div className="info">
+                    <p className='meeting-info my-1'>
+                      <span className="bold">{lc.signup_count}</span> people learned <span className="bold">{lc.course.title}</span> together in { formattedCity }
+                    </p>
+                    <a href={lc.report_url}>See the final report</a>
+                  </div>
+
+                </div>
+              </div>
+            )
+          })
+        }
         {
           totalPages > 1 &&
           <nav aria-label="Page navigation">

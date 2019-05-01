@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import axios from "axios";
+import AOS from 'aos';
 import { DISCOURSE_API_URL } from "../../helpers/constants";
 
 
@@ -18,7 +19,11 @@ export default class DiscourseTable extends Component {
   componentDidMount() {
     this.populateResources();
     this.populateCategories();
+    AOS.init();
+  }
 
+  componentDidUpdate() {
+    AOS.refresh();
   }
 
   _populateResources() {
@@ -41,29 +46,31 @@ export default class DiscourseTable extends Component {
     const top10topics = this.state.topics.slice(0,5);
 
     return (
-      <table className="table">
-        <thead>
-          <tr>
-            <td>Topic</td>
-            <td>Category</td>
-            <td>Views</td>
-          </tr>
-        </thead>
-        <tbody>
-          {
-            top10topics.map((topic, index) => {
-              const category = this.state.categories.find(cat => cat.id == topic.category_id) || {};
-              return(
-                <tr key={`${topic.slug}`}>
-                  <td><a href={`${DISCOURSE_API_URL}/t/${ topic.slug }`}>{ topic.title }</a></td>
-                  <td>{ category.name }</td>
-                  <td>{ topic.views }</td>
-                </tr>
-              )
-            })
-          }
-        </tbody>
-      </table>
+      <div className="table-responsive" data-aos='fade'>
+        <table className="table">
+          <thead>
+            <tr>
+              <td>Topic</td>
+              <td>Category</td>
+              <td>Views</td>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              top10topics.map((topic, index) => {
+                const category = this.state.categories.find(cat => cat.id == topic.category_id) || {};
+                return(
+                  <tr key={`${topic.slug}`}>
+                    <td><a href={`${DISCOURSE_API_URL}/t/${ topic.slug }`}>{ topic.title }</a></td>
+                    <td>{ category.name }</td>
+                    <td>{ topic.views }</td>
+                  </tr>
+                )
+              })
+            }
+          </tbody>
+        </table>
+      </div>
     );
   }
 }

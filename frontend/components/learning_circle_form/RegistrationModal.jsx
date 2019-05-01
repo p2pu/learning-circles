@@ -76,11 +76,11 @@ export default class RegistrationModal extends React.Component {
           }
           {
             this.state.registration &&
-            <p>In order to save your learning circle, you need to register or <button className="btn btn-secondary" onClick={this.toggleModalType}>log in.</button></p>
+            <p>In order to save your learning circle, you need to register or <button className="p2pu-btn btn-secondary" onClick={this.toggleModalType}>log in.</button></p>
           }
           {
             !this.state.registration &&
-            <p>In order to save your learning circle, you need to log in or <button className="btn btn-secondary" onClick={this.toggleModalType}>register.</button></p>
+            <p>In order to save your learning circle, you need to log in or <button className="p2pu-btn btn-secondary" onClick={this.toggleModalType}>register.</button></p>
           }
           <form id='registration-form' onSubmit={this.submitForm}>
             { this.state.registration &&

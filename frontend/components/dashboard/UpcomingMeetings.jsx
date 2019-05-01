@@ -1,9 +1,7 @@
 import React, { Component } from "react";
-import axios from "axios";
-import { DISCOURSE_API_URL } from "../../helpers/constants";
 import ApiHelper from "../../helpers/ApiHelper";
-import GenericTable from "./GenericTable";
 import moment from "moment";
+import AOS from 'aos';
 
 
 export default class UpcomingMeetings extends Component {
@@ -13,14 +11,18 @@ export default class UpcomingMeetings extends Component {
       meetings: [],
       errors: []
     };
-    this.populateResources = () => this._populateResources();
   }
 
   componentDidMount() {
     this.populateResources();
+    AOS.init();
   }
 
-  _populateResources() {
+  componentDidUpdate() {
+    AOS.refresh();
+  }
+
+  populateResources = () => {
     const api = new ApiHelper('landingPage');
 
     const onSuccess = (data) => {
@@ -45,10 +47,12 @@ export default class UpcomingMeetings extends Component {
   }
 
   render() {
-    if (this.state.meetings.length === 0) {
+    if (this.state.errors.length > 0) {
       return(
         <div className="py-2">
-          <div>{this.state.errors}</div>
+          <div>
+            <a href="https://community.p2pu.org/c/communities/building-a-p2pu-community/">Check out our organizer materials</a> if you’re interested in starting a team.
+          </div>
         </div>
       )
     };
@@ -56,21 +60,23 @@ export default class UpcomingMeetings extends Component {
     return (
       <div className="">
         {
-          this.state.meetings.map(meeting => {
+          this.state.meetings.map((meeting, index) => {
             const nextMeeting = moment(`${meeting.next_meeting_date} ${meeting.meeting_time}`);
             const formattedMeetingDate = this.generateFormattedMeetingDate(nextMeeting);
             const formattedStartTime = nextMeeting.format('h:mma');
             const formattedCity = meeting.city.replace(/United States of America/, 'USA');
-            const imgSrc = meeting.image_url ? meeting.image_url : '/static/images/learning-circle-default.jpg';
+            const delay = index * 100;
 
             return(
-              <div className="meeting-card py-3 row" key={meeting.course.id}>
-                <div className="col-sm-12 col-md-2">
-                  <img className="img-thumbnail" src={imgSrc} />
+              <div className="meeting-card py-3 row" key={meeting.course.id} data-aos='fade-up' data-aos-delay={delay}>
+                <div className="d-none d-sm-block col-sm-4 col-md-2 image-thumbnail">
+                  { meeting.image_url &&
+                    <img className="img-thumbnail" src={meeting.image_url} />
+                  }
                 </div>
 
-                <div className="content col-sm-12 col-md-10">
-                  <div className="d-flex">
+                <div className="content col-12 col-sm-8 col-md-10">
+                  <div className="d-sm-block d-lg-flex mb-2">
 
                     <div className="minicaps text-xs d-flex align-items-center mr-3">
                       <i className="material-icons pr-1">today</i>
@@ -92,8 +98,8 @@ export default class UpcomingMeetings extends Component {
                   </div>
 
                   <div className="info">
-                    <p className='meeting-info my-1'>
-                      <span className="bold">{meeting.facilitator}</span> is facilitating a learning circle on <span className="bold">{meeting.course.title}</span> at { meeting.venue }
+                    <p className='meeting-info mb-0'>
+                      <span className="">{meeting.facilitator}</span> is facilitating a learning circle on <span className="">{meeting.course.title}</span> at { meeting.venue }
                     </p>
                   </div>
 

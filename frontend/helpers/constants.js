@@ -59,6 +59,14 @@ export const API_ENDPOINTS = {
   },
   images: {
     postUrl: '/api/upload_image/'
+  },
+  learningCircleSuccesses: {
+    baseUrl: '/api/learningcircles/successes/?',
+    searchParams: ['limit', 'offset']
+  },
+  instagram: {
+    baseUrl: '/api/instagram-feed/?',
+    searchParams: []
   }
 };
 

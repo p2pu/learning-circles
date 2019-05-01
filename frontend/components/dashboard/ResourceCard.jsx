@@ -4,7 +4,7 @@ import { DISCOURSE_API_URL, FACILITATOR_RESOURCE_TYPES } from '../../helpers/con
 
 const ResourceCard = props => {
 
-  const { topic, defaultImagePath } = props;
+  const { topic, defaultImagePath, ...rest } = props;
   const url = `${DISCOURSE_API_URL}/t/${topic.slug}`;
   const resourceType = topic.tags.find(tag => FACILITATOR_RESOURCE_TYPES.includes(tag));
 
@@ -24,7 +24,7 @@ const ResourceCard = props => {
   const imgUrl = getImageUrl();
 
   return (
-      <div className="resource-card col-md-4 col-sm-12 col-12" onClick={() => window.location.href = url}>
+      <div className="resource-card col-md-4 col-sm-12 col-12" onClick={() => window.location.href = url} {...rest}>
         <div className="image">
           { imgUrl && <img src={imgUrl} /> }
           <div className="overlay">

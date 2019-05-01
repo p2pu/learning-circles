@@ -8,6 +8,11 @@
   margin-bottom: $padding-sm;
   @include drop-shadow;
   font-size: $font-size-small;
+  transition: all ease-in-out 0.3s;
+
+  &:hover {
+    box-shadow: -3px 3px 6px 2px rgba(0, 0, 0, 0.2);
+  }
 
   .card-title {
     font-size: $font-size-base;
@@ -17,6 +22,10 @@
   .text-xs {
     font-size: $font-size-xs;
   }
+
+  .p2pu-btn.btn-sm {
+    padding: 0.5em 1em;
+  }
 }
 
 .react-tabs__tab-list {
@@ -24,7 +33,7 @@
 
   .react-tabs__tab {
     padding: 0 $padding-xs;
-    margin-right: $padding-sm;
+    margin-right: $padding-xs;
     border: none;
   }
 
@@ -38,6 +47,46 @@
 
 .bg-dark {
   background: #049487 !important;
+}
+
+.page-link {
+  &.disabled {
+    color: $gray-darker;
+
+    &:hover {
+      background: $white;
+    }
+  }
+}
+
+.pagination {
+  justify-content: center;
+  font-size: $font-size-small;
+  font-family: $font-family-sans-serif;
+}
+
+.card {
+  .meeting-card {
+    border-bottom: 1px solid $gray-light;
+
+    &:last-of-type {
+      border-bottom: none;
+    }
+
+    .image-thumbnail {
+      img {
+        height: 80px;
+        width: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .content {
+      .minicaps {
+        white-space: nowrap;
+      }
+    }
+  }
 }
 
 table.table {
@@ -54,4 +103,8 @@ table.table {
   td {
     padding: 0.5em;
   }
+}
+
+.flex-grow {
+  flex: 1 1 auto;
 }
