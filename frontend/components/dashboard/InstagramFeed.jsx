@@ -78,7 +78,8 @@ export default class InstagramFeed extends Component {
 
     const onSuccess = (data) => {
       if (data.status && data.status === "error") {
-        return this.setState({ errors: data.errors })
+        console.log(data)
+        return this.setState({ errors: "There are no recent posts available." })
       }
 
       this.setState({ items: data.items })

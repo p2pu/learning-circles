@@ -26,7 +26,7 @@ export default class LearningCirclesTable extends Component {
       this.setState({ learningCircles: data.items, count: data.count, offset: data.offset, limit: data.limit })
     }
 
-    const defaultParams = { limit: this.state.limit, offset: this.state.offset, user: true, draft: true, scope: "current" }
+    const defaultParams = { limit: this.state.limit, offset: this.state.offset, user: true, scope: "current" }
 
     api.fetchResource({ callback: onSuccess, params: { ...defaultParams, ...params } })
   }
@@ -124,7 +124,7 @@ export default class LearningCirclesTable extends Component {
           totalPages > 1 &&
           <nav aria-label="Page navigation">
             <ul className="pagination">
-              <li className={`page-item ${currentPage == 1 ? 'disabled' : ''}`}>
+              <li className={`page-item ${currentPage <= 1 ? 'disabled' : ''}`}>
                 <a className="page-link" href="" aria-label="Previous" onClick={this.prevPage}>
                   <span aria-hidden="true">&laquo;</span>
                   <span className="sr-only">Previous</span>

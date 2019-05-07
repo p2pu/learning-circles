@@ -202,7 +202,7 @@ class LearningCircleListView(View):
             scope = request.GET.get('scope')
             today = datetime.date.today()
             if scope == "upcoming":
-                study_groups = study_groups.filter(start_date__gt=today)\
+                study_groups = study_groups.filter(Q(start_date__gt=today) | Q(draft=True))\
                 .annotate(
                     next_meeting_date=Min('meeting__meeting_date')
                 )
@@ -881,8 +881,11 @@ class FinalReportListView(View):
 class InstagramFeed(View):
     def get(self, request):
         url = "https://api.instagram.com/v1/users/self/media/recent/?access_token={}".format(settings.INSTAGRAM_TOKEN)
-        latest_posts = get_json_response(url)
+        response = get_json_response(url)
 
-        return json_response(request, { "items": latest_posts["data"] })
+        if response["meta"]["code"] != 200:
+            return json_response(request, { "status": "error", "errors": response["meta"]["error_message"] })
+
+        return json_response(request, { "items": response["data"] })
 
 

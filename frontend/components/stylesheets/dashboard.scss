@@ -26,6 +26,28 @@
   .p2pu-btn.btn-sm {
     padding: 0.5em 1em;
   }
+
+  .meeting-card {
+    border-bottom: 1px solid $gray-light;
+
+    &:last-of-type {
+      border-bottom: none;
+    }
+
+    .image-thumbnail {
+      img {
+        height: 80px;
+        width: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .content {
+      .minicaps {
+        white-space: nowrap;
+      }
+    }
+  }
 }
 
 .react-tabs__tab-list {
@@ -65,29 +87,6 @@
   font-family: $font-family-sans-serif;
 }
 
-.card {
-  .meeting-card {
-    border-bottom: 1px solid $gray-light;
-
-    &:last-of-type {
-      border-bottom: none;
-    }
-
-    .image-thumbnail {
-      img {
-        height: 80px;
-        width: 100%;
-        object-fit: cover;
-      }
-    }
-
-    .content {
-      .minicaps {
-        white-space: nowrap;
-      }
-    }
-  }
-}
 
 table.table {
   thead {
@@ -107,4 +106,16 @@ table.table {
 
 .flex-grow {
   flex: 1 1 auto;
+}
+
+a.p2pu-btn {
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.feedback-survey {
+  a {
+    font-size: 1em;
+  }
 }

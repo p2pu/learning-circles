@@ -92,8 +92,12 @@ def facilitator(request):
 def view_study_group(request, study_group_id):
     # TODO - redirect user if the study group has been deleted
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+    user_is_facilitator = study_group.facilitator == request.user
     facilitator_is_organizer = TeamMembership.objects.filter(user=request.user, role=TeamMembership.ORGANIZER).exists()
-    dashboard_url = reverse('studygroups_organize') if facilitator_is_organizer else reverse('studygroups_facilitator_dashboard')
+    dashboard_url = reverse('studygroups_facilitator_dashboard')
+
+    if facilitator_is_organizer and not user_is_facilitator:
+        dashboard_url = reverse('studygroups_organize')
 
     context = {
         'study_group': study_group,

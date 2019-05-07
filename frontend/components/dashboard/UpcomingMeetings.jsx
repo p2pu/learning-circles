@@ -68,7 +68,7 @@ export default class UpcomingMeetings extends Component {
             const delay = index * 100;
 
             return(
-              <div className="meeting-card py-3 row" key={meeting.course.id} data-aos='fade-up' data-aos-delay={delay}>
+              <div className="meeting-card py-3 row" key={`meeting-${meeting.course.id}-${index}`} data-aos='fade-up' data-aos-delay={delay}>
                 <div className="d-none d-sm-block col-sm-4 col-md-2 image-thumbnail">
                   { meeting.image_url &&
                     <img className="img-thumbnail" src={meeting.image_url} />

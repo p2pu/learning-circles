@@ -96,10 +96,10 @@ export default class GlobalSuccesses extends Component {
           })
         }
         {
-          totalPages > 1 &&
+          (this.state.items.length > 0 && totalPages > 1) &&
           <nav aria-label="Page navigation">
             <ul className="pagination">
-              <li className={`page-item ${currentPage == 1 ? 'disabled' : ''}`}>
+              <li className={`page-item ${currentPage <= 1 ? 'disabled' : ''}`}>
                 <a className="page-link" href="" aria-label="Previous" onClick={this.prevPage}>
                   <span aria-hidden="true">&laquo;</span>
                   <span className="sr-only">Previous</span>
