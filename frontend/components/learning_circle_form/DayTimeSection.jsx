@@ -1,5 +1,4 @@
 import React from 'react';
-import SelectWithLabel from 'p2pu-input-fields/dist/SelectWithLabel'
 import InputWithLabel from 'p2pu-input-fields/dist/InputWithLabel'
 import TimePickerWithLabel from 'p2pu-input-fields/dist/TimePickerWithLabel'
 import DatePickerWithLabel from 'p2pu-input-fields/dist/DatePickerWithLabel'
