@@ -176,9 +176,9 @@ class LearningCircleListView(View):
             "offset": schema.integer(),
             "limit": schema.integer(),
             "weekdays": _intCommaList,
-            "user": schema.text(),
+            "user": schema.boolean(),
             "scope": schema.text(),
-            "draft": schema.text(),
+            "draft": schema.boolean(),
         }
         data = schema.django_get_to_dict(request.GET)
         clean_data, errors = schema.validate(query_schema, data)
@@ -418,7 +418,9 @@ class CourseListView(View):
 
         courses = Course.objects.active()
 
-        if request.GET.get('include_unlisted', "false") == "false":
+        # include_unlisted must be != false and the query must be scoped
+        # by user to avoid filtering out unlisted courses
+        if request.GET.get('include_unlisted', "false") == "false" or 'user' not in request.GET:
             courses = courses.filter(unlisted=False)
 
         courses = courses.annotate(
