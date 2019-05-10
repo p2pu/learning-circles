@@ -30,10 +30,8 @@ from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import generate_all_meetings
 from studygroups.models import filter_studygroups_with_survey_responses
-from studygroups.models import filter_studygroups_with_survey_responses
 from studygroups.models import get_json_response
 from studygroups.models.course import course_platform_from_url
-from studygroups.models.team import get_user_team
 
 from uxhelpers.utils import json_response
 
@@ -890,5 +888,3 @@ class InstagramFeed(View):
             return json_response(request, { "status": "error", "errors": response["meta"]["error_message"] })
 
         return json_response(request, { "items": response["data"] })
-
-
