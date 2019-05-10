@@ -884,6 +884,7 @@ class InstagramFeed(View):
         response = get_json_response(url)
 
         if response["meta"]["code"] != 200:
+            logger.error('Could not make request to Instagram')
             return json_response(request, { "status": "error", "errors": response["meta"]["error_message"] })
 
         return json_response(request, { "items": response["data"] })
