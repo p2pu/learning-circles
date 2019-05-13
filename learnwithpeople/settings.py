@@ -188,9 +188,8 @@ ALLOWED_HOSTS = ['*']
 # CORS config
 CORS_ORIGIN_WHITELIST = [
     "https://www.p2pu.org",
-    "http://localhost:4000",
+    "https://p2pu.github.io",
 ]
-
 
 AUTHENTICATION_BACKENDS = ['custom_registration.backend.CaseInsensitiveBackend']
 
