@@ -121,7 +121,6 @@ def _map_to_json(sg):
         "end_time": sg.end_time(),
         "weeks": sg.meeting_set.active().count(),
         "url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
-        "signup_count": sg.application_set.count(),
         "report_url": sg.report_url(),
         "studygroup_path": reverse('studygroups_view_study_group', args=(sg.id,)),
         "draft": sg.draft,
