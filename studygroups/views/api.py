@@ -873,7 +873,13 @@ class FinalReportListView(View):
             data['limit'] = limit
             studygroups = studygroups[offset:offset+limit]
 
-        data['items'] = [ _map_to_json(sg) for sg in studygroups ]
+        def _map(sg):
+            data = _map_to_json(sg)
+            if request.user.is_authenticated:
+                data['signup_count'] = sg.application_set.count()
+            return data
+
+        data['items'] = [ _map(sg) for sg in studygroups ]
 
         return json_response(request, data)
 
