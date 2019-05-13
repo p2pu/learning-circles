@@ -730,7 +730,7 @@ class SignupView(View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        study_group = data.get('learning_circle')
+        study_group = clean_data.get('learning_circle')
 
         if Application.objects.active().filter(email__iexact=data.get('email'), study_group=study_group).exists():
             application = Application.objects.active().get(email__iexact=data.get('email'), study_group=study_group)
