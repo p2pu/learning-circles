@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     # 3rd party apps
+    'corsheaders',
     'crispy_forms',
     'phonenumber_field',
     # own
@@ -61,6 +62,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -182,6 +184,12 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Allow all host headers
 ALLOWED_HOSTS = ['*']
+
+# CORS config
+CORS_ORIGIN_WHITELIST = [
+    "https://www.p2pu.org",
+    "https://p2pu.github.io",
+]
 
 AUTHENTICATION_BACKENDS = ['custom_registration.backend.CaseInsensitiveBackend']
 
@@ -323,4 +331,7 @@ P2PU_RESOURCES_AWS_BUCKET = env('RESOURCES_AWS_BUCKET', '')
 MAILGUN_API_KEY = env('MAILGUN_API_KEY', '')
 MAILGUN_DOMAIN = env('MAILGUN_DOMAIN', '')
 ANNOUNCE_EMAIL = env('ANNOUNCE_EMAIL', 'announce@localhost')
+
+# Instagram token
+INSTAGRAM_TOKEN = env('INSTAGRAM_TOKEN', '')
 

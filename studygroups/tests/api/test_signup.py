@@ -19,7 +19,7 @@ class TestApiSignupView(TestCase):
     fixtures = ['test_courses.json', 'test_studygroups.json']
 
     APPLICATION_DATA = {
-        'study_group': '1',
+        'learning_circle': '1',
         'name': 'Test User',
         'email': 'test@mail.com',
         'mobile': '',
@@ -40,7 +40,7 @@ class TestApiSignupView(TestCase):
         c = Client()
         url = '/api/signup/'
         signup_data = {
-            'study_group': '1',
+            'learning_circle': '1',
             'name': 'User name',
             'email': 'user@mail.com',
             'mobile': '+12812344321',
@@ -64,7 +64,7 @@ class TestApiSignupView(TestCase):
         c = Client()
         url = '/api/signup/'
         signup_data = {
-            'study_group': '1',
+            'learning_circle': '1',
             'name': 'User name',
             'email': 'user@mail.com',
             'mobile': '+12812344321',
@@ -87,7 +87,7 @@ class TestApiSignupView(TestCase):
         c = Client()
         url = '/api/signup/'
         signup_data = {
-            'study_group': '1',
+            'learning_circle': '1',
             'name': 'User name',
             'email': 'user@mail.com',
             'signup_questions': {
@@ -99,7 +99,7 @@ class TestApiSignupView(TestCase):
         }
 
         # test required fields
-        required_fields = ['study_group', 'name', 'email']
+        required_fields = ['learning_circle', 'name', 'email']
         for field in required_fields:
             data = dict(signup_data)
             del data[field]
@@ -114,7 +114,7 @@ class TestApiSignupView(TestCase):
         c = Client()
         url = '/api/signup/'
         signup_data = {
-            'study_group': '99',
+            'learning_circle': '99',
             'name': 'User name',
             'email': 'user@mail.com',
             'signup_questions': {
@@ -129,6 +129,6 @@ class TestApiSignupView(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json(), {
             "status": "error",
-            "errors": {"study_group": ["No matching learning circle exists"]}
+            "errors": {"learning_circle": ["No matching learning circle exists"]}
         })
         self.assertEqual(Application.objects.all().count(), 0)

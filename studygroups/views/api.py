@@ -13,6 +13,7 @@ from django.utils import timezone
 from django.utils.translation import get_language_info
 from django.utils.decorators import method_decorator
 from django.utils.text import slugify
+from django.views.decorators.csrf import csrf_exempt
 
 from collections import Counter
 import json
@@ -27,7 +28,10 @@ from studygroups.models import StudyGroup
 from studygroups.models import Application
 from studygroups.models import Meeting
 from studygroups.models import Team
+from studygroups.models import TeamMembership
 from studygroups.models import generate_all_meetings
+from studygroups.models import filter_studygroups_with_survey_responses
+from studygroups.models import get_json_response
 from studygroups.models.course import course_platform_from_url
 
 from uxhelpers.utils import json_response
@@ -45,7 +49,7 @@ def studygroups(request):
     study_groups = StudyGroup.objects.published()
     if 'course_id' in request.GET:
         study_groups = study_groups.filter(course_id=request.GET.get('course_id'))
-    
+
     def to_json(sg):
         data = {
             "course_title": sg.course.title,
@@ -95,9 +99,12 @@ def _map_to_json(sg):
             "id": sg.course.pk,
             "title": sg.course.title,
             "provider": sg.course.provider,
-            "link": sg.course.link
+            "link": sg.course.link,
+            "course_page_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse('studygroups_course_page', args=(sg.course.id,)),
+            "discourse_topic_url": sg.course.discourse_topic_url if sg.course.discourse_topic_url else settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_generate_course_discourse_topic", args=(sg.course.id,)),
         },
-        "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
+        "id": sg.id,
+        "facilitator": sg.facilitator.first_name,
         "venue": sg.venue_name,
         "venue_address": sg.venue_address + ", " + sg.city,
         "city": sg.city,
@@ -115,12 +122,18 @@ def _map_to_json(sg):
         "end_time": sg.end_time(),
         "weeks": sg.meeting_set.active().count(),
         "url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
+        "report_url": sg.report_url(),
+        "studygroup_path": reverse('studygroups_view_study_group', args=(sg.id,)),
+        "draft": sg.draft,
     }
+
     if sg.image:
         data["image_url"] = settings.PROTOCOL + '://' + settings.DOMAIN + sg.image.url
     # TODO else set default image URL
     if hasattr(sg, 'next_meeting_date'):
         data["next_meeting_date"] = sg.next_meeting_date
+    if hasattr(sg, 'last_meeting_date'):
+        data["last_meeting_date"] = sg.last_meeting_date
     return data
 
 
@@ -158,6 +171,9 @@ class LearningCircleListView(View):
             "offset": schema.integer(),
             "limit": schema.integer(),
             "weekdays": _intCommaList,
+            "user": schema.boolean(),
+            "scope": schema.text(),
+            "draft": schema.boolean(),
         }
         data = schema.django_get_to_dict(request.GET)
         clean_data, errors = schema.validate(query_schema, data)
@@ -166,9 +182,35 @@ class LearningCircleListView(View):
 
         study_groups = StudyGroup.objects.published().order_by('id')
 
+        if 'draft' in request.GET:
+            study_groups = StudyGroup.objects.active().order_by('id')
+
         if 'id' in request.GET:
             id = request.GET.get('id')
             study_groups = StudyGroup.objects.filter(pk=int(id))
+
+        if 'user' in request.GET:
+            user_id = request.user.id
+            study_groups = study_groups.filter(facilitator=user_id)
+
+        if 'scope' in request.GET:
+            scope = request.GET.get('scope')
+            today = datetime.date.today()
+            if scope == "upcoming":
+                study_groups = study_groups.filter(Q(start_date__gt=today) | Q(draft=True))\
+                .annotate(
+                    next_meeting_date=Min('meeting__meeting_date')
+                )
+            elif scope == "current":
+                study_groups = study_groups.filter(start_date__lte=today, end_date__gt=today)\
+                .annotate(
+                    next_meeting_date=Min('meeting__meeting_date')
+                )
+            elif scope == "completed":
+                study_groups = study_groups.filter(end_date__lt=today)\
+                .annotate(
+                    last_meeting_date=Max('meeting__meeting_date')
+                )
 
         if 'q' in request.GET:
             q = request.GET.get('q')
@@ -256,6 +298,7 @@ class LearningCircleListView(View):
         data = {
             'count': len(study_groups)
         }
+
         if 'offset' in request.GET or 'limit' in request.GET:
             limit, offset = _limit_offset(request)
             data['offset'] = offset
@@ -341,7 +384,12 @@ def _course_to_json(course):
         "rating_step_counts": course.rating_step_counts,
         "tagdorsements": course.tagdorsements,
         "tagdorsement_counts": course.tagdorsement_counts,
-        "course_page_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_course_page", args=(course.id,))
+        "course_page_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_course_page", args=(course.id,)),
+        "course_page_path": reverse("studygroups_course_page", args=(course.id,)),
+        "course_edit_path": reverse("studygroups_course_edit", args=(course.id,)),
+        "created_at": course.created_at,
+        "unlisted": course.unlisted,
+        "discourse_topic_url": course.discourse_topic_url if course.discourse_topic_url else settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_generate_course_discourse_topic", args=(course.id,)),
     }
 
     if hasattr(course, 'num_learning_circles'):
@@ -355,14 +403,24 @@ class CourseListView(View):
         query_schema = {
             "offset": schema.integer(),
             "limit": schema.integer(),
-            "order": lambda v: (v, None) if v in ['title', 'usage', 'overall_rating', 'created_at', None] else (None, "must be 'title', 'usage', 'created_at', or 'overall_rating'")
+            "order": lambda v: (v, None) if v in ['title', 'usage', 'overall_rating', 'created_at', None] else (None, "must be 'title', 'usage', 'created_at', or 'overall_rating'"),
+            "user": schema.boolean(),
+            "include_unlisted": schema.boolean(),
         }
         data = schema.django_get_to_dict(request.GET)
         clean_data, errors = schema.validate(query_schema, data)
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        courses = Course.objects.active().filter(unlisted=False).annotate(
+        courses = Course.objects.active()
+
+        # include_unlisted must be != false and the query must be scoped
+        # by user to avoid filtering out unlisted courses
+        if request.GET.get('include_unlisted', "false") == "false" or 'user' not in request.GET:
+            # return only courses that is not unlisted
+            courses = courses.filter(unlisted=False)
+
+        courses = courses.annotate(
             num_learning_circles=Sum(
                 Case(
                     When(
@@ -373,6 +431,10 @@ class CourseListView(View):
                 )
             )
         )
+
+        if 'user' in request.GET:
+            user_id = request.user.id
+            courses = courses.filter(created_by=user_id)
 
         if 'course_id' in request.GET:
             course_id = request.GET.get('course_id')
@@ -644,6 +706,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         return json_response(request, { "status": "updated", "url": study_group_url })
 
 
+@method_decorator(csrf_exempt, name="dispatch")
 class SignupView(View):
     def post(self, request):
         signup_questions = {
@@ -653,7 +716,7 @@ class SignupView(View):
             "use_internet": schema.text(required=True)
         }
         post_schema = {
-            "study_group": schema.chain([
+            "learning_circle": schema.chain([
                 schema.integer(),
                 lambda x: (None, 'No matching learning circle exists') if not StudyGroup.objects.filter(pk=int(x)).exists() else (StudyGroup.objects.get(pk=int(x)), None),
             ], required=True),
@@ -667,7 +730,7 @@ class SignupView(View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        study_group = StudyGroup.objects.get(pk=data.get('study_group'))
+        study_group = clean_data.get('learning_circle')
 
         if Application.objects.active().filter(email__iexact=data.get('email'), study_group=study_group).exists():
             application = Application.objects.active().get(email__iexact=data.get('email'), study_group=study_group)
@@ -691,8 +754,28 @@ class LandingPageLearningCirclesView(View):
     """ return upcoming learning circles for landing page """
     def get(self, request):
 
+        query_schema = {
+            "scope": schema.text(),
+        }
+        data = schema.django_get_to_dict(request.GET)
+        clean_data, errors = schema.validate(query_schema, data)
+        if errors != {}:
+            return json_response(request, {"status": "error", "errors": errors})
+
+        study_groups_unsliced = StudyGroup.objects.published()
+
+        if 'scope' in request.GET and request.GET.get('scope') == "team":
+            user = request.user
+            team_ids = TeamMembership.objects.filter(user=user).values("team")
+
+            if team_ids.count() == 0:
+                return json_response(request, { "status": "error", "errors": ["User is not on a team."] })
+
+            team_members = TeamMembership.objects.filter(team__in=team_ids).values("user")
+            study_groups_unsliced = study_groups_unsliced.filter(facilitator__in=team_members)
+
         # get learning circles with image & upcoming meetings
-        study_groups = StudyGroup.objects.published().filter(
+        study_groups = study_groups_unsliced.filter(
             meeting__meeting_date__gte=timezone.now(),
         ).annotate(
             next_meeting_date=Min('meeting__meeting_date')
@@ -701,7 +784,7 @@ class LandingPageLearningCirclesView(View):
         # if there are less than 3 with upcoming meetings and an image
         if study_groups.count() < 3:
             # pad with learning circles with the most recent meetings
-            past_study_groups = StudyGroup.objects.published().filter(
+            past_study_groups = study_groups_unsliced.filter(
                 meeting__meeting_date__lt=timezone.now(),
             ).annotate(
                 next_meeting_date=Max('meeting__meeting_date')
@@ -775,3 +858,39 @@ class CourseLanguageListView(View):
 
         data = { "languages": languages_dict }
         return json_response(request, data)
+
+
+class FinalReportListView(View):
+    def get(self, request):
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        studygroups = StudyGroup.objects.published().filter(end_date__lt=today)
+        studygroups = filter_studygroups_with_survey_responses(studygroups)
+        data = {}
+
+        if 'offset' in request.GET or 'limit' in request.GET:
+            limit, offset = _limit_offset(request)
+            data['offset'] = offset
+            data['limit'] = limit
+            studygroups = studygroups[offset:offset+limit]
+
+        def _map(sg):
+            data = _map_to_json(sg)
+            if request.user.is_authenticated:
+                data['signup_count'] = sg.application_set.count()
+            return data
+
+        data['items'] = [ _map(sg) for sg in studygroups ]
+
+        return json_response(request, data)
+
+
+class InstagramFeed(View):
+    def get(self, request):
+        url = "https://api.instagram.com/v1/users/self/media/recent/?access_token={}".format(settings.INSTAGRAM_TOKEN)
+        response = get_json_response(url)
+
+        if response["meta"]["code"] != 200:
+            logger.error('Could not make request to Instagram')
+            return json_response(request, { "status": "error", "errors": response["meta"]["error_message"] })
+
+        return json_response(request, { "items": response["data"] })
