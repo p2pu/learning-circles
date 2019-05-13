@@ -13,6 +13,7 @@ from django.utils import timezone
 from django.utils.translation import get_language_info
 from django.utils.decorators import method_decorator
 from django.utils.text import slugify
+from django.views.decorators.csrf import csrf_exempt
 
 from collections import Counter
 import json
@@ -705,6 +706,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         return json_response(request, { "status": "updated", "url": study_group_url })
 
 
+@method_decorator(csrf_exempt, name="dispatch")
 class SignupView(View):
     def post(self, request):
         signup_questions = {
@@ -714,7 +716,7 @@ class SignupView(View):
             "use_internet": schema.text(required=True)
         }
         post_schema = {
-            "study_group": schema.chain([
+            "learning_circle": schema.chain([
                 schema.integer(),
                 lambda x: (None, 'No matching learning circle exists') if not StudyGroup.objects.filter(pk=int(x)).exists() else (StudyGroup.objects.get(pk=int(x)), None),
             ], required=True),
@@ -728,7 +730,7 @@ class SignupView(View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        study_group = StudyGroup.objects.get(pk=data.get('study_group'))
+        study_group = data.get('learning_circle')
 
         if Application.objects.active().filter(email__iexact=data.get('email'), study_group=study_group).exists():
             application = Application.objects.active().get(email__iexact=data.get('email'), study_group=study_group)

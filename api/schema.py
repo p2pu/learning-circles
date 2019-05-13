@@ -6,6 +6,7 @@ from decimal import Decimal
 # Validators should return a function that takes the value as argument
 # and return a tuple (value, error) with error being None if the user 
 # supplied data is correct
+# Validators should also convert the data to the correct type
 
 def _required(func):
     def decorator(*args, **kwargs):
@@ -34,6 +35,8 @@ def integer():
             return n, None
         except ValueError:
             return None, error
+        except TypeError:
+            return None, error
     return _validate
 
 
@@ -55,6 +58,10 @@ def floating_point():
 def boolean():
     def _validate(value):
         error = 'Not a boolean value'
+        if value == 'true' or value == 'on':
+            return True, None
+        if value == 'false':
+            return False, None
         if type(value) != type(True):
             return None, error
         return value, None
@@ -133,16 +140,13 @@ def mobile():
 
 @_required
 def chain(checks):
-    """ Chain multiple checks. Result from last check is returned as data """
+    """ Chain multiple checks. First error fails, result from last check is returned as data """
     def _validate(data):
-        errors = []
         parsed = data
         for check in checks:
             parsed, error = check(parsed)
             if error != None:
-                errors += [error]
-        if errors != []:
-            return None, errors
+                return None, error
         return parsed, None
     return _validate
 
