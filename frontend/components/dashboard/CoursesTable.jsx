@@ -80,10 +80,10 @@ export default class CoursesTable extends Component {
 
                   return(
                     <tr key={course.id} className={`${classes}`}>
-                      <td><a href={course.course_page_url}>{`${course.unlisted ? "[UNLISTED] " : ""}${course.title}`}</a></td>
+                      <td><a href={course.course_page_path}>{`${course.unlisted ? "[UNLISTED] " : ""}${course.title}`}</a></td>
                       <td>{course.provider}</td>
                       <td>{date}</td>
-                      <td><a href={course.course_edit_url} className="p2pu-btn btn-sm dark">edit</a></td>
+                      <td><a href={course.course_edit_path} className="p2pu-btn btn-sm dark">edit</a></td>
                     </tr>
                   )
                 })
@@ -101,7 +101,7 @@ export default class CoursesTable extends Component {
 
               return(
                 <div className={`meeting-card p-2 ${classes}`} key={course.id} data-aos='fade-up' data-aos-delay={delay}>
-                  <a className="bold" href={course.course_page_url}>{`${course.unlisted ? "[UNLISTED] " : ""}${course.title}`}</a>
+                  <a className="bold" href={course.course_page_path}>{`${course.unlisted ? "[UNLISTED] " : ""}${course.title}`}</a>
 
                   <div className="d-flex">
                     <div className="pr-2">
@@ -115,7 +115,7 @@ export default class CoursesTable extends Component {
                     </div>
                   </div>
 
-                  <a href={ course.course_edit_url } className="p2pu-btn btn-sm dark m-0 my-2">edit</a>
+                  <a href={ course.course_edit_path } className="p2pu-btn btn-sm dark m-0 my-2">edit</a>
                 </div>
               )
             })

@@ -81,7 +81,7 @@ export default class LearningCirclesTable extends Component {
                       <td>{ lc.signup_count }</td>
                       <td>{ date }</td>
                       <td>
-                        <a href={ lc.manage_url } className="p2pu-btn btn-sm dark">manage</a>
+                        <a href={ lc.studygroup_path } className="p2pu-btn btn-sm dark">manage</a>
                       </td>
                     </tr>
                   )
@@ -115,7 +115,7 @@ export default class LearningCirclesTable extends Component {
                     </div>
                   </div>
 
-                  <a href={ lc.manage_url } className="p2pu-btn btn-sm dark m-0 my-2">manage</a>
+                  <a href={ lc.studygroup_path } className="p2pu-btn btn-sm dark m-0 my-2">manage</a>
                 </div>
               )
             })
