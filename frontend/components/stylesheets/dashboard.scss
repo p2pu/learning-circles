@@ -1,0 +1,121 @@
+@import 'variables';
+@import 'mixins';
+
+.card {
+  padding: $padding-sm;
+  border-radius: 0;
+  border: none;
+  margin-bottom: $padding-sm;
+  @include drop-shadow;
+  font-size: $font-size-small;
+  transition: all ease-in-out 0.3s;
+
+  &:hover {
+    box-shadow: -3px 3px 6px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .card-title {
+    font-size: $font-size-base;
+    font-weight: 700;
+  }
+
+  .text-xs {
+    font-size: $font-size-xs;
+  }
+
+  .p2pu-btn.btn-sm {
+    padding: 0.5em 1em;
+  }
+
+  .meeting-card {
+    border-bottom: 1px solid $gray-light;
+
+    &:last-of-type {
+      border-bottom: none;
+    }
+
+    .image-thumbnail {
+      img {
+        height: 80px;
+        width: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .content {
+      .minicaps {
+        white-space: nowrap;
+      }
+    }
+  }
+}
+
+.react-tabs__tab-list {
+  border-bottom: 1px solid $gray-light;
+
+  .react-tabs__tab {
+    padding: 0 $padding-xs;
+    margin-right: $padding-xs;
+    border: none;
+  }
+
+  .react-tabs__tab--selected {
+    border: none;
+    border-radius: 0;
+    border-bottom: 5px solid $p2pu-blue;
+    color: inherit;
+  }
+}
+
+.bg-dark {
+  background: #049487 !important;
+}
+
+.page-link {
+  &.disabled {
+    color: $gray-darker;
+
+    &:hover {
+      background: $white;
+    }
+  }
+}
+
+.pagination {
+  justify-content: center;
+  font-size: $font-size-small;
+  font-family: $font-family-sans-serif;
+}
+
+
+table.table {
+  thead {
+    tr {
+      td {
+        border-bottom: 2px solid $gray-darker;
+        border-top: none;
+        font-weight: 700;
+      }
+    }
+  }
+
+  td {
+    padding: 0.5em;
+  }
+}
+
+.flex-grow {
+  flex: 1 1 auto;
+}
+
+a.p2pu-btn {
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.feedback-survey {
+  a {
+    font-size: 1em;
+  }
+}

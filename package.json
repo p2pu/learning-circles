@@ -24,6 +24,7 @@
   "homepage": "https://github.com/p2pu/learning-circles#readme",
   "dependencies": {
     "@typeform/embed": "^0.5.12",
+    "aos": "^3.0.0-beta.6",
     "axios": "^0.17.1",
     "babel-core": "^6.24.1",
     "babel-loader": "^6.4.1",
@@ -34,6 +35,7 @@
     "css-loader": "^0.26.4",
     "extract-text-webpack-plugin": "^2.1.0",
     "file-loader": "^0.11.1",
+    "instafeed-lite": "^1.0.10",
     "jsonp": "^0.2.1",
     "lodash": "^4.17.11",
     "moment": "^2.18.1",
@@ -52,6 +54,7 @@
     "react-loading": "^2.0.3",
     "react-modal": "^3.1.11",
     "react-responsive-modal": "^2.0.0",
+    "react-spring": "^8.0.19",
     "react-tabs": "^2.2.1",
     "react-telephone-input": "^4.0.1",
     "sass-loader": "^4.0.2",

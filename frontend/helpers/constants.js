@@ -31,33 +31,42 @@ export const API_ENDPOINTS = {
   learningCircle: '/api/learning-circle/',
   registration: '/en/accounts/fe/register/',
   login: '/en/accounts/fe/login/',
+  whoami: '/en/accounts/fe/whoami/',
   learningCircles: {
     postUrl: '/api/learning-circle/',
     baseUrl: '/api/learningcircles/?',
-    searchParams: ['q', 'topics', 'weekdays', 'latitude', 'longitude', 'distance', 'active', 'limit', 'offset', 'city', 'signup', 'team_id', 'id']
+    searchParams: ['q', 'topics', 'weekdays', 'latitude', 'longitude', 'distance', 'active', 'limit', 'offset', 'city', 'signup', 'team_id', 'id', 'user', 'scope', 'draft']
   },
   courses: {
     baseUrl: '/api/courses/?',
-    searchParams: ['q', 'topics', 'order', 'course_id']
+    searchParams: ['q', 'topics', 'order', 'course_id', 'user', 'include_unlisted', 'limit']
   },
   learningCirclesTopics: {
-    baseUrl: 'https://learningcircles.p2pu.org/api/learningcircles/topics/?',
+    baseUrl: '/api/learningcircles/topics/?',
     searchParams: []
   },
   coursesTopics: {
-    baseUrl: 'https://learningcircles.p2pu.org/api/courses/topics/?',
+    baseUrl: '/api/courses/topics/?',
     searchParams: []
   },
   stats: {
-    baseUrl: 'https://learningcircles.p2pu.org/api/landing-page-stats/?',
+    baseUrl: '/api/landing-page-stats/?',
     searchParams: []
   },
   landingPage: {
-    baseUrl: 'https://learningcircles.p2pu.org/api/landing-page-learning-circles/?',
-    searchParams: []
+    baseUrl: '/api/landing-page-learning-circles/?',
+    searchParams: ['team', 'scope']
   },
   images: {
     postUrl: '/api/upload_image/'
+  },
+  learningCircleSuccesses: {
+    baseUrl: '/api/learningcircles/successes/?',
+    searchParams: ['limit', 'offset']
+  },
+  instagram: {
+    baseUrl: '/api/instagram-feed/?',
+    searchParams: []
   }
 };
 
@@ -75,4 +84,9 @@ export const LC_DEFAULTS = {
 export const FACILITATOR_SURVEY = 'wPg50i';
 export const NO_STUDYGROUP_SURVEY = 'iVldef';
 export const LEARNER_SURVEY = 'VA1aVz';
+
+export const DISCOURSE_API_URL = 'https://community.p2pu.org';
+export const FACILITATOR_RESOURCE_TYPES = [
+  'video', 'activity', 'blog', 'template', 'thread'
+]
 

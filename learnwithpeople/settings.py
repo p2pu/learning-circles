@@ -324,3 +324,6 @@ MAILGUN_API_KEY = env('MAILGUN_API_KEY', '')
 MAILGUN_DOMAIN = env('MAILGUN_DOMAIN', '')
 ANNOUNCE_EMAIL = env('ANNOUNCE_EMAIL', 'announce@localhost')
 
+# Instagram token
+INSTAGRAM_TOKEN = env('INSTAGRAM_TOKEN', '')
+
