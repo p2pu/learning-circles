@@ -6,6 +6,7 @@ from . import views
 
 urlpatterns = [
     url(r'^learningcircles/$', views.LearningCircleListView.as_view(), name='api_learningcircles'),
+    url(r'^learningcircles/successes/$', views.FinalReportListView.as_view(), name='api_learningcircles_successes'),
     url(r'^learningcircles/topics/$', views.LearningCircleTopicListView.as_view(), name='api_learningcircle_topics'),
     url(r'^courses/$', views.CourseListView.as_view(), name='api_courses'),
     url(r'^courses/topics/$', views.CourseTopicListView.as_view(), name='api_course_topics'),
@@ -18,4 +19,5 @@ urlpatterns = [
     url(r'^landing-page-stats/$', views.LandingPageStatsView.as_view(), name='api_landing_page_stats'),
     url(r'^upload_image/$', views.ImageUploadView.as_view(), name='api_image_upload'),
     url(r'^learning-circles-map/$', views.LearningCirclesMapView.as_view(), name='api_learningcircles_map'),
+    url(r'^instagram-feed/$', views.InstagramFeed.as_view(), name='api_instagram_feed'),
 ]

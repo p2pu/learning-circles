@@ -39,7 +39,12 @@ class TestCourseApi(TestCase):
             'rating_step_counts',
             'tagdorsements',
             'tagdorsement_counts',
-            'course_page_url'
+            'course_page_url',
+            'course_page_path',
+            'course_edit_path',
+            'created_at',
+            'unlisted',
+            'discourse_topic_url',
         ]
         resp_keys = list(resp.json()["items"][0].keys())
         for key in resp_keys:
