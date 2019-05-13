@@ -403,8 +403,8 @@ class CourseListView(View):
             "offset": schema.integer(),
             "limit": schema.integer(),
             "order": lambda v: (v, None) if v in ['title', 'usage', 'overall_rating', 'created_at', None] else (None, "must be 'title', 'usage', 'created_at', or 'overall_rating'"),
-            "user": schema.text(),
-            "include_unlisted": schema.text(),
+            "user": schema.boolean(),
+            "include_unlisted": schema.boolean(),
         }
         data = schema.django_get_to_dict(request.GET)
         clean_data, errors = schema.validate(query_schema, data)
@@ -416,6 +416,7 @@ class CourseListView(View):
         # include_unlisted must be != false and the query must be scoped
         # by user to avoid filtering out unlisted courses
         if request.GET.get('include_unlisted', "false") == "false" or 'user' not in request.GET:
+            # return only courses that is not unlisted
             courses = courses.filter(unlisted=False)
 
         courses = courses.annotate(
