@@ -116,17 +116,14 @@ def _map_to_json(sg):
         "day": sg.day(),
         "start_date": sg.start_date,
         "start_datetime": sg.local_start_date(),
-        "end_date": sg.end_date,
         "meeting_time": sg.meeting_time,
         "time_zone": sg.timezone_display(),
         "end_time": sg.end_time(),
         "weeks": sg.meeting_set.active().count(),
         "url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
-        "facilitator_survey_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse('studygroups_facilitator_survey', args=(sg.id,)),
         "signup_count": sg.application_set.count(),
         "report_url": sg.report_url(),
-        "edit_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse('studygroups_edit_study_group', args=(sg.id,)),
-        "manage_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse('studygroups_view_study_group', args=(sg.id,)),
+        "studygroup_path": reverse('studygroups_view_study_group', args=(sg.id,)),
         "draft": sg.draft,
     }
 
@@ -388,7 +385,8 @@ def _course_to_json(course):
         "tagdorsements": course.tagdorsements,
         "tagdorsement_counts": course.tagdorsement_counts,
         "course_page_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_course_page", args=(course.id,)),
-        "course_edit_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_course_edit", args=(course.id,)),
+        "course_page_path": reverse("studygroups_course_page", args=(course.id,)),
+        "course_edit_path": reverse("studygroups_course_edit", args=(course.id,)),
         "created_at": course.created_at,
         "unlisted": course.unlisted,
         "discourse_topic_url": course.discourse_topic_url if course.discourse_topic_url else settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_generate_course_discourse_topic", args=(course.id,)),
@@ -762,7 +760,7 @@ class LandingPageLearningCirclesView(View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        study_groups_unfiltered = StudyGroup.objects.published()
+        study_groups_unsliced = StudyGroup.objects.published()
 
         if 'scope' in request.GET and request.GET.get('scope') == "team":
             user = request.user
@@ -772,10 +770,10 @@ class LandingPageLearningCirclesView(View):
                 return json_response(request, { "status": "error", "errors": ["User is not on a team."] })
 
             team_members = TeamMembership.objects.filter(team__in=team_ids).values("user")
-            study_groups_unfiltered = study_groups_unfiltered.filter(facilitator__in=team_members)
+            study_groups_unsliced = study_groups_unsliced.filter(facilitator__in=team_members)
 
         # get learning circles with image & upcoming meetings
-        study_groups = study_groups_unfiltered.filter(
+        study_groups = study_groups_unsliced.filter(
             meeting__meeting_date__gte=timezone.now(),
         ).annotate(
             next_meeting_date=Min('meeting__meeting_date')
@@ -784,7 +782,7 @@ class LandingPageLearningCirclesView(View):
         # if there are less than 3 with upcoming meetings and an image
         if study_groups.count() < 3:
             # pad with learning circles with the most recent meetings
-            past_study_groups = study_groups_unfiltered.filter(
+            past_study_groups = study_groups_unsliced.filter(
                 meeting__meeting_date__lt=timezone.now(),
             ).annotate(
                 next_meeting_date=Max('meeting__meeting_date')

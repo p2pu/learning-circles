@@ -137,7 +137,7 @@ export default class FacilitatorDashboard extends React.Component {
                 <div className="card-title">My Courses</div>
                 {
                   !this.state.user &&
-                  <p>You must be logged in to see your learning circles. <a className="p2pu-btn btn-dark btn-sm" href={"/en/login_redirect/"}>Log in or register</a></p>
+                  <p>You must be logged in to see your courses. <a className="p2pu-btn btn-dark btn-sm" href={"/en/login_redirect/"}>Log in or register</a></p>
                 }
                 {
                   this.state.user &&
