@@ -762,7 +762,7 @@ class LandingPageLearningCirclesView(View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        study_groups_unfiltered = StudyGroup.objects.published()
+        study_groups_unsliced = StudyGroup.objects.published()
 
         if 'scope' in request.GET and request.GET.get('scope') == "team":
             user = request.user
@@ -772,10 +772,10 @@ class LandingPageLearningCirclesView(View):
                 return json_response(request, { "status": "error", "errors": ["User is not on a team."] })
 
             team_members = TeamMembership.objects.filter(team__in=team_ids).values("user")
-            study_groups_unfiltered = study_groups_unfiltered.filter(facilitator__in=team_members)
+            study_groups_unsliced = study_groups_unsliced.filter(facilitator__in=team_members)
 
         # get learning circles with image & upcoming meetings
-        study_groups = study_groups_unfiltered.filter(
+        study_groups = study_groups_unsliced.filter(
             meeting__meeting_date__gte=timezone.now(),
         ).annotate(
             next_meeting_date=Min('meeting__meeting_date')
@@ -784,7 +784,7 @@ class LandingPageLearningCirclesView(View):
         # if there are less than 3 with upcoming meetings and an image
         if study_groups.count() < 3:
             # pad with learning circles with the most recent meetings
-            past_study_groups = study_groups_unfiltered.filter(
+            past_study_groups = study_groups_unsliced.filter(
                 meeting__meeting_date__lt=timezone.now(),
             ).annotate(
                 next_meeting_date=Max('meeting__meeting_date')
