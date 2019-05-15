@@ -40,10 +40,10 @@ function dashboardSurvey(){
     <div id="deprecated-site-alert" aria-hidden="true">
       <div role="alert" tabindex="1">
         <div class="text-center">
-          <p>We're designing a new Facilitator Dashboard and we need your feedback! Are there any changes you'd like to see?</p>
+          <p>The Facilitator Dashboard is changing!</p>
           <div>
-            <a href="https://p2pu.typeform.com/to/weIA87" id="go-to-survey" class="p2pu-btn btn-sm light" target="_blank" rel="noopener noreferrer">Yes!</a>
-            <button id="go-away" class="p2pu-btn btn-sm light transparent">No, leave me alone.</button>
+            <a href="/en/facilitator/dashboard" id="go-to-survey" class="p2pu-btn btn-sm light">Preview the new version</a>
+            <button id="go-away" class="p2pu-btn btn-sm light transparent">No thanks.</button>
           </div>
         </div>
         <div>
