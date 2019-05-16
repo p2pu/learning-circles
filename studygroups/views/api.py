@@ -722,6 +722,7 @@ class SignupView(View):
             ], required=True),
             "name": schema.text(required=True),
             "email": schema.email(required=True),
+            "communications_opt_in": schema.boolean(),
             "mobile": schema.mobile(),
             "signup_questions": schema.schema(signup_questions, required=True)
         }
@@ -732,20 +733,20 @@ class SignupView(View):
 
         study_group = clean_data.get('learning_circle')
 
-        if Application.objects.active().filter(email__iexact=data.get('email'), study_group=study_group).exists():
-            application = Application.objects.active().get(email__iexact=data.get('email'), study_group=study_group)
+        if Application.objects.active().filter(email__iexact=clean_data.get('email'), study_group=study_group).exists():
+            application = Application.objects.active().get(email__iexact=clean_data.get('email'), study_group=study_group)
         else:
             application = Application(
                 study_group=study_group,
-                name=data.get('name'),
-                email=data.get('email'),
-                signup_questions=json.dumps(data.get('signup_questions')),
+                name=clean_data.get('name'),
+                email=clean_data.get('email'),
                 accepted_at=timezone.now()
             )
-        application.name = data.get('name')
-        application.signup_questions = json.dumps(data.get('signup_questions'))
-        if data.get('mobile'):
-            application.mobile = data.get('mobile')
+        application.name = clean_data.get('name')
+        application.signup_questions = json.dumps(clean_data.get('signup_questions'))
+        if clean_data.get('mobile'):
+            application.mobile = clean_data.get('mobile')
+        application.communications_opt_in = clean_data.get('communications_opt_in', False)
         application.save()
         return json_response(request, {"status": "created"})
 

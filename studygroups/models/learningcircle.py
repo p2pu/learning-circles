@@ -205,6 +205,7 @@ class Application(LifeTimeTrackingModel):
     study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE)
     name = models.CharField(max_length=128)
     email = models.EmailField(verbose_name='Email address', blank=True)
+    communications_opt_in = models.BooleanField(default=False)
     mobile = models.CharField(max_length=20, blank=True)
     mobile_opt_out_at = models.DateTimeField(blank=True, null=True)
     signup_questions = models.TextField(default='{}')

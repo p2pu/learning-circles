@@ -93,6 +93,7 @@ class ApplicationForm(forms.ModelForm):
             'computer_access',
             'use_internet',
             'mobile',
+            'communications_opt_in'
         )
         self.helper.add_input(Submit('submit', 'Submit'))
         super().__init__(*args, **kwargs)
@@ -133,8 +134,12 @@ class ApplicationForm(forms.ModelForm):
 
     class Meta:
         model = Application
-        fields = ['study_group', 'name', 'email', 'mobile']
+        fields = ['study_group', 'name', 'email', 'mobile', 'communications_opt_in']
         widgets = {'study_group': forms.HiddenInput}
+        labels = {
+            'communications_opt_in': _('Would you like to receive information about other learning opportunities in the future?'),
+        }
+ 
 
 
 class OptOutForm(forms.Form):

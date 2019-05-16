@@ -7,6 +7,9 @@ from decimal import Decimal
 # and return a tuple (value, error) with error being None if the user 
 # supplied data is correct
 # Validators should also convert the data to the correct type
+# but data should only be converted if no information is lost, eg.
+# for an email address, return the original text provided by the user
+# if it passes the validation
 
 def _required(func):
     def decorator(*args, **kwargs):
@@ -126,13 +129,11 @@ def email():
 @_required
 def mobile():
     def _validate(mobile):
-        if mobile is None:
-            return None
         try:
             nr = phonenumbers.parse(mobile, None)
             if phonenumbers.is_valid_number(nr) is False:
-                return 'Not a valid phone number'
-            return nr, None
+                return None, 'Not a valid phone number'
+            return mobile, None
         except phonenumbers.phonenumberutil.NumberParseException:
             return None, 'Not a valid phone number'
     return _validate
