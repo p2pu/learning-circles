@@ -15,18 +15,24 @@ function dashboardSurvey(){
       }
 
       #deprecated-site-alert > div[role="alert"] {
-        padding: 10px 20px;
+        padding: 30px;
         background: #049487;
         color: #fff;
         box-shadow: -2px 2px 8px 1px rgba(0,0,0,0.2);
         border: 2px solid #fff;
         border-radius: 8px;
-        display: flex;
+        position: relative;
       }
 
       #deprecated-site-alert.showDeprecationAlert {
         bottom: 0;
         opacity: 1;
+      }
+
+      #deprecated-site-alert .close-btn {
+        position: absolute;
+        top: 4px;
+        right: 4px;
       }
 
       #deprecated-alert-close {
@@ -40,13 +46,13 @@ function dashboardSurvey(){
     <div id="deprecated-site-alert" aria-hidden="true">
       <div role="alert" tabindex="1">
         <div class="text-center">
-          <p>We're designing a new Facilitator Dashboard and we need your feedback! Are there any changes you'd like to see?</p>
+          <p>The Facilitator Dashboard is changing!</p>
           <div>
-            <a href="https://p2pu.typeform.com/to/weIA87" id="go-to-survey" class="p2pu-btn btn-sm light" target="_blank" rel="noopener noreferrer">Yes!</a>
-            <button id="go-away" class="p2pu-btn btn-sm light transparent">No, leave me alone.</button>
+            <a href="/en/facilitator/dashboard" id="go-to-dashboard" class="p2pu-btn btn-sm light">Preview the new dashboard</a>
+            <button id="go-away" class="p2pu-btn btn-sm light transparent">No thanks</button>
           </div>
         </div>
-        <div>
+        <div class="close-btn">
           <button id="deprecated-alert-close" aria-label="Close">&times;</button>
         </div>
       </div>
@@ -63,8 +69,8 @@ var callback = function(){
   var deprecationAlert = document.getElementById('deprecated-site-alert');
   var deprecationAlertCloseButton = document.getElementById('deprecated-alert-close');
   var goAwayButton = document.getElementById('go-away');
-  var goToSurveyButton = document.getElementById('go-to-survey');
-  var preventAlert = window.localStorage.getItem('prevent-survey-alert') === 'true';
+  var goToSurveyButton = document.getElementById('go-to-dashboard');
+  var preventAlert = window.localStorage.getItem('prevent-dashboard-prompt') === 'true';
 
   function showDeprecationAlert(alert) {
     alert.classList.add('showDeprecationAlert')
@@ -77,7 +83,7 @@ var callback = function(){
   }
 
   function savePreferences() {
-    window.localStorage.setItem('prevent-survey-alert', 'true');
+    window.localStorage.setItem('prevent-dashboard-prompt', 'true');
   }
 
   if (!preventAlert) {
