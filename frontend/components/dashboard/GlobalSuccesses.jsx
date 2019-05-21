@@ -84,9 +84,14 @@ export default class GlobalSuccesses extends Component {
                 <div className={`content ${lc.image_url ? 'col-8' : 'col-12'}`}>
 
                   <div className="info">
-                    <p className='meeting-info my-1'>
-                      <span className="bold">{lc.signup_count}</span> people learned <span className="bold">{lc.course.title}</span> together in { formattedCity }
-                    </p>
+                    {
+                      lc.signup_count &&
+                      <p className='meeting-info my-1'><span className="bold">{lc.signup_count}</span> people learned <span className="bold">{lc.course.title}</span> together in { formattedCity }</p>
+                    }
+                    {
+                      !lc.signup_count &&
+                      <p className='meeting-info my-1'>A learning circle on <span className="bold">{lc.course.title}</span> wrapped up in { formattedCity }</p>
+                    }
                     <a href={lc.report_url}>See the final report</a>
                   </div>
 

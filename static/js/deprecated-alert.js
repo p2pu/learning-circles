@@ -1,4 +1,4 @@
-function dashboardSurvey(){
+function deprecatedAlert(){
   return `
     <style>
       #deprecated-site-alert {
@@ -8,15 +8,15 @@ function dashboardSurvey(){
         position: fixed;
         right: 0;
         left: 0;
-        padding: 40px;
+        padding: 20px;
         z-index: 1000;
         display: flex;
         justify-content: center;
       }
 
       #deprecated-site-alert > div[role="alert"] {
-        padding: 30px;
-        background: #049487;
+        padding: 20px;
+        background: #FC7100;
         color: #fff;
         box-shadow: -2px 2px 8px 1px rgba(0,0,0,0.2);
         border: 2px solid #fff;
@@ -46,14 +46,10 @@ function dashboardSurvey(){
     <div id="deprecated-site-alert" aria-hidden="true">
       <div role="alert" tabindex="1">
         <div class="text-center">
-          <p>The Facilitator Dashboard is changing!</p>
+          <p>The new Facilitator Dashboard is here! This page is deprecated and will soon be removed completely.</p>
           <div>
-            <a href="/en/facilitator/dashboard" id="go-to-dashboard" class="p2pu-btn btn-sm light">Preview the new dashboard</a>
-            <button id="go-away" class="p2pu-btn btn-sm light transparent">No thanks</button>
+            <a href="/en/" id="go-to-dashboard" class="p2pu-btn btn-sm light">Go to the new dashboard</a>
           </div>
-        </div>
-        <div class="close-btn">
-          <button id="deprecated-alert-close" aria-label="Close">&times;</button>
         </div>
       </div>
     </div>
@@ -64,47 +60,18 @@ function dashboardSurvey(){
 var callback = function(){
   // Handler when the DOM is fully loaded
   let body = document.getElementsByTagName('body')[0];
-  body.insertAdjacentHTML("afterbegin", dashboardSurvey());
+  body.insertAdjacentHTML("afterbegin", deprecatedAlert());
 
   var deprecationAlert = document.getElementById('deprecated-site-alert');
-  var deprecationAlertCloseButton = document.getElementById('deprecated-alert-close');
-  var goAwayButton = document.getElementById('go-away');
-  var goToSurveyButton = document.getElementById('go-to-dashboard');
-  var preventAlert = window.localStorage.getItem('prevent-dashboard-prompt') === 'true';
 
   function showDeprecationAlert(alert) {
     alert.classList.add('showDeprecationAlert')
     alert.setAttribute('aria-hidden', 'false')
   }
 
-  function hideDeprecationAlert(alert) {
-    alert.classList.remove('showDeprecationAlert')
-    alert.setAttribute('aria-hidden', 'true')
-  }
-
-  function savePreferences() {
-    window.localStorage.setItem('prevent-dashboard-prompt', 'true');
-  }
-
-  if (!preventAlert) {
-    setTimeout(function() {
-      showDeprecationAlert(deprecationAlert);
-    }, 2000);
-  }
-
-  deprecationAlertCloseButton.addEventListener('click', function() {
-    hideDeprecationAlert(deprecationAlert);
-  })
-
-  goAwayButton.addEventListener('click', function() {
-    hideDeprecationAlert(deprecationAlert);
-    savePreferences(deprecationAlert)
-  })
-
-  goToSurveyButton.addEventListener('click', function() {
-    hideDeprecationAlert(deprecationAlert);
-    savePreferences(deprecationAlert);
-  })
+  setTimeout(function() {
+    showDeprecationAlert(deprecationAlert);
+  }, 2000);
 
 }
 

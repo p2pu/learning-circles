@@ -39,7 +39,7 @@ export const API_ENDPOINTS = {
   },
   courses: {
     baseUrl: '/api/courses/?',
-    searchParams: ['q', 'topics', 'order', 'course_id', 'user', 'include_unlisted', 'limit']
+    searchParams: ['q', 'topics', 'order', 'course_id', 'user', 'include_unlisted', 'limit', 'offset']
   },
   learningCirclesTopics: {
     baseUrl: '/api/learningcircles/topics/?',

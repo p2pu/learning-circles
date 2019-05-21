@@ -94,7 +94,7 @@ def view_study_group(request, study_group_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
     user_is_facilitator = study_group.facilitator == request.user
     facilitator_is_organizer = TeamMembership.objects.filter(user=request.user, role=TeamMembership.ORGANIZER).exists()
-    dashboard_url = reverse('studygroups_facilitator_dashboard')
+    dashboard_url = reverse('studygroups_facilitator')
 
     if facilitator_is_organizer and not user_is_facilitator:
         dashboard_url = reverse('studygroups_organize')
