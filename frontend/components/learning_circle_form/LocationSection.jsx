@@ -1,6 +1,7 @@
 import React from 'react'
 import PlaceSelect from 'p2pu-input-fields/dist/PlaceSelect'
 import InputWithLabel from 'p2pu-input-fields/dist/InputWithLabel'
+import LanguageSelect from 'p2pu-input-fields/dist/LanguageSelect'
 
 
 const LocationSection = (props) => {
@@ -50,6 +51,16 @@ const LocationSection = (props) => {
         id={'id_venue_address'}
         errorMessage={props.errors.venue_address}
         required={true}
+      />
+      <LanguageSelect
+        label={'What is the primary language for this learning circle'}
+        value={props.learningCircle.language}
+        handleChange={props.updateFormData}
+        placeholder={'Pick a language'}
+        name={'language'}
+        id={'id_language'}
+        errorMessage={props.errors.language}
+        helpText={'This is used to determine in which language messaging will be sent to participants.'}
       />
     </div>
   );
