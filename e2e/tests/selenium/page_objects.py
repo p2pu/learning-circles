@@ -34,7 +34,6 @@ class LearningCircleCreationPage(BasePage):
         self.fill_text_field(LearningCircleCreationPageLocators.VENUE_NAME_FIELD, "KPL")
         self.fill_text_field(LearningCircleCreationPageLocators.VENUE_DETAILS_FIELD, "Hacienda Cafe")
         self.fill_text_field(LearningCircleCreationPageLocators.VENUE_ADDRESS_FIELD, "85 Queen St N, Kitchener")
-        self.fill_language_select_field("English")
 
         self.click_next_button()
 
@@ -74,12 +73,6 @@ class LearningCircleCreationPage(BasePage):
         city_select.send_keys(location)
         self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.CITY_SELECT_OPTION))
         city_select.send_keys(Keys.ARROW_DOWN, Keys.ENTER)
-
-
-    def fill_language_select_field(self, language):
-        language_select = self.wait.until(expected_conditions.visibility_of_element_located(LearningCircleCreationPageLocators.LANGUAGE_FIELD))
-        city_select.send_keys(language)
-        city_select.send_keys(Keys.ENTER)
 
 
     def fill_meeting_time_field(self, time):

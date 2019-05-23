@@ -21,7 +21,6 @@ class LearningCircleCreationPageLocators(object):
     VENUE_NAME_FIELD = (By.ID, "id_venue_name")
     VENUE_DETAILS_FIELD = (By.ID, "id_venue_details")
     VENUE_ADDRESS_FIELD = (By.ID, "id_venue_address")
-    LANGUAGE_FIELD = (By.ID, "id_language")
     START_DATE_FIELD = (By.ID, "id_start_date")
     WEEKS_FIELD = (By.ID, "id_weeks")
     MEETING_TIME_FIELD = (By.NAME, "meeting_time")
