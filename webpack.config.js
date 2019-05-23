@@ -1,7 +1,7 @@
 var path = require("path");
 var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
-var ExtractTextPlugin = require("extract-text-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 var fs = require("fs");
 
@@ -26,6 +26,7 @@ const reactBuild = {
     path: path.resolve('./assets/dist/'),
     filename: "[name]-[hash].js",
   },
+  devtool: 'source-map',
   module: {
     rules: [
       {
@@ -46,7 +47,7 @@ const reactBuild = {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        loader: 'babel-loader?presets[]=env&presets[]=react&presets[]=stage-2'
+        loader: 'babel-loader'
       },
     ],
   },
@@ -54,13 +55,21 @@ const reactBuild = {
     jquery: 'jQuery',
     $: 'jQuery'
   },
+  optimization: {
+    //runtimeChunk: "single", // enable "runtime" chunk
+    splitChunks: {
+      cacheGroups: {
+        common: {
+          name: 'common',
+          chunks: 'initial',
+          minChunks: 3
+        }
+      }
+    }
+  },
   plugins: [
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-    new BundleTracker({filename: './assets/frontend-webpack-manifest.json'}),
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'common',
-      minChunks: 3,
-    })
+    new BundleTracker({filename: './assets/frontend-webpack-manifest.json'})
   ],
   resolve: {
     modules: [
@@ -88,21 +97,22 @@ const styleBuild = {
       },
       {
         test: /\.scss$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: [{
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
             loader: 'css-loader',
             options: {
               sourceMap: true,
             },
-          }, {
+          }, 
+          {
             loader: 'sass-loader',
             options: {
               sourceMap: true,
               includePaths: [path.resolve("./static/"), path.resolve("./node_modules/")]
             }
-          }]
-        }),
+          }
+        ]
       },
     ]
   },
@@ -111,7 +121,7 @@ const styleBuild = {
     filename: "[name].[hash].js",
   },
   plugins: [
-    new ExtractTextPlugin("[name].[hash].css"),
+    new MiniCssExtractPlugin({filename: "[name].[hash].css"}),
     new BundleTracker({filename: './assets/style-webpack-manifest.json'}),
   ]
 }
