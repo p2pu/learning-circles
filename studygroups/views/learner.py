@@ -163,14 +163,14 @@ def optout_confirm(request):
     else:
         messages.error(request, _('Please check the email you received and make sure this is the correct URL.'))
 
-    url = reverse('studygroups_landing')
+    url = reverse('studygroups_facilitator')
     return http.HttpResponseRedirect(url)
 
 
 class OptOutView(FormView):
     template_name = 'studygroups/optout.html'
     form_class = OptOutForm
-    success_url = reverse_lazy('studygroups_landing')
+    success_url = reverse_lazy('studygroups_facilitator')
 
     def form_valid(self, form):
         # Find all signups with email and send opt out confirmation
@@ -216,7 +216,7 @@ def rsvp(request):
         return http.HttpResponseRedirect(url)
     else:
         messages.error(request, 'Bad RSVP code')
-        url = reverse('studygroups_landing')
+        url = reverse('studygroups_facilitator')
         # TODO user http error code and display proper error page
         return http.HttpResponseRedirect(url)
 
@@ -229,7 +229,7 @@ def receive_sms(request):
     message = request.POST.get('Body')
 
     STOP_LIST = ['STOP', 'STOPALL', 'UNSUBSCRIBE', 'CANCEL', 'END', 'QUIT']
-    command = message.strip(string.punctuation + string.whitespace).upper() 
+    command = message.strip(string.punctuation + string.whitespace).upper()
     opt_out = command in STOP_LIST
     if opt_out:
         application_mobile_opt_out(sender)

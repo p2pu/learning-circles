@@ -39,7 +39,7 @@ export const API_ENDPOINTS = {
   },
   courses: {
     baseUrl: '/api/courses/?',
-    searchParams: ['q', 'topics', 'order', 'course_id', 'user', 'include_unlisted', 'limit']
+    searchParams: ['q', 'topics', 'order', 'course_id', 'user', 'include_unlisted', 'limit', 'offset']
   },
   learningCirclesTopics: {
     baseUrl: '/api/learningcircles/topics/?',
@@ -72,7 +72,7 @@ export const API_ENDPOINTS = {
 
 export const LC_PUBLISHED_PAGE = '/en/facilitator/study_group/published';
 export const LC_SAVED_DRAFT_PAGE = '/en/facilitator/study_group/saved';
-export const FACILITATOR_PAGE = '/en/facilitator';
+export const FACILITATOR_PAGE = '/en/';
 
 export const LC_DEFAULTS = {
   duration: 90,

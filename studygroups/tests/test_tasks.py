@@ -348,7 +348,7 @@ class TestStudyGroupTasks(TestCase):
         self.assertEqual(mail.outbox[1].to[0], sg.facilitator.email)
         self.assertFalse(send_message.called)
         self.assertNotIn('{0}/{1}/rsvp/'.format(settings.DOMAIN, get_language()), mail.outbox[1].alternatives[0][0])
-        self.assertIn('{0}/{1}/facilitator/'.format(settings.DOMAIN, get_language()), mail.outbox[1].alternatives[0][0])
+        self.assertIn('{0}/{1}/'.format(settings.DOMAIN, get_language()), mail.outbox[1].alternatives[0][0])
         self.assertNotIn('{0}/{1}/optout/confirm/?user='.format(settings.DOMAIN, get_language()), mail.outbox[1].alternatives[0][0])
 
 
