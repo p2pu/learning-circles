@@ -8,7 +8,6 @@
   },
   "scripts": {
     "build": "webpack --mode production",
-    "build:production": "webpack --mode production",
     "build:dev": "webpack --mode development",
     "watch": "webpack --mode development --watch",
     "build:profile": "webpack --mode production --config webpack.config.profile.js"
