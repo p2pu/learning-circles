@@ -140,6 +140,7 @@ class TestLearningCircleApi(TestCase):
             "region": "Western Cape",
             "latitude": 3.1,
             "longitude": "1.3",
+            "language": "en",
             "start_date": "2018-02-12",
             "weeks": 2,
             "meeting_time": "17:01",
