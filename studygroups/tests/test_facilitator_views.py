@@ -64,6 +64,7 @@ class TestFacilitatorViews(TestCase):
         'latitude': -26.205,
         'longitude': 28.0497,
         'place_id': '342432',
+        'language': 'en',
         'description': 'We will complete the course about motorcycle maintenance together',
         'start_date': '2018-07-25',
         'weeks': '6',

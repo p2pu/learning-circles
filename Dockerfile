@@ -6,7 +6,7 @@ RUN apk --no-cache add --virtual native-deps \
   npm install --quiet --production && \
   apk del native-deps
 COPY . /opt/app/
-RUN npm run build:production
+RUN npm run build
 
 FROM python:3.6-alpine3.8
 WORKDIR /opt/app/

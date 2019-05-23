@@ -79,6 +79,7 @@ export const LC_DEFAULTS = {
   weeks: 6,
   course: {},
   draft: true,
+  language: 'en',
 };
 
 export const FACILITATOR_SURVEY = 'wPg50i';

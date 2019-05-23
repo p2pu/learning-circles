@@ -39,25 +39,6 @@ import cities
 import json
 
 
-def landing(request):
-    two_weeks = (datetime.datetime.now() - datetime.timedelta(weeks=2)).date()
-
-    study_group_ids = Meeting.objects.active().filter(meeting_date__gte=timezone.now()).values('study_group')
-    study_groups = StudyGroup.objects.published().filter(id__in=study_group_ids, signup_open=True).order_by('start_date')
-
-    city_list = study_groups.values('city').exclude(city='').annotate(total=Count('city')).order_by('-total')
-
-    # NOTE: Not sure what the performance implication of the following line would be - it reads a file from disk every time
-    #filter_func = lambda x: next( (c for c in cities.read_autocomplete_list() if c.lower().startswith(x['city'].lower())), (None) ) != None
-    #city_list = filter(filter_func, city_list)
-
-    context = {
-        'learning_circles': study_groups[:50],
-        'cities': city_list
-    }
-    return render(request, 'studygroups/index.html', context)
-
-
 class TeamPage(DetailView):
     model = Team
     template_name = 'studygroups/team_page.html'
