@@ -140,7 +140,7 @@ class TestFacilitatorViews(TestCase):
         data['meeting_time'] = '07:00 PM',
         with freeze_time('2018-07-20'):
             resp = c.post('/en/studygroup/create/legacy/', data)
-            self.assertRedirects(resp, '/en/facilitator/')
+            self.assertRedirects(resp, '/en/')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
         lc = study_groups.first()
@@ -166,7 +166,7 @@ class TestFacilitatorViews(TestCase):
         self.assertEqual(study_groups.first().meeting_set.count(), 0)
 
         resp = c.post('/en/studygroup/{0}/publish/'.format(study_groups.first().pk))
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
         self.assertEqual(study_group.draft, False)
         self.assertEqual(study_group.meeting_set.count(), 6)
@@ -185,7 +185,7 @@ class TestFacilitatorViews(TestCase):
         self.assertEqual(study_groups.count(), 1)
 
         resp = c.post('/en/studygroup/{0}/publish/'.format(study_groups.first().pk))
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
         self.assertEqual(study_group.draft, True)
 
@@ -208,19 +208,19 @@ class TestFacilitatorViews(TestCase):
         self.assertEqual(study_groups.first().pk, StudyGroup.objects.last().pk)
         url_base = '/en/studygroup/{0}'.format(study_groups.first().pk)
         resp = c.get(url_base + '/meeting/create/')
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         meeting_data = {
             "meeting_date": "2018-03-17",
             "meeting_time": "04:00+PM",
             "study_group": "515",
         }
         resp = c.post(url_base + '/meeting/create/', data=meeting_data)
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         self.assertEqual(StudyGroup.objects.last().meeting_set.count(), 0)
 
         # try to send a message
         resp = c.get('/en/studygroup/{0}/message/compose/'.format(study_groups.first().pk))
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         mail_data = {
             u'study_group': study_groups.first().pk,
             u'email_subject': 'does not matter',
@@ -228,19 +228,19 @@ class TestFacilitatorViews(TestCase):
         }
         mail.outbox = []
         resp = c.post(url_base + '/message/compose/', mail_data)
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         self.assertEqual(len(mail.outbox), 0)
 
         # try to add a learner
         resp = c.get('/en/studygroup/{0}/member/add/'.format(study_groups.first().pk))
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         learner_data = {
             "email": "learn@example.net",
             "name": "no name",
             "study_group": "515",
         }
         resp = c.post(url_base + '/member/add/', data=learner_data)
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         self.assertEqual(StudyGroup.objects.last().application_set.count(), 0)
 
 
@@ -254,7 +254,7 @@ class TestFacilitatorViews(TestCase):
         data['meeting_time'] = '07:00 PM'
         with freeze_time("2018-12-20"):
             resp = c.post('/en/studygroup/create/legacy/', data)
-            self.assertRedirects(resp, '/en/facilitator/')
+            self.assertRedirects(resp, '/en/')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
         lc = study_groups.first()
@@ -266,14 +266,14 @@ class TestFacilitatorViews(TestCase):
             data['meeting_time'] = '07:10 PM'
             edit_url = '/en/studygroup/{}/edit/legacy/'.format(lc.pk)
             resp = c.post(edit_url, data)
-            self.assertRedirects(resp, '/en/facilitator/')
+            self.assertRedirects(resp, '/en/')
             study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
             self.assertEqual(study_group.start_date, datetime.date(2018, 12, 25))
             self.assertEqual(study_group.meeting_time, datetime.time(19, 10))
             self.assertEqual(study_group.meeting_set.active().count(), 0)
 
         resp = c.post('/en/studygroup/{0}/publish/'.format(study_groups.first().pk))
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
         self.assertEqual(study_group.draft, False)
         self.assertEqual(study_group.meeting_set.active().count(), 6)
@@ -297,7 +297,7 @@ class TestFacilitatorViews(TestCase):
             data['weeks'] = 3
             edit_url = '/en/studygroup/{}/edit/legacy/'.format(study_group.pk)
             resp = c.post(edit_url, data)
-            self.assertRedirects(resp, '/en/facilitator/')
+            self.assertRedirects(resp, '/en/')
             study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
             self.assertEqual(study_group.start_date, datetime.date(2018, 12, 24))
             self.assertEqual(study_group.meeting_set.active().count(), 3)
@@ -348,13 +348,13 @@ class TestFacilitatorViews(TestCase):
         data['start_date'] = '12/25/2018'
         data['meeting_time'] = '07:00 PM'
         resp = c.post('/en/studygroup/create/legacy/', data)
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
         lc = study_groups.first()
         self.assertEquals(study_groups.first().meeting_set.count(), 0)
         resp = c.post('/en/studygroup/{0}/publish/'.format(study_groups.first().pk))
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
         self.assertEqual(study_group.draft, False)
         self.assertEqual(study_group.meeting_set.count(), 6)
@@ -374,7 +374,7 @@ class TestFacilitatorViews(TestCase):
             "study_group": study_group.pk,
         }
         resp = c.post('/en/studygroup/{0}/meeting/{1}/edit/'.format(study_group.pk, meeting.pk), update)
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         meeting.refresh_from_db()
         self.assertEqual(meeting.meeting_date, datetime.date(2018, 12, 27))
 
@@ -399,7 +399,7 @@ class TestFacilitatorViews(TestCase):
             self.assertEquals(Reminder.objects.count(), 1)
             update['meeting_date'] = '2018-12-30'
             resp = c.post('/en/studygroup/{0}/meeting/{1}/edit/'.format(study_group.pk, meeting.pk), update)
-            self.assertRedirects(resp, '/en/facilitator/')
+            self.assertRedirects(resp, '/en/')
             meeting.refresh_from_db()
             self.assertFalse(send_meeting_change_notification.delay.called)
             # old reminder should be orphaned - not linked to this meeting
@@ -420,7 +420,7 @@ class TestFacilitatorViews(TestCase):
             self.assertEqual(Reminder.objects.filter(study_group_meeting=meeting, sent_at__isnull=False).count(), 1)
             update['meeting_date'] = '2019-01-02'
             resp = c.post('/en/studygroup/{0}/meeting/{1}/edit/'.format(study_group.pk, meeting.pk), update)
-            self.assertRedirects(resp, '/en/facilitator/')
+            self.assertRedirects(resp, '/en/')
             meeting.refresh_from_db()
             self.assertTrue(send_meeting_change_notification.delay.called)
             # old reminder should be orphaned - not linked to this meeting
@@ -447,7 +447,7 @@ class TestFacilitatorViews(TestCase):
             'sms_body': 'The first study group for GED® Prep Math will meet next Thursday, May 7th, from 6:00 pm-7:45 pm at Edgewater on the 2nd floor. Feel free to bring a study buddy!'
         }
         resp = c.post(url, mail_data)
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, mail_data['email_subject'])
@@ -475,7 +475,7 @@ class TestFacilitatorViews(TestCase):
             'sms_body': 'Sms body'
         }
         resp = c.post(url, mail_data)
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         self.assertEqual(len(mail.outbox), 1)  # Send both email and text message
         self.assertTrue(send_message.called)
 
@@ -498,7 +498,7 @@ class TestFacilitatorViews(TestCase):
             'email_body': 'Email body'
         }
         resp = c.post(url, mail_data)
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         self.assertEqual(len(mail.outbox), 1)  # Still send email
         self.assertFalse(send_message.called) # dont send sms
 
@@ -550,12 +550,12 @@ class TestFacilitatorViews(TestCase):
         c = Client()
         c.login(username='faci1@team.com', password='1234')
         resp = c.get('/en/facilitator/team-invitation/')
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
 
         TeamInvitation.objects.create(team=team, organizer=organizer, role=TeamMembership.MEMBER, email=faci1.email)
         self.assertTrue(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email__iexact=faci1.email).responded_at is None)
         resp = c.post('/en/facilitator/team-invitation/', {'response': 'yes'})
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         self.assertEqual(TeamMembership.objects.filter(team=team, role=TeamMembership.MEMBER, user=faci1).count(), 1)
         self.assertFalse(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email__iexact=faci1.email).responded_at is None)
 
@@ -575,7 +575,7 @@ class TestFacilitatorViews(TestCase):
         TeamInvitation.objects.create(team=team, organizer=organizer, role=TeamMembership.MEMBER, email=faci1.email)
         self.assertTrue(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email__iexact=faci1.email).responded_at is None)
         resp = c.post('/en/facilitator/team-invitation/', {'response': 'no'})
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         self.assertEqual(TeamMembership.objects.filter(team=team, role=TeamMembership.MEMBER, user=faci1).count(), 0)
         self.assertFalse(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email__iexact=faci1.email).responded_at is None)
 
@@ -600,7 +600,7 @@ class TestFacilitatorViews(TestCase):
         resp = c.get(course_url)
         course_data['topics'] = 'magic'
         resp = c.post(course_url, course_data)
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         self.assertEqual(Course.objects.get(pk=course.id).topics, 'magic')
 
 
@@ -652,10 +652,10 @@ class TestFacilitatorViews(TestCase):
         # make sure bob123 can edit the course
         course_url = '/en/course/{}/edit/'.format(course.id)
         resp = c.get(course_url)
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         course_data['topics'] = 'magic'
         resp = c.post(course_url, course_data)
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         self.assertEqual(Course.objects.get(pk=course.id).topics, 'html,test')
 
 
