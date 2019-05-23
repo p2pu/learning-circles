@@ -53,14 +53,14 @@ const LocationSection = (props) => {
         required={true}
       />
       <LanguageSelect
-        label={'What is the primary language for this learning circle'}
+        label={'What is the primary language for this learning circle?'}
         value={props.learningCircle.language}
         handleChange={props.updateFormData}
         placeholder={'Pick a language'}
         name={'language'}
         id={'id_language'}
         errorMessage={props.errors.language}
-        helpText={'This is used to determine in which language messaging will be sent to participants.'}
+        helpText={'Participants will receive communications in this language.'}
       />
     </div>
   );
