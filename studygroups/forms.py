@@ -200,7 +200,7 @@ class CourseForm(forms.ModelForm):
         ('de', _('German')),
         ('es', _('Spanish')),
         ('fr', _('French')),
-        ('other', [ (code, name) for code, name in LANGUAGES if code not in ['en', 'es', 'fr']]),
+        ('other', [ (code, name) for code, name in LANGUAGES if code not in ['en', 'es', 'fr', 'de']]),
     )
     language = forms.ChoiceField(choices=LANGUAGES, initial='en')
 
