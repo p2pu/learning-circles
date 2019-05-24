@@ -173,6 +173,16 @@ export default class FacilitatorDashboard extends React.Component {
           <div className="col-12 col-lg-4">
 
             <div data-aos='fade'>
+              <Card className="bg-dark feedback-survey">
+                <div className="bold text-center text-white">What do you think about your new learning circles dashboard?</div>
+                <div className="text-center mt-3">
+                  <a href="https://p2pu.typeform.com/to/WwRKql?first_impression=like" className="p2pu-btn light btn-sm">😍 I like it!</a>
+                  <a href="https://p2pu.typeform.com/to/WwRKql?first_impression=dislike" className="p2pu-btn light btn-sm">😕 Meh</a>
+                </div>
+              </Card>
+            </div>
+
+            <div data-aos='fade'>
               <Card>
                 <div className="card-title">Recent Successes</div>
                 <GlobalSuccesses />
@@ -186,15 +196,6 @@ export default class FacilitatorDashboard extends React.Component {
               </Card>
             </div>
 
-            <div data-aos='fade'>
-              <Card className="bg-dark feedback-survey">
-                <div className="bold text-center text-white">What do you think about your new learning circles dashboard?</div>
-                <div className="text-center mt-3">
-                  <a href="https://p2pu.typeform.com/to/WwRKql?first_impression=like" className="p2pu-btn light btn-sm">😍 I like it!</a>
-                  <a href="https://p2pu.typeform.com/to/WwRKql?first_impression=dislike" className="p2pu-btn light btn-sm">😕 Meh</a>
-                </div>
-              </Card>
-            </div>
           </div>
         </div>
       </div>

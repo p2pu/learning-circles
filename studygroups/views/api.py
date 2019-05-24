@@ -114,6 +114,7 @@ def _map_to_json(sg):
         "latitude": sg.latitude,
         "longitude": sg.longitude,
         "place_id": sg.place_id,
+        "language": sg.language,
         "day": sg.day(),
         "start_date": sg.start_date,
         "start_datetime": sg.local_start_date(),
@@ -555,6 +556,7 @@ def _make_learning_circle_schema(request):
         "latitude": schema.floating_point(),
         "longitude": schema.floating_point(),
         "place_id": schema.text(length=256),
+        "language": schema.text(required=True, length=6),
         "start_date": schema.date(required=True),
         "weeks": schema.chain([
             schema.integer(required=True),
@@ -602,6 +604,7 @@ class LearningCircleCreateView(View):
             latitude=data.get('latitude'),
             longitude=data.get('longitude'),
             place_id=data.get('place_id', ''),
+            language=data.get('language'),
             start_date=data.get('start_date'),
             end_date=end_date,
             meeting_time=data.get('meeting_time'),
@@ -683,6 +686,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         study_group.latitude = data.get('latitude')
         study_group.longitude = data.get('longitude')
         study_group.place_id = data.get('place_id', '')
+        study_group.language = data.get('language')
         study_group.start_date = data.get('start_date')
         study_group.end_date = end_date
         study_group.meeting_time = data.get('meeting_time')
@@ -722,6 +726,7 @@ class SignupView(View):
             ], required=True),
             "name": schema.text(required=True),
             "email": schema.email(required=True),
+            "communications_opt_in": schema.boolean(),
             "mobile": schema.mobile(),
             "signup_questions": schema.schema(signup_questions, required=True)
         }
@@ -732,20 +737,20 @@ class SignupView(View):
 
         study_group = clean_data.get('learning_circle')
 
-        if Application.objects.active().filter(email__iexact=data.get('email'), study_group=study_group).exists():
-            application = Application.objects.active().get(email__iexact=data.get('email'), study_group=study_group)
+        if Application.objects.active().filter(email__iexact=clean_data.get('email'), study_group=study_group).exists():
+            application = Application.objects.active().get(email__iexact=clean_data.get('email'), study_group=study_group)
         else:
             application = Application(
                 study_group=study_group,
-                name=data.get('name'),
-                email=data.get('email'),
-                signup_questions=json.dumps(data.get('signup_questions')),
+                name=clean_data.get('name'),
+                email=clean_data.get('email'),
                 accepted_at=timezone.now()
             )
-        application.name = data.get('name')
-        application.signup_questions = json.dumps(data.get('signup_questions'))
-        if data.get('mobile'):
-            application.mobile = data.get('mobile')
+        application.name = clean_data.get('name')
+        application.signup_questions = json.dumps(clean_data.get('signup_questions'))
+        if clean_data.get('mobile'):
+            application.mobile = clean_data.get('mobile')
+        application.communications_opt_in = clean_data.get('communications_opt_in', False)
         application.save()
         return json_response(request, {"status": "created"})
 

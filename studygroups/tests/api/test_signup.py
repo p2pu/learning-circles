@@ -43,6 +43,7 @@ class TestApiSignupView(TestCase):
             'learning_circle': '1',
             'name': 'User name',
             'email': 'user@mail.com',
+            'communications_opt_in': 'false',
             'mobile': '+12812344321',
             'signup_questions': {
                 'goals': 'Learn new stuff',
@@ -67,6 +68,7 @@ class TestApiSignupView(TestCase):
             'learning_circle': '1',
             'name': 'User name',
             'email': 'user@mail.com',
+            'communications_opt_in': 'true',
             'mobile': '+12812344321',
             'signup_questions': {
                 'goals': 'Learn new stuff',
@@ -117,6 +119,7 @@ class TestApiSignupView(TestCase):
             'learning_circle': '99',
             'name': 'User name',
             'email': 'user@mail.com',
+            'communications_opt_in': 'false',
             'signup_questions': {
                 'goals': 'Learn new stuff',
                 'support': 'Help my fellow learners',

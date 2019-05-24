@@ -39,25 +39,6 @@ import cities
 import json
 
 
-def landing(request):
-    two_weeks = (datetime.datetime.now() - datetime.timedelta(weeks=2)).date()
-
-    study_group_ids = Meeting.objects.active().filter(meeting_date__gte=timezone.now()).values('study_group')
-    study_groups = StudyGroup.objects.published().filter(id__in=study_group_ids, signup_open=True).order_by('start_date')
-
-    city_list = study_groups.values('city').exclude(city='').annotate(total=Count('city')).order_by('-total')
-
-    # NOTE: Not sure what the performance implication of the following line would be - it reads a file from disk every time
-    #filter_func = lambda x: next( (c for c in cities.read_autocomplete_list() if c.lower().startswith(x['city'].lower())), (None) ) != None
-    #city_list = filter(filter_func, city_list)
-
-    context = {
-        'learning_circles': study_groups[:50],
-        'cities': city_list
-    }
-    return render(request, 'studygroups/index.html', context)
-
-
 class TeamPage(DetailView):
     model = Team
     template_name = 'studygroups/team_page.html'
@@ -163,14 +144,14 @@ def optout_confirm(request):
     else:
         messages.error(request, _('Please check the email you received and make sure this is the correct URL.'))
 
-    url = reverse('studygroups_landing')
+    url = reverse('studygroups_facilitator')
     return http.HttpResponseRedirect(url)
 
 
 class OptOutView(FormView):
     template_name = 'studygroups/optout.html'
     form_class = OptOutForm
-    success_url = reverse_lazy('studygroups_landing')
+    success_url = reverse_lazy('studygroups_facilitator')
 
     def form_valid(self, form):
         # Find all signups with email and send opt out confirmation
@@ -216,7 +197,7 @@ def rsvp(request):
         return http.HttpResponseRedirect(url)
     else:
         messages.error(request, 'Bad RSVP code')
-        url = reverse('studygroups_landing')
+        url = reverse('studygroups_facilitator')
         # TODO user http error code and display proper error page
         return http.HttpResponseRedirect(url)
 
@@ -229,7 +210,7 @@ def receive_sms(request):
     message = request.POST.get('Body')
 
     STOP_LIST = ['STOP', 'STOPALL', 'UNSUBSCRIBE', 'CANCEL', 'END', 'QUIT']
-    command = message.strip(string.punctuation + string.whitespace).upper() 
+    command = message.strip(string.punctuation + string.whitespace).upper()
     opt_out = command in STOP_LIST
     if opt_out:
         application_mobile_opt_out(sender)

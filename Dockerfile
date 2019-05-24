@@ -6,7 +6,7 @@ RUN apk --no-cache add --virtual native-deps \
   npm install --quiet --production && \
   apk del native-deps
 COPY . /opt/app/
-RUN npm run build:production
+RUN npm run build
 
 FROM python:3.6-alpine3.8
 WORKDIR /opt/app/
@@ -54,6 +54,7 @@ RUN mkdir -p /var/lib/celery && \
     addgroup -g 1000 -S celery && \
     adduser -u 1000 -S celery -G celery && \
     chown celery:celery /var/lib/celery/
+RUN /opt/django-venv/bin/python /opt/app/manage.py compilemessages -l de
 ENV DATABASE_URL="sqlite:////var/app/db.sqlite3" \
     ADMIN_EMAIL="" \
     SECRET_KEY="" \

@@ -34,7 +34,7 @@ class TestCustomRegistrationViews(TestCase):
             "password2": "password",
         }
         resp = c.post('/en/accounts/register/', data)
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         users = User.objects.filter(email__iexact=data['email'])
         self.assertEqual(users.count(), 1)
         profile = Profile.objects.get(user=users.first())
@@ -55,7 +55,7 @@ class TestCustomRegistrationViews(TestCase):
             "communication_opt_in": "on",
         }
         resp = c.post('/en/accounts/register/', data)
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         data['email'] = data['email'].upper()
         resp = c.post('/en/accounts/register/', data)
         users = User.objects.filter(username__iexact=data['email'])
@@ -74,7 +74,7 @@ class TestCustomRegistrationViews(TestCase):
         self.assertEqual(resp.redirect_chain, [
             ('/login_redirect/', 302),
             ('/en/login_redirect/', 302),
-            ('/en/facilitator/', 302)
+            ('/en/', 302)
         ])
 
 
@@ -115,7 +115,7 @@ class TestCustomRegistrationViews(TestCase):
             'new_password1': 'newpass',
             'new_password2': 'newpass'
         }, follow=True)
-        self.assertRedirects(res, '/en/facilitator/')
+        self.assertRedirects(res, '/en/')
 
 
     def test_api_account_create(self):
@@ -166,7 +166,7 @@ class TestCustomRegistrationViews(TestCase):
 
         mail.outbox = []
         resp = c.post('/en/accounts/email_confirm/')
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn(user.email, mail.outbox[0].to)
         self.assertEqual(mail.outbox[0].subject, 'Please confirm your email address')
@@ -198,10 +198,10 @@ class TestCustomRegistrationViews(TestCase):
         confirm_url = match.group(0)
         c.logout()
         res = c.get(confirm_url)
-        self.assertRedirects(res, '/en/facilitator/')
+        self.assertRedirects(res, '/en/')
         bob = User.objects.get(email=data['email'])
         self.assertNotEqual(bob.profile.email_confirmed_at, None)
-    
+
 
     def test_send_new_user_email(self):
         c = Client()
@@ -214,13 +214,13 @@ class TestCustomRegistrationViews(TestCase):
             "password2": "password",
         }
         resp = c.post('/en/accounts/register/', data)
-        self.assertRedirects(resp, '/en/facilitator/')
+        self.assertRedirects(resp, '/en/')
         users = User.objects.filter(email__iexact=data['email'])
         self.assertEqual(users.count(), 1)
         profile = Profile.objects.get(user=users.first())
         profile.email_confirmed_at = datetime.datetime(2018, 9, 5, 12, 37, tzinfo=utc)
         profile.save()
-        
+
         mail.outbox = []
         with freeze_time('2018-09-05 12:39:00'):
             send_new_user_emails()
@@ -246,4 +246,4 @@ class TestCustomRegistrationViews(TestCase):
         self.assertTrue(anonymize_discourse_user.called)
         self.assertFalse(anon.is_active)
         self.assertNotEqual(anon.email, 'bob@example.net')
- 
+

@@ -10,7 +10,10 @@ export default class CoursesTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      courses: []
+      courses: [],
+      limit: PAGE_LIMIT,
+      count: 0,
+      offset: 0,
     };
   }
 
@@ -30,7 +33,7 @@ export default class CoursesTable extends Component {
       this.setState({ courses: data.items, count: data.count, offset: data.offset, limit: data.limit })
     }
 
-    const defaultParams = { limit: 10, user: true, include_unlisted: true }
+    const defaultParams = { limit: this.state.limit, offset: this.state.offset, user: true, include_unlisted: true }
 
     api.fetchResource({ callback: onSuccess, params: { ...defaultParams, ...params } })
   }

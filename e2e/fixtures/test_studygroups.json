@@ -26,6 +26,7 @@
       "venue_address": "123 Street",
       "venue_details": "3rd floor",
       "city": "Chicago",
+      "language" : "en",
       "image": "http://image-url.png",
       "draft": false
    },
@@ -48,6 +49,7 @@
       "venue_address": "123 Street",
       "venue_details": "3rd floor",
       "city": "Chicago",
+      "language" : "en",
       "image": "http://image-url.png",
       "draft": false
    },
@@ -70,6 +72,7 @@
       "venue_address": "123 Street",
       "venue_details": "3rd floor",
       "city": "Chicago",
+      "language" : "en",
       "image": "http://image-url.png",
       "draft": false
    },
@@ -92,6 +95,7 @@
       "venue_address": "123 Street",
       "venue_details": "3rd floor",
       "city": "Chicago",
+      "language" : "en",
       "image": "http://image-url.png",
       "draft": false
    },

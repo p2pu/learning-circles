@@ -13,3 +13,4 @@ node_modules/
 assets/
 .DS_Store
 tmp/*.png
+*.mo

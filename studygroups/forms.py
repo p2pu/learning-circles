@@ -93,6 +93,7 @@ class ApplicationForm(forms.ModelForm):
             'computer_access',
             'use_internet',
             'mobile',
+            'communications_opt_in'
         )
         self.helper.add_input(Submit('submit', 'Submit'))
         super().__init__(*args, **kwargs)
@@ -133,8 +134,12 @@ class ApplicationForm(forms.ModelForm):
 
     class Meta:
         model = Application
-        fields = ['study_group', 'name', 'email', 'mobile']
+        fields = ['study_group', 'name', 'email', 'mobile', 'communications_opt_in']
         widgets = {'study_group': forms.HiddenInput}
+        labels = {
+            'communications_opt_in': _('Would you like to receive information about other learning opportunities in the future?'),
+        }
+ 
 
 
 class OptOutForm(forms.Form):
@@ -192,9 +197,10 @@ class OptOutForm(forms.Form):
 class CourseForm(forms.ModelForm):
     LANGUAGES = (
         ('en', _('English')),
+        ('de', _('German')),
         ('es', _('Spanish')),
         ('fr', _('French')),
-        ('other', [ (code, name) for code, name in LANGUAGES if code not in ['en', 'es', 'fr']]),
+        ('other', [ (code, name) for code, name in LANGUAGES if code not in ['en', 'es', 'fr', 'de']]),
     )
     language = forms.ChoiceField(choices=LANGUAGES, initial='en')
 
@@ -261,12 +267,18 @@ class CourseForm(forms.ModelForm):
 class StudyGroupForm(forms.ModelForm):
     TIMEZONES = [('', _('Select one of the following')),] + list(zip(pytz.common_timezones, pytz.common_timezones))
 
+    LANGUAGES = (
+        ('en', _('English')),
+        ('de', _('German')),
+    )
+
     meeting_time = forms.TimeField(input_formats=['%I:%M %p'], label=_('What time will your learning circle meet each week?'), help_text=_('We recommend establishing a consistent weekly meeting time. You can always change individual meeting times from your Dashboard later.'), initial=datetime.time(16))
     weeks = forms.IntegerField(min_value=1, label=_('How many weeks will your learning circle run for?'), help_text=_('If you\'re not sure, six weeks is generally a good bet!'))
     timezone = forms.ChoiceField(choices=TIMEZONES, label=_('What timezone is your learning circle happening in?'))
 
     latitude = forms.DecimalField(required=False, widget=forms.HiddenInput)
     longitude = forms.DecimalField(required=False, widget=forms.HiddenInput)
+    language = forms.ChoiceField(choices=LANGUAGES, initial='en', label=_('What is the primary language for this learning circle?'), help_text=_('Participants will receive communications in this language.'))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -286,7 +298,10 @@ class StudyGroupForm(forms.ModelForm):
         """))
 
         if self.instance.pk:
-            self.fields['weeks'].initial = self.instance.meeting_set.active().count()
+            if self.instance.draft == True:
+                self.fields['weeks'].initial = self.instance.weeks
+            else:
+                self.fields['weeks'].initial = self.instance.meeting_set.active().count()
 
 
     def clean(self):
@@ -334,6 +349,7 @@ class StudyGroupForm(forms.ModelForm):
             'place_id',
             'latitude',
             'longitude',
+            'language',
             'venue_name',
             'venue_details',
             'venue_address',
