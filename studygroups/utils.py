@@ -1,11 +1,13 @@
 from django.conf import settings
 from django.template.loader import render_to_string
+from django.utils import translation
 
 import urllib.request, urllib.parse, urllib.error
 import hmac
 import hashlib
 import re
 import bleach
+from contextlib import contextmanager
 
 
 def signed_querystring(params):
@@ -62,6 +64,17 @@ def render_to_string_ctx(template, context={}):
         'PROTOCOL': settings.PROTOCOL,
     })
     return render_to_string(template, context)
+
+
+@contextmanager
+def use_language(language):
+    cur_language = translation.get_language()
+    try:
+        translation.activate(language)
+        yield
+    finally:
+        translation.activate(cur_language)
+        
 
 
 def html_body_to_text(html):

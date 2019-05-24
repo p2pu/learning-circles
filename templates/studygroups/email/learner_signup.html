@@ -44,6 +44,7 @@ The address for the meeting is:<br/>
 
 <p>{% blocktrans with city=study_group.city %}By signing up for this learning circle, you are joining the P2PU community of learners and facilitators. We work with libraries and community centers in {{city}} and around the world to create this program free of charge for you, and we really hope you enjoy it.{% endblocktrans %}</p>
 
+{% if advice %}
 <p>{% blocktrans with name=advice.first_name city=advice.city country=advice.country topic=advice.topic tip=advice.tip %}Here is some advice from {{name}} in {{city}}, {{country}} who just finished a learning circle in {{topic}}: {% endblocktrans %}</p>
 
 <p style="padding:1em; border-left: solid 10px rgb(255,155,0); background: rgba(255,155,0,15%);">
@@ -51,6 +52,7 @@ The address for the meeting is:<br/>
 </p>
 
 <p>{% blocktrans %}Want more? Check out <a href="https://www.p2pu.org/">P2PU’s website</a> to learn more about how we support equitable, social learning opportunities outside of school. You can also read <a href="http://info.p2pu.org/2018/03/06/tips/">more tips</a> from learners around the world.{% endblocktrans %}</p>
+{% endif %}
 
 <p>{% trans "Cheers" %}</p>
 <p>P2PU</p>

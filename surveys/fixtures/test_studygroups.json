@@ -23,6 +23,7 @@
       "timezone": "US/Central",
       "latitude" : "41.850030",
       "longitude" : "-87.650050",
+      "language": "en",
       "place_id" : "",
       "facilitator": 1,
       "venue_name": "Harold Washington",
@@ -54,6 +55,7 @@
       "city": "Chicago",
       "latitude" : "41.850030",
       "longitude" : "-87.650050",
+      "language": "en",
       "image": "http://image-url.png",
       "draft": false
    },
@@ -78,6 +80,7 @@
       "city": "Chicago",
       "latitude" : "41.850030",
       "longitude" : "-87.650050",
+      "language": "en",
       "image": "http://image-url.png",
       "draft": false
    },
@@ -102,6 +105,7 @@
       "city": "Chicago",
       "latitude" : "41.850030",
       "longitude" : "-87.650050",
+      "language": "en",
       "image": "http://image-url.png",
       "draft": false
    },
