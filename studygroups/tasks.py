@@ -20,6 +20,7 @@ from studygroups.utils import render_to_string_ctx
 from studygroups.email_helper import render_email_templates
 from studygroups.email_helper import render_html_with_css
 from .utils import html_body_to_text
+from .utils import use_language
 from .ics import make_meeting_ics
 
 import datetime
@@ -51,18 +52,19 @@ def generate_reminder(study_group):
                 context['feedback'] = previous_meeting.feedback_set.first()
             timezone.activate(pytz.timezone(study_group.timezone))
             # TODO do I need to activate a locale?
-            reminder.email_subject = render_to_string_ctx(
-                'studygroups/email/reminder-subject.txt',
-                context
-            ).strip('\n')
-            reminder.email_body = render_to_string_ctx(
-                'studygroups/email/reminder.txt',
-                context
-            )
-            reminder.sms_body = render_to_string_ctx(
-                'studygroups/email/sms.txt',
-                context
-            )
+            with use_language(study_group.language):
+                reminder.email_subject = render_to_string_ctx(
+                    'studygroups/email/reminder-subject.txt',
+                    context
+                ).strip('\n')
+                reminder.email_body = render_to_string_ctx(
+                    'studygroups/email/reminder.txt',
+                    context
+                )
+                reminder.sms_body = render_to_string_ctx(
+                    'studygroups/email/sms.txt',
+                    context
+                )
             # TODO - handle SMS reminders that are too long
             if len(reminder.sms_body) > 160:
                 logger.error('SMS body too long: ' + reminder.sms_body)
@@ -344,6 +346,10 @@ def send_learner_survey(application):
 # send two days before the second to last meeting
 # should be called every hour at :30
 def send_learner_surveys(study_group):
+    if study_group.language != 'en':
+        # TODO surveys only supported in English
+        return
+
     now = timezone.now()
     end_of_window = now.replace(minute=0, second=0, microsecond=0)
     start_of_window = end_of_window - datetime.timedelta(hours=1)
@@ -380,10 +386,12 @@ def send_meeting_reminder(reminder):
             "unsubscribe_link": unsubscribe_link,
             "event_meta": True,
         }
-        subject, text_body, html_body = render_email_templates(
-            'studygroups/email/learner_meeting_reminder',
-            context
-        )
+        # activate correct language
+        with use_language(reminder.study_group.language):
+            subject, text_body, html_body = render_email_templates(
+                'studygroups/email/learner_meeting_reminder',
+                context
+            )
         # TODO not using subject
         try:
             reminder_email = EmailMultiAlternatives(
@@ -464,10 +472,12 @@ def send_reminder(reminder):
             "facilitator_message": reminder.email_body,
             "facilitator": reminder.study_group.facilitator
         }
-        subject, text_body, html_body = render_email_templates(
-            'studygroups/email/facilitator_message',
-            context
-        )
+        # activate learning circle language
+        with use_language(reminder.study_group.language):
+            subject, text_body, html_body = render_email_templates(
+                'studygroups/email/facilitator_message',
+                context
+            )
         to += [reminder.study_group.facilitator.email]
         sender = 'P2PU <{0}>'.format(settings.DEFAULT_FROM_EMAIL)
         try:
@@ -650,8 +660,6 @@ def send_community_digest(start_date, end_date):
 def send_reminders():
     """ Send meeting reminders """
     now = timezone.now()
-    translation.activate(settings.LANGUAGE_CODE)
-    # TODO - should this be set here or closer to where the language matters?
     # make sure both the StudyGroup and Meeting is still available
     reminders = Reminder.objects.filter(
         sent_at__isnull=True,

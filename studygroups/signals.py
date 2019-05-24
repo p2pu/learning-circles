@@ -12,6 +12,7 @@ from .models import StudyGroup
 from .models import Course
 
 from .utils import html_body_to_text
+from .utils import use_language
 
 from advice.models import Advice
 
@@ -26,10 +27,14 @@ def handle_new_application(sender, instance, created, **kwargs):
     application = instance
 
     # get a random piece of advice
-    advice = Advice.objects.order_by('?').first()
+    # TODO only supported in English atm
+    advice = None
+    if application.study_group.language == 'en':
+        advice = Advice.objects.order_by('?').first()
 
-    # activitate timezone for message reminder
-    with timezone.override(pytz.timezone(application.study_group.timezone)):
+    # activate language and timezone for message reminder
+    with use_language(application.study_group.language), timezone.override(pytz.timezone(application.study_group.timezone)):
+        print(f'{application.study_group.language}')
         # Send welcome message to learner
         learner_signup_subject = render_to_string_ctx(
             'studygroups/email/learner_signup-subject.txt', {
@@ -37,6 +42,9 @@ def handle_new_application(sender, instance, created, **kwargs):
                 'advice': advice,
             }
         ).strip('\n')
+        print(learner_signup_subject)
+        from django.utils.translation import gettext as _
+        print(_('Welcome to P2PU'))
 
         learner_signup_html = render_html_with_css(
             'studygroups/email/learner_signup.html', {
