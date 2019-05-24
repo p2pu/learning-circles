@@ -42,9 +42,6 @@ def handle_new_application(sender, instance, created, **kwargs):
                 'advice': advice,
             }
         ).strip('\n')
-        print(learner_signup_subject)
-        from django.utils.translation import gettext as _
-        print(_('Welcome to P2PU'))
 
         learner_signup_html = render_html_with_css(
             'studygroups/email/learner_signup.html', {
