@@ -210,6 +210,10 @@ def send_facilitator_survey_reminder(study_group):
 # send learning circle report two days after last meeting
 # should be called every hour at :30
 def send_final_learning_circle_report(study_group):
+    # TODO disable for non-English learning circles
+    if study_group.language != 'en':
+        return
+
     now = timezone.now()
     end_of_window = now.replace(minute=0, second=0, microsecond=0)
     start_of_window = end_of_window - datetime.timedelta(hours=1)
