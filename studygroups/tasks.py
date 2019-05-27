@@ -377,26 +377,26 @@ def send_meeting_reminder(reminder):
     sender = 'P2PU <{0}>'.format(settings.DEFAULT_FROM_EMAIL)
 
     for email in to:
-        yes_link = reminder.study_group_meeting.rsvp_yes_link(email)
-        no_link = reminder.study_group_meeting.rsvp_no_link(email)
-        application = reminder.study_group_meeting.study_group.application_set.active().filter(email__iexact=email).first()
-        unsubscribe_link = application.unapply_link()
-        context = {
-            "reminder": reminder,
-            "learning_circle": reminder.study_group,
-            "facilitator_message": reminder.email_body,
-            "rsvp_yes_link": yes_link,
-            "rsvp_no_link": no_link,
-            "unsubscribe_link": unsubscribe_link,
-            "event_meta": True,
-        }
         # activate correct language
         with use_language(reminder.study_group.language):
+            yes_link = reminder.study_group_meeting.rsvp_yes_link(email)
+            no_link = reminder.study_group_meeting.rsvp_no_link(email)
+            application = reminder.study_group_meeting.study_group.application_set.active().filter(email__iexact=email).first()
+            unsubscribe_link = application.unapply_link()
+            context = {
+                "reminder": reminder,
+                "learning_circle": reminder.study_group,
+                "facilitator_message": reminder.email_body,
+                "rsvp_yes_link": yes_link,
+                "rsvp_no_link": no_link,
+                "unsubscribe_link": unsubscribe_link,
+                "event_meta": True,
+            }
             subject, text_body, html_body = render_email_templates(
                 'studygroups/email/learner_meeting_reminder',
                 context
             )
-        # TODO not using subject
+            # TODO not using subject
         try:
             reminder_email = EmailMultiAlternatives(
                 reminder.email_subject.strip('\n'),
