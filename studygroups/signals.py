@@ -34,7 +34,6 @@ def handle_new_application(sender, instance, created, **kwargs):
 
     # activate language and timezone for message reminder
     with use_language(application.study_group.language), timezone.override(pytz.timezone(application.study_group.timezone)):
-        print(f'{application.study_group.language}')
         # Send welcome message to learner
         learner_signup_subject = render_to_string_ctx(
             'studygroups/email/learner_signup-subject.txt', {
