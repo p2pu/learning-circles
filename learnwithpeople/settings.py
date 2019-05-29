@@ -189,6 +189,7 @@ ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_WHITELIST = [
     "https://www.p2pu.org",
     "https://berlin.p2pu.org",
+    "http://berlin.p2pu.org",
     "https://p2pu.github.io",
 ]
 
