@@ -572,7 +572,7 @@ class TestStudyGroupTasks(TestCase):
             self.assertEqual(len(mail.outbox), 0)
 
         with freeze_time("2010-02-07 18:30:00"):
-            send_facilitator_learner_survey_prompt(sag)
+            send_facilitator_learner_survey_prompt(sg)
             self.assertEqual(len(mail.outbox), 1)
             self.assertIn('{0}/en/studygroup/{1}/facilitator_survey/'.format(settings.DOMAIN, sg.id), mail.outbox[0].body)
             self.assertIn(sg.facilitator.email, mail.outbox[0].to)
