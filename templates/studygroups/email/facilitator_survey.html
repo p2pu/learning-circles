@@ -13,56 +13,47 @@
   color: #05C6B4;
   border: 1px solid #05C6B4;
 }
-
 .rating-scale .cell.first-cell {
   border-right: none;
   border-radius: 4px 0 0 4px;
 }
-
 .rating-scale .cell.last-cell {
   border-radius: 0 4px 4px 0;
 }
-
 .rating-scale .cell.middle-cell {
   border-right: none;
 }
-
 .rating-scale td a {
   text-align: center;
   text-decoration: none;
 }
-
 .rating-scale .label.align-right {
   text-align: right;
 }
-
 .rating-scale .label small {
   font-size: 0.8em;
   color: #05C6B4;
 }
-
 .text-center {
   text-align: center;
 }
-
 .color-green {
   color: #05C6B4;
 }
 </style>
 
-
 <table>
   <tbody>
     <tr>
       <td>
-        {% blocktrans %}
-        <p>Hi {{facilitator_name}},</p>
+        <p>
+        {% blocktrans %}Hi {{facilitator_name}},{% endblocktrans %}</p>
 
-        <p>After your learning circle, you probably have a few things to say (good and bad!) about <strong>{{course_title}}</strong>, activities you tried, and the learning circle process in general.</p>
+        <p>{% blocktrans %}Your learning circle is about to end. You probably have a few things to say (good and bad!) about <strong>{{course_title}}</strong>, activities you tried, and the learning circle process in general.{% endblocktrans %}</p>
 
-        <p>Can you take a few minutes to share with us? Your feedback will be immediately put to use, helping our community identify high-quality online courses and deliver equitable learning experiences around the world.</p>
-        <p>How did the learning circle go?</p>
-        {% endblocktrans %}
+        <p>{% trans "Can you take a few minutes to share with us? Your feedback will be immediately put to use, helping our community identify high-quality online courses and deliver equitable learning experiences around the world." %}</p>
+
+        <p>{% trans "How did the learning circle go?" %}</p>
       </td>
     </tr>
     <tr>
@@ -110,10 +101,10 @@
                   <tbody>
                     <tr>
                       <td class="label">
-                        <small>Terrible</small>
+                        <small>{% trans "Terrible" %}</small>
                       </td>
                       <td class="label align-right">
-                        <small>Excellent</small>
+                        <small>{% trans "Excellent" %}</small>
                       </td>
                     </tr>
                   </tbody>
@@ -122,8 +113,8 @@
             </tr>
             <tr>
               <td>
-                <p class="text-center">- or -</p>
-                <p class="text-center"><a href="{{survey_url}}?nostudygroup=true" class="color-green">This learning circle didn’t end up happening.</a></p>
+                <p class="text-center">- {% trans "or" %} -</p>
+                <p class="text-center"><a href="{{survey_url}}?nostudygroup=true" class="color-green">{% trans "This learning circle didn’t end up happening." %}</a></p>
               </td>
             </tr>
           </tbody>

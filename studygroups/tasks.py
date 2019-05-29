@@ -119,7 +119,7 @@ def send_facilitator_survey(study_group):
 
         timezone.deactivate()
         subject, txt, html = render_email_templates(
-            'studygroups/email/facilitator-survey',
+            'studygroups/email/facilitator_survey',
             context
         )
         to = [study_group.facilitator.email]
