@@ -13,27 +13,25 @@
   <tbody>
     <tr>
       <td>
-        {% blocktrans with responses_p=learner_responses_count|pluralize %}
-        <p>Hi {{ facilitator_name }},</p>
+        <p>{% blocktrans %}Hi {{ facilitator_name }},{% endblocktrans %}</p>
 
-        <p>The survey we sent to your learning circle participants has {{ learner_responses_count }} response{{ responses_p }} so far. Here’s a preview of what your learning circle report currently looks like: <a href="{{ report_url }}">{{ report_url }}</a></p>
-
-        <p>Can you remind your learning circle participants to reply to the survey? Feel free to copy the text below and modify it:</p>
-        {% endblocktrans %}
-        <div class="indented">
-          <p>{% trans "Hi there" %},</p>
-          <p>{% trans "Can you take a few minutes to let me know how your learning circle is going? Your feedback - the good and the bad - will improve the learning circle program for learners and facilitators around the world." %}</p>
-          <p>{% trans "Share your feedback here:" %} <a href="{{ learner_survey_url }}">{{ learner_survey_url }}</a></p>
-          <p>{% trans "Thank you!" %}</p>
-        </div>
+        <p>{% blocktrans with responses_p=learner_responses_count|pluralize %}Two days ago we sent surveys to you and everyone signed up for your learning circle. So far {{ learner_responses_count }} people responded. In additon to giving us good feedback, we also use the surveys to generate a learning circle report for you. <a href="{{ report_url }}">Here</a> is a preview of what your report currently looks like.{% endblocktrans %}</p>
 
           {% if learners_without_survey_responses is not None %}
-          <p>{% trans "These are the participants who haven't responded yet, according to our records:" %}
-          <ul>
-            {% for learner in learners_without_survey_responses %}
-              <li>{{ learner.name }} - {{ learner.email }}</li>
-            {% endfor %}
-          </ul>
+            <p>{% trans "The following participants haven't yet responded according to our records:" %}
+            <ul>
+              {% for learner in learners_without_survey_responses %}
+                <li>{{ learner.name }} - {{ learner.email }}</li>
+              {% endfor %}
+            </ul>
+
+            <p>{% trans "Feel free to use the text below if you would like to remind them via email." %}:</p>
+            <div class="indented">
+              <p>{% trans "Hi there" %},</p>
+              <p>{% trans "Can you take a few minutes to let me know how your learning circle went? Your feedback - the good and the bad - will improve the learning circle program for learners and facilitators around the world." %}</p>
+              <p>{% trans "Share your feedback here:" %} <a href="{{ learner_survey_url }}">{{ learner_survey_url }}</a></p>
+              <p>{% trans "Thank you!" %}</p>
+            </div>
           {% endif %}
 
         {% if facilitator_survey_url is not None %}
