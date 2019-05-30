@@ -111,7 +111,8 @@ def send_facilitator_survey(study_group):
         survey_url = base_url + path
 
         context = {
-            "facilitator": study_group.facilitator,
+            'study_group': study_group,
+            'facilitator': study_group.facilitator,
             'facilitator_name': facilitator_name,
             'survey_url': survey_url,
             'course_title': study_group.course.title,
