@@ -11,6 +11,7 @@ import json
 import os
 import boto3
 import datetime
+import calendar
 
 from dateutil.relativedelta import relativedelta
 from pygal.style import Style
@@ -803,7 +804,11 @@ class LearningCircleMeetingsChart():
             else:
                 data["dates"].append("")
             data["meetings"].append(meetings_count)
-            end_date = end_date + relativedelta(months=+1)
+            end_date = end_date + relativedelta(months=+2)
+            end_date = end_date.replace(day=1) - relativedelta(days=1)
+
+        meetings_count = Meeting.objects.active().filter(meeting_date__gte=start_date, meeting_date__lt=self.report_date, study_group__deleted_at__isnull=True, study_group__draft=False).count()
+        data["meetings"].append(meetings_count)
 
         return data
 
