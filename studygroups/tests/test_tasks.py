@@ -558,7 +558,7 @@ class TestStudyGroupTasks(TestCase):
         self.assertEqual(last_meeting.meeting_time, datetime.time(18,15))
         self.assertEqual(sg.meeting_set.active().count(), 6)
         self.assertEqual(Reminder.objects.all().count(), 0)
- 
+
         with freeze_time("2010-02-06 18:30:00"):
             send_facilitator_learner_survey_prompt(sg)
             self.assertEqual(len(mail.outbox), 0)
@@ -676,7 +676,7 @@ class TestStudyGroupTasks(TestCase):
             start_date = end_date - datetime.timedelta(days=21)
 
             web_version_path = reverse('studygroups_community_digest', kwargs={'start_date': start_date.strftime("%d-%m-%Y"), 'end_date': end_date.strftime("%d-%m-%Y")})
-            web_version_url = "https://{}".format(settings.DOMAIN) + web_version_path
+            web_version_url = "{}://{}".format(settings.PROTOCOL, settings.DOMAIN) + web_version_path
 
             self.assertEqual(len(mail.outbox), 1)
             self.assertEqual(mail.outbox[0].to[0], settings.COMMUNITY_DIGEST_EMAIL)
