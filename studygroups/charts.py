@@ -11,7 +11,6 @@ import json
 import os
 import boto3
 import datetime
-import calendar
 
 from dateutil.relativedelta import relativedelta
 from pygal.style import Style

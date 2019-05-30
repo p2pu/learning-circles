@@ -315,7 +315,6 @@ def community_digest_data(start_time, end_time):
         "end_date": end_time.date(),
         "studygroups_that_met": studygroups_that_met,
         "studygroups_meetings_count": studygroups_meetings_count,
-        "studygroups_met_count": studygroups_that_met.count(),
         "learners_reached_count": learners_reached.count(),
         "new_users_count": new_users.count(),
         "upcoming_studygroups": upcoming_studygroups,
