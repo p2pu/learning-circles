@@ -226,10 +226,6 @@ CELERYBEAT_SCHEDULE = {
         'task': 'custom_registration.tasks.send_new_user_emails',
         'schedule': crontab(minute='*/10'),
     },
-    'send_new_studygroup_email': {
-        'task': 'studygroups.tasks.send_new_studygroup_emails',
-        'schedule': crontab(hour='12', minute='0'),
-    },
     'send_survey_reminders': {
         'task': 'studygroups.tasks.send_all_studygroup_survey_reminders',
         'schedule': crontab(minute='30'),
