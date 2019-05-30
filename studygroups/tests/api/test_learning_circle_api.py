@@ -591,5 +591,3 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(resp.json()["count"], 1)
         self.assertEqual(data["items"][0]["last_meeting_date"], "2019-05-15")
 
-
-
