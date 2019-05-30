@@ -226,7 +226,7 @@ class LearningCircleListView(View):
                     + SearchVector('venue_details')
                     + SearchVector('facilitator__first_name')
                     + SearchVector('facilitator__last_name')
-            ).filter(search=q)
+            ).filter(Q(search=q) | Q(search__icontains=q))
 
         if 'course_id' in request.GET:
             study_groups = study_groups.filter(

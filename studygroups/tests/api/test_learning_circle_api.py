@@ -189,7 +189,7 @@ class TestLearningCircleApi(TestCase):
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
-        
+
         resp = c.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 200)
         lc = StudyGroup.objects.all().last()
@@ -487,5 +487,19 @@ class TestLearningCircleApi(TestCase):
         c = Client()
         # Friday and Saturday
         resp = c.get('/api/learningcircles/?weekdays=4,5')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["count"], 2)
+
+
+    def test_get_learning_circles_full_text_search(self):
+        c = Client()
+
+        # full text match
+        resp = c.get('/api/learningcircles/?q=Academic')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["count"], 1)
+
+        # partial match
+        resp = c.get('/api/learningcircles/?q=Academ')
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()["count"], 2)
