@@ -5,7 +5,7 @@ from django.contrib.postgres.search import SearchQuery
 from django.contrib.postgres.search import SearchVector
 from django.core.files.storage import get_storage_class
 from django.db import models
-from django.db.models import Q, F, Case, When, Value, Sum, Min, Max
+from django.db.models import Q, F, Case, When, Value, Sum, Min, Max, OuterRef, Subquery
 from django.views import View
 from django.views.generic.detail import SingleObjectMixin
 from django.urls import reverse
@@ -14,6 +14,9 @@ from django.utils.translation import get_language_info
 from django.utils.decorators import method_decorator
 from django.utils.text import slugify
 from django.views.decorators.csrf import csrf_exempt
+from django.core.serializers import serialize
+from django.core.serializers.json import DjangoJSONEncoder
+
 
 from collections import Counter
 import json
@@ -899,3 +902,43 @@ class InstagramFeed(View):
             return json_response(request, { "status": "error", "errors": response["meta"]["error_message"] })
 
         return json_response(request, { "items": response["data"] })
+
+
+class TeamListView(View):
+    def get(self, request):
+        data = {}
+
+        def _serialize_team_data(team):
+            serialized_team = {
+                "id": team.pk,
+                "name": team.name,
+                "page_slug": team.page_slug,
+                "member_count": team.teammembership_set.count(),
+                "zoom": team.zoom,
+                "coordinates": {
+                    "longitude": team.longitude,
+                    "latitude": team.latitude,
+                }
+            }
+
+            members = team.teammembership_set.values('user')
+            team_users = User.objects.filter(pk__in=members)
+            studygroup_count = StudyGroup.objects.filter(facilitator__in=team_users).count()
+
+            serialized_team["studygroup_count"] = studygroup_count
+
+            organizer = team.teammembership_set.filter(role=TeamMembership.ORGANIZER).first()
+            if organizer is not None:
+                serialized_team["organizer"] = {
+                    "first_name": organizer.user.first_name
+                }
+
+            if team.page_image:
+                serialized_team["image_url"] = f"{settings.PROTOCOL}://{settings.DOMAIN}" + team.page_image.url
+
+            return serialized_team
+
+        teams = Team.objects.all()
+        data['items'] = [ _serialize_team_data(team) for team in teams ]
+        return json_response(request, data)
+
