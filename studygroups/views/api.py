@@ -5,7 +5,7 @@ from django.contrib.postgres.search import SearchQuery
 from django.contrib.postgres.search import SearchVector
 from django.core.files.storage import get_storage_class
 from django.db import models
-from django.db.models import Q, F, Case, When, Value, Sum, Min, Max, OuterRef, Subquery
+from django.db.models import Q, F, Case, When, Value, Sum, Min, Max
 from django.views import View
 from django.views.generic.detail import SingleObjectMixin
 from django.urls import reverse
@@ -14,9 +14,6 @@ from django.utils.translation import get_language_info
 from django.utils.decorators import method_decorator
 from django.utils.text import slugify
 from django.views.decorators.csrf import csrf_exempt
-from django.core.serializers import serialize
-from django.core.serializers.json import DjangoJSONEncoder
-
 
 from collections import Counter
 import json
@@ -922,8 +919,7 @@ class TeamListView(View):
             }
 
             members = team.teammembership_set.values('user')
-            team_users = User.objects.filter(pk__in=members)
-            studygroup_count = StudyGroup.objects.filter(facilitator__in=team_users).count()
+            studygroup_count = StudyGroup.objects.filter(facilitator__in=members).count()
 
             serialized_team["studygroup_count"] = studygroup_count
 
