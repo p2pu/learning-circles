@@ -912,10 +912,6 @@ class TeamListView(View):
                 "page_slug": team.page_slug,
                 "member_count": team.teammembership_set.count(),
                 "zoom": team.zoom,
-                "coordinates": {
-                    "longitude": team.longitude,
-                    "latitude": team.latitude,
-                }
             }
 
             members = team.teammembership_set.values('user')
@@ -932,9 +928,16 @@ class TeamListView(View):
             if team.page_image:
                 serialized_team["image_url"] = f"{settings.PROTOCOL}://{settings.DOMAIN}" + team.page_image.url
 
+            if team.latitude and team.longitude:
+                serialized_team["coordinates"] = {
+                    "longitude": team.longitude,
+                    "latitude": team.latitude,
+                }
+
             return serialized_team
 
         teams = Team.objects.all()
+        data["count"] = teams.count()
         data['items'] = [ _serialize_team_data(team) for team in teams ]
         return json_response(request, data)
 
