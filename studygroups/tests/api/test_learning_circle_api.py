@@ -524,6 +524,18 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(data["items"][0]["course"]["title"], "Academic Writing")
         self.assertEqual(data["items"][1]["course"]["provider"], "Khan Academy")
 
+        resp = c.get('/api/learningcircles/', {'q': 'writ'})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["count"], 1)
+        self.assertEqual(data["items"][0]["course"]["title"], "Academic Writing")
+
+        resp = c.get('/api/learningcircles/', {'q': 'writing'})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["count"], 1)
+        self.assertEqual(data["items"][0]["course"]["title"], "Academic Writing")
+
 
         # full word match
 
