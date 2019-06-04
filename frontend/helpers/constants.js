@@ -70,8 +70,6 @@ export const API_ENDPOINTS = {
   }
 };
 
-// export const LC_PUBLISHED_PAGE = '/en/facilitator/study_group/published';
-// export const LC_SAVED_DRAFT_PAGE = '/en/facilitator/study_group/saved';
 export const FACILITATOR_PAGE = '/en/';
 
 export const LC_DEFAULTS = {

@@ -61,7 +61,6 @@ class TestLearningCircleApi(TestCase):
         lc = StudyGroup.objects.all().last()
         self.assertEqual(resp.json(), {
             "status": "created",
-            "signup_url": "{}://{}/en/signup/75-harrington-{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk),
             "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
@@ -111,7 +110,6 @@ class TestLearningCircleApi(TestCase):
         lc = StudyGroup.objects.all().last()
         self.assertEqual(resp.json(), {
             "status": "created",
-            "signup_url": "{}://{}/en/signup/75-harrington-{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk),
             "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
@@ -198,7 +196,6 @@ class TestLearningCircleApi(TestCase):
         lc = StudyGroup.objects.all().last()
         self.assertEqual(resp.json(), {
             "status": "created",
-            "signup_url": "{}://{}/en/signup/75-harrington-{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk),
             "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
@@ -257,7 +254,6 @@ class TestLearningCircleApi(TestCase):
         lc = StudyGroup.objects.all().last()
         self.assertEqual(resp.json(), {
             "status": "created",
-            "signup_url": "{}://{}/en/signup/75-harrington-{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk),
             "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
@@ -287,7 +283,6 @@ class TestLearningCircleApi(TestCase):
             resp = c.post(url, data=json.dumps(data), content_type='application/json')
             self.assertEqual(resp.json(), {
                 "status": "updated",
-                "signup_url": "{}://{}/en/signup/75-harrington-{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk),
             "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
             })
 
@@ -333,7 +328,6 @@ class TestLearningCircleApi(TestCase):
         lc = StudyGroup.objects.all().last()
         self.assertEqual(resp.json(), {
             "status": "created",
-            "signup_url": "{}://{}/en/signup/75-harrington-{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk),
             "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
@@ -348,7 +342,6 @@ class TestLearningCircleApi(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertEqual(resp.json(), {
                 "status": "updated",
-                "signup_url": "{}://{}/en/signup/75-harrington-{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk),
             "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
             })
             lc = StudyGroup.objects.all().last()
@@ -364,7 +357,6 @@ class TestLearningCircleApi(TestCase):
             resp = c.post(url, data=json.dumps(data), content_type='application/json')
             self.assertEqual(resp.json(), {
                 "status": "updated",
-                "signup_url": "{}://{}/en/signup/75-harrington-{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk),
             "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
             })
             lc = StudyGroup.objects.all().last()
@@ -408,7 +400,6 @@ class TestLearningCircleApi(TestCase):
         lc = StudyGroup.objects.all().last()
         self.assertEqual(resp.json(), {
             "status": "created",
-            "signup_url": "{}://{}/en/signup/75-harrington-{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk),
             "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
@@ -466,7 +457,6 @@ class TestLearningCircleApi(TestCase):
             lc = StudyGroup.objects.all().last()
             self.assertEqual(resp.json(), {
                 "status": "created",
-                "signup_url": "{}://{}/en/signup/%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%A7%D9%84%D9%86%D9%81%D8%B3%D9%8A%D8%A9-%D9%84%D9%84%D8%B7%D9%81%D9%84-{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk),
                 "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
             })
             self.assertEqual(StudyGroup.objects.all().count(), 5)
@@ -590,4 +580,5 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()["count"], 1)
         self.assertEqual(data["items"][0]["last_meeting_date"], "2019-05-15")
+
 

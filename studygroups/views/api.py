@@ -623,9 +623,8 @@ class LearningCircleCreateView(View):
         if study_group.draft is False:
             generate_all_meetings(study_group)
 
-        signup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_signup', args=(slugify(study_group.venue_name, allow_unicode=True), study_group.id,))
         studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
-        return json_response(request, { "status": "created", "signup_url": signup_url, "studygroup_url": studygroup_url })
+        return json_response(request, { "status": "created", "studygroup_url": studygroup_url })
 
 
 @method_decorator(user_is_group_facilitator, name='dispatch')
@@ -706,9 +705,8 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
             study_group.meeting_set.delete()
             generate_all_meetings(study_group)
 
-        signup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_signup', args=(slugify(study_group.venue_name, allow_unicode=True), study_group.id,))
         studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
-        return json_response(request, { "status": "updated", "signup_url": signup_url, "studygroup_url": studygroup_url })
+        return json_response(request, { "status": "updated", "studygroup_url": studygroup_url })
 
 
 @method_decorator(csrf_exempt, name="dispatch")
