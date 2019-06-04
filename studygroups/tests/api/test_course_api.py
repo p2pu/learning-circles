@@ -111,7 +111,32 @@ class TestCourseApi(TestCase):
         self.assertEqual(resp.json()["count"], 1)
         self.assertEqual(resp.json()["items"][0]["title"], "Programming with Python")
 
+        resp = c.get('/api/courses/', {'q': 'prog'})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["count"], 1)
+        self.assertEqual(resp.json()["items"][0]["title"], "Programming with Python")
+
+        resp = c.get('/api/courses/', {'q': 'progr'})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["count"], 1)
+        self.assertEqual(resp.json()["items"][0]["title"], "Programming with Python")
+
+        resp = c.get('/api/courses/', {'q': 'progra'})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["count"], 1)
+        self.assertEqual(resp.json()["items"][0]["title"], "Programming with Python")
+
         resp = c.get('/api/courses/', {'q': 'program'})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["count"], 1)
+        self.assertEqual(resp.json()["items"][0]["title"], "Programming with Python")
+
+        resp = c.get('/api/courses/', {'q': 'programm'})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["count"], 1)
+        self.assertEqual(resp.json()["items"][0]["title"], "Programming with Python")
+
+        resp = c.get('/api/courses/', {'q': 'programmin'})
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()["count"], 1)
         self.assertEqual(resp.json()["items"][0]["title"], "Programming with Python")

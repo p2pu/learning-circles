@@ -503,6 +503,20 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(data["items"][0]["course"]["title"], "Academic Writing")
         self.assertEqual(data["items"][1]["course"]["provider"], "Khan Academy")
 
+        resp = c.get('/api/learningcircles/', {'q': 'acad'})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["count"], 2)
+        self.assertEqual(data["items"][0]["course"]["title"], "Academic Writing")
+        self.assertEqual(data["items"][1]["course"]["provider"], "Khan Academy")
+
+        resp = c.get('/api/learningcircles/', {'q': 'acade'})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["count"], 2)
+        self.assertEqual(data["items"][0]["course"]["title"], "Academic Writing")
+        self.assertEqual(data["items"][1]["course"]["provider"], "Khan Academy")
+
         resp = c.get('/api/learningcircles/', {'q': 'academ'})
         self.assertEqual(resp.status_code, 200)
         data = resp.json()
