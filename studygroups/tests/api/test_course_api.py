@@ -106,12 +106,20 @@ class TestCourseApi(TestCase):
         self.assertEqual(resp.json()["count"], 1)
         self.assertEqual(resp.json()["items"][0]["title"], "Programming with Python")
 
-        # search for a title with a partial match
-        resp = c.get('/api/courses/', {'q': 'gram'})
+        resp = c.get('/api/courses/', {'q': 'pyth'})
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()["count"], 1)
         self.assertEqual(resp.json()["items"][0]["title"], "Programming with Python")
 
+        resp = c.get('/api/courses/', {'q': 'program'})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["count"], 1)
+        self.assertEqual(resp.json()["items"][0]["title"], "Programming with Python")
+
+        resp = c.get('/api/courses/', {'q': 'programming'})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["count"], 1)
+        self.assertEqual(resp.json()["items"][0]["title"], "Programming with Python")
 
 
     def test_search_by_active(self):
