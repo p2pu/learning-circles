@@ -898,3 +898,45 @@ class InstagramFeed(View):
             return json_response(request, { "status": "error", "errors": response["meta"]["error_message"] })
 
         return json_response(request, { "items": response["data"] })
+
+
+class TeamListView(View):
+    def get(self, request):
+        data = {}
+
+        def _serialize_team_data(team):
+            serialized_team = {
+                "id": team.pk,
+                "name": team.name,
+                "page_slug": team.page_slug,
+                "member_count": team.teammembership_set.count(),
+                "zoom": team.zoom,
+            }
+
+            members = team.teammembership_set.values('user')
+            studygroup_count = StudyGroup.objects.filter(facilitator__in=members).count()
+
+            serialized_team["studygroup_count"] = studygroup_count
+
+            organizer = team.teammembership_set.filter(role=TeamMembership.ORGANIZER).first()
+            if organizer is not None:
+                serialized_team["organizer"] = {
+                    "first_name": organizer.user.first_name
+                }
+
+            if team.page_image:
+                serialized_team["image_url"] = f"{settings.PROTOCOL}://{settings.DOMAIN}" + team.page_image.url
+
+            if team.latitude and team.longitude:
+                serialized_team["coordinates"] = {
+                    "longitude": team.longitude,
+                    "latitude": team.latitude,
+                }
+
+            return serialized_team
+
+        teams = Team.objects.all()
+        data["count"] = teams.count()
+        data['items'] = [ _serialize_team_data(team) for team in teams ]
+        return json_response(request, data)
+
