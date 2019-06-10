@@ -76,7 +76,7 @@ export default class LearningCirclesTable extends Component {
 
                   return(
                     <tr key={ lc.id } className={`${classes}`}>
-                      <td><a href={ lc.course.course_page_url }>{`${lc.draft ? "[DRAFT] " : ""}${lc.course.title}`}</a></td>
+                      <td>{`${lc.draft ? "[DRAFT] " : ""}${lc.course.title}`}</td>
                       <td>{ lc.venue }</td>
                       <td>{ lc.signup_count }</td>
                       <td>{ date }</td>
