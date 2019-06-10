@@ -18,7 +18,7 @@ from .profile import Profile
 from .learningcircle import StudyGroup
 from .learningcircle import Meeting
 from .learningcircle import Application
-from .learningcircle import Reminder 
+from .learningcircle import Reminder
 from .learningcircle import Rsvp
 from .learningcircle import Feedback
 
@@ -213,10 +213,10 @@ def get_new_user_intros(new_users, limit=5):
 
     intros_from_new_users = []
     for post in latest_introduction_posts['post_stream']['posts']:
-        discourse_user = post["name"]
 
+        discourse_user = post.get("name", None)
 
-        if settings.DEBUG:
+        if settings.DEBUG and discourse_user is not None:
             discourse_user = discourse_user.split(" ")[0] + " Lastname" # TODO remove this on production!!
 
         if discourse_user in new_discourse_users and post["reply_to_post_number"] is None:
