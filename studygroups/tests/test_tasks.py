@@ -29,7 +29,6 @@ from studygroups.utils import check_unsubscribe_signature
 from studygroups.tasks import generate_reminder
 from studygroups.tasks import send_reminders
 from studygroups.tasks import send_reminder
-from studygroups.tasks import send_new_studygroup_emails
 from studygroups.tasks import send_weekly_update
 from studygroups.tasks import send_learner_surveys
 from studygroups.tasks import send_facilitator_survey
@@ -375,18 +374,6 @@ class TestStudyGroupTasks(TestCase):
         self.assertEqual(len(mail.outbox), 2)
         #self.assertEqual(mail.outbox[0].subject, mail_data['email_subject'])
         self.assertFalse(send_message.called)
-
-
-    def test_send_new_studygroup_update(self):
-        send_new_studygroup_emails()
-        self.assertEqual(len(mail.outbox), 0)
-
-        studygroup = StudyGroup.objects.get(pk=1)
-        studygroup.created_at = timezone.now() - datetime.timedelta(days=7)
-        studygroup.save()
-
-        send_new_studygroup_emails()
-        self.assertEqual(len(mail.outbox), 1)
 
 
     def test_send_weekly_report(self):
