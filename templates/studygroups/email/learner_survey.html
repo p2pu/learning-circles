@@ -49,14 +49,14 @@
       <td>
         <p>Hi {{learner_name}},</p>
 
-        <p>{% trans "Can you take a few minutes to let us know how your learning circle is going? Your feedback - the good and the bad - will improve the learning circle program for learners and facilitators around the world." %}</p>
+        <p>{% trans "Your learning circle is about to meet for the last time! Please take a few minutes to let us know how it went? Your feedback - the good and the bad - will improve the learning circle program for learners and facilitators around the world." %}</p>
 
         {% if learner_goal %}
         <p>{% blocktrans %}Let’s start with what brought you here. When you signed up for the learning circle, you said that your primary goal was: <strong>{{learner_goal}}</strong>.{% endblocktrans %}</p>
 
         <p>{% trans "To what extent did you achieve this goal during the learning circle?" %}</p>
         {% else %}
-        <p>{% blocktrans %}Share your feedback by clicking <a href="{{survey_url}}">this link</a>{% endblocktrans %}<p>
+        <p>{% blocktrans %}Please share your feedback by completing <a href="{{survey_url}}">this survey</a>.{% endblocktrans %}<p>
         {% endif %}
       </td>
     </tr>

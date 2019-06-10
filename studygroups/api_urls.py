@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^upload_image/$', views.ImageUploadView.as_view(), name='api_image_upload'),
     url(r'^learning-circles-map/$', views.LearningCirclesMapView.as_view(), name='api_learningcircles_map'),
     url(r'^instagram-feed/$', views.InstagramFeed.as_view(), name='api_instagram_feed'),
+    url(r'^teams/$', views.TeamListView.as_view(), name='api_teams'),
 ]

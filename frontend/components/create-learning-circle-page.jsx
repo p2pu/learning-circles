@@ -138,11 +138,7 @@ export default class CreateLearningCirclePage extends React.Component {
 
       const onSuccess = (data) => {
         this.setState({ learningCircle: {}, isSaving: false, isPublishing: false }, () => {
-          if (data.draft == false) {
-            window.location.href = `${LC_PUBLISHED_PAGE}?url=${data.study_group_url}`;
-          } else {
-            window.location.href = FACILITATOR_PAGE;
-          }
+          window.location.href = data.studygroup_url;
         })
       }
 

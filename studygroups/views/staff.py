@@ -50,7 +50,6 @@ class DigestGenerateView(FormView):
 
     def form_valid(self, form):
         # Find all signups with email and send opt out confirmation
-        print('boom')
         messages.info(self.request, _('You will shortly receive the community digest.'))
         start_date = datetime.combine(form.cleaned_data['start_date'], time(0,0,0))
         start_date = timezone.utc.localize(start_date)

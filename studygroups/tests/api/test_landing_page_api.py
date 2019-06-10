@@ -1,6 +1,7 @@
 # coding: utf-8
 from django.test import TestCase, override_settings
 from django.test import Client
+from django.conf import settings
 from django.core import mail
 from django.contrib.auth.models import User, Group
 from django.utils import timezone
@@ -97,9 +98,9 @@ class TestLandingPageApi(TestCase):
                 'longitude': '-87.650050',
                 'start_date': '2015-03-23',
                 'title': 'Public Speaking',
-                'url': 'https://localhost:8000/en/signup/harold-washington-1/'
+                'url': settings.PROTOCOL + '://' + settings.DOMAIN + '/en/signup/harold-washington-1/'
             })
-            
+
             finished_item = next(item for item in data["items"] if item["id"] == finished_studygroup.id)
             self.assertEqual(finished_item, {
                 'active': False,
@@ -107,7 +108,7 @@ class TestLandingPageApi(TestCase):
                 'id': 2,
                 "latitude" : "41.850030",
                 "longitude" : "-87.650050",
-                'report_url': 'https://localhost:8000/en/studygroup/2/report/',
+                'report_url': settings.PROTOCOL + '://' + settings.DOMAIN + '/en/studygroup/2/report/',
                 'start_date': '2015-03-23',
                 'title': 'Academic Writing',
             })

@@ -1,0 +1,35 @@
+[
+   {
+      "model":"studygroups.team",
+      "pk":1,
+      "fields":{
+         "name":"Richland County",
+         "page_slug":"richlandcounty",
+         "page_image":"test_image.jpg",
+         "latitude":34.126276,
+         "longitude":-80.882611,
+         "zoom":7
+      }
+   },
+   {
+      "model":"studygroups.team",
+      "pk":2,
+      "fields":{
+         "name":"Boston Public Library",
+         "page_slug":"boston",
+         "page_image":"",
+         "latitude":null,
+         "longitude":null,
+         "zoom":7
+      }
+   },
+   {
+      "model": "studygroups.teammembership",
+      "pk": 1,
+      "fields": {
+         "team": 1,
+         "user": 1,
+         "role": "ORGANIZER"
+      }
+   }
+]

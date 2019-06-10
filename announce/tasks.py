@@ -20,9 +20,9 @@ logger = logging.getLogger(__name__)
 @shared_task
 def send_announcement(sender, subject, body_text, body_html):
     """ Send message to all users that opted-in for the community email list """
-    
+
     # Check that account settings link is present in message
-    account_settings_url = 'https://' + settings.DOMAIN + reverse('account_settings')
+    account_settings_url = settings.PROTOCOL + '://' + settings.DOMAIN + reverse('account_settings')
 
     # check if account settings URL is in HTML body
     if not re.search(account_settings_url, body_html):
