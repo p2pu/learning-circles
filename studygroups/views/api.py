@@ -5,7 +5,7 @@ from django.contrib.postgres.search import SearchQuery
 from django.contrib.postgres.search import SearchVector
 from django.core.files.storage import get_storage_class
 from django.db import models
-from django.db.models import Q, F, Case, When, Value, Sum, Min, Max
+from django.db.models import Q, F, Case, When, Value, Sum, Min, Max, OuterRef, Subquery
 from django.views import View
 from django.views.generic.detail import SingleObjectMixin
 from django.urls import reverse
@@ -122,7 +122,7 @@ def _map_to_json(sg):
         "time_zone": sg.timezone_display(),
         "end_time": sg.end_time(),
         "weeks": sg.meeting_set.active().count(),
-        "url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
+        "url": f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
         "report_url": sg.report_url(),
         "studygroup_path": reverse('studygroups_view_study_group', args=(sg.id,)),
         "draft": sg.draft,
@@ -197,21 +197,20 @@ class LearningCircleListView(View):
         if 'scope' in request.GET:
             scope = request.GET.get('scope')
             today = datetime.date.today()
+            active_meetings = Meeting.objects.filter(study_group=OuterRef('pk'), deleted_at__isnull=True).order_by('meeting_date')
+            upcoming_meetings = Meeting.objects.filter(study_group=OuterRef('pk'), deleted_at__isnull=True, meeting_date__gte=today).order_by('meeting_date')
             if scope == "upcoming":
-                study_groups = study_groups.filter(Q(start_date__gt=today) | Q(draft=True))\
-                .annotate(
-                    next_meeting_date=Min('meeting__meeting_date')
-                )
+                study_groups = study_groups\
+                .annotate(first_meeting_date=Subquery(active_meetings.values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
+                .filter(Q(first_meeting_date__gt=today) | Q(draft=True))
             elif scope == "current":
-                study_groups = study_groups.filter(start_date__lte=today, end_date__gt=today)\
-                .annotate(
-                    next_meeting_date=Min('meeting__meeting_date')
-                )
+                study_groups = study_groups\
+                .annotate(first_meeting_date=Subquery(active_meetings.values('meeting_date')[:1]), last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
+                .filter(first_meeting_date__lte=today, last_meeting_date__gte=today)
             elif scope == "completed":
-                study_groups = study_groups.filter(end_date__lt=today)\
-                .annotate(
-                    last_meeting_date=Max('meeting__meeting_date')
-                )
+                study_groups = study_groups\
+                .annotate(last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]))\
+                .filter(last_meeting_date__lt=today)
 
         if 'q' in request.GET:
             q = request.GET.get('q')
@@ -624,8 +623,8 @@ class LearningCircleCreateView(View):
         if study_group.draft is False:
             generate_all_meetings(study_group)
 
-        study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name, allow_unicode=True), study_group.id,))
-        return json_response(request, { "status": "created", "url": study_group_url })
+        studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
+        return json_response(request, { "status": "created", "studygroup_url": studygroup_url })
 
 
 @method_decorator(user_is_group_facilitator, name='dispatch')
@@ -706,8 +705,8 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
             study_group.meeting_set.delete()
             generate_all_meetings(study_group)
 
-        study_group_url = settings.DOMAIN + reverse('studygroups_signup', args=(slugify(study_group.venue_name, allow_unicode=True), study_group.id,))
-        return json_response(request, { "status": "updated", "url": study_group_url })
+        studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
+        return json_response(request, { "status": "updated", "studygroup_url": studygroup_url })
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -899,3 +898,45 @@ class InstagramFeed(View):
             return json_response(request, { "status": "error", "errors": response["meta"]["error_message"] })
 
         return json_response(request, { "items": response["data"] })
+
+
+class TeamListView(View):
+    def get(self, request):
+        data = {}
+
+        def _serialize_team_data(team):
+            serialized_team = {
+                "id": team.pk,
+                "name": team.name,
+                "page_slug": team.page_slug,
+                "member_count": team.teammembership_set.count(),
+                "zoom": team.zoom,
+            }
+
+            members = team.teammembership_set.values('user')
+            studygroup_count = StudyGroup.objects.filter(facilitator__in=members).count()
+
+            serialized_team["studygroup_count"] = studygroup_count
+
+            organizer = team.teammembership_set.filter(role=TeamMembership.ORGANIZER).first()
+            if organizer is not None:
+                serialized_team["organizer"] = {
+                    "first_name": organizer.user.first_name
+                }
+
+            if team.page_image:
+                serialized_team["image_url"] = f"{settings.PROTOCOL}://{settings.DOMAIN}" + team.page_image.url
+
+            if team.latitude and team.longitude:
+                serialized_team["coordinates"] = {
+                    "longitude": team.longitude,
+                    "latitude": team.latitude,
+                }
+
+            return serialized_team
+
+        teams = Team.objects.all()
+        data["count"] = teams.count()
+        data['items'] = [ _serialize_team_data(team) for team in teams ]
+        return json_response(request, data)
+

@@ -5,7 +5,8 @@ export const Step1 = () => (
   <div className='help-text'>
     <h4>Course selection tips</h4>
     <div className='content'>
-      <p>The courses here were added by past facilitators. By default, courses list alphabetically but you can also order by the number of times each course has been used. We try to keep this list limited to on-demand courses, but you should confirm that a course is available by clicking “see the course” before you select it.</p>
+      <p>The courses here were all added by members of the P2PU community. By default, courses list alphabetically but you can also sort them by popularity and community rating and filter them by language.</p>
+      <p>We try to keep this list limited to on-demand courses, but you should confirm that a course is available by clicking “more details” before you select it.</p>
       <p>For more information on how to select a good course, <a href="https://community.p2pu.org/t/what-to-look-for-in-a-course/2756" target="_blank" rel="noopener noreferrer">check out this discussion thread on the community.</a></p>
       <p>If you want to use a course that is not listed on the P2PU courses page, that is fine too! You can use any course from around the web so long as it is free for learners. <a href="https://community.p2pu.org/t/how-do-i-find-a-good-online-course/2757" target="_blank" rel="noopener noreferrer">You can learn more about searching for online courses on the community</a>, as well. Once you find a course you like, you can add that here.</p>
       <a href="/en/course/create/"><button className="p2pu-btn blue">add a course</button></a>
