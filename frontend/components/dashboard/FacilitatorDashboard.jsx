@@ -5,6 +5,7 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
 import Alert from '../learning_circle_form/Alert';
 import Card from './Card';
+import Notification from './Notification';
 import DiscourseTable from './DiscourseTable';
 import CoursesTable from './CoursesTable';
 import UpcomingLearningCirclesTable from './UpcomingLearningCirclesTable';
@@ -72,6 +73,23 @@ export default class FacilitatorDashboard extends React.Component {
 
         <div className="row">
           <div className="col-12 col-lg-8">
+            <div data-aos='fade'>
+            {
+              this.props.emailConfirmationUrl &&
+              <Notification level="warning">
+                <p className="mb-0">Your email address has not yet been validated. Check your inbox for an email from us.</p>
+                <a href={this.props.emailConfirmationUrl}>Re-send the validation email</a>
+              </Notification>
+            }
+
+            {
+              this.props.teamInvitationUrl &&
+              <Notification level="success">
+                <p className="mb-0">{`You've been invited to join ${this.props.teamName}. Do you want to join?`}</p>
+                <a href={this.props.teamInvitationUrl}>Respond to this invitation</a>
+              </Notification>
+            }
+            </div>
 
             <div data-aos='fade'>
               <Card>

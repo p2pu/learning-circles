@@ -4,7 +4,13 @@
 {% load i18n %}
 
 {% block content %}
-<div id='facilitator-dashboard' data-user="{{ request.user }}">
+<div
+  id='facilitator-dashboard'
+  data-user="{{ request.user }}"
+  data-team-name="{{ team_name }}"
+  data-team-invitation-url="{{ team_invitation_url }}"
+  data-email-confirmation-url="{{ email_confirmation_url }}"
+>
   <div class="loader"></div>
 </div>
 

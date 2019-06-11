@@ -618,5 +618,14 @@ class FacilitatorDashboard(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(FacilitatorDashboard, self).get_context_data(**kwargs)
 
+        if self.request.user.is_authenticated():
+            invitation = TeamInvitation.objects.filter(email__iexact=self.request.user.email, responded_at__isnull=True).first()
+            if invitation:
+                context['team_name'] = invitation.team.name
+                context['team_invitation_url'] = reverse("studygroups_facilitator_invitation_confirm")
+
+            if self.request.user.profile.email_confirmed_at is None:
+                context["email_confirmation_url"] = reverse("email_confirm_request")
+
         return context
 
