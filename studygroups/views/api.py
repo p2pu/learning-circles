@@ -78,7 +78,7 @@ class CustomSearchQuery(SearchQuery):
     """ use to_tsquery to support partial matches """
     """ NOTE: This is potentially unsafe!!"""
     def as_sql(self, compiler, connection):
-        query = re.sub(r'[!\'()|&\:=,\.\ \-\<\>@]+', ' ', self.value).strip()
+        query = re.sub(r'[!\'()|&\:=,\.\ \-\<\>@]+', ' ', self.value).strip().lower()
         tsquery = ":* & ".join(query.split(' '))
         tsquery += ":*"
         params = [tsquery]
@@ -212,20 +212,22 @@ class LearningCircleListView(View):
                 .annotate(last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]))\
                 .filter(last_meeting_date__lt=today)
 
-        if 'q' in request.GET:
-            q = request.GET.get('q')
+        q = request.GET.get('q', None)
+        if q:
             tsquery = CustomSearchQuery(q, config='simple')
             study_groups = study_groups.annotate(
-                search =
-                    SearchVector('city')
-                    + SearchVector('course__title')
-                    + SearchVector('course__provider')
-                    + SearchVector('course__topics')
-                    + SearchVector('venue_name')
-                    + SearchVector('venue_address')
-                    + SearchVector('venue_details')
-                    + SearchVector('facilitator__first_name')
-                    + SearchVector('facilitator__last_name')
+                search = SearchVector(
+                    'city',
+                    'course__title',
+                    'course__provider',
+                    'course__topics',
+                    'venue_name',
+                    'venue_address',
+                    'venue_details',
+                    'facilitator__first_name',
+                    'facilitator__last_name',
+                    config='simple'
+                )
             ).filter(search=tsquery)
 
         if 'course_id' in request.GET:
