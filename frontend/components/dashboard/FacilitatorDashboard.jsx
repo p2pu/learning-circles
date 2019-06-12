@@ -16,6 +16,7 @@ import RecommendedResources from "./RecommendedResources";
 import GlobalSuccesses from "./GlobalSuccesses";
 import InstagramFeed from "./InstagramFeed";
 import Title from './Title';
+import EmailValidationNotification from './EmailValidationNotification'
 
 import 'react-tabs/style/react-tabs.css';
 import 'aos/dist/aos.css';
@@ -31,8 +32,6 @@ export default class FacilitatorDashboard extends React.Component {
       errors: {},
       alert: { show: false }
     };
-    this.showAlert = (msg, type) => this._showAlert(msg, type);
-    this.closeAlert = () => this._closeAlert();
   }
 
   componentDidMount(){
@@ -42,7 +41,7 @@ export default class FacilitatorDashboard extends React.Component {
     })
   }
 
-  _showAlert(message, type) {
+  showAlert = (message, type) => {
     this.setState({
       alert: {
         message,
@@ -52,7 +51,7 @@ export default class FacilitatorDashboard extends React.Component {
     })
   }
 
-  _closeAlert() {
+  closeAlert = () => {
     this.setState({ alert: { show: false }})
   }
 
@@ -76,10 +75,7 @@ export default class FacilitatorDashboard extends React.Component {
             <div data-aos='fade'>
             {
               this.props.emailConfirmationUrl &&
-              <Notification level="warning">
-                <p className="mb-0">Your email address has not yet been validated. Check your inbox for an email from us.</p>
-                <a href={this.props.emailConfirmationUrl}>Re-send the validation email</a>
-              </Notification>
+              <EmailValidationNotification emailConfirmationUrl={this.props.emailConfirmationUrl} showAlert={this.showAlert} />
             }
 
             {
