@@ -19,26 +19,30 @@
 		<div class="collapse navbar-collapse" id="nav-links-collapse">
 			<ul class="nav navbar-nav">
 				<li class="">
-                <a href="{% url 'studygroups_courses' %}">{% trans "Courses" %}</a>
+          <a href="{% url 'studygroups_courses' %}">{% trans "Courses" %}</a>
         </li>
 			  <li class="">
-              <a href="{% url 'about' %}">{% trans "About" %}</a>
+          <a href="{% url 'about' %}">{% trans "About" %}</a>
         </li>
 			  <li class="">
-              <a href="https://www.p2pu.org/en/facilitate/" target="_blank">{% trans "Facilitator Guide" %}</a>
+          <a href="https://www.p2pu.org/en/facilitate/" target="_blank">{% trans "Facilitator Guide" %}</a>
         </li>
         {% if user.is_authenticated %}
-        {% if user|is_organizer %}
-        <li>
+          {% if user|is_organizer %}
+          <li>
             <a href="{% url 'studygroups_organize' %}">{% trans "Organize" %}</a>
-        </li>
-        {% endif %}
+          </li>
+          {% endif %}
         <li>
-            <a href="{% url 'studygroups_facilitator' %}">{% trans "Dashboard" %}</a>
+          <a href="{% url 'studygroups_facilitator' %}">{% trans "Dashboard" %}</a>
         </li>
-        <li><a href="{% url 'logout' %}">{% trans "Log out" %}</a></li>
+        <li>
+          <a href="{% url 'logout' %}">{% trans "Log out" %}</a>
+        </li>
         {% else %}
-        <li><a href="{% url 'studygroups_login_redirect' %}">{% trans "Log in" %}</a></li>
+        <li>
+          <a href="{% url 'studygroups_login_redirect' %}">{% trans "Log in" %}</a>
+        </li>
         {% endif %}
       </ul>
 			<ul class="navbar-nav logos hidden-xs hidden-sm">

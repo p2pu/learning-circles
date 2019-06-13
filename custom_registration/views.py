@@ -125,6 +125,7 @@ class WhoAmIView(View):
             user_data["user"] = request.user.first_name
             user_data["links"] = [
                 {"text": "My learning circles", "url": reverse('studygroups_facilitator')},
+                {"text": "Account settings", "url": reverse('account_settings')},
                 {"text": "Log out", "url": reverse('logout')},
             ]
             if request.user.is_staff or TeamMembership.objects.filter(user=request.user, role=TeamMembership.ORGANIZER):
@@ -229,7 +230,7 @@ class AccountDeleteView(DeleteView):
 
         # anonymize user details - email, username, first name, last name and password
         user.first_name = 'Anonymous'
-        user.last_name = random.choice(['Penguin', 'Albatross', 'Elephant', 'Dassie', 'Lion', 'Sponge', 'Giraffe', 'Hippo', 'Leopard', 'Buffalo']) 
+        user.last_name = random.choice(['Penguin', 'Albatross', 'Elephant', 'Dassie', 'Lion', 'Sponge', 'Giraffe', 'Hippo', 'Leopard', 'Buffalo'])
         user.password = '-'
         random_username = "".join([random.choice(string.digits+string.ascii_letters) for i in range(12)])
         while User.objects.filter(username=random_username).exists():

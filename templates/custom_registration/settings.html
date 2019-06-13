@@ -17,12 +17,15 @@
         </div>
         <div class="col-12 col-md-5" data-aos="fade-left">
           <div class="form">
-            <h4>Communication preferences</h4>
+            <h4>Facilitator Profile</h4>
             <form action="" method="POST" enctype="multipart/form-data">
               {% csrf_token %}
               {{ form|crispy }}
               <button type="submit" class="btn p2pu-btn light">{% trans "Save" %}</button>
             </form>
+          </div>
+
+          <div class="form">
             <h4>Delete account</h4>
             <p>{% trans "This will permanently delete your P2PU account and also delete any future or active learning circles." %}</p>
             <p><a href="{% url "account_delete" %}" class="btn p2pu-btn light">{% trans "Delete account" %}</a></p>

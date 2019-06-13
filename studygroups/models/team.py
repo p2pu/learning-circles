@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 class Team(models.Model):
     name = models.CharField(max_length=128)
@@ -9,6 +10,8 @@ class Team(models.Model):
     latitude = models.DecimalField(max_digits=8, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     zoom = models.IntegerField(default=7)
+    created_at = models.DateTimeField(auto_now_add=True)
+    email_domain = models.CharField(max_length=128, blank=True)
 
     def __str__(self):
         return self.name
@@ -24,6 +27,7 @@ class TeamMembership(models.Model):
     team = models.ForeignKey('studygroups.Team', on_delete=models.CASCADE)
     user = models.OneToOneField(User, on_delete=models.CASCADE) # TODO should this be a OneToOneField?
     role = models.CharField(max_length=256, choices=ROLES)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return 'Team membership: {}'.format(self.user.__str__())
@@ -67,3 +71,4 @@ def get_team_users(user):
 def get_user_team(user):
     team_membership = TeamMembership.objects.filter(user=user).get()
     return team_membership.team
+

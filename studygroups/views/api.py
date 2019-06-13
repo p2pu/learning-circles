@@ -912,18 +912,26 @@ class TeamListView(View):
                 "page_slug": team.page_slug,
                 "member_count": team.teammembership_set.count(),
                 "zoom": team.zoom,
+                "date_established": team.created_at.strftime("%B %Y")
             }
 
             members = team.teammembership_set.values('user')
-            studygroup_count = StudyGroup.objects.filter(facilitator__in=members).count()
+            studygroup_count = StudyGroup.objects.published().filter(facilitator__in=members).count()
 
             serialized_team["studygroup_count"] = studygroup_count
 
             organizer = team.teammembership_set.filter(role=TeamMembership.ORGANIZER).first()
             if organizer is not None:
                 serialized_team["organizer"] = {
-                    "first_name": organizer.user.first_name
+                    "first_name": organizer.user.first_name,
+                    "location": organizer.user.profile.location,
+                    "bio": organizer.user.profile.bio,
+                    "contact_url": organizer.user.profile.contact_url,
+                    "organizer_since": organizer.created_at.strftime("%b %Y"),
                 }
+
+                if organizer.user.profile.avatar:
+                    serialized_team["organizer"]["avatar_url"] = f"{settings.PROTOCOL}://{settings.DOMAIN}" + organizer.user.profile.avatar.url
 
             if team.page_image:
                 serialized_team["image_url"] = f"{settings.PROTOCOL}://{settings.DOMAIN}" + team.page_image.url
