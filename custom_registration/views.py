@@ -124,7 +124,7 @@ class WhoAmIView(View):
         if request.user.is_authenticated():
             user_data["user"] = request.user.first_name
             user_data["links"] = [
-                {"text": "My learning circles", "url": reverse('studygroups_facilitator')},
+                {"text": "Dashboard", "url": reverse('studygroups_facilitator')},
                 {"text": "Account settings", "url": reverse('account_settings')},
                 {"text": "Log out", "url": reverse('logout')},
             ]
