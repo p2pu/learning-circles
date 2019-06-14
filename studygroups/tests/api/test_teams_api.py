@@ -33,6 +33,7 @@ class TestTeamsApi(TestCase):
             'coordinates',
             'organizer',
             'image_url',
+            'date_established'
         ]
 
         resp_keys = list(res_data["items"][0].keys())
@@ -50,6 +51,7 @@ class TestTeamsApi(TestCase):
             'member_count',
             'studygroup_count',
             'zoom',
+            'date_established'
         ]
 
         resp_keys = list(res_data["items"][1].keys())
