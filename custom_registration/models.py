@@ -12,8 +12,11 @@ from django.core.mail import EmailMultiAlternatives, send_mail
 
 import random
 import string
+import re
 
 from studygroups.models import Profile
+from studygroups.models import Team
+from studygroups.models import TeamInvitation
 from studygroups.utils import html_body_to_text
 
 def create_user(email, first_name, last_name, password, communication_opt_in=False, interested_in_learning=''):
@@ -61,6 +64,24 @@ def check_user_token(user, token):
 def confirm_user_email(user):
     user.profile.email_confirmed_at = timezone.now()
     user.profile.save()
+    generate_team_invitation_by_email_domain(user)
+
+
+def generate_team_invitation_by_email_domain(user):
+    domain = re.search("@([\w.]+)$", user.email)
+    team = Team.objects.filter(email_domain=domain.group()[0]).first()
+    organizer = team.teammembership_set.filter(role=TeamMembership.ORGANIZER).first()
+    if organizer is None:
+        logger.error('Team must have an organizer to add other members.')
+        return
+
+    if team:
+        invitation = TeamInvitation.objects.create(
+            team=team,
+            organizer=organizer.user,
+            email=user.email,
+            role=TeamMembership.MEMBER
+        )
 
 
 def send_email_confirm_email(user):
