@@ -70,9 +70,9 @@ def confirm_user_email(user):
 
 def generate_team_invitation_by_email_domain(user):
     domain = re.search("@([\w.]+)$", user.email)
-    team = Team.objects.filter(email_domain=domain.groups()[0]).first()
+    matching_teams = Team.objects.filter(email_domain=domain.groups()[0])
 
-    if team:
+    for team in matching_teams:
         organizer = team.teammembership_set.filter(role=TeamMembership.ORGANIZER).first()
         if organizer is None:
             logger.error('Team must have an organizer to add other members.')
