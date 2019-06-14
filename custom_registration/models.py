@@ -17,6 +17,7 @@ import re
 from studygroups.models import Profile
 from studygroups.models import Team
 from studygroups.models import TeamInvitation
+from studygroups.models import TeamMembership
 from studygroups.utils import html_body_to_text
 
 def create_user(email, first_name, last_name, password, communication_opt_in=False, interested_in_learning=''):
@@ -69,13 +70,13 @@ def confirm_user_email(user):
 
 def generate_team_invitation_by_email_domain(user):
     domain = re.search("@([\w.]+)$", user.email)
-    team = Team.objects.filter(email_domain=domain.group()[0]).first()
-    organizer = team.teammembership_set.filter(role=TeamMembership.ORGANIZER).first()
-    if organizer is None:
-        logger.error('Team must have an organizer to add other members.')
-        return
+    team = Team.objects.filter(email_domain=domain.groups()[0]).first()
 
     if team:
+        organizer = team.teammembership_set.filter(role=TeamMembership.ORGANIZER).first()
+        if organizer is None:
+            logger.error('Team must have an organizer to add other members.')
+            return
         invitation = TeamInvitation.objects.create(
             team=team,
             organizer=organizer.user,

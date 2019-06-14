@@ -9,7 +9,7 @@ const user = element.dataset.user === "AnonymousUser" ? null : element.dataset.u
 const teamName = element.dataset.teamName === "None" ? null : element.dataset.teamName;
 const teamInvitationUrl = element.dataset.teamInvitationUrl === "None" ? null : element.dataset.teamInvitationUrl;
 const emailConfirmationUrl = element.dataset.emailConfirmationUrl === "None" ? null : element.dataset.emailConfirmationUrl;
-
+console.log('emailConfirmationUrl', emailConfirmationUrl)
 
 ReactDOM.render(
   <FacilitatorDashboard

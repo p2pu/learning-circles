@@ -624,7 +624,9 @@ class FacilitatorDashboard(TemplateView):
                 context['team_name'] = invitation.team.name
                 context['team_invitation_url'] = reverse("studygroups_facilitator_invitation_confirm")
 
+            print(invitation)
             if self.request.user.profile.email_confirmed_at is None:
+                print(reverse("email_confirm_request"))
                 context["email_confirmation_url"] = reverse("email_confirm_request")
 
         return context

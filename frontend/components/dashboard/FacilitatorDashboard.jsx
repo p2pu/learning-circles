@@ -80,9 +80,9 @@ export default class FacilitatorDashboard extends React.Component {
 
             {
               this.props.teamInvitationUrl &&
-              <Notification level="success">
-                <p className="mb-0">{`You've been invited to join ${this.props.teamName}. Do you want to join?`}</p>
-                <a href={this.props.teamInvitationUrl}>Respond to this invitation</a>
+              <Notification level="success" dismissable={true}>
+                <p className="mb-0">Based on your email address, you've been invited to join <span className="bold">{this.props.teamName}</span>. Do you want to join this team?</p>
+                <a href={this.props.teamInvitationUrl}>Respond to the invitation</a>
               </Notification>
             }
             </div>
