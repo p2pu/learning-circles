@@ -281,7 +281,7 @@ img.lc-about-image{
       padding: 2em;
       color: $white;
 
-      #div_id_communication_opt_in {
+      #div_id_communication_opt_in,  {
         label {
           display: flex;
           align-items: center;
@@ -295,6 +295,24 @@ img.lc-about-image{
       .help-block {
         color: $gray-lighter;
         font-size: 0.8em;
+      }
+
+      .form-check-input {
+        margin-top: initial;
+      }
+
+      .form-group label {
+        font-weight: bold;
+      }
+
+      #div_id_avatar {
+        label[for='avatar-clear_id'] {
+          font-weight: normal;
+        }
+
+        input[type='checkbox'] {
+          margin-left: 10px;
+        }
       }
     }
   }

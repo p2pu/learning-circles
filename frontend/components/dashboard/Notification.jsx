@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import Card from './Card'
 
 class Notification extends React.Component {
@@ -21,6 +22,16 @@ class Notification extends React.Component {
       </Card>
     );
   }
+}
+
+Notification.propTypes = {
+  dismissable: PropTypes.bool,
+  level: PropTypes.oneOf(['success', 'warning', 'error'])
+}
+
+Notification.defaultProps = {
+  dismissable: true,
+  level: 'success'
 }
 
 export default Notification

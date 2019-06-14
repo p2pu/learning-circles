@@ -16,8 +16,8 @@
           <p>{% trans "Additionally you can choose to receive announcements like community digests and newsletters. Update your preferences on this page." %}</p>
         </div>
         <div class="col-12 col-md-5" data-aos="fade-left">
-          <div class="form">
-            <h4>Facilitator Profile</h4>
+          <div class="form profile-form">
+            <h4>Profile</h4>
             <form action="" method="POST" enctype="multipart/form-data">
               {% csrf_token %}
               {{ form|crispy }}
