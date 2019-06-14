@@ -18,7 +18,7 @@ from .profile import Profile
 from .learningcircle import StudyGroup
 from .learningcircle import Meeting
 from .learningcircle import Application
-from .learningcircle import Reminder 
+from .learningcircle import Reminder
 from .learningcircle import Rsvp
 from .learningcircle import Feedback
 
@@ -213,10 +213,10 @@ def get_new_user_intros(new_users, limit=5):
 
     intros_from_new_users = []
     for post in latest_introduction_posts['post_stream']['posts']:
-        discourse_user = post["name"]
 
+        discourse_user = post.get("name", None)
 
-        if settings.DEBUG:
+        if settings.DEBUG and discourse_user is not None:
             discourse_user = discourse_user.split(" ")[0] + " Lastname" # TODO remove this on production!!
 
         if discourse_user in new_discourse_users and post["reply_to_post_number"] is None:
@@ -287,6 +287,8 @@ def get_unrated_studygroups():
 def get_unpublished_studygroups(start_time, end_time):
     return StudyGroup.objects.filter(draft=True, created_at__lt=end_time, created_at__gte=start_time).order_by('created_at')
 
+def get_studygroups_meetings(start_time, end_time):
+    return Meeting.objects.active().filter(meeting_date__gte=start_time, meeting_date__lt=end_time, study_group__deleted_at__isnull=True, study_group__draft=False)
 
 def community_digest_data(start_time, end_time):
     origin_date = datetime.date(2016, 1, 1)
@@ -294,7 +296,8 @@ def community_digest_data(start_time, end_time):
     studygroups_that_met = get_studygroups_with_meetings(start_time, end_time)
     learners_reached = Application.objects.active().filter(study_group__in=studygroups_that_met)
     total_learners_reached_count = Application.objects.active().filter(accepted_at__gte=origin_date, accepted_at__lt=end_time).count()
-    total_studygroups_met_count = get_studygroups_with_meetings(origin_date, end_time).count()
+    total_meetings_count = get_studygroups_meetings(origin_date, end_time).count()
+    studygroups_meetings_count = get_studygroups_meetings(start_time, end_time).count()
     new_users = get_new_users(start_time, end_time)
     new_applications = get_new_applications(start_time, end_time)
     new_courses = get_new_courses(start_time, end_time)
@@ -311,7 +314,7 @@ def community_digest_data(start_time, end_time):
         "start_date": start_time.date(),
         "end_date": end_time.date(),
         "studygroups_that_met": studygroups_that_met,
-        "studygroups_met_count": studygroups_that_met.count(),
+        "studygroups_meetings_count": studygroups_meetings_count,
         "learners_reached_count": learners_reached.count(),
         "new_users_count": new_users.count(),
         "upcoming_studygroups": upcoming_studygroups,
@@ -328,7 +331,7 @@ def community_digest_data(start_time, end_time):
         "intros_from_new_users": intros_from_new_users,
         "web_version_path": web_version_path,
         "total_learners_reached_count": total_learners_reached_count,
-        "total_studygroups_met_count": total_studygroups_met_count,
+        "total_meetings_count": total_meetings_count,
     }
 
 

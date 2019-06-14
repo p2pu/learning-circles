@@ -111,7 +111,8 @@ def send_facilitator_survey(study_group):
         survey_url = base_url + path
 
         context = {
-            "facilitator": study_group.facilitator,
+            'study_group': study_group,
+            'facilitator': study_group.facilitator,
             'facilitator_name': facilitator_name,
             'survey_url': survey_url,
             'course_title': study_group.course.title,
@@ -442,25 +443,6 @@ def send_meeting_reminder(reminder):
         logger.exception('Could not send email to ', reminder.study_group.facilitator.email, exc_info=e)
 
 
-def send_new_studygroup_email(studygroup):
-    context = {
-        'studygroup': studygroup,
-        'facilitator': studygroup.facilitator
-    }
-
-    timezone.activate(pytz.timezone(settings.TIME_ZONE))
-    translation.activate(settings.LANGUAGE_CODE)
-    subject = render_to_string_ctx('studygroups/email/new_studygroup_update-subject.txt', context).strip('\n')
-    html_body = render_html_with_css('studygroups/email/new_studygroup_update.html', context)
-    text_body = html_body_to_text(html_body)
-    timezone.deactivate()
-    to = [studygroup.facilitator.email]
-
-    msg = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
-    msg.attach_alternative(html_body, 'text/html')
-    msg.send()
-
-
 # If called directly, be sure to activate language to use for constructing URLs
 # Failed text delivery won't case this function to fail, simply log an error
 def send_reminder(reminder):
@@ -689,15 +671,6 @@ def gen_reminders():
 def weekly_update():
     # Create a report for the previous week
     send_weekly_update()
-
-@shared_task
-def send_new_studygroup_emails():
-    # send email to organizers who created a learning circle a week ago
-    now = timezone.now()
-    seven_days_ago = now.date() - datetime.timedelta(days=7)
-    six_days_ago = now.date() - datetime.timedelta(days=6)
-    for studygroup in StudyGroup.objects.filter(created_at__gte=seven_days_ago, created_at__lt=six_days_ago):
-        send_new_studygroup_email(studygroup)
 
 
 @shared_task

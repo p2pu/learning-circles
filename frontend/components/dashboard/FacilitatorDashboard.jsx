@@ -5,6 +5,7 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
 import Alert from '../learning_circle_form/Alert';
 import Card from './Card';
+import Notification from './Notification';
 import DiscourseTable from './DiscourseTable';
 import CoursesTable from './CoursesTable';
 import UpcomingLearningCirclesTable from './UpcomingLearningCirclesTable';
@@ -15,6 +16,7 @@ import RecommendedResources from "./RecommendedResources";
 import GlobalSuccesses from "./GlobalSuccesses";
 import InstagramFeed from "./InstagramFeed";
 import Title from './Title';
+import EmailValidationNotification from './EmailValidationNotification'
 
 import 'react-tabs/style/react-tabs.css';
 import 'aos/dist/aos.css';
@@ -30,8 +32,6 @@ export default class FacilitatorDashboard extends React.Component {
       errors: {},
       alert: { show: false }
     };
-    this.showAlert = (msg, type) => this._showAlert(msg, type);
-    this.closeAlert = () => this._closeAlert();
   }
 
   componentDidMount(){
@@ -41,7 +41,7 @@ export default class FacilitatorDashboard extends React.Component {
     })
   }
 
-  _showAlert(message, type) {
+  showAlert = (message, type) => {
     this.setState({
       alert: {
         message,
@@ -51,7 +51,7 @@ export default class FacilitatorDashboard extends React.Component {
     })
   }
 
-  _closeAlert() {
+  closeAlert = () => {
     this.setState({ alert: { show: false }})
   }
 
@@ -72,6 +72,20 @@ export default class FacilitatorDashboard extends React.Component {
 
         <div className="row">
           <div className="col-12 col-lg-8">
+            <div data-aos='fade'>
+            {
+              this.props.emailConfirmationUrl &&
+              <EmailValidationNotification emailConfirmationUrl={this.props.emailConfirmationUrl} showAlert={this.showAlert} />
+            }
+
+            {
+              this.props.teamInvitationUrl &&
+              <Notification level="success">
+                <p className="mb-0">{`You've been invited to join ${this.props.teamName}. Do you want to join?`}</p>
+                <a href={this.props.teamInvitationUrl}>Respond to this invitation</a>
+              </Notification>
+            }
+            </div>
 
             <div data-aos='fade'>
               <Card>

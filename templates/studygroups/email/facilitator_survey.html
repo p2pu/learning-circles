@@ -49,9 +49,12 @@
         <p>
         {% blocktrans %}Hi {{facilitator_name}},{% endblocktrans %}</p>
 
-        <p>{% blocktrans %}Your learning circle is about to end. You probably have a few things to say (good and bad!) about <strong>{{course_title}}</strong>, activities you tried, and the learning circle process in general.{% endblocktrans %}</p>
+        <p>{% blocktrans %}You made it! Now that your learning circle is finished, could we have five more minutes of your time? Your reflections (both good and bad) are vital for the future of P2PU.{% endblocktrans %}</p>
 
-        <p>{% trans "Can you take a few minutes to share with us? Your feedback will be immediately put to use, helping our community identify high-quality online courses and deliver equitable learning experiences around the world." %}</p>
+        {% url 'studygroups_generate_course_discourse_topic' study_group.course.pk as course_discourse_url %}
+        <p>{% blocktrans %}<strong>First:</strong> Please leave <a href="{{ course_discourse_url }}">feedback about the online course on our community forum</a>. This will help future facilitators who want to run a learning circle on the same topic.{% endblocktrans %}</p>
+
+        <p>{% blocktrans %}<strong>Second:</strong> Please take this five minute survey about the learning circle experience. This will help us at P2PU better support facilitators in the future.{% endblocktrans %}</p>
 
         <p>{% trans "How did the learning circle go?" %}</p>
       </td>

@@ -25,7 +25,7 @@ class TestAnnounceViews(TestCase):
 
     fixtures = ['test_courses.json', 'test_studygroups.json']
     MESSAGE_DATA = {
-        'recipient': 'announce@localhost', 
+        'recipient': 'announce@localhost',
         'sender': 'Staff member <admin@example.net>',
         'from': 'Staff member <admin@example.net>',
         'subject': 'Monthly community update',
@@ -48,7 +48,7 @@ class TestAnnounceViews(TestCase):
         create_user('user2@example.net', 'user', 'Two', '123', False)
         create_user('user3@example.net', 'user', 'Three', '123', True)
 
-    
+
     @patch('announce.views.send_announcement')
     def test_webhook_signature_check(self, send_announcement):
         c = Client()
@@ -114,7 +114,7 @@ class TestAnnounceViews(TestCase):
         send_announcement('Tester <test@example.net>', 'Subject', 'This is a message', '<html><body><h1>HTML message</h1></body></html>')
         self.assertTrue(requests.post.called)
 
-        account_settings_url = 'https://' + settings.DOMAIN + reverse('account_settings')
+        account_settings_url = settings.PROTOCOL + '://' + settings.DOMAIN + reverse('account_settings')
         post_data = requests.post.call_args[1].get('data')
         self.assertEquals('text', post_data[2][0])
         self.assertIn(account_settings_url, post_data[2][1])

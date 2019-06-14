@@ -159,15 +159,15 @@
 <div class="report-section">
   <h2>
     <span class="section-header">
-      {% blocktrans count studygroups_met_count=studygroups_met_count %}
-        {{ studygroups_met_count }} learning circle met,
-      {% plural %}
-        {{ studygroups_met_count }} learning circles met,
-      {% endblocktrans %}
       {% blocktrans count learners_reached_count=learners_reached_count %}
-        reaching {{ learners_reached_count }} learner
+        {{ learners_reached_count }} person participated in
       {% plural %}
-        reaching {{ learners_reached_count }} learners
+        {{ learners_reached_count }} people participated in
+      {% endblocktrans %}
+      {% blocktrans count studygroups_meetings_count=studygroups_meetings_count %}
+        {{ studygroups_meetings_count }} learning circle meeting
+      {% plural %}
+        {{ studygroups_meetings_count }} learning circle meetings
       {% endblocktrans %}
     </span>
   </h2>
@@ -176,8 +176,8 @@
       <tr>
         <td>
           {% trans 'Total number of learning circle meetings' as chart_title %}
-          {% with total_studygroups_met=total_studygroups_met_count|stringformat:'i' total_learners_reached=total_learners_reached_count|stringformat:'i' %}
-          {% include "studygroups/measurement_card.html" with title=chart_title chart=meetings_chart description="Since January 2016, "|add:total_studygroups_met|add:" learning circles met, reaching "|add:total_learners_reached|add:" learners" fullwidth=web %}
+          {% with total_meetings=total_meetings_count|stringformat:'i' total_learners_reached=total_learners_reached_count|stringformat:'i' %}
+          {% include "studygroups/measurement_card.html" with title=chart_title chart=meetings_chart description="Since January 2016, "|add:total_learners_reached|add:" people participated in "|add:total_meetings|add:" learning circle meetings." fullwidth=web %}
           {% endwith %}
         </td>
       </tr>

@@ -108,12 +108,9 @@ def view_study_group(request, study_group_id):
 
 
 class FacilitatorRedirectMixin(object):
-    """ Redirect facilitators back to their dashboard & organizers to the study group page """
+    """ Redirect to the study group page """
 
     def get_success_url(self, *args, **kwargs):
-        study_group = get_object_or_404(StudyGroup, pk=self.kwargs.get('study_group_id'))
-        if study_group.facilitator == self.request.user:
-            return reverse_lazy('studygroups_facilitator')
         return reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
 
 
@@ -360,7 +357,6 @@ class StudyGroupCreate(TemplateView):
 
 
 class StudyGroupCreateLegacy(CreateView):
-    success_url = reverse_lazy('studygroups_facilitator')
     template_name = 'studygroups/studygroup_form_legacy.html'
     form_class = StudyGroupForm
 
@@ -377,7 +373,8 @@ class StudyGroupCreateLegacy(CreateView):
         study_group.save()
         #generate_all_meetings(study_group)
         messages.success(self.request, _('You created a new learning circle! Check your email for next steps.'))
-        return http.HttpResponseRedirect(self.success_url)
+        success_url = reverse_lazy('studygroups_view_study_group', args=(study_group.id,))
+        return http.HttpResponseRedirect(success_url)
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
@@ -432,8 +429,6 @@ class StudyGroupToggleSignup(RedirectView, SingleObjectMixin):
         return super(StudyGroupToggleSignup, self).get(request, *args, **kwargs)
 
     def get_redirect_url(self, *args, **kwargs):
-        if self.get_object().facilitator == self.request.user:
-            return reverse_lazy('studygroups_facilitator')
         return reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
 
 
@@ -454,8 +449,6 @@ class StudyGroupPublish(SingleObjectMixin, View):
             generate_all_meetings(study_group)
 
         url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
-        if self.get_object().facilitator == self.request.user:
-            url = reverse_lazy('studygroups_facilitator')
         return http.HttpResponseRedirect(url)
 
 
@@ -494,8 +487,8 @@ def message_send(request, study_group_id):
 def message_edit(request, study_group_id, message_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
     reminder = get_object_or_404(Reminder, pk=message_id)
+    url = reverse('studygroups_view_study_group', args=(study_group_id,))
     if not reminder.sent_at == None:
-        url = reverse('studygroups_facilitator')
         messages.info(request, 'Message has already been sent and cannot be edited.')
         return http.HttpResponseRedirect(url)
 
@@ -509,9 +502,6 @@ def message_edit(request, study_group_id, message_id):
         if form.is_valid():
             reminder = form.save()
             messages.success(request, 'Message successfully edited')
-            url = reverse('studygroups_view_study_group', args=(study_group_id,))
-            if study_group.facilitator == request.user:
-                url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
     else:
         form = form_class(instance=reminder)
@@ -545,8 +535,6 @@ def add_member(request, study_group_id):
                 # TODO - remove accepted_at or use accepting applications flow
                 application.accepted_at = timezone.now()
                 application.save()
-            if study_group.facilitator == request.user:
-                url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
     else:
         form = form_class(initial={'study_group': study_group})
@@ -629,6 +617,15 @@ class FacilitatorDashboard(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(FacilitatorDashboard, self).get_context_data(**kwargs)
+
+        if self.request.user.is_authenticated():
+            invitation = TeamInvitation.objects.filter(email__iexact=self.request.user.email, responded_at__isnull=True).first()
+            if invitation:
+                context['team_name'] = invitation.team.name
+                context['team_invitation_url'] = reverse("studygroups_facilitator_invitation_confirm")
+
+            if self.request.user.profile.email_confirmed_at is None:
+                context["email_confirmation_url"] = reverse("email_confirm_request")
 
         return context
 

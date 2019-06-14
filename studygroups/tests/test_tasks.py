@@ -29,7 +29,6 @@ from studygroups.utils import check_unsubscribe_signature
 from studygroups.tasks import generate_reminder
 from studygroups.tasks import send_reminders
 from studygroups.tasks import send_reminder
-from studygroups.tasks import send_new_studygroup_emails
 from studygroups.tasks import send_weekly_update
 from studygroups.tasks import send_learner_surveys
 from studygroups.tasks import send_facilitator_survey
@@ -377,18 +376,6 @@ class TestStudyGroupTasks(TestCase):
         self.assertFalse(send_message.called)
 
 
-    def test_send_new_studygroup_update(self):
-        send_new_studygroup_emails()
-        self.assertEqual(len(mail.outbox), 0)
-
-        studygroup = StudyGroup.objects.get(pk=1)
-        studygroup.created_at = timezone.now() - datetime.timedelta(days=7)
-        studygroup.save()
-
-        send_new_studygroup_emails()
-        self.assertEqual(len(mail.outbox), 1)
-
-
     def test_send_weekly_report(self):
         organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
         faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', 'password')
@@ -558,7 +545,7 @@ class TestStudyGroupTasks(TestCase):
         self.assertEqual(last_meeting.meeting_time, datetime.time(18,15))
         self.assertEqual(sg.meeting_set.active().count(), 6)
         self.assertEqual(Reminder.objects.all().count(), 0)
- 
+
         with freeze_time("2010-02-06 18:30:00"):
             send_facilitator_learner_survey_prompt(sg)
             self.assertEqual(len(mail.outbox), 0)
@@ -676,7 +663,7 @@ class TestStudyGroupTasks(TestCase):
             start_date = end_date - datetime.timedelta(days=21)
 
             web_version_path = reverse('studygroups_community_digest', kwargs={'start_date': start_date.strftime("%d-%m-%Y"), 'end_date': end_date.strftime("%d-%m-%Y")})
-            web_version_url = "https://{}".format(settings.DOMAIN) + web_version_path
+            web_version_url = "{}://{}".format(settings.PROTOCOL, settings.DOMAIN) + web_version_path
 
             self.assertEqual(len(mail.outbox), 1)
             self.assertEqual(mail.outbox[0].to[0], settings.COMMUNITY_DIGEST_EMAIL)
