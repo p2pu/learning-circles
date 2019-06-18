@@ -492,6 +492,67 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(resp.json()["count"], 2)
 
 
+    def test_get_learning_circles_full_text_search(self):
+        c = Client()
+
+        # partial word match
+
+        resp = c.get('/api/learningcircles/', {'q': 'aca'})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["count"], 2)
+        self.assertEqual(data["items"][0]["course"]["title"], "Academic Writing")
+        self.assertEqual(data["items"][1]["course"]["provider"], "Khan Academy")
+
+        resp = c.get('/api/learningcircles/', {'q': 'acad'})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["count"], 2)
+        self.assertEqual(data["items"][0]["course"]["title"], "Academic Writing")
+        self.assertEqual(data["items"][1]["course"]["provider"], "Khan Academy")
+
+        resp = c.get('/api/learningcircles/', {'q': 'acade'})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["count"], 2)
+        self.assertEqual(data["items"][0]["course"]["title"], "Academic Writing")
+        self.assertEqual(data["items"][1]["course"]["provider"], "Khan Academy")
+
+        resp = c.get('/api/learningcircles/', {'q': 'academ'})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["count"], 2)
+        self.assertEqual(data["items"][0]["course"]["title"], "Academic Writing")
+        self.assertEqual(data["items"][1]["course"]["provider"], "Khan Academy")
+
+        resp = c.get('/api/learningcircles/', {'q': 'writ'})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["count"], 1)
+        self.assertEqual(data["items"][0]["course"]["title"], "Academic Writing")
+
+        resp = c.get('/api/learningcircles/', {'q': 'writing'})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["count"], 1)
+        self.assertEqual(data["items"][0]["course"]["title"], "Academic Writing")
+
+
+        # full word match
+
+        resp = c.get('/api/learningcircles/', {'q': 'academy'})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["count"], 1)
+        self.assertEqual(data["items"][0]["course"]["provider"], "Khan Academy")
+
+        resp = c.get('/api/learningcircles/', {'q': 'academic'})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["count"], 1)
+        self.assertEqual(data["items"][0]["course"]["title"], "Academic Writing")
+
+
     @freeze_time("2019-05-31")
     def test_get_learning_circles_by_scope(self):
         sg = StudyGroup.objects.get(pk=1)
@@ -580,5 +641,3 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()["count"], 1)
         self.assertEqual(data["items"][0]["last_meeting_date"], "2019-05-15")
-
-
