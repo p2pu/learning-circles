@@ -923,10 +923,9 @@ class TeamListView(View):
             if organizer is not None:
                 serialized_team["organizer"] = {
                     "first_name": organizer.user.first_name,
-                    "location": organizer.user.profile.location,
+                    "city": organizer.user.profile.city,
                     "bio": organizer.user.profile.bio,
                     "contact_url": organizer.user.profile.contact_url,
-                    "organizer_since": organizer.created_at.strftime("%b %Y"),
                 }
 
                 if organizer.user.profile.avatar:
@@ -943,7 +942,7 @@ class TeamListView(View):
 
             return serialized_team
 
-        teams = Team.objects.all()
+        teams = Team.objects.all().order_by('name')
         data["count"] = teams.count()
         data['items'] = [ _serialize_team_data(team) for team in teams ]
         return json_response(request, data)

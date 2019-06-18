@@ -69,7 +69,7 @@ def confirm_user_email(user):
 
 
 def generate_team_invitation_by_email_domain(user):
-    domain = re.search("@([\w.]+)$", user.email).groups()[0]
+    domain = user.email.rsplit('@', 1)[1]
     matching_teams = Team.objects.filter(email_domain=domain)
 
     for team in matching_teams:

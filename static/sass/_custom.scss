@@ -281,6 +281,10 @@ img.lc-about-image{
       padding: 2em;
       color: $white;
 
+      .algolia-places {
+        color: $gray-darker;
+      }
+
       #div_id_communication_opt_in,  {
         label {
           display: flex;
