@@ -19,9 +19,10 @@ class TestTeamsApi(TestCase):
         self.assertEqual(response.status_code, 200)
 
         res_data = response.json()
+
         self.assertEqual(res_data["count"], 2)
 
-        # complete team
+        # complete team - pk 1
 
         item_fields = [
             'id',
@@ -36,13 +37,13 @@ class TestTeamsApi(TestCase):
             'date_established'
         ]
 
-        resp_keys = list(res_data["items"][0].keys())
+        resp_keys = list(res_data["items"][1].keys())
         for key in resp_keys:
             self.assertIn(key, item_fields)
         for key in item_fields:
             self.assertIn(key, resp_keys)
 
-        # incomplete_team
+        # incomplete_team - pk 2
 
         item_fields = [
             'id',
@@ -54,7 +55,7 @@ class TestTeamsApi(TestCase):
             'date_established'
         ]
 
-        resp_keys = list(res_data["items"][1].keys())
+        resp_keys = list(res_data["items"][0].keys())
         for key in resp_keys:
             self.assertIn(key, item_fields)
         for key in item_fields:
@@ -69,8 +70,7 @@ class TestTeamsApi(TestCase):
         res_data = response.json()
         self.assertEqual(res_data["count"], 2)
 
-        team_json = res_data["items"][0]
-        print(res_data["items"][1])
+        team_json = res_data["items"][1]
 
         team = Team.objects.get(pk=1)
         organizer = User.objects.get(pk=1)
