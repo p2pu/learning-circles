@@ -1,6 +1,7 @@
 {% extends 'email_base.html' %}
 {% block body %}
 {% load i18n %}
+{% load l10n %}
 
 {% with study_group=application.study_group course=application.study_group.course first_meeting=application.study_group.next_meeting %}
 <p>{% blocktrans with name=application.name %}Hi {{name}},{% endblocktrans%}</p>
@@ -8,8 +9,10 @@
 <h2>{% trans "Welcome to your learning circle!" %}</h2>
 
 <p>
-{% blocktrans with course_title=course.title meeting_date=first_meeting.meeting_date|date:"l, j N" meeting_time=first_meeting.meeting_time|date:"fA"%}You signed up for {{course_title}}! The first meeting will be on {{meeting_date}} at {{meeting_time}}.
+{% localize on %}
+{% blocktrans with course_title=course.title meeting_date=first_meeting.meeting_date|date:"l, j N" meeting_time=first_meeting.meeting_time|time %}You signed up for {{course_title}}! The first meeting will be on {{meeting_date}} at {{meeting_time}}.
 {% endblocktrans %}
+{% endlocalize %}
 </p>
 
 <p>
@@ -28,7 +31,8 @@ The address for the meeting is:<br/>
 <ul style="list-style: none; padding: 1em; background: rgba(5, 199, 180, 15%); border-left: 10px solid rgba(5, 199, 180, 100%);">
     {% with answers=application.get_signup_questions %}
     <li><strong>{% trans "Q: What is your goal for taking this learning circle?" %}</strong></li>
-    <li>{% blocktrans with answer=answers.goals %}A: {{answer}}{% endblocktrans %}</li>
+    {% trans answers.goals as goal_answer %}
+    <li>{% blocktrans %}A: {{goal_answer}}{% endblocktrans %}</li>
     <li>&nbsp;</li>
     <li><strong>{% trans "Q: How will you help your peers achieve their goals?" %}</strong></li>
     <li>{% blocktrans with answer=answers.support %}A: {{answer}}{% endblocktrans %}</li>

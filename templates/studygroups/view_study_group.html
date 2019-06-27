@@ -5,6 +5,11 @@
 <div class="container">
   <!-- Example row of columns -->
 
+  <div class="row my-3">
+    <a href="{{dashboard_url}}"><i class="fas fa-arrow-left mr-2"></i>Back to my dashboard</a>
+  </div>
+
+
   {% with lc=study_group %}
     {% include 'studygroups/study_group_facilitate.html' %}
   {% endwith %}

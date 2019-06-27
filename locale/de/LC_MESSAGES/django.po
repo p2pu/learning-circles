@@ -2,24 +2,23 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 # Translators:
-# Pranke <Juliana.Pranke@zlb.de>, 2019
 # Dirk Uys <dirkcuys@gmail.com>, 2019
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-05-24 08:02+0000\n"
-"PO-Revision-Date: 2019-04-25 15:08+0000\n"
+"POT-Creation-Date: 2019-06-27 11:22+0000\n"
+"PO-Revision-Date: 2019-06-27 10:42+0000\n"
 "Last-Translator: Dirk Uys <dirkcuys@gmail.com>, 2019\n"
 "Language-Team: German (https://www.transifex.com/p2pu/teams/98473/de/)\n"
-"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: announce/tasks.py:40
@@ -35,8 +34,8 @@ msgstr ""
 
 #: custom_registration/forms.py:13
 msgid ""
-"Joining the community comes with an expectation that you would like to learn "
-"about upcoming events, new features, and updates from around the world. If "
+"Joining the community comes with an expectation that you would like to learn"
+" about upcoming events, new features, and updates from around the world. If "
 "you do not want to receive any of these messages, uncheck this box."
 msgstr ""
 
@@ -109,40 +108,36 @@ msgid "Just headphones"
 msgstr ""
 
 #: studygroups/forms.py:41
-#, fuzzy
-#| msgid "Hi there"
 msgid "Neither"
-msgstr "Hallo"
+msgstr ""
 
 #: studygroups/forms.py:50
 msgid "To increase my employability"
-msgstr ""
+msgstr "Um meine Chancen auf dem Arbeitsmarkt zu erhöhen. "
 
 #: studygroups/forms.py:51
 msgid "Professional development for my current job"
-msgstr ""
+msgstr "Berufliche Weiterentwicklung in meinem aktuellen Job"
 
 #: studygroups/forms.py:52
 msgid "To accompany other educational programs"
-msgstr ""
+msgstr "Als Unterstützung/Begleitung für andere Fort- und Weiterbildungen"
 
 #: studygroups/forms.py:53
 msgid "Personal interest"
-msgstr ""
+msgstr "Persönliches Interesse"
 
 #: studygroups/forms.py:54
 msgid "Social reasons"
-msgstr ""
+msgstr "Ich möchte gern mit anderen Menschen zusammenkommen."
 
 #: studygroups/forms.py:55
 msgid "For fun / to try something new"
-msgstr ""
+msgstr "Aus Spaß / Um etwas Neues auszuprobieren"
 
 #: studygroups/forms.py:56 studygroups/forms.py:215
-#, fuzzy
-#| msgid "Hi there"
 msgid "Other"
-msgstr "Hallo"
+msgstr "Andere Ziele"
 
 #: studygroups/forms.py:60
 msgid ""
@@ -155,15 +150,13 @@ msgid "Your number won't be shared with other participants."
 msgstr ""
 
 #: studygroups/forms.py:65
-msgid "Can you bring a laptop and headphones to the learning circle each week?"
+msgid ""
+"Can you bring a laptop and headphones to the learning circle each week?"
 msgstr ""
 
 #: studygroups/forms.py:68
-#, fuzzy
-#| msgid "Q: What is your goal for taking this learning circle?"
 msgid "What is your goal for taking this learning circle?"
 msgstr ""
-"Frage: Welches Ziel verfolgst du mit deiner Teilnahme an diesem Lernteam?"
 
 #: studygroups/forms.py:72
 msgid "If you selected other, could you specify?"
@@ -321,10 +314,8 @@ msgid ""
 msgstr ""
 
 #: studygroups/forms.py:275
-#, fuzzy
-#| msgid "Welcome to your learning circle!"
 msgid "What time will your learning circle meet each week?"
-msgstr "Willkommen bei deinem Lernteam!"
+msgstr ""
 
 #: studygroups/forms.py:275
 msgid ""
@@ -333,27 +324,20 @@ msgid ""
 msgstr ""
 
 #: studygroups/forms.py:276
-#, fuzzy
-#| msgid "Welcome to your learning circle!"
 msgid "How many weeks will your learning circle run for?"
-msgstr "Willkommen bei deinem Lernteam!"
+msgstr ""
 
 #: studygroups/forms.py:276
 msgid "If you're not sure, six weeks is generally a good bet!"
 msgstr ""
 
 #: studygroups/forms.py:277
-#, fuzzy
-#| msgid "Welcome to your learning circle!"
 msgid "What timezone is your learning circle happening in?"
-msgstr "Willkommen bei deinem Lernteam!"
+msgstr ""
 
 #: studygroups/forms.py:281
-#, fuzzy
-#| msgid "Q: What is your goal for taking this learning circle?"
 msgid "What is the primary language for this learning circle?"
 msgstr ""
-"Frage: Welches Ziel verfolgst du mit deiner Teilnahme an diesem Lernteam?"
 
 #: studygroups/forms.py:281
 msgid "Participants will receive communications in this language."
@@ -369,10 +353,8 @@ msgid "The start date must be at least 48 hours from now."
 msgstr ""
 
 #: studygroups/forms.py:369
-#, fuzzy
-#| msgid "Welcome to your learning circle!"
 msgid "Choose the course that your learning circle will study."
-msgstr "Willkommen bei deinem Lernteam!"
+msgstr ""
 
 #: studygroups/forms.py:370
 msgid "Share a welcome message with potential learners."
@@ -399,17 +381,12 @@ msgid "Do you have a website you want to link to?"
 msgstr ""
 
 #: studygroups/forms.py:376
-#, fuzzy
-#| msgid "Q: What is your goal for taking this learning circle?"
 msgid "What is the date of the first learning circle?"
 msgstr ""
-"Frage: Welches Ziel verfolgst du mit deiner Teilnahme an diesem Lernteam?"
 
 #: studygroups/forms.py:377
-#, fuzzy
-#| msgid "Email to learning circle participants"
 msgid "How long will each learning circle last (in minutes)?"
-msgstr "E-Mail an die Lernteam-Teilnehmenden"
+msgstr ""
 
 #: studygroups/forms.py:378
 msgid "Care to add an image?"
@@ -422,11 +399,8 @@ msgid ""
 msgstr ""
 
 #: studygroups/forms.py:380
-#, fuzzy
-#| msgid "Q: What is your goal for taking this learning circle?"
 msgid "What are your personal goals as you facilitate this learning circle? "
 msgstr ""
-"Frage: Welches Ziel verfolgst du mit deiner Teilnahme an diesem Lernteam?"
 
 #: studygroups/forms.py:381
 msgid ""
@@ -518,8 +492,8 @@ msgid ""
 "<p>What recommendations do you have for other facilitators who are using "
 "\"{}\"? Consider sharing additional resources you found helpful, activities "
 "that worked particularly well, and some reflections on who this course is "
-"best suited for. For more information, see this course on <a href='https://"
-"learningcircles.p2pu.org{}'>P2PU’s course page</a>.</p>"
+"best suited for. For more information, see this course on <a "
+"href='https://learningcircles.p2pu.org{}'>P2PU’s course page</a>.</p>"
 msgstr ""
 
 #: studygroups/models/learningcircle.py:231
@@ -598,72 +572,61 @@ msgstr ""
 msgid "I need some help"
 msgstr ""
 
-#: studygroups/models/team.py:18
+#: studygroups/models/team.py:21
 msgid "Organizer"
 msgstr ""
 
-#: studygroups/models/team.py:19
+#: studygroups/models/team.py:22
 msgid "Member"
 msgstr ""
 
-#: studygroups/signals.py:47
-#: templates/custom_registration/new_user_confirmed-subject.txt:1
-#: templates/studygroups/email/learner_signup-subject.txt:1
-#: templates/studygroups/email/learner_signup.html:43
-msgid "Welcome to P2PU"
-msgstr "Willkommen bei P2PU"
-
-#: studygroups/tasks.py:603 studygroups/tasks.py:626
+#: studygroups/tasks.py:590 studygroups/tasks.py:613
 #: templates/studygroups/email/weekly-update.html:140
-#, fuzzy
-#| msgid "Welcome to your learning circle!"
 msgid "Weekly learning circles update"
-msgstr "Willkommen bei deinem Lernteam!"
+msgstr ""
 
-#: studygroups/views/facilitate.py:299 studygroups/views/facilitate.py:339
+#: studygroups/views/facilitate.py:296 studygroups/views/facilitate.py:336
 msgid ""
 "Your course has been created. You can now create a learning circle using it."
 msgstr ""
 
-#: studygroups/views/facilitate.py:320
+#: studygroups/views/facilitate.py:317
 msgid ""
 "This course is being used by other learning circles and cannot be edited, "
 "please create a new course to make changes"
 msgstr ""
 
-#: studygroups/views/facilitate.py:379
+#: studygroups/views/facilitate.py:375
 msgid "You created a new learning circle! Check your email for next steps."
 msgstr ""
 
-#: studygroups/views/facilitate.py:431
-#, fuzzy
-#| msgid "You successfully signed up!"
+#: studygroups/views/facilitate.py:428
 msgid "Signup successfully changed"
-msgstr "Du hast dich erfolgreich angemeldet!"
+msgstr ""
 
-#: studygroups/views/facilitate.py:449
+#: studygroups/views/facilitate.py:444
 msgid ""
 "You need to confirm your email address before you can publish a learning "
 "circle."
 msgstr ""
 
-#: studygroups/views/facilitate.py:451
+#: studygroups/views/facilitate.py:446
 msgid "Your learning circle has been published."
 msgstr ""
 
-#: studygroups/views/facilitate.py:541
+#: studygroups/views/facilitate.py:531
 msgid "User with the given email address already signed up."
 msgstr ""
 
-#: studygroups/views/facilitate.py:543
+#: studygroups/views/facilitate.py:533
 msgid "User with the given mobile number already signed up."
 msgstr ""
 
-#: studygroups/views/facilitate.py:571
+#: studygroups/views/facilitate.py:559
 msgid "No team invitations found"
 msgstr ""
 
-#: studygroups/views/facilitate.py:591
+#: studygroups/views/facilitate.py:579
 msgid ""
 "You are currently the organizer of another team and cannot join this team."
 msgstr ""
@@ -697,7 +660,7 @@ msgstr ""
 msgid "User with the given email address is already part of your team."
 msgstr ""
 
-#: studygroups/views/staff.py:54
+#: studygroups/views/staff.py:53
 msgid "You will shortly receive the community digest."
 msgstr ""
 
@@ -707,9 +670,9 @@ msgstr ""
 
 #: templates/403.html:6
 msgid ""
-"You don't have permission to access the requested page. If you think that is "
-"an error, please report it on the <a href=\"https://community.p2pu.org/"
-"\">forum</a>."
+"You don't have permission to access the requested page. If you think that is"
+" an error, please report it on the <a "
+"href=\"https://community.p2pu.org/\">forum</a>."
 msgstr ""
 
 #: templates/404.html:5
@@ -731,16 +694,11 @@ msgid ""
 msgstr ""
 
 #: templates/announce/account_settings_email_link.html:4
-#, fuzzy, python-format
-#| msgid ""
-#| "You can manage your message preferences from <a href=\"%(PROTOCOL)s://"
-#| "%(DOMAIN)s%(account_settings_url)s\">your dashboard</a>"
+#, python-format
 msgid ""
 "You can manage your message preferences from your dashboard or by following "
 "<a href=\"%(PROTOCOL)s://%(DOMAIN)s%(account_settings_url)s\">this link</a>"
 msgstr ""
-"Du kannst deine Mitteilungseinstellungen in <a href=\"%(PROTOCOL)s://"
-"%(DOMAIN)s%(account_settings_url)s\">deinem Dashboard</a> verändern. "
 
 #: templates/auth/user_confirm_delete.html:13
 msgid "Are you sure you want to delete your P2PU account?"
@@ -768,8 +726,8 @@ msgstr ""
 
 #: templates/custom_registration/email_confirm.html:19
 #: templates/custom_registration/email_confirm.txt:1
-#: templates/studygroups/email/facilitator-survey-reminder.html:24
-#: templates/studygroups/email/facilitator-survey-reminder.txt:15
+#: templates/studygroups/email/facilitator_learner_survey_prompt.html:30
+#: templates/studygroups/email/facilitator_learner_survey_prompt.txt:20
 #: templates/studygroups/email/feedback-submitted.html:4
 #: templates/studygroups/email/feedback-submitted.txt:2
 #: templates/studygroups/email/incoming_sms.html:4
@@ -799,26 +757,25 @@ msgstr ""
 #: templates/custom_registration/email_confirm.html:29
 #: templates/custom_registration/email_confirm.txt:9
 #: templates/custom_registration/new_user_confirmed.html:20
-#: templates/studygroups/email/facilitator-survey-reminder.html:43
-#: templates/studygroups/email/facilitator-survey-reminder.txt:35
-#: templates/studygroups/email/facilitator-survey.html:135
-#: templates/studygroups/email/facilitator-survey.txt:13
+#: templates/studygroups/email/facilitator_learner_survey_prompt.html:41
+#: templates/studygroups/email/facilitator_learner_survey_prompt.txt:33
 #: templates/studygroups/email/facilitator_meeting_reminder.html:16
 #: templates/studygroups/email/facilitator_meeting_reminder.txt:13
+#: templates/studygroups/email/facilitator_survey.html:129
+#: templates/studygroups/email/facilitator_survey.txt:14
 #: templates/studygroups/email/feedback-submitted.html:23
 #: templates/studygroups/email/feedback-submitted.txt:13
 #: templates/studygroups/email/incoming_sms.html:29
 #: templates/studygroups/email/incoming_sms.txt:13
 #: templates/studygroups/email/last_week_group_activity.html:29
-#: templates/studygroups/email/learner_signup.html:57
-#: templates/studygroups/email/learner_survey_reminder.html:127
-#: templates/studygroups/email/learner_survey_reminder.txt:10
-#: templates/studygroups/email/learning_circle_created.html:53
+#: templates/studygroups/email/learner_signup.html:61
+#: templates/studygroups/email/learner_survey.html:127
+#: templates/studygroups/email/learner_survey.txt:10
+#: templates/studygroups/email/learning_circle_created.html:55
 #: templates/studygroups/email/learning_circle_final_report.html:33
 #: templates/studygroups/email/learning_circle_final_report.txt:12
 #: templates/studygroups/email/new_facilitator_invite.html:10
 #: templates/studygroups/email/new_facilitator_invite.txt:5
-#: templates/studygroups/email/new_studygroup_update.html:10
 #: templates/studygroups/email/optout_confirm.html:12
 #: templates/studygroups/email/optout_confirm.txt:9
 #: templates/studygroups/email/team_invite.html:10
@@ -829,19 +786,23 @@ msgstr "Danke"
 #: templates/custom_registration/email_confirm.txt:3
 #, python-format
 msgid ""
-"Welcome to the P2PU learning circle community! To use your account, please "
-"confirm your email by following this link:\n"
+"Welcome to the P2PU learning circle community! To use your account, please confirm your email by following this link:\n"
 "\n"
 "%(PROTOCOL)s://%(DOMAIN)s%(email_confirm_url)s\n"
 "\n"
 "Your username is %(email)s."
 msgstr ""
 
+#: templates/custom_registration/new_user_confirmed-subject.txt:1
+#: templates/studygroups/email/learner_signup-subject.txt:1
+#: templates/studygroups/email/learner_signup.html:47
+msgid "Welcome to P2PU"
+msgstr "Willkommen bei P2PU"
+
 #: templates/custom_registration/new_user_confirmed.html:5
-#, fuzzy, python-format
-#| msgid "Hi there %(first_name)s"
+#, python-format
 msgid "Hi %(first_name)s"
-msgstr "Hallo %(first_name)s"
+msgstr ""
 
 #: templates/custom_registration/new_user_confirmed.html:7
 msgid ""
@@ -854,23 +815,24 @@ msgstr ""
 
 #: templates/custom_registration/new_user_confirmed.html:12
 msgid ""
-"<a href=\"https://community.p2pu.org/t/introduce-yourself/1571/last"
-"\">Introduce yourself</a> in our community space (log in using your P2PU "
-"account)."
+"<a href=\"https://community.p2pu.org/t/introduce-"
+"yourself/1571/last\">Introduce yourself</a> in our community space (log in "
+"using your P2PU account)."
 msgstr ""
 
 #: templates/custom_registration/new_user_confirmed.html:13
 msgid ""
-"<a href=\"https://www.p2pu.org/en/facilitate/\">Visit www.p2pu.org/"
-"facilitate</a> to get your first learning circle up and running."
+"<a href=\"https://www.p2pu.org/en/facilitate/\">Visit "
+"www.p2pu.org/facilitate</a> to get your first learning circle up and "
+"running."
 msgstr ""
 
 #: templates/custom_registration/new_user_confirmed.html:14
 #, python-format
 msgid ""
 "<a href=\"https://www.p2pu.org/en/courses/\">Review the courses</a> that "
-"other facilitators are using, and add new courses that you like from <a href="
-"\"%(PROTOCOL)s://%(DOMAIN)s%(dashboard_url)s\">your dashboard</a>."
+"other facilitators are using, and add new courses that you like from <a "
+"href=\"%(PROTOCOL)s://%(DOMAIN)s%(dashboard_url)s\">your dashboard</a>."
 msgstr ""
 
 #: templates/custom_registration/new_user_confirmed.html:15
@@ -882,8 +844,8 @@ msgstr ""
 #: templates/custom_registration/new_user_confirmed.html:18
 msgid ""
 "If you have any questions, our team and community of facilitators are "
-"standing by in <a href=\"https://community.p2pu.org/\">the community group</"
-"a> to answer questions and share feedback. We hope to see you there!"
+"standing by in <a href=\"https://community.p2pu.org/\">the community "
+"group</a> to answer questions and share feedback. We hope to see you there!"
 msgstr ""
 
 #: templates/custom_registration/settings.html:13
@@ -914,8 +876,8 @@ msgstr ""
 
 #: templates/custom_registration/settings.html:27
 msgid ""
-"This will permanently delete your P2PU account and also delete any future or "
-"active learning circles."
+"This will permanently delete your P2PU account and also delete any future or"
+" active learning circles."
 msgstr ""
 
 #: templates/custom_registration/settings.html:28
@@ -938,11 +900,13 @@ msgstr ""
 #: templates/email_base.html:71
 #, python-format
 msgid ""
-"You can manage your message preferences from <a href=\"%(PROTOCOL)s://"
-"%(DOMAIN)s%(account_settings_url)s\">your dashboard</a>"
+"You can manage your message preferences from <a "
+"href=\"%(PROTOCOL)s://%(DOMAIN)s%(account_settings_url)s\">your "
+"dashboard</a>"
 msgstr ""
-"Du kannst deine Mitteilungseinstellungen in <a href=\"%(PROTOCOL)s://"
-"%(DOMAIN)s%(account_settings_url)s\">deinem Dashboard</a> verändern. "
+"Sie können Ihre Mitteilungseinstellungen in <a "
+"href=\"%(PROTOCOL)s://%(DOMAIN)s%(account_settings_url)s\">Ihrem "
+"Dashboard</a> verändern. "
 
 #: templates/footer.html:10
 msgid "Newsletter"
@@ -954,8 +918,8 @@ msgstr ""
 
 #: templates/footer.html:82
 msgid ""
-"Unless otherwise noted, all the materials on this site are licensed under CC "
-"BY-SA 4.0."
+"Unless otherwise noted, all the materials on this site are licensed under CC"
+" BY-SA 4.0."
 msgstr ""
 
 #: templates/footer.html:85
@@ -1018,10 +982,8 @@ msgid "My team"
 msgstr ""
 
 #: templates/nav.html:38
-#, fuzzy
-#| msgid "Welcome to your learning circle!"
 msgid "My learning circles"
-msgstr "Willkommen bei deinem Lernteam!"
+msgstr ""
 
 #: templates/registration/logged_out.html:5
 msgid "You have been logged out!"
@@ -1074,8 +1036,8 @@ msgstr ""
 #: templates/registration/password_reset_complete.html:7
 #, python-format
 msgid ""
-"You can now log into your dashboard. <a class=\"btn btn-primary\" href="
-"\"%(login_url)s\">Log in</a>."
+"You can now log into your dashboard. <a class=\"btn btn-primary\" "
+"href=\"%(login_url)s\">Log in</a>."
 msgstr ""
 
 #: templates/registration/password_reset_confirm.html:7
@@ -1094,9 +1056,8 @@ msgstr ""
 #: templates/registration/password_reset_email.html:1
 #, python-format
 msgid ""
-"Someone asked for a password reset for email %(email)s. Follow the link "
-"below to complete the password reset:\n"
-"%(PROTOCOL)s://%(DOMAIN)s%(reset_url)s"
+"Someone asked for a password reset for email %(email)s. Follow the link below to complete the password reset:\n"
+"%(protocol)s://%(domain)s%(reset_url)s"
 msgstr ""
 
 #: templates/registration/password_reset_form.html:7
@@ -1115,19 +1076,17 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"        %(meeting_number)s meeting for %(course_title)s <br/> at "
-"%(venue_name)s</td>\n"
+"        %(meeting_number)s meeting for %(course_title)s <br/> at %(venue_name)s</td>\n"
 "        "
 msgstr ""
 
 #: templates/studygroups/_meeting_tr.html:10
-#, fuzzy, python-format
-#| msgid "Facilitated by %(first_name)s %(last_name)s"
+#, python-format
 msgid ""
 "\n"
 "            %(first_name)s %(last_name)s\n"
 "        "
-msgstr "Moderiert von %(first_name)s %(last_name)s"
+msgstr ""
 
 #: templates/studygroups/_meeting_tr.html:15
 #, python-format
@@ -1136,13 +1095,13 @@ msgstr ""
 
 #: templates/studygroups/_meeting_tr.html:16
 #: templates/studygroups/invitation_confirm.html:16
-#: templates/studygroups/study_group_facilitate.html:83
+#: templates/studygroups/study_group_facilitate.html:78
 msgid "Yes"
 msgstr ""
 
 #: templates/studygroups/_meeting_tr.html:16
 #: templates/studygroups/invitation_confirm.html:17
-#: templates/studygroups/study_group_facilitate.html:83
+#: templates/studygroups/study_group_facilitate.html:78
 msgid "No"
 msgstr ""
 
@@ -1156,10 +1115,9 @@ msgid "Update details for %(name)s "
 msgstr ""
 
 #: templates/studygroups/add_member.html:12
-#, fuzzy, python-format
-#| msgid "Sign up for %(course_title)s"
+#, python-format
 msgid "Add a new member to %(course_title)s "
-msgstr "Anmeldung für %(course_title)s"
+msgstr ""
 
 #: templates/studygroups/add_member.html:21
 msgid "Add"
@@ -1178,15 +1136,14 @@ msgstr ""
 #: templates/studygroups/city_list.html:15
 #, python-format
 msgid ""
-"Sign up below for a learning circle in your area, or <a class=\"lc-jumbo-link"
-"\" href=\"%(signup_url)s\">create your own!</a>"
+"Sign up below for a learning circle in your area, or <a class=\"lc-jumbo-"
+"link\" href=\"%(signup_url)s\">create your own!</a>"
 msgstr ""
 
 #: templates/studygroups/city_list.html:22
-#, fuzzy, python-format
-#| msgid "Email to learning circle participants"
+#, python-format
 msgid "Active learning circles in %(city)s"
-msgstr "E-Mail an die Lernteam-Teilnehmenden"
+msgstr ""
 
 #: templates/studygroups/city_list.html:27
 #, python-format
@@ -1237,22 +1194,20 @@ msgstr ""
 msgid ""
 "Want to run an online course that isn&#39;t listed on our website yet? Just "
 "fill in this form and then you&#39;ll be able to select this course when "
-"creating learning circles going forward. This course will also be visible to "
-"other facilitators on the <a href=\"https://www.p2pu.org/en/courses/"
-"\">courses page</a>."
+"creating learning circles going forward. This course will also be visible to"
+" other facilitators on the <a "
+"href=\"https://www.p2pu.org/en/courses/\">courses page</a>."
 msgstr ""
 
 #: templates/studygroups/course_list.html:8
-#, fuzzy
-#| msgid "Welcome to your learning circle!"
 msgid "Looking for a course for your learning circle?"
-msgstr "Willkommen bei deinem Lernteam!"
+msgstr ""
 
 #: templates/studygroups/course_list.html:9
 msgid ""
 "These are courses that we've worked with in the past and think work pretty "
-"well as learning circles. When you create a learning circle, you'll have the "
-"option to select from these courses or to add your own."
+"well as learning circles. When you create a learning circle, you'll have the"
+" option to select from these courses or to add your own."
 msgstr ""
 
 #: templates/studygroups/course_page.html:22
@@ -1382,8 +1337,8 @@ msgstr ""
 msgid ""
 "Send messages to everyone in your learning circle. You can include text in "
 "both the email and SMS (text message) field, and the message will be "
-"delivered to learners in whichever medium they selected when they signed up. "
-"Note that all messages will appear from your email address."
+"delivered to learners in whichever medium they selected when they signed up."
+" Note that all messages will appear from your email address."
 msgstr ""
 
 #: templates/studygroups/email.html:13
@@ -1417,11 +1372,11 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"        %(studygroups_met_count)s learning circle met,\n"
+"        %(learners_reached_count)s person participated in\n"
 "      "
 msgid_plural ""
 "\n"
-"        %(studygroups_met_count)s learning circles met,\n"
+"        %(learners_reached_count)s people participated in\n"
 "      "
 msgstr[0] ""
 msgstr[1] ""
@@ -1430,32 +1385,26 @@ msgstr[1] ""
 #, python-format
 msgid ""
 "\n"
-"        reaching %(learners_reached_count)s learner\n"
+"        %(studygroups_meetings_count)s learning circle meeting\n"
 "      "
 msgid_plural ""
 "\n"
-"        reaching %(learners_reached_count)s learners\n"
+"        %(studygroups_meetings_count)s learning circle meetings\n"
 "      "
 msgstr[0] ""
 msgstr[1] ""
 
 #: templates/studygroups/email/community_digest.html:178
-#, fuzzy
-#| msgid "Text message to learning circle participants"
 msgid "Total number of learning circle meetings"
-msgstr "Textnachricht an die Lernteam-Teilnehmenden"
+msgstr ""
 
 #: templates/studygroups/email/community_digest.html:186
-#, fuzzy
-#| msgid "Signup for this learning circle is not open yet."
 msgid "Current learning circles by country"
-msgstr "Die Anmeldung für dieses Lernteam ist noch nicht möglich. "
+msgstr ""
 
 #: templates/studygroups/email/community_digest.html:192
-#, fuzzy
-#| msgid "Email to learning circle participants"
 msgid "Current learning circles by topic"
-msgstr "E-Mail an die Lernteam-Teilnehmenden"
+msgstr ""
 
 #: templates/studygroups/email/community_digest.html:204
 #, python-format
@@ -1500,13 +1449,11 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"        %(upcoming_studygroups_count)s learning circle will begin in the "
-"next 3 weeks\n"
+"        %(upcoming_studygroups_count)s learning circle will begin in the next 3 weeks\n"
 "      "
 msgid_plural ""
 "\n"
-"        %(upcoming_studygroups_count)s learning circles will begin in the "
-"next 3 weeks\n"
+"        %(upcoming_studygroups_count)s learning circles will begin in the next 3 weeks\n"
 "      "
 msgstr[0] ""
 msgstr[1] ""
@@ -1521,10 +1468,8 @@ msgstr[1] ""
 #: templates/studygroups/stats_dash.html:179
 #: templates/studygroups/stats_dash.html:208
 #: templates/studygroups/studygroup_list.html:15
-#, fuzzy
-#| msgid "Meet your facilitator"
 msgid "Facilitator"
-msgstr "Lerne deine/n Lernteam-Moderator/in kennen"
+msgstr ""
 
 #: templates/studygroups/email/community_digest.html:254
 #: templates/studygroups/email/weekly-update.html:163
@@ -1617,125 +1562,95 @@ msgstr ""
 msgid "view this digest online"
 msgstr ""
 
-#: templates/studygroups/email/facilitator-survey-reminder-subject.txt:1
-#, fuzzy
-#| msgid "Welcome to your learning circle!"
+#: templates/studygroups/email/facilitator_learner_survey_prompt-subject.txt:1
 msgid "Get a preview of your learning circle report"
-msgstr "Willkommen bei deinem Lernteam!"
-
-#: templates/studygroups/email/facilitator-survey-reminder.html:16
-#, python-format
-msgid ""
-"\n"
-"        <p>Hi %(facilitator_name)s,</p>\n"
-"\n"
-"        <p>The survey we sent to your learning circle participants has "
-"%(learner_responses_count)s response%(responses_p)s so far. Here’s a preview "
-"of what your learning circle report currently looks like: <a href="
-"\"%(report_url)s\">%(report_url)s</a></p>\n"
-"\n"
-"        <p>Can you remind your learning circle participants to reply to the "
-"survey? Feel free to copy the text below and modify it:</p>\n"
-"        "
 msgstr ""
 
-#: templates/studygroups/email/facilitator-survey-reminder.html:25
-#: templates/studygroups/email/facilitator-survey-reminder.txt:16
+#: templates/studygroups/email/facilitator_learner_survey_prompt.html:16
+#: templates/studygroups/email/facilitator_learner_survey_prompt.txt:5
+#: templates/studygroups/email/facilitator_survey.html:50
+#: templates/studygroups/email/facilitator_survey.txt:2
+#, python-format
+msgid "Hi %(facilitator_name)s,"
+msgstr ""
+
+#: templates/studygroups/email/facilitator_learner_survey_prompt.html:18
+#, python-format
 msgid ""
-"Can you take a few minutes to let me know how your learning circle is going? "
+"Two days ago we sent surveys to you and everyone signed up for your learning"
+" circle. So far %(learner_responses_count)s people responded. In additon to "
+"giving us good feedback, we also use the surveys to generate a learning "
+"circle report for you. <a href=\"%(report_url)s\">Here</a> is a preview of "
+"what your report currently looks like."
+msgstr ""
+
+#: templates/studygroups/email/facilitator_learner_survey_prompt.html:21
+#: templates/studygroups/email/facilitator_learner_survey_prompt.txt:12
+msgid ""
+"The following participants haven't yet responded according to our records:"
+msgstr ""
+
+#: templates/studygroups/email/facilitator_learner_survey_prompt.html:28
+#: templates/studygroups/email/facilitator_learner_survey_prompt.txt:18
+msgid ""
+"Feel free to use the text below if you would like to remind them via email."
+msgstr ""
+
+#: templates/studygroups/email/facilitator_learner_survey_prompt.html:31
+msgid ""
+"Can you take a few minutes to let me know how your learning circle went? "
 "Your feedback - the good and the bad - will improve the learning circle "
 "program for learners and facilitators around the world."
 msgstr ""
 
-#: templates/studygroups/email/facilitator-survey-reminder.html:26
-#: templates/studygroups/email/facilitator-survey-reminder.txt:17
+#: templates/studygroups/email/facilitator_learner_survey_prompt.html:32
+#: templates/studygroups/email/facilitator_learner_survey_prompt.txt:23
 msgid "Share your feedback here:"
 msgstr ""
 
-#: templates/studygroups/email/facilitator-survey-reminder.html:27
-#: templates/studygroups/email/facilitator-survey-reminder.txt:18
+#: templates/studygroups/email/facilitator_learner_survey_prompt.html:33
+#: templates/studygroups/email/facilitator_learner_survey_prompt.txt:25
 msgid "Thank you!"
 msgstr ""
 
-#: templates/studygroups/email/facilitator-survey-reminder.html:31
-#: templates/studygroups/email/facilitator-survey-reminder.txt:25
-msgid ""
-"These are the participants who haven't responded yet, according to our "
-"records:"
-msgstr ""
-
-#: templates/studygroups/email/facilitator-survey-reminder.html:40
-#: templates/studygroups/email/facilitator-survey-reminder.txt:32
+#: templates/studygroups/email/facilitator_learner_survey_prompt.html:38
+#: templates/studygroups/email/facilitator_learner_survey_prompt.txt:30
 msgid "As a reminder, this is the link for you to leave your own feedback:"
 msgstr ""
 
-#: templates/studygroups/email/facilitator-survey-reminder.html:44
-#: templates/studygroups/email/facilitator-survey-reminder.txt:36
-#: templates/studygroups/email/facilitator-survey.html:136
-#: templates/studygroups/email/facilitator-survey.txt:14
+#: templates/studygroups/email/facilitator_learner_survey_prompt.html:42
+#: templates/studygroups/email/facilitator_learner_survey_prompt.txt:34
+#: templates/studygroups/email/facilitator_survey.html:130
+#: templates/studygroups/email/facilitator_survey.txt:15
 #: templates/studygroups/email/last_week_group_activity.html:30
-#: templates/studygroups/email/learner_survey_reminder.html:128
-#: templates/studygroups/email/learner_survey_reminder.txt:11
+#: templates/studygroups/email/learner_survey.html:128
+#: templates/studygroups/email/learner_survey.txt:11
 #: templates/studygroups/email/learning_circle_final_report.html:34
 #: templates/studygroups/email/learning_circle_final_report.txt:14
 msgid "The P2PU Team"
 msgstr ""
 
-#: templates/studygroups/email/facilitator-survey-reminder.txt:5
+#: templates/studygroups/email/facilitator_learner_survey_prompt.txt:7
 #, python-format
 msgid ""
-"\n"
-"Hi %(facilitator_name)s,\n"
-"\n"
-"The survey we sent to your learning circle participants has "
-"%(learner_responses_count)s response%(learner_responses_count|pluralize)s so "
-"far. Here’s a preview of what your learning circle report currently looks "
-"like: %(report_url)s\n"
-"\n"
+"Two days ago we sent surveys to you and everyone signed up for your learning"
+" circle. So far %(learner_responses_count)s people responded. In additon to "
+"giving us good feedback, we also use the surveys to generate a learning "
+"circle report for you. Here is a preview of what your report currently looks"
+" like: %(report_url)s."
+msgstr ""
+
+#: templates/studygroups/email/facilitator_learner_survey_prompt.txt:9
+msgid ""
 "Can you remind your learning circle participants to reply to the survey? "
-"Feel free to copy the text below and modify it:\n"
-"\n"
+"Feel free to copy the text below and modify it:"
 msgstr ""
 
-#: templates/studygroups/email/facilitator-survey-subject.txt:1
-#, fuzzy
-#| msgid "Welcome to your learning circle!"
-msgid "How did your learning circle go?"
-msgstr "Willkommen bei deinem Lernteam!"
-
-#: templates/studygroups/email/facilitator-survey.html:58
-#, python-format
+#: templates/studygroups/email/facilitator_learner_survey_prompt.txt:22
 msgid ""
-"\n"
-"        <p>Hi %(facilitator_name)s,</p>\n"
-"\n"
-"        <p>After your learning circle, you probably have a few things to say "
-"(good and bad!) about <strong>%(course_title)s</strong>, activities you "
-"tried, and the learning circle process in general.</p>\n"
-"\n"
-"        <p>Can you take a few minutes to share with us? Your feedback will "
-"be immediately put to use, helping our community identify high-quality "
-"online courses and deliver equitable learning experiences around the world.</"
-"p>\n"
-"        <p>How did the learning circle go?</p>\n"
-"        "
-msgstr ""
-
-#: templates/studygroups/email/facilitator-survey.txt:3
-#, python-format
-msgid ""
-"\n"
-"Hi %(facilitator_name)s,\n"
-"\n"
-"After your learning circle, you probably have a few things to say (good and "
-"bad!) about %(course_title)s, activities you tried, and the learning circle "
-"process in general.\n"
-"\n"
-"Can you take a few minutes to share with us? Your feedback will be "
-"immediately put to use, helping our community identify high-quality online "
-"courses and deliver equitable learning experiences around the world.\n"
-"\n"
-"Review your learning circle now: %(survey_url)s\n"
+"Can you take a few minutes to let me know how your learning circle is going?"
+" Your feedback - the good and the bad - will improve the learning circle "
+"program for learners and facilitators around the world."
 msgstr ""
 
 #: templates/studygroups/email/facilitator_meeting_reminder-subject.txt:1
@@ -1755,18 +1670,18 @@ msgstr "Hallo,"
 #: templates/studygroups/email/facilitator_meeting_reminder.html:7
 #: templates/studygroups/email/facilitator_meeting_reminder.txt:7
 msgid "The following message has been sent to your learning circle."
-msgstr "Die folgende Nachricht wurde an dein Lernteam verschickt. "
+msgstr "Die folgende Nachricht wurde an Ihr Lernteam verschickt. "
 
 #: templates/studygroups/email/facilitator_meeting_reminder.html:14
 #, python-format
 msgid ""
-"To see how many learners RSVPed or to record feedback after the meeting, you "
-"can visit <a href=\"%(PROTOCOL)s://%(DOMAIN)s%(dash_url)s\">your dashboard</"
-"a>."
+"To see how many learners RSVPed or to record feedback after the meeting, you"
+" can visit <a href=\"%(PROTOCOL)s://%(DOMAIN)s%(dash_url)s\">your "
+"dashboard</a>."
 msgstr ""
 "Um zu sehen, wie viele Lernende sich schon gemeldet haben oder um Feedback "
-"nach einem Treffen aufzunehmen, kannst du auf <a href=\"%(PROTOCOL)s://"
-"%(DOMAIN)s%(dash_url)s\">dein Dashboard</a> gehen. "
+"nach einem Treffen aufzunehmen, können Sie auf <a "
+"href=\"%(PROTOCOL)s://%(DOMAIN)s%(dash_url)s\">Ihr Dashboard</a> gehen. "
 
 #: templates/studygroups/email/facilitator_meeting_reminder.txt:11
 #, python-format
@@ -1775,17 +1690,17 @@ msgid ""
 "you can visit your dashboard (%(PROTOCOL)s://%(DOMAIN)s%(dash_url)s)."
 msgstr ""
 "Um zu sehen, wie viele Lernende sich schon gemeldet haben oder um Feedback "
-"nach einem Treffen aufzunehmen, kannst du auf dein Dashboard gehen "
+"nach einem Treffen aufzunehmen, können Sie auf Ihr Dashboard gehen "
 "(%(PROTOCOL)s://%(DOMAIN)s%(dash_url)s)."
 
 #: templates/studygroups/email/facilitator_message.html:8
 #, python-format
 msgid ""
-"To leave this learning circle and stop receiving messages, <a href="
-"\"%(PROTOCOL)s://%(DOMAIN)s%(link)s\">click here</a>"
+"To leave this learning circle and stop receiving messages, <a "
+"href=\"%(PROTOCOL)s://%(DOMAIN)s%(link)s\">click here</a>"
 msgstr ""
 "Um dieses Lernteam zu verlassen und keine weiteren Nachrichten zu bekommen, "
-"<a href=\"%(PROTOCOL)s://%(DOMAIN)s%(link)s\">klicke hier </a>"
+"<a href=\"%(PROTOCOL)s://%(DOMAIN)s%(link)s\">klicken Sie bitte hier </a>"
 
 #: templates/studygroups/email/facilitator_message.txt:5
 #, python-format
@@ -1794,34 +1709,98 @@ msgid ""
 "%(PROTOCOL)s://%(DOMAIN)s%(link)s"
 msgstr ""
 "Um dieses Lernteam zu verlassen und keine weiteren Nachrichten zu bekommen, "
-"klicke hier: %(PROTOCOL)s://%(DOMAIN)s%(link)s"
+"klicken Sie bitte hier: %(PROTOCOL)s://%(DOMAIN)s%(link)s"
+
+#: templates/studygroups/email/facilitator_survey-subject.txt:1
+msgid "How did your learning circle go?"
+msgstr ""
+
+#: templates/studygroups/email/facilitator_survey.html:52
+#: templates/studygroups/email/facilitator_survey.txt:4
+msgid ""
+"You made it! Now that your learning circle is finished, could we have five "
+"more minutes of your time? Your reflections (both good and bad) are vital "
+"for the future of P2PU."
+msgstr ""
+
+#: templates/studygroups/email/facilitator_survey.html:55
+#, python-format
+msgid ""
+"<strong>First:</strong> Please leave <a "
+"href=\"%(course_discourse_url)s\">feedback about the online course on our "
+"community forum</a>. This will help future facilitators who want to run a "
+"learning circle on the same topic."
+msgstr ""
+
+#: templates/studygroups/email/facilitator_survey.html:57
+msgid ""
+"<strong>Second:</strong> Please take this five minute survey about the "
+"learning circle experience. This will help us at P2PU better support "
+"facilitators in the future."
+msgstr ""
+
+#: templates/studygroups/email/facilitator_survey.html:59
+msgid "How did the learning circle go?"
+msgstr ""
+
+#: templates/studygroups/email/facilitator_survey.html:107
+msgid "Terrible"
+msgstr ""
+
+#: templates/studygroups/email/facilitator_survey.html:110
+msgid "Excellent"
+msgstr ""
+
+#: templates/studygroups/email/facilitator_survey.html:119
+msgid "or"
+msgstr ""
+
+#: templates/studygroups/email/facilitator_survey.html:120
+msgid "This learning circle didn’t end up happening."
+msgstr ""
+
+#: templates/studygroups/email/facilitator_survey.txt:6
+msgid ""
+"Please take a few minutes to share with us? Your feedback will be "
+"immediately put to use, helping our community identify high-quality online "
+"courses and deliver equitable learning experiences around the world."
+msgstr ""
+
+#: templates/studygroups/email/facilitator_survey.txt:8
+#, python-format
+msgid ""
+"First: Please leave feedback about the online course on our community forum:"
+" %(course_discourse_url)s. This will help future facilitators who want to "
+"run a learning circle on the same topic."
+msgstr ""
+
+#: templates/studygroups/email/facilitator_survey.txt:10
+msgid ""
+"Second: Please take this five minute survey about the learning circle "
+"experience. This will help us at P2PU better support facilitators in the "
+"future."
+msgstr ""
+
+#: templates/studygroups/email/facilitator_survey.txt:12
+#, python-format
+msgid "Review your learning circle now: %(survey_url)s"
+msgstr ""
 
 #: templates/studygroups/email/feedback-submitted-subject.txt:3
-#, fuzzy, python-format
-#| msgid ""
-#| "%(course_title)s learning circle at %(venue)s now meets %(meeting_date)s."
+#, python-format
 msgid ""
 "\n"
-"            New feedback submitted for the \"%(course_title)s\" learning "
-"circle meeting at %(venue_name)s %(meeting_date)s\n"
+"            New feedback submitted for the \"%(course_title)s\" learning circle meeting at %(venue_name)s %(meeting_date)s\n"
 "        "
 msgstr ""
-"Das Lernteam %(course_title)s trifft sich nun am %(meeting_date)s an diesem "
-"Ort: %(venue)s."
 
 #: templates/studygroups/email/feedback-submitted.html:8
-#, fuzzy, python-format
-#| msgid ""
-#| "%(course_title)s learning circle at %(venue)s now meets %(meeting_date)s."
+#, python-format
 msgid ""
 "\n"
-"    %(first_name)s %(last_name)s submitted feedback for the "
-"\"%(course_title)s\" learning circle meeting at %(venue_name)s, "
-"%(meeting_date)s.\n"
+"    %(first_name)s %(last_name)s submitted feedback for the \"%(course_title)s\" learning circle meeting at %(venue_name)s, %(meeting_date)s.\n"
 "  "
 msgstr ""
-"Das Lernteam %(course_title)s trifft sich nun am %(meeting_date)s an diesem "
-"Ort: %(venue)s."
 
 #: templates/studygroups/email/feedback-submitted.html:14
 #: templates/studygroups/email/feedback-submitted.txt:6
@@ -1834,22 +1813,17 @@ msgid "Internal reflection"
 msgstr ""
 
 #: templates/studygroups/email/feedback-submitted.txt:4
-#, fuzzy, python-format
-#| msgid ""
-#| "%(course_title)s learning circle at %(venue)s now meets %(meeting_date)s."
+#, python-format
 msgid ""
-"%(first_name)s %(last_name)s submitted feedback for the \"%(course_title)s\" "
-"learning circle meeting at %(venue_name)s, %(meeting_date)s."
+"%(first_name)s %(last_name)s submitted feedback for the \"%(course_title)s\""
+" learning circle meeting at %(venue_name)s, %(meeting_date)s."
 msgstr ""
-"Das Lernteam %(course_title)s trifft sich nun am %(meeting_date)s an diesem "
-"Ort: %(venue)s."
 
 #: templates/studygroups/email/incoming_sms.html:7
 #, python-format
 msgid ""
 "\n"
-"        <p>We received the following SMS from %(name)s as a response to a "
-"reminder you&#39;ve sent.</p>\n"
+"        <p>We received the following SMS from %(name)s as a response to a reminder you&#39;ve sent.</p>\n"
 "    "
 msgstr ""
 
@@ -1862,9 +1836,7 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"        <p>If this is a RSVP for the learning circle meeting "
-"%(meeting_date)s, %(meeting_time)s please click the appropriate link below.</"
-"p>\n"
+"        <p>If this is a RSVP for the learning circle meeting %(meeting_date)s, %(meeting_time)s please click the appropriate link below.</p>\n"
 "    "
 msgstr ""
 
@@ -1893,24 +1865,19 @@ msgid ""
 msgstr ""
 
 #: templates/studygroups/email/last_week_group_activity-subject.txt:1
-#, fuzzy
-#| msgid "Welcome to your learning circle!"
 msgid "Welcome the next learning circle"
-msgstr "Willkommen bei deinem Lernteam!"
+msgstr ""
 
 #: templates/studygroups/email/last_week_group_activity.html:5
-#, fuzzy, python-format
-#| msgid "Hi there %(first_name)s"
+#, python-format
 msgid "Dear %(facilitator_name)s,"
-msgstr "Hallo %(first_name)s"
+msgstr ""
 
 #: templates/studygroups/email/last_week_group_activity.html:8
 #, python-format
 msgid ""
 "\n"
-"In %(weeks)s weeks, a learning circle will start in %(city)s studying "
-"\"%(course_title)s\". As a group, can you please write them a short note "
-"welcoming them to the P2PU Community?\n"
+"In %(weeks)s weeks, a learning circle will start in %(city)s studying \"%(course_title)s\". As a group, can you please write them a short note welcoming them to the P2PU Community?\n"
 msgstr ""
 
 #: templates/studygroups/email/last_week_group_activity.html:12
@@ -1936,10 +1903,8 @@ msgid "Here are a few prompts:"
 msgstr ""
 
 #: templates/studygroups/email/last_week_group_activity.html:23
-#, fuzzy
-#| msgid "Welcome to your learning circle!"
 msgid "What was the highlight of your learning circle?"
-msgstr "Willkommen bei deinem Lernteam!"
+msgstr ""
 
 #: templates/studygroups/email/last_week_group_activity.html:24
 msgid "What course did you study? How was it?"
@@ -1958,10 +1923,11 @@ msgstr ""
 #: templates/studygroups/email/learner_meeting_reminder.html:32
 #: templates/studygroups/email/learner_meeting_reminder.txt:5
 msgid ""
-"Please let us know if you can make it by visiting the appropriate link below."
+"Please let us know if you can make it by visiting the appropriate link "
+"below."
 msgstr ""
-"Bitte teile uns mit, ob du an dem Termin teilnehmen kannst, in dem du den "
-"entsprechenden Link unten anklickst. "
+"Bitte teilen Sie uns mit, ob Sie an dem Termin teilnehmen können, in dem Sie"
+" den entsprechenden Link unten anklicken. "
 
 #: templates/studygroups/email/learner_meeting_reminder.html:34
 #: templates/studygroups/email/learner_meeting_reminder.txt:7
@@ -1977,17 +1943,17 @@ msgstr "Nein, ich schaffe es nicht. "
 #: templates/studygroups/email/learner_meeting_reminder.txt:10
 #: templates/studygroups/email/meeting_changed.html:9
 msgid "See you soon."
-msgstr "Wir sehen uns bald!"
+msgstr "Bis bald!"
 
 #: templates/studygroups/email/learner_meeting_reminder.html:40
 #: templates/studygroups/email/meeting_changed.html:12
 #, python-format
 msgid ""
-"To leave this learning circle and stop receiving messages, <a href=\"%(link)s"
-"\">click here</a>"
+"To leave this learning circle and stop receiving messages, <a "
+"href=\"%(link)s\">click here</a>"
 msgstr ""
 "Um dieses Lernteam zu verlassen und keine weiteren Nachrichten zu bekommen, "
-"<a href=\"%(link)s\">klicke hier </a>"
+"<a href=\"%(link)s\">klicken Sie bitte hier </a>"
 
 #: templates/studygroups/email/learner_meeting_reminder.txt:12
 #, python-format
@@ -1996,27 +1962,27 @@ msgid ""
 "%(link)s"
 msgstr ""
 "Um dieses Lernteam zu verlassen und keine weiteren Nachrichten zu bekommen, "
-"klicke hier: %(link)s"
+"klicken Sie bitte hier: %(link)s"
 
-#: templates/studygroups/email/learner_signup.html:6
+#: templates/studygroups/email/learner_signup.html:7
 #, python-format
 msgid "Hi %(name)s,"
 msgstr "Hallo %(name)s,"
 
-#: templates/studygroups/email/learner_signup.html:8
+#: templates/studygroups/email/learner_signup.html:9
 msgid "Welcome to your learning circle!"
-msgstr "Willkommen bei deinem Lernteam!"
+msgstr "Willkommen bei Ihrem Lernteam!"
 
-#: templates/studygroups/email/learner_signup.html:11
+#: templates/studygroups/email/learner_signup.html:13
 #, python-format
 msgid ""
 "You signed up for %(course_title)s! The first meeting will be on "
 "%(meeting_date)s at %(meeting_time)s.\n"
 msgstr ""
-"Du hast dich angemeldet für %(course_title)s! Das erste Treffen wird am "
+"Sie haben sich für %(course_title)s angemeldet! Das erste Treffen wird am "
 "%(meeting_date)s um %(meeting_time)s sein.\n"
 
-#: templates/studygroups/email/learner_signup.html:16
+#: templates/studygroups/email/learner_signup.html:19
 #, python-format
 msgid ""
 "\n"
@@ -2033,11 +1999,11 @@ msgstr ""
 "%(venue_address)s<br/>\n"
 " "
 
-#: templates/studygroups/email/learner_signup.html:24
+#: templates/studygroups/email/learner_signup.html:27
 msgid "Meet your facilitator"
-msgstr "Lerne deine/n Lernteam-Moderator/in kennen"
+msgstr "Lernen Sie Ihre*n Lernteam-Moderator*in kennen"
 
-#: templates/studygroups/email/learner_signup.html:26
+#: templates/studygroups/email/learner_signup.html:29
 #, python-format
 msgid ""
 "Your facilitator is <strong>%(facilitator_first_name)s "
@@ -2045,36 +2011,40 @@ msgid ""
 "any questions you can simply reply. To help your facilitator better assist "
 "you, we’re including your answers to the signup questions below:"
 msgstr ""
-"Dein/e Lernteam-Moderator/in heißt <strong>%(facilitator_first_name)s"
-"%(facilitator_last_name)s</strong> und ist cc in dieser E-mail. Wenn du "
-"irgendwelche Fragen hast, antworte einfach auf diese Mail. Um deiner/deinem "
-"Lernteam-Moderator/in zu helfen, dich besser zu unterstützen, haben wir "
-"deine Antworten zu den Anmeldefragen unten mit angegeben.  "
+"Ihr*e Lernteam-Moderator*in heißt <strong>%(facilitator_first_name)s "
+"%(facilitator_last_name)s</strong> und ist cc in dieser E-mail. Wenn Sie "
+"irgendwelche Fragen haben, antworten Sie bitte einfach auf diese Mail. Um "
+"Ihrer/Ihrem Lernteam-Moderator*in zu helfen, Sie besser zu unterstützen, "
+"haben wir Ihre Antworten auf die Anmeldefragen unten mit angegeben.  "
 
-#: templates/studygroups/email/learner_signup.html:30
+#: templates/studygroups/email/learner_signup.html:33
 msgid "Q: What is your goal for taking this learning circle?"
 msgstr ""
-"Frage: Welches Ziel verfolgst du mit deiner Teilnahme an diesem Lernteam?"
+"Frage: Welches Ziel verfolgen Sie mit Ihrer Teilnahme an diesem Lernteam?"
 
-#: templates/studygroups/email/learner_signup.html:31
-#: templates/studygroups/email/learner_signup.html:34
+#: templates/studygroups/email/learner_signup.html:35
+#, python-format
+msgid "A: %(goal_answer)s"
+msgstr ""
+
+#: templates/studygroups/email/learner_signup.html:37
+msgid "Q: How will you help your peers achieve their goals?"
+msgstr ""
+"Frage: Wie werden Sie Ihren Peers (Mitlernenden) helfen, ihre Ziele zu "
+"erreichen? "
+
 #: templates/studygroups/email/learner_signup.html:38
+#: templates/studygroups/email/learner_signup.html:42
 #, python-format
 msgid "A: %(answer)s"
 msgstr "Antwort: %(answer)s"
 
-#: templates/studygroups/email/learner_signup.html:33
-msgid "Q: How will you help your peers achieve their goals?"
-msgstr ""
-"Frage: Wie wirst du deinen Peers (Mitlernenden) helfen, ihre Ziele zu "
-"erreichen? "
-
-#: templates/studygroups/email/learner_signup.html:37
+#: templates/studygroups/email/learner_signup.html:41
 #, python-format
 msgid "Q: %(question)s"
 msgstr "Frage: %(question)s"
 
-#: templates/studygroups/email/learner_signup.html:45
+#: templates/studygroups/email/learner_signup.html:49
 #, python-format
 msgid ""
 "By signing up for this learning circle, you are joining the P2PU community "
@@ -2082,138 +2052,123 @@ msgid ""
 "in %(city)s and around the world to create this program free of charge for "
 "you, and we really hope you enjoy it."
 msgstr ""
-"Wenn du dich für dieses Lernteam anmeldest, trittst du der P2PU-Community "
+"Wenn Sie sich für dieses Lernteam anmelden, treten Sie der P2PU-Community "
 "von Lernenden und Moderator*innen bei. Wir arbeiten mit Bibliotheken und "
 "Gemeindezentren in %(city)s und auf der ganzen Welt zusammen, um dieses "
-"Programm kostenlos für dich zu erstellen, und wir hoffen, du hast Spaß beim "
-"Lernen und mit deinem Mitlernenden."
+"Programm kostenlos für Sie zu erstellen, und wir hoffen, Sie haben Spaß beim"
+" Lernen und mit Ihren Mitlernenden."
 
-#: templates/studygroups/email/learner_signup.html:48
+#: templates/studygroups/email/learner_signup.html:52
 #, python-format
 msgid ""
-"Here is some advice from %(name)s in %(city)s, %(country)s who just finished "
-"a learning circle in %(topic)s: "
+"Here is some advice from %(name)s in %(city)s, %(country)s who just finished"
+" a learning circle in %(topic)s: "
 msgstr ""
-"Hier gibt es Feedback und Hinweise von %(name)sin %(city)s, %(country)s, die "
-"gerade ein Lernteam zum Thema %(topic)s abgeschlossen haben: "
+"Hier gibt es Feedback und Hinweise von %(name)sin %(city)s, %(country)s, die"
+" gerade ein Lernteam zum Thema %(topic)s abgeschlossen haben: "
 
-#: templates/studygroups/email/learner_signup.html:54
+#: templates/studygroups/email/learner_signup.html:58
 msgid ""
-"Want more? Check out <a href=\"https://www.p2pu.org/\">P2PU’s website</a> to "
-"learn more about how we support equitable, social learning opportunities "
-"outside of school. You can also read <a href=\"http://info.p2pu."
-"org/2018/03/06/tips/\">more tips</a> from learners around the world."
+"Want more? Check out <a href=\"https://www.p2pu.org/\">P2PU’s website</a> to"
+" learn more about how we support equitable, social learning opportunities "
+"outside of school. You can also read <a "
+"href=\"http://info.p2pu.org/2018/03/06/tips/\">more tips</a> from learners "
+"around the world."
 msgstr ""
-"Willst du mehr über P2PU wissen? Gehe auf die <a href=\"https://www.p2pu.org/"
-"\">P2PU Webseite </a> um mehr darüber zu erfahren, wie wir gerechte, soziale "
-"Lernmöglichkeiten außerhalb der Schule schaffen. Du kannst auch <a href="
-"\"http://info.p2pu.org/2018/03/06/tips/\"> mehr Hinweise </a> von Lernenden "
-"aus der ganzen Welt lesen. "
+"Wollen Sie mehr über P2PU wissen? Gehen Sie auf die <a "
+"href=\"https://www.p2pu.org/\">P2PU Webseite </a> um mehr darüber zu "
+"erfahren, wie wir gerechte, soziale Lernmöglichkeiten außerhalb der Schule "
+"schaffen. Sie können auch <a href=\"http://info.p2pu.org/2018/03/06/tips/\">"
+" mehr Hinweise </a> von Lernenden aus der ganzen Welt lesen. "
 
-#: templates/studygroups/email/learner_signup.html:60
+#: templates/studygroups/email/learner_signup.html:64
 #, python-format
 msgid ""
 "If you’d no longer like to participate in this learning circle, you can "
 "unenroll through <a href=\"%(unapply_link)s\">this link</a>."
 msgstr ""
-"Wenn du nicht länger an diesem Lernteam teilnehmen möchtest, kannst du dich "
-"unter <a href=\"%(unapply_link)s\"> diesem Link </a> abmelden. "
+"Wenn Sie nicht länger an diesem Lernteam teilnehmen möchten, können Sie sich"
+" unter <a href=\"%(unapply_link)s\"> diesem Link </a> abmelden. "
 
-#: templates/studygroups/email/learner_survey_reminder-subject.txt:1
-#, fuzzy
-#| msgid "Welcome to your learning circle!"
+#: templates/studygroups/email/learner_survey-subject.txt:1
 msgid "How is you learning circle going?"
-msgstr "Willkommen bei deinem Lernteam!"
-
-#: templates/studygroups/email/learner_survey_reminder.html:52
-msgid ""
-"Can you take a few minutes to let us know how your learning circle is going? "
-"Your feedback - the good and the bad - will improve the learning circle "
-"program for learners and facilitators around the world."
 msgstr ""
 
-#: templates/studygroups/email/learner_survey_reminder.html:55
+#: templates/studygroups/email/learner_survey.html:52
+msgid ""
+"Your learning circle is about to meet for the last time! Please take a few "
+"minutes to let us know how it went? Your feedback - the good and the bad - "
+"will improve the learning circle program for learners and facilitators "
+"around the world."
+msgstr ""
+
+#: templates/studygroups/email/learner_survey.html:55
 #, python-format
 msgid ""
 "Let’s start with what brought you here. When you signed up for the learning "
-"circle, you said that your primary goal was: <strong>%(learner_goal)s</"
-"strong>."
+"circle, you said that your primary goal was: "
+"<strong>%(learner_goal)s</strong>."
 msgstr ""
 
-#: templates/studygroups/email/learner_survey_reminder.html:57
-#, fuzzy
-#| msgid "Q: What is your goal for taking this learning circle?"
+#: templates/studygroups/email/learner_survey.html:57
 msgid "To what extent did you achieve this goal during the learning circle?"
 msgstr ""
-"Frage: Welches Ziel verfolgst du mit deiner Teilnahme an diesem Lernteam?"
 
-#: templates/studygroups/email/learner_survey_reminder.html:59
+#: templates/studygroups/email/learner_survey.html:59
 #, python-format
 msgid ""
-"Share your feedback by clicking <a href=\"%(survey_url)s\">this link</a>"
+"Please share your feedback by completing <a href=\"%(survey_url)s\">this "
+"survey</a>."
 msgstr ""
 
-#: templates/studygroups/email/learner_survey_reminder.html:110
+#: templates/studygroups/email/learner_survey.html:110
 msgid "Not at all"
 msgstr ""
 
-#: templates/studygroups/email/learner_survey_reminder.html:113
+#: templates/studygroups/email/learner_survey.html:113
 msgid "Completely!"
 msgstr ""
 
-#: templates/studygroups/email/learner_survey_reminder.txt:2
+#: templates/studygroups/email/learner_survey.txt:2
 #, python-format
 msgid ""
 "Hi %(learner_name)s,\n"
 "\n"
-"Can you take a few minutes to let us know how your learning circle is going? "
-"Your feedback - the good and the bad - will improve the learning circle "
-"program for learners and facilitators around the world.\n"
+"Your learning circle is about to meet for the last time! Please take a few minutes to let us know how it went? Your feedback - the good and the bad - will improve the learning circle program for learners and facilitators around the world.\n"
 "\n"
-"Share your feedback by clicking this link: %(survey_url)s\n"
+"Please share your feedback by completing this survey: %(survey_url)s\n"
 "\n"
-"Thank you for being part of the P2PU community, and we look forward to "
-"hearing from you!"
+"Thank you for being part of the P2PU community, and we look forward to hearing from you!"
 msgstr ""
 
 #: templates/studygroups/email/learning_circle_created-subject.txt:1
-#, fuzzy, python-format
-#| msgid ""
-#| "Your %(course_title)s learning circle meeting scheduled for %(old_date)s "
-#| "has been moved to %(new_date)s."
+#, python-format
 msgid ""
 "Your “%(course_title)s” learning circle in %(city)s has been created! What "
 "next?"
 msgstr ""
-"Dein %(course_title)s Lernteamtreffen wurde vom %(old_date)s auf den "
-"%(new_date)s verschoben. "
 
 #: templates/studygroups/email/learning_circle_created.html:6
-#, fuzzy, python-format
-#| msgid "Hi %(name)s,"
+#, python-format
 msgid "Hi %(name)s"
-msgstr "Hallo %(name)s,"
+msgstr ""
 
 #: templates/studygroups/email/learning_circle_created.html:9
-#, fuzzy
-#| msgid "Signup for this learning circle is not open yet."
 msgid "Your learning circle has been created!"
-msgstr "Die Anmeldung für dieses Lernteam ist noch nicht möglich. "
+msgstr ""
 
 #: templates/studygroups/email/learning_circle_created.html:12
 #, python-format
 msgid ""
 "\n"
-"    Congratulations! You created a learning circle on “%(course_title)s” in "
-"%(city)s.\n"
+"    Congratulations! You created a learning circle on “%(course_title)s” in %(city)s.\n"
 "  "
 msgstr ""
 
 #: templates/studygroups/email/learning_circle_created.html:16
 #, python-format
 msgid ""
-"You can view a draft signup page at  <a href=\"%(PROTOCOL)s://%(DOMAIN)s"
-"%(study_group_url)s\">%(PROTOCOL)s://%(DOMAIN)s%(study_group_url)s</a>\n"
+"You can view a draft signup page at  <a href=\"%(PROTOCOL)s://%(DOMAIN)s%(study_group_url)s\">%(PROTOCOL)s://%(DOMAIN)s%(study_group_url)s</a>\n"
 "    "
 msgstr ""
 
@@ -2221,8 +2176,7 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"      Your signup page is live at: <a href=\"%(PROTOCOL)s://%(DOMAIN)s"
-"%(study_group_url)s\">%(PROTOCOL)s://%(DOMAIN)s%(study_group_url)s</a></p>\n"
+"      Your signup page is live at: <a href=\"%(PROTOCOL)s://%(DOMAIN)s%(study_group_url)s\">%(PROTOCOL)s://%(DOMAIN)s%(study_group_url)s</a></p>\n"
 "    "
 msgstr ""
 
@@ -2263,39 +2217,42 @@ msgid ""
 "circle."
 msgstr ""
 
-#: templates/studygroups/email/learning_circle_created.html:48
+#: templates/studygroups/email/learning_circle_created.html:49
+#, python-format
+msgid ""
+"<a href=\"%(course_discourse_url)s\">Learn more about "
+"“%(course_title)s”</a>. Post questions specific to this course our community"
+" forum."
+msgstr ""
+
+#: templates/studygroups/email/learning_circle_created.html:50
 msgid ""
 "<a href=\"https://community.p2pu.org/c/learning-circles/creating-a-learning-"
 "circle\"><b>Gather your supplies</b></a>. Make sure you have everything you "
 "need before your learning circle gets started."
 msgstr ""
 
-#: templates/studygroups/email/learning_circle_created.html:49
+#: templates/studygroups/email/learning_circle_created.html:51
 #, python-format
 msgid ""
-"<a href=\"%(dashboard_url)s\"><b>Review learner applications</b></a>. You’ll "
-"receive an email whenever somebody applies to your learning circle. You can "
-"view their applications and send them messages directly through your "
+"<a href=\"%(dashboard_url)s\"><b>Review learner applications</b></a>. You’ll"
+" receive an email whenever somebody applies to your learning circle. You can"
+" view their applications and send them messages directly through your "
 "dashboard."
 msgstr ""
 
 #: templates/studygroups/email/learning_circle_final_report-subject.txt:2
-#, fuzzy, python-format
-#| msgid ""
-#| "%(course_title)s learning circle meeting this %(meeting_date)s at "
-#| "%(venue)s."
+#, python-format
 msgid ""
 "\n"
 "%(course_title)s learning circle report is ready\n"
 msgstr ""
-"%(course_title)s Lernteam diesen %(meeting_date)s an diesem Ort: %(venue)s"
 
 #: templates/studygroups/email/learning_circle_final_report.html:6
 #: templates/studygroups/email/learning_circle_final_report.txt:6
-#, fuzzy, python-format
-#| msgid "Email to learning circle participants"
+#, python-format
 msgid "Hi %(facilitator_name)s and learning circle participants,"
-msgstr "E-Mail an die Lernteam-Teilnehmenden"
+msgstr ""
 
 #: templates/studygroups/email/learning_circle_final_report.html:9
 #: templates/studygroups/email/learning_circle_final_report.txt:8
@@ -2319,11 +2276,11 @@ msgstr ""
 #: templates/studygroups/email/meeting_changed-sms.txt:1
 #, python-format
 msgid ""
-"Your learning circle on %(meeting_date)s has been rescheduled. Reply STOP to "
-"unsubscribe."
+"Your learning circle on %(meeting_date)s has been rescheduled. Reply STOP to"
+" unsubscribe."
 msgstr ""
-"Dein Lernteam am %(meeting_date)s wurde verschoben. Bitte antworte mit STOP "
-"um dich abzumelden. "
+"Ihr Lernteam am %(meeting_date)s wurde verschoben. Bitte antworten Sie mit "
+"STOP um sich abzumelden. "
 
 #: templates/studygroups/email/meeting_changed-subject.txt:1
 #, python-format
@@ -2336,64 +2293,44 @@ msgstr ""
 #: templates/studygroups/email/meeting_changed.html:5
 #, python-format
 msgid ""
-"Your %(course_title)s learning circle meeting scheduled for %(old_date)s has "
-"been moved to %(new_date)s."
+"Your %(course_title)s learning circle meeting scheduled for %(old_date)s has"
+" been moved to %(new_date)s."
 msgstr ""
-"Dein %(course_title)s Lernteamtreffen wurde vom %(old_date)s auf den "
+"Ihr %(course_title)s Lernteamtreffen wurde vom %(old_date)s auf den "
 "%(new_date)s verschoben. "
 
 #: templates/studygroups/email/meeting_changed.html:7
 msgid ""
 "You will receive a reminder 2 days before the new scheduled meeting time"
 msgstr ""
-"Du wirst 2 Tage vor dem nächsten Treffen eine Erinnerungsnachricht bekommen. "
+"Sie werden 2 Tage vor dem nächsten Treffen eine Erinnerungsnachricht "
+"bekommen. "
 
 #: templates/studygroups/email/new_facilitator_invite-subject.txt:1
 #: templates/studygroups/email/team_invite-subject.txt:1
 #, python-format
 msgid ""
-"%(organizer_name)s invited you to join their team on learningcircles.p2pu.org"
+"%(organizer_name)s invited you to join their team on "
+"learningcircles.p2pu.org"
 msgstr ""
 
 #: templates/studygroups/email/new_facilitator_invite.html:8
 #, python-format
 msgid ""
-"%(organizer_name)s invited you to join their team on <a href=\"https://"
-"learningcircles.p2pu.org\">learningcircles.p2pu.org</a>. You first have to "
-"sign up at <a href=\"%(PROTOCOL)s://%(DOMAIN)s%(facilitator_signup_url)s\">"
-"%(DOMAIN)s%(facilitator_signup_url)s</a> and then accept the invitation."
+"%(organizer_name)s invited you to join their team on <a "
+"href=\"https://learningcircles.p2pu.org\">learningcircles.p2pu.org</a>. You "
+"first have to sign up at <a "
+"href=\"%(PROTOCOL)s://%(DOMAIN)s%(facilitator_signup_url)s\">%(DOMAIN)s%(facilitator_signup_url)s</a>"
+" and then accept the invitation."
 msgstr ""
 
 #: templates/studygroups/email/new_facilitator_invite.txt:3
 #, python-format
 msgid ""
-"%(organizer_name)s invited you to join their team on learningcircles.p2pu."
-"org. You first have to sign up at %(PROTOCOL)s://%(DOMAIN)s"
-"%(facilitator_signup_url)s and then accept the invitation."
-msgstr ""
-
-#: templates/studygroups/email/new_studygroup_update-subject.txt:1
-#, fuzzy
-#| msgid "Welcome to your learning circle!"
-msgid "Can we help you start your learning circle?"
-msgstr "Willkommen bei deinem Lernteam!"
-
-#: templates/studygroups/email/new_studygroup_update.html:4
-#, fuzzy, python-format
-#| msgid "Hi there %(first_name)s"
-msgid "Hi there %(studygroup.facilitator.first_name)s"
-msgstr "Hallo %(first_name)s"
-
-#: templates/studygroups/email/new_studygroup_update.html:6
-msgid "We saw that you created a learning circle last week. Amazing!"
-msgstr ""
-
-#: templates/studygroups/email/new_studygroup_update.html:8
-msgid ""
-"The <a href=\"https://community.p2pu.org/c/learning-circles/\">P2PU "
-"community</a> is a great place to help you get everything set up for your "
-"learning circle. You can also explore group activities and facilitation "
-"strategies that may help you during your learning circle."
+"%(organizer_name)s invited you to join their team on "
+"learningcircles.p2pu.org. You first have to sign up at "
+"%(PROTOCOL)s://%(DOMAIN)s%(facilitator_signup_url)s and then accept the "
+"invitation."
 msgstr ""
 
 #: templates/studygroups/email/optout_confirm-subject.txt:1
@@ -2407,17 +2344,17 @@ msgid ""
 "You requested to be removed from the learning circle mentioned in the "
 "subject. Visit the link below to confirm:"
 msgstr ""
-"Du möchtest von dem im Betreff genannten Lernteam aussteigen. Bitte klicke "
-"auf den Link unten um dies zu bestätigen: "
+"Sie möchten von dem im Betreff genannten Lernteam aussteigen. Bitte klicken "
+"Sie auf den Link unten um dies zu bestätigen: "
 
 #: templates/studygroups/email/optout_confirm.html:10
 #: templates/studygroups/email/optout_confirm.txt:7
 msgid ""
-"If you didn't request to be removed from the learning circle, you can safely "
-"ignore this message."
+"If you didn't request to be removed from the learning circle, you can safely"
+" ignore this message."
 msgstr ""
-"Wenn du dich nicht von dem Lernteam abmelden willst, ignoriere bitte einfach "
-"diese Nachricht. "
+"Wenn Sie sich nicht von dem Lernteam abmelden wollen, ignorieren Sie bitte "
+"einfach diese Nachricht. "
 
 #: templates/studygroups/email/optout_confirm_text.txt:1
 #, python-format
@@ -2425,8 +2362,9 @@ msgid ""
 "You successfully left %(title)s %(day)ss %(time)s at "
 "%(application.study_group.venue_name)s."
 msgstr ""
-"Du bist erfolgreich aus folgendem Lernteam ausgestiegen: %(title)s%(day)s"
-"%(time)s an diesem Ort: %(application.study_group.venue_name)s."
+"Sie sind erfolgreich aus folgendem Lernteam ausgestiegen: "
+"%(title)s%(day)s%(time)s an diesem Ort: "
+"%(application.study_group.venue_name)s."
 
 #: templates/studygroups/email/reminder.txt:1
 msgid "Hi there!"
@@ -2435,11 +2373,11 @@ msgstr "Hallo!"
 #: templates/studygroups/email/reminder.txt:3
 #, python-format
 msgid ""
-"The %(course_title)s learning circle will meet this %(meeting_date)s at "
-"%(venue_name)s, %(venue_details)s."
+"The %(course_title)s learning circle will meet this %(meeting_date)s, "
+"%(meeting_time)s at %(venue_name)s, %(venue_details)s."
 msgstr ""
-"Das Lernteam %(course_title)s trifft sich diesen %(meeting_date)s an "
-"folgendem Ort: %(venue_name)s, %(venue_details)s."
+"Das Lernteam %(course_title)s trifft sich diesen %(meeting_date)s, "
+"%(meeting_time)s Uhr an folgendem Ort: %(venue_name)s, %(venue_details)s."
 
 #: templates/studygroups/email/reminder.txt:5
 #, python-format
@@ -2457,7 +2395,8 @@ msgstr "Hallo %(first_name)s"
 #, python-format
 msgid ""
 "We've generated a reminder for the learning circle meeting this "
-"%(meeting_date)s. The reminder will be sent automatically in 2 days from now."
+"%(meeting_date)s. The reminder will be sent automatically in 2 days from "
+"now."
 msgstr ""
 "Wir haben eine Erinnerungsmail für das Lernteam-Treffen diesen "
 "%(meeting_date)s erstellt. Die Mail wird automatisch in 2 Tagen versendet. "
@@ -2477,8 +2416,8 @@ msgid ""
 "We'll insert RSVP links below for learners to indicate if they can attend "
 "the meeting"
 msgstr ""
-"Wir werden Rückmelde-Links für die Lernenden in die Mail einbauen, damit sie "
-"mitteilen können, ob sie am Treffen teilnehmen.  "
+"Wir werden Rückmelde-Links für die Lernenden in die Mail einbauen, damit sie"
+" mitteilen können, ob sie am Treffen teilnehmen.  "
 
 #: templates/studygroups/email/reminder_notification.html:18
 #: templates/studygroups/email/reminder_notification.txt:11
@@ -2488,11 +2427,11 @@ msgstr "Textnachricht an die Lernteam-Teilnehmenden"
 #: templates/studygroups/email/reminder_notification.html:25
 #, python-format
 msgid ""
-"If you wish to edit the reminder, you can follow <a href=\"%(PROTOCOL)s://"
-"%(DOMAIN)s%(message_edit_url)s\">this link</a>."
+"If you wish to edit the reminder, you can follow <a "
+"href=\"%(PROTOCOL)s://%(DOMAIN)s%(message_edit_url)s\">this link</a>."
 msgstr ""
-"Wenn du die Erinnerung bearbeiten willst, folge bitte <a href="
-"\"%(PROTOCOL)s://%(DOMAIN)s%(message_edit_url)s\"> diesem Link</a>."
+"Wenn Sie die Erinnerung bearbeiten wollen, folgen Sie bitte <a "
+"href=\"%(PROTOCOL)s://%(DOMAIN)s%(message_edit_url)s\"> diesem Link</a>."
 
 #: templates/studygroups/email/reminder_notification.html:27
 #: templates/studygroups/email/reminder_notification.txt:17
@@ -2502,10 +2441,10 @@ msgstr "Grüße"
 #: templates/studygroups/email/reminder_notification.txt:15
 #, python-format
 msgid ""
-"If you wish to edit the reminder, you can follow this link: %(PROTOCOL)s://"
-"%(DOMAIN)s%(message_edit_url)s."
+"If you wish to edit the reminder, you can follow this link: "
+"%(PROTOCOL)s://%(DOMAIN)s%(message_edit_url)s."
 msgstr ""
-"Wenn du die Erinnerung bearbeiten willst, folge bitte diesem Link: "
+"Wenn Sie die Erinnerung bearbeiten wollen, folgen Sie bitte diesem Link: "
 "%(PROTOCOL)s://%(DOMAIN)s%(message_edit_url)s."
 
 #: templates/studygroups/email/sms.txt:1
@@ -2513,37 +2452,29 @@ msgstr ""
 msgid ""
 "Your learning circle is meeting %(meeting_date)s. Reply STOP to unsubscribe."
 msgstr ""
-"Dein Lernteam trifft sich am %(meeting_date)s. Bitte antworte mit STOP um "
-"dich abzumelden. "
+"Ihr Lernteam trifft sich am %(meeting_date)s. Bitte antworten Sie mit STOP "
+"um sich abzumelden. "
 
 #: templates/studygroups/email/team_invite.html:5
 #: templates/studygroups/email/team_invite.txt:1
-#, fuzzy, python-format
-#| msgid "Hi there %(first_name)s"
+#, python-format
 msgid "Hi there %(name)s"
-msgstr "Hallo %(first_name)s"
+msgstr ""
 
 #: templates/studygroups/email/team_invite.html:8
-#, fuzzy, python-format
-#| msgid ""
-#| "To see how many learners RSVPed or to record feedback after the meeting, "
-#| "you can visit <a href=\"%(PROTOCOL)s://%(DOMAIN)s%(dash_url)s\">your "
-#| "dashboard</a>."
+#, python-format
 msgid ""
 "%(organizer_name)s invited you to join their team. You can respond to the "
-"invitation on your <a href=\"%(PROTOCOL)s://%(DOMAIN)s%(facilitator_url)s"
-"\">dashboard</a>."
+"invitation on your <a "
+"href=\"%(PROTOCOL)s://%(DOMAIN)s%(facilitator_url)s\">dashboard</a>."
 msgstr ""
-"Um zu sehen, wie viele Lernende sich schon gemeldet haben oder um Feedback "
-"nach einem Treffen aufzunehmen, kannst du auf <a href=\"%(PROTOCOL)s://"
-"%(DOMAIN)s%(dash_url)s\">dein Dashboard</a> gehen. "
 
 #: templates/studygroups/email/team_invite.txt:3
 #, python-format
 msgid ""
 "%(organizer_name)s invited you to join their team. You can respond to the "
-"invitation on your dashboard: %(PROTOCOL)s://%(DOMAIN)s"
-"%(facilitator_signup_url)s."
+"invitation on your dashboard: "
+"%(PROTOCOL)s://%(DOMAIN)s%(facilitator_signup_url)s."
 msgstr ""
 
 #: templates/studygroups/email/weekly-update.html:138
@@ -2557,16 +2488,11 @@ msgid "For the week starting %(start_date)s."
 msgstr ""
 
 #: templates/studygroups/email/weekly-update.html:145
-#, fuzzy, python-format
-#| msgid ""
-#| "If you wish to edit the reminder, you can follow <a href=\"%(PROTOCOL)s://"
-#| "%(DOMAIN)s%(message_edit_url)s\">this link</a>."
+#, python-format
 msgid ""
-"You can also view this report <a href=\"%(PROTOCOL)s://%(DOMAIN)s"
-"%(report_url)s\">online</a>."
+"You can also view this report <a "
+"href=\"%(PROTOCOL)s://%(DOMAIN)s%(report_url)s\">online</a>."
 msgstr ""
-"Wenn du die Erinnerung bearbeiten willst, folge bitte <a href="
-"\"%(PROTOCOL)s://%(DOMAIN)s%(message_edit_url)s\"> diesem Link</a>."
 
 #: templates/studygroups/email/weekly-update.html:150
 #, python-format
@@ -2596,8 +2522,7 @@ msgstr ""
 msgid ""
 "\n"
 "          <tr>\n"
-"            <td><a href=\"mailto:%(email)s\">%(first_name)s %(last_name)s</"
-"a></td>\n"
+"            <td><a href=\"mailto:%(email)s\">%(first_name)s %(last_name)s</a></td>\n"
 "            <td><a href=\"%(course_url)s\">%(course)s</a></td>\n"
 "            <td>%(venue)s</td>\n"
 "          "
@@ -2655,8 +2580,7 @@ msgstr ""
 msgid ""
 "\n"
 "            <tr>\n"
-"              <td><a href=\"mailto:%(email)s\">%(first_name)s %(last_name)s</"
-"a></td>\n"
+"              <td><a href=\"mailto:%(email)s\">%(first_name)s %(last_name)s</a></td>\n"
 "              <td><a href=\"%(course_url)s\">%(course)s</a></td>\n"
 "              <td>%(venue)s</td>\n"
 "              <td>%(meeting_date)s</td>\n"
@@ -2675,13 +2599,12 @@ msgid "%(course)s"
 msgstr ""
 
 #: templates/studygroups/email/weekly-update.html:250
-#, fuzzy, python-format
-#| msgid "Facilitated by %(first_name)s %(last_name)s"
+#, python-format
 msgid ""
 "\n"
 "              Facilitated by %(first_name)s %(last_name)s at %(venue)s\n"
 "            "
-msgstr "Moderiert von %(first_name)s %(last_name)s"
+msgstr ""
 
 #: templates/studygroups/email/weekly-update.html:254
 #: templates/studygroups/final_report.html:33
@@ -2700,13 +2623,11 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"          %(upcoming_studygroups_count)s learning circle will begin in the "
-"next 3 weeks\n"
+"          %(upcoming_studygroups_count)s learning circle will begin in the next 3 weeks\n"
 "        "
 msgid_plural ""
 "\n"
-"          %(upcoming_studygroups_count)s learning circles will begin in the "
-"next 3 weeks\n"
+"          %(upcoming_studygroups_count)s learning circles will begin in the next 3 weeks\n"
 "        "
 msgstr[0] ""
 msgstr[1] ""
@@ -2716,8 +2637,7 @@ msgstr[1] ""
 msgid ""
 "\n"
 "          <tr>\n"
-"            <td><a href=\"mailto:%(email)s\">%(first_name)s %(last_name)s</"
-"a></td>\n"
+"            <td><a href=\"mailto:%(email)s\">%(first_name)s %(last_name)s</a></td>\n"
 "            <td><a href=\"%(course_url)s\">%(course)s</a></td>\n"
 "            <td>%(venue)s</td>\n"
 "          </tr>\n"
@@ -2751,7 +2671,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: templates/studygroups/email/weekly-update.html:333
-#: templates/studygroups/study_group_facilitate.html:146
+#: templates/studygroups/study_group_facilitate.html:141
 msgid "Name"
 msgstr ""
 
@@ -2765,14 +2685,11 @@ msgid "%(first_name)s&#39;s Facilitator Dashboard"
 msgstr ""
 
 #: templates/studygroups/facilitator.html:15
-#, fuzzy
-#| msgid "Welcome to your learning circle!"
 msgid "For help with your learning circle, check out:"
-msgstr "Willkommen bei deinem Lernteam!"
+msgstr ""
 
 #: templates/studygroups/facilitator.html:17
-msgid ""
-"<a href=\"https://www.p2pu.org/en/facilitate/\">Facilitator resources</a>"
+msgid "<a href=\"https://www.p2pu.org/en/facilitate/\">Facilitator resources</a>"
 msgstr ""
 
 #: templates/studygroups/facilitator.html:18
@@ -2785,10 +2702,8 @@ msgstr ""
 
 #: templates/studygroups/facilitator.html:22
 #: templates/studygroups/team_page.html:21
-#, fuzzy
-#| msgid "Welcome to your learning circle!"
 msgid "Active learning circles"
-msgstr "Willkommen bei deinem Lernteam!"
+msgstr ""
 
 #: templates/studygroups/facilitator.html:26
 msgid "No active learning circles found, why not create one?"
@@ -2796,16 +2711,12 @@ msgstr ""
 
 #: templates/studygroups/facilitator.html:28
 #: templates/studygroups/studygroup_form_legacy.html:12
-#, fuzzy
-#| msgid "Welcome to your learning circle!"
 msgid "Create a learning circle"
-msgstr "Willkommen bei deinem Lernteam!"
+msgstr ""
 
 #: templates/studygroups/facilitator.html:32
-#, fuzzy
-#| msgid "Email to learning circle participants"
 msgid "Past learning circles"
-msgstr "E-Mail an die Lernteam-Teilnehmenden"
+msgstr ""
 
 #: templates/studygroups/facilitator.html:36
 #: templates/studygroups/facilitator.html:57
@@ -2846,8 +2757,7 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"            Feedback from meeting that happened %(meeting_date)s, "
-"%(meeting_time)s\n"
+"            Feedback from meeting that happened %(meeting_date)s, %(meeting_time)s\n"
 "          "
 msgstr ""
 
@@ -2867,15 +2777,14 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"            Capture feedback for the meeting that happened on "
-"%(meeting_date)s, %(meeting_time)s\n"
+"            Capture feedback for the meeting that happened on %(meeting_date)s, %(meeting_time)s\n"
 "          "
 msgstr ""
 
 #: templates/studygroups/feedback_form.html:22
 msgid ""
-"If you have any questions, reach out to your organizer or the <a href="
-"\"https://community.p2pu.org/\">P2PU community</a>"
+"If you have any questions, reach out to your organizer or the <a "
+"href=\"https://community.p2pu.org/\">P2PU community</a>"
 msgstr ""
 
 #: templates/studygroups/final_report.html:20
@@ -2924,7 +2833,8 @@ msgstr ""
 #: templates/studygroups/invitation_confirm.html:14
 #, python-format
 msgid ""
-"You were invited to join %(team_name)s? Do you wish to accept the invitation?"
+"You were invited to join %(team_name)s? Do you wish to accept the "
+"invitation?"
 msgstr ""
 
 #: templates/studygroups/learner_survey_done.html:12
@@ -2932,17 +2842,13 @@ msgid "Thanks for participating! What do you want to do next?"
 msgstr ""
 
 #: templates/studygroups/learning-circles.html:11
-#, fuzzy
-#| msgid "Email to learning circle participants"
 msgid "Image of the learning circle location"
-msgstr "E-Mail an die Lernteam-Teilnehmenden"
+msgstr ""
 
 #: templates/studygroups/learning-circles.html:14
-#, fuzzy, python-format
-#| msgid "Facilitated by %(first_name)s %(last_name)s"
-msgid ""
-"Facilitator: <span class=\"extrabold\">%(first_name)s %(last_name)s</span>"
-msgstr "Moderiert von %(first_name)s %(last_name)s"
+#, python-format
+msgid "Facilitator: <span class=\"extrabold\">%(first_name)s %(last_name)s</span>"
+msgstr ""
 
 #: templates/studygroups/learning-circles.html:17
 #, python-format
@@ -2954,31 +2860,24 @@ msgstr ""
 #: templates/studygroups/learning-circles.html:18
 #, python-format
 msgid ""
-"<span class=\"extrabold\">One week</span> beginning <span class=\"extrabold"
-"\">%(start_date)s</span>"
+"<span class=\"extrabold\">One week</span> beginning <span "
+"class=\"extrabold\">%(start_date)s</span>"
 msgid_plural ""
-"<span class=\"extrabold\">%(weeks)s weeks</span> beginning <span class="
-"\"extrabold\">%(start_date)s</span>"
+"<span class=\"extrabold\">%(weeks)s weeks</span> beginning <span "
+"class=\"extrabold\">%(start_date)s</span>"
 msgstr[0] ""
 msgstr[1] ""
 
 #: templates/studygroups/meeting_confirm_delete.html:9
-#, fuzzy
-#| msgid "Welcome to your learning circle!"
 msgid "Confirm deletion of learning circle meeting."
-msgstr "Willkommen bei deinem Lernteam!"
+msgstr ""
 
 #: templates/studygroups/meeting_confirm_delete.html:11
-#, fuzzy, python-format
-#| msgid ""
-#| "You signed up for %(course_title)s! The first meeting will be on "
-#| "%(meeting_date)s at %(meeting_time)s.\n"
+#, python-format
 msgid ""
 "Are you sure you want to delete the meeting on %(meeting_date)s at "
 "%(meeting_time)s?"
 msgstr ""
-"Du hast dich angemeldet für %(course_title)s! Das erste Treffen wird am "
-"%(meeting_date)s um %(meeting_time)s sein.\n"
 
 #: templates/studygroups/meeting_form.html:17
 msgid ""
@@ -3001,10 +2900,8 @@ msgid "back to organizer dashboard"
 msgstr ""
 
 #: templates/studygroups/meeting_list.html:9
-#, fuzzy
-#| msgid "Email to learning circle participants"
 msgid "Learning circles meetings"
-msgstr "E-Mail an die Lernteam-Teilnehmenden"
+msgstr ""
 
 #: templates/studygroups/meeting_list.html:13
 #: templates/studygroups/organize_meetings.html:25
@@ -3018,13 +2915,13 @@ msgstr ""
 
 #: templates/studygroups/meeting_list.html:16
 #: templates/studygroups/organize_meetings.html:28
-#: templates/studygroups/study_group_facilitate.html:69
+#: templates/studygroups/study_group_facilitate.html:64
 msgid "RSVPs"
 msgstr ""
 
 #: templates/studygroups/meeting_list.html:17
 #: templates/studygroups/organize_meetings.html:29
-#: templates/studygroups/study_group_facilitate.html:70
+#: templates/studygroups/study_group_facilitate.html:65
 msgid "Feedback"
 msgstr ""
 
@@ -3056,8 +2953,8 @@ msgstr ""
 #: templates/studygroups/notifications.html:19
 #, python-format
 msgid ""
-"You've been invited to join %(team_name)s. <a href=\"%(invite_confirm_url)s"
-"\">Respond to this invitation</a>"
+"You've been invited to join %(team_name)s. <a "
+"href=\"%(invite_confirm_url)s\">Respond to this invitation</a>"
 msgstr ""
 
 #: templates/studygroups/organize_meetings.html:4
@@ -3078,8 +2975,8 @@ msgid ""
 "If you want to change your RSVP status, just visit the appropriate link in "
 "your reminder email."
 msgstr ""
-"Wenn du deinen Rückmeldestatus ändern willst, klicke einfach auf den "
-"entsprechenden Link in deiner Erinnerungsmail. "
+"Wenn Sie Ihren Rückmeldestatus ändern wollen, klicken Sie bitte einfach auf "
+"den entsprechenden Link in Ihrer Erinnerungsmail. "
 
 #: templates/studygroups/signup.html:11
 #, python-format
@@ -3094,8 +2991,8 @@ msgstr "Moderiert von %(first_name)s %(last_name)s"
 #: templates/studygroups/signup.html:24
 #, python-format
 msgid ""
-"Course materials provided by <a href=\"%(link)s\" target=\"_blank\">"
-"%(provider)s</a>"
+"Course materials provided by <a href=\"%(link)s\" "
+"target=\"_blank\">%(provider)s</a>"
 msgstr ""
 "Kursmaterialien werden zur Verfügung gestellt von <a href=\"%(link)s\" "
 "target=\"_blank\">%(provider)s</a>"
@@ -3104,26 +3001,18 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"      This learning circle meets every <strong>%(day)s</strong> from <strong>"
-"%(meeting_time)s to %(end_time)s</strong> %(timezone)s starting <strong>"
-"%(start_date)s</strong> for %(meeting_count)s week.\n"
+"      This learning circle meets every <strong>%(day)s</strong> from <strong>%(meeting_time)s to %(end_time)s</strong> %(timezone)s starting <strong>%(start_date)s</strong> for %(meeting_count)s week.\n"
 "      "
 msgid_plural ""
 "\n"
-"      This learning circle meets every<strong> %(day)s</strong> from <strong>"
-"%(meeting_time)s to %(end_time)s</strong> %(timezone)s starting <strong>"
-"%(start_date)s</strong> for %(meeting_count)s weeks.</strong>\n"
+"      This learning circle meets every<strong> %(day)s</strong> from <strong>%(meeting_time)s to %(end_time)s</strong> %(timezone)s starting <strong>%(start_date)s</strong> for %(meeting_count)s weeks.</strong>\n"
 "      "
 msgstr[0] ""
 "\n"
-"Dieser Lernkreis trifft sich jeden <strong>%(day)s</strong> von <strong>"
-"%(meeting_time)s bis %(end_time)s</strong>%(timezone)s beginnend am <strong>"
-"%(start_date)s</strong> für %(meeting_count)s Woche."
+"Dieser Lernkreis trifft sich jeden <strong>%(day)s</strong> von <strong>%(meeting_time)s bis %(end_time)s</strong>%(timezone)s beginnend am <strong>%(start_date)s</strong> für %(meeting_count)s Woche."
 msgstr[1] ""
 "\n"
-"Dieses Lernteam trifft sich jeden <strong>%(day)s</strong> von <strong>"
-"%(meeting_time)s bis %(end_time)s</strong>%(timezone)s beginnend am <strong>"
-"%(start_date)s</strong> für %(meeting_count)s Wochen</strong>."
+"Dieses Lernteam trifft sich jeden <strong>%(day)s</strong> von <strong>%(meeting_time)s bis %(end_time)s</strong>%(timezone)s beginnend am <strong>%(start_date)s</strong> für %(meeting_count)s Wochen</strong>."
 
 #: templates/studygroups/signup.html:32
 msgid "At"
@@ -3139,21 +3028,16 @@ msgstr "Leider kann man sich für dieses Lernteam nicht mehr anmelden. "
 
 #: templates/studygroups/signup_success.html:9
 msgid "You successfully signed up!"
-msgstr "Du hast dich erfolgreich angemeldet!"
+msgstr "Sie haben sich erfolgreich angemeldet!"
 
 #: templates/studygroups/signup_success.html:12
 #, python-format
 msgid ""
 "\n"
-"        Thank you for signing up for &quot;%(course_title)s&quot; at "
-"%(venue_name)s. The first meeting will be on <strong>%(start_date)s, "
-"%(meeting_time)s</strong>. Your facilitator will be in contact before then."
+"        Thank you for signing up for &quot;%(course_title)s&quot; at %(venue_name)s. The first meeting will be on <strong>%(start_date)s, %(meeting_time)s</strong>. Your facilitator will be in contact before then."
 msgstr ""
 "\n"
-"Danke für deine Anmeldung zu quot;%(course_title)s&quot; an diesem Ort: "
-"%(venue_name)s. Das erste Treffen wird am <strong>%(start_date)s, "
-"%(meeting_time)s</strong> sein. Dein/e Lernteam-Moderator/in wird sich bis "
-"dahin bei dir melden. "
+"Danke für Ihre Anmeldung zu quot;%(course_title)s&quot; an diesem Ort: %(venue_name)s. Das erste Treffen wird am <strong>%(start_date)s, %(meeting_time)s</strong> sein. Ihr*e Lernteam-Moderator*in wird sich bis dahin bei Ihnen melden. "
 
 #: templates/studygroups/staff_dash.html:7
 msgid "Nico's dash"
@@ -3212,13 +3096,11 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"                  <strong>%(studygroups_met_count)s</strong> learning circle "
-"met\n"
+"                  <strong>%(studygroups_met_count)s</strong> learning circle met\n"
 "                "
 msgid_plural ""
 "\n"
-"                  <strong>%(studygroups_met_count)s</strong> learning "
-"circles met\n"
+"                  <strong>%(studygroups_met_count)s</strong> learning circles met\n"
 "                "
 msgstr[0] ""
 msgstr[1] ""
@@ -3227,13 +3109,11 @@ msgstr[1] ""
 #, python-format
 msgid ""
 "\n"
-"                  <strong>%(learners_reached_count)s</strong> learner "
-"reached\n"
+"                  <strong>%(learners_reached_count)s</strong> learner reached\n"
 "                "
 msgid_plural ""
 "\n"
-"                  <strong>%(learners_reached_count)s</strong> learners "
-"reached\n"
+"                  <strong>%(learners_reached_count)s</strong> learners reached\n"
 "                "
 msgstr[0] ""
 msgstr[1] ""
@@ -3259,7 +3139,7 @@ msgid "Facilitator rating"
 msgstr ""
 
 #: templates/studygroups/stats_dash.html:130
-#: templates/studygroups/study_group_facilitate.html:142
+#: templates/studygroups/study_group_facilitate.html:137
 msgid "Learners"
 msgstr ""
 
@@ -3292,10 +3172,8 @@ msgid "Last meeting"
 msgstr ""
 
 #: templates/studygroups/stats_dash.html:201
-#, fuzzy
-#| msgid "Meet your facilitator"
 msgid "Active facilitators"
-msgstr "Lerne deine/n Lernteam-Moderator/in kennen"
+msgstr ""
 
 #: templates/studygroups/stats_dash.html:209
 msgid "Team"
@@ -3317,153 +3195,151 @@ msgstr ""
 msgid "ID"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:19
+#: templates/studygroups/study_group_facilitate.html:14
 #, python-format
 msgid ""
-"At <a href=\"%(venue_website)s\">%(venue_name)s</a>, %(venue_details)s every "
-"%(day)s, %(meeting_time)s to %(end_time)s %(timezone)s starting "
+"At <a href=\"%(venue_website)s\">%(venue_name)s</a>, %(venue_details)s every"
+" %(day)s, %(meeting_time)s to %(end_time)s %(timezone)s starting "
 "%(start_date)s"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:21
+#: templates/studygroups/study_group_facilitate.html:16
 #, python-format
 msgid ""
 "At <strong>%(venue_name)s</strong>, %(venue_details)s every %(day)s, "
 "%(meeting_time)s to %(end_time)s %(timezone)s starting %(start_date)s"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:24
-#, fuzzy
-#| msgid "Meet your facilitator"
+#: templates/studygroups/study_group_facilitate.html:19
 msgid "Facilitator:"
-msgstr "Lerne deine/n Lernteam-Moderator/in kennen"
+msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:29
+#: templates/studygroups/study_group_facilitate.html:24
 msgid ""
 "This learning circle has been deleted. If that is a mistake, please contact "
 "your team coordinator or the P2PU learning circles coordinator."
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:35
-#: templates/studygroups/study_group_facilitate.html:79
-#: templates/studygroups/study_group_facilitate.html:90
-#: templates/studygroups/study_group_facilitate.html:129
-#: templates/studygroups/study_group_facilitate.html:180
+#: templates/studygroups/study_group_facilitate.html:30
+#: templates/studygroups/study_group_facilitate.html:74
+#: templates/studygroups/study_group_facilitate.html:85
+#: templates/studygroups/study_group_facilitate.html:124
+#: templates/studygroups/study_group_facilitate.html:175
 msgid "Edit"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:36
-#: templates/studygroups/study_group_facilitate.html:80
+#: templates/studygroups/study_group_facilitate.html:31
+#: templates/studygroups/study_group_facilitate.html:75
 msgid "Delete"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:39
+#: templates/studygroups/study_group_facilitate.html:34
 msgid "Close signup"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:41
+#: templates/studygroups/study_group_facilitate.html:36
 msgid "Open signup"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:44
+#: templates/studygroups/study_group_facilitate.html:39
 msgid "View webpage"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:45
+#: templates/studygroups/study_group_facilitate.html:40
 msgid "View final report"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:48
+#: templates/studygroups/study_group_facilitate.html:43
 msgid "Facilitator survey"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:50
+#: templates/studygroups/study_group_facilitate.html:45
 msgid "Learner survey link:"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:53
+#: templates/studygroups/study_group_facilitate.html:48
 msgid ""
-"This learning circle is currently a draft and users won't be able to find it "
-"on www.p2pu.org or sign up."
+"This learning circle is currently a draft and users won't be able to find it"
+" on www.p2pu.org or sign up."
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:54
+#: templates/studygroups/study_group_facilitate.html:49
 msgid "publish"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:59
+#: templates/studygroups/study_group_facilitate.html:54
 msgid ""
 "Signup is currently closed and your learning circle will not be listed on "
 "the landing page."
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:64
+#: templates/studygroups/study_group_facilitate.html:59
 msgid "Meetings"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:68
+#: templates/studygroups/study_group_facilitate.html:63
 msgid "Date"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:89
+#: templates/studygroups/study_group_facilitate.html:84
 #: templates/studygroups/studygroup_list.html:37
 msgid "View"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:95
-#: templates/studygroups/study_group_facilitate.html:97
+#: templates/studygroups/study_group_facilitate.html:90
+#: templates/studygroups/study_group_facilitate.html:92
 msgid "Capture feedback"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:105
+#: templates/studygroups/study_group_facilitate.html:100
 msgid "Add meeting"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:108
+#: templates/studygroups/study_group_facilitate.html:103
 msgid "Messages"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:113
+#: templates/studygroups/study_group_facilitate.html:108
 msgid "Email subject"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:114
+#: templates/studygroups/study_group_facilitate.html:109
 msgid "Email body"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:115
+#: templates/studygroups/study_group_facilitate.html:110
 msgid "SMS body"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:116
+#: templates/studygroups/study_group_facilitate.html:111
 msgid "Sent at"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:136
+#: templates/studygroups/study_group_facilitate.html:131
 msgid "New message"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:147
+#: templates/studygroups/study_group_facilitate.html:142
 msgid "Goal"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:148
+#: templates/studygroups/study_group_facilitate.html:143
 msgid "Support"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:149
+#: templates/studygroups/study_group_facilitate.html:144
 msgid "Laptop & headphones"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:151
+#: templates/studygroups/study_group_facilitate.html:146
 msgid "Digital literacy"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:179
+#: templates/studygroups/study_group_facilitate.html:174
 msgid "Remove"
 msgstr ""
 
-#: templates/studygroups/study_group_facilitate.html:187
+#: templates/studygroups/study_group_facilitate.html:182
 msgid "Add learner"
 msgstr ""
 
@@ -3475,11 +3351,11 @@ msgstr ""
 #: templates/studygroups/studygroup_form_legacy.html:13
 msgid ""
 "This information will be used to generate your public webpage for your "
-"learning circle. If you get stuck, the <a href=\"https://www.p2pu.org/en/"
-"facilitate/\" target=\"_blank\">facilitator page</a> and the <a href="
-"\"https://community.p2pu.org/\">P2PU community</a> can provide tips and "
-"suggestions. You can edit this webpage at any point in the future through "
-"your Dashboard."
+"learning circle. If you get stuck, the <a "
+"href=\"https://www.p2pu.org/en/facilitate/\" target=\"_blank\">facilitator "
+"page</a> and the <a href=\"https://community.p2pu.org/\">P2PU community</a> "
+"can provide tips and suggestions. You can edit this webpage at any point in "
+"the future through your Dashboard."
 msgstr ""
 
 #: templates/studygroups/studygroup_form_legacy.html:16
