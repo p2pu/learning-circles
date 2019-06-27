@@ -75,7 +75,7 @@ class TestLearnerViews(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].to[0], self.APPLICATION_DATA['email'])
         self.assertEqual(mail.outbox[0].cc[0], study_group.facilitator.email)
-        self.assertIn('The first meeting will be on Monday, 23 March at 6:30PM', mail.outbox[0].body)
+        self.assertIn('The first meeting will be on Monday, 23 March at 6:30 p.m.', mail.outbox[0].body)
 
 
     def test_submit_application_sg_with_custom_q(self):
