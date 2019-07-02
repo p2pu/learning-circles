@@ -3,7 +3,13 @@ import PropTypes from 'prop-types'
 import Card from './Card'
 
 class Notification extends React.Component {
-  state = { dismissed: false }
+  state = { dismissed: this.props.dismissed }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.dismissed !== this.props.dismissed) {
+      this.setState({ dismissed: this.props.dismissed })
+    }
+  }
 
   render() {
     return (
@@ -25,11 +31,13 @@ class Notification extends React.Component {
 }
 
 Notification.propTypes = {
+  dismissed: PropTypes.bool,
   dismissable: PropTypes.bool,
   level: PropTypes.oneOf(['success', 'warning', 'error'])
 }
 
 Notification.defaultProps = {
+  dismissed: false,
   dismissable: true,
   level: 'success'
 }

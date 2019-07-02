@@ -11,8 +11,6 @@ class EmailValidationNotification extends React.Component {
     e.preventDefault()
     const url = this.props.emailConfirmationUrl;
 
-    console.log(url)
-
     axios({
       url,
       method: 'POST',

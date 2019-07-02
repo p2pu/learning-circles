@@ -49,6 +49,7 @@ from studygroups.decorators import study_group_is_published
 from studygroups.charts import OverallRatingBarChart
 from studygroups.discourse import create_discourse_topic
 from studygroups.views.api import _course_to_json
+from custom_registration.models import eligible_team_by_email_domain
 
 logger = logging.getLogger(__name__)
 
@@ -574,6 +575,17 @@ class InvitationConfirm(FormView):
     def form_valid(self, form):
         # Update invitation
         invitation = TeamInvitation.objects.filter(email__iexact=self.request.user.email, responded_at__isnull=True).first()
+        if invitation is None:
+            # implicit invitation from matching email
+            eligible_team = eligible_team_by_email_domain(self.request.user)
+            if eligible_team:
+                organizer = eligible_team.teammembership_set.filter(role=TeamMembership.ORGANIZER).first()
+                invitation = TeamInvitation.objects.create(
+                    team=eligible_team,
+                    organizer=organizer.user,
+                    email=self.request.user.email,
+                    role=TeamMembership.MEMBER
+                )
         current_membership_qs = TeamMembership.objects.filter(user=self.request.user)
         if current_membership_qs.filter(role=TeamMembership.ORGANIZER).exists() and self.request.POST['response'] == 'yes':
             messages.warning(self.request, _('You are currently the organizer of another team and cannot join this team.'))
@@ -619,12 +631,22 @@ class FacilitatorDashboard(TemplateView):
         context = super(FacilitatorDashboard, self).get_context_data(**kwargs)
 
         if self.request.user.is_authenticated():
+            email_validated = hasattr(self.request.user, 'profile') and self.request.user.profile.email_confirmed_at is not None
+
+            # pending team invitation from organizer
             invitation = TeamInvitation.objects.filter(email__iexact=self.request.user.email, responded_at__isnull=True).first()
             if invitation:
                 context['team_name'] = invitation.team.name
-                context['team_invitation_url'] = reverse("studygroups_facilitator_invitation_confirm")
+                context['team_organizer_name'] = invitation.organizer.first_name
+                context['explicit_team_invitation_url'] = reverse("studygroups_facilitator_invitation_confirm")
+            else:
+                # implicit team invitation based on email domain
+                eligible_team = eligible_team_by_email_domain(self.request.user)
+                if email_validated and eligible_team:
+                    context['team_name'] = eligible_team.name
+                    context['implicit_team_invitation_url'] = reverse("studygroups_facilitator_invitation_confirm")
 
-            if hasattr(self.request.user, 'profile') and self.request.user.profile.email_confirmed_at is None:
+            if not email_validated:
                 context["email_confirmation_url"] = reverse("email_confirm_request")
 
         return context

@@ -65,24 +65,6 @@ def check_user_token(user, token):
 def confirm_user_email(user):
     user.profile.email_confirmed_at = timezone.now()
     user.profile.save()
-    generate_team_invitation_by_email_domain(user)
-
-
-def generate_team_invitation_by_email_domain(user):
-    domain = user.email.rsplit('@', 1)[1]
-    matching_teams = Team.objects.filter(email_domain=domain)
-
-    for team in matching_teams:
-        organizer = team.teammembership_set.filter(role=TeamMembership.ORGANIZER).first()
-        if organizer is None:
-            logger.error('Team must have an organizer to add other members.')
-            return
-        invitation = TeamInvitation.objects.create(
-            team=team,
-            organizer=organizer.user,
-            email=user.email,
-            role=TeamMembership.MEMBER
-        )
 
 
 def send_email_confirm_email(user):
@@ -133,3 +115,23 @@ def send_new_user_email(user):
     )
     email.attach_alternative(html_body, 'text/html')
     email.send()
+
+
+def eligible_team_by_email_domain(user):
+    # user is already on a team
+    if TeamMembership.objects.filter(user=user).exists():
+        return None
+
+    email_domain = user.email.rsplit('@', 1)[1]
+    matching_team = Team.objects.filter(email_domain=email_domain).first()
+
+    # user already has an explicit invitation to this team or has already responsed to an invitation to this team
+    if TeamInvitation.objects.filter(email=user.emailgi, team=matching_team).exists():
+        return None
+
+    # team must have an organizer to create invitation
+    if not TeamMembership.objects.filter(team=matching_team, role=TeamMembership.ORGANIZER).exists():
+        return None
+
+    return matching_team
+
