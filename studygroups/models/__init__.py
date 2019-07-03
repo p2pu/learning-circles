@@ -1,6 +1,6 @@
 # coding=utf-8
 from django.db import models
-from django.db.models import Count, Max, Q, Sum, Case, When, IntegerField, Value
+from django.db.models import Count, Max, Q, Sum, Case, When, IntegerField, Value, OuterRef, Subquery
 from django.db.models import F
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
@@ -194,7 +194,9 @@ def get_new_courses(start_time, end_time):
 
 def get_upcoming_studygroups(start_time):
     end_time = start_time + datetime.timedelta(days=21)
-    return StudyGroup.objects.published().filter(start_date__gte=start_time, start_date__lt=end_time)
+    team_membership = TeamMembership.objects.filter(user=OuterRef('facilitator'))
+
+    return StudyGroup.objects.published().filter(start_date__gte=start_time, start_date__lt=end_time).annotate(team=Subquery(team_membership.values('team__name')))
 
 def get_studygroups_that_ended(start_time, end_time, team=None):
     if team:
@@ -308,7 +310,6 @@ def community_digest_data(start_time, end_time):
     discourse_categories = get_discourse_categories()
     top_discourse_topics = get_top_discourse_topics_and_users()
     web_version_path = reverse('studygroups_community_digest', kwargs={'start_date': start_time.strftime("%d-%m-%Y"), 'end_date': end_time.strftime("%d-%m-%Y")})
-
 
     return {
         "start_date": start_time.date(),

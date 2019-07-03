@@ -253,6 +253,7 @@
         <td>{% trans "Facilitator" %}</td>
         <td>{% trans "Course" %}</td>
         <td>{% trans "Location" %}</td>
+        <td>{% trans "Team" %}</td>
       </tr>
     </thead>
     <tbody>
@@ -261,6 +262,7 @@
           <td>{{ studygroup.facilitator.first_name | title }}</td>
           <td><a href="{% url 'studygroups_course_page' studygroup.course.pk %}">{{ studygroup.course.title }}</a></td>
           <td>{{ studygroup.city | title }}</td>
+          <td>{{ studygroup.team }}</td>
         </tr>
       {% endfor %}
     </tbody>
