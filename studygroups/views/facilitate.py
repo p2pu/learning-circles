@@ -557,8 +557,19 @@ class InvitationConfirm(FormView):
                 email__iexact=self.request.user.email,
                 responded_at__isnull=True).first()
         if invitation is None:
-            messages.warning(self.request, _('No team invitations found'))
-            return http.HttpResponseRedirect(reverse('studygroups_facilitator'))
+            # implicit invitation from matching email
+            eligible_team = eligible_team_by_email_domain(self.request.user)
+            if eligible_team:
+                organizer = eligible_team.teammembership_set.filter(role=TeamMembership.ORGANIZER).first()
+                invitation = TeamInvitation.objects.create(
+                    team=eligible_team,
+                    organizer=organizer.user,
+                    email=self.request.user.email,
+                    role=TeamMembership.MEMBER
+                )
+            else:
+                messages.warning(self.request, _('No team invitations found'))
+                return http.HttpResponseRedirect(reverse('studygroups_facilitator'))
 
         return super(InvitationConfirm, self).get(request, *args, **kwargs)
 
@@ -575,17 +586,6 @@ class InvitationConfirm(FormView):
     def form_valid(self, form):
         # Update invitation
         invitation = TeamInvitation.objects.filter(email__iexact=self.request.user.email, responded_at__isnull=True).first()
-        if invitation is None:
-            # implicit invitation from matching email
-            eligible_team = eligible_team_by_email_domain(self.request.user)
-            if eligible_team:
-                organizer = eligible_team.teammembership_set.filter(role=TeamMembership.ORGANIZER).first()
-                invitation = TeamInvitation.objects.create(
-                    team=eligible_team,
-                    organizer=organizer.user,
-                    email=self.request.user.email,
-                    role=TeamMembership.MEMBER
-                )
         current_membership_qs = TeamMembership.objects.filter(user=self.request.user)
         if current_membership_qs.filter(role=TeamMembership.ORGANIZER).exists() and self.request.POST['response'] == 'yes':
             messages.warning(self.request, _('You are currently the organizer of another team and cannot join this team.'))
@@ -597,6 +597,7 @@ class InvitationConfirm(FormView):
             if current_membership_qs.exists():
                 current_membership_qs.delete()
             TeamMembership.objects.create(team=invitation.team, user=self.request.user, role=invitation.role)
+            messages.success(self.request, _('Welcome to the team! You are now a part of {}'.format(invitation.team.name)))
         return super(InvitationConfirm, self).form_valid(form)
 
 
@@ -638,13 +639,13 @@ class FacilitatorDashboard(TemplateView):
             if invitation:
                 context['team_name'] = invitation.team.name
                 context['team_organizer_name'] = invitation.organizer.first_name
-                context['explicit_team_invitation_url'] = reverse("studygroups_facilitator_invitation_confirm")
+                context['team_invitation_url'] = reverse("studygroups_facilitator_invitation_confirm")
             else:
                 # implicit team invitation based on email domain
                 eligible_team = eligible_team_by_email_domain(self.request.user)
                 if email_validated and eligible_team:
                     context['team_name'] = eligible_team.name
-                    context['implicit_team_invitation_url'] = reverse("studygroups_facilitator_invitation_confirm")
+                    context['team_invitation_url'] = reverse("studygroups_facilitator_invitation_confirm")
 
             if not email_validated:
                 context["email_confirmation_url"] = reverse("email_confirm_request")

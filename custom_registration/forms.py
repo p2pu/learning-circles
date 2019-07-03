@@ -56,6 +56,9 @@ class ProfileForm(forms.ModelForm):
         placeholders = {
             'contact_url': _("Twitter, LinkedIn, website, etc.")
         }
+        help_texts = {
+             'contact_url': _('Where can potential team members find your contact information? i.e. Staff page, Twitter, personal website, etc.'),
+        }
         widgets = {
             'bio': forms.Textarea(attrs={'rows':5, 'cols':10}),
             'latitude': forms.HiddenInput,

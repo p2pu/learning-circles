@@ -8,8 +8,7 @@ const element = document.getElementById('facilitator-dashboard')
 const user = element.dataset.user === "AnonymousUser" ? null : element.dataset.user;
 const teamName = element.dataset.teamName === "None" ? null : element.dataset.teamName;
 const teamOrganizerName = element.dataset.teamOrganizerName === "None" ? null : element.dataset.teamOrganizerName;
-const explicitTeamInvitationUrl = element.dataset.explicitTeamInvitationUrl === "None" ? null : element.dataset.explicitTeamInvitationUrl;
-const implicitTeamInvitationUrl = element.dataset.implicitTeamInvitationUrl === "None" ? null : element.dataset.implicitTeamInvitationUrl;
+const teamInvitationUrl = element.dataset.teamInvitationUrl === "None" ? null : element.dataset.teamInvitationUrl;
 const emailConfirmationUrl = element.dataset.emailConfirmationUrl === "None" ? null : element.dataset.emailConfirmationUrl;
 
 ReactDOM.render(
@@ -17,7 +16,6 @@ ReactDOM.render(
     user={user}
     teamName={teamName}
     teamOrganizerName={teamOrganizerName}
-    explicitTeamInvitationUrl={explicitTeamInvitationUrl}
-    implicitTeamInvitationUrl={implicitTeamInvitationUrl}
+    teamInvitationUrl={teamInvitationUrl}
     emailConfirmationUrl={emailConfirmationUrl}
   />, element)

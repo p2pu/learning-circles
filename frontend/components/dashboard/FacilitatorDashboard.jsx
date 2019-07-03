@@ -17,7 +17,7 @@ import GlobalSuccesses from "./GlobalSuccesses";
 import InstagramFeed from "./InstagramFeed";
 import Title from './Title';
 import EmailValidationNotification from './EmailValidationNotification'
-import ImplicitTeamInvitationNotification from './ImplicitTeamInvitationNotification'
+import TeamInvitationNotification from './TeamInvitationNotification'
 
 import 'react-tabs/style/react-tabs.css';
 import 'aos/dist/aos.css';
@@ -80,19 +80,11 @@ export default class FacilitatorDashboard extends React.Component {
             }
 
             {
-              this.props.explicitTeamInvitationUrl &&
-              <Notification level="success" dismissable={true}>
-                <p className="mb-0"><span className="bold">{this.props.teamOrganizerName}</span> invited you to join <span className="bold">{this.props.teamName}</span>. Do you want to join this team?</p>
-                <a href={this.props.explicitTeamInvitationUrl}>Respond to the invitation</a>
-              </Notification>
-            }
-
-            {
-              this.props.implicitTeamInvitationUrl &&
-              <ImplicitTeamInvitationNotification
-                implicitTeamInvitationUrl={this.props.implicitTeamInvitationUrl}
+              this.props.teamInvitationUrl &&
+              <TeamInvitationNotification
+                teamInvitationUrl={this.props.teamInvitationUrl}
+                teamOrganizerName={this.props.teamOrganizerName}
                 teamName={this.props.teamName}
-                showAlert={this.showAlert}
               />
             }
             </div>

@@ -126,7 +126,7 @@ def eligible_team_by_email_domain(user):
     matching_team = Team.objects.filter(email_domain=email_domain).first()
 
     # user already has an explicit invitation to this team or has already responsed to an invitation to this team
-    if TeamInvitation.objects.filter(email=user.emailgi, team=matching_team).exists():
+    if TeamInvitation.objects.filter(email=user.email, team=matching_team).exists():
         return None
 
     # team must have an organizer to create invitation
