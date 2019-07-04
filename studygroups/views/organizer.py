@@ -28,6 +28,7 @@ from studygroups.models import get_team_users
 from studygroups.models import get_user_team
 from studygroups.tasks import send_team_invitation_email
 from studygroups.decorators import user_is_organizer
+from studygroups.decorators import user_is_team_member
 from studygroups.decorators import user_is_team_organizer
 from studygroups.charts import NewLearnersGoalsChart
 
@@ -186,7 +187,7 @@ class TeamInvitationCreate(View):
         return http.JsonResponse({"status": "CREATED"})
 
 
-@user_is_organizer
+@user_is_team_member
 def weekly_report(request, year=None, month=None, day=None):
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     if month and day and year:
@@ -199,7 +200,7 @@ def weekly_report(request, year=None, month=None, day=None):
     }
     # get team for current user
     team = None
-    membership = TeamMembership.objects.filter(user=request.user, role=TeamMembership.ORGANIZER).first()
+    membership = TeamMembership.objects.filter(user=request.user).first()
     if membership:
         team = membership.team
 
@@ -207,8 +208,11 @@ def weekly_report(request, year=None, month=None, day=None):
     report_charts = {
         "learner_goals_chart": NewLearnersGoalsChart(start_time, end_time, data["new_applications"], team).generate()
     }
+    show_emails = (membership and membership.role == TeamMembership.ORGANIZER) or request.user.is_staff
 
     context.update(data)
     context.update(report_charts)
+    context.update({'show_emails': show_emails})
+
 
     return render(request, 'studygroups/email/weekly-update.html', context)

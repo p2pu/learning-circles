@@ -46,6 +46,14 @@ def user_is_organizer(func):
     return login_required(decorated)
 
 
+def user_is_team_member(func):
+    def decorated(*args, **kwargs):
+        if args[0].user.is_staff or TeamMembership.objects.filter(user=args[0].user,).exists():
+            return func(*args, **kwargs)
+        raise PermissionDenied
+    return login_required(decorated)
+
+
 def user_is_team_organizer(func):
     def decorated(*args, **kwargs):
         team_id = kwargs.get('team_id')

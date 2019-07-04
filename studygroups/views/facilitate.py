@@ -597,7 +597,7 @@ class InvitationConfirm(FormView):
             if current_membership_qs.exists():
                 current_membership_qs.delete()
             TeamMembership.objects.create(team=invitation.team, user=self.request.user, role=invitation.role)
-            messages.success(self.request, _('Welcome to the team! You are now a part of {}'.format(invitation.team.name)))
+            messages.success(self.request, _('Welcome to the team! You are now a part of {}.'.format(invitation.team.name)))
         return super(InvitationConfirm, self).form_valid(form)
 
 

@@ -331,14 +331,18 @@
       <thead>
         <tr>
           <td>{% trans "Name" %}</td>
+          {% if show_emails %}
           <td>{% trans "Email" %}</td>
+          {% endif %}
         </tr>
       </thead>
       <tbody>
         {% for user in new_users %}
           <tr>
             <td>{{ user.first_name | title }} {{ user.last_name | title }}</td>
+            {% if show_emails %}
             <td>{{ user.email }}</td>
+            {% endif %}
           </tr>
         {% endfor %}
       </tbody>
