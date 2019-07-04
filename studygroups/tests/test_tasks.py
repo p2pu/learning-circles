@@ -404,7 +404,8 @@ class TestStudyGroupTasks(TestCase):
             send_weekly_update()
 
         self.assertEqual(len(mail.outbox), 2)
-        self.assertEqual(mail.outbox[0].to[0], 'organ@team.com')
+        self.assertEqual(mail.outbox[0].bcc[0], 'faci1@team.com')
+        self.assertEqual(mail.outbox[0].bcc[1], 'organ@team.com')
         self.assertEqual(mail.outbox[1].to[0], 'admin@test.com')
 
 
