@@ -3,7 +3,7 @@
 {% block body %}
 <p>{% blocktrans with first_name=study_group.facilitator.first_name %}Hi there {{first_name}}{% endblocktrans %}</p>
 
-<p>{% blocktrans with meeting_date=next_meeting.meeting_datetime|date:"l, j N, fA" %}We've generated a reminder for the learning circle meeting this {{meeting_date}}. The reminder will be sent automatically in 2 days from now.{% endblocktrans %}</p>
+<p>{% blocktrans with meeting_date=next_meeting.meeting_datetime|date:"MEETING_DATETIME_FORMAT" %}We've generated a reminder for the learning circle meeting this {{meeting_date}}. The reminder will be sent automatically in 2 days from now.{% endblocktrans %}</p>
 
 <p>{% trans "This is what the reminder will look like." %}</p>
 
