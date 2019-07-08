@@ -19,7 +19,7 @@ before_script:
 - docker build -t p2pu/learning-circles .
 
 script:
-- docker run -d --name=postgres -e POSTGRES_PASSWORD=password postgres:9.3
+- docker run -d --name=postgres -e POSTGRES_PASSWORD=password postgres:11
 - docker run -d --name=selenium selenium/standalone-chrome
 - docker run --rm -it --link postgres --link selenium -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost p2pu/learning-circles dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
 
