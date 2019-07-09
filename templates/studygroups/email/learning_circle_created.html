@@ -46,7 +46,7 @@
 <ul>
     <li>{% blocktrans %}<a href="https://community.p2pu.org/c/learning-circles/promotion-and-outreach"><b>Review promotion and outreach.</b></a>You'll find templates and discussions on the community that will help you promote your learning circle.{% endblocktrans %}</li>
     {% url 'studygroups_generate_course_discourse_topic' study_group.course.pk as course_discourse_url %}
-    <li>{% blocktrans with course_title=study_group.course.title %}<a href="{{course_discourse_url}}">Learn more about “{{course_title}}”</a>. Post questions specific to this course our community forum.{% endblocktrans %}</li>
+    <li>{% blocktrans with course_title=study_group.course.title %}<a href="{{course_discourse_url}}"><b>Learn more about “{{course_title}}”</b></a>. Post questions specific to this course our community forum.{% endblocktrans %}</li>
     <li>{% blocktrans %}<a href="https://community.p2pu.org/c/learning-circles/creating-a-learning-circle"><b>Gather your supplies</b></a>. Make sure you have everything you need before your learning circle gets started.{% endblocktrans %}</li>
     <li>{% blocktrans %}<a href="{{dashboard_url}}"><b>Review learner applications</b></a>. You’ll receive an email whenever somebody applies to your learning circle. You can view their applications and send them messages directly through your dashboard.{% endblocktrans %}</li>
 </ul>

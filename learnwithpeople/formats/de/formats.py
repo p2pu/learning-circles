@@ -1,0 +1,2 @@
+DATE_FORMAT = "l, j. N"
+MEETING_DATETIME_FORMAT = "l, j. N, H:i"

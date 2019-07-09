@@ -51,7 +51,6 @@ def generate_reminder(study_group):
             if previous_meeting and previous_meeting.feedback_set.first():
                 context['feedback'] = previous_meeting.feedback_set.first()
             timezone.activate(pytz.timezone(study_group.timezone))
-            # TODO do I need to activate a locale?
             with use_language(study_group.language):
                 reminder.email_subject = render_to_string_ctx(
                     'studygroups/email/reminder-subject.txt',
@@ -71,15 +70,17 @@ def generate_reminder(study_group):
             reminder.sms_body = reminder.sms_body[:160]
             reminder.save()
 
-            facilitator_notification_subject = 'A reminder for {0} was generated'.format(study_group.course.title)
-            facilitator_notification_html = render_html_with_css(
-                'studygroups/email/reminder_notification.html',
-                context
-            )
-            facilitator_notification_txt = render_to_string_ctx(
-                'studygroups/email/reminder_notification.txt',
-                context
-            )
+            with use_language(reminder.study_group.language):
+                facilitator_notification_subject = _('A reminder for %(course_title)s was generated' % {"course_title": study_group.course.title})
+                facilitator_notification_html = render_html_with_css(
+                    'studygroups/email/reminder_notification.html',
+                    context
+                )
+                facilitator_notification_txt = render_to_string_ctx(
+                    'studygroups/email/reminder_notification.txt',
+                    context
+                )
+
             timezone.deactivate()
             to = [study_group.facilitator.email]
             notification = EmailMultiAlternatives(
@@ -502,12 +503,13 @@ def send_meeting_change_notification(old_meeting, new_meeting):
         'new_meeting': new_meeting,
         'learning_circle': study_group,
     }
-    timezone.activate(pytz.timezone(study_group.timezone))
-    subject = render_to_string_ctx('studygroups/email/meeting_changed-subject.txt', context).strip('\n')
-    html_body = render_to_string_ctx('studygroups/email/meeting_changed.html', context)
-    text_body = html_body_to_text(html_body)
-    sms_body = render_to_string_ctx('studygroups/email/meeting_changed-sms.txt', context).strip('\n')
-    timezone.deactivate()
+    
+    with use_language(study_group.language), timezone.override(pytz.timezone(study_group.timezone)):
+        subject = render_to_string_ctx('studygroups/email/meeting_changed-subject.txt', context).strip('\n')
+        html_body = render_to_string_ctx('studygroups/email/meeting_changed.html', context)
+        text_body = html_body_to_text(html_body)
+        sms_body = render_to_string_ctx('studygroups/email/meeting_changed-sms.txt', context).strip('\n')
+
     notification = EmailMultiAlternatives(
         subject, 
         text_body, 

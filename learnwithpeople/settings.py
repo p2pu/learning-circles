@@ -98,9 +98,12 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 LOCALE_PATHS = [
     path('locale')
+]
+
+FORMAT_MODULE_PATH = [
+    'learnwithpeople.formats',
 ]
 
 # Static files (CSS, JavaScript, Images)
