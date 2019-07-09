@@ -72,3 +72,22 @@ def get_user_team(user):
     team_membership = TeamMembership.objects.filter(user=user).get()
     return team_membership.team
 
+
+def eligible_team_by_email_domain(user):
+    # user is already on a team
+    if TeamMembership.objects.filter(user=user).exists():
+        return None
+
+    email_domain = user.email.rsplit('@', 1)[1]
+    matching_team = Team.objects.filter(email_domain=email_domain).first()
+
+    # user already has an explicit invitation to this team or has already responsed to an invitation to this team
+    if TeamInvitation.objects.filter(email=user.email, team=matching_team).exists():
+        return None
+
+    # team must have an organizer to create invitation
+    if not TeamMembership.objects.filter(team=matching_team, role=TeamMembership.ORGANIZER).exists():
+        return None
+
+    return matching_team
+

@@ -49,7 +49,7 @@ from studygroups.decorators import study_group_is_published
 from studygroups.charts import OverallRatingBarChart
 from studygroups.discourse import create_discourse_topic
 from studygroups.views.api import _course_to_json
-from custom_registration.models import eligible_team_by_email_domain
+from studygroups.models.team import eligible_team_by_email_domain
 
 logger = logging.getLogger(__name__)
 

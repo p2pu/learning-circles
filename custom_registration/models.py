@@ -15,9 +15,6 @@ import string
 import re
 
 from studygroups.models import Profile
-from studygroups.models import Team
-from studygroups.models import TeamInvitation
-from studygroups.models import TeamMembership
 from studygroups.utils import html_body_to_text
 
 def create_user(email, first_name, last_name, password, communication_opt_in=False, interested_in_learning=''):
@@ -115,23 +112,3 @@ def send_new_user_email(user):
     )
     email.attach_alternative(html_body, 'text/html')
     email.send()
-
-
-def eligible_team_by_email_domain(user):
-    # user is already on a team
-    if TeamMembership.objects.filter(user=user).exists():
-        return None
-
-    email_domain = user.email.rsplit('@', 1)[1]
-    matching_team = Team.objects.filter(email_domain=email_domain).first()
-
-    # user already has an explicit invitation to this team or has already responsed to an invitation to this team
-    if TeamInvitation.objects.filter(email=user.email, team=matching_team).exists():
-        return None
-
-    # team must have an organizer to create invitation
-    if not TeamMembership.objects.filter(team=matching_team, role=TeamMembership.ORGANIZER).exists():
-        return None
-
-    return matching_team
-
