@@ -23,6 +23,7 @@ import pytz
 import logging
 
 from studygroups.decorators import user_is_group_facilitator
+from studygroups.decorators import user_is_team_organizer
 from studygroups.models import Course
 from studygroups.models import StudyGroup
 from studygroups.models import Application
@@ -900,53 +901,86 @@ class InstagramFeed(View):
         return json_response(request, { "items": response["data"] })
 
 
+def serialize_team_data(team):
+    serialized_team = {
+        "id": team.pk,
+        "name": team.name,
+        "page_slug": team.page_slug,
+        "member_count": team.teammembership_set.count(),
+        "zoom": team.zoom,
+        "date_established": team.created_at.strftime("%B %Y"),
+        "organizers": [],
+    }
+
+    members = team.teammembership_set.values('user')
+    studygroup_count = StudyGroup.objects.published().filter(facilitator__in=members).count()
+
+    serialized_team["studygroup_count"] = studygroup_count
+
+    organizers = team.teammembership_set.filter(role=TeamMembership.ORGANIZER)
+    for organizer in organizers:
+        serialized_organizer = {
+            "first_name": organizer.user.first_name,
+            "city": organizer.user.profile.city,
+            "bio": organizer.user.profile.bio,
+            "contact_url": organizer.user.profile.contact_url,
+        }
+
+        if organizer.user.profile.avatar:
+            serialized_organizer["avatar_url"] = f"{settings.PROTOCOL}://{settings.DOMAIN}" + organizer.user.profile.avatar.url
+
+        serialized_team["organizers"].append(serialized_organizer)
+
+    if team.page_image:
+        serialized_team["image_url"] = f"{settings.PROTOCOL}://{settings.DOMAIN}" + team.page_image.url
+
+    if team.latitude and team.longitude:
+        serialized_team["coordinates"] = {
+            "longitude": team.longitude,
+            "latitude": team.latitude,
+        }
+
+    return serialized_team
+
+
 class TeamListView(View):
     def get(self, request):
         data = {}
 
-        def _serialize_team_data(team):
-            serialized_team = {
-                "id": team.pk,
-                "name": team.name,
-                "page_slug": team.page_slug,
-                "member_count": team.teammembership_set.count(),
-                "zoom": team.zoom,
-                "date_established": team.created_at.strftime("%B %Y"),
-                "organizers": [],
-            }
-
-            members = team.teammembership_set.values('user')
-            studygroup_count = StudyGroup.objects.published().filter(facilitator__in=members).count()
-
-            serialized_team["studygroup_count"] = studygroup_count
-
-            organizers = team.teammembership_set.filter(role=TeamMembership.ORGANIZER)
-            for organizer in organizers:
-                serialized_organizer = {
-                    "first_name": organizer.user.first_name,
-                    "city": organizer.user.profile.city,
-                    "bio": organizer.user.profile.bio,
-                    "contact_url": organizer.user.profile.contact_url,
-                }
-
-                if organizer.user.profile.avatar:
-                    serialized_organizer["avatar_url"] = f"{settings.PROTOCOL}://{settings.DOMAIN}" + organizer.user.profile.avatar.url
-
-                serialized_team["organizers"].append(serialized_organizer)
-
-            if team.page_image:
-                serialized_team["image_url"] = f"{settings.PROTOCOL}://{settings.DOMAIN}" + team.page_image.url
-
-            if team.latitude and team.longitude:
-                serialized_team["coordinates"] = {
-                    "longitude": team.longitude,
-                    "latitude": team.latitude,
-                }
-
-            return serialized_team
-
         teams = Team.objects.all().order_by('name')
         data["count"] = teams.count()
-        data['items'] = [ _serialize_team_data(team) for team in teams ]
+        data['items'] = [ serialize_team_data(team) for team in teams ]
         return json_response(request, data)
+
+
+class TeamDetailView(SingleObjectMixin, View):
+    model = Team
+    pk_url_kwarg = 'team_id'
+
+    def get(self, request, **kwargs):
+        data = {}
+        team = self.get_object()
+        serialized_team = serialize_team_data(team)
+
+        if request.user.is_authenticated:
+            #  ensure user is team organizer
+            # organizers = team.teammembership_set.filter(role=TeamMembership.ORGANIZER)
+            serialized_team['team_invitation_url'] = team.team_invitation_url()
+
+        data['item'] = serialized_team
+
+        return json_response(request, data)
+
+
+@user_is_team_organizer
+@login_required
+def refresh_team_invitation_url(request, team_id):
+    team = Team.objects.get(pk=team_id)
+    team.generate_invitation_token()
+
+    return json_response(request, { "team_invitation_url": team.team_invitation_url() })
+
+
+
+
 

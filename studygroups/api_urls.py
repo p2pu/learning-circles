@@ -21,4 +21,6 @@ urlpatterns = [
     url(r'^learning-circles-map/$', views.LearningCirclesMapView.as_view(), name='api_learningcircles_map'),
     url(r'^instagram-feed/$', views.InstagramFeed.as_view(), name='api_instagram_feed'),
     url(r'^teams/$', views.TeamListView.as_view(), name='api_teams'),
+    url(r'^teams/(?P<team_id>[\d]+)/$', views.TeamDetailView.as_view(), name='api_teams_detail'),
+    url(r'^teams/(?P<team_id>[\d]+)/refresh-invitation-url/$', views.refresh_team_invitation_url, name='api_teams_refresh_invitation_url'),
 ]
