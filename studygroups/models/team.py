@@ -2,6 +2,13 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.db import IntegrityError
+from django.conf import settings
+from django.urls import reverse
+
+from .base import LifeTimeTrackingModel
+
+import uuid
 
 class Team(models.Model):
     name = models.CharField(max_length=128)
@@ -12,12 +19,30 @@ class Team(models.Model):
     zoom = models.IntegerField(default=7)
     created_at = models.DateTimeField(auto_now_add=True)
     email_domain = models.CharField(max_length=128, blank=True)
+    invitation_token = models.UUIDField(null=True, blank=True, unique=True)
 
     def __str__(self):
         return self.name
 
+    def generate_invitation_token(self):
+        try:
+            self.invitation_token = uuid.uuid4()
+            self.save()
+        except IntegrityError:
+            generate_invitation_token(self)
 
-class TeamMembership(models.Model):
+
+    def team_invitation_url(self):
+        if self.invitation_token is None:
+            return None
+
+        base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
+        path = reverse('studygroups_generate_team_invitation', kwargs={'token': self.invitation_token})
+
+        return base_url + path
+
+
+class TeamMembership(LifeTimeTrackingModel):
     ORGANIZER = 'ORGANIZER'
     MEMBER = 'MEMBER'
     ROLES = (
@@ -27,7 +52,7 @@ class TeamMembership(models.Model):
     team = models.ForeignKey('studygroups.Team', on_delete=models.CASCADE)
     user = models.OneToOneField(User, on_delete=models.CASCADE) # TODO should this be a OneToOneField?
     role = models.CharField(max_length=256, choices=ROLES)
-    created_at = models.DateTimeField(auto_now_add=True)
+    communication_opt_in = models.BooleanField(default=False)
 
     def __str__(self):
         return 'Team membership: {}'.format(self.user.__str__())
@@ -71,4 +96,3 @@ def get_team_users(user):
 def get_user_team(user):
     team_membership = TeamMembership.objects.filter(user=user).get()
     return team_membership.team
-
