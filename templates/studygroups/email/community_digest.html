@@ -262,7 +262,7 @@
           <td>{{ studygroup.facilitator.first_name | title }}</td>
           <td><a href="{% url 'studygroups_course_page' studygroup.course.pk %}">{{ studygroup.course.title }}</a></td>
           <td>{{ studygroup.city | title }}</td>
-          <td>{{ studygroup.team }}</td>
+          <td>{{ studygroup.team.name }}</td>
         </tr>
       {% endfor %}
     </tbody>

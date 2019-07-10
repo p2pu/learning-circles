@@ -590,7 +590,7 @@ def send_weekly_update():
             _('Weekly team update for {}'.format(team.name)),
             text_body,
             settings.DEFAULT_FROM_EMAIL,
-            bcc=to
+            cc=to
         )
         update.attach_alternative(html_body, 'text/html')
         update.send()
@@ -602,7 +602,6 @@ def send_weekly_update():
     }
     report_context.update(context)
     report_context.update(report_charts)
-    report_context.update({'show_emails': True})
     timezone.activate(pytz.timezone(settings.TIME_ZONE))
     translation.activate(settings.LANGUAGE_CODE)
     html_body = render_html_with_css('studygroups/email/weekly-update.html', report_context)
