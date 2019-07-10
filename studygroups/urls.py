@@ -105,6 +105,7 @@ urlpatterns = [
 
     url(r'^facilitator/$', views.facilitator, name='studygroups_facilitator_deprecated'),
     url(r'^facilitator/team-invitation/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm'),
+    url(r'^facilitator/team-invitation/(?P<token>[\w-]+)$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm_token'),
 
     url(r'^optout/$', OptOutView.as_view(), name='studygroups_optout'),
     url(r'^optout/confirm/$', views.optout_confirm, name='studygroups_leave'),
@@ -118,8 +119,6 @@ urlpatterns = [
     url(r'^organize/studygroup_meetings/$', MeetingList.as_view(), name='studygroups_organizer_studygroup_meetings'),
     url(r'^organize/teammembership/(?P<team_id>[\d]+)/(?P<user_id>[\d]+)/delete/$', TeamMembershipDelete.as_view(), name='studygroups_teammembership_delete'),
     url(r'^organize/team/(?P<team_id>[\d]+)/member/invite/$', TeamInvitationCreate.as_view(), name='studygroups_team_member_invite'),
-    url(r'^organize/team/invitation/(?P<token>[\w-]+)/$', views.generate_team_invitation, name="studygroups_generate_team_invitation"),
-    url(r'^team-invitation/(?P<invitation_id>[\d]+)/$', TeamInvitationResponse.as_view(), name='studygroups_team_invitation_response'),
 
     url(r'^report/weekly/$', views.weekly_report, name='studygroups_weekly_report'),
     url(r'^report/weekly/(?P<year>[\d]+)-(?P<month>[\d]+)-(?P<day>[\d]+)/$', views.weekly_report, name='studygroups_weekly_report_date'),

@@ -554,23 +554,14 @@ class InvitationConfirm(FormView):
     success_url = reverse_lazy('studygroups_facilitator')
 
     def get(self, request, *args, **kwargs):
+        token = kwargs.get('token')
         invitation = TeamInvitation.objects.filter(
                 email__iexact=self.request.user.email,
                 responded_at__isnull=True).first()
-        if invitation is None:
-            # implicit invitation from matching email
-            eligible_team = eligible_team_by_email_domain(self.request.user)
-            if eligible_team:
-                organizer = eligible_team.teammembership_set.filter(role=TeamMembership.ORGANIZER).first()
-                invitation = TeamInvitation.objects.create(
-                    team=eligible_team,
-                    organizer=organizer.user,
-                    email=self.request.user.email,
-                    role=TeamMembership.MEMBER
-                )
-            else:
-                messages.warning(self.request, _('No team invitations found'))
-                return http.HttpResponseRedirect(reverse('studygroups_facilitator'))
+        # if no invitation and no token and no matching domain
+        if invitation is None and token in None:
+            messages.warning(self.request, _('No team invitations found'))
+            return http.HttpResponseRedirect(reverse('studygroups_facilitator'))
 
         return super(InvitationConfirm, self).get(request, *args, **kwargs)
 
@@ -581,10 +572,33 @@ class InvitationConfirm(FormView):
                 responded_at__isnull=True).first()
         team_membership = TeamMembership.objects.filter(user=self.request.user).first()
         context['invitation'] = invitation
+        # team = token or invitation or matched domain
         context['team_membership'] = team_membership
         return context
 
     def form_valid(self, form):
+
+        # if you're currently the only organizer for a team, you can't join any other teams
+        # if we have a token
+        #   if the responce was no, do nothing
+        #   if the response was yes, add TeamMembership
+        # if there is an invitation
+        #   save the response
+        #   if yes, add TeamMembership
+        # if there is a matching domain
+        #   if no, create and save Invitation with response
+        #   if yes, add TeamMembership
+        # if you joined a team, remove any previous team memberships
+
+        eligible_team = eligible_team_by_email_domain(self.request.user)
+        if eligible_team:
+            organizer = eligible_team.teammembership_set.filter(role=TeamMembership.ORGANIZER).first()
+            invitation = TeamInvitation.objects.create(
+                team=eligible_team,
+                organizer=organizer.user,
+                email=self.request.user.email,
+                role=TeamMembership.MEMBER
+            )
         # Update invitation
         invitation = TeamInvitation.objects.filter(email__iexact=self.request.user.email, responded_at__isnull=True).first()
         current_membership_qs = TeamMembership.objects.filter(user=self.request.user)
@@ -600,64 +614,6 @@ class InvitationConfirm(FormView):
             TeamMembership.objects.create(team=invitation.team, user=self.request.user, role=invitation.role)
             messages.success(self.request, _('Welcome to the team! You are now a part of {}.'.format(invitation.team.name)))
         return super(InvitationConfirm, self).form_valid(form)
-
-
-@method_decorator(login_required, name='dispatch')
-class TeamInvitationResponse(FormView):
-    form_class = forms.Form
-    template_name = 'studygroups/invitation_confirm.html'
-    success_url = reverse_lazy('studygroups_facilitator')
-
-    def get_context_data(self, **kwargs):
-        context = super(TeamInvitationResponse, self).get_context_data(**kwargs)
-        invitation = get_object_or_404(TeamInvitation, pk=self.kwargs.get('invitation_id'), email=self.request.user.email)
-        team_membership = TeamMembership.objects.filter(user=self.request.user).first()
-        context['invitation'] = invitation
-        context['team_membership'] = team_membership
-        return context
-
-
-    def form_valid(self, form):
-        # Update invitation
-        invitation = get_object_or_404(TeamInvitation, pk=self.request.kwargs.get('invitation_id'))
-        current_membership_qs = TeamMembership.objects.filter(user=self.request.user)
-        if current_membership_qs.filter(role=TeamMembership.ORGANIZER).exists() and self.request.POST['response'] == 'yes':
-            messages.warning(self.request, _('You are currently the organizer of another team and cannot join this team.'))
-            return http.HttpResponseRedirect(reverse('studygroups_facilitator'))
-        invitation.responded_at = timezone.now()
-        invitation.joined = self.request.POST['response'] == 'yes'
-        invitation.save()
-        if invitation.joined is True:
-            if current_membership_qs.exists():
-                current_membership_qs.delete()
-            TeamMembership.objects.create(team=invitation.team, user=self.request.user, role=invitation.role)
-            messages.success(self.request, _('Welcome to the team! You are now a part of {}.'.format(invitation.team.name)))
-        return super(TeamInvitationResponse, self).form_valid(form)
-
-
-@login_required
-def generate_team_invitation(request, token):
-    team = Team.objects.get(invitation_token=token)
-
-    if team is None:
-        messages.warning(request, _('This invitation URL is not valid.'))
-        return http.HttpResponseRedirect(reverse('studygroups_facilitator'))
-
-    organizer = team.teammembership_set.filter(role=TeamMembership.ORGANIZER).first()
-    invitation = TeamInvitation.objects.filter(
-        team=team,
-        email=request.user.email,
-        responded_at__isnull=True).first()
-
-    if invitation is None:
-        invitation = TeamInvitation.objects.create(
-            team=team,
-            organizer=organizer.user,
-            email=request.user.email,
-            role=TeamMembership.MEMBER
-        )
-
-    return http.HttpResponseRedirect(reverse('studygroups_team_invitation_response', args=(invitation.pk,)))
 
 
 @method_decorator(user_is_group_facilitator, name='dispatch')
