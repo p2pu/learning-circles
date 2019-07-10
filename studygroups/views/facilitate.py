@@ -553,13 +553,21 @@ class InvitationConfirm(FormView):
     template_name = 'studygroups/invitation_confirm.html'
     success_url = reverse_lazy('studygroups_facilitator')
 
+    def get_team_from_token(self, token):
+        if token is None:
+            return None
+
+        return Team.objects.filter(invitation_token=token).first()
+
     def get(self, request, *args, **kwargs):
-        token = kwargs.get('token')
+        team_from_token = self.get_team_from_token(kwargs.get('token'))
+        eligible_team = eligible_team_by_email_domain(self.request.user)
         invitation = TeamInvitation.objects.filter(
                 email__iexact=self.request.user.email,
                 responded_at__isnull=True).first()
+
         # if no invitation and no token and no matching domain
-        if invitation is None and token in None:
+        if invitation is None and team_from_token is None and eligible_team is None:
             messages.warning(self.request, _('No team invitations found'))
             return http.HttpResponseRedirect(reverse('studygroups_facilitator'))
 
@@ -567,53 +575,80 @@ class InvitationConfirm(FormView):
 
     def get_context_data(self, **kwargs):
         context = super(InvitationConfirm, self).get_context_data(**kwargs)
-        invitation = TeamInvitation.objects.filter(
-                email__iexact=self.request.user.email,
-                responded_at__isnull=True).first()
         team_membership = TeamMembership.objects.filter(user=self.request.user).first()
-        context['invitation'] = invitation
-        # team = token or invitation or matched domain
         context['team_membership'] = team_membership
+
+        # if there's a token, get team from the token
+        team_from_token = self.get_team_from_token(self.kwargs.get('token'))
+        if team_from_token:
+            context['team'] = team_from_token
+            return context
+
+        # if there's an invitation, get the team from the invitation
+        invitation = TeamInvitation.objects.filter(
+            email__iexact=self.request.user.email,
+            responded_at__isnull=True).first()
+
+        if invitation:
+            context['team'] = invitation.team
+            return context
+
+        # otherwise use team with matching email
+        team = eligible_team_by_email_domain(self.request.user)
+        context['team'] = team
         return context
 
-    def form_valid(self, form):
+    def form_valid(self, form, **kwargs):
+        invitation_confirmed = self.request.POST['response'] == 'yes'
+        user = self.request.user
+        default_role = TeamMembership.MEMBER
+        new_membership = None
+        current_membership_qs = TeamMembership.objects.filter(user=user)
 
         # if you're currently the only organizer for a team, you can't join any other teams
-        # if we have a token
-        #   if the responce was no, do nothing
-        #   if the response was yes, add TeamMembership
-        # if there is an invitation
-        #   save the response
-        #   if yes, add TeamMembership
-        # if there is a matching domain
-        #   if no, create and save Invitation with response
-        #   if yes, add TeamMembership
-        # if you joined a team, remove any previous team memberships
-
-        eligible_team = eligible_team_by_email_domain(self.request.user)
-        if eligible_team:
-            organizer = eligible_team.teammembership_set.filter(role=TeamMembership.ORGANIZER).first()
-            invitation = TeamInvitation.objects.create(
-                team=eligible_team,
-                organizer=organizer.user,
-                email=self.request.user.email,
-                role=TeamMembership.MEMBER
-            )
-        # Update invitation
-        invitation = TeamInvitation.objects.filter(email__iexact=self.request.user.email, responded_at__isnull=True).first()
-        current_membership_qs = TeamMembership.objects.filter(user=self.request.user)
-        if current_membership_qs.filter(role=TeamMembership.ORGANIZER).exists() and self.request.POST['response'] == 'yes':
+        if invitation_confirmed and current_membership_qs.filter(role=TeamMembership.ORGANIZER).exists():
             messages.warning(self.request, _('You are currently the organizer of another team and cannot join this team.'))
             return http.HttpResponseRedirect(reverse('studygroups_facilitator'))
-        invitation.responded_at = timezone.now()
-        invitation.joined = self.request.POST['response'] == 'yes'
-        invitation.save()
-        if invitation.joined is True:
-            if current_membership_qs.exists():
+
+        # add to team by token
+        team_from_token = self.get_team_from_token(kwargs.get('token'))
+        if team_from_token and invitation_confirmed:
+            current_membership_qs.delete()
+            new_membership = TeamMembership.objects.create(team=team_from_token, user=user, role=default_role)
+
+        # add to team by invitation
+        invitation = TeamInvitation.objects.filter(email__iexact=user.email, responded_at__isnull=True).first()
+        if invitation:
+            invitation.responded_at = timezone.now()
+            invitation.joined = invitation_confirmed
+            invitation.save()
+
+            if invitation_confirmed:
                 current_membership_qs.delete()
-            TeamMembership.objects.create(team=invitation.team, user=self.request.user, role=invitation.role)
+                new_membership = TeamMembership.objects.create(team=invitation.team, user=user, role=invitation.role)
+
+        # add to team by matching email
+        eligible_team = eligible_team_by_email_domain(user)
+        if eligible_team:
+            if invitation_confirmed:
+                current_membership_qs.delete()
+                new_membership = TeamMembership.objects.create(team=eligible_team, user=user, role=default_role)
+            else:
+                organizer = eligible_team.teammembership_set.filter(role=TeamMembership.ORGANIZER).first()
+                rejected_invitation = TeamInvitation.objects.create(
+                    team=eligible_team,
+                    organizer=organizer.user,
+                    email=user.email,
+                    role=default_role,
+                    joined=invitation_confirmed,
+                    responded_at=timezone.now()
+                )
+
+        if new_membership is not None:
             messages.success(self.request, _('Welcome to the team! You are now a part of {}.'.format(invitation.team.name)))
+
         return super(InvitationConfirm, self).form_valid(form)
+
 
 
 @method_decorator(user_is_group_facilitator, name='dispatch')

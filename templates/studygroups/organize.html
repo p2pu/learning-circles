@@ -9,12 +9,19 @@
       <div class="col-md-12">
           <div id="organizer-dash"></div>
       </div>
+      <div class="col-md-12 mt-5">
+        <p><a href="{{ generate_team_invitation_url }}">Generate new team invitation link</a></p>
+        {% if team_invitation_url %}
+            <p>Team invitation link: <code class="copy-url">{{ team_invitation_url }}</code></p>
+            <p><a href="{{ delete_team_invitation_url }}">Delete team invitation link</a></p>
+        {% endif %}
+      </div>
     </div>
 </div> <!-- /container -->
 
 <script>
     window.organizerDash = window.organizerDash || {};
- 
+
     var activeLearningCircles = [
         {% for group in active_study_groups %}{{ group.to_json|safe }},
         {% endfor %}
@@ -23,7 +30,7 @@
 
     var meetings = [
         {% for meeting in meetings %}
-        { 
+        {
             meeting_time: "{{meeting.meeting_time|time:"H:i"}}",
             meeting_date: "{{meeting.meeting_date|date:"Y-m-d"}}",
             {% if meeting.rsvp_set.all.count %}rsvp: {yes: "{{ meeting.rsvps.yes|length }}", no: "{{ meeting.rsvps.no|length }}"},{% endif %}

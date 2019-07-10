@@ -46,7 +46,6 @@ def organize(request):
     study_groups = StudyGroup.objects.published()
     facilitators = User.objects.all()
     courses = []  # TODO Remove courses until we implement course selection for teams
-    team = None
     invitations = []
 
     active_study_groups = study_groups.filter(
@@ -55,6 +54,8 @@ def organize(request):
     meetings = Meeting.objects.active()\
         .filter(study_group__in=study_groups, meeting_date__gte=two_weeks_ago)\
         .exclude(meeting_date__gte=two_weeks)
+
+    team_invitation_url = team.team_invitation_url()
 
     context = {
         'team': team,
@@ -65,9 +66,28 @@ def organize(request):
         'facilitators': facilitators,
         'invitations': invitations,
         'today': timezone.now(),
+        'team_invitation_url': team_invitation_url,
+        'generate_team_invitation_url': reverse('studygroups_team_generate_invitation_link', args=(team.id,)),
+        'delete_team_invitation_url': reverse('studygroups_team_delete_invitation_link', args=(team.id,)),
     }
+
     return render(request, 'studygroups/organize.html', context)
 
+@user_is_organizer
+def generate_team_invitation_url(self, team_id):
+    team = get_object_or_404(Team, pk=team_id)
+    team.generate_invitation_token()
+
+    url = reverse('studygroups_organize_team', args=(team.id,))
+    return http.HttpResponseRedirect(url)
+
+def delete_team_invitation_url(self, team_id):
+    team = get_object_or_404(Team, pk=team_id)
+    team.invitation_token = None
+    team.save()
+
+    url = reverse('studygroups_organize_team', args=(team.id,))
+    return http.HttpResponseRedirect(url)
 
 @user_is_team_organizer
 def organize_team(request, team_id):
@@ -88,6 +108,8 @@ def organize_team(request, team_id):
         .filter(study_group__in=study_groups, meeting_date__gte=two_weeks_ago)\
         .exclude(meeting_date__gte=two_weeks)
 
+    team_invitation_url = team.team_invitation_url()
+
     context = {
         'team': team,
         'meetings': meetings,
@@ -96,6 +118,9 @@ def organize_team(request, team_id):
         'facilitators': facilitators,
         'invitations': invitations,
         'today': timezone.now(),
+        'team_invitation_url': team_invitation_url,
+        'generate_team_invitation_url': reverse('studygroups_team_generate_invitation_link', args=(team.id,)),
+        'delete_team_invitation_url': reverse('studygroups_team_delete_invitation_link', args=(team.id,)),
     }
     return render(request, 'studygroups/organize.html', context)
 

@@ -208,11 +208,11 @@ class AccountSettingsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(AccountSettingsView, self).get_context_data(**kwargs)
-        context['profile_form'] = self.profile_form(instance=self.request.user.profile)
+        context['profile_form'] = self.profile_form(prefix='profile', instance=self.request.user.profile)
         team_membership = TeamMembership.objects.filter(user=self.request.user).first()
         if team_membership is not None:
             context['team'] = team_membership.team.name
-            context['team_membership_form'] = self.team_membership_form(instance=team_membership)
+            context['team_membership_form'] = self.team_membership_form(prefix='team_membership', instance=team_membership)
         return context
 
 
@@ -237,6 +237,7 @@ class AccountSettingsView(TemplateView):
 
             context = self.get_context_data(team_membership_form=team_membership_form)
             return super(AccountSettingsView, self).render_to_response(context)
+
 
 
 @method_decorator(login_required, name='dispatch')

@@ -31,13 +31,12 @@ class Team(models.Model):
         except IntegrityError:
             generate_invitation_token(self)
 
-
     def team_invitation_url(self):
         if self.invitation_token is None:
             return None
 
         base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
-        path = reverse('studygroups_generate_team_invitation', kwargs={'token': self.invitation_token})
+        path = reverse('studygroups_facilitator_invitation_confirm_token', kwargs={'token': self.invitation_token})
 
         return base_url + path
 
