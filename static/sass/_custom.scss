@@ -285,7 +285,7 @@ img.lc-about-image{
         color: $gray-darker;
       }
 
-      #div_id_communication_opt_in,  {
+      #div_id_communication_opt_in, #div_id_weekly_update_opt_in {
         label {
           display: flex;
           align-items: center;
@@ -295,6 +295,7 @@ img.lc-about-image{
           }
         }
       }
+
 
       .help-block {
         color: $gray-lighter;

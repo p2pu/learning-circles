@@ -585,7 +585,7 @@ def send_weekly_update():
         text_body = html_body_to_text(html_body)
         timezone.deactivate()
 
-        to = [member.user.email for member in team.teammembership_set.all()]
+        to = [member.user.email for member in team.teammembership_set.filter(weekly_update_opt_in=True)]
         update = EmailMultiAlternatives(
             _('Weekly team update for {}'.format(team.name)),
             text_body,

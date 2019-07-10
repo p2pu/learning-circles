@@ -24,6 +24,7 @@ from studygroups.models import StudyGroup
 from studygroups.models import Meeting
 from studygroups.models import Feedback
 from studygroups.models import Course
+from studygroups.models import TeamMembership
 from studygroups.sms import send_message
 
 import logging
@@ -139,7 +140,7 @@ class ApplicationForm(forms.ModelForm):
         labels = {
             'communications_opt_in': _('Would you like to receive information about other learning opportunities in the future?'),
         }
- 
+
 
 
 class OptOutForm(forms.Form):
@@ -445,3 +446,13 @@ class FeedbackForm(forms.ModelForm):
             'reflection': _('What went well this week? What surprised you? Any funny stories? We\'ll pull what you write here into our community newsletters and updates.'),
         }
         widgets = {'study_group_meeting': forms.HiddenInput}
+
+
+class TeamMembershipForm(forms.ModelForm):
+    class Meta:
+        fields = ['weekly_update_opt_in']
+        model = TeamMembership
+        labels = {
+            'weekly_update_opt_in': _('Receive weekly update'),
+        }
+

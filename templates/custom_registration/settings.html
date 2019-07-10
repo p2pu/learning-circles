@@ -21,10 +21,22 @@
             <h4>{% trans "Profile" %}</h4>
             <form action="" method="POST" enctype="multipart/form-data">
               {% csrf_token %}
-              {{ form|crispy }}
-              <button type="submit" class="btn p2pu-btn light">{% trans "Save" %}</button>
+              {{ profile_form|crispy }}
+              <input type="submit" class="btn p2pu-btn light" name="profile" value="Save profile settings" />
             </form>
           </div>
+
+          {% if team %}
+            <div class="form profile-form">
+              <h4>{% trans "Team" %}</h4>
+              <p>{% trans "Your team:" %} {{ team }}</p>
+              <form action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ team_membership_form|crispy }}
+                <input type="submit" class="btn p2pu-btn light" name="team_membership" value="Save team settings" />
+              </form>
+            </div>
+          {% endif %}
 
           <div class="form">
             <h4>{% trans "Delete Account" %}</h4>
