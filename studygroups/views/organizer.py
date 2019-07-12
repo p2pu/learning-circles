@@ -47,6 +47,7 @@ def organize(request):
     facilitators = User.objects.all()
     courses = []  # TODO Remove courses until we implement course selection for teams
     invitations = []
+    team=None
 
     active_study_groups = study_groups.filter(
         id__in=Meeting.objects.active().filter(meeting_date__gte=two_weeks_ago).values('study_group')
@@ -54,8 +55,6 @@ def organize(request):
     meetings = Meeting.objects.active()\
         .filter(study_group__in=study_groups, meeting_date__gte=two_weeks_ago)\
         .exclude(meeting_date__gte=two_weeks)
-
-    team_invitation_url = team.team_invitation_url()
 
     context = {
         'team': team,
@@ -66,9 +65,6 @@ def organize(request):
         'facilitators': facilitators,
         'invitations': invitations,
         'today': timezone.now(),
-        'team_invitation_url': team_invitation_url,
-        'generate_team_invitation_url': reverse('studygroups_team_generate_invitation_link', args=(team.id,)),
-        'delete_team_invitation_url': reverse('studygroups_team_delete_invitation_link', args=(team.id,)),
     }
 
     return render(request, 'studygroups/organize.html', context)
@@ -78,15 +74,16 @@ def generate_team_invitation_url(self, team_id):
     team = get_object_or_404(Team, pk=team_id)
     team.generate_invitation_token()
 
-    url = reverse('studygroups_organize_team', args=(team.id,))
+    url = reverse('studygroups_facilitator')
     return http.HttpResponseRedirect(url)
 
+@user_is_organizer
 def delete_team_invitation_url(self, team_id):
     team = get_object_or_404(Team, pk=team_id)
     team.invitation_token = None
     team.save()
 
-    url = reverse('studygroups_organize_team', args=(team.id,))
+    url = reverse('studygroups_facilitator')
     return http.HttpResponseRedirect(url)
 
 @user_is_team_organizer

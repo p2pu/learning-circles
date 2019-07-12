@@ -14,6 +14,7 @@ from django.utils.translation import get_language_info
 from django.utils.decorators import method_decorator
 from django.utils.text import slugify
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 
 from collections import Counter
 import json
@@ -974,13 +975,22 @@ class TeamDetailView(SingleObjectMixin, View):
 
 @user_is_team_organizer
 @login_required
-def refresh_team_invitation_url(request, team_id):
+@require_http_methods(["POST"])
+def create_team_invitation_url(request, team_id):
     team = Team.objects.get(pk=team_id)
     team.generate_invitation_token()
 
-    return json_response(request, { "team_invitation_url": team.team_invitation_url() })
+    return json_response(request, { "status": "updated", "team_invitation_url": team.team_invitation_url() })
 
 
+@user_is_team_organizer
+@login_required
+@require_http_methods(["POST"])
+def delete_team_invitation_url(request, team_id):
+    team = Team.objects.get(pk=team_id)
+    team.invitation_token = None
+    team.save()
 
+    return json_response(request, { "status": "deleted", "team_invitation_url": None })
 
 

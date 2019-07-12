@@ -148,3 +148,10 @@ a.p2pu-btn {
     opacity: 0;
   }
 }
+
+.invitation-form {
+  .error-message {
+    text-align: left;
+    color: $p2pu-orange;
+  }
+}

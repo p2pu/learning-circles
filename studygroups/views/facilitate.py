@@ -689,16 +689,25 @@ class FacilitatorDashboard(TemplateView):
             if invitation:
                 context['team_name'] = invitation.team.name
                 context['team_organizer_name'] = invitation.organizer.first_name
-                context['team_invitation_url'] = reverse("studygroups_facilitator_invitation_confirm")
+                context['team_invitation_confirmation_url'] = reverse("studygroups_facilitator_invitation_confirm")
             else:
                 # implicit team invitation based on email domain
                 eligible_team = eligible_team_by_email_domain(self.request.user)
                 if email_validated and eligible_team:
                     context['team_name'] = eligible_team.name
-                    context['team_invitation_url'] = reverse("studygroups_facilitator_invitation_confirm")
+                    context['team_invitation_confirmation_url'] = reverse("studygroups_facilitator_invitation_confirm")
 
             if not email_validated:
                 context["email_confirmation_url"] = reverse("email_confirm_request")
+
+            # add context for team organizers
+            team_membership = TeamMembership.objects.active().filter(user=self.request.user, role=TeamMembership.ORGANIZER).first()
+            if team_membership:
+                context['user_is_organizer'] = True
+                context['team_invitation_url'] = team_membership.team.team_invitation_url()
+                context['create_team_invitation_url'] = reverse('api_teams_create_invitation_url', args=(team_membership.team.id,))
+                context['delete_team_invitation_url'] = reverse('api_teams_delete_invitation_url', args=(team_membership.team.id,))
+                context['team_member_invitation_url'] = reverse('studygroups_team_member_invite', args=(team_membership.team.id,))
 
         return context
 

@@ -18,6 +18,8 @@ import InstagramFeed from "./InstagramFeed";
 import Title from './Title';
 import EmailValidationNotification from './EmailValidationNotification'
 import TeamInvitationNotification from './TeamInvitationNotification'
+import OrganizerTeamTable from './OrganizerTeamTable'
+import OrganizerTeamInvitations from './OrganizerTeamInvitations'
 
 import 'react-tabs/style/react-tabs.css';
 import 'aos/dist/aos.css';
@@ -80,9 +82,9 @@ export default class FacilitatorDashboard extends React.Component {
             }
 
             {
-              this.props.teamInvitationUrl &&
+              this.props.teamInvitationConfirmationUrl &&
               <TeamInvitationNotification
-                teamInvitationUrl={this.props.teamInvitationUrl}
+                teamInvitationConfirmationUrl={this.props.teamInvitationConfirmationUrl}
                 teamOrganizerName={this.props.teamOrganizerName}
                 teamName={this.props.teamName}
               />
@@ -126,6 +128,41 @@ export default class FacilitatorDashboard extends React.Component {
                 </div>
               </Card>
             </div>
+
+            {
+              this.props.userIsOrganizer &&
+              <div data-aos='fade'>
+                <Card>
+                  <div className="card-title">My Team</div>
+                    <Tabs defaultIndex={0}>
+                      <TabList>
+                        <Tab><span className="minicaps bold text-xs">Team members</span></Tab>
+                        <Tab><span className="minicaps bold text-xs">Invite new members</span></Tab>
+                      </TabList>
+                      <TabPanel>
+                        <div data-aos='fade'>
+                          <p>Team table goes here</p>
+                        </div>
+                      </TabPanel>
+                      <TabPanel>
+                        <div data-aos='fade'>
+                          <OrganizerTeamInvitations
+                            teamInvitationUrl={this.props.teamInvitationUrl}
+                            createTeamInvitationUrl={this.props.createTeamInvitationUrl}
+                            deleteTeamInvitationUrl={this.props.deleteTeamInvitationUrl}
+                            teamMemberInvitationUrl={this.props.teamMemberInvitationUrl}
+                            showAlert={this.showAlert}
+                          />
+                        </div>
+                      </TabPanel>
+                    </Tabs>
+                  <div className="text-right">
+                    <a href={"https://www.p2pu.org/en/teams/"}>See all teams</a>
+                  </div>
+                </Card>
+              </div>
+            }
+
 
             <div data-aos='fade'>
               <Card>
