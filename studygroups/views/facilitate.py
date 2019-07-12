@@ -645,7 +645,7 @@ class InvitationConfirm(FormView):
                 )
 
         if new_membership is not None:
-            messages.success(self.request, _('Welcome to the team! You are now a part of {}.'.format(invitation.team.name)))
+            messages.success(self.request, _('Welcome to the team! You are now a part of {}.'.format(new_membership.team.name)))
 
         return super(InvitationConfirm, self).form_valid(form)
 
