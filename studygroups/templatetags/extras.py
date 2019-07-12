@@ -29,7 +29,7 @@ def is_organizer(user):
     """
     Return true if the user is an organizer of staff
     """
-    return user.is_staff or TeamMembership.objects.filter(user=user, role=TeamMembership.ORGANIZER)
+    return user.is_staff or TeamMembership.objects.active().filter(user=user, role=TeamMembership.ORGANIZER)
 
 @register.filter
 def category_title(id, categories):

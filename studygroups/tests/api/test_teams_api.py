@@ -77,7 +77,7 @@ class TestTeamsApi(TestCase):
         organizer = User.objects.get(pk=1)
         organizer_studygroups_count = StudyGroup.objects.filter(facilitator=organizer).count()
 
-        self.assertEqual(team_json["member_count"], team.teammembership_set.count())
+        self.assertEqual(team_json["member_count"], team.teammembership_set.active().count())
         self.assertEqual(team_json["organizers"][0]["first_name"], organizer.first_name)
         self.assertEqual(team_json["studygroup_count"], organizer_studygroups_count)
         self.assertEqual(team_json["image_url"], f"{settings.PROTOCOL}://{settings.DOMAIN}" + team.page_image.url)

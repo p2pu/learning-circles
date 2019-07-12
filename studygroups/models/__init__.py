@@ -116,7 +116,7 @@ def report_data(start_time, end_time, team=None):
 
 
     if team:
-        members = team.teammembership_set.all().values_list('user', flat=True)
+        members = team.teammembership_set.active().values_list('user', flat=True)
         new_courses = new_courses.filter(created_by__in=members)
         new_applications = new_applications.filter(study_group__facilitator__in=members)
         meetings = meetings.filter(study_group__facilitator__in=members)
@@ -175,7 +175,7 @@ def get_json_response(url):
 
 def get_studygroups_with_meetings(start_time, end_time, team=None):
     if team:
-        team_memberships = team.teammembership_set.values('user')
+        team_memberships = team.teammembership_set.active().values('user')
         return StudyGroup.objects.published().filter(facilitator__in=team_memberships, meeting__meeting_date__gte=start_time, meeting__meeting_date__lt=end_time, meeting__deleted_at__isnull=True).distinct()
 
     return StudyGroup.objects.published().filter(meeting__meeting_date__gte=start_time, meeting__meeting_date__lt=end_time, meeting__deleted_at__isnull=True).distinct()
@@ -194,13 +194,13 @@ def get_new_courses(start_time, end_time):
 
 def get_upcoming_studygroups(start_time):
     end_time = start_time + datetime.timedelta(days=21)
-    team_membership = TeamMembership.objects.filter(user=OuterRef('facilitator'))
+    team_membership = TeamMembership.objects.active().filter(user=OuterRef('facilitator'))
 
     return StudyGroup.objects.published().filter(start_date__gte=start_time, start_date__lt=end_time).annotate(team=Subquery(team_membership.values('team__name')))
 
 def get_studygroups_that_ended(start_time, end_time, team=None):
     if team:
-        team_memberships = team.teammembership_set.values('user')
+        team_memberships = team.teammembership_set.active().values('user')
         return StudyGroup.objects.published().filter(end_date__gte=start_time, end_date__lt=end_time, facilitator__in=team_memberships)
 
     return StudyGroup.objects.published().filter(end_date__gte=start_time, end_date__lt=end_time)

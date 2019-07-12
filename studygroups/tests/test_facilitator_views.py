@@ -561,7 +561,7 @@ class TestFacilitatorViews(TestCase):
         self.assertTrue(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email__iexact=faci1.email).responded_at is None)
         resp = c.post('/en/facilitator/team-invitation/', {'response': 'yes'})
         self.assertRedirects(resp, '/en/')
-        self.assertEqual(TeamMembership.objects.filter(team=team, role=TeamMembership.MEMBER, user=faci1).count(), 1)
+        self.assertEqual(TeamMembership.objects.active().filter(team=team, role=TeamMembership.MEMBER, user=faci1).count(), 1)
         self.assertFalse(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email__iexact=faci1.email).responded_at is None)
 
 
@@ -581,7 +581,7 @@ class TestFacilitatorViews(TestCase):
         self.assertTrue(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email__iexact=faci1.email).responded_at is None)
         resp = c.post('/en/facilitator/team-invitation/', {'response': 'no'})
         self.assertRedirects(resp, '/en/')
-        self.assertEqual(TeamMembership.objects.filter(team=team, role=TeamMembership.MEMBER, user=faci1).count(), 0)
+        self.assertEqual(TeamMembership.objects.active().filter(team=team, role=TeamMembership.MEMBER, user=faci1).count(), 0)
         self.assertFalse(TeamInvitation.objects.get(team=team, role=TeamMembership.MEMBER, email__iexact=faci1.email).responded_at is None)
 
 

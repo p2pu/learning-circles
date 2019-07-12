@@ -27,6 +27,7 @@ from studygroups.views import StudyGroupPublish
 from studygroups.views import StudyGroupList
 from studygroups.views import StudyGroupLearnerSurvey
 from studygroups.views import StudyGroupFacilitatorSurvey
+from studygroups.views import LeaveTeam
 from studygroups.views import MeetingList
 from studygroups.views import TeamMembershipDelete
 from studygroups.views import TeamInvitationCreate
@@ -104,7 +105,9 @@ urlpatterns = [
 
     url(r'^facilitator/$', views.facilitator, name='studygroups_facilitator_deprecated'),
     url(r'^facilitator/team-invitation/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm'),
-    url(r'^facilitator/team-invitation/(?P<token>[\w-]+)$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm_token'),
+    url(r'^facilitator/team-invitation/(?P<token>[\w-]+)/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm_token'),
+    url(r'^facilitator/teammembership/(?P<pk>[\d]+)/delete/$', LeaveTeam.as_view(), name='studygroups_facilitator_leave_team'),
+
 
     url(r'^optout/$', OptOutView.as_view(), name='studygroups_optout'),
     url(r'^optout/confirm/$', views.optout_confirm, name='studygroups_leave'),

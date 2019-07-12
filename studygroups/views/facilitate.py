@@ -56,8 +56,8 @@ logger = logging.getLogger(__name__)
 
 @login_required
 def login_redirect(request):
-    if TeamMembership.objects.filter(user=request.user, role=TeamMembership.ORGANIZER).exists():
-        team = TeamMembership.objects.get(user=request.user, role=TeamMembership.ORGANIZER).team
+    if TeamMembership.objects.active().filter(user=request.user, role=TeamMembership.ORGANIZER).exists():
+        team = TeamMembership.objects.active().get(user=request.user, role=TeamMembership.ORGANIZER).team
         url = reverse('studygroups_organize_team', args=(team.pk,))
     else:
         url = reverse('studygroups_facilitator')
@@ -76,8 +76,8 @@ def facilitator(request):
     )
     past_study_groups = study_groups.exclude(id__in=current_study_groups)
     team = None
-    if TeamMembership.objects.filter(user=request.user).exists():
-        team = TeamMembership.objects.filter(user=request.user).first().team
+    if TeamMembership.objects.active().filter(user=request.user).exists():
+        team = TeamMembership.objects.active().filter(user=request.user).first().team
     invitation = TeamInvitation.objects.filter(email__iexact=request.user.email, responded_at__isnull=True).first()
     context = {
         'current_study_groups': current_study_groups,
@@ -95,7 +95,7 @@ def view_study_group(request, study_group_id):
     # TODO - redirect user if the study group has been deleted
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
     user_is_facilitator = study_group.facilitator == request.user
-    facilitator_is_organizer = TeamMembership.objects.filter(user=request.user, role=TeamMembership.ORGANIZER).exists()
+    facilitator_is_organizer = TeamMembership.objects.active().filter(user=request.user, role=TeamMembership.ORGANIZER).exists()
     dashboard_url = reverse('studygroups_facilitator')
 
     if facilitator_is_organizer and not user_is_facilitator:
@@ -575,7 +575,7 @@ class InvitationConfirm(FormView):
 
     def get_context_data(self, **kwargs):
         context = super(InvitationConfirm, self).get_context_data(**kwargs)
-        team_membership = TeamMembership.objects.filter(user=self.request.user).first()
+        team_membership = TeamMembership.objects.active().filter(user=self.request.user).first()
         context['team_membership'] = team_membership
 
         # if there's a token, get team from the token
@@ -603,7 +603,7 @@ class InvitationConfirm(FormView):
         user = self.request.user
         default_role = TeamMembership.MEMBER
         new_membership = None
-        current_membership_qs = TeamMembership.objects.filter(user=user)
+        current_membership_qs = TeamMembership.objects.active().filter(user=user)
 
         # if you're currently the only organizer for a team, you can't join any other teams
         if invitation_confirmed and current_membership_qs.filter(role=TeamMembership.ORGANIZER).exists():
@@ -634,7 +634,7 @@ class InvitationConfirm(FormView):
                 current_membership_qs.delete()
                 new_membership = TeamMembership.objects.create(team=eligible_team, user=user, role=default_role)
             else:
-                organizer = eligible_team.teammembership_set.filter(role=TeamMembership.ORGANIZER).first()
+                organizer = eligible_team.teammembership_set.active().filter(role=TeamMembership.ORGANIZER).first()
                 rejected_invitation = TeamInvitation.objects.create(
                     team=eligible_team,
                     organizer=organizer.user,
@@ -701,4 +701,19 @@ class FacilitatorDashboard(TemplateView):
                 context["email_confirmation_url"] = reverse("email_confirm_request")
 
         return context
+
+
+@method_decorator(login_required, name='dispatch')
+class LeaveTeam(DeleteView):
+    model = TeamMembership
+    success_url = reverse_lazy('account_settings')
+    template_name = 'studygroups/confirm_leave_team.html'
+
+    def get(self, request, *args, **kwargs):
+        team_membership = self.get_object()
+        if team_membership.role == TeamMembership.ORGANIZER:
+            messages.warning(self.request, _('As the team organizer, you need to contact P2PU in order to leave the team.'))
+            return http.HttpResponseRedirect(reverse('account_settings'))
+
+        return super(LeaveTeam, self).get(request, *args, **kwargs)
 

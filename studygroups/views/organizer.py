@@ -96,7 +96,7 @@ def organize_team(request, team_id):
     two_weeks = today - datetime.timedelta(days=today.weekday()) + datetime.timedelta(weeks=3)
     team = get_object_or_404(Team, pk=team_id)
 
-    members = team.teammembership_set.values('user')
+    members = team.teammembership_set.active().values('user')
     team_users = User.objects.filter(pk__in=members)
     study_groups = StudyGroup.objects.published().filter(facilitator__in=team_users)
     facilitators = team_users
@@ -159,7 +159,7 @@ class TeamMembershipDelete(DeleteView):
 
     def get_object(self, queryset=None):
         if queryset is None:
-            queryset = TeamMembership.objects
+            queryset = TeamMembership.objects.active()
         return queryset.get(user_id=self.kwargs.get('user_id'), team_id=self.kwargs.get('team_id'))
 
 
@@ -195,7 +195,7 @@ class TeamInvitationCreate(View):
                 }
             })
         # make sure user not already part of this team
-        if TeamMembership.objects.filter(team=team, user__email__iexact=email).exists():
+        if TeamMembership.objects.active().filter(team=team, user__email__iexact=email).exists():
             return http.JsonResponse({
                 "status": "ERROR",
                 "errors": {
@@ -225,7 +225,7 @@ def weekly_report(request, year=None, month=None, day=None):
     }
     # get team for current user
     team = None
-    membership = TeamMembership.objects.filter(user=request.user).first()
+    membership = TeamMembership.objects.active().filter(user=request.user).first()
     if membership:
         team = membership.team
 

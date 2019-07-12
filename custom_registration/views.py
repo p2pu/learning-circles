@@ -130,7 +130,7 @@ class WhoAmIView(View):
                 {"text": "Account settings", "url": reverse('account_settings')},
                 {"text": "Log out", "url": reverse('logout')},
             ]
-            if request.user.is_staff or TeamMembership.objects.filter(user=request.user, role=TeamMembership.ORGANIZER):
+            if request.user.is_staff or TeamMembership.objects.active().filter(user=request.user, role=TeamMembership.ORGANIZER):
                 user_data["links"][:0] = [
                     {"text": "My Team", "url": reverse('studygroups_organize')},
                 ]
@@ -209,9 +209,9 @@ class AccountSettingsView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(AccountSettingsView, self).get_context_data(**kwargs)
         context['profile_form'] = self.profile_form(prefix='profile', instance=self.request.user.profile)
-        team_membership = TeamMembership.objects.filter(user=self.request.user).first()
+        team_membership = TeamMembership.objects.active().filter(user=self.request.user).first()
         if team_membership is not None:
-            context['team'] = team_membership.team.name
+            context['team_membership'] = team_membership
             context['team_membership_form'] = self.team_membership_form(prefix='team_membership', instance=team_membership)
         return context
 
@@ -228,7 +228,7 @@ class AccountSettingsView(TemplateView):
             return super(AccountSettingsView, self).render_to_response(context)
 
         if 'team_membership' in request.POST:
-            team_membership = TeamMembership.objects.filter(user=request.user).first()
+            team_membership = TeamMembership.objects.active().filter(user=request.user).first()
             team_membership_form = self.team_membership_form(request.POST, prefix='team_membership', instance=team_membership)
 
             if team_membership_form.is_valid():
@@ -237,7 +237,6 @@ class AccountSettingsView(TemplateView):
 
             context = self.get_context_data(team_membership_form=team_membership_form)
             return super(AccountSettingsView, self).render_to_response(context)
-
 
 
 @method_decorator(login_required, name='dispatch')
@@ -271,6 +270,6 @@ class AccountDeleteView(DeleteView):
         # delete discourse user if any
         anonymize_discourse_user(user)
 
-        messages.success(self.request, _('Your account have been deleted.'))
+        messages.success(self.request, _('Your account has been deleted.'))
         # log user out
         return http.HttpResponseRedirect(reverse('logout'))

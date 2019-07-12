@@ -26,22 +26,23 @@
             </form>
           </div>
 
-          {% if team %}
+          {% if team_membership %}
             <div class="form profile-form">
               <h4>{% trans "Team" %}</h4>
-              <p>{% trans "Your team:" %} {{ team }}</p>
+              <p>{% trans "Your team:" %} {{ team_membership.team.name }}</p>
               <form action="" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ team_membership_form|crispy }}
                 <input type="submit" class="btn p2pu-btn light" name="team_membership" value="Save team settings" />
               </form>
+              <p class="mt-2"><a href="{% url "studygroups_facilitator_leave_team" team_membership.id %}" class="btn p2pu-btn light transparent">{% trans "Leave team" %}</a></p>
             </div>
           {% endif %}
 
           <div class="form">
             <h4>{% trans "Delete Account" %}</h4>
             <p>{% trans "This will permanently delete your P2PU account and also delete any future or active learning circles." %}</p>
-            <p><a href="{% url "account_delete" %}" class="btn p2pu-btn light">{% trans "Delete account" %}</a></p>
+            <p><a href="{% url "account_delete" %}" class="btn p2pu-btn light transparent">{% trans "Delete account" %}</a></p>
           </div>
         </div>
       </div>

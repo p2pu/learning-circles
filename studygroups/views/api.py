@@ -240,7 +240,7 @@ class LearningCircleListView(View):
         team_id = request.GET.get('team_id')
         if team_id is not None:
             team = Team.objects.get(pk=team_id)
-            members = team.teammembership_set.values('user')
+            members = team.teammembership_set.active().values('user')
             team_users = User.objects.filter(pk__in=members)
             study_groups = study_groups.filter(facilitator__in=team_users)
 
@@ -771,12 +771,12 @@ class LandingPageLearningCirclesView(View):
 
         if 'scope' in request.GET and request.GET.get('scope') == "team":
             user = request.user
-            team_ids = TeamMembership.objects.filter(user=user).values("team")
+            team_ids = TeamMembership.objects.active().filter(user=user).values("team")
 
             if team_ids.count() == 0:
                 return json_response(request, { "status": "error", "errors": ["User is not on a team."] })
 
-            team_members = TeamMembership.objects.filter(team__in=team_ids).values("user")
+            team_members = TeamMembership.objects.active().filter(team__in=team_ids).values("user")
             study_groups_unsliced = study_groups_unsliced.filter(facilitator__in=team_members)
 
         # get learning circles with image & upcoming meetings
@@ -906,18 +906,18 @@ def serialize_team_data(team):
         "id": team.pk,
         "name": team.name,
         "page_slug": team.page_slug,
-        "member_count": team.teammembership_set.count(),
+        "member_count": team.teammembership_set.active().count(),
         "zoom": team.zoom,
         "date_established": team.created_at.strftime("%B %Y"),
         "organizers": [],
     }
 
-    members = team.teammembership_set.values('user')
+    members = team.teammembership_set.active().values('user')
     studygroup_count = StudyGroup.objects.published().filter(facilitator__in=members).count()
 
     serialized_team["studygroup_count"] = studygroup_count
 
-    organizers = team.teammembership_set.filter(role=TeamMembership.ORGANIZER)
+    organizers = team.teammembership_set.active().filter(role=TeamMembership.ORGANIZER)
     for organizer in organizers:
         serialized_organizer = {
             "first_name": organizer.user.first_name,
@@ -964,7 +964,7 @@ class TeamDetailView(SingleObjectMixin, View):
 
         if request.user.is_authenticated:
             #  ensure user is team organizer
-            # organizers = team.teammembership_set.filter(role=TeamMembership.ORGANIZER)
+            # organizers = team.teammembership_set.active().filter(role=TeamMembership.ORGANIZER)
             serialized_team['team_invitation_url'] = team.team_invitation_url()
 
         data['item'] = serialized_team

@@ -73,9 +73,9 @@ class TeamInvitation(models.Model):
 
 def get_study_group_organizers(study_group):
     """ Return the organizers for the study group """
-    team_membership = TeamMembership.objects.filter(user=study_group.facilitator)
+    team_membership = TeamMembership.objects.active().filter(user=study_group.facilitator)
     if team_membership.count() == 1:
-        organizers = team_membership.first().team.teammembership_set.filter(role=TeamMembership.ORGANIZER).values('user')
+        organizers = team_membership.first().team.teammembership_set.active().filter(role=TeamMembership.ORGANIZER).values('user')
         return User.objects.filter(pk__in=organizers)
     return []
 
@@ -84,22 +84,22 @@ def get_team_users(user):
     """ Return the team members for a user """
     # TODO this function doesn't make sense - only applies for logged in users
     # change functionality or rename to get_team_mates
-    team_membership = TeamMembership.objects.filter(user=user)
+    team_membership = TeamMembership.objects.active().filter(user=user)
     if team_membership.count() == 1:
-        members = team_membership.first().team.teammembership_set.values('user')
+        members = team_membership.first().team.teammembership_set.active().values('user')
         return User.objects.filter(pk__in=members)
     return []
 
 
 """ Return the team a user belongs to """
 def get_user_team(user):
-    team_membership = TeamMembership.objects.filter(user=user).get()
+    team_membership = TeamMembership.objects.active().filter(user=user).get()
     return team_membership.team
 
 
 def eligible_team_by_email_domain(user):
     # user is already on a team
-    if TeamMembership.objects.filter(user=user).exists():
+    if TeamMembership.objects.active().filter(user=user).exists():
         return None
 
     email_domain = user.email.rsplit('@', 1)[1]
@@ -110,7 +110,7 @@ def eligible_team_by_email_domain(user):
         return None
 
     # team must have an organizer to create invitation
-    if not TeamMembership.objects.filter(team=matching_team, role=TeamMembership.ORGANIZER).exists():
+    if not TeamMembership.objects.active().filter(team=matching_team, role=TeamMembership.ORGANIZER).exists():
         return None
 
     return matching_team
