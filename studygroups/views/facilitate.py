@@ -548,6 +548,7 @@ def add_member(request, study_group_id):
     return render(request, 'studygroups/add_member.html', context)
 
 
+@method_decorator(login_required, name='dispatch')
 class InvitationConfirm(FormView):
     form_class = forms.Form
     template_name = 'studygroups/invitation_confirm.html'
@@ -598,7 +599,7 @@ class InvitationConfirm(FormView):
         context['team'] = team
         return context
 
-    def form_valid(self, form, **kwargs):
+    def form_valid(self, form):
         invitation_confirmed = self.request.POST['response'] == 'yes'
         user = self.request.user
         default_role = TeamMembership.MEMBER
@@ -611,7 +612,8 @@ class InvitationConfirm(FormView):
             return http.HttpResponseRedirect(reverse('studygroups_facilitator'))
 
         # add to team by token
-        team_from_token = self.get_team_from_token(kwargs.get('token'))
+        token = self.kwargs.get('token')
+        team_from_token = self.get_team_from_token(token)
         if team_from_token and invitation_confirmed:
             current_membership_qs.delete()
             new_membership = TeamMembership.objects.create(team=team_from_token, user=user, role=default_role)

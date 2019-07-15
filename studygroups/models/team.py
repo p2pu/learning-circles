@@ -49,7 +49,7 @@ class TeamMembership(LifeTimeTrackingModel):
         (MEMBER, _('Member')),
     )
     team = models.ForeignKey('studygroups.Team', on_delete=models.CASCADE)
-    user = models.OneToOneField(User, on_delete=models.CASCADE) # TODO should this be a OneToOneField?
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     role = models.CharField(max_length=256, choices=ROLES)
     weekly_update_opt_in = models.BooleanField(default=True)
 
