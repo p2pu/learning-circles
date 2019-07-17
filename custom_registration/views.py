@@ -11,6 +11,7 @@ from django.views.decorators.cache import never_cache
 from django.views.generic.edit import FormView
 from django.views.generic.edit import UpdateView
 from django.views.generic.edit import DeleteView
+from django.views.generic.base import TemplateView
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth.forms import AuthenticationForm
@@ -25,6 +26,7 @@ import random
 
 from studygroups.models import TeamMembership
 from studygroups.models import Profile
+from studygroups.forms import TeamMembershipForm
 from uxhelpers.utils import json_response
 from api import schema
 from .models import create_user
@@ -124,10 +126,11 @@ class WhoAmIView(View):
         if request.user.is_authenticated():
             user_data["user"] = request.user.first_name
             user_data["links"] = [
-                {"text": "My learning circles", "url": reverse('studygroups_facilitator')},
+                {"text": "Dashboard", "url": reverse('studygroups_facilitator')},
+                {"text": "Account settings", "url": reverse('account_settings')},
                 {"text": "Log out", "url": reverse('logout')},
             ]
-            if request.user.is_staff or TeamMembership.objects.filter(user=request.user, role=TeamMembership.ORGANIZER):
+            if request.user.is_staff or TeamMembership.objects.active().filter(user=request.user, role=TeamMembership.ORGANIZER):
                 user_data["links"][:0] = [
                     {"text": "My Team", "url": reverse('studygroups_organize')},
                 ]
@@ -198,19 +201,42 @@ class EmailConfirmView(View):
 
 
 @method_decorator(login_required, name='dispatch')
-class AccountSettingsView(UpdateView):
-    model = Profile
-    #fields = ['communication_opt_in']
+class AccountSettingsView(TemplateView):
     template_name = 'custom_registration/settings.html'
-    success_url = reverse_lazy('studygroups_facilitator')
-    form_class = ProfileForm
+    profile_form = ProfileForm
+    team_membership_form = TeamMembershipForm
 
-    def get_object(self):
-        return self.request.user.profile
+    def get_context_data(self, **kwargs):
+        context = super(AccountSettingsView, self).get_context_data(**kwargs)
+        context['profile_form'] = self.profile_form(prefix='profile', instance=self.request.user.profile)
+        team_membership = TeamMembership.objects.active().filter(user=self.request.user).first()
+        if team_membership is not None:
+            context['team_membership'] = team_membership
+            context['team_membership_form'] = self.team_membership_form(prefix='team_membership', instance=team_membership)
+        return context
 
-    def form_valid(self, form):
-        messages.success(self.request, _('Your account settings have been saved.'))
-        return super().form_valid(form)
+
+    def post(self, request, *args, **kwargs):
+        if 'profile' in request.POST:
+            profile_form = self.profile_form(request.POST, prefix='profile', instance=request.user.profile)
+
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, "Profile settings saved successfully")
+
+            context = self.get_context_data(profile_form=profile_form)
+            return super(AccountSettingsView, self).render_to_response(context)
+
+        if 'team_membership' in request.POST:
+            team_membership = TeamMembership.objects.active().filter(user=request.user).first()
+            team_membership_form = self.team_membership_form(request.POST, prefix='team_membership', instance=team_membership)
+
+            if team_membership_form.is_valid():
+                team_membership_form.save()
+                messages.success(request, "Team settings saved successfully")
+
+            context = self.get_context_data(team_membership_form=team_membership_form)
+            return super(AccountSettingsView, self).render_to_response(context)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -229,7 +255,7 @@ class AccountDeleteView(DeleteView):
 
         # anonymize user details - email, username, first name, last name and password
         user.first_name = 'Anonymous'
-        user.last_name = random.choice(['Penguin', 'Albatross', 'Elephant', 'Dassie', 'Lion', 'Sponge', 'Giraffe', 'Hippo', 'Leopard', 'Buffalo']) 
+        user.last_name = random.choice(['Penguin', 'Albatross', 'Elephant', 'Dassie', 'Lion', 'Sponge', 'Giraffe', 'Hippo', 'Leopard', 'Buffalo'])
         user.password = '-'
         random_username = "".join([random.choice(string.digits+string.ascii_letters) for i in range(12)])
         while User.objects.filter(username=random_username).exists():
@@ -244,6 +270,6 @@ class AccountDeleteView(DeleteView):
         # delete discourse user if any
         anonymize_discourse_user(user)
 
-        messages.success(self.request, _('Your account have been deleted.'))
+        messages.success(self.request, _('Your account has been deleted.'))
         # log user out
         return http.HttpResponseRedirect(reverse('logout'))

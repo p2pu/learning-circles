@@ -11,6 +11,13 @@
    "pk": 1
 },
 {
+    "fields": {
+      "user": 1
+   },
+   "model": "studygroups.profile",
+   "pk": 1
+},
+{
    "fields": {
       "created_at": "2015-03-23T15:18:39.462Z",
       "updated_at": "2015-03-23T15:18:39.462Z",

@@ -19,9 +19,10 @@ class TestTeamsApi(TestCase):
         self.assertEqual(response.status_code, 200)
 
         res_data = response.json()
+
         self.assertEqual(res_data["count"], 2)
 
-        # complete team
+        # complete team - pk 1
 
         item_fields = [
             'id',
@@ -31,17 +32,18 @@ class TestTeamsApi(TestCase):
             'studygroup_count',
             'zoom',
             'coordinates',
-            'organizer',
+            'organizers',
             'image_url',
+            'date_established'
         ]
 
-        resp_keys = list(res_data["items"][0].keys())
+        resp_keys = list(res_data["items"][1].keys())
         for key in resp_keys:
             self.assertIn(key, item_fields)
         for key in item_fields:
             self.assertIn(key, resp_keys)
 
-        # incomplete_team
+        # incomplete_team - pk 2
 
         item_fields = [
             'id',
@@ -50,9 +52,11 @@ class TestTeamsApi(TestCase):
             'member_count',
             'studygroup_count',
             'zoom',
+            'date_established',
+            'organizers'
         ]
 
-        resp_keys = list(res_data["items"][1].keys())
+        resp_keys = list(res_data["items"][0].keys())
         for key in resp_keys:
             self.assertIn(key, item_fields)
         for key in item_fields:
@@ -67,15 +71,14 @@ class TestTeamsApi(TestCase):
         res_data = response.json()
         self.assertEqual(res_data["count"], 2)
 
-        team_json = res_data["items"][0]
-        print(res_data["items"][1])
+        team_json = res_data["items"][1]
 
         team = Team.objects.get(pk=1)
         organizer = User.objects.get(pk=1)
         organizer_studygroups_count = StudyGroup.objects.filter(facilitator=organizer).count()
 
-        self.assertEqual(team_json["member_count"], team.teammembership_set.count())
-        self.assertEqual(team_json["organizer"]["first_name"], organizer.first_name)
+        self.assertEqual(team_json["member_count"], team.teammembership_set.active().count())
+        self.assertEqual(team_json["organizers"][0]["first_name"], organizer.first_name)
         self.assertEqual(team_json["studygroup_count"], organizer_studygroups_count)
         self.assertEqual(team_json["image_url"], f"{settings.PROTOCOL}://{settings.DOMAIN}" + team.page_image.url)
 

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="row">
+    <div class="col-md-12">
+      <h2 class="mb-4">{% blocktrans with team=object.team.name %}Are you sure you want to leave {{team}}?{% endblocktrans %}</h2>
+      <p>{% trans "This means that you will no longer receive the weekly team updates and your learning circles will not appear on the team's page." %}</p>
+      <p>{% trans "To rejoin the team, you will need to be invited by the team organizer." %}</p>
+      <form method="post">{% csrf_token %}
+        <p><input class="btn p2pu-btn dark" type="submit" value="{% trans "Confirm" %}" /></p>
+      </form>
+      <p><a href="{% url 'account_settings' %}">{% trans "Back to Account Settings" %}</a></p>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

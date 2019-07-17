@@ -21,4 +21,10 @@ urlpatterns = [
     url(r'^learning-circles-map/$', views.LearningCirclesMapView.as_view(), name='api_learningcircles_map'),
     url(r'^instagram-feed/$', views.InstagramFeed.as_view(), name='api_instagram_feed'),
     url(r'^teams/$', views.TeamListView.as_view(), name='api_teams'),
+    url(r'^teams/(?P<team_id>[\d]+)/$', views.TeamDetailView.as_view(), name='api_teams_detail'),
+    url(r'^teams/(?P<team_id>[\d]+)/invitation-url/create/$', views.create_team_invitation_url, name='api_teams_create_invitation_url'),
+    url(r'^teams/(?P<team_id>[\d]+)/invitation-url/delete/$', views.delete_team_invitation_url, name='api_teams_delete_invitation_url'),
+    url(r'^teams/members/$', views.TeamMembershipListView.as_view(), name='api_team_memberships'),
+    url(r'^teams/invitations/$', views.TeamInvitationListView.as_view(), name='api_team_memberships'),
+
 ]

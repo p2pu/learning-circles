@@ -12,20 +12,37 @@
           <header>
             <h1>{% trans "Account Settings" %}</h1>
           </header>
-          <p>{% trans "If you create a learning circle, you will receive occasional messages from P2PU and learners related to that learning circle. You will also receive basic account-related emails, like when you reset your password." %} </p>
-          <p>{% trans "Additionally you can choose to receive announcements like community digests and newsletters. Update your preferences on this page." %}</p>
+          <p>{% blocktrans %}Add an optional profile to distinguish yourself across P2PU. If you are an organizer, your bio will appear on our <a href="https://www.p2pu.org/en/teams/">team page</a>.{% endblocktrans %}</p>
+          <p>{% trans "You should opt into communication if you would like to receive tri-weekly community digests from P2PU and occasional announcements. We will never spam you." %}</p>
+          <p>{% trans "There are some messages you cannot opt out of. When you create a learning circle, you will receive occasional messages from P2PU and learners related to that learning circle. Additionally, you cannot opt out of account-related messages (such as password resets)." %}</p>
         </div>
         <div class="col-12 col-md-5" data-aos="fade-left">
-          <div class="form">
-            <h4>Communication preferences</h4>
+          <div class="form profile-form">
+            <h4>{% trans "Profile" %}</h4>
             <form action="" method="POST" enctype="multipart/form-data">
               {% csrf_token %}
-              {{ form|crispy }}
-              <button type="submit" class="btn p2pu-btn light">{% trans "Save" %}</button>
+              {{ profile_form|crispy }}
+              <input type="submit" class="btn p2pu-btn light" name="profile" value="Save profile settings" />
             </form>
-            <h4>Delete account</h4>
+          </div>
+
+          {% if team_membership %}
+            <div class="form profile-form">
+              <h4>{% trans "Team" %}</h4>
+              <p>{% trans "Your team:" %} {{ team_membership.team.name }}</p>
+              <form action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ team_membership_form|crispy }}
+                <input type="submit" class="btn p2pu-btn light" name="team_membership" value="Save team settings" />
+              </form>
+              <p class="mt-2"><a href="{% url "studygroups_facilitator_leave_team" team_membership.id %}" class="btn p2pu-btn light transparent">{% trans "Leave team" %}</a></p>
+            </div>
+          {% endif %}
+
+          <div class="form">
+            <h4>{% trans "Delete Account" %}</h4>
             <p>{% trans "This will permanently delete your P2PU account and also delete any future or active learning circles." %}</p>
-            <p><a href="{% url "account_delete" %}" class="btn p2pu-btn light">{% trans "Delete account" %}</a></p>
+            <p><a href="{% url "account_delete" %}" class="btn p2pu-btn light transparent">{% trans "Delete account" %}</a></p>
           </div>
         </div>
       </div>
@@ -33,3 +50,36 @@
   </div>
 </div>
 {% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/places.js/1/places.min.js"></script>
+<script>
+    $(document).ready(function(){
+        var placesAutocomplete = places({
+            container: document.querySelector('#id_city'),
+            type: 'city'
+        });
+        // update lat, lon based on city
+        placesAutocomplete.on('change', function(e){
+          $('#id_latitude').val(e.suggestion.latlng.lat);
+          $('#id_longitude').val(e.suggestion.latlng.lng);
+          try {
+            $('#id_place_id').val(e.suggestion.rawAnswer.hits[0].objectID);
+          } catch (error) {
+            console.log("Couldn't get objectID for place");
+          }
+          try {
+            $('#id_country').val(e.suggestion.country);
+          } catch (error) {
+            console.log("Couldn't get country for place");
+          }
+          try {
+            $('#id_region').val(e.suggestion.administrative);
+          } catch (error){
+            console.log("Couldn't get region for place");
+          }
+        });
+    });
+</script>
+{% endblock %}
+

@@ -28,6 +28,7 @@ from studygroups.models import get_team_users
 from studygroups.models import get_user_team
 from studygroups.tasks import send_team_invitation_email
 from studygroups.decorators import user_is_organizer
+from studygroups.decorators import user_is_team_member
 from studygroups.decorators import user_is_team_organizer
 from studygroups.charts import NewLearnersGoalsChart
 
@@ -45,8 +46,8 @@ def organize(request):
     study_groups = StudyGroup.objects.published()
     facilitators = User.objects.all()
     courses = []  # TODO Remove courses until we implement course selection for teams
-    team = None
     invitations = []
+    team=None
 
     active_study_groups = study_groups.filter(
         id__in=Meeting.objects.active().filter(meeting_date__gte=two_weeks_ago).values('study_group')
@@ -65,6 +66,7 @@ def organize(request):
         'invitations': invitations,
         'today': timezone.now(),
     }
+
     return render(request, 'studygroups/organize.html', context)
 
 
@@ -75,7 +77,7 @@ def organize_team(request, team_id):
     two_weeks = today - datetime.timedelta(days=today.weekday()) + datetime.timedelta(weeks=3)
     team = get_object_or_404(Team, pk=team_id)
 
-    members = team.teammembership_set.values('user')
+    members = team.teammembership_set.active().values('user')
     team_users = User.objects.filter(pk__in=members)
     study_groups = StudyGroup.objects.published().filter(facilitator__in=team_users)
     facilitators = team_users
@@ -94,7 +96,7 @@ def organize_team(request, team_id):
         'active_study_groups': active_study_groups,
         'facilitators': facilitators,
         'invitations': invitations,
-        'today': timezone.now(),
+        'today': timezone.now()
     }
     return render(request, 'studygroups/organize.html', context)
 
@@ -133,7 +135,7 @@ class TeamMembershipDelete(DeleteView):
 
     def get_object(self, queryset=None):
         if queryset is None:
-            queryset = TeamMembership.objects
+            queryset = TeamMembership.objects.active()
         return queryset.get(user_id=self.kwargs.get('user_id'), team_id=self.kwargs.get('team_id'))
 
 
@@ -169,7 +171,7 @@ class TeamInvitationCreate(View):
                 }
             })
         # make sure user not already part of this team
-        if TeamMembership.objects.filter(team=team, user__email__iexact=email).exists():
+        if TeamMembership.objects.active().filter(team=team, user__email__iexact=email).exists():
             return http.JsonResponse({
                 "status": "ERROR",
                 "errors": {
@@ -186,7 +188,7 @@ class TeamInvitationCreate(View):
         return http.JsonResponse({"status": "CREATED"})
 
 
-@user_is_organizer
+@user_is_team_member
 def weekly_report(request, year=None, month=None, day=None):
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     if month and day and year:
@@ -199,7 +201,7 @@ def weekly_report(request, year=None, month=None, day=None):
     }
     # get team for current user
     team = None
-    membership = TeamMembership.objects.filter(user=request.user, role=TeamMembership.ORGANIZER).first()
+    membership = TeamMembership.objects.active().filter(user=request.user).first()
     if membership:
         team = membership.team
 
@@ -210,5 +212,6 @@ def weekly_report(request, year=None, month=None, day=None):
 
     context.update(data)
     context.update(report_charts)
+
 
     return render(request, 'studygroups/email/weekly-update.html', context)

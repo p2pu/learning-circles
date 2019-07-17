@@ -511,8 +511,8 @@ def send_meeting_change_notification(old_meeting, new_meeting):
         sms_body = render_to_string_ctx('studygroups/email/meeting_changed-sms.txt', context).strip('\n')
 
     notification = EmailMultiAlternatives(
-        subject, 
-        text_body, 
+        subject,
+        text_body,
         settings.DEFAULT_FROM_EMAIL,
         bcc=to
     )
@@ -587,12 +587,12 @@ def send_weekly_update():
         text_body = html_body_to_text(html_body)
         timezone.deactivate()
 
-        to = [o.user.email for o in team.teammembership_set.filter(role=TeamMembership.ORGANIZER)]
+        to = [member.user.email for member in team.teammembership_set.active().filter(weekly_update_opt_in=True)]
         update = EmailMultiAlternatives(
-            _('Weekly learning circles update'),
+            _('Weekly team update for {}'.format(team.name)),
             text_body,
             settings.DEFAULT_FROM_EMAIL,
-            to
+            cc=to
         )
         update.attach_alternative(html_body, 'text/html')
         update.send()
