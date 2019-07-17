@@ -75,6 +75,10 @@ export const API_ENDPOINTS = {
   teamInvitations: {
     baseUrl: '/api/teams/invitations/?',
     searchParams: ['team_id', 'offset', 'limit']
+  },
+  invitationNotifications: {
+    baseUrl: '/api/facilitator/invitations/?',
+    searchParams: []
   }
 };
 

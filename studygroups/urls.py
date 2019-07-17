@@ -105,6 +105,7 @@ urlpatterns = [
 
     url(r'^facilitator/$', views.facilitator, name='studygroups_facilitator_deprecated'),
     url(r'^facilitator/team-invitation/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm'),
+    url(r'^facilitator/team-invitation/(?P<invitation_id>[\d]+)/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm'),
     url(r'^facilitator/team-invitation/(?P<token>[\w-]+)/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm_token'),
     url(r'^facilitator/teammembership/(?P<pk>[\d]+)/delete/$', LeaveTeam.as_view(), name='studygroups_facilitator_leave_team'),
 
