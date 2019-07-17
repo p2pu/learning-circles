@@ -5,6 +5,7 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
 import Alert from '../learning_circle_form/Alert';
 import Card from './Card';
+import Notification from './Notification';
 import DiscourseTable from './DiscourseTable';
 import CoursesTable from './CoursesTable';
 import UpcomingLearningCirclesTable from './UpcomingLearningCirclesTable';
@@ -15,6 +16,11 @@ import RecommendedResources from "./RecommendedResources";
 import GlobalSuccesses from "./GlobalSuccesses";
 import InstagramFeed from "./InstagramFeed";
 import Title from './Title';
+import EmailValidationNotification from './EmailValidationNotification'
+import TeamInvitationNotification from './TeamInvitationNotification'
+import TeamMembersTable from './TeamMembersTable'
+import TeamInvitationsTable from './TeamInvitationsTable'
+import OrganizerTeamInvitations from './OrganizerTeamInvitations'
 
 import 'react-tabs/style/react-tabs.css';
 import 'aos/dist/aos.css';
@@ -30,8 +36,6 @@ export default class FacilitatorDashboard extends React.Component {
       errors: {},
       alert: { show: false }
     };
-    this.showAlert = (msg, type) => this._showAlert(msg, type);
-    this.closeAlert = () => this._closeAlert();
   }
 
   componentDidMount(){
@@ -41,7 +45,7 @@ export default class FacilitatorDashboard extends React.Component {
     })
   }
 
-  _showAlert(message, type) {
+  showAlert = (message, type) => {
     this.setState({
       alert: {
         message,
@@ -51,7 +55,7 @@ export default class FacilitatorDashboard extends React.Component {
     })
   }
 
-  _closeAlert() {
+  closeAlert = () => {
     this.setState({ alert: { show: false }})
   }
 
@@ -72,6 +76,21 @@ export default class FacilitatorDashboard extends React.Component {
 
         <div className="row">
           <div className="col-12 col-lg-8">
+            <div data-aos='fade'>
+            {
+              this.props.emailConfirmationUrl &&
+              <EmailValidationNotification emailConfirmationUrl={this.props.emailConfirmationUrl} showAlert={this.showAlert} />
+            }
+
+            {
+              this.props.teamInvitationConfirmationUrl &&
+              <TeamInvitationNotification
+                teamInvitationConfirmationUrl={this.props.teamInvitationConfirmationUrl}
+                teamOrganizerName={this.props.teamOrganizerName}
+                teamName={this.props.teamName}
+              />
+            }
+            </div>
 
             <div data-aos='fade'>
               <Card>
@@ -90,17 +109,17 @@ export default class FacilitatorDashboard extends React.Component {
                     </TabList>
                     <TabPanel>
                       <div data-aos='fade'>
-                        <UpcomingLearningCirclesTable />
+                        <UpcomingLearningCirclesTable user={true} />
                       </div>
                     </TabPanel>
                     <TabPanel>
                       <div data-aos='fade'>
-                        <CurrentLearningCirclesTable />
+                        <CurrentLearningCirclesTable user={true} />
                       </div>
                     </TabPanel>
                     <TabPanel>
                       <div data-aos='fade'>
-                        <CompletedLearningCirclesTable />
+                        <CompletedLearningCirclesTable user={true} />
                       </div>
                     </TabPanel>
                   </Tabs>
@@ -110,6 +129,85 @@ export default class FacilitatorDashboard extends React.Component {
                 </div>
               </Card>
             </div>
+
+            {
+              this.props.teamId &&
+              <div data-aos='fade'>
+                <Card>
+                  <div className="card-title">My Team's Learning Circles</div>
+                  {
+                    !this.state.user &&
+                    <p>You must be logged in to see your team's learning circles. <a className="p2pu-btn btn-dark btn-sm" href={"/en/login_redirect/"}>Log in or register</a></p>
+                  }
+                  {
+                    this.state.user &&
+                    <Tabs defaultIndex={0}>
+                      <TabList>
+                        <Tab><span className="minicaps bold text-xs">Upcoming</span></Tab>
+                        <Tab><span className="minicaps bold text-xs">Current</span></Tab>
+                        <Tab><span className="minicaps bold text-xs">Completed</span></Tab>
+                      </TabList>
+                      <TabPanel>
+                        <div data-aos='fade'>
+                          <UpcomingLearningCirclesTable teamId={this.props.teamId} userIsOrganizer={this.props.userIsOrganizer} />
+                        </div>
+                      </TabPanel>
+                      <TabPanel>
+                        <div data-aos='fade'>
+                          <CurrentLearningCirclesTable teamId={this.props.teamId} userIsOrganizer={this.props.userIsOrganizer} />
+                        </div>
+                      </TabPanel>
+                      <TabPanel>
+                        <div data-aos='fade'>
+                          <CompletedLearningCirclesTable teamId={this.props.teamId} userIsOrganizer={this.props.userIsOrganizer} />
+                        </div>
+                      </TabPanel>
+                    </Tabs>
+                  }
+                  <div className="text-right">
+                    <a href={"https://www.p2pu.org/en/teams/"}>See all teams</a>
+                  </div>
+                </Card>
+              </div>
+            }
+
+            {
+              this.props.userIsOrganizer &&
+              <div data-aos='fade'>
+                <Card>
+                  <div className="card-title">Team Members</div>
+                    <Tabs defaultIndex={0}>
+                      <TabList>
+                        <Tab><span className="minicaps bold text-xs">Team members</span></Tab>
+                        <Tab><span className="minicaps bold text-xs">Pending invitations</span></Tab>
+                        <Tab><span className="minicaps bold text-xs">Invite new members</span></Tab>
+                      </TabList>
+                      <TabPanel>
+                        <div data-aos='fade'>
+                          <TeamMembersTable teamId={this.props.teamId} />
+                        </div>
+                      </TabPanel>
+                      <TabPanel>
+                        <div data-aos='fade'>
+                          <TeamInvitationsTable teamId={this.props.teamId} />
+                        </div>
+                      </TabPanel>
+                      <TabPanel>
+                        <div data-aos='fade'>
+                          <OrganizerTeamInvitations
+                            teamInvitationUrl={this.props.teamInvitationUrl}
+                            createTeamInvitationUrl={this.props.createTeamInvitationUrl}
+                            deleteTeamInvitationUrl={this.props.deleteTeamInvitationUrl}
+                            teamMemberInvitationUrl={this.props.teamMemberInvitationUrl}
+                            showAlert={this.showAlert}
+                          />
+                        </div>
+                      </TabPanel>
+                    </Tabs>
+                </Card>
+              </div>
+            }
+
 
             <div data-aos='fade'>
               <Card>
@@ -123,7 +221,11 @@ export default class FacilitatorDashboard extends React.Component {
                     <UpcomingMeetings scope="global" />
                   </TabPanel>
                   <TabPanel>
-                    <UpcomingMeetings scope="team" />
+                    {
+                      this.state.user ?
+                      <UpcomingMeetings scope="team" /> :
+                      <p>You must be logged in to see your team's activity. <a className="p2pu-btn btn-dark btn-sm" href={"/en/login_redirect/"}>Log in or register</a></p>
+                    }
                   </TabPanel>
                 </Tabs>
                 <div className="text-right">

@@ -4,13 +4,13 @@ import moment from "moment";
 
 const PAGE_LIMIT = 5;
 
-export default class LearningCirclesTable extends Component {
+export default class TeamMembersTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      learningCircles: [],
+      teamMembers: [],
       limit: PAGE_LIMIT,
-      count: 0,
+      count: 0
     };
   }
 
@@ -19,20 +19,20 @@ export default class LearningCirclesTable extends Component {
   }
 
   populateResources = (params={}) => {
-    const api = new ApiHelper('learningCircles');
+    const api = new ApiHelper('teamMembers');
 
     const onSuccess = (data) => {
-      this.setState({ learningCircles: data.items, count: data.count, offset: data.offset, limit: data.limit })
+      this.setState({ teamMembers: data.items, count: data.count, offset: data.offset, limit: data.limit })
     }
 
-    const defaultParams = { limit: this.state.limit, offset: this.state.offset, user: this.props.user, draft: true, scope: "upcoming", team_id: this.props.teamId }
+    const defaultParams = { limit: this.state.limit, offset: this.state.offset, team_id: this.props.teamId }
 
     api.fetchResource({ callback: onSuccess, params: { ...defaultParams, ...params } })
   }
 
   nextPage = (e) => {
     e.preventDefault();
-    const params = { limit: PAGE_LIMIT, offset: this.state.offset + this.state.learningCircles.length };
+    const params = { limit: PAGE_LIMIT, offset: this.state.offset + this.state.teamMembers.length };
     this.populateResources(params)
   }
 
@@ -45,12 +45,12 @@ export default class LearningCirclesTable extends Component {
 
   render() {
     const totalPages = Math.ceil(this.state.count / PAGE_LIMIT);
-    const currentPage = Math.ceil((this.state.offset + this.state.learningCircles.length) / PAGE_LIMIT);
+    const currentPage = Math.ceil((this.state.offset + this.state.teamMembers.length) / PAGE_LIMIT);
 
-    if (this.state.learningCircles.length === 0) {
+    if (this.state.teamMembers.length === 0) {
       return(
         <div className="py-2">
-          <div>No upcoming learning circles.</div>
+          <div>You don't have any team members.</div>
         </div>
       )
     }
@@ -61,28 +61,22 @@ export default class LearningCirclesTable extends Component {
           <table className="table">
             <thead>
               <tr>
-                <td>Course</td>
-                <td>Venue</td>
-                { this.props.teamId && <td>Facilitator</td>}
-                <td>Signups</td>
-                <td>First meeting</td>
-                { (this.props.user || this.props.userIsOrganizer) && <td></td> }
+                <td>Name</td>
+                <td>Email</td>
+                <td>Role</td>
+                <td>Joined</td>
               </tr>
             </thead>
             <tbody>
               {
-                this.state.learningCircles.map(lc => {
-                  const date = lc.next_meeting_date ? moment(lc.next_meeting_date).format('MMM D, YYYY') : "n/a";
-                  const classes = lc.draft ? 'bg-secondary' : '';
-
+                this.state.teamMembers.map(m => {
+                  const facilitator = m.facilitator
                   return(
-                    <tr key={ lc.id } className={`${classes}`}>
-                      <td>{`${lc.draft ? "[DRAFT] " : ""}${lc.course.title}`}</td>
-                      <td>{ lc.venue }</td>
-                      { this.props.teamId && <td>{ lc.facilitator }</td>}
-                      <td>{ lc.signup_count }</td>
-                      <td>{ date }</td>
-                      { (this.props.user || this.props.userIsOrganizer) && <td><a href={ lc.studygroup_path } className="p2pu-btn btn-sm dark">manage</a></td> }
+                    <tr key={ m.id }>
+                      <td>{`${facilitator.first_name} ${facilitator.last_name}`}</td>
+                      <td>{ facilitator.email }</td>
+                      <td>{ m.role }</td>
+                      <td>{ m.created_at }</td>
                     </tr>
                   )
                 })
@@ -93,29 +87,25 @@ export default class LearningCirclesTable extends Component {
 
         <div className="d-md-none">
           {
-            this.state.learningCircles.map(lc => {
-              const date = lc.next_meeting_date ? moment(lc.next_meeting_date).format('MMM D, YYYY') : "n/a";
-              const classes = lc.draft ? 'bg-secondary' : '';
-
+            this.state.teamMembers.map(m => {
+              const facilitator = m.facilitator
               return(
-                <div className={`meeting-card p-2 ${classes}`} key={lc.id}>
-                  <a className="bold" href={ lc.course.course_page_url }>{`${lc.draft ? "[DRAFT] " : ""}${lc.course.title}`}</a>
-
+                <div className={`meeting-card p-2`} key={m.id}>
                   <div className="d-flex">
                     <div className="pr-2">
-                      <div className="bold">Venue</div>
-                      <div className="bold">Signups</div>
-                      <div className="bold">First Meeting</div>
+                      <div className="bold">Name</div>
+                      <div className="bold">Email</div>
+                      <div className="bold">Role</div>
+                      <div className="bold">Joined</div>
                     </div>
 
                     <div className="flex-grow px-2">
-                      <div className="">{ lc.venue }</div>
-                      <div className="">{ lc.signup_count }</div>
-                      <div className="">{ date }</div>
+                      <div className="">{`${facilitator.first_name} ${facilitator.last_name}`}</div>
+                      <div className="">{ facilitator.email }</div>
+                      <div className="">{ m.role }</div>
+                      <div className="">{ m.created_at }</div>
                     </div>
                   </div>
-
-                  { (this.props.user || this.props.userIsOrganizer) && <a href={ lc.studygroup_path } className="p2pu-btn btn-sm dark m-0 my-2">manage</a> }
                 </div>
               )
             })

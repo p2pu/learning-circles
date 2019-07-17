@@ -57,6 +57,14 @@ export default class UpcomingMeetings extends Component {
       )
     };
 
+    if (this.state.meetings.length === 0) {
+      return(
+        <div className="py-2">
+          <div>No upcoming meetings.</div>
+        </div>
+      )
+    }
+
     return (
       <div className="">
         {

@@ -34,10 +34,18 @@
             <a href="{% url 'studygroups_organize' %}">{% trans "My team" %}</a>
           </li>
           {% endif %}
+
           <li>
-            <a href="{% url 'studygroups_facilitator' %}">{% trans "My learning circles" %}</a>
+            <a href="{% url 'studygroups_facilitator' %}">{% trans "Dashboard" %}</a>
           </li>
-          <li><a href="{% url 'logout' %}">{% trans "Log out" %}</a></li>
+
+          <li>
+            <a href="{% url 'account_settings' %}">{% trans "Account settings" %}</a>
+          </li>
+
+          <li>
+            <a href="{% url 'logout' %}">{% trans "Log out" %}</a>
+          </li>
         </ul>
       </div>
       {% else %}

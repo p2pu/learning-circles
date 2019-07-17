@@ -45,7 +45,25 @@ class CustomPasswordResetForm(PasswordResetForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ['communication_opt_in']
+        fields = ['avatar', 'bio', 'contact_url', 'city', 'country', 'place_id', 'region', 'latitude', 'longitude', 'communication_opt_in']
         labels = {
-            'communication_opt_in': _('Receive announcements')
+            'avatar': _('Profile photo'),
+            'bio': _('Short bio (max 500 characters)'),
+            'contact_url': _('Contact URL'),
+            'city': _('City'),
+            'communication_opt_in': _('Receive announcements'),
+        }
+        placeholders = {
+            'contact_url': _("Twitter, LinkedIn, website, etc.")
+        }
+        help_texts = {
+             'contact_url': _('Where can potential team members find your contact information? i.e. Staff page, Twitter, personal website, etc.'),
+        }
+        widgets = {
+            'bio': forms.Textarea(attrs={'rows':5, 'cols':10}),
+            'latitude': forms.HiddenInput,
+            'longitude': forms.HiddenInput,
+            'place_id': forms.HiddenInput,
+            'country': forms.HiddenInput,
+            'region': forms.HiddenInput,
         }

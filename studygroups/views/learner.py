@@ -49,7 +49,7 @@ class TeamPage(DetailView):
         context = super(TeamPage, self).get_context_data(**kwargs)
         two_weeks = (datetime.datetime.now() - datetime.timedelta(weeks=2)).date()
 
-        team_users = TeamMembership.objects.filter(team=self.object).values('user')
+        team_users = TeamMembership.objects.active().filter(team=self.object).values('user')
         study_group_ids = Meeting.objects.active()\
                 .filter(meeting_date__gte=timezone.now())\
                 .values('study_group')

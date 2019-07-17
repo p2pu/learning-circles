@@ -7,8 +7,7 @@ from django.utils.encoding import force_bytes
 from django.conf import settings
 from studygroups.utils import render_to_string_ctx
 from studygroups.email_helper import render_html_with_css
-from django.core.mail import EmailMultiAlternatives, send_mail
-
+from django.core.mail import EmailMultiAlternatives
 
 import random
 import string

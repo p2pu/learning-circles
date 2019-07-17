@@ -50,7 +50,7 @@ export default class LearningCirclesTable extends Component {
     if (this.state.learningCircles.length === 0) {
       return(
         <div className="py-2">
-          <div>You don't have any current learning circles.</div>
+          <div>No current learning circles.</div>
         </div>
       )
     };
@@ -65,7 +65,7 @@ export default class LearningCirclesTable extends Component {
                 <td>Venue</td>
                 <td>Signups</td>
                 <td>Next Meeting</td>
-                <td></td>
+                { (this.props.user || this.props.userIsOrganizer) && <td></td> }
               </tr>
             </thead>
             <tbody>
@@ -80,9 +80,7 @@ export default class LearningCirclesTable extends Component {
                       <td>{ lc.venue }</td>
                       <td>{ lc.signup_count }</td>
                       <td>{ date }</td>
-                      <td>
-                        <a href={ lc.studygroup_path } className="p2pu-btn btn-sm dark">manage</a>
-                      </td>
+                      { (this.props.user || this.props.userIsOrganizer) && <td><a href={ lc.studygroup_path } className="p2pu-btn btn-sm dark">manage</a></td> }
                     </tr>
                   )
                 })
@@ -114,7 +112,7 @@ export default class LearningCirclesTable extends Component {
                     </div>
                   </div>
 
-                  <a href={ lc.studygroup_path } className="p2pu-btn btn-sm dark m-0 my-2">manage</a>
+                  { (this.props.user || this.props.userIsOrganizer) && <a href={ lc.studygroup_path } className="p2pu-btn btn-sm dark m-0 my-2">manage</a> }
                 </div>
               )
             })

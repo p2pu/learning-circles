@@ -6,16 +6,34 @@
   <div class="row">
     <div class="col-md-12">
 
-      <h2>Invitation to join team</h2>
+      <h2>
+        {% blocktrans with team_name=team.name %}
+          You've been invited to join {{ team_name }}.
+        {% endblocktrans %}
+      </h2>
       {% if team_membership %}
         <div class="alert alert-danger">{% blocktrans with team_name=team_membership.team.name %}You are currently part of {{team_name}}. Accepting this invitation will remove you from {{team_name}} and you will have to be invited again to join.{% endblocktrans %}</div>
       {% endif %}
       <form action="" method="post">{% csrf_token %}
-        <p>{% blocktrans with team_name=invitation.team.name %}You were invited to join {{ team_name }}? Do you wish to accept the invitation?{% endblocktrans %}</p>
+        <p>{% trans "Do you wish to join the team?" %}</p>
         <p>
-        <button class="btn btn-primary" type="submit" value="yes" name="response">{% trans "Yes" %}</button>&nbsp;
-        <button class="btn btn-primary" type="submit" value="no"  name="response">{% trans "No" %}</button></p>
+          <button class="btn p2pu-btn blue secondary" type="submit" value="no"  name="response">{% trans "No" %}</button>
+          <button class="btn p2pu-btn blue" type="submit" value="yes" name="response">{% trans "Yes!" %}</button>
+        </p>
       </form>
+
+      <p>{% trans "Joining a team means that:" %}</p>
+      <ul>
+        <li>
+          {% blocktrans with team_page_slug=invitation.team.page_slug %}
+          Your learning circles will appear on <a target="_blank" href="https://www.p2pu.org/{{ team_page_slug }}">your team’s learning circle page</a>, making it easier for people in your community to find your learning circles.
+          {% endblocktrans %}
+        </li>
+        <li>{% trans "You’ll be informed of other learning circles happening across your team through your dashboard and a weekly update. (You can configure email communications in account settings)." %}</li>
+        <li>{% trans "Your email address will be visible to other members of your team in the weekly update." %}</li>
+        <li>{% trans "Information about your learning circles will be included in any reporting or evaluation that your team is conducting." %}
+        </li>
+      </ul>
     </div>
   </div>
 </div>

@@ -14,7 +14,7 @@
 
 <script>
     window.organizerDash = window.organizerDash || {};
- 
+
     var activeLearningCircles = [
         {% for group in active_study_groups %}{{ group.to_json|safe }},
         {% endfor %}
@@ -23,7 +23,7 @@
 
     var meetings = [
         {% for meeting in meetings %}
-        { 
+        {
             meeting_time: "{{meeting.meeting_time|time:"H:i"}}",
             meeting_date: "{{meeting.meeting_date|date:"Y-m-d"}}",
             {% if meeting.rsvp_set.all.count %}rsvp: {yes: "{{ meeting.rsvps.yes|length }}", no: "{{ meeting.rsvps.no|length }}"},{% endif %}
