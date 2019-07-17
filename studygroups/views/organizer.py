@@ -69,22 +69,6 @@ def organize(request):
 
     return render(request, 'studygroups/organize.html', context)
 
-@user_is_organizer
-def generate_team_invitation_url(self, team_id):
-    team = get_object_or_404(Team, pk=team_id)
-    team.generate_invitation_token()
-
-    url = reverse('studygroups_facilitator')
-    return http.HttpResponseRedirect(url)
-
-@user_is_organizer
-def delete_team_invitation_url(self, team_id):
-    team = get_object_or_404(Team, pk=team_id)
-    team.invitation_token = None
-    team.save()
-
-    url = reverse('studygroups_facilitator')
-    return http.HttpResponseRedirect(url)
 
 @user_is_team_organizer
 def organize_team(request, team_id):
@@ -105,8 +89,6 @@ def organize_team(request, team_id):
         .filter(study_group__in=study_groups, meeting_date__gte=two_weeks_ago)\
         .exclude(meeting_date__gte=two_weeks)
 
-    team_invitation_url = team.team_invitation_url()
-
     context = {
         'team': team,
         'meetings': meetings,
@@ -114,10 +96,7 @@ def organize_team(request, team_id):
         'active_study_groups': active_study_groups,
         'facilitators': facilitators,
         'invitations': invitations,
-        'today': timezone.now(),
-        'team_invitation_url': team_invitation_url,
-        'generate_team_invitation_url': reverse('studygroups_team_generate_invitation_link', args=(team.id,)),
-        'delete_team_invitation_url': reverse('studygroups_team_delete_invitation_link', args=(team.id,)),
+        'today': timezone.now()
     }
     return render(request, 'studygroups/organize.html', context)
 
@@ -230,11 +209,9 @@ def weekly_report(request, year=None, month=None, day=None):
     report_charts = {
         "learner_goals_chart": NewLearnersGoalsChart(start_time, end_time, data["new_applications"], team).generate()
     }
-    show_emails = (membership and membership.role == TeamMembership.ORGANIZER) or request.user.is_staff
 
     context.update(data)
     context.update(report_charts)
-    context.update({'show_emails': show_emails})
 
 
     return render(request, 'studygroups/email/weekly-update.html', context)

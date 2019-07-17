@@ -6,6 +6,7 @@ import FacilitatorDashboard from './components/dashboard/FacilitatorDashboard'
 const element = document.getElementById('facilitator-dashboard')
 
 const user = element.dataset.user === "AnonymousUser" ? null : element.dataset.user;
+const teamId = element.dataset.teamId === "None" ? null : parseInt(element.dataset.teamId);
 const teamName = element.dataset.teamName === "None" ? null : element.dataset.teamName;
 const teamOrganizerName = element.dataset.teamOrganizerName === "None" ? null : element.dataset.teamOrganizerName;
 const teamInvitationConfirmationUrl = element.dataset.teamInvitationConfirmationUrl === "None" ? null : element.dataset.teamInvitationConfirmationUrl;
@@ -19,6 +20,7 @@ const teamMemberInvitationUrl = element.dataset.teamMemberInvitationUrl === "Non
 ReactDOM.render(
   <FacilitatorDashboard
     user={user}
+    teamId={teamId}
     teamName={teamName}
     teamOrganizerName={teamOrganizerName}
     teamInvitationConfirmationUrl={teamInvitationConfirmationUrl}

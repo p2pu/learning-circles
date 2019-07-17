@@ -67,6 +67,14 @@ export const API_ENDPOINTS = {
   instagram: {
     baseUrl: '/api/instagram-feed/?',
     searchParams: []
+  },
+  teamMembers: {
+    baseUrl: '/api/teams/members/?',
+    searchParams: ['team_id', 'offset', 'limit']
+  },
+  teamInvitations: {
+    baseUrl: '/api/teams/invitations/?',
+    searchParams: ['team_id', 'offset', 'limit']
   }
 };
 

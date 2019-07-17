@@ -15,6 +15,7 @@ from django.utils.decorators import method_decorator
 from django.utils.text import slugify
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django.http import JsonResponse, HttpResponseForbidden
 
 from collections import Counter
 import json
@@ -31,6 +32,7 @@ from studygroups.models import Application
 from studygroups.models import Meeting
 from studygroups.models import Team
 from studygroups.models import TeamMembership
+from studygroups.models import TeamInvitation
 from studygroups.models import generate_all_meetings
 from studygroups.models import filter_studygroups_with_survey_responses
 from studygroups.models import get_json_response
@@ -177,6 +179,7 @@ class LearningCircleListView(View):
             "user": schema.boolean(),
             "scope": schema.text(),
             "draft": schema.boolean(),
+            "team_id": schema.integer(),
         }
         data = schema.django_get_to_dict(request.GET)
         clean_data, errors = schema.validate(query_schema, data)
@@ -966,9 +969,111 @@ class TeamDetailView(SingleObjectMixin, View):
         if request.user.is_authenticated:
             #  ensure user is team organizer
             # organizers = team.teammembership_set.active().filter(role=TeamMembership.ORGANIZER)
-            serialized_team['team_invitation_url'] = team.team_invitation_url()
+            serialized_team['team_invitation_url'] = f'{settings.PROTOCOL}://{settings.DOMAIN}' + team.team_invitation_url()
 
         data['item'] = serialized_team
+
+        return json_response(request, data)
+
+
+def serialize_team_membership(tm):
+    role_label = dict(TeamMembership.ROLES)[tm.role]
+    return {
+        "facilitator": {
+            "first_name": tm.user.first_name,
+            "last_name": tm.user.last_name,
+            "email": tm.user.email,
+        },
+        "created_at": tm.created_at.strftime("%-d %B %Y"),
+        "role": role_label,
+        "id": tm.id,
+    }
+
+def serialize_team_invitation(ti):
+    role_label = dict(TeamMembership.ROLES)[ti.role]
+    return {
+        "facilitator": {
+            "email": ti.email,
+        },
+        "created_at": ti.created_at.strftime("%-d %B %Y"),
+        "role": role_label,
+        "id": ti.id,
+    }
+
+
+@method_decorator(login_required, name="dispatch")
+class TeamMembershipListView(View):
+
+    def get(self, request, **kwargs):
+        query_schema = {
+            "offset": schema.integer(),
+            "limit": schema.integer(),
+            "team_id": schema.integer(required=True),
+        }
+
+        data = schema.django_get_to_dict(request.GET)
+        clean_data, errors = schema.validate(query_schema, data)
+        team_id = clean_data["team_id"]
+
+        user_is_team_organizer = TeamMembership.objects.active().filter(team=team_id, user=request.user, role=TeamMembership.ORGANIZER).exists()
+        if not user_is_team_organizer:
+            return HttpResponseForbidden()
+
+        if errors != {}:
+            return json_response(request, {"status": "error", "errors": errors})
+
+        team_memberships = TeamMembership.objects.active().filter(team=team_id)
+
+        data = {
+            'count': team_memberships.count()
+        }
+
+        if 'offset' in request.GET or 'limit' in request.GET:
+            limit, offset = _limit_offset(request)
+            data['offset'] = offset
+            data['limit'] = limit
+            team_memberships = team_memberships[offset:offset+limit]
+
+        data['items'] = [serialize_team_membership(m) for m in team_memberships]
+
+        return json_response(request, data)
+
+
+
+@method_decorator(login_required, name="dispatch")
+class TeamInvitationListView(View):
+
+    def get(self, request, **kwargs):
+        query_schema = {
+            "offset": schema.integer(),
+            "limit": schema.integer(),
+            "team_id": schema.integer(required=True)
+        }
+
+        data = schema.django_get_to_dict(request.GET)
+        clean_data, errors = schema.validate(query_schema, data)
+        team_id = clean_data["team_id"]
+
+        user_is_team_organizer = TeamMembership.objects.active().filter(team=team_id, user=request.user, role=TeamMembership.ORGANIZER).exists()
+        if not user_is_team_organizer:
+            return HttpResponseForbidden()
+
+        if errors != {}:
+            return json_response(request, {"status": "error", "errors": errors})
+
+        team_invitations = TeamInvitation.objects.filter(team=team_id, responded_at__isnull=True)
+
+        data = {
+            'count': team_invitations.count()
+        }
+
+        if 'offset' in request.GET or 'limit' in request.GET:
+            limit, offset = _limit_offset(request)
+            data['offset'] = offset
+            data['limit'] = limit
+            team_invitations = team_invitations[offset:offset+limit]
+
+        data['items'] = [serialize_team_invitation(i) for i in team_invitations]
 
         return json_response(request, data)
 
@@ -980,7 +1085,7 @@ def create_team_invitation_url(request, team_id):
     team = Team.objects.get(pk=team_id)
     team.generate_invitation_token()
 
-    return json_response(request, { "status": "updated", "team_invitation_url": team.team_invitation_url() })
+    return json_response(request, { "status": "updated", "team_invitation_url": f'{settings.PROTOCOL}://{settings.DOMAIN}' +  team.team_invitation_url() })
 
 
 @user_is_team_organizer

@@ -30,7 +30,7 @@ export default class OrganizerTeamInvitations extends Component {
       console.log(res)
       if (res.status === 200) {
         if (res.data.status === "CREATED") {
-          this.props.showAlert(`We've sent a team invitation to the ${this.state.email}.`, "success")
+          this.props.showAlert(`We've sent a team invitation to ${this.state.email}.`, "success")
           this.setState({ email: "", inviteError: null })
         } else if (res.data.status === "ERROR") {
           this.setState({ inviteError: res.data.errors._ })
