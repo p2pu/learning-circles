@@ -967,9 +967,8 @@ class TeamDetailView(SingleObjectMixin, View):
         team = self.get_object()
         serialized_team = serialize_team_data(team)
 
-        if request.user.is_authenticated:
+        if request.user.is_authenticated and team.teammembership_set.active().filter(user=request.user, role=TeamMembership.ORGANIZER).exists():
             #  ensure user is team organizer
-            # organizers = team.teammembership_set.active().filter(role=TeamMembership.ORGANIZER)
             serialized_team['team_invitation_url'] = team.team_invitation_url()
 
         data['item'] = serialized_team
