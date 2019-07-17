@@ -969,7 +969,7 @@ class TeamDetailView(SingleObjectMixin, View):
         if request.user.is_authenticated:
             #  ensure user is team organizer
             # organizers = team.teammembership_set.active().filter(role=TeamMembership.ORGANIZER)
-            serialized_team['team_invitation_url'] = f'{settings.PROTOCOL}://{settings.DOMAIN}' + team.team_invitation_url()
+            serialized_team['team_invitation_url'] = team.team_invitation_url()
 
         data['item'] = serialized_team
 
@@ -1085,7 +1085,7 @@ def create_team_invitation_url(request, team_id):
     team = Team.objects.get(pk=team_id)
     team.generate_invitation_token()
 
-    return json_response(request, { "status": "updated", "team_invitation_url": f'{settings.PROTOCOL}://{settings.DOMAIN}' +  team.team_invitation_url() })
+    return json_response(request, { "status": "updated", "team_invitation_url": team.team_invitation_url() })
 
 
 @user_is_team_organizer

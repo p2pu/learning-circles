@@ -35,7 +35,10 @@ class Team(models.Model):
         if self.invitation_token is None:
             return None
 
-        return reverse('studygroups_facilitator_invitation_confirm_token', kwargs={'token': self.invitation_token})
+        base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
+        path = reverse('studygroups_facilitator_invitation_confirm_token', kwargs={'token': self.invitation_token})
+
+        return base_url + path
 
 
 class TeamMembership(LifeTimeTrackingModel):
