@@ -221,7 +221,11 @@ export default class FacilitatorDashboard extends React.Component {
                     <UpcomingMeetings scope="global" />
                   </TabPanel>
                   <TabPanel>
-                    <UpcomingMeetings scope="team" />
+                    {
+                      this.state.user ?
+                      <UpcomingMeetings scope="team" /> :
+                      <p>You must be logged in to see your team's activity. <a className="p2pu-btn btn-dark btn-sm" href={"/en/login_redirect/"}>Log in or register</a></p>
+                    }
                   </TabPanel>
                 </Tabs>
                 <div className="text-right">
