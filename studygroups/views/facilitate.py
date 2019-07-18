@@ -560,6 +560,12 @@ class InvitationConfirm(FormView):
 
         return Team.objects.filter(invitation_token=token).first()
 
+    def get_invitation_from_id(self, invitation_id):
+        if invitation_id is None:
+            return None
+
+        return TeamInvitation.objects.filter(id=invitation_id).get()
+
     def get(self, request, *args, **kwargs):
         team_from_token = self.get_team_from_token(kwargs.get('token'))
         eligible_team = eligible_team_by_email_domain(self.request.user)
@@ -586,9 +592,8 @@ class InvitationConfirm(FormView):
             return context
 
         # if there's an invitation, get the team from the invitation
-        invitation = TeamInvitation.objects.filter(
-            email__iexact=self.request.user.email,
-            responded_at__isnull=True).first()
+        invitation_id = self.kwargs.get('invitation_id')
+        invitation = self.get_invitation_from_id(invitation_id)
 
         if invitation:
             context['team'] = invitation.team
@@ -614,12 +619,21 @@ class InvitationConfirm(FormView):
         # add to team by token
         token = self.kwargs.get('token')
         team_from_token = self.get_team_from_token(token)
-        if team_from_token and invitation_confirmed:
-            current_membership_qs.delete()
-            new_membership = TeamMembership.objects.create(team=team_from_token, user=user, role=default_role)
+        if team_from_token:
+            if invitation_confirmed:
+                current_membership_qs.delete()
+                pending_invitations = TeamInvitation.objects.filter(email__iexact=user.email, responded_at__isnull=True)
+                pending_invitations.delete()
+                new_membership = TeamMembership.objects.create(team=team_from_token, user=user, role=default_role)
+                messages.success(self.request, _('Welcome to the team! You are now a part of {}.'.format(new_membership.team.name)))
+                return super(InvitationConfirm, self).form_valid(form)
+            else:
+                return super(InvitationConfirm, self).form_valid(form)
 
         # add to team by invitation
-        invitation = TeamInvitation.objects.filter(email__iexact=user.email, responded_at__isnull=True).first()
+        invitation_id = self.kwargs.get('invitation_id')
+        invitation = self.get_invitation_from_id(invitation_id)
+
         if invitation:
             invitation.responded_at = timezone.now()
             invitation.joined = invitation_confirmed
@@ -627,14 +641,24 @@ class InvitationConfirm(FormView):
 
             if invitation_confirmed:
                 current_membership_qs.delete()
+                pending_invitations = TeamInvitation.objects.filter(email__iexact=user.email, responded_at__isnull=True)
+                pending_invitations.delete()
                 new_membership = TeamMembership.objects.create(team=invitation.team, user=user, role=invitation.role)
+                messages.success(self.request, _('Welcome to the team! You are now a part of {}.'.format(new_membership.team.name)))
+                return super(InvitationConfirm, self).form_valid(form)
+            else:
+                return super(InvitationConfirm, self).form_valid(form)
 
         # add to team by matching email
         eligible_team = eligible_team_by_email_domain(user)
         if eligible_team:
             if invitation_confirmed:
                 current_membership_qs.delete()
+                pending_invitations = TeamInvitation.objects.filter(email__iexact=user.email, responded_at__isnull=True)
+                pending_invitations.delete()
                 new_membership = TeamMembership.objects.create(team=eligible_team, user=user, role=default_role)
+                messages.success(self.request, _('Welcome to the team! You are now a part of {}.'.format(new_membership.team.name)))
+                return super(InvitationConfirm, self).form_valid(form)
             else:
                 organizer = eligible_team.teammembership_set.active().filter(role=TeamMembership.ORGANIZER).first()
                 rejected_invitation = TeamInvitation.objects.create(
@@ -645,9 +669,7 @@ class InvitationConfirm(FormView):
                     joined=invitation_confirmed,
                     responded_at=timezone.now()
                 )
-
-        if new_membership is not None:
-            messages.success(self.request, _('Welcome to the team! You are now a part of {}.'.format(new_membership.team.name)))
+                return super(InvitationConfirm, self).form_valid(form)
 
         return super(InvitationConfirm, self).form_valid(form)
 
@@ -685,19 +707,6 @@ class FacilitatorDashboard(TemplateView):
 
         if self.request.user.is_authenticated():
             email_validated = hasattr(self.request.user, 'profile') and self.request.user.profile.email_confirmed_at is not None
-
-            # pending team invitation from organizer
-            invitation = TeamInvitation.objects.filter(email__iexact=self.request.user.email, responded_at__isnull=True).first()
-            if invitation:
-                context['team_name'] = invitation.team.name
-                context['team_organizer_name'] = invitation.organizer.first_name
-                context['team_invitation_confirmation_url'] = reverse("studygroups_facilitator_invitation_confirm")
-            else:
-                # implicit team invitation based on email domain
-                eligible_team = eligible_team_by_email_domain(self.request.user)
-                if email_validated and eligible_team:
-                    context['team_name'] = eligible_team.name
-                    context['team_invitation_confirmation_url'] = reverse("studygroups_facilitator_invitation_confirm")
 
             if not email_validated:
                 context["email_confirmation_url"] = reverse("email_confirm_request")
