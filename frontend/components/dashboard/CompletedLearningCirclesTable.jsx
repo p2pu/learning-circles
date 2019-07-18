@@ -25,7 +25,7 @@ export default class LearningCirclesTable extends Component {
       this.setState({ learningCircles: data.items, count: data.count, offset: data.offset, limit: data.limit })
     }
 
-    const defaultParams = { limit: this.state.limit, offset: this.state.offset, user: true, scope: "completed" }
+    const defaultParams = { limit: this.state.limit, offset: this.state.offset, user: this.props.user, team_id: this.props.teamId, scope: "completed" }
 
     api.fetchResource({ callback: onSuccess, params: { ...defaultParams, ...params } })
   }
@@ -62,6 +62,7 @@ export default class LearningCirclesTable extends Component {
               <tr>
                 <td>Course</td>
                 <td>Venue</td>
+                { this.props.teamId && <td>Facilitator</td>}
                 <td>Signups</td>
                 <td>Last meeting</td>
                 { (this.props.user || this.props.userIsOrganizer) && <td></td> }
@@ -77,6 +78,7 @@ export default class LearningCirclesTable extends Component {
                     <tr key={ lc.id } className={`${classes}`}>
                       <td>{`${lc.draft ? "[DRAFT] " : ""}${lc.course.title}`}</td>
                       <td>{ lc.venue }</td>
+                      { this.props.teamId && <td>{ lc.facilitator }</td>}
                       <td>{ lc.signup_count }</td>
                       <td>{ date }</td>
                       { (this.props.user || this.props.userIsOrganizer) && <td><a href={ lc.studygroup_path } className="p2pu-btn btn-sm dark">manage</a></td> }

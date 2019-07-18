@@ -3,6 +3,7 @@ import axios from 'axios';
 import AOS from 'aos';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
+import ApiHelper from "../../helpers/ApiHelper";
 import Alert from '../learning_circle_form/Alert';
 import Card from './Card';
 import Notification from './Notification';
@@ -34,15 +35,28 @@ export default class FacilitatorDashboard extends React.Component {
     this.state = {
       user: this.props.user,
       errors: {},
-      alert: { show: false }
+      alert: { show: false },
+      invitationNotifications: [],
     };
   }
 
   componentDidMount(){
+    this.populateInvitationNotifications()
     AOS.init({
       duration: 500,
       delay: 100
     })
+  }
+
+  populateInvitationNotifications = (params={}) => {
+    const api = new ApiHelper('invitationNotifications');
+
+    const onSuccess = (data) => {
+      console.log('success', data)
+      this.setState({ invitationNotifications: data.items })
+    }
+
+    api.fetchResource({ callback: onSuccess, params: {} })
   }
 
   showAlert = (message, type) => {
@@ -60,6 +74,7 @@ export default class FacilitatorDashboard extends React.Component {
   }
 
   render() {
+    console.log('invitationNotifications', this.state.invitationNotifications)
     return (
       <div className="bg-light">
         <Alert
@@ -83,12 +98,12 @@ export default class FacilitatorDashboard extends React.Component {
             }
 
             {
-              this.props.teamInvitationConfirmationUrl &&
-              <TeamInvitationNotification
-                teamInvitationConfirmationUrl={this.props.teamInvitationConfirmationUrl}
-                teamOrganizerName={this.props.teamOrganizerName}
-                teamName={this.props.teamName}
-              />
+              this.state.invitationNotifications.map((invitation, i) => {
+                return (<TeamInvitationNotification
+                  key={`invitatation-${i}`}
+                  invitation={invitation}
+                />)
+              })
             }
             </div>
 
