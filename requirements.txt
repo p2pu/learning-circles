@@ -12,7 +12,7 @@ botocore==1.10.3
 cairocffi==0.9.0
 CairoSVG==2.1.3
 celery==3.1.25
-certifi==2017.7.27.1
+certifi==2019.3.9
 cffi==1.11.5
 chardet==3.0.4
 cssselect==1.0.3
@@ -24,9 +24,11 @@ Django==1.11.6
 django-appconf==1.0.1
 django-cors-headers==3.0.0
 django-crispy-forms==1.7.2
+django-filter==2.2.0
 django-inlinecss==0.1.2
 django-phonenumber-field==1.1.0
 django-webpack-loader==0.5.0
+djangorestframework==3.10.1
 docutils==0.14
 filechunkio==1.6
 freezegun==0.3.8
@@ -36,10 +38,11 @@ gunicorn==19.7.1
 html5lib==1.0.1
 httplib2==0.9.1
 icalendar==4.0.3
-idna==2.6
+idna==2.8
 jmespath==0.9.3
 kombu==3.0.37
 lxml==4.2.5
+Markdown==3.1.1
 mock==1.0.1
 olefile==0.44
 packaging==16.8
@@ -55,7 +58,7 @@ pyparsing==2.2.0
 PySocks==1.6.8
 python-dateutil==2.6.1
 pytz==2017.2
-requests==2.18.4
+requests==2.22.0
 s3-backup-rotate==0.3.3
 s3transfer==0.1.13
 selenium==3.141.0
@@ -64,6 +67,6 @@ tinycss2==0.6.1
 transifex-client==0.12.4
 twilio==6.8.0
 unicodecsv==0.14.1
-urllib3==1.24.1
+urllib3==1.25.2
 vine==1.1.3
 webencodings==0.5.1

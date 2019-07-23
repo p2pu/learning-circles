@@ -47,16 +47,18 @@ INSTALLED_APPS = [
     'corsheaders',
     'crispy_forms',
     'phonenumber_field',
+    'rest_framework',
+    'webpack_loader',
     # own
     'studygroups',
     'backup',
     'analytics',
     'uxhelpers',
-    'webpack_loader',
     'custom_registration',
     'advice',
     'surveys',
     'announce',
+    'community_calendar',
 ]
 
 MIDDLEWARE = [
@@ -335,3 +337,10 @@ ANNOUNCE_EMAIL = env('ANNOUNCE_EMAIL', 'announce@localhost')
 # Instagram token
 INSTAGRAM_TOKEN = env('INSTAGRAM_TOKEN', '')
 
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}

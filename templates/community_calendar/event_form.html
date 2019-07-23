@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+
+    <div class="col-md-12 col-sm-12">
+      {% if object %}
+      <h2>{% trans "Edit event" %}</h2>
+      {% else %}
+      <h2>{% trans "Add an event" %}</h2>
+      <p>{% blocktrans %}Add events that are relevant for other people in the P2PU commutiny{% endblocktrans %}</p>
+      {% endif %}
+      <form action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+          {{ form|crispy }}
+          <p><button type="submit" class="btn btn-primary">{% trans "Save" %}</button></p>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'css/datepicker.css' %}" charset="utf-8">
+<link type="text/css" rel="stylesheet" href="{% static 'css/jquery.timepicker.css' %}" charset="utf-8">
+{% endblock %}
+
+
+{% block scripts %}
+<script src="{% static 'js/vendor/bootstrap-datepicker.js' %}"></script>
+<script src="{% static 'js/vendor/jquery.timepicker.js' %}"></script>
+<script src="{% static 'js/vendor/jstz.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/places.js/1/places.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('.dateinput').datepicker({'format': 'yyyy-mm-dd'});
+        // TODO time input should be localized
+        $('.timeinput').timepicker({ 'step': 15, 'timeFormat': 'h:i A' });
+        var tz = jstz.determine();
+        if (typeof (tz) !== 'undefined' && $('#id_timezone').val() === "") {
+            $('#id_timezone').val(tz.name());
+        }
+        var placesAutocomplete = places({
+            container: document.querySelector('#id_city'),
+            type: 'city'
+        });
+        // update lat, lon based on city
+        placesAutocomplete.on('change', function(e){
+          $('#id_latitude').val(e.suggestion.latlng.lat);
+          $('#id_longitude').val(e.suggestion.latlng.lng);
+          try {
+            $('#id_place_id').val(e.suggestion.rawAnswer.hits[0].objectID);
+          } catch (error) {
+            console.log("Couldn't get objectID for place");
+          }
+          try {
+            $('#id_country').val(e.suggestion.country);
+          } catch (error) {
+            console.log("Couldn't get country for place");
+          }
+          try {
+            $('#id_region').val(e.suggestion.administrative);
+          } catch (error){
+            console.log("Couldn't get region for place");
+          }
+        });
+    });
+</script>
+{% endblock %}
