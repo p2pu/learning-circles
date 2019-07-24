@@ -981,13 +981,16 @@ class TeamDetailView(SingleObjectMixin, View):
 
 def serialize_team_membership(tm):
     role_label = dict(TeamMembership.ROLES)[tm.role]
+    email_validated = hasattr(tm.user, 'profile') and tm.user.profile.email_confirmed_at is not None
+    email_confirmed_at = tm.user.profile.email_confirmed_at.strftime("%-d %B %Y") if email_validated else "--"
+
     return {
         "facilitator": {
             "first_name": tm.user.first_name,
             "last_name": tm.user.last_name,
             "email": tm.user.email,
+            "email_confirmed_at": email_confirmed_at
         },
-        "created_at": tm.created_at.strftime("%-d %B %Y"),
         "role": role_label,
         "id": tm.id,
     }
