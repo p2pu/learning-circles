@@ -64,7 +64,7 @@ export default class TeamMembersTable extends Component {
                 <td>Name</td>
                 <td>Email</td>
                 <td>Role</td>
-                <td>Joined</td>
+                <td>Joined P2PU</td>
               </tr>
             </thead>
             <tbody>
@@ -76,7 +76,7 @@ export default class TeamMembersTable extends Component {
                       <td>{`${facilitator.first_name} ${facilitator.last_name}`}</td>
                       <td>{ facilitator.email }</td>
                       <td>{ m.role }</td>
-                      <td>{ m.created_at }</td>
+                      <td>{ facilitator.email_confirmed_at }</td>
                     </tr>
                   )
                 })
