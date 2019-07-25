@@ -35,6 +35,12 @@ function deprecatedAlert(){
         right: 4px;
       }
 
+      #deprecated-site-alert a.link {
+        color: #ffffff;
+        text-decoration: underline;
+        font-weight: bold;
+      }
+
       #deprecated-alert-close {
         background: transparent;
         border: none;
@@ -46,7 +52,7 @@ function deprecatedAlert(){
     <div id="deprecated-site-alert" aria-hidden="true">
       <div role="alert" tabindex="1">
         <div class="text-center">
-          <p>The Organizer Dashboard is now part of the new Facilitator Dashboard! This page is deprecated and will soon be removed completely.</p>
+          <p>The Organizer Dashboard is now part of the new Facilitator Dashboard! This page is deprecated and will soon be removed completely. Visit this <a class="link" href="https://community.p2pu.org/t/new-facilitator-dashboard-and-team-page/3894">thread on the Community forum</a> for more information about these changes or to give us feedback.</p>
           <div>
             <a href="/en/" id="go-to-dashboard" class="p2pu-btn btn-sm light">Go to the new dashboard</a>
           </div>
