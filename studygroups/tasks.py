@@ -560,20 +560,6 @@ def send_team_invitation_email(team, email, organizer):
     msg.send()
 
 
-def send_organization_guide(form):
-    print(form)
-    # context = form_data
-
-    # subject = render_to_string_ctx('studygroups/email/community_digest-subject.txt', context)
-    # html_body = render_html_with_css('studygroups/email/community_digest.html', context)
-    # text_body = html_body_to_text(html_body)
-    # to = [settings.COMMUNITY_DIGEST_EMAIL]
-
-    # msg = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
-    # msg.attach_alternative(html_body, 'text/html')
-    # msg.send()
-
-
 def send_weekly_update():
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     start_time = today - datetime.timedelta(days=today.weekday() + 7) #start of previous week
