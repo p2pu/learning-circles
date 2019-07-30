@@ -13,8 +13,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.views.generic.base import View
-from django.views.generic.edit import CreateView, DeleteView
+from django.views.generic.edit import CreateView, DeleteView, FormView
 from django.views.generic import ListView
+from django.contrib import messages
 
 from studygroups.models import Course
 from studygroups.models import StudyGroup
@@ -31,7 +32,7 @@ from studygroups.decorators import user_is_organizer
 from studygroups.decorators import user_is_team_member
 from studygroups.decorators import user_is_team_organizer
 from studygroups.charts import NewLearnersGoalsChart
-
+from studygroups.forms import OrganizerGuideForm
 
 @user_is_organizer
 def organize(request):
@@ -215,3 +216,25 @@ def weekly_report(request, year=None, month=None, day=None):
 
 
     return render(request, 'studygroups/email/weekly-update.html', context)
+
+
+class OrganizerGuideForm(FormView):
+    form_class = OrganizerGuideForm
+    template_name = 'studygroups/get_organizer_guide.html'
+    success_url = reverse_lazy('studygroups_facilitator')
+
+    def get_context_data(self, **kwargs):
+        context = super(OrganizerGuideForm, self).get_context_data(**kwargs)
+
+        if self.request.user.is_authenticated():
+            context['form'] = self.form_class(self.request.user)
+
+        return context
+
+    def form_valid(self, form):
+        form.send_organization_guide()
+        messages.success(self.request, _('We have sent the Organizer Guide to you by email, please check your inbox!'))
+        return super().form_valid(form)
+
+
+

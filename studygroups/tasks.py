@@ -503,7 +503,7 @@ def send_meeting_change_notification(old_meeting, new_meeting):
         'new_meeting': new_meeting,
         'learning_circle': study_group,
     }
-    
+
     with use_language(study_group.language), timezone.override(pytz.timezone(study_group.timezone)):
         subject = render_to_string_ctx('studygroups/email/meeting_changed-subject.txt', context).strip('\n')
         html_body = render_to_string_ctx('studygroups/email/meeting_changed.html', context)
@@ -558,6 +558,20 @@ def send_team_invitation_email(team, email, organizer):
     msg = EmailMultiAlternatives(subject, text_body, from_, to)
     msg.attach_alternative(html_body, 'text/html')
     msg.send()
+
+
+def send_organization_guide(form):
+    print(form)
+    # context = form_data
+
+    # subject = render_to_string_ctx('studygroups/email/community_digest-subject.txt', context)
+    # html_body = render_html_with_css('studygroups/email/community_digest.html', context)
+    # text_body = html_body_to_text(html_body)
+    # to = [settings.COMMUNITY_DIGEST_EMAIL]
+
+    # msg = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
+    # msg.attach_alternative(html_body, 'text/html')
+    # msg.send()
 
 
 def send_weekly_update():

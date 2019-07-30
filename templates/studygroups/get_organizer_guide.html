@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block content %}
+<div class="container">
+<div class="row my-5">
+
+  <div class="col-12">
+    <h1>Get the Organizer Guide</h1>
+    <p>Please provide the following information so that we can email you the Organizer Guide and follow up with you on getting a team started.</p>
+  </div>
+  <div class="col-12">
+    <form action="" method="POST">
+      {% csrf_token %}
+      {{ form|crispy }}
+        <p><button type="submit" class="btn p2pu-btn blue">{% trans "Get the Guide!" %}</button></p>
+    </form>
+  </div>
+
+</div>
+</div>
+{% endblock %}
