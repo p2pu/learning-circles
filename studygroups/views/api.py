@@ -37,6 +37,7 @@ from studygroups.models import generate_all_meetings
 from studygroups.models import filter_studygroups_with_survey_responses
 from studygroups.models import get_json_response
 from studygroups.models.course import course_platform_from_url
+from studygroups.models.team import eligible_team_by_email_domain
 
 from uxhelpers.utils import json_response
 
@@ -980,13 +981,16 @@ class TeamDetailView(SingleObjectMixin, View):
 
 def serialize_team_membership(tm):
     role_label = dict(TeamMembership.ROLES)[tm.role]
+    email_validated = hasattr(tm.user, 'profile') and tm.user.profile.email_confirmed_at is not None
+    email_confirmed_at = tm.user.profile.email_confirmed_at.strftime("%-d %B %Y") if email_validated else "--"
+
     return {
         "facilitator": {
             "first_name": tm.user.first_name,
             "last_name": tm.user.last_name,
             "email": tm.user.email,
+            "email_confirmed_at": email_confirmed_at
         },
-        "created_at": tm.created_at.strftime("%-d %B %Y"),
         "role": role_label,
         "id": tm.id,
     }
@@ -1078,6 +1082,35 @@ class TeamInvitationListView(View):
         data['items'] = [serialize_team_invitation(i) for i in team_invitations]
 
         return json_response(request, data)
+
+
+def serialize_invitation_notification(invitation):
+    return {
+        "team_name": invitation.team.name,
+        "team_organizer_name": invitation.organizer.first_name,
+        "team_invitation_confirmation_url": reverse("studygroups_facilitator_invitation_confirm", args=(invitation.id,)),
+    }
+
+@login_required
+def facilitator_invitation_notifications(request):
+    email_validated = hasattr(request.user, 'profile') and request.user.profile.email_confirmed_at is not None
+    pending_invitations = TeamInvitation.objects.filter(email__iexact=request.user.email, responded_at__isnull=True)
+    eligible_team = eligible_team_by_email_domain(request.user)
+
+    invitation_notifications = [ serialize_invitation_notification(i) for i in pending_invitations]
+
+    if email_validated and eligible_team:
+        implicit_invitation_notification = {
+            'team_name': eligible_team.name,
+            'team_invitation_confirmation_url': reverse("studygroups_facilitator_invitation_confirm")
+        }
+        invitation_notifications.append(implicit_invitation_notification)
+
+    data = {
+        "items": invitation_notifications
+    }
+
+    return json_response(request, data)
 
 
 @user_is_team_organizer
