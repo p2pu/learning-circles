@@ -1,8 +1,6 @@
 import React from "react";
 import {datetime} from "../../helpers/i18n";
 
-const path = '/api/community_calendar/events/?user=self';
-
 const EventRow = ({event, classes, index}) => (
   <tr key={index} className={`${classes}`}>
     <td>{event.title}</td>
@@ -26,7 +24,7 @@ export default class EventsTable extends React.Component {
   }
 
   componentDidMount() {
-    let apiUrl = 'http://localhost:8000/api/community_calendar/events/?format=json&user=self'
+    let apiUrl = '/api/community_calendar/events/?format=json&user=self'
     fetch(apiUrl).then( resp => resp.json()).then( data => {
       this.setState({events: data.results});
     });
