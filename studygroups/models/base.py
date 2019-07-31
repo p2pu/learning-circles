@@ -35,6 +35,9 @@ class ModeratedQuerySet(models.QuerySet):
 
     def moderated(self):
         """ iow, moderated().active() or active().moderated() will get you stuff to show """
+        return self.filter(moderated_at__isnull=False, moderation_approved=True)
+
+    def to_moderate(self):
         return self.filter(moderated_at__isnull=True)
 
 
@@ -42,11 +45,10 @@ class Moderatable(models.Model):
     """ When moderating, deleted_at will be set to indicate spam """
     moderated_at = models.DateTimeField(blank=True, null=True)
     moderated_by = models.ForeignKey(User, blank=True, null=True, related_name='moderator')
-    #approved = models.NullBooleanField(blank=True, null=True)
-    note = models.CharField(max_length=256, blank=True)
+    moderation_approved = models.NullBooleanField(blank=True, null=True)
+    moderation_note = models.CharField(max_length=256, blank=True)
 
     objects = ModeratedQuerySet.as_manager()
 
     class Meta:
         abstract = True
-

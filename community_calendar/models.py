@@ -20,7 +20,7 @@ class Event(Moderatable):
     country_en = models.CharField(max_length=256, blank=True)
     #place_id ??
 
-    link = models.URLField(blank=True)
+    link = models.URLField()
     image = models.ImageField(blank=True)
 
     def local_datetime(self):
