@@ -503,7 +503,7 @@ def send_meeting_change_notification(old_meeting, new_meeting):
         'new_meeting': new_meeting,
         'learning_circle': study_group,
     }
-    
+
     with use_language(study_group.language), timezone.override(pytz.timezone(study_group.timezone)):
         subject = render_to_string_ctx('studygroups/email/meeting_changed-subject.txt', context).strip('\n')
         html_body = render_to_string_ctx('studygroups/email/meeting_changed.html', context)

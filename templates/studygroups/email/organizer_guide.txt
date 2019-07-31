@@ -1,0 +1,16 @@
+{% load i18n %}
+
+{% blocktrans %}
+Hi {{first_name}},
+{% endblocktrans %}
+{% trans "Your copy of the P2PU organizer guide is attached!" %}
+{% blocktrans%}
+We are excited that you want to learn more about starting learning circles in {{location}}.
+{% endblocktrans %}
+{% trans "Setting up a team on our site is a manual process on our end, so please let us know if and when you’re ready to move forward and we’ll get that started." %}
+
+{% trans "Additionally, we are available to provide a variety of services to help you get your team started, including running a training workshop, developing a custom landing page for your team, and conducting project evaluation. Please reach out if any of this interests you." %}
+
+{% trans "Cheers," %}
+{% trans "P2PU" %}
+
