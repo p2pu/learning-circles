@@ -27,6 +27,7 @@ from studygroups.models import Course
 from studygroups.models import TeamMembership
 from studygroups.sms import send_message
 
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -455,4 +456,46 @@ class TeamMembershipForm(forms.ModelForm):
         labels = {
             'weekly_update_opt_in': _('Receive weekly update'),
         }
+
+
+class OrganizerGuideForm(forms.Form):
+    first_name = forms.CharField(label=_('First name'))
+    last_name = forms.CharField(label=_('Last name'))
+    email = forms.EmailField(label=_('Email address'))
+    location = forms.CharField(label=_('City or location'))
+    # message = forms.CharField(required=False, label=_('Do you have any particular questions about starting a team that we can help you with?'))
+
+    def __init__(self, user=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+        self.helper.add_input(Submit('submit', 'Submit'))
+
+        if user is not None:
+            self.fields['first_name'].initial = user.first_name
+            self.fields['last_name'].initial = user.last_name
+            self.fields['email'].initial = user.email
+            self.fields['location'].initial = user.profile.city
+
+    def send_organization_guide(self):
+        email = self.cleaned_data['email']
+        first_name = self.cleaned_data['first_name']
+        last_name = self.cleaned_data['last_name']
+        location = self.cleaned_data['location']
+        # message = self.cleaned_data['message']
+
+        context = {
+            'first_name': first_name,
+            'last_name': last_name,
+            'location': location,
+            # 'message': message,
+        }
+        to = [email, settings.TEAM_EMAIL]
+        subject = render_to_string_ctx('studygroups/email/organizer_guide-subject.txt', context).strip('\n')
+        html_body = render_to_string_ctx('studygroups/email/organizer_guide.html', context)
+        text_body = render_to_string_ctx('studygroups/email/organizer_guide.txt', context)
+        email = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
+        email.attach_alternative(html_body, 'text/html')
+        email.attach_file("static/files/organizer_guide.pdf")
+        email.send()
+
 
