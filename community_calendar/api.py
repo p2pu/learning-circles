@@ -54,6 +54,6 @@ class EventViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         if self.request.user and self.request.query_params.get('user') == 'self':
             return Event.objects.filter(created_by=self.request.user)
-        if self.request.user and self.request.user.is_staff and self.request.query_parames.get('to_moderate') == 'yes':
+        if self.request.user and self.request.user.is_staff and self.request.query_params.get('to_moderate') == 'yes':
             return Event.objects.to_moderate()
         return Event.objects.moderated()
