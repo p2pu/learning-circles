@@ -6,6 +6,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.utils import formats
+from django.utils import timezone 
 from django.utils.translation import ugettext as _
 from django import http
 
@@ -27,10 +28,13 @@ class EventCreate(CreateView):
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.created_by = self.request.user
+        self.object.moderation_approved = True  # TODO - for testing
+        self.object.moderated_at = timezone.now()  # TODO - for testing
         self.object.save()
         # moderation logic be here
         messages.success(self.request, _('Your event has been added.'))
         return http.HttpResponseRedirect(self.get_success_url())
+
 
 event_edit_decorators = [login_required, user_owns_event]
 @method_decorator(event_edit_decorators, name="dispatch")
