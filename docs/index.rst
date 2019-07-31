@@ -6,7 +6,7 @@
 Welcome to Learning Circles Dashboard's documentation!
 ======================================================
 
-Contents:
+You are probably looking for the documentation `here <https://learning-circles-user-manual.readthedocs.io/en/latest/>`.
 
 .. toctree::
    :maxdepth: 2
