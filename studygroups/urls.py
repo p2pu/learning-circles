@@ -1,7 +1,5 @@
 from django.conf.urls import url
-from django.urls import reverse_lazy
 from django.views.generic import TemplateView
-from django.contrib.auth.decorators import login_required
 from django.views.generic.base import RedirectView
 
 from studygroups.views import MeetingCreate

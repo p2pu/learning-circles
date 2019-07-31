@@ -295,7 +295,7 @@ class CourseCreate(CreateView):
         self.object = form.save(commit=False)
         self.object.created_by = self.request.user
         self.object.save()
-        messages.success(self.request, _('Your course has been created. You can now create a learning circle using it.'))
+        messages.success(self.request, _('Your course has been added. You can now create a learning circle using it.'))
         return http.HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
