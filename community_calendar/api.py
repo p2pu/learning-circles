@@ -56,4 +56,4 @@ class EventViewSet(viewsets.ReadOnlyModelViewSet):
             return Event.objects.filter(created_by=self.request.user)
         if self.request.user and self.request.user.is_staff and self.request.query_params.get('to_moderate') == 'yes':
             return Event.objects.to_moderate()
-        return Event.objects.moderated()
+        return Event.objects.moderated().order_by('datetime')
