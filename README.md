@@ -4,7 +4,7 @@ Learning circles are study groups that meet weekly at a physical location to wor
 
 This is the source code for the online dashboard that helps facilitators organize and run their learning circles. You can find the dashboard at [learningcircles.p2pu.org](https://learningcircles.p2pu.org/) or see the [online user documentation](https://learning-circles-user-manual.readthedocs.io/en/latest/) for a guide on how to use the dashboard and a description on the functionality provided.
 
-# What are the future plans
+# What are the future plans?
 
 We maintain a [feature roadmap](https://github.com/p2pu/learning-circles/wiki/Roadmap) where you can see what we are currently working on and what we are planning to do.
 
