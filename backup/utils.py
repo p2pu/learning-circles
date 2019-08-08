@@ -66,10 +66,11 @@ def backup_db():
     env = os.environ.copy()
     env['PGPASSWORD'] = settings.DATABASES['default']['PASSWORD']
     #TODO not the best way to pass the password!
-    process = subprocess.Popen(cmd.split(' '), env=env)
+    process = subprocess.Popen(cmd.split(' '), env=env, stderr=subprocess.PIPE)
     return_code = process.wait()
     if return_code != 0:
-        raise BackupFailed('could not create media backup')
+        _, err = process.communicate()
+        raise BackupFailed('could not create database backup ' + err)
     
     # Upload to S3
     upload_rotate(
