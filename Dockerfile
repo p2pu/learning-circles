@@ -8,7 +8,7 @@ RUN apk --no-cache add --virtual native-deps \
 COPY . /opt/app/
 RUN npm run build
 
-FROM python:3.6-alpine3.8
+FROM python:3.6-alpine3.10
 WORKDIR /opt/app/
 COPY requirements.txt /opt/app/
 RUN apk --no-cache add --virtual .python-rundeps \
