@@ -4,7 +4,6 @@ import {datetime} from "../../helpers/i18n";
 const EventRow = ({event, classes, index}) => (
   <tr key={index} className={`${classes}`}>
     <td>{event.title}</td>
-    <td>{event.description}</td>
     <td>{datetime(event.datetime)}</td>
     <td>
       <a href={event.edit_url} className="p2pu-btn btn-sm dark">edit</a>
@@ -38,14 +37,13 @@ export default class EventsTable extends React.Component {
             <thead>
               <tr>
                 <td>Title</td>
-                <td>Description</td>
                 <td>Date</td>
                 <td></td>
                 <td></td>
               </tr>
             </thead>
             <tbody>
-              {this.state.events.map( event => <EventRow event={event} />)}
+              {this.state.events.map( event => <EventRow event={event} key={event.title} />)}
             </tbody>
           </table>
         </div>

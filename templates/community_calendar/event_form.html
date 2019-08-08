@@ -5,7 +5,7 @@
 {% load i18n %}
 
 {% block content %}
-<div class="container">
+<div class="container my-4">
   <div class="row">
 
     <div class="col-md-12 col-sm-12">
@@ -13,12 +13,12 @@
       <h2>{% trans "Edit event" %}</h2>
       {% else %}
       <h2>{% trans "Add an event" %}</h2>
-      <p>{% blocktrans %}Add events that are relevant for other people in the P2PU commutiny{% endblocktrans %}</p>
+      <p>{% trans "Use this calendar to share conferences, events, and gatherings that you think the P2PU community would be interested in. If you are trying to create a learning circle, " %}<a href="{% url 'studygroups_facilitator_studygroup_create' %}">{% trans "do that here" %}</a>.</p>
       {% endif %}
       <form action="" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
           {{ form|crispy }}
-          <p><button type="submit" class="btn btn-primary">{% trans "Save" %}</button></p>
+          <p><button type="submit" class="btn p2pu-btn blue">{% trans "Save" %}</button></p>
       </form>
     </div>
   </div>

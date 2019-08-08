@@ -4,6 +4,8 @@ from rest_framework import serializers, viewsets
 from rest_framework import generics
 
 import pytz
+import datetime
+from django.utils import timezone
 
 from .models import Event
 
@@ -56,4 +58,12 @@ class EventViewSet(viewsets.ReadOnlyModelViewSet):
             return Event.objects.filter(created_by=self.request.user)
         if self.request.user and self.request.user.is_staff and self.request.query_params.get('to_moderate') == 'yes':
             return Event.objects.to_moderate()
-        return Event.objects.moderated().order_by('datetime')
+
+        today = timezone.now()
+        events = Event.objects.moderated().filter(datetime__gte=today).order_by('datetime')
+
+        if 'limit' in self.request.GET:
+            limit = int(self.request.GET.get('limit'))
+            events = events[:limit]
+
+        return events

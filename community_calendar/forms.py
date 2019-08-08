@@ -3,7 +3,7 @@ from django import forms
 from django.utils.translation import ugettext as _
 from django.utils import timezone
 
-from .models import Event 
+from .models import Event
 
 import pytz
 import datetime
@@ -52,9 +52,9 @@ class EventForm(forms.ModelForm):
             'datetime': _('Event date and time'),
         }
         help_texts = {
-            'description': _('Briefly tell people what this event is about and how it\'s relevant to the P2PU community.'),
+            'description': _('This description will appear on p2pu.org/events. Maximum 500 characters.'),
             'city': _('Is this event happing in a specific location?'),
-            'link': _('Where can someone find more info and/or register for the event?'),
+            'link': _('This is where you should direct people to sign up. If you don’t have a website, you can create a post on our community forum.'),
             'image': _('Make your learning circle stand out with a picture or .gif. It could be related to location, subject matter, or anything else you want to identify with!'),
         }
         widgets = {
@@ -65,4 +65,5 @@ class EventForm(forms.ModelForm):
             'country_en': forms.HiddenInput,
             'region': forms.HiddenInput,
             'datetime': forms.HiddenInput,
+            'description': forms.Textarea(attrs={"rows":5}),
         }

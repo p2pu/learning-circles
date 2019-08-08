@@ -20,6 +20,7 @@ import InstagramFeed from "./InstagramFeed";
 import Title from './Title';
 import EmailValidationNotification from './EmailValidationNotification'
 import TeamInvitationNotification from './TeamInvitationNotification'
+import UpcomingEventNotification from './UpcomingEventNotification'
 import TeamMembersTable from './TeamMembersTable'
 import TeamInvitationsTable from './TeamInvitationsTable'
 import OrganizerTeamInvitations from './OrganizerTeamInvitations'
@@ -38,11 +39,13 @@ export default class FacilitatorDashboard extends React.Component {
       errors: {},
       alert: { show: false },
       invitationNotifications: [],
+      events: [],
     };
   }
 
   componentDidMount(){
     this.populateInvitationNotifications()
+    this.populateUpcomingEvents()
     AOS.init({
       duration: 500,
       delay: 100
@@ -53,11 +56,17 @@ export default class FacilitatorDashboard extends React.Component {
     const api = new ApiHelper('invitationNotifications');
 
     const onSuccess = (data) => {
-      console.log('success', data)
       this.setState({ invitationNotifications: data.items })
     }
 
     api.fetchResource({ callback: onSuccess, params: {} })
+  }
+
+  populateUpcomingEvents = (params={}) => {
+    let apiUrl = '/api/community_calendar/events/?format=json&user=self&limit=1'
+    fetch(apiUrl).then( resp => resp.json()).then( data => {
+      this.setState({events: data.results});
+    });
   }
 
   showAlert = (message, type) => {
@@ -75,7 +84,7 @@ export default class FacilitatorDashboard extends React.Component {
   }
 
   render() {
-    console.log('invitationNotifications', this.state.invitationNotifications)
+    console.log(this.state.events)
     return (
       <div className="bg-light">
         <Alert
@@ -105,6 +114,10 @@ export default class FacilitatorDashboard extends React.Component {
                   invitation={invitation}
                 />)
               })
+            }
+
+            {
+              this.state.events.map(event => <UpcomingEventNotification key={event.title} event={event} />)
             }
             </div>
 
