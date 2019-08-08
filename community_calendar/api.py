@@ -7,10 +7,21 @@ import pytz
 import datetime
 from django.utils import timezone
 
+from django.contrib.auth.models import User
 from .models import Event
 
+
 # Serializers define the API representation.
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name']
+
+
 class EventSerializer(serializers.HyperlinkedModelSerializer):
+    created_by = UserSerializer(read_only=True)
+
     class Meta:
         model = Event
         fields = [
@@ -23,7 +34,8 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
              'region',
              'country',
              'link',
-             'image'
+             'image',
+             'created_by',
         ]
 
 
