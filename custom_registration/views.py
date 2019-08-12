@@ -218,7 +218,7 @@ class AccountSettingsView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         if 'profile' in request.POST:
-            profile_form = self.profile_form(request.POST, prefix='profile', instance=request.user.profile)
+            profile_form = self.profile_form(request.POST, request.FILES, prefix='profile', instance=request.user.profile)
 
             if profile_form.is_valid():
                 profile_form.save()
