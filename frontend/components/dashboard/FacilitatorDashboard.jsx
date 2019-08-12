@@ -190,7 +190,7 @@ export default class FacilitatorDashboard extends React.Component {
               this.props.userIsOrganizer &&
               <div data-aos='fade'>
                 <Card>
-                  <div className="card-title">Team Members</div>
+                  <div className="card-title">Team Management</div>
                     <Tabs defaultIndex={0}>
                       <TabList>
                         <Tab><span className="minicaps bold text-xs">Team members</span></Tab>
@@ -278,10 +278,10 @@ export default class FacilitatorDashboard extends React.Component {
 
             <div data-aos='fade'>
               <Card>
-                <div className="card-title">Activities for your Learning Circle</div>
+                <div className="card-title">Facilitator Resources</div>
                 <RecommendedResources />
                 <div className="text-right">
-                  <a href={"https://community.p2pu.org/tags/activity/"}>See all activities</a>
+                  <a href={"https://www.p2pu.org/en/facilitate/"}>See all resources</a>
                 </div>
               </Card>
             </div>

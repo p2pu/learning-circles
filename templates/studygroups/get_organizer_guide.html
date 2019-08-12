@@ -7,7 +7,11 @@
 <div class="row my-5">
 
   <div class="col-12">
-    <h1>{% trans "Get the Organizer Guide" %}</h1>
+    <h1 class="mb-4">{% trans "Get the Organizer Guide" %}</h1>
+    <p><small class="text-muted">
+      <a href="{% url 'login' %}?next=/en/get-organizer-guide/">{% trans "Log in" %}</a>
+      {% trans "if you have an account." %}
+    </small></p>
     <p>{% trans "Please provide the following information so that we can email you the Organizer Guide and follow up with you on getting a team started." %}</p>
   </div>
   <div class="col-12">
