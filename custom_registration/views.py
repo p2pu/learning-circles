@@ -127,6 +127,7 @@ class WhoAmIView(View):
             user_data["user"] = request.user.first_name
             user_data["links"] = [
                 {"text": "Dashboard", "url": reverse('studygroups_facilitator')},
+                {"text": "Create a learning circle", "url": reverse('studygroups_facilitator_studygroup_create')},
                 {"text": "Account settings", "url": reverse('account_settings')},
                 {"text": "Log out", "url": reverse('logout')},
             ]
