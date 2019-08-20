@@ -956,8 +956,21 @@ class TeamListView(View):
         data = {}
 
         teams = Team.objects.all().order_by('name')
+
         data["count"] = teams.count()
+
+        if 'image' in request.GET and request.GET.get('image') == "true":
+            teams = teams.exclude(page_image="")
+
+
+        if 'offset' in request.GET or 'limit' in request.GET:
+            limit, offset = _limit_offset(request)
+            data['offset'] = offset
+            data['limit'] = limit
+            teams = teams[offset:offset+limit]
+
         data['items'] = [ serialize_team_data(team) for team in teams ]
+
         return json_response(request, data)
 
 

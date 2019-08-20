@@ -461,9 +461,8 @@ class TeamMembershipForm(forms.ModelForm):
 class OrganizerGuideForm(forms.Form):
     first_name = forms.CharField(label=_('First name'))
     last_name = forms.CharField(label=_('Last name'))
-    email = forms.EmailField(label=_('Email address'))
+    email = forms.EmailField(label=_('Email address'), help_text=_('Your copy of the organizer guide will arrive as an email with the P2PU team in copy. Your email address will not be shared externally nor will it be added to any mailing lists.'))
     location = forms.CharField(label=_('City or location'))
-    # message = forms.CharField(required=False, label=_('Do you have any particular questions about starting a team that we can help you with?'))
 
     def __init__(self, user=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -481,13 +480,11 @@ class OrganizerGuideForm(forms.Form):
         first_name = self.cleaned_data['first_name']
         last_name = self.cleaned_data['last_name']
         location = self.cleaned_data['location']
-        # message = self.cleaned_data['message']
 
         context = {
             'first_name': first_name,
             'last_name': last_name,
             'location': location,
-            # 'message': message,
         }
         to = [email, settings.TEAM_EMAIL]
         subject = render_to_string_ctx('studygroups/email/organizer_guide-subject.txt', context).strip('\n')

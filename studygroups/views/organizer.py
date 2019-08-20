@@ -223,6 +223,17 @@ class OrganizerGuideForm(FormView):
     template_name = 'studygroups/get_organizer_guide.html'
     success_url = reverse_lazy('studygroups_facilitator')
 
+    def get(self, request, *args, **kwargs):
+        user = self.request.user
+        # redirect to the guide on discourse if user is organizer
+        if user.is_authenticated():
+            if TeamMembership.objects.active().filter(user=user, role=TeamMembership.ORGANIZER).exists():
+                url = 'https://community.p2pu.org/t/julianas-organizer-guide-how-to-start-a-learning-circle-community/3160'
+                return http.HttpResponseRedirect(url)
+
+        return super(OrganizerGuideForm, self).get(request, *args, **kwargs)
+
+
     def get_context_data(self, **kwargs):
         context = super(OrganizerGuideForm, self).get_context_data(**kwargs)
 
