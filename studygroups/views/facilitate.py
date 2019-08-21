@@ -319,7 +319,7 @@ class CourseUpdate(UpdateView):
             messages.warning(request, _('This course is being used by other learning circles and cannot be edited, please create a new course to make changes'))
             url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
-        return super(CourseUpdate, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(CourseUpdate, self).get_context_data(**kwargs)
