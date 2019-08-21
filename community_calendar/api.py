@@ -63,6 +63,7 @@ class UserEventSerializer(serializers.HyperlinkedModelSerializer):
             'country',
             'link',
             'image',
+            'moderation_approved',
             'edit_url',
             'delete_url',
         ]
@@ -76,16 +77,16 @@ class EventViewSet(viewsets.ReadOnlyModelViewSet):
         return EventSerializer
 
     def get_queryset(self):
+        # NOTE 'datetime' can change, so paging could break if trying to 
+        # retrieve all events while some are being updated in between requests
+        events = Event.objects.order_by('datetime')
+
         if self.request.user.is_authenticated and self.request.query_params.get('user') == 'self':
-            return Event.objects.filter(created_by=self.request.user)
+            return events.filter(created_by=self.request.user).exclude(moderation_approved=False)
         if self.request.user.is_authenticated and self.request.user.is_staff and self.request.query_params.get('to_moderate') == 'yes':
-            return Event.objects.to_moderate()
+            return events.to_moderate()
 
         today = timezone.now()
-        events = Event.objects.moderated().filter(datetime__gte=today).order_by('datetime')
-
-        if 'limit' in self.request.GET:
-            limit = int(self.request.GET.get('limit'))
-            events = events[:limit]
+        events = events.moderated().filter(datetime__gte=today)
 
         return events
