@@ -63,10 +63,11 @@ export default class FacilitatorDashboard extends React.Component {
   }
 
   populateUpcomingEvents = (params={}) => {
-    let apiUrl = '/api/community_calendar/events/?format=json&user=self&limit=1'
-    fetch(apiUrl).then( resp => resp.json()).then( data => {
-      this.setState({events: data.results});
-    });
+    // TODO - this doesn't make sense
+    // let apiUrl = '/api/community_calendar/events/?format=json&user=self&limit=1'
+    // fetch(apiUrl).then( resp => resp.json()).then( data => {
+    //   this.setState({events: data.results});
+    // });
   }
 
   showAlert = (message, type) => {
@@ -114,10 +115,6 @@ export default class FacilitatorDashboard extends React.Component {
                   invitation={invitation}
                 />)
               })
-            }
-
-            {
-              this.state.events.map(event => <UpcomingEventNotification key={event.title} event={event} />)
             }
             </div>
 

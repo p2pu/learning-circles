@@ -6,6 +6,10 @@ const EventRow = ({event, classes, index}) => (
     <td>{event.title}</td>
     <td>{datetime(event.datetime)}</td>
     <td>
+      {event.moderation_approved === true && 'Approved'}
+      {event.moderation_approved === null && 'Pending...'}
+    </td>
+    <td>
       <a href={event.edit_url} className="p2pu-btn btn-sm dark">edit</a>
     </td>
     <td>
@@ -38,6 +42,7 @@ export default class EventsTable extends React.Component {
               <tr>
                 <td>Title</td>
                 <td>Date</td>
+                <td>Moderation status</td>
                 <td></td>
                 <td></td>
               </tr>
