@@ -295,7 +295,7 @@ class CourseCreate(CreateView):
         self.object = form.save(commit=False)
         self.object.created_by = self.request.user
         self.object.save()
-        messages.success(self.request, _('Your course has been created. You can now create a learning circle using it.'))
+        messages.success(self.request, _('Your course has been added. You can now create a learning circle using it.'))
         return http.HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
@@ -319,7 +319,7 @@ class CourseUpdate(UpdateView):
             messages.warning(request, _('This course is being used by other learning circles and cannot be edited, please create a new course to make changes'))
             url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
-        return super(CourseUpdate, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(CourseUpdate, self).get_context_data(**kwargs)

@@ -1,0 +1,1 @@
+{% load i18n %}{% blocktrans with title=event.title %}A new event "{{title}}" has been added to the P2PU community calendar{% endblocktrans %}
