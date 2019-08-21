@@ -1,36 +1,55 @@
 version: '3'
 services:
   postgres:
-    image: postgres
+    image: postgres:11
   rabbitmq:
     image: rabbitmq:3
+  email:
+    image: djfarrelly/maildev
+    ports:
+    - 1080:80
   learning-circles:
     build: .
     image: p2pu/learning-circles:local
     ports:
     - "8000:80"
-#    volumes:
-#    - .:/opt/app
+    volumes:
+    - .:/opt/app
     depends_on:
     - rabbitmq
     - postgres
+    - email
     environment:
-    - DATABASE_URL=postgres://lc:password@postgres:5432/lc
-    - SECRET_KEY=321
+    - ADMIN_EMAIL=admin@localhost
     - BROKER_URL=amqp://guest:guest@rabbitmq//
+    - COMMUNITY_MANAGER=user@mail.com
+    - DATABASE_URL=postgres://lc:password@postgres:5432/lc
     - DEBUG=true
+    - DEFAULT_FROM_EMAIL=notify@mail.com
+    - EMAIL_HOST=email
+    - PROTOCOL=http
+    - SECRET_KEY=321
   celery:
     image: p2pu/learning-circles:local
     depends_on:
     - rabbitmq
     - postgres
+    - email
     user: celery
+    volumes:
+    - .:/opt/app
     working_dir: /opt/app
     command: /opt/django-venv/bin/celery worker -A learnwithpeople --loglevel=INFO
     environment:
-    - DATABASE_URL=postgres://lc:password@postgres:5432/lc
-    - SECRET_KEY=321
+    - ADMIN_EMAIL=admin@localhost
     - BROKER_URL=amqp://guest:guest@rabbitmq//
+    - COMMUNITY_MANAGER=user@mail.com
+    - DATABASE_URL=postgres://lc:password@postgres:5432/lc
+    - DEBUG=true
+    - DEFAULT_FROM_EMAIL=notify@mail.com
+    - EMAIL_HOST=email
+    - PROTOCOL=http
+    - SECRET_KEY=321
   celery-beat:
     image: p2pu/learning-circles:local
     depends_on:
