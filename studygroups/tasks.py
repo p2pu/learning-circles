@@ -519,7 +519,7 @@ def send_meeting_change_notification(old_meeting, new_meeting):
     notification.attach_alternative(html_body, 'text/html')
     try:
         notification.send()
-    except Exceptoin as e:
+    except Exception as e:
         logger.exception('Could not send meeting change notification', exc_info=e)
 
     applications = study_group.application_set.active().filter(accepted_at__isnull=False).exclude(mobile='')
