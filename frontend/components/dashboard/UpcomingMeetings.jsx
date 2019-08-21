@@ -51,7 +51,7 @@ export default class UpcomingMeetings extends Component {
       return(
         <div className="py-2">
           <div>
-            <a href="https://community.p2pu.org/c/communities/building-a-p2pu-community/">Check out our organizer materials</a> if you’re interested in starting a team.
+            <a href="https://www.p2pu.org/en/organize/">Check out our organizer materials</a> if you’re interested in starting a team.
           </div>
         </div>
       )
