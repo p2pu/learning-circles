@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<div class="container my-4">
+  <div class="row">
+    <div class="col-md-12 col-sm-12">
+      <h2>{% trans "Moderate event" %}</h2>
+
+      {% with event=object %}
+
+    <div class="card mb-4">
+      <div class="event-card d-block d-md-flex">
+        <div class='date p-3'>
+          <div class="day">
+            {{ event.datetime | date:'d'}}
+          </div>
+          <div class="month-year">
+            <div class="month">
+              {{ event.datetime | date:'N' }}
+            </div>
+            <div class="year">
+              {{ event.datetime | date:'Y' }}
+            </div>
+          </div>
+        </div>
+
+        <div class='info p-3'>
+          <div class="minicaps text-left text-muted bold">
+            <span>{{ event.datetime | time }}</span>
+            {% if event.city %}<span> | {{event.city}}</span>{% endif %}
+            <span> | Added by {{event.created_by.first_name}}</span>
+          </div>
+          <h4 class="card-title">{{event.title}}</h4>
+          <p class="card-text">{{event.description}}</p>
+        </div>
+
+        <div class="actions p-3">
+          <a href={{event.link}} class="p2pu-btn btn-primary blue" target="_blank" rel="nofollow">More info</a>
+        </div>
+      </div>
+    </div>
+    {% endwith %}
+
+    {% if object.moderated_at %}
+      <div class="alert alert-warning" role="alert">
+        {% if object.moderation_approved %}
+          {% blocktrans with moderator=object.moderated_by moderation_date=object.moderated_at %}This event has already been <strong>approved</strong> by {{moderator}} on {{moderation_date}}{% endblocktrans %}
+        {% else %}
+          {% blocktrans with moderator=object.moderated_by moderation_date=object.moderated_at %}This event has already been <strong>rejected</strong> by {{moderator}} on {{moderation_date}}{% endblocktrans %}
+        {% endif %}
+      </div>
+    {% endif %}
+
+      <form action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <p>
+          <button type="submit" name="moderation_approved" value="yes" class="btn p2pu-btn dark">{% trans "Add to community calendar" %}</button>
+          <button type="submit" name="moderation_approved" value="no" class="btn p2pu-btn dark secondary">{% trans "Don't add to community calendar" %}</button>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{% static 'css/datepicker.css' %}" charset="utf-8">
+<link type="text/css" rel="stylesheet" href="{% static 'css/jquery.timepicker.css' %}" charset="utf-8">
+{% endblock %}
+
+
+{% block scripts %}
+<script src="{% static 'js/vendor/bootstrap-datepicker.js' %}"></script>
+<script src="{% static 'js/vendor/jquery.timepicker.js' %}"></script>
+<script src="{% static 'js/vendor/jstz.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/places.js/1/places.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('.dateinput').datepicker({'format': 'yyyy-mm-dd'});
+        // TODO time input should be localized
+        $('.timeinput').timepicker({ 'step': 15, 'timeFormat': 'h:i A' });
+        var tz = jstz.determine();
+        if (typeof (tz) !== 'undefined' && $('#id_timezone').val() === "") {
+            $('#id_timezone').val(tz.name());
+        }
+        var placesAutocomplete = places({
+            container: document.querySelector('#id_city'),
+            type: 'city'
+        });
+        // update lat, lon based on city
+        placesAutocomplete.on('change', function(e){
+          $('#id_latitude').val(e.suggestion.latlng.lat);
+          $('#id_longitude').val(e.suggestion.latlng.lng);
+          try {
+            $('#id_place_id').val(e.suggestion.rawAnswer.hits[0].objectID);
+          } catch (error) {
+            console.log("Couldn't get objectID for place");
+          }
+          try {
+            $('#id_country').val(e.suggestion.country);
+          } catch (error) {
+            console.log("Couldn't get country for place");
+          }
+          try {
+            $('#id_region').val(e.suggestion.administrative);
+          } catch (error){
+            console.log("Couldn't get region for place");
+          }
+        });
+    });
+</script>
+{% endblock %}
