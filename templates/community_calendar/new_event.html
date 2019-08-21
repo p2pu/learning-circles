@@ -1,0 +1,14 @@
+{% extends 'email_base.html' %}
+{% load i18n %}
+{% block body %}
+<p>{% trans "Hi there" %}</p>
+
+<p>{% blocktrans with creator=event.created_by.first_name event_title=event.title %}{{creator}} added a new event titled <i>"{{event_title}}"</i>{% endblocktrans %}</p>
+
+<p>
+<a href="{{PROTOCOL}}://{{DOMAIN}}{% url 'community_calendar_event_moderate' event.pk %}">{% trans "Moderate event" %}</a>
+</p>
+
+<p>{% trans "Cheers" %}</p>
+<p>P2PU</p>
+{% endblock %}

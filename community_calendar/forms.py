@@ -67,3 +67,22 @@ class EventForm(forms.ModelForm):
             'datetime': forms.HiddenInput,
             'description': forms.Textarea(attrs={"rows":5}),
         }
+
+class EventModerateForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = [
+            'moderation_note',
+        ]
+        widgets = {
+            'moderation_note': forms.Textarea(attrs={"rows":5}),
+        }
+
+    def save(self, commit=True):
+        event = super().save(commit)
+        event.moderation_approved = self.data['moderation_approved'] == 'yes'
+        if commit:
+            event.save()
+        return event
+
+

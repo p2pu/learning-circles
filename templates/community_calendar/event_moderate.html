@@ -7,18 +7,61 @@
 {% block content %}
 <div class="container my-4">
   <div class="row">
-
     <div class="col-md-12 col-sm-12">
-      {% if object %}
-      <h2>{% trans "Edit event" %}</h2>
-      {% else %}
-      <h2>{% trans "Add an event" %}</h2>
-      <p>{% trans "Use this calendar to share conferences, events, and gatherings that you think the P2PU community would be interested in. If you are trying to create a learning circle, " %}<a href="{% url 'studygroups_facilitator_studygroup_create' %}">{% trans "do that here" %}</a>.</p>
-      {% endif %}
+      <h2>{% trans "Moderate event" %}</h2>
+
+      {% with event=object %}
+
+    <div class="card mb-4">
+      <div class="event-card d-block d-md-flex">
+        <div class='date p-3'>
+          <div class="day">
+            {{ event.datetime | date:'d'}}
+          </div>
+          <div class="month-year">
+            <div class="month">
+              {{ event.datetime | date:'N' }}
+            </div>
+            <div class="year">
+              {{ event.datetime | date:'Y' }}
+            </div>
+          </div>
+        </div>
+
+        <div class='info p-3'>
+          <div class="minicaps text-left text-muted bold">
+            <span>{{ event.datetime | time }}</span>
+            {% if event.city %}<span> | {{event.city}}</span>{% endif %}
+            <span> | Added by {{event.created_by.first_name}}</span>
+          </div>
+          <h4 class="card-title">{{event.title}}</h4>
+          <p class="card-text">{{event.description}}</p>
+        </div>
+
+        <div class="actions p-3">
+          <a href={{event.link}} class="p2pu-btn btn-primary blue" target="_blank" rel="nofollow">More info</a>
+        </div>
+      </div>
+    </div>
+    {% endwith %}
+
+    {% if object.moderated_at %}
+      <div class="alert alert-warning" role="alert">
+        {% if object.moderation_approved %}
+          {% blocktrans with moderator=object.moderated_by moderation_date=object.moderated_at %}This event has already been <strong>approved</strong> by {{moderator}} on {{moderation_date}}{% endblocktrans %}
+        {% else %}
+          {% blocktrans with moderator=object.moderated_by moderation_date=object.moderated_at %}This event has already been <strong>rejected</strong> by {{moderator}} on {{moderation_date}}{% endblocktrans %}
+        {% endif %}
+      </div>
+    {% endif %}
+
       <form action="" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form|crispy }}
-        <p><button type="submit" class="btn p2pu-btn blue">{% trans "Save" %}</button></p>
+        <p>
+          <button type="submit" name="moderation_approved" value="yes" class="btn p2pu-btn dark">{% trans "Add to community calendar" %}</button>
+          <button type="submit" name="moderation_approved" value="no" class="btn p2pu-btn dark secondary">{% trans "Don't add to community calendar" %}</button>
+        </p>
       </form>
     </div>
   </div>
