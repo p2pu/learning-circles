@@ -19,23 +19,23 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['first_name']
 
 
-class EventSerializer(serializers.HyperlinkedModelSerializer):
+class EventSerializer(serializers.ModelSerializer):
     created_by = UserSerializer(read_only=True)
 
     class Meta:
         model = Event
         fields = [
             'title',
-             'description',
-             'datetime',
-             'local_datetime',
-             'timezone',
-             'city',
-             'region',
-             'country',
-             'link',
-             'image',
-             'created_by',
+            'description',
+            'datetime',
+            'local_datetime',
+            'timezone',
+            'city',
+            'region',
+            'country',
+            'link',
+            'image',
+            'created_by',
         ]
 
 
@@ -52,7 +52,17 @@ class UserEventSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Event
-        fields = EventSerializer.Meta.fields + [
+        fields = [
+            'title',
+            'description',
+            'datetime',
+            'local_datetime',
+            'timezone',
+            'city',
+            'region',
+            'country',
+            'link',
+            'image',
             'edit_url',
             'delete_url',
         ]
@@ -61,14 +71,14 @@ class UserEventSerializer(serializers.HyperlinkedModelSerializer):
 class EventViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_serializer_class(self):
-        if self.request.user and self.request.query_params.get('user') == 'self':
+        if self.request.user.is_authenticated and self.request.query_params.get('user') == 'self':
             return UserEventSerializer
         return EventSerializer
 
     def get_queryset(self):
-        if self.request.user and self.request.query_params.get('user') == 'self':
+        if self.request.user.is_authenticated and self.request.query_params.get('user') == 'self':
             return Event.objects.filter(created_by=self.request.user)
-        if self.request.user and self.request.user.is_staff and self.request.query_params.get('to_moderate') == 'yes':
+        if self.request.user.is_authenticated and self.request.user.is_staff and self.request.query_params.get('to_moderate') == 'yes':
             return Event.objects.to_moderate()
 
         today = timezone.now()
