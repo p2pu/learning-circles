@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import FacilitatorDashboard from './components/dashboard/FacilitatorDashboard'
-
+import ErrorBoundary from './components/error-boundary'
 
 const element = document.getElementById('facilitator-dashboard')
 
@@ -18,16 +18,19 @@ const deleteTeamInvitationUrl = element.dataset.deleteTeamInvitationUrl === "Non
 const teamMemberInvitationUrl = element.dataset.teamMemberInvitationUrl === "None" ? null : element.dataset.teamMemberInvitationUrl;
 
 ReactDOM.render(
-  <FacilitatorDashboard
-    user={user}
-    teamId={teamId}
-    teamName={teamName}
-    teamOrganizerName={teamOrganizerName}
-    teamInvitationConfirmationUrl={teamInvitationConfirmationUrl}
-    emailConfirmationUrl={emailConfirmationUrl}
-    userIsOrganizer={userIsOrganizer}
-    teamInvitationUrl={teamInvitationUrl}
-    createTeamInvitationUrl={createTeamInvitationUrl}
-    deleteTeamInvitationUrl={deleteTeamInvitationUrl}
-    teamMemberInvitationUrl={teamMemberInvitationUrl}
-  />, element)
+  <ErrorBoundary scope="facilitator-dashboard">
+    <FacilitatorDashboard
+      user={user}
+      teamId={teamId}
+      teamName={teamName}
+      teamOrganizerName={teamOrganizerName}
+      teamInvitationConfirmationUrl={teamInvitationConfirmationUrl}
+      emailConfirmationUrl={emailConfirmationUrl}
+      userIsOrganizer={userIsOrganizer}
+      teamInvitationUrl={teamInvitationUrl}
+      createTeamInvitationUrl={createTeamInvitationUrl}
+      deleteTeamInvitationUrl={deleteTeamInvitationUrl}
+      teamMemberInvitationUrl={teamMemberInvitationUrl}
+    />
+  </ErrorBoundary>
+  , element)
