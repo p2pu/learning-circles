@@ -23,6 +23,7 @@ urlpatterns += [
     url(r'^api/', include('studygroups.api_urls')),
     url(r'^api/community_calendar/', include('community_calendar.api_urls')),
     url(r'^announce/', include('announce.urls')),
+    url(r'^log/', include('client_logging.urls')),
 ]
 
 if settings.DEBUG:

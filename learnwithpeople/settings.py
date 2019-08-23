@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'surveys',
     'announce',
     'community_calendar',
+    'client_logging',
 ]
 
 MIDDLEWARE = [
@@ -201,6 +202,8 @@ CORS_ORIGIN_WHITELIST = [
     "http://berlin.p2pu.org",
     "https://p2pu.github.io",
 ]
+if DEBUG:
+    CORS_ORIGIN_WHITELIST.append('http://localhost:8000')
 
 AUTHENTICATION_BACKENDS = ['custom_registration.backend.CaseInsensitiveBackend']
 
