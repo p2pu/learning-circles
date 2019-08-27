@@ -7,7 +7,6 @@ function getCookie(name) {
   var parts = value.split("; " + name + "=");
   if (parts.length == 2) return parts.pop().split(";").shift();
 }
-
 function sendLog(level, message){
   fetch('/log/', {
         method: 'POST',
@@ -18,9 +17,11 @@ function sendLog(level, message){
             'X-CSRFToken': getCookie('csrftoken'),
         },
         redirect: 'follow',
-        body: {level, message},
+    body: JSON.stringify({level, message}),
   }).then(t=> console.log(t));
 }
+
+window.sendLog = sendLog;
 
 export default class ErrorBoundary extends React.Component {
   constructor(props) {
