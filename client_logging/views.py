@@ -3,6 +3,7 @@ from django import http
 
 from uxhelpers.utils import json_response
 
+import json
 import logging
 
 logger = logging.getLogger(__name__)
@@ -19,10 +20,11 @@ LEVELS = {
 
 class LogPostView(View):
     def post(self, request):
+        logger.error('received log event from frontend')
         try:
             json_data = json.loads(request.body)
             level = json_data['level']
             logger.log(LEVELS[level], json_data['message'])
-        except Exception:
+        except (ValueError, KeyError):
             logger.warning('Malformed client log received')
         return json_response(request, {'status': 200})
