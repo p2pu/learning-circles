@@ -163,7 +163,7 @@ class ExportFacilitatorsView(ListView):
 class ExportStudyGroupsView(ListView):
 
     def get_queryset(self):
-        return StudyGroup.objects.all().prefetch_related('course', 'facilitator', 'meeting_set', 'facilitator__teammembership', 'facilitator__teammembership__team').annotate(
+        return StudyGroup.objects.all().prefetch_related('course', 'facilitator', 'meeting_set').annotate(
             learning_circle_number=RawSQL("RANK() OVER(PARTITION BY facilitator_id ORDER BY created_at ASC)", [])
         )
 
