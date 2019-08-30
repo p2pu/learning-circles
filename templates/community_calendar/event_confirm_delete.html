@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h2>{% trans "Confirm deletion of event." %}</h2>
+      <form action="" method="post">{% csrf_token %}
+        <p>{% blocktrans with title=object.title datetime=object.datetime %}Are you sure you want to delete the event "{{title}}" on {{datetime}}?{% endblocktrans %}</p>
+          <p><input class="btn btn-primary" type="submit" value="{% trans "Confirm" %}" /></p>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -9,6 +9,7 @@ import Card from './Card';
 import Notification from './Notification';
 import DiscourseTable from './DiscourseTable';
 import CoursesTable from './CoursesTable';
+import EventsTable from './EventsTable';
 import UpcomingLearningCirclesTable from './UpcomingLearningCirclesTable';
 import CurrentLearningCirclesTable from './CurrentLearningCirclesTable';
 import CompletedLearningCirclesTable from './CompletedLearningCirclesTable';
@@ -19,6 +20,7 @@ import InstagramFeed from "./InstagramFeed";
 import Title from './Title';
 import EmailValidationNotification from './EmailValidationNotification'
 import TeamInvitationNotification from './TeamInvitationNotification'
+import UpcomingEventNotification from './UpcomingEventNotification'
 import TeamMembersTable from './TeamMembersTable'
 import TeamInvitationsTable from './TeamInvitationsTable'
 import OrganizerTeamInvitations from './OrganizerTeamInvitations'
@@ -37,11 +39,13 @@ export default class FacilitatorDashboard extends React.Component {
       errors: {},
       alert: { show: false },
       invitationNotifications: [],
+      events: [],
     };
   }
 
   componentDidMount(){
     this.populateInvitationNotifications()
+    this.populateUpcomingEvents()
     AOS.init({
       duration: 500,
       delay: 100
@@ -52,11 +56,18 @@ export default class FacilitatorDashboard extends React.Component {
     const api = new ApiHelper('invitationNotifications');
 
     const onSuccess = (data) => {
-      console.log('success', data)
       this.setState({ invitationNotifications: data.items })
     }
 
     api.fetchResource({ callback: onSuccess, params: {} })
+  }
+
+  populateUpcomingEvents = (params={}) => {
+    // TODO - this doesn't make sense
+    // let apiUrl = '/api/community_calendar/events/?format=json&user=self&limit=1'
+    // fetch(apiUrl).then( resp => resp.json()).then( data => {
+    //   this.setState({events: data.results});
+    // });
   }
 
   showAlert = (message, type) => {
@@ -74,7 +85,7 @@ export default class FacilitatorDashboard extends React.Component {
   }
 
   render() {
-    console.log('invitationNotifications', this.state.invitationNotifications)
+    console.log(this.state.events)
     return (
       <div className="bg-light">
         <Alert
@@ -265,6 +276,27 @@ export default class FacilitatorDashboard extends React.Component {
                 </div>
               </Card>
             </div>
+
+            <div data-aos='fade'>
+              <Card>
+                <div className="card-title">My Events</div>
+                {
+                  !this.state.user &&
+                  <p>You must be logged in to see events you've added. <a className="p2pu-btn btn-dark btn-sm" href={"/en/login_redirect/"}>Log in or register</a></p>
+                }
+                {
+                  this.state.user &&
+                  <EventsTable />
+                }
+                <div className="">
+                  <a className="p2pu-btn btn-sm dark" href="/en/community_calendar/event/add/">Add an event</a>
+                </div>
+                <div className="text-right">
+                  <a href={"https://www.p2pu.org/en/events/"}>See all events</a>
+                </div>
+              </Card>
+            </div>
+
 
             <div data-aos='fade'>
               <Card>

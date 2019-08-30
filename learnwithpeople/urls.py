@@ -15,12 +15,15 @@ urlpatterns = i18n_patterns(
     url(r'^jsi18n/$', javascript_catalog, js_info_dict, name='javascript-catalog'),
     url(r'^discourse/', include('discourse_sso.urls')),
     url(r'^surveys/', include('surveys.urls')),
+    url(r'^community_calendar/', include('community_calendar.urls')),
     url(r'^', include('studygroups.urls'))
 )
 
 urlpatterns += [
     url(r'^api/', include('studygroups.api_urls')),
+    url(r'^api/community_calendar/', include('community_calendar.api_urls')),
     url(r'^announce/', include('announce.urls')),
+    url(r'^log/', include('client_logging.urls')),
 ]
 
 if settings.DEBUG:
