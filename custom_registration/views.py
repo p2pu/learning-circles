@@ -133,7 +133,7 @@ class WhoAmIView(View):
             ]
             if request.user.is_staff or TeamMembership.objects.active().filter(user=request.user, role=TeamMembership.ORGANIZER):
                 user_data["links"][:0] = [
-                    {"text": "My Team", "url": reverse('studygroups_organize')},
+                    {"text": "My team", "url": reverse('studygroups_organize')},
                 ]
 
             if request.user.is_staff:
