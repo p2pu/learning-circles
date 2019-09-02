@@ -127,13 +127,13 @@ class WhoAmIView(View):
             user_data["user"] = request.user.first_name
             user_data["links"] = [
                 {"text": "Dashboard", "url": reverse('studygroups_facilitator')},
-                {"text": "Start a learnign circle", "url": reverse('studygroups_facilitator_studygroup_create')},
+                {"text": "Start a learning circle", "url": reverse('studygroups_facilitator_studygroup_create')},
                 {"text": "Account settings", "url": reverse('account_settings')},
                 {"text": "Log out", "url": reverse('logout')},
             ]
             if request.user.is_staff or TeamMembership.objects.active().filter(user=request.user, role=TeamMembership.ORGANIZER):
                 user_data["links"][:0] = [
-                    {"text": "My Team", "url": reverse('studygroups_organize')},
+                    {"text": "My team", "url": reverse('studygroups_organize')},
                 ]
 
             if request.user.is_staff:
