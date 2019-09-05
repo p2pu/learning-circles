@@ -81,7 +81,7 @@
           </div>
           <div class="info col-12 col-sm-8">
             {% if course.created_by.first_name %}
-              {{ course.created_by.first_name }} {{ course.created_by.last_name }} {% trans "on" %} {{ course.created_at|date:"j M, Y" }}
+              {{ course.created_by.first_name }} {% trans "on" %} {{ course.created_at|date:"j M, Y" }}
             {% else %}
               {% trans "Anonymous on" %} {{ course.created_at|date:"j M, Y" }}
             {% endif%}

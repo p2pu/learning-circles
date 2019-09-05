@@ -289,23 +289,26 @@ LOGGING = {
         },
         'console': {
             'class': 'logging.StreamHandler',
-            'level': 'INFO',
-            'stream': 'ext://sys.stdout'
+            'level': 'DEBUG' if DEBUG else 'WARNING',
         },
     },
+    'root': {
+        'handlers': ['mail_admins', 'console'],
+        'level': 'DEBUG',
+    },
     'loggers': {
-        '': {
-            'handlers': ['mail_admins', 'console'],
-            'level': 'DEBUG',
-            'propagate': False,
-        },
         'django': {
             'handlers': ['mail_admins', 'console'],
-            'level': 'DEBUG',
+            'level': 'WARNING',
             'propagate': False,
         },
     },
 }
+
+# Disable django's default logging
+LOGGING_CONFIG = None
+import logging.config
+logging.config.dictConfig(LOGGING)
 
 #### Backup config ####
 
