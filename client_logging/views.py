@@ -20,7 +20,6 @@ LEVELS = {
 
 class LogPostView(View):
     def post(self, request):
-        logger.error('received log event from frontend')
         try:
             json_data = json.loads(request.body)
             level = json_data['level']
