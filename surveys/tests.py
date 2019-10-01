@@ -13,7 +13,7 @@ class TestCommunityFeedback(TestCase):
 
         self.assertEqual(course.overall_rating, 0)
         self.assertEqual(course.rating_step_counts, "{}")
-        self.assertEqual(course.total_ratings, None)
+        self.assertEqual(course.total_ratings, 0)
 
         calculate_course_ratings(course)
 
@@ -28,7 +28,7 @@ class TestCommunityFeedback(TestCase):
 
         self.assertEqual(course.tagdorsement_counts, "{}")
         self.assertEqual(course.tagdorsements, "")
-        self.assertEqual(course.total_reviewers, None)
+        self.assertEqual(course.total_reviewers, 0)
 
         calculate_course_tagdorsements(course)
 

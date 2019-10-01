@@ -323,15 +323,6 @@ export default class FacilitatorDashboard extends React.Component {
           <div className="col-12 col-lg-4">
 
             <div data-aos='fade'>
-              <Card className="boston-banner">
-                <div className="bold text-center text-white">Join us in Boston this September!</div>
-                <div className="text-center mt-3">
-                  <a href="https://boston2019.p2pu.org/" className="p2pu-btn light btn-sm">More info</a>
-                </div>
-              </Card>
-            </div>
-
-            <div data-aos='fade'>
               <Card className="bg-dark feedback-survey">
                 <div className="bold text-center text-white">What do you think about your new learning circles dashboard?</div>
                 <div className="text-center mt-3">

@@ -62,6 +62,7 @@ class EventDelete(DeleteView):
         return super().delete(request, *args, **kwargs)
 
 
+@method_decorator(login_required, name="dispatch")
 class EventModerate(UpdateView):
     model = Event
     form_class = EventModerateForm
