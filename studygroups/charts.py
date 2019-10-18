@@ -87,7 +87,7 @@ def get_question_field(study_group, question_id):
 
 def get_response_field(response_str, question_id):
     response = json.loads(response_str)
-    answers = response['answers']
+    answers = response.get('answers', []) # TODO - fixed the error when the key doesn't exist
     return next((answer for answer in answers if answer["field"]["id"] == question_id), None)
 
 def average(total, divisor):
