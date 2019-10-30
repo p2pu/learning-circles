@@ -421,7 +421,7 @@ class CourseListView(View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        courses = Course.objects.active()
+        courses = Course.objects.active().filter(archived=False)
 
         # include_unlisted must be != false and the query must be scoped
         # by user to avoid filtering out unlisted courses
