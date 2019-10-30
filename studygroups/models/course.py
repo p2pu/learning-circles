@@ -35,21 +35,22 @@ def course_platform_from_url(url):
     return platform
 
 
-
 class Course(LifeTimeTrackingModel):
     OER_LICENSES = ['CC-BY', 'CC-BY-SA', 'CC-BY-NC', 'CC-BY-NC-SA', 'Public Domain']
 
     title = models.CharField(max_length=128)
     provider = models.CharField(max_length=256)
     link = models.URLField()
-    caption = models.CharField(max_length=200)
+    caption = models.CharField(max_length=500)
     on_demand = models.BooleanField()
     topics = models.CharField(max_length=500)
-    language = models.CharField(max_length=6)
+    language = models.CharField(max_length=6) # ISO language code
     created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
     unlisted = models.BooleanField(default=False)
+    archived = models.BooleanField(default=False)
     license = models.CharField(max_length=128, blank=True)
     platform = models.CharField(max_length=256, blank=True)
+
     overall_rating = models.FloatField(default=0)
     total_ratings = models.SmallIntegerField(default=0)
     rating_step_counts = models.TextField(default="{}") # JSON value
