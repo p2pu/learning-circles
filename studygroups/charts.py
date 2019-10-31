@@ -29,6 +29,12 @@ from surveys.models import FacilitatorSurveyResponse
 from surveys.models import LearnerSurveyResponse
 from surveys.models import MAX_STAR_RATING
 
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+
 SKILLS_LEARNED_THRESHOLD = 3
 GOAL_MET_THRESHOLD = 4
 NO_DATA = "<p>No data</p>"
@@ -1501,7 +1507,10 @@ class SkillsImprovedChart():
 
             for response_str in survey_responses:
                 response = json.loads(response_str)
-                answers = response['answers']
+                answers = response.get('answers')
+                if not answers:
+                    logger.debug(f'Unexpected structure for learner survey response {response_str}')
+                    continue
 
                 questions = [
                     ("QH6akGDy6aHK", "Using the internet"),
@@ -1767,7 +1776,7 @@ class StudygroupsByCountryOverTimeChart():
         self.chart.x_labels = chart_data["dates"]
 
         all_values = chart_data["data"].values()
-        print(all_values)
+        logger.debug(all_values)
 
         months = len(chart_data["dates"])
         monthly_values = [sum([row[i] for row in all_values]) for i in range(months)]
