@@ -111,7 +111,7 @@
                   {% for item in low_rated_courses %}
                     {% with course=item.0 rating=item.1 %}
                     <tr>
-                      <td><a href="{{course.link}}">{{ course.title }}</a></td>
+                      <td><a href="{% url 'studygroups_course_page' course.id %}">{{ course.title }}</a></td>
                       <td>{{ rating }}</td>
                     </tr>
                     {% endwith %}
