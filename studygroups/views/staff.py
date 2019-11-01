@@ -226,8 +226,8 @@ class ExportStudyGroupsView(ListView):
 
             data += [sg.application_set.count()]
             # team
-            if hasattr(sg.facilitator, 'teammembership'):
-                data += [sg.facilitator.teammembership.team.name]
+            if sg.facilitator.teammembership_set.active().count():
+                data += [sg.facilitator.teammembership_set.active().first().team.name]
             else:
                 data += ['']
 

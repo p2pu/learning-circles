@@ -64,7 +64,7 @@
       <div class="row mt-4">
         <div class="col-12 mb-4">
             <h2>{% trans "Course Quality" %}</h2>
-            <p class="my-0">{% trans "Course used" %}: <a href="{{ course.link }}">{{ course.title }}</a></p>
+            <p class="my-0">{% trans "Course used" %}: <a href="{% url 'studygroups_course_page' course.id %}">{{ course.title }}</a></p>
         </div>
           {% include "studygroups/measurement_card.html" with title="Facilitator's Rating" description="How well did this course work as a learning circle?" chart=facilitator_rating_chart %}
 
