@@ -27,6 +27,9 @@ class LifeTimeTrackingModel(models.Model):
         self.deleted_at = timezone.now()
         self.save()
 
+    def hard_delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)
+
     class Meta:
         abstract = True
 
