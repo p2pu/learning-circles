@@ -2,36 +2,46 @@ from django.contrib import admin
 
 # Register your models here.
 from studygroups.models import Course
-from studygroups.models import StudyGroup 
-from studygroups.models import Meeting 
-from studygroups.models import Application 
-from studygroups.models import Reminder 
+from studygroups.models import StudyGroup
+from studygroups.models import Meeting
+from studygroups.models import Application
+from studygroups.models import Reminder
 from studygroups.models import Profile
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 
+
 class ApplicationInline(admin.TabularInline):
     model = Application
 
+
 class StudyGroupAdmin(admin.ModelAdmin):
-    inlines = [ ApplicationInline ]
+    inlines = [ApplicationInline]
 
     list_display = ['course', 'city', 'facilitator', 'start_date', 'day', 'signup_open']
+
 
 class TeamMembershipInline(admin.TabularInline):
     model = TeamMembership
     raw_id_fields = ("user",)
 
+
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('name', 'page_slug')
-    inlines = [ TeamMembershipInline ]
+    list_display = ('name', 'page_slug', 'members')
+    inlines = [TeamMembershipInline]
+
+    def members(self, obj):
+        return obj.teammembership_set.active().count()
+
 
 class ApplicationAdmin(admin.ModelAdmin):
     list_display = ('name', 'study_group', 'email', 'mobile', 'created_at')
 
+
 def reminder_course_title(obj):
     return obj.study_group.course.title
+
 
 class ReminderAdmin(admin.ModelAdmin):
     list_display = (reminder_course_title, 'email_subject', 'sent_at')
@@ -48,8 +58,9 @@ class StudyGroupInline(admin.TabularInline):
     def has_delete_permission(self, request, obj=None):
         return False
 
+
 class CourseAdmin(admin.ModelAdmin):
-   
+
     def get_queryset(self, request):
         qs = super(CourseAdmin, self).get_queryset(request)
         return qs.active()
@@ -81,7 +92,6 @@ class ProfileAdmin(admin.ModelAdmin):
     list_display = [user, 'mailing_list_signup', 'communication_opt_in']
     search_fields = ['user__email']
 
- 
 
 admin.site.register(Course, CourseAdmin)
 admin.site.register(StudyGroup, StudyGroupAdmin)
