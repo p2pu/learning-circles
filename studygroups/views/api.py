@@ -724,8 +724,7 @@ class SignupView(View):
         signup_questions = {
             "goals": schema.text(required=True),
             "support": schema.text(required=True),
-            "computer_access": schema.text(required=True),
-            "use_internet": schema.text(required=True)
+            "custom_question": schema.text(),
         }
         post_schema = {
             "learning_circle": schema.chain([
@@ -735,6 +734,10 @@ class SignupView(View):
             "name": schema.text(required=True),
             "email": schema.email(required=True),
             "communications_opt_in": schema.boolean(),
+            "consent": schema.chain([
+                schema.boolean(),
+                lambda consent: (None, 'Consent is needed to sign up') if not consent else (consent, None),
+            ]),
             "mobile": schema.mobile(),
             "signup_questions": schema.schema(signup_questions, required=True)
         }
