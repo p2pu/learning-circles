@@ -70,18 +70,18 @@ class StudyGroup(LifeTimeTrackingModel):
     venue_details = models.CharField(max_length=128)
     venue_website = models.URLField(blank=True)
     city = models.CharField(max_length=256)
-    region = models.CharField(max_length=256, blank=True) # schema.org. Algolia => administrative
+    region = models.CharField(max_length=256, blank=True)  # schema.org. Algolia => administrative
     country = models.CharField(max_length=256, blank=True)
     country_en = models.CharField(max_length=256, blank=True)
     language = models.CharField(max_length=6)
     latitude = models.DecimalField(max_digits=8, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    place_id = models.CharField(max_length=256, blank=True) # Algolia place_id
+    place_id = models.CharField(max_length=256, blank=True)  # Algolia place_id
     facilitator = models.ForeignKey(User, on_delete=models.CASCADE)
     start_date = models.DateField()
     meeting_time = models.TimeField()
-    end_date = models.DateField() # TODO consider storing number of weeks/meetings instead of end_date
-    duration = models.IntegerField(default=90) # meeting duration in minutes
+    end_date = models.DateField()  # TODO consider storing number of weeks/meetings instead of end_date
+    duration = models.IntegerField(default=90)  # meeting duration in minutes
     timezone = models.CharField(max_length=128)
     signup_open = models.BooleanField(default=True)
     draft = models.BooleanField(default=True)
@@ -126,7 +126,6 @@ class StudyGroup(LifeTimeTrackingModel):
         path = reverse('studygroups_final_report', kwargs={'study_group_id': self.id})
         return base_url + path
 
-
     def can_update_meeting_datetime(self):
         """ check to see if you can update the date """
         # if it's a draft, you can edit
@@ -145,11 +144,9 @@ class StudyGroup(LifeTimeTrackingModel):
 
         return False
 
-
     @property
     def weeks(self):
         return (self.end_date - self.start_date).days//7 + 1
-
 
     def to_dict(self):
         sg = self  # TODO - this logic is repeated in the API class
@@ -197,7 +194,6 @@ class StudyGroup(LifeTimeTrackingModel):
 
     def to_json(self):
         return json.dumps(self.to_dict(), cls=DjangoJSONEncoder)
-
 
     def __str__(self):
         return '{0} - {1}s {2} at the {3}'.format(self.course.title, self.day(), self.meeting_time, self.venue_name)
