@@ -9,7 +9,7 @@ const FinalizeSection = (props) => {
   return (
     <div>
       <TextareaWithLabel
-        label={'What are your personal goals as you facilitate this learning circle?'}
+        label={'What do you hope to achieve by facilitating this learning circle?'}
         value={props.learningCircle.facilitator_goal || ''}
         handleChange={props.updateFormData}
         name={'facilitator_goal'}
@@ -17,7 +17,7 @@ const FinalizeSection = (props) => {
         errorMessage={props.errors.facilitator_goal}
       />
       <TextareaWithLabel
-        label={'What questions or concerns do you have about the learning circle? Is there anything that you want feedback on before you get started?'}
+        label={'Is there anything that we can help you with as you get started?'}
         value={props.learningCircle.facilitator_concerns || ''}
         handleChange={props.updateFormData}
         name={'facilitator_concerns'}

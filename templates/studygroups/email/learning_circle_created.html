@@ -22,23 +22,13 @@
   {% endif %}
 </p>
 
-<p>{% trans "A handful of P2PU community members are copied on this email. So that they can better assist you, we are including your goals, questions and concerns below." %}</p>
+<p>{% trans "A handful of P2PU community members are copied on this email. So that they can better assist you, we are including your repsonses to the following questions:" %}</p>
 
 <div style="padding: 0.2em 1em; border-left: solid 10px rgb(255,155,0); background: rgba(255,155,0,15%);">
-  <p>
-    {% if study_group.facilitator_goal %}
-      {% blocktrans with goal=study_group.facilitator_goal %}<strong>Goals</strong>: {{goal}}{% endblocktrans %}
-    {% else %}
-      {% blocktrans %}<strong>Goals</strong>: Not specified{% endblocktrans %}
-    {% endif %}
-  </p>
-  <p>
-    {% if study_group.facilitator_concerns %}
-      {% blocktrans with concerns=study_group.facilitator_concerns %}<strong>Questions or concerns</strong>: {{concerns}}{% endblocktrans %}
-    {% else %}
-      {% blocktrans %}<strong>Questions or concerns</strong>: Not specified{% endblocktrans %}
-    {% endif %}
-  </p>
+  <h3>What do you hope to achieve by facilitating this learning circle?</h3>
+  <p>{% if study_group.facilitator_goal %}{{ study_group.facilitator_goal }}{% else %}{% trans "Not specified" %}{% endif %}</p>
+  <h3>Is there anything that we can help you with as you get started?</h3>
+  <p>{% if study_group.facilitator_concerns %}{{ study_group.facilitator_concerns }}{% else %}{% trans "Not specified" %}{% endif %}</p>
 </div>
 
 {% url 'studygroups_facilitator' as dashboard_url %}
