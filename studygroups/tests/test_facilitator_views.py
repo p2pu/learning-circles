@@ -49,6 +49,7 @@ class TestFacilitatorViews(TestCase):
         'goals': 'Social reasons',
         'support': 'thinking how to?',
         'computer_access': 'Both',
+        'consent': True,
         'use_internet': '2'
     }
 
