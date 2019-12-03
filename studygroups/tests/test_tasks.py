@@ -34,7 +34,6 @@ from studygroups.tasks import send_learner_surveys
 from studygroups.tasks import send_facilitator_survey
 from studygroups.tasks import send_facilitator_learner_survey_prompt
 from studygroups.tasks import send_final_learning_circle_report
-from studygroups.tasks import send_last_week_group_activity
 from studygroups.tasks import send_out_community_digest
 
 import calendar
@@ -620,35 +619,6 @@ class TestStudyGroupTasks(TestCase):
             self.assertIn(organizer.email, mail.outbox[0].bcc)
             self.assertEqual(len(mail.outbox[0].bcc), 3)
             self.assertIn('{0}/en/studygroup/{1}/report/'.format(settings.DOMAIN, sg.id), mail.outbox[0].body)
-
-
-    def test_generate_last_week_activity_email(self):
-        now = timezone.now()
-        sg = StudyGroup.objects.get(pk=1)
-        sg.timezone = "UTC"
-        sg.meeting_time = datetime.time(18, 0)
-        sg.end_date = datetime.date(2018, 1, 6)
-        sg.start_date = sg.end_date - datetime.timedelta(weeks=5)
-        sg.save()
-        sg = StudyGroup.objects.get(pk=1)
-        generate_all_meetings(sg)
-
-        # freeze time to 3 days before last meeting
-        with freeze_time("2018-01-03 17:59:00"):
-            send_last_week_group_activity(sg)
-            self.assertEqual(len(mail.outbox), 0)
-
-        # freeze time to less than 2 days before last meeting
-        with freeze_time("2018-01-04 18:01:00"):
-            send_last_week_group_activity(sg)
-            self.assertEqual(len(mail.outbox), 1)
-            self.assertIn(sg.facilitator.email, mail.outbox[0].to)
-
-        mail.outbox = []
-        # freeze time to less than 1 day before last meeting
-        with freeze_time("2018-01-05 18:01:00"):
-            send_last_week_group_activity(sg)
-            self.assertEqual(len(mail.outbox), 0)
 
 
     @patch('studygroups.charts.LearningCircleMeetingsChart.generate', mock_generate)

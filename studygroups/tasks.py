@@ -267,55 +267,6 @@ def send_final_learning_circle_report(study_group):
         notification.send()
 
 
-def send_last_week_group_activity(study_group):
-    """ send to facilitator when last meeting is in 2 days """
-    now = timezone.now()
-    today = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    two_days_from_now = today + datetime.timedelta(days=2)
-    last_meeting = study_group.meeting_set.active()\
-            .order_by('-meeting_date', '-meeting_time').first()
-
-    if last_meeting and two_days_from_now < last_meeting.meeting_datetime() and last_meeting.meeting_datetime() < two_days_from_now + datetime.timedelta(days=1):
-
-        two_weeks_from_now = today + datetime.timedelta(weeks=2)
-        next_study_group = StudyGroup.objects.filter(start_date__gte=two_weeks_from_now).order_by('start_date').first()
-
-        timezone.deactivate()
-
-        context = {
-            'next_study_group': next_study_group,
-            'facilitator_name': study_group.facilitator.first_name
-        }
-
-        if next_study_group:
-            next_study_group_start_delta = next_study_group.start_date - today.date()
-            weeks_until_start = next_study_group_start_delta.days//7
-            context['weeks'] = weeks_until_start
-            context['city'] = next_study_group.city
-            context['course_title'] = next_study_group.course.title
-
-        subject = render_to_string_ctx(
-            'studygroups/email/last_week_group_activity-subject.txt',
-            context
-        ).strip('\n')
-        html = render_html_with_css(
-            'studygroups/email/last_week_group_activity.html',
-            context
-        )
-        txt = html_body_to_text(html)
-        to = [study_group.facilitator.email]
-
-        notification = EmailMultiAlternatives(
-            subject,
-            txt,
-            settings.DEFAULT_FROM_EMAIL,
-            to,
-            reply_to=[settings.DEFAULT_FROM_EMAIL]
-        )
-        notification.attach_alternative(html, 'text/html')
-        notification.send()
-
-
 def send_learner_survey(application):
     """ send email to learner with link to survey, if goal is specified, also ask if they
     achieved their goal """
@@ -690,22 +641,18 @@ def send_all_facilitator_surveys():
 
 
 @shared_task
-def send_all_last_week_group_activities():
-    for study_group in StudyGroup.objects.published():
-        translation.activate(settings.LANGUAGE_CODE)
-        send_last_week_group_activity(study_group)
-
-@shared_task
 def send_all_facilitator_survey_reminders():
     for study_group in StudyGroup.objects.published():
         translation.activate(settings.LANGUAGE_CODE)
         send_facilitator_learner_survey_prompt(study_group)
+
 
 @shared_task
 def send_all_learning_circle_reports():
     for study_group in StudyGroup.objects.published():
         translation.activate(settings.LANGUAGE_CODE)
         send_final_learning_circle_report(study_group)
+
 
 @shared_task
 def send_out_community_digest():
