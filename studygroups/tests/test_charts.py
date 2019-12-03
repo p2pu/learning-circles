@@ -98,7 +98,7 @@ class TestCharts(TestCase):
 
         svg_result = chart_object.generate()
 
-        self.assertIn('svg xmlns:xlink="http://www.w3.org/1999/xlink"', svg_result)
+        self.assertIn('xmlns:xlink="http://www.w3.org/1999/xlink"', svg_result)
         self.assertIn("Number of learners", svg_result)
 
         png_result = chart_object.generate(output="png")
@@ -131,7 +131,7 @@ class TestCharts(TestCase):
 
         svg_result = chart_object.generate()
 
-        self.assertIn('svg xmlns:xlink="http://www.w3.org/1999/xlink"', svg_result)
+        self.assertIn('xmlns:xlink="http://www.w3.org/1999/xlink"', svg_result)
         self.assertIn("Rating", svg_result)
 
         png_result = chart_object.generate(output="png")
@@ -168,7 +168,7 @@ class TestCharts(TestCase):
 
         svg_result = chart_object.generate()
 
-        self.assertIn('svg xmlns:xlink="http://www.w3.org/1999/xlink"', svg_result)
+        self.assertIn('xmlns:xlink="http://www.w3.org/1999/xlink"', svg_result)
         self.assertIn("Number of learners", svg_result)
         self.assertIn("Using the internet", svg_result)
 
@@ -203,7 +203,7 @@ class TestCharts(TestCase):
 
         svg_result = chart_object.generate()
 
-        self.assertIn('svg xmlns:xlink="http://www.w3.org/1999/xlink"', svg_result)
+        self.assertIn('xmlns:xlink="http://www.w3.org/1999/xlink"', svg_result)
 
         png_result = chart_object.generate(output="png")
 
@@ -236,7 +236,7 @@ class TestCharts(TestCase):
 
         svg_result = chart_object.generate()
 
-        self.assertIn('svg xmlns:xlink="http://www.w3.org/1999/xlink"', svg_result)
+        self.assertIn('xmlns:xlink="http://www.w3.org/1999/xlink"', svg_result)
 
         png_result = chart_object.generate(output="png")
 
@@ -269,7 +269,7 @@ class TestCharts(TestCase):
 
         svg_result = chart_object.generate()
 
-        self.assertIn('svg xmlns:xlink="http://www.w3.org/1999/xlink"', svg_result)
+        self.assertIn('xmlns:xlink="http://www.w3.org/1999/xlink"', svg_result)
 
         png_result = chart_object.generate(output="png")
 
@@ -389,7 +389,7 @@ class TestCharts(TestCase):
 
         svg_result = chart_object.generate()
 
-        self.assertIn('svg xmlns:xlink="http://www.w3.org/1999/xlink"', svg_result)
+        self.assertIn('xmlns:xlink="http://www.w3.org/1999/xlink"', svg_result)
         self.assertIn("Number of learners", svg_result)
 
         png_result = chart_object.generate(output="png")
@@ -426,7 +426,7 @@ class TestCharts(TestCase):
 
         svg_result = chart_object.generate()
 
-        self.assertIn('svg xmlns:xlink="http://www.w3.org/1999/xlink"', svg_result)
+        self.assertIn('xmlns:xlink="http://www.w3.org/1999/xlink"', svg_result)
 
         png_result = chart_object.generate(output="png")
 
@@ -592,5 +592,5 @@ class TestCharts(TestCase):
 
         chart_object = OverallRatingBarChart(chart_data)
         result = chart_object.generate()
-        self.assertIn('svg xmlns:xlink="http://www.w3.org/1999/xlink"', result)
+        self.assertIn('xmlns:xlink="http://www.w3.org/1999/xlink"', result)
 
