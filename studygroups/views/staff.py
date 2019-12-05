@@ -216,11 +216,15 @@ class ExportStudyGroupsView(ListView):
             ]
             if sg.meeting_set.active().last():
                 data += [sg.meeting_set.active().order_by('meeting_date', 'meeting_time').last().meeting_date]
+            elif sg.deleted_at:
+                data += [sg.start_date]
             else:
                 data += ['']
 
             if sg.meeting_set.active().first():
                 data += [sg.meeting_set.active().order_by('meeting_date', 'meeting_time').first().meeting_date]
+            elif sg.deleted_at:
+                data += [sg.end_date]
             else:
                 data += ['']
 
