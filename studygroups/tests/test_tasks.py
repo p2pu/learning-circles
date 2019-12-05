@@ -565,7 +565,6 @@ class TestStudyGroupTasks(TestCase):
             self.assertIn(sg.facilitator.email, mail.outbox[0].to)
 
 
-    @patch('studygroups.charts.LearnerGoalsChart.generate', mock_generate)
     @patch('studygroups.charts.GoalsMetChart.generate', mock_generate)
     def test_send_final_learning_circle_report_email(self):
         organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
@@ -623,7 +622,6 @@ class TestStudyGroupTasks(TestCase):
 
     @patch('studygroups.charts.LearningCircleMeetingsChart.generate', mock_generate)
     @patch('studygroups.charts.LearningCircleCountriesChart.generate', mock_generate)
-    @patch('studygroups.charts.NewLearnerGoalsChart.generate', mock_generate)
     @patch('studygroups.charts.TopTopicsChart.generate', mock_generate)
     def test_send_community_digest_email(self):
         with freeze_time("2018-01-15 11:00:00"):

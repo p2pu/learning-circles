@@ -24,6 +24,10 @@ from django.urls import reverse_lazy
 
 import requests
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class StudyGroupFinalReport(TemplateView):
     template_name = 'studygroups/final_report.html'
@@ -44,7 +48,6 @@ class StudyGroupFinalReport(TemplateView):
 
             return context
 
-        learner_goals_chart = charts.LearnerGoalsChart(study_group)
         new_learners_chart = charts.NewLearnersChart(study_group)
         completion_rate_chart = charts.CompletionRateChart(study_group)
         goals_met_chart = charts.GoalsMetChart(study_group)
@@ -66,7 +69,6 @@ class StudyGroupFinalReport(TemplateView):
             'learner_survey_responses': study_group.learnersurveyresponse_set.count(),
             'facilitator_survey_responses': study_group.facilitatorsurveyresponse_set.count(),
             'course': study_group.course,
-            'learner_goals_chart': learner_goals_chart.generate(),
             'goals_met_chart': goals_met_chart.generate(),
             'new_learners_chart': new_learners_chart.generate(),
             'completion_rate_chart': completion_rate_chart.generate(),
@@ -99,7 +101,6 @@ class CommunityDigestView(TemplateView):
         chart_data = {
             "meetings_chart": charts.LearningCircleMeetingsChart(end_date.date()).generate(), # why does the svg set text-anchor: middle on the x_labels?!?!
             "countries_chart": charts.LearningCircleCountriesChart(start_date.date(), end_date.date()).generate(),
-            "learner_goals_chart": charts.NewLearnerGoalsChart(end_date.date(), digest_data['new_applications']).generate(),
             "top_topics_chart": charts.TopTopicsChart(end_date.date(), digest_data['studygroups_that_met']).generate(),
         }
 
@@ -120,6 +121,8 @@ def get_low_rated_courses():
         if field is not None and field['number'] < 3:
             if response.study_group.course.unlisted is False:
                 low_rated_courses.append((response.study_group.course, field['number']))
+        elif field is None:
+            logger.debug(f'Response {response.id} did not have expected field Zm9XlzKGKC66')
 
     return low_rated_courses
 

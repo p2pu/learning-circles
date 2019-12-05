@@ -108,56 +108,6 @@ def percentage(total, divisor):
 
     return round((total / divisor) * 100)
 
-class LearnerGoalsChart():
-    def __init__(self, study_group, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, x_title="Learners", **kwargs)
-        self.study_group = study_group
-
-    def get_data(self):
-        data = {}
-        for choice in reversed(ApplicationForm.GOAL_CHOICES):
-            data[choice[0]] = 0
-
-        signup_questions = self.study_group.application_set.values_list('signup_questions', flat=True)
-        if len(signup_questions) == 0:
-            return None
-
-        # check for responses for field id UXwfFPX0On3f in typeform responses
-        # check if the email for those responses already exists in application_set
-
-        for answer_str in signup_questions:
-            answer = json.loads(answer_str)
-            goal = answer.get('goals', None)
-
-            if goal in data:
-                data[goal] += 1
-
-        return data
-
-    def generate(self, **opts):
-        chart_data = self.get_data()
-
-        if chart_data is None:
-            return NO_DATA
-
-        labels = chart_data.keys()
-        serie = chart_data.values()
-
-        self.chart.add('Number of learners', serie)
-        self.chart.x_labels = labels
-
-        if opts.get('output', None) == "png":
-            filename = "report-{}-learner-goals-chart.png".format(self.study_group.uuid)
-            target_path = os.path.join('/tmp', filename)
-            self.chart.height = 400
-            self.chart.render_to_png(target_path)
-            file = open(target_path, 'rb')
-            img_url = save_to_aws(file, filename)
-
-            return "<img src={} alt={} width='100%'>".format(img_url, 'Learner goals chart')
-
-        return self.chart.render(is_unicode=True)
-
 
 class GoalsMetChart():
 
@@ -894,49 +844,6 @@ class LearningCircleCountriesChart():
         return self.chart.render(is_unicode=True)
 
 
-class NewLearnerGoalsChart():
-
-    def __init__(self, report_date, applications, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), height=400, show_legend=False, order_min=0, max_scale=10, x_title="Learners", **kwargs)
-        self.applications = applications
-        self.report_date = report_date
-
-    def get_data(self):
-        data = {}
-        for choice in reversed(ApplicationForm.GOAL_CHOICES):
-            data[choice[0]] = 0
-
-        signup_questions = self.applications.values_list('signup_questions', flat=True)
-
-        for answer_str in signup_questions:
-            answer = json.loads(answer_str)
-            goal = answer.get('goals', None)
-
-            if goal in data:
-                data[goal] += 1
-
-        return data
-
-    def generate(self, **opts):
-        chart_data = self.get_data()
-        labels = chart_data.keys()
-        serie = chart_data.values()
-
-        self.chart.add('Number of learners', serie)
-        self.chart.x_labels = labels
-
-        if opts.get('output', None) == "png":
-            filename = "community-digest-{}-learner-goals-chart.png".format(self.report_date.isoformat())
-            target_path = os.path.join('/tmp', filename)
-            self.chart.height = 400
-            self.chart.render_to_png(target_path)
-            file = open(target_path, 'rb')
-            img_url = save_to_aws(file, filename)
-            return "<img src={} alt={} width='100%'>".format(img_url, 'Learner Goals')
-
-        return self.chart.render(is_unicode=True)
-
-
 class TopTopicsChart():
 
     def __init__(self, report_date, study_group_ids, **kwargs):
@@ -987,55 +894,6 @@ class TopTopicsChart():
 
         return self.chart.render(is_unicode=True)
 
-
-class NewLearnersGoalsChart():
-    def __init__(self, start_time, end_time, applications, team=None, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, x_title="Learners", **kwargs)
-        self.start_time = start_time
-        self.end_time = end_time
-        self.applications = applications
-        self.team = team
-
-    def get_data(self):
-        data = {}
-        for choice in reversed(ApplicationForm.GOAL_CHOICES):
-            data[choice[0]] = 0
-
-        if self.applications.count() == 0:
-            return None
-
-        for application in self.applications:
-            answer = json.loads(application.signup_questions)
-            goal = answer.get('goals', None)
-
-            if goal in data:
-                data[goal] += 1
-
-        return data
-
-    def generate(self, **opts):
-        chart_data = self.get_data()
-        if chart_data is None:
-            return NO_DATA
-
-        labels = chart_data.keys()
-        serie = chart_data.values()
-
-        self.chart.add('Number of learners', serie)
-        self.chart.x_labels = labels
-
-        if opts.get('output', None) == "png":
-            team = self.team.id if self.team else 'staff'
-            filename = "weekly-update-{}-{}-learner-goals-chart.png".format(self.end_time.date().isoformat(), team)
-            target_path = os.path.join('/tmp', filename)
-            self.chart.height = 400
-            self.chart.render_to_png(target_path)
-            file = open(target_path, 'rb')
-            img_url = save_to_aws(file, filename)
-
-            return "<img src={} alt={} width='100%'>".format(img_url, 'Learner goals chart')
-
-        return self.chart.render(is_unicode=True)
 
 class TotalLearnersChart():
 
@@ -1944,6 +1802,3 @@ class OverallRatingBarChart():
         self.chart.x_labels = labels
 
         return self.chart.render(is_unicode=True)
-
-
-

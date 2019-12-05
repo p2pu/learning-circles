@@ -14,7 +14,6 @@ from surveys.models import FacilitatorSurveyResponse
 from studygroups.charts import get_question_field
 from studygroups.charts import get_response_field
 from studygroups.charts import save_to_aws
-from studygroups.charts import LearnerGoalsChart
 from studygroups.charts import GoalsMetChart
 from studygroups.charts import SkillsLearnedChart
 from studygroups.charts import NewLearnersChart
@@ -76,42 +75,6 @@ class TestCharts(TestCase):
         result = get_response_field(survey_response.response, question_id)
 
         self.assertIsNone(result)
-
-
-    @patch('studygroups.charts.save_to_aws')
-    def test_learner_goals_chart_with_responses(self, mock_aws):
-        study_group = StudyGroup.objects.get(pk=1)
-        chart_object = LearnerGoalsChart(study_group)
-        mock_aws.configure_mock(return_value = "test.png")
-
-        self.assertTrue(isinstance(chart_object.chart, pygal.graph.horizontalbar.HorizontalBar))
-
-        chart_data = chart_object.get_data()
-
-        self.assertIsNotNone(chart_data["Other"])
-        self.assertIsNotNone(chart_data["For fun / to try something new"])
-        self.assertIsNotNone(chart_data["Social reasons"])
-        self.assertIsNotNone(chart_data["Personal interest"])
-        self.assertIsNotNone(chart_data["To accompany other educational programs"])
-        self.assertIsNotNone(chart_data["Professional development for my current job"])
-        self.assertIsNotNone(chart_data["To increase my employability"])
-
-        svg_result = chart_object.generate()
-
-        self.assertIn('xmlns:xlink="http://www.w3.org/1999/xlink"', svg_result)
-        self.assertIn("Number of learners", svg_result)
-
-        png_result = chart_object.generate(output="png")
-
-        mock_aws.assert_called()
-        self.assertIn('Learner goals chart', png_result)
-        self.assertIn("test.png", png_result)
-
-
-    def test_learner_goals_chart_no_responses(self):
-        study_group = StudyGroup.objects.get(pk=2)
-        result = LearnerGoalsChart(study_group).generate()
-        self.assertEqual(result, NO_DATA)
 
 
     @patch('studygroups.charts.get_response_field')

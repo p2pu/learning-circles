@@ -233,7 +233,6 @@ def send_final_learning_circle_report(study_group):
     if start_of_window <= time_to_send and time_to_send < end_of_window:
         timezone.deactivate()
 
-        learner_goals_chart = charts.LearnerGoalsChart(study_group)
         goals_met_chart = charts.GoalsMetChart(study_group)
         report_path = reverse('studygroups_final_report', kwargs={'study_group_id': study_group.id})
         recipients = study_group.application_set.values_list('email', flat=True)
@@ -248,7 +247,6 @@ def send_final_learning_circle_report(study_group):
             'facilitator_name': study_group.facilitator.first_name,
             'registrations': study_group.application_set.active().count(),
             'survey_responses': study_group.learnersurveyresponse_set.count(),
-            'learner_goals_chart': learner_goals_chart.generate(output="png"),
             'goals_met_chart': goals_met_chart.generate(output="png"),
         }
 
@@ -524,14 +522,10 @@ def send_weekly_update():
 
     for team in Team.objects.all():
         report_context = report_data(start_time, end_time, team)
-        report_charts = {
-            "learner_goals_chart": charts.NewLearnersGoalsChart(start_time, end_time, report_context["new_applications"], team).generate(output="png")
-        }
         # If there wasn't any activity during this period discard the update
         if report_context['active'] is False:
             continue
         report_context.update(context)
-        report_context.update(report_charts)
         timezone.activate(pytz.timezone(settings.TIME_ZONE)) #TODO not sure what this influences anymore?
         translation.activate(settings.LANGUAGE_CODE)
         html_body = render_html_with_css('studygroups/email/weekly-update.html', report_context)
@@ -550,11 +544,7 @@ def send_weekly_update():
 
     # send weekly update to staff
     report_context = report_data(start_time, end_time)
-    report_charts = {
-        "learner_goals_chart": charts.NewLearnersGoalsChart(start_time, end_time, report_context["new_applications"]).generate(output="png")
-    }
     report_context.update(context)
-    report_context.update(report_charts)
     timezone.activate(pytz.timezone(settings.TIME_ZONE))
     translation.activate(settings.LANGUAGE_CODE)
     html_body = render_html_with_css('studygroups/email/weekly-update.html', report_context)
@@ -580,7 +570,6 @@ def send_community_digest(start_date, end_date):
     chart_data = {
         "meetings_chart": charts.LearningCircleMeetingsChart(end_date.date()).generate(output="png"),
         "countries_chart": charts.LearningCircleCountriesChart(start_date.date(), end_date.date()).generate(output="png"),
-        "learner_goals_chart": charts.NewLearnerGoalsChart(end_date.date(), context['new_applications']).generate(output="png"),
         "top_topics_chart": charts.TopTopicsChart(end_date.date(), context['studygroups_that_met']).generate(output="png"),
     }
 
