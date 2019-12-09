@@ -235,12 +235,10 @@ class CoursePage(DetailView):
         context = super().get_context_data(**kwargs)
         usage = StudyGroup.objects.filter(course=self.object.id).count()
         rating_step_counts = json.loads(self.object.rating_step_counts)
-        tagdorsement_counts = json.loads(self.object.tagdorsement_counts)
         similar_courses = [ _course_to_json(course) for course in self.object.similar_courses()]
 
         context['usage'] = usage
         context['rating_counts_chart'] = OverallRatingBarChart(rating_step_counts).generate()
-        context['tagdorsement_counts'] = tagdorsement_counts
         context['rating_step_counts'] = rating_step_counts
         context['similar_courses'] = json.dumps(similar_courses, cls=DjangoJSONEncoder)
         context['default_discourse_text'] = self.object.discourse_topic_default_body()

@@ -741,13 +741,11 @@ class TestFacilitatorViews(TestCase):
         self.assertEqual(response.status_code, 200)
 
         expected_create_studygroup_url = reverse('studygroups_facilitator_studygroup_create') + "?course_id={}".format(course.id)
-        expected_tagdorsement_counts = json.loads(course.tagdorsement_counts)
         expected_rating_step_counts = json.loads(course.rating_step_counts)
         expected_generate_discourse_topic_url = reverse('studygroups_generate_course_discourse_topic', args=(course.id,))
 
         self.assertEqual(response.context_data['usage'], 1)
         self.assertIsNotNone(response.context_data['rating_counts_chart'])
-        self.assertEqual(response.context_data['tagdorsement_counts'], expected_tagdorsement_counts)
         self.assertEqual(response.context_data['rating_step_counts'], expected_rating_step_counts)
         self.assertEqual(len(json.loads(response.context_data['similar_courses'])), 3)
         self.assertIn(expected_create_studygroup_url, str(response.content))
