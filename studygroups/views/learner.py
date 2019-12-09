@@ -62,11 +62,6 @@ class TeamPage(DetailView):
         return context
 
 
-class CourseListView(ListView):
-    def get_queryset(self):
-        return Course.objects.filter(created_by__isnull=True)
-
-
 def city(request, city_name):
     matches = [ c for c in cities.read_autocomplete_list() if c.lower().startswith(city_name.lower()) ]
 
