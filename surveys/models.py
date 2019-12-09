@@ -26,7 +26,6 @@ class FacilitatorSurveyResponse(models.Model):
         return next((field for field in survey_fields if field["id"] == field_id), None)
 
 
-
 class LearnerSurveyResponse(models.Model):
     typeform_key = models.CharField(max_length=64, unique=True) #Called token in the JSON response
     study_group = models.ForeignKey(StudyGroup, blank=True, null=True)
@@ -115,7 +114,7 @@ def get_all_results(query_set):
     fields = {} # dict of all fields
     for response in query_set:
         data = normalize_data(response)
-        # update headins
+        # update headings
         for field_id, value in data.items():
             fields[field_id] = value.get('field_title')
 
