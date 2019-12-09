@@ -2,7 +2,6 @@ from django.test import TestCase
 
 from studygroups.models import Course
 from .community_feedback import calculate_course_ratings
-from .community_feedback import calculate_course_tagdorsements
 
 
 class TestCommunityFeedback(TestCase):
@@ -23,15 +22,3 @@ class TestCommunityFeedback(TestCase):
         self.assertEqual(course.rating_step_counts, expected_rating_step_counts)
         self.assertEqual(course.total_ratings, 3)
 
-    def test_calculate_course_tagdorsements(self):
-        course = Course.objects.get(pk=3)
-
-        self.assertEqual(course.tagdorsement_counts, "{}")
-        self.assertEqual(course.tagdorsements, "")
-        self.assertEqual(course.total_reviewers, 0)
-
-        calculate_course_tagdorsements(course)
-
-        self.assertEqual(course.tagdorsement_counts, '{"Easy to use": 1, "Good for first time facilitators": 0, "Great for beginners": 1, "Engaging material": 1, "Led to great discussions": 1}')
-        self.assertEqual(course.tagdorsements, 'Easy to use, Great for beginners, Engaging material, Led to great discussions')
-        self.assertEqual(course.total_reviewers, 1)
