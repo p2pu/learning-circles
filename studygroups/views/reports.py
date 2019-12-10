@@ -48,10 +48,9 @@ class StudyGroupFinalReport(TemplateView):
 
             return context
 
-        new_learners_chart = charts.NewLearnersChart(study_group)
+        # TODO new_learners_chart = charts.NewLearnersChart(study_group)
         completion_rate_chart = charts.CompletionRateChart(study_group)
         goals_met_chart = charts.GoalsMetChart(study_group)
-        skills_learned_chart = charts.SkillsLearnedChart(study_group)
         reasons_for_success_chart = charts.ReasonsForSuccessChart(study_group)
         next_steps_chart = charts.NextStepsChart(study_group)
         ideas_chart = charts.IdeasChart(study_group)
@@ -72,7 +71,6 @@ class StudyGroupFinalReport(TemplateView):
             'goals_met_chart': goals_met_chart.generate(),
             'new_learners_chart': new_learners_chart.generate(),
             'completion_rate_chart': completion_rate_chart.generate(),
-            'skills_learned_chart': skills_learned_chart.generate(),
             'reasons_for_success_chart': reasons_for_success_chart.generate(),
             'next_steps_chart': next_steps_chart.generate(),
             'ideas_chart': ideas_chart.generate(),
@@ -109,6 +107,7 @@ class CommunityDigestView(TemplateView):
         context.update({ "web": True })
 
         return context
+
 
 def get_low_rated_courses():
     survey_responses = FacilitatorSurveyResponse.objects.all()
@@ -170,7 +169,6 @@ class StatsDashView(FormView):
             "facilitator_experience_chart" : charts.FacilitatorExperienceChart(start_time, end_time, data["studygroups_that_met"]).generate(),
             "participants_over_time_chart" : charts.ParticipantsOverTimeChart(start_time, end_time, data["studygroups_that_met"]).generate(),
             "learner_goal_reached_chart" : charts.LearnerGoalReachedChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
-            "skills_improved_chart" : charts.SkillsImprovedChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
             "learner_response_rate_chart" : charts.LearnerResponseRateChart(start_time, end_time, data["studygroups_that_ended"]).generate(),
         }
 
