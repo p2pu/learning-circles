@@ -324,9 +324,9 @@ def community_digest_data(start_time, end_time):
         "finished_studygroups_count": len(studygroups_that_ended),
         "studygroups_with_survey_responses": studygroups_with_survey_responses,
         "new_applications": new_applications,
-        "new_learners_count": new_applications.count(),
+        "new_learners_count": new_applications.count(),  # TODO remove and use new_applications | length in templates
         "new_courses": new_courses,
-        "new_courses_count": new_courses.count(),
+        "new_courses_count": new_courses.count(),  # TODO remove and use `| length` in templates
         "top_discourse_topics": top_discourse_topics,
         "discourse_categories": discourse_categories,
         "intros_from_new_users": intros_from_new_users,
