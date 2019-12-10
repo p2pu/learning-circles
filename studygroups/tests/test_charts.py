@@ -15,7 +15,6 @@ from studygroups.charts import get_question_field
 from studygroups.charts import get_response_field
 from studygroups.charts import save_to_aws
 from studygroups.charts import GoalsMetChart
-from studygroups.charts import SkillsLearnedChart
 from studygroups.charts import NewLearnersChart
 from studygroups.charts import CompletionRateChart
 from studygroups.charts import ReasonsForSuccessChart
@@ -107,44 +106,6 @@ class TestCharts(TestCase):
     def test_goals_met_chart_no_responses(self):
         study_group = StudyGroup.objects.get(pk=2)
         result = GoalsMetChart(study_group).generate()
-        self.assertEqual(result, NO_DATA)
-
-
-    @patch('studygroups.charts.get_response_field')
-    @patch('studygroups.charts.save_to_aws')
-    def test_skills_learned_chart_with_responses(self, mock_aws, mock_get_response_field):
-        study_group = StudyGroup.objects.get(pk=1)
-        chart_object = SkillsLearnedChart(study_group)
-        mock_aws.configure_mock(return_value = "test.png")
-        mock_get_response_field.configure_mock(wraps=get_response_field)
-        survey_response = LearnerSurveyResponse.objects.filter(study_group=study_group).last()
-
-        self.assertTrue(isinstance(chart_object.chart, pygal.graph.horizontalbar.HorizontalBar))
-
-        chart_data = chart_object.get_data()
-        self.assertIsNotNone(chart_data["Using the internet"])
-        self.assertIsNotNone(chart_data["Speaking in public"])
-        self.assertIsNotNone(chart_data["Feeling connected to my community"])
-        self.assertIsNotNone(chart_data["Working with others"])
-        self.assertIsNotNone(chart_data["Navigating online courses"])
-        self.assertIsNotNone(chart_data["Setting goals for myself"])
-
-        svg_result = chart_object.generate()
-
-        self.assertIn('xmlns:xlink="http://www.w3.org/1999/xlink"', svg_result)
-        self.assertIn("Number of learners", svg_result)
-        self.assertIn("Using the internet", svg_result)
-
-        png_result = chart_object.generate(output="png")
-
-        mock_aws.assert_called()
-        self.assertIn('Skills learned chart', png_result)
-        self.assertIn("test.png", png_result)
-
-
-    def test_skills_learned_chart_no_responses(self):
-        study_group = StudyGroup.objects.get(pk=2)
-        result = SkillsLearnedChart(study_group).generate()
         self.assertEqual(result, NO_DATA)
 
 
