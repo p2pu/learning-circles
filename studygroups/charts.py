@@ -1361,62 +1361,6 @@ class MeetingsOverTimeChart():
         return self.chart.render(is_unicode=True)
 
 
-# class DraftLearningCirclesChart():
-#     def __init__(self, start_time, end_time, **kwargs):
-#         self.chart = pygal.Line(style=custom_style(), height=400, max_scale=10, order_min=0, y_title="Draft learning circles", x_label_rotation=30, **kwargs)
-#         self.start_time = start_time
-#         self.end_time = end_time
-
-#     def get_data(self):
-#         data = { "current_year": [], "previous_year": [], "dates": [] }
-
-#         window_start = self.start_time
-#         window_end = window_start + relativedelta(months=+1)
-
-#         while window_start <= self.end_time:
-#             three_months_ago = window_start - relativedelta(months=+3)
-#             current_published_studygroups = StudyGroup.objects.published()
-#             draft_learning_circles = Meeting.objects.active().filter(meeting_date__gte=window_start, meeting_date__lt=window_end, study_group__deleted_at__isnull=True, study_group__draft=False).count()
-
-#             data["dates"].append(window_start.strftime("%b"))
-#             data["previous_year"].append(meetings_count)
-
-#             window_start = window_end
-#             window_end = window_start + relativedelta(months=+1)
-
-
-#         window_start = self.end_time.replace(month=1, day=1)
-#         window_end = window_start + relativedelta(months=+1)
-
-#         while window_start <= self.end_time:
-#             meetings_count = Meeting.objects.active().filter(meeting_date__gte=window_start, meeting_date__lt=window_end, study_group__deleted_at__isnull=True, study_group__draft=False).count()
-
-#             data["current_year"].append(meetings_count)
-
-#             window_start = window_end
-#             window_end = window_start + relativedelta(months=+1)
-
-#         return data
-
-
-#     def generate(self, **opts):
-#         chart_data = self.get_data()
-
-#         self.chart.add(str(self.previous_year), chart_data["previous_year"])
-#         self.chart.add(str(self.current_year), chart_data["current_year"], allow_interruptions=True)
-#         self.chart.x_labels = chart_data["dates"]
-
-#         if opts.get('output', None) == "png":
-#             filename = "stats-dash-{}-meetings-chart.png".format(self.end_time.isoformat())
-#             target_path = os.path.join('tmp', filename)
-#             self.chart.render_to_png(target_path)
-#             file = open(target_path, 'rb')
-#             img_url = save_to_aws(file, filename)
-
-#             return "<img src={} alt={} width='100%'>".format(img_url, 'Number of meetings over time')
-
-#         return self.chart.render(is_unicode=True)
-
 class StudygroupsByCountryOverTimeChart():
 
     def __init__(self, start_time, end_time, study_groups, **kwargs):
@@ -1557,7 +1501,6 @@ class LearnerGoalReachedChart():
             return "<img src={} alt={} width='100%'>".format(img_url, 'Rate of learners that met their goals')
 
         return self.chart.render(is_unicode=True)
-
 
 
 class LearnerResponseRateChart():
