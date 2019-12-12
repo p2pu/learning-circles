@@ -93,6 +93,39 @@ def generate_reminder(study_group):
             notification.send()
 
 
+def _send_facilitator_survey(study_group):
+    facilitator_name = study_group.facilitator.first_name
+    path = reverse('studygroups_facilitator_survey', kwargs={'study_group_uuid': study_group.uuid})
+    base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
+    survey_url = base_url + path
+
+    context = {
+        'study_group': study_group,
+        'facilitator': study_group.facilitator,
+        'facilitator_name': facilitator_name,
+        'survey_url': survey_url,
+        'course_title': study_group.course.title,
+    }
+
+    timezone.deactivate()
+    subject, txt, html = render_email_templates(
+        'studygroups/email/facilitator_survey',
+        context
+    )
+    to = [study_group.facilitator.email]
+    cc = [settings.DEFAULT_FROM_EMAIL]
+
+    notification = EmailMultiAlternatives(
+        subject,
+        txt,
+        settings.DEFAULT_FROM_EMAIL,
+        to,
+        cc=cc
+    )
+    notification.attach_alternative(html, 'text/html')
+    notification.send()
+
+
 # If called directly, be sure to activate the current language
 # Should be called every hour at :30
 def send_facilitator_survey(study_group):
@@ -106,36 +139,7 @@ def send_facilitator_survey(study_group):
     time_to_send = last_meeting.meeting_datetime() - datetime.timedelta(hours=1)
 
     if start_of_window <= time_to_send and time_to_send < end_of_window:
-        facilitator_name = study_group.facilitator.first_name
-        path = reverse('studygroups_facilitator_survey', kwargs={'study_group_id': study_group.id})
-        base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
-        survey_url = base_url + path
-
-        context = {
-            'study_group': study_group,
-            'facilitator': study_group.facilitator,
-            'facilitator_name': facilitator_name,
-            'survey_url': survey_url,
-            'course_title': study_group.course.title,
-        }
-
-        timezone.deactivate()
-        subject, txt, html = render_email_templates(
-            'studygroups/email/facilitator_survey',
-            context
-        )
-        to = [study_group.facilitator.email]
-        cc = [settings.DEFAULT_FROM_EMAIL]
-
-        notification = EmailMultiAlternatives(
-            subject,
-            txt,
-            settings.DEFAULT_FROM_EMAIL,
-            to,
-            cc=cc
-        )
-        notification.attach_alternative(html, 'text/html')
-        notification.send()
+        _send_facilitator_survey(study_group)
 
 
 # send prompt to facilitators to ask learners to complete surveys
@@ -164,7 +168,7 @@ def send_facilitator_learner_survey_prompt(study_group):
         facilitator_name = study_group.facilitator.first_name
         facilitator_survey_path = reverse(
             'studygroups_facilitator_survey',
-            kwargs={'study_group_id': study_group.id}
+            kwargs={'study_group_uuid': study_group.uuid}
         )
         learner_survey_path = reverse(
             'studygroups_learner_survey',

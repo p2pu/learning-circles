@@ -40,7 +40,7 @@
           <a class="btn btn-primary" href="{% url 'studygroups_final_report' study_group_id=lc.pk %}">{% trans "View final report" %}</a>
           </p>
           {% if lc.facilitatorsurveyresponse_set.count == 0 %}
-            <p><a class="btn btn-primary" href="{% url 'studygroups_facilitator_survey' lc.id %}">{% trans "Facilitator survey" %}</a></p>
+            <p><a class="btn btn-primary" href="{% url 'studygroups_facilitator_survey' lc.uuid %}">{% trans "Facilitator survey" %}</a></p>
           {% endif %}
           <p><strong>{% trans "Learner survey link:" %} </strong><a href="https://learningcircles.p2pu.org{% url 'studygroups_learner_survey' lc.uuid %}">https://learningcircles.p2pu.org{% url 'studygroups_learner_survey' lc.uuid %}</a></p>
           {% if lc.draft %}

@@ -92,7 +92,7 @@ export const LC_DEFAULTS = {
   language: 'en',
 };
 
-export const FACILITATOR_SURVEY = 'wPg50i';
+// TODO - this needs to be configured, not baked into the code
 export const NO_STUDYGROUP_SURVEY = 'iVldef';
 export const LEARNER_SURVEY = 'VA1aVz';
 

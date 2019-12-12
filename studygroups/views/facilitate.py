@@ -672,27 +672,21 @@ class InvitationConfirm(FormView):
         return super(InvitationConfirm, self).form_valid(form)
 
 
-
-@method_decorator(user_is_group_facilitator, name='dispatch')
 class StudyGroupFacilitatorSurvey(TemplateView):
     template_name = 'studygroups/facilitator_survey.html'
 
-    def get(self, request, *args, **kwargs):
-        study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
-        study_group.facilitator_rating = request.GET.get('rating', None)
-        study_group.save()
-        response = super().get(request, *args, **kwargs)
-        return response
-
     def get_context_data(self, **kwargs):
+        study_group = get_object_or_404(StudyGroup, uuid=kwargs.get('study_group_uuid'))
+        study_group.facilitator_goal_rating = self.request.GET.get('goal_rating', None)
+        study_group.save()
+
         context = super(StudyGroupFacilitatorSurvey, self).get_context_data(**kwargs)
-        study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
-        context['study_group_uuid'] = study_group.uuid
-        context['study_group_name'] = study_group.course.title
-        context['facilitator'] = self.request.user
-        context['facilitator_name'] = self.request.user.first_name
-        context['rating'] = self.request.GET.get('rating', None)
-        context['no_studygroup'] = self.request.GET.get('nostudygroup', False)
+        context['survey_id'] = settings.TYPEFORM_FACILITATOR_SURVEY_FORM
+        context['studygroup_uuid'] = study_group.uuid
+        context['course'] = study_group.course.title
+        context['goal'] = study_group.facilitator_goal
+        context['goal_rating'] = self.request.GET.get('goal_rating', '')
+        # TODO context['no_studygroup'] = self.request.GET.get('nostudygroup', False)
         return context
 
 

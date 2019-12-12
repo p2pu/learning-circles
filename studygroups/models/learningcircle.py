@@ -90,7 +90,8 @@ class StudyGroup(LifeTimeTrackingModel):
     facilitator_goal = models.CharField(max_length=256, blank=True)
     facilitator_concerns = models.CharField(max_length=256, blank=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    facilitator_rating = models.IntegerField(blank=True, null=True)
+    facilitator_rating = models.IntegerField(blank=True, null=True)  # Deprecated: 1-5 rating use previously
+    facilitator_goal_rating = models.IntegerField(blank=True, null=True)  # Self reported rating of whether the facilitator goal was met.
     attach_ics = models.BooleanField(default=True)
 
     objects = StudyGroupQuerySet.as_manager()

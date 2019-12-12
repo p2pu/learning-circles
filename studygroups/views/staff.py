@@ -234,7 +234,7 @@ class ExportStudyGroupsView(ListView):
             base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
             facilitator_survey =  '{}{}'.format(
                 base_url,
-                reverse('studygroups_facilitator_survey', args=(sg.pk,))
+                reverse('studygroups_facilitator_survey', args=(sg.uuid,))
             )
             data += [facilitator_survey]
             data += ['yes' if sg.facilitatorsurveyresponse_set.count() else 'no']
