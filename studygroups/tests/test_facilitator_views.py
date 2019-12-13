@@ -101,7 +101,6 @@ class TestFacilitatorViews(TestCase):
         assertForbidden('/en/studygroup/1/meeting/2/edit/')
         assertForbidden('/en/studygroup/1/meeting/2/delete/')
         assertForbidden('/en/studygroup/1/meeting/2/feedback/create/')
-        assertForbidden('/en/studygroup/1/facilitator_survey/')
 
 
     def test_facilitator_access(self):
@@ -130,7 +129,6 @@ class TestFacilitatorViews(TestCase):
         assertStatus('/en/studygroup/1/meeting/2/edit/', 404)
         assertStatus('/en/studygroup/1/meeting/2/delete/', 404)
         assertStatus('/en/studygroup/1/meeting/2/feedback/create/', 404)
-        assertAllowed('/en/studygroup/1/facilitator_survey/')
 
 
     def test_create_study_group(self):
@@ -686,16 +684,16 @@ class TestFacilitatorViews(TestCase):
         sg.save()
         c = Client()
         c.login(username='bowie', password='password')
-        feedback_url = '/en/studygroup/{}/facilitator_survey/?rating=5'.format(sg.pk)
+        feedback_url = '/en/studygroup/{}/facilitator_survey/?goal_rating=5'.format(sg.uuid)
         response = c.get(feedback_url)
 
         sg.refresh_from_db()
-        self.assertEqual(sg.facilitator_rating, 5)
+        self.assertEqual(sg.facilitator_goal_rating, 5)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context_data['study_group_uuid'], sg.uuid)
-        self.assertEqual(response.context_data['study_group_name'], course.title)
-        self.assertEqual(response.context_data['facilitator'], facilitator)
-        self.assertEqual(response.context_data['facilitator_name'], facilitator.first_name)
+        self.assertEqual(response.context_data['study_group_uuid'], str(sg.uuid))
+        self.assertEqual(response.context_data['course'], course.title)
+        self.assertEqual(response.context_data['goal'], sg.facilitator_goal)
+        self.assertEqual(response.context_data['goal_rating'], str(sg.facilitator_goal_rating))
 
 
     def test_facilitator_active_learning_circles(self):

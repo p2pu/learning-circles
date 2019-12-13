@@ -525,7 +525,7 @@ class TestStudyGroupTasks(TestCase):
         with freeze_time("2010-02-05 17:34"):
             send_facilitator_survey(sg)
             self.assertEqual(len(mail.outbox), 1)
-            self.assertIn('{0}/en/studygroup/{1}/facilitator_survey/'.format(settings.DOMAIN, sg.id), mail.outbox[0].body)
+            self.assertIn('{0}/en/studygroup/{1}/facilitator_survey/'.format(settings.DOMAIN, sg.uuid), mail.outbox[0].body)
             self.assertIn(sg.facilitator.email, mail.outbox[0].to)
 
 
@@ -561,7 +561,7 @@ class TestStudyGroupTasks(TestCase):
         with freeze_time("2010-02-07 18:30:00"):
             send_facilitator_learner_survey_prompt(sg)
             self.assertEqual(len(mail.outbox), 1)
-            self.assertIn('{0}/en/studygroup/{1}/facilitator_survey/'.format(settings.DOMAIN, sg.id), mail.outbox[0].body)
+            self.assertIn('{0}/en/studygroup/{1}/facilitator_survey/'.format(settings.DOMAIN, sg.uuid), mail.outbox[0].body)
             self.assertIn(sg.facilitator.email, mail.outbox[0].to)
 
 
