@@ -2,14 +2,14 @@ import * as typeformEmbed from '@typeform/embed';
 
 const element = document.getElementById('studygroup-learner-feedback');
 const surveyId = element.dataset.surveyId;
-const studygroup = element.dataset.studygroup;
+const studygroupUuid = element.dataset.studygroupUuid;
 const course = encodeURIComponent(element.dataset.course);
 const contact = encodeURIComponent(element.dataset.contact);
-const goal = encodeURIComponent(element.dataset.goal);
-const learner = encodeURIComponent(element.dataset.learnerName)
+const goalRating = encodeURIComponent(element.dataset.goalRating);
+const learnerUuid = element.dataset.learnerUuid
 const facilitator = encodeURIComponent(element.dataset.facilitatorName)
 const goalmet = element.dataset.goalMet;
-const url = `https://p2pu.typeform.com/to/${surveyId}?studygroup=${studygroup}&course=${course}&contact=${contact}&goalmet=${goalmet}&goal=${goal}&learner=${learner}&facilitator=${facilitator}`;
+const url = `https://p2pu.typeform.com/to/${surveyId}?studygroup_uuid=${studygroupUuid}&course=${course}&goal_rating=${goalRating}&learner_uuid=${learnerUuid}&facilitator=${facilitator}`;
 
 
 const options = {
