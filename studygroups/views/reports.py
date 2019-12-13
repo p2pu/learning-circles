@@ -69,7 +69,7 @@ class StudyGroupFinalReport(TemplateView):
             'facilitator_survey_responses': study_group.facilitatorsurveyresponse_set.count(),
             'course': study_group.course,
             'goals_met_chart': goals_met_chart.generate(),
-            'new_learners_chart': new_learners_chart.generate(),
+            # TODO 'new_learners_chart': new_learners_chart.generate(),
             'completion_rate_chart': completion_rate_chart.generate(),
             'reasons_for_success_chart': reasons_for_success_chart.generate(),
             'next_steps_chart': next_steps_chart.generate(),
