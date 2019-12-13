@@ -273,10 +273,13 @@ class StudyGroupLearnerSurvey(TemplateView):
 
     def get(self, request, *args, **kwargs):
         study_group = get_object_or_404(StudyGroup, uuid=kwargs.get('study_group_uuid'))
-        learner_uuid = request.GET.get('learner', None)
-        goal_met = request.GET.get('goal', None)
 
-        if learner_uuid is not None:
+        if request.GET.get('learner', None):
+            # if learner is in the query parameters, 
+            # store data in session and redirect to URL without query params
+            # this is to minize the chance of a learner sharing 'their' survey URL
+            learner_uuid = request.GET.get('learner', None)
+            goal_met = request.GET.get('goal', None)
             try:
                 application = study_group.application_set.get(uuid=learner_uuid)
                 application.goal_met = goal_met
@@ -293,8 +296,7 @@ class StudyGroupLearnerSurvey(TemplateView):
         else:
             learner_uuid = request.session.get('learner_uuid', None)
             goal_met = request.session.get('goal_met', None)
-            # consider unsetting session variable here
-
+            # TODO consider unsetting session variable here
             try:
                 application = study_group.application_set.get(uuid=learner_uuid)
                 signup_questions = json.loads(application.signup_questions)
@@ -308,14 +310,17 @@ class StudyGroupLearnerSurvey(TemplateView):
                     'goal': learner_goal,
                     'goal_met': goal_met,
                     'learner_name': application.name,
-                    'facilitator_name': study_group.facilitator.first_name
+                    'facilitator_name': study_group.facilitator.first_name,
+                    'survey_id': settings.TYPEFORM_LEARNER_SURVEY_FORM,
                 }
             except ObjectDoesNotExist:
                 context = {
                     'study_group_uuid': study_group.uuid,
                     'course_title': study_group.course.title,
-                    'facilitator_name': study_group.facilitator.first_name
+                    'facilitator_name': study_group.facilitator.first_name,
+                    'survey_id': settings.TYPEFORM_LEARNER_SURVEY_FORM,
                 }
 
-        request.session.clear() #TODO this logs anyone out of learningcircles.p2pu.org when they visit this URL
+        # TODO if the users refreshes the page, it will delete the session and log the survey as anonymous
+        request.session.clear()  #TODO this logs anyone out of learningcircles.p2pu.org when they visit this URL
         return render(request, self.template_name, context)

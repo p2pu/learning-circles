@@ -32,8 +32,8 @@
   text-decoration: none;
 }
 
-.rating-scale .label.align-right {
-  text-align: right;
+.rating-scale .label {
+  text-align: center;
 }
 
 .rating-scale .label small {
@@ -52,9 +52,9 @@
         <p>{% trans "Your learning circle is about to meet for the last time! Please take a few minutes to let us know how it went? Your feedback - the good and the bad - will improve the learning circle program for learners and facilitators around the world." %}</p>
 
         {% if learner_goal %}
-        <p>{% blocktrans %}Let’s start with what brought you here. When you signed up for the learning circle, you said that your primary goal was: <strong>{{learner_goal}}</strong>.{% endblocktrans %}</p>
+        <p>{% blocktrans %}When you signed up, we asked what you hoped to achieve by joining learning circle, and you wrote: <strong>{{learner_goal}}</strong>.{% endblocktrans %}</p>
 
-        <p>{% trans "To what extent did you achieve this goal during the learning circle?" %}</p>
+        <p>{% trans "To what extent did you achieve this?" %}</p>
         {% else %}
         <p>{% blocktrans %}Please share your feedback by completing <a href="{{survey_url}}">this survey</a>.{% endblocktrans %}<p>
         {% endif %}
@@ -97,19 +97,16 @@
                           </a>
                         </td>
                       </tr>
-                    </tbody>
-                  </table>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <table width="100%">
-                    <tbody>
                       <tr>
                         <td class="label">
                           <small>{% trans "Not at all" %}</small>
                         </td>
-                        <td class="label align-right">
+                        <td class="label"></td>
+                        <td class="label">
+                          <small>{% trans "Somewhat" %}</small>
+                        </td>
+                        <td class="label"></td>
+                        <td class="label">
                           <small>{% trans "Completely!" %}</small>
                         </td>
                       </tr>

@@ -94,7 +94,6 @@ export const LC_DEFAULTS = {
 
 // TODO - this needs to be configured, not baked into the code
 export const NO_STUDYGROUP_SURVEY = 'iVldef';
-export const LEARNER_SURVEY = 'VA1aVz';
 
 export const DISCOURSE_API_URL = 'https://community.p2pu.org';
 export const FACILITATOR_RESOURCE_TYPES = [
