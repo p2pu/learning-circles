@@ -34,7 +34,3 @@ class TestCommunityCalendar(TestCase):
 
     def test_public_api(self):
         pass
-
-    @patch('send_new_event_notification')
-    def test_create_event(self, send_new_event_notification):
-        pass
