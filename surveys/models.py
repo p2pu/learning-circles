@@ -7,13 +7,15 @@ import json
 
 MAX_STAR_RATING = 5
 
-
-class FacilitatorSurveyResponse(models.Model):
+class TypeformSurveyResponse(models.Model):
     typeform_key = models.CharField(max_length=64, unique=True) #Called token in the JSON response
-    study_group = models.ForeignKey(StudyGroup, blank=True, null=True)
+    form_id = models.CharField(max_length=12)
     survey = models.TextField()
     response = models.TextField() #This will be a JSON value
     responded_at = models.DateTimeField()
+
+    class Meta:
+        abstract = True
 
     def get_response_field(self, question_id):
         response = json.loads(self.response)
@@ -26,23 +28,13 @@ class FacilitatorSurveyResponse(models.Model):
         return next((field for field in survey_fields if field["id"] == field_id), None)
 
 
-class LearnerSurveyResponse(models.Model):
-    typeform_key = models.CharField(max_length=64, unique=True) #Called token in the JSON response
+class FacilitatorSurveyResponse(TypeformSurveyResponse):
+    study_group = models.ForeignKey(StudyGroup, blank=True, null=True)
+
+
+class LearnerSurveyResponse(TypeformSurveyResponse):
     study_group = models.ForeignKey(StudyGroup, blank=True, null=True)
     learner = models.ForeignKey(Application, blank=True, null=True)
-    survey = models.TextField()
-    response = models.TextField() #This will be a JSON value
-    responded_at = models.DateTimeField()
-
-    def get_response_field(self, question_id):
-        response = json.loads(self.response)
-        answers = response['answers']
-        return next((answer for answer in answers if answer["field"]["id"] == question_id), None)
-
-    def get_survey_field(self, field_id):
-        survey = json.loads(self.survey)
-        survey_fields = survey['fields']
-        return next((field for field in survey_fields if field["id"] == field_id), None)
 
 
 def find_field(field_id, typeform_survey):
