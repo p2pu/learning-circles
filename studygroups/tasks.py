@@ -411,7 +411,6 @@ def send_reminder(reminder):
         context = {
             "reminder": reminder,
             "facilitator_message": reminder.email_body,
-            "facilitator": reminder.study_group.facilitator
         }
         # activate learning circle language
         with use_language(reminder.study_group.language):
