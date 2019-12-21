@@ -59,8 +59,9 @@ class StudyGroupFinalReport(TemplateView):
             'facilitator_survey_responses': study_group.facilitatorsurveyresponse_set.count(),
             'goals_chart': charts.goals_chart(study_group),
             'goals_met_chart': goals_met_chart.generate(),
-            'completion_rate_chart': completion_rate_chart.generate(),
+            'topic_confidence_chart': charts.topic_confidence_chart(study_group),
             'next_steps_chart': charts.next_steps_chart(study_group),
+            'completion_rate_chart': completion_rate_chart.generate(),
         }
         return context
 

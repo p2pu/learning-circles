@@ -180,6 +180,19 @@ class GoalsMetChart():
         return self.chart.render(is_unicode=True)
 
 
+def topic_confidence_chart(study_group):
+    survey_data = map(learner_survey_summary, study_group.learnersurveyresponse_set.all())
+    ratings = [res.get('subject_confidence') for res in survey_data if res.get('subject_confidence')]
+    counts = [0]*5
+    for rating in ratings:
+        counts[rating-1] += 1
+    x_title = "Confidence (1: No, 3: Somewhat, 5: Yes)"
+    chart = pygal.Bar(style=custom_style(), show_legend=False, max_scale=10, order_min=0, y_title="Participants", x_title=x_title)
+    chart.x_labels = map(str, range(1,6))
+    chart.add('Confidence', counts)
+    return chart.render(is_unicode=True)
+
+
 class NewLearnersChart():
     # TODO - either remove this data or calculate from signup data
 

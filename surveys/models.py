@@ -162,7 +162,7 @@ def _old_learner_survey_summary(response):
             data['goal_rating'] = goal_rating
 
     # next_steps = survey next steps
-    data['next_steps'] = survey_response.get_value_by_ref('3fa8908a-665d-4dfe-9d77-26a76294a253')
+    data['next_steps'] = response.get_value_by_ref('3fa8908a-665d-4dfe-9d77-26a76294a253')
 
     #TODO course rating = survey course rating
     #TODO course rating reason = None
