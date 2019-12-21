@@ -28,7 +28,7 @@ from studygroups.models import get_studygroups_with_meetings
 from surveys.models import FacilitatorSurveyResponse
 from surveys.models import LearnerSurveyResponse
 from surveys.models import MAX_STAR_RATING
-from surveys.models import get_learner_survey_data
+from surveys.models import learner_survey_summary
 
 import logging
 
@@ -114,7 +114,7 @@ def goals_chart(study_group):
     goals = [ appl.get_goal() for appl in applications if appl.get_goal() ]
     # add survey responses without an associated application
     survey_responses = study_group.learnersurveyresponse_set.filter(learner__isnull=True)
-    survey_data = map(get_learner_survey_data, survey_responses)
+    survey_data = map(learner_survey_summary, survey_responses)
     goals += [ response.get("goal") for response in survey_data if response.get("goal")]
     goals = list(set(goals))
     html = "<div><ul class='quote-list list-unstyled'>"
@@ -128,7 +128,7 @@ def goals_chart(study_group):
 
 def next_steps_chart(study_group):
     html = "<div><ul class='quote-list list-unstyled'>"
-    chart_data = map(get_learner_survey_data, study_group.learnersurveyresponse_set.all())
+    chart_data = map(learner_survey_summary, study_group.learnersurveyresponse_set.all())
     values = [ response.get("next_steps") for response in chart_data if response.get("next_steps")]
     values = list(set(values))
     for value in values[:5]:
@@ -147,33 +147,17 @@ class GoalsMetChart():
         self.study_group = study_group
 
     def get_data(self):
-        data = { 'Rating': [0,0,0,0,0] }
-        survey_responses = get_typeform_survey_learner_responses(self.study_group)
-
-        if len(survey_responses) < 1:
-            return None
-
-        # G6AXyEuG2NRQ = "When you signed up for {{hidden:course}}, you said that your primary goal was: {{hidden:goal}}. To what extent did you meet your goal?"
-        # IO9ALWvVYE3n = "To what extent did you meet your goal?"
-
-        for response in survey_responses:
-            #if response.learner and response.learner.goal_met:
-            res = json.loads(response)
-            if res.get('hidden', {}).get('goalmet'):
-                rating = int(res.get('hidden', {}).get('goalmet'))
-                data['Rating'][rating - 1] += 1
-            else:
-                field = get_response_field(response, "G6AXyEuG2NRQ")
-                if field is None:
-                    field = get_response_field(response, "IO9ALWvVYE3n")
-                if field is not None:
-                    rating = field["number"]
-                    data['Rating'][rating - 1] += 1
+        """ Combine data from applications and surveys """
+        rating_counts = [0]*5
+        survey_responses = self.study_group.learnersurveyresponse_set.all()
+        survey_summaries = map(learner_survey_summary, survey_responses)
+        goal_ratings = [res.get('goal_rating') for res in survey_summaries if res.get('goal_rating')]
         applications = self.study_group.application_set.filter(goal_met__isnull=False, learnersurveyresponse__isnull=True)
-        for application in applications:
-            data['Rating'][application.goal_met - 1] += 1
+        goal_ratings += [app.goal_met for app in applications]
+        for rating in goal_ratings:
+            rating_counts[rating-1] += 1
 
-        return data
+        return { 'Rating': rating_counts }
 
     def generate(self, **opts):
         chart_data = self.get_data()

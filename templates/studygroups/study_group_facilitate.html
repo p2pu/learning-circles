@@ -42,7 +42,7 @@
           {% if lc.facilitatorsurveyresponse_set.count == 0 %}
             <p><a class="btn btn-primary" href="{% url 'studygroups_facilitator_survey' lc.uuid %}">{% trans "Facilitator survey" %}</a></p>
           {% endif %}
-          <p><strong>{% trans "Learner survey link:" %} </strong><a href="https://learningcircles.p2pu.org{% url 'studygroups_learner_survey' lc.uuid %}">https://learningcircles.p2pu.org{% url 'studygroups_learner_survey' lc.uuid %}</a></p>
+          <p><strong>{% trans "Learner survey link:" %} </strong><a href="{{PROTOCOL}}://{{DOMAIN}}{% url 'studygroups_learner_survey' lc.uuid %}">{{PROTOCOL}}://{{DOMAIN}}{% url 'studygroups_learner_survey' lc.uuid %}</a></p>
           {% if lc.draft %}
             <div class="alert alert-info" role="alert">
               <p>{% trans "This learning circle is currently a draft and users won't be able to find it on www.p2pu.org or sign up." %}</p>

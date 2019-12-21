@@ -1,5 +1,6 @@
 # coding=utf-8
 from django.db import models
+from django.conf import settings
 from studygroups.models import StudyGroup
 from studygroups.models import Application
 
@@ -136,7 +137,7 @@ def get_all_results(query_set):
     }
 
 
-def _transform_old_survey_data(survey_response):
+def _old_learner_survey_summary(response):
     data = {
         "learned_extra": None,
         "confidence": None,
@@ -145,28 +146,62 @@ def _transform_old_survey_data(survey_response):
     }
 
     # goal = signup goal OR survey goal OR None
-    if survey_response.learner and survey_response.learner.get_goal():
-        data['goal'] = survey_response.learner.get_goal()
-    elif survey_response.get_value_by_ref('1929769b-dc20-4cd6-a849-c07ddd780456'):
-        data['goal'] = survey_response.get_value_by_ref('1929769b-dc20-4cd6-a849-c07ddd780456')
+    if response.learner and response.learner.get_goal():
+        data['goal'] = response.learner.get_goal()
+    elif response.get_value_by_ref('1929769b-dc20-4cd6-a849-c07ddd780456'):
+        data['goal'] = response.get_value_by_ref('1929769b-dc20-4cd6-a849-c07ddd780456')
 
     # goal_rating = application.goal_met or survey goal met x2
+    if response.learner and response.learner.goal_met:
+        data['goal_rating'] = response.learner.goal_met
+    else:
+        goal_rating = response.get_value_by_ref('06677105-57d8-4b18-99d7-02f77165cca8')
+        if not goal_rating:
+            goal_rating = response.get_value_by_ref('47b94cfa-13fe-430d-b1d0-2414beedd865')
+        if goal_rating:
+            data['goal_rating'] = goal_rating
 
     # next_steps = survey next steps
     data['next_steps'] = survey_response.get_value_by_ref('3fa8908a-665d-4dfe-9d77-26a76294a253')
 
-    # course rating = survey course rating
-    # course rating reason = None
+    #TODO course rating = survey course rating
+    #TODO course rating reason = None
     return data
 
 
-def get_learner_survey_data(survey_response):
+def _new_learner_survey_summary(response):
+    summary = {}
+    if response.learner and response.learner.get_goal():
+        summary['goal'] = response.learner.get_goal()
+    else:
+        summary['goal'] = response.get_value_by_ref('goal')
+
+    if response.learner and response.learner.goal_met:
+        summary['goal_rating'] = response.learner.goal_met
+    else:
+        summary['goal_rating'] = response.get_value_by_ref('goal_rating_alt')
+
+    survey_fields = [
+        "goal_extra",
+        "subject_confidence",
+        "next_steps",
+        "course_rating",
+        "course_rating_reason",
+        "recommendation_rating",
+        "recommendation_rating_reason",
+    ]
+    for field in survey_fields:
+        summary[field] = response.get_value_by_ref(field)
+    return summary
+
+
+def learner_survey_summary(survey_response):
     """
-    Take a survey response, and return the following data:
+    Take a survey response, and return the following summary:
     {
         "goal": "blah",
         "goal_rating": 1,
-        "learned_extra": "nah",
+        "goal_extra": "nah",
         "subject_confidence": 1,
         "next_steps": "none",
         "course_rating": 4,
@@ -175,5 +210,7 @@ def get_learner_survey_data(survey_response):
         "recommendation_rating_reason": "blah",
     }
     """
-    # TODO decide based on form ID how to get the data
-    return _transform_old_survey_data(survey_response)
+    # decide based on form ID how to get the data
+    if survey_response.form_id == settings.TYPEFORM_LEARNER_SURVEY_FORM:
+        return _new_learner_survey_summary(survey_response)
+    return _old_learner_survey_summary(survey_response)

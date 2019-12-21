@@ -61,13 +61,13 @@ def sync_facilitator_responses():
     survey_responses = []
 
     for survey in r.get('items', []):
-        study_group_id = survey.get('hidden', {}).get('studygroup')
+        study_group_uuid = survey.get('hidden', {}).get('studygroup_uuid')
         study_group = None
         if study_group_id:
             try:
-                study_group = StudyGroup.objects.get(uuid=study_group_id)
+                study_group = StudyGroup.objects.get(uuid=study_group_uuid)
             except ObjectDoesNotExist as e:
-                logger.debug('Study group with ID does not exist', e)
+                logger.debug('Study group with UUID does not exist', e)
             except ValidationError as e:
                 logger.debug('UUID is not valid', e)
 
@@ -94,7 +94,6 @@ def sync_facilitator_responses():
     return survey_responses
 
 
-
 def sync_learner_responses():
     form_id = settings.TYPEFORM_LEARNER_SURVEY_FORM
     form = get_form(form_id)
@@ -109,10 +108,10 @@ def sync_learner_responses():
 
     for survey in r.get('items', []):
 
-        study_group_id = survey.get('hidden').get('studygroup')
+        study_group_uuid = survey.get('hidden').get('studygroup_uuid')
         study_group = None
         try:
-            study_group = StudyGroup.objects.get(uuid=study_group_id)
+            study_group = StudyGroup.objects.get(uuid=study_group_uuid)
         except ObjectDoesNotExist as e:
             logger.debug('Study group with ID does not exist', e)
         except ValidationError as e:
@@ -120,12 +119,13 @@ def sync_learner_responses():
 
         responded_at = parser.parse(survey.get('submitted_at'))
 
-        email = survey.get('hidden').get('contact')
+        learner_uuid = survey.get('hidden').get('learner_uuid')
         learner = None
-        try:
-            learner = Application.objects.get(email=email, study_group=study_group)
-        except ObjectDoesNotExist as e:
-            logger.debug('Application not found', e)
+        if learner_uuid:
+            try:
+                learner = Application.objects.get(uuid=learner_uuid)
+            except ObjectDoesNotExist as e:
+                logger.debug('Application not found', e)
 
         data = {
             'form_id': form_id,
