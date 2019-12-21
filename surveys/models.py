@@ -22,6 +22,18 @@ class TypeformSurveyResponse(models.Model):
         answers = response['answers']
         return next((answer for answer in answers if answer["field"]["id"] == question_id), None)
 
+    def get_value_by_ref(self, ref):
+        response = json.loads(self.response)
+        answers = response.get('answers', [])
+        answer = next((answer for answer in answers if answer["field"]["ref"] == ref), None)
+        if not answer:
+            return None
+        type_ = answer.get('type')
+        value = answer.get(type_)
+        if type_ == 'choice':
+            value = value.get('label')
+        return value
+
     def get_survey_field(self, field_id):
         survey = json.loads(self.survey)
         survey_fields = survey['fields']
@@ -123,3 +135,45 @@ def get_all_results(query_set):
         'data': data
     }
 
+
+def _transform_old_survey_data(survey_response):
+    data = {
+        "learned_extra": None,
+        "confidence": None,
+        "recommendation_rating": None,
+        "recommendation_rating_reason": None,
+    }
+
+    # goal = signup goal OR survey goal OR None
+    if survey_response.learner and survey_response.learner.get_goal():
+        data['goal'] = survey_response.learner.get_goal()
+    elif survey_response.get_value_by_ref('1929769b-dc20-4cd6-a849-c07ddd780456'):
+        data['goal'] = survey_response.get_value_by_ref('1929769b-dc20-4cd6-a849-c07ddd780456')
+
+    # goal_rating = application.goal_met or survey goal met x2
+
+    # next_steps = survey next steps
+    data['next_steps'] = survey_response.get_value_by_ref('3fa8908a-665d-4dfe-9d77-26a76294a253')
+
+    # course rating = survey course rating
+    # course rating reason = None
+    return data
+
+
+def get_learner_survey_data(survey_response):
+    """
+    Take a survey response, and return the following data:
+    {
+        "goal": "blah",
+        "goal_rating": 1,
+        "learned_extra": "nah",
+        "subject_confidence": 1,
+        "next_steps": "none",
+        "course_rating": 4,
+        "course_rating_reason": "blah",
+        "recommendation_rating": 1,
+        "recommendation_rating_reason": "blah",
+    }
+    """
+    # TODO decide based on form ID how to get the data
+    return _transform_old_survey_data(survey_response)

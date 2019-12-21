@@ -52,8 +52,7 @@ def sync_facilitator_responses():
     form_id = settings.TYPEFORM_FACILITATOR_SURVEY_FORM
     form = get_form(form_id)
 
-    last_response = FacilitatorSurveyResponse.objects.order_by('-responded_at')\
-        .first()
+    last_response = FacilitatorSurveyResponse.objects.filter(form_id=form_id).order_by('-responded_at').first()
     after = None
     if last_response:
         after = last_response.typeform_key
@@ -75,6 +74,7 @@ def sync_facilitator_responses():
         responded_at = parser.parse(survey.get('submitted_at'))
 
         data = {
+            'form_id': form_id,
             'study_group': study_group,
             'survey': json.dumps(form),
             'response': json.dumps(survey),
@@ -99,7 +99,7 @@ def sync_learner_responses():
     form_id = settings.TYPEFORM_LEARNER_SURVEY_FORM
     form = get_form(form_id)
 
-    last_response = LearnerSurveyResponse.objects.order_by('-responded_at').first()
+    last_response = LearnerSurveyResponse.objects.filter(form_id=form_id).order_by('-responded_at').first()
     after = None
     if last_response:
         after = last_response.typeform_key
@@ -128,6 +128,7 @@ def sync_learner_responses():
             logger.debug('Application not found', e)
 
         data = {
+            'form_id': form_id,
             'study_group': study_group,
             'learner': learner,
             'survey': json.dumps(form),

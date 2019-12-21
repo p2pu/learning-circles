@@ -224,6 +224,12 @@ class Application(LifeTimeTrackingModel):
     def get_signup_questions(self):
         return json.loads(self.signup_questions)
 
+    def get_goal(self):
+        goal = self.get_signup_questions().get('goals')
+        if goal:
+            goal = goal.replace('Other: ', '')
+        return goal
+
     DIGITAL_LITERACY_QUESTIONS = {
         'use_internet': _('How comfortable are you using the internet?'),
         'send_email': _('Send an email'),
