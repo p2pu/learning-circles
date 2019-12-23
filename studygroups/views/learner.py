@@ -284,44 +284,36 @@ class StudyGroupLearnerSurvey(TemplateView):
                 application = study_group.application_set.get(uuid=learner_uuid)
                 application.goal_met = goal_met
                 application.save()
-
                 request.session['learner_uuid'] = learner_uuid
-
-                redirect_url = reverse('studygroups_learner_survey', kwargs={'study_group_uuid': kwargs.get('study_group_uuid')})
-                return HttpResponseRedirect(redirect_url)
             except ObjectDoesNotExist:
-                redirect_url = reverse('studygroups_learner_survey', kwargs={'study_group_uuid': kwargs.get('study_group_uuid')})
-                return HttpResponseRedirect(redirect_url)
+                pass
+
+            redirect_url = reverse('studygroups_learner_survey', args=(study_group.uuid,))
+            return HttpResponseRedirect(redirect_url)
         else:
             learner_uuid = request.session.get('learner_uuid', None)
-
-            # TODO if the users refreshes the page, it will delete the session and log the survey as anonymous
+            # TODO if the users refreshes the page, it will delete the session and log 
+            # the survey as anonymous
             # Move this to the survey done page
             if learner_uuid: 
                 del request.session['learner_uuid']
             try:
                 application = study_group.application_set.get(uuid=learner_uuid)
-                signup_questions = json.loads(application.signup_questions)
-                learner_goal = signup_questions.get('goals', None)
                 goal_met = application.goal_met
-                contact = application.email if application.email else application.mobile
-
                 context = {
                     'survey_id': settings.TYPEFORM_LEARNER_SURVEY_FORM,
                     'study_group_uuid': study_group.uuid,
                     'course_title': study_group.course.title,
-                    'contact': contact,
-                    'goal': learner_goal,
                     'goal_met': goal_met,
-                    'learner_name': application.name,
+                    'learner_uuid': application.uuid,
                     'facilitator_name': study_group.facilitator.first_name,
                 }
             except ObjectDoesNotExist:
                 context = {
+                    'survey_id': settings.TYPEFORM_LEARNER_SURVEY_FORM,
                     'study_group_uuid': study_group.uuid,
                     'course_title': study_group.course.title,
                     'facilitator_name': study_group.facilitator.first_name,
-                    'survey_id': settings.TYPEFORM_LEARNER_SURVEY_FORM,
                 }
 
         return render(request, self.template_name, context)
