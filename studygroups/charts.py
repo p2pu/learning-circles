@@ -139,6 +139,66 @@ def next_steps_chart(study_group):
     return html + "</div>"
 
 
+def attendance_chart(study_group):
+    meetings = study_group.meeting_set.active().order_by('meeting_date', 'meeting_time')
+    attendance = [m.feedback_set.first().attendance if m.feedback_set.first() else 0 for m in meetings]
+    rsvp_yes = [m.rsvp_set.filter(attending=True).count() for m in meetings]
+    rsvp_no = [m.rsvp_set.filter(attending=False).count() for m in meetings]
+
+    chart = pygal.Line(style=custom_style(), max_scale=10, order_min=0, y_title="Attendance")
+    chart.legend_at_bottom = True
+    chart.x_labels = [m.meeting_date for m in meetings]
+    chart.add('attendance', attendance)
+    chart.add('rsvp yes', rsvp_yes)
+    chart.add('rsvp no', rsvp_no)
+    return chart.render(is_unicode=True)
+
+
+def recommendation_chart(study_group):
+    applications = study_group.application_set.active()
+    survey_responses = study_group.learnersurveyresponse_set.all()
+    survey_data = map(learner_survey_summary, survey_responses)
+    recommendations = [ response.get("recommendation_rating") for response in survey_data if response.get("recommendation_rating")]
+    counts = [ sum(1 for x in recommendations if x == i) for i in range(1,6) ]
+    x_title = "Rating (1: No, 3: Maybe, 5: Yes)"
+    chart = pygal.Bar(style=custom_style(), show_legend=False, max_scale=10, order_min=0, y_title="Participants", x_title=x_title)
+    chart.x_labels = map(str, range(1,6))
+    chart.add('Recommendation score', counts)
+    return chart.render(is_unicode=True)
+
+
+def recommendation_reasons_chart(study_group):
+    applications = study_group.application_set.active()
+    survey_responses = study_group.learnersurveyresponse_set.all()
+    survey_data = map(learner_survey_summary, survey_responses)
+    why = [
+        r.get("recommendation_rating_reason") 
+        for r in survey_data 
+        if all([r.get("recommendation_rating_reason"), r.get('recommendation_rating'), r.get('recommendation_rating') > 3])
+    ]
+    why_not = [
+        r.get("recommendation_rating_reason") 
+        for r in survey_data 
+        if 
+            r.get("recommendation_rating_reason") 
+            and r.get('recommendation_rating') 
+            and r.get('recommendation_rating') < 3
+    ]
+    html = "<div>"
+    if why:
+        html += "<h2>Why</h2><ul class='quote-list list-unstyled'>"
+        for value in why[:2]:
+            html += "<li class='pl-2 my-3 font-italic'>&quot;{}&quot;</li>".format(value)
+        html += "</ul>"
+
+    if why_not:
+        html += "<ul class='quote-list list-unstyled'><h2>Why not</h2>"
+        for value in why_not[:2]:
+            html += "<li class='pl-2 my-3 font-italic'>&quot;{}&quot;</li>".format(value)
+        html += "</ul>"
+    return html + "</div>"
+
+
 class GoalsMetChart():
     def __init__(self, study_group, **kwargs):
         x_title = "Rating (1: Not at all, 3: Somewhat, 5: Completely)"
@@ -183,6 +243,8 @@ class GoalsMetChart():
 def topic_confidence_chart(study_group):
     survey_data = map(learner_survey_summary, study_group.learnersurveyresponse_set.all())
     ratings = [res.get('subject_confidence') for res in survey_data if res.get('subject_confidence')]
+    if not len(ratings):
+        return NO_DATA
     counts = [0]*5
     for rating in ratings:
         counts[rating-1] += 1

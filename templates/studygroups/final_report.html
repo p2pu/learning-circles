@@ -34,37 +34,14 @@
             <p class="my-0">{{ registrations }} {% trans "learners signed up" %}; {{ learner_survey_responses }} {% trans "responded to the survey" %}</p>
         </div>
 
-          {% comment %} TODO - replace this {% endcomment %}
           {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=goals_chart %}
-
           {% include "studygroups/measurement_card.html" with title='Goals Met' description='Did participants reach their learning goals?' chart=goals_met_chart %}
-
           {% include "studygroups/measurement_card.html" with title="Confidence in course materials" description="Do participants feel more confident about what they learned?" chart=topic_confidence_chart %}
-
           {% include "studygroups/measurement_card.html" with title='Next Steps' description='What do participants want to do with the skills they gained?' chart=next_steps_chart %}
-
           {% include "studygroups/measurement_card.html" with title='Recommendable' description='Would participants recommend a learning circle?' chart=recommendation_chart %}
-      </div>
-
-      <div class="row mt-4">
-        <div class="col-12 mb-4">
-            <h2>{% trans "Participation" %}</h2>
-        </div>
-
-          {% include "studygroups/measurement_card.html" with title='New Learners' chart=new_learners_chart %}
-
+          {% include "studygroups/measurement_card.html" with title='Recommendable' description='Would participants recommend a learning circle?' chart=recommendation_reasons_chart %}
+          {% include "studygroups/measurement_card.html" with title='Attendance' chart=attendance_chart %}
           {% include "studygroups/measurement_card.html" with title='Completion Rate' chart=completion_rate_chart %}
-
-      </div>
-
-      <div class="row mt-4">
-        <div class="col-12 mb-4">
-            <h2>{% trans "Course Quality" %}</h2>
-            <p class="my-0">{% trans "Course used" %}: <a href="{% url 'studygroups_course_page' course.id %}">{{ course.title }}</a></p>
-        </div>
-          {% include "studygroups/measurement_card.html" with title="Facilitator's Rating" description="How well did this course work as a learning circle?" chart=facilitator_rating_chart %}
-
-          {% include "studygroups/measurement_card.html" with title="Learners' Rating" description="How well did this course work as a learning circle?" chart=learner_rating_chart %}
       </div>
       {% endif %}
   </div>

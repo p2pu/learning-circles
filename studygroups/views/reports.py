@@ -62,6 +62,9 @@ class StudyGroupFinalReport(TemplateView):
             'topic_confidence_chart': charts.topic_confidence_chart(study_group),
             'next_steps_chart': charts.next_steps_chart(study_group),
             'completion_rate_chart': completion_rate_chart.generate(),
+            'attendance_chart': charts.attendance_chart(study_group),
+            'recommendation_chart': charts.recommendation_chart(study_group),
+            'recommendation_reasons_chart': charts.recommendation_reasons_chart(study_group),
         }
         return context
 
