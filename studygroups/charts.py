@@ -140,9 +140,17 @@ def next_steps_chart(study_group):
 
 def attendance_chart(study_group):
     meetings = study_group.meeting_set.active().order_by('meeting_date', 'meeting_time')
-    attendance = [m.feedback_set.first().attendance if m.feedback_set.first() else 0 for m in meetings]
+    attendance = [m.feedback_set.first().attendance if m.feedback_set.first() else None for m in meetings]
     rsvp_yes = [m.rsvp_set.filter(attending=True).count() for m in meetings]
     rsvp_no = [m.rsvp_set.filter(attending=False).count() for m in meetings]
+    survey_responses = study_group.facilitatorsurveyresponse_set.all()
+    survey_attendance = []
+    if survey_responses.count():
+        facilitator_survey_response = survey_responses.first()  #TODO there could be more than 1 reply
+        attendance_1 = facilitator_survey_response.get_value_by_ref('attendance_1_alt')
+        attendance_2 = facilitator_survey_response.get_value_by_ref('attendance_2_alt')
+        attendance_n = facilitator_survey_response.get_value_by_ref('attendance_n_alt')
+        survey_attendance = [ attendance_1, attendance_2 ] + [0]*max(0, meetings.count()-3) + [attendance_n]
 
     chart = pygal.Line(style=custom_style(), max_scale=10, order_min=0, y_title="Attendance")
     chart.legend_at_bottom = True
@@ -150,6 +158,8 @@ def attendance_chart(study_group):
     chart.add('attendance', attendance)
     chart.add('rsvp yes', rsvp_yes)
     chart.add('rsvp no', rsvp_no)
+    if survey_attendance:
+        chart.add('survey', survey_attendance)
     return chart.render(is_unicode=True)
 
 

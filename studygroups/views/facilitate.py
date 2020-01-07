@@ -686,6 +686,15 @@ class StudyGroupFacilitatorSurvey(TemplateView):
         context['course'] = study_group.course.title
         context['goal'] = study_group.facilitator_goal
         context['goal_rating'] = self.request.GET.get('goal_rating', '')
+        meetings = study_group.meeting_set.active().order_by('meeting_date', 'meeting_time')
+        attendance = [m.feedback_set.first().attendance if m.feedback_set.first() else None for m in meetings]
+        if len(attendance) and attendance[0]:
+            context['attendance_1'] = attendance[0]
+        if len(attendance) > 1 and attendance[1]:
+            context['attendance_2'] = attendance[1]
+        if len(attendance) > 2 and attendance[-1]:
+            context['attendance_n'] = attendance[-1]
+
         # TODO context['no_studygroup'] = self.request.GET.get('nostudygroup', False)
         return context
 

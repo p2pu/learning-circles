@@ -63,7 +63,7 @@ def sync_facilitator_responses():
     for survey in r.get('items', []):
         study_group_uuid = survey.get('hidden', {}).get('studygroup_uuid')
         study_group = None
-        if study_group_id:
+        if study_group_uuid:
             try:
                 study_group = StudyGroup.objects.get(uuid=study_group_uuid)
             except ObjectDoesNotExist as e:
