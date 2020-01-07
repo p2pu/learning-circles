@@ -1,4 +1,3 @@
-
 # TODOs:
 # - document which survey question each typeform id represents
 # - finish adding png condition to all the charts
@@ -174,7 +173,7 @@ def recommendation_reasons_chart(study_group):
     why = [
         r.get("recommendation_rating_reason") 
         for r in survey_data 
-        if all([r.get("recommendation_rating_reason"), r.get('recommendation_rating'), r.get('recommendation_rating') > 3])
+        if r.get("recommendation_rating_reason") and r.get('recommendation_rating') and r.get('recommendation_rating') > 3
     ]
     why_not = [
         r.get("recommendation_rating_reason") 
