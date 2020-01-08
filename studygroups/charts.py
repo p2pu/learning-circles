@@ -139,18 +139,27 @@ def next_steps_chart(study_group):
 
 
 def attendance_chart(study_group):
+    # precedence: reported in survey, recorded in weekly feedback
     meetings = study_group.meeting_set.active().order_by('meeting_date', 'meeting_time')
     attendance = [m.feedback_set.first().attendance if m.feedback_set.first() else None for m in meetings]
     rsvp_yes = [m.rsvp_set.filter(attending=True).count() for m in meetings]
     rsvp_no = [m.rsvp_set.filter(attending=False).count() for m in meetings]
     survey_responses = study_group.facilitatorsurveyresponse_set.all()
-    survey_attendance = []
     if survey_responses.count():
         facilitator_survey_response = survey_responses.first()  #TODO there could be more than 1 reply
         attendance_1 = facilitator_survey_response.get_value_by_ref('attendance_1_alt')
         attendance_2 = facilitator_survey_response.get_value_by_ref('attendance_2_alt')
         attendance_n = facilitator_survey_response.get_value_by_ref('attendance_n_alt')
-        survey_attendance = [ attendance_1, attendance_2 ] + [0]*max(0, meetings.count()-3) + [attendance_n]
+        if attendance_1 and len(attendance):
+            attendance[0] = attendance_1
+        if attendance_2 and len(attendance) > 1:
+            attendance[1] = attendance_2
+        if attendance_n and len(attendance) > 2:
+            attendance[-1] = attendance_n
+        # TODO What happens if there are less than 3 meetings?
+
+    if not sum(filter(lambda i: i, attendance + rsvp_yes + rsvp_no)):
+        return NO_DATA
 
     chart = pygal.Line(style=custom_style(), max_scale=10, order_min=0, y_title="Attendance")
     chart.legend_at_bottom = True
@@ -158,8 +167,6 @@ def attendance_chart(study_group):
     chart.add('attendance', attendance)
     chart.add('rsvp yes', rsvp_yes)
     chart.add('rsvp no', rsvp_no)
-    if survey_attendance:
-        chart.add('survey', survey_attendance)
     return chart.render(is_unicode=True)
 
 
@@ -168,6 +175,8 @@ def recommendation_chart(study_group):
     survey_responses = study_group.learnersurveyresponse_set.all()
     survey_data = map(learner_survey_summary, survey_responses)
     recommendations = [ response.get("recommendation_rating") for response in survey_data if response.get("recommendation_rating")]
+    if not len(recommendations):
+        return NO_DATA
     counts = [ sum(1 for x in recommendations if x == i) for i in range(1,6) ]
     x_title = "Rating (1: No, 3: Maybe, 5: Yes)"
     chart = pygal.Bar(style=custom_style(), show_legend=False, max_scale=10, order_min=0, y_title="Participants", x_title=x_title)
@@ -193,6 +202,8 @@ def recommendation_reasons_chart(study_group):
             and r.get('recommendation_rating') 
             and r.get('recommendation_rating') < 3
     ]
+    if not len(why) and not len(why_not):
+        return NO_DATA
     html = "<div>"
     if why:
         html += "<h2>Why</h2><ul class='quote-list list-unstyled'>"
@@ -326,25 +337,36 @@ class CompletionRateChart():
         self.study_group = study_group
 
     def get_data(self):
-        data = { 'Completed': [ {'value': 0, 'max_value': 100} ]}
-        survey_responses = get_typeform_survey_learner_responses(self.study_group)
 
-        if len(survey_responses) < 1:
+        # get first meeting attendance; precedence: reported in survey, recorded in weekly feedback
+        # get last week attendance, same precedence
+        # completion is last week attendance / first week attendance
+        meetings = self.study_group.meeting_set.active().order_by('meeting_date', 'meeting_time')
+        attendance = [m.feedback_set.first().attendance if m.feedback_set.first() else None for m in meetings]
+        survey_responses = self.study_group.facilitatorsurveyresponse_set.all()
+        attendance_1 = None
+        attendance_n = None
+        if survey_responses.count():
+            facilitator_survey_response = survey_responses.first()  #TODO there could be more than 1 reply
+            attendance_1 = facilitator_survey_response.get_value_by_ref('attendance_1_alt')
+            attendance_2 = facilitator_survey_response.get_value_by_ref('attendance_2_alt')
+            attendance_n = facilitator_survey_response.get_value_by_ref('attendance_n_alt')
+        
+        if not attendance_1:
+            if len(attendance) and attendance[0]:
+                attendance_1 = attendance[0]
+
+        if not attendance_n:
+            if len(attendance) > 2 and attendance[-1]:
+                attendance_n = attendance[-1]
+
+        data = { 'Completed': [ {'value': 0, 'max_value': 100} ]}
+        if attendance_1 and attendance_n:
+            data['Completed'][0]['value'] = percentage(attendance_n, attendance_1)
+            return data
+        else:
             return None
 
-        completed = 0
-
-        for response_str in survey_responses:
-            field = get_response_field(response_str, "i7ps4iNBVya0")
-            # i7ps4iNBVya0 = "Which best describes you?"
-
-            if field is not None and field["choice"]["label"] == "I completed the learning circle":
-                completed += 1
-
-        value = percentage(completed, len(survey_responses))
-        data['Completed'][0]['value'] = value
-
-        return data
 
     def generate(self, **opts):
         chart_data = self.get_data()
