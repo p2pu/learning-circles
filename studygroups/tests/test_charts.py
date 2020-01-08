@@ -17,7 +17,6 @@ from studygroups.charts import save_to_aws
 from studygroups.charts import GoalsMetChart
 from studygroups.charts import NewLearnersChart
 from studygroups.charts import CompletionRateChart
-from studygroups.charts import ReasonsForSuccessChart
 from studygroups.charts import NextStepsChart
 from studygroups.charts import IdeasChart
 from studygroups.charts import PromotionChart
@@ -26,7 +25,6 @@ from studygroups.charts import LearnerRatingChart
 from studygroups.charts import FacilitatorRatingChart
 from studygroups.charts import AdditionalResourcesChart
 from studygroups.charts import FacilitatorNewSkillsChart
-from studygroups.charts import FacilitatorTipsChart
 from studygroups.charts import OverallRatingBarChart
 from studygroups.charts import NO_DATA
 
@@ -205,33 +203,6 @@ class TestCharts(TestCase):
     def test_completion_rate_chart_no_responses(self):
         study_group = StudyGroup.objects.get(pk=2)
         result = CompletionRateChart(study_group).generate()
-        self.assertEqual(result, NO_DATA)
-
-
-    @patch('studygroups.charts.get_response_field')
-    @patch('studygroups.charts.save_to_aws')
-    def test_reasons_for_success_chart_with_responses(self, mock_aws, mock_get_response_field):
-        study_group = StudyGroup.objects.get(pk=1)
-        chart_object = ReasonsForSuccessChart(study_group)
-        mock_aws.configure_mock(return_value = "test.png")
-        mock_get_response_field.configure_mock(wraps=get_response_field)
-        survey_response1 = LearnerSurveyResponse.objects.first()
-        survey_response2 = LearnerSurveyResponse.objects.filter(study_group=study_group).last()
-        survey_response1_json = json.loads(survey_response1.response)
-        survey_response2_json = json.loads(survey_response2.response)
-
-        chart_data = chart_object.get_data()
-        self.assertIsNotNone(chart_data[survey_response1_json.get("landing_id")])
-        self.assertIsNotNone(chart_data[survey_response2_json.get("landing_id")])
-        mock_get_response_field.assert_called_with(survey_response2.response, 'BBZ52adAzbGJ')
-
-        result = chart_object.generate()
-        self.assertIn("<ul class='quote-list list-unstyled'>", result)
-
-
-    def test_reasons_for_success_chart_no_responses(self):
-        study_group = StudyGroup.objects.get(pk=2)
-        result = ReasonsForSuccessChart(study_group).generate()
         self.assertEqual(result, NO_DATA)
 
 
@@ -479,29 +450,6 @@ class TestCharts(TestCase):
     def test_facilitator_new_skills_chart_no_responses(self):
         study_group = StudyGroup.objects.get(pk=2)
         result = FacilitatorNewSkillsChart(study_group).generate()
-        self.assertEqual(result, NO_DATA)
-
-
-    @patch('studygroups.charts.get_response_field')
-    @patch('studygroups.charts.save_to_aws')
-    def test_facilitator_tips_chart_with_responses(self, mock_aws, mock_get_response_field):
-        study_group = StudyGroup.objects.get(pk=1)
-        chart_object = FacilitatorTipsChart(study_group)
-        mock_aws.configure_mock(return_value = "test.png")
-        mock_get_response_field.configure_mock(wraps=get_response_field)
-        survey_response = FacilitatorSurveyResponse.objects.last()
-
-        chart_data = chart_object.get_data()
-        mock_get_response_field.assert_called_with(survey_response.response, 'dP7B4zDIZRcF')
-        self.assertIsNotNone(chart_data["text"])
-
-        result = chart_object.generate()
-        self.assertIn("<ul class='quote-list list-unstyled'>", result)
-
-
-    def test_facilitator_tips_chart_no_responses(self):
-        study_group = StudyGroup.objects.get(pk=2)
-        result = FacilitatorTipsChart(study_group).generate()
         self.assertEqual(result, NO_DATA)
 
 
