@@ -116,6 +116,8 @@ def goals_chart(study_group):
     survey_data = map(learner_survey_summary, survey_responses)
     goals += [ response.get("goal") for response in survey_data if response.get("goal")]
     goals = list(set(goals))
+    if not len(goals):
+        return NO_DATA
     html = "<div><ul class='quote-list list-unstyled'>"
     for goal in goals[:5]:
         html += "<li class='pl-2 my-3 font-italic'>&quot;{}&quot;</li>".format(goal)
@@ -234,6 +236,8 @@ class GoalsMetChart():
         goal_ratings = [res.get('goal_rating') for res in survey_summaries if res.get('goal_rating')]
         applications = self.study_group.application_set.filter(goal_met__isnull=False, learnersurveyresponse__isnull=True)
         goal_ratings += [app.goal_met for app in applications]
+        if not len(goal_ratings):
+            return None
         for rating in goal_ratings:
             rating_counts[rating-1] += 1
 
