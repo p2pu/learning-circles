@@ -76,7 +76,7 @@ class TestCharts(TestCase):
         survey_response = LearnerSurveyResponse.objects.filter(study_group=study_group).last()
 
         chart_data = chart_object.get_data()
-        self.assertIsNotNone(chart_data["Rating"])
+        self.assertIsNotNone(chart_data.get("Rating"))
 
         svg_result = chart_object.generate()
 
