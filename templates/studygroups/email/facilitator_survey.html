@@ -53,7 +53,7 @@
 
 
         {% if study_group.facilitator_goal %}
-        <p>{% blocktrans with facilitator_goal=study_group.facilitator_goal %}When you signed up, we asked what you hoped to achieve by facilitating a learning circle, and you wrote "{{facilitator_goal}}". To what extent did you achieve this?{% endblocktrans %}</p>
+        <p>{% blocktrans with facilitator_goal=study_group.facilitator_goal %}When you signed up, we asked what you hoped to achieve by facilitating a learning circle, and you wrote <strong>"{{facilitator_goal}}"</strong>. To what extent did you achieve this?{% endblocktrans %}</p>
         {% else %}
         <p>{% blocktrans %}Please take <a href="{{survey_url}}">this five minute survey</a> about your learning circle experience. This will help us at P2PU better support facilitators in the future.{% endblocktrans %}</p>
         {% endif %}
@@ -95,20 +95,17 @@
                         </a>
                       </td>
                     </tr>
-                  </tbody>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <table width="100%">
-                  <tbody>
                     <tr>
                       <td class="label">
                         <small>{% trans "Not at all" %}</small>
                       </td>
-                      <td class="label align-right">
-                        <small>{% trans "Completely" %}</small>
+                      <td class="label"></td>
+                      <td class="label">
+                        <small>{% trans "Somewhat" %}</small>
+                      </td>
+                      <td class="label"></td>
+                      <td class="label">
+                        <small>{% trans "Completely!" %}</small>
                       </td>
                     </tr>
                   </tbody>
