@@ -143,6 +143,7 @@ def _old_learner_survey_summary(response):
         "confidence": None,
         "recommendation_rating": None,
         "recommendation_rating_reason": None,
+        "course_rating_reason": None,
     }
 
     # goal = signup goal OR survey goal OR None
@@ -164,8 +165,8 @@ def _old_learner_survey_summary(response):
     # next_steps = survey next steps
     data['next_steps'] = response.get_value_by_ref('3fa8908a-665d-4dfe-9d77-26a76294a253')
 
-    #TODO course rating = survey course rating
-    #TODO course rating reason = None
+    # course rating = survey course rating
+    data['course_rating'] = response.get_value_by_ref('d8915ce4-0116-4469-b240-80e11fb4e362')
     return data
 
 
