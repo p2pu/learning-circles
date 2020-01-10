@@ -14,6 +14,7 @@ from studygroups.models import stats_dash_data
 from studygroups import charts
 
 from surveys.models import FacilitatorSurveyResponse
+from surveys.models import facilitator_survey_summary
 
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -93,19 +94,10 @@ class CommunityDigestView(TemplateView):
 
 
 def get_low_rated_courses():
-    survey_responses = FacilitatorSurveyResponse.objects.all()
-
-    low_rated_courses = []
-
-    for response in survey_responses:
-        field = charts.get_response_field(response.response, "Zm9XlzKGKC66")
-        # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
-        if field is not None and field['number'] < 3:
-            if response.study_group.course.unlisted is False:
-                low_rated_courses.append((response.study_group.course, field['number']))
-        elif field is None:
-            logger.debug(f'Response {response.id} did not have expected field Zm9XlzKGKC66')
-
+    survey_responses = FacilitatorSurveyResponse.objects.filter(study_group__isnull=False, study_group__course__unlisted=False)
+    
+    survey_responses = [(r.study_group.course, facilitator_survey_summary(r)) for r in survey_responses]
+    low_rated_courses = [(c, r.get('course_rating')) for c, r in survey_responses if r.get('course_rating', 99) < 3 ]
     return low_rated_courses
 
 

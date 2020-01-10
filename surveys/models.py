@@ -20,7 +20,7 @@ class TypeformSurveyResponse(models.Model):
 
     def get_response_field(self, question_id):
         response = json.loads(self.response)
-        answers = response['answers']
+        answers = response.get('answers', [])
         return next((answer for answer in answers if answer["field"]["id"] == question_id), None)
 
     def get_value_by_ref(self, ref):
@@ -273,6 +273,7 @@ def _old_facilitator_survey_summary(response):
             pass
         else:
             summary['course_rating'] = facilitator_rating
+    return summary
 
 
 def facilitator_survey_summary(survey_response):

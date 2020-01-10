@@ -28,6 +28,7 @@ from surveys.models import FacilitatorSurveyResponse
 from surveys.models import LearnerSurveyResponse
 from surveys.models import MAX_STAR_RATING
 from surveys.models import learner_survey_summary
+from surveys.models import facilitator_survey_summary
 
 import logging
 
@@ -440,66 +441,6 @@ class LearnerRatingChart():
         return stars + "</div>"
 
 
-class FacilitatorRatingChart():
-    def __init__(self, study_group, **kwargs):
-        self.study_group = study_group
-
-    def get_data(self):
-        data = { 'average_rating': 0, 'maximum': 0 }
-        response = self.study_group.facilitatorsurveyresponse_set.first()
-
-        if response is None:
-            return None
-
-        survey_questions = response.survey
-        survey_responses = get_typeform_survey_facilitator_responses(self.study_group)
-
-        ratings = []
-
-        for response_str in survey_responses:
-            field = get_response_field(response_str, "Zm9XlzKGKC66")
-            # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
-            if field is not None:
-                ratings.append(field['number'])
-
-        average_rating = average(sum(ratings), len(ratings))
-
-        survey_fields = json.loads(survey_questions)['fields']
-        selected_field = next((field for field in survey_fields if field["id"] == "Zm9XlzKGKC66"), None)
-        steps = selected_field['properties']['steps']
-
-        # Make sure rating is out of 5
-        if steps > MAX_STAR_RATING:
-            multiplier = MAX_STAR_RATING / steps
-            steps = MAX_STAR_RATING
-            average_rating = average_rating * multiplier
-
-        data = {
-            'average_rating': round(average_rating),
-            'maximum': steps
-        }
-
-        return data
-
-    def generate(self):
-        chart_data = self.get_data()
-
-        if chart_data is None:
-            return NO_DATA
-
-        remainder = chart_data['maximum'] - chart_data['average_rating']
-
-        stars = "<div class='course-rating row justify-content-around text-warning'>"
-
-        for x in range(0, chart_data['average_rating']):
-            stars += "<i class='fas fa-star'></i>"
-
-        for x in range(0, remainder):
-            stars += "<i class='far fa-star'></i>"
-
-        return stars + "</div>"
-
-
 class LearningCircleMeetingsChart():
 
     def __init__(self, report_date, **kwargs):
@@ -717,8 +658,8 @@ class FacilitatorRatingOverTimeChart():
         window_end = window_start + relativedelta(months=+1)
 
         while window_start <= self.end_time:
-
-            ratings = self.study_groups.filter(end_date__gte=window_start, end_date__lt=window_end).values_list('facilitator_rating', flat=True)
+            ratings = self.study_groups.filter(end_date__gte=window_start, end_date__lt=window_end)
+            ratings = [s.facilitator_goal_rating if s.facilitator_goal_rating else s.facilitator_rating for s in ratings]
             ratings_counter = Counter(ratings)
 
             for rating, collection in data.items():
@@ -728,7 +669,6 @@ class FacilitatorRatingOverTimeChart():
 
             window_start = window_end
             window_end = window_start + relativedelta(months=+1)
-
 
         return { "data": data, "dates": dates }
 
@@ -780,16 +720,10 @@ class FacilitatorCourseApprovalChart():
         window_end = window_start + relativedelta(months=+1)
 
         while window_start <= self.end_time:
-            survey_responses = FacilitatorSurveyResponse.objects.filter(study_group__in=self.study_groups, responded_at__gte=window_start, responded_at__lt=window_end).values_list('response', flat=True)
+            survey_responses = FacilitatorSurveyResponse.objects.filter(study_group__in=self.study_groups, responded_at__gte=window_start, responded_at__lt=window_end)
 
-            ratings = []
-
-            for response_str in survey_responses:
-                field = get_response_field(response_str, "Zm9XlzKGKC66")
-                # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
-                if field is not None:
-                    ratings.append(field['number'])
-
+            ratings = map(facilitator_survey_summary, survey_responses)
+            ratings = [r.get('course_rating') for r in ratings if r.get('course_rating')]
 
             ratings_counter = Counter(ratings)
 
@@ -850,17 +784,10 @@ class LearnerCourseApprovalChart():
         window_end = window_start + relativedelta(months=+1)
 
         while window_start <= self.end_time:
-            survey_responses = LearnerSurveyResponse.objects.filter(study_group__in=self.study_groups, responded_at__gte=window_start, responded_at__lt=window_end).values_list('response', flat=True)
+            survey_responses = LearnerSurveyResponse.objects.filter(study_group__in=self.study_groups, responded_at__gte=window_start, responded_at__lt=window_end)
 
-            ratings = []
-
-            for response_str in survey_responses:
-                field = get_response_field(response_str, "iGWRNCyniE7s")
-                # iGWRNCyniE7s = "How well did the online course {{hidden:course}} work as a learning circle?"
-                if field is not None:
-                    ratings.append(field['number'])
-
-
+            ratings = map(learner_survey_summary, survey_responses)
+            ratings = [r.get('course_rating') for r in ratings if r.get('course_rating')]
             ratings_counter = Counter(ratings)
 
             for rating, collection in data.items():
@@ -1276,32 +1203,21 @@ class LearnerGoalReachedChart():
         window_end = window_start + relativedelta(months=+1)
 
         while window_start <= self.end_time:
-            survey_responses = LearnerSurveyResponse.objects.filter(study_group__in=self.study_groups, responded_at__gte=window_start, responded_at__lt=window_end).values_list('response', flat=True)
-
-            ratings = []
-
-            # G6AXyEuG2NRQ = "When you signed up for {{hidden:course}}, you said that your primary goal was: {{hidden:goal}}. To what extent did you meet your goal?"
-            # IO9ALWvVYE3n = "To what extent did you meet your goal?"
-
-            for response in survey_responses:
-                field = get_response_field(response, "G6AXyEuG2NRQ")
-
-                if field is None:
-                    field = get_response_field(response, "IO9ALWvVYE3n")
-
-                if field is not None:
-                    ratings.append(field['number'])
-
+            survey_responses = LearnerSurveyResponse.objects.filter(study_group__in=self.study_groups, responded_at__gte=window_start, responded_at__lt=window_end)
+            ratings = [
+                r.get('goal_rating') for r in map(learner_survey_summary, survey_responses)
+                if r.get('goal_rating')
+            ]
+            
             ratings_counter = Counter(ratings)
-
+            
             for rating, collection in data.items():
                 collection.append(ratings_counter[rating])
-
+            
             dates.append(window_start.strftime("%b %Y"))
 
             window_start = window_end
             window_end = window_start + relativedelta(months=+1)
-
 
         return { "data": data, "dates": dates }
 
@@ -1350,6 +1266,7 @@ class LearnerResponseRateChart():
         while window_start <= self.end_time:
             applications = Application.objects.filter(study_group__in=self.study_groups, study_group__end_date__gte=window_start, study_group__end_date__lt=window_end)
             applications_with_responses = applications.filter(goal_met__isnull=False)
+            # TODO This doesn't take surveys without learned data into account
 
             value = percentage(applications_with_responses.count(), applications.count())
             data.append(value)
@@ -1357,7 +1274,6 @@ class LearnerResponseRateChart():
 
             window_start = window_end
             window_end = window_start + relativedelta(months=+1)
-
 
         return { "data": data, "dates": dates }
 

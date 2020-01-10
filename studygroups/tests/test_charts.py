@@ -18,7 +18,6 @@ from studygroups.charts import GoalsMetChart
 from studygroups.charts import NewLearnersChart
 from studygroups.charts import CompletionRateChart
 from studygroups.charts import LearnerRatingChart
-from studygroups.charts import FacilitatorRatingChart
 from studygroups.charts import OverallRatingBarChart
 from studygroups.charts import NO_DATA
 
@@ -209,30 +208,6 @@ class TestCharts(TestCase):
     def test_learner_rating_chart_no_responses(self):
         study_group = StudyGroup.objects.get(pk=2)
         result = LearnerRatingChart(study_group).generate()
-        self.assertEqual(result, NO_DATA)
-
-
-    @patch('studygroups.charts.get_response_field')
-    @patch('studygroups.charts.save_to_aws')
-    def test_facilitator_rating_chart_with_responses(self, mock_aws, mock_get_response_field):
-        study_group = StudyGroup.objects.get(pk=1)
-        chart_object = FacilitatorRatingChart(study_group)
-        mock_aws.configure_mock(return_value = "test.png")
-        mock_get_response_field.configure_mock(wraps=get_response_field)
-        survey_response = FacilitatorSurveyResponse.objects.last()
-
-        chart_data = chart_object.get_data()
-        mock_get_response_field.assert_called_with(survey_response.response, 'Zm9XlzKGKC66')
-        self.assertIsNotNone(chart_data["average_rating"])
-        self.assertIsNotNone(chart_data["maximum"])
-
-        result = chart_object.generate()
-        self.assertIn("<div class='course-rating row justify-content-around text-warning'>", result)
-
-
-    def test_facilitator_rating_chart_no_responses(self):
-        study_group = StudyGroup.objects.get(pk=2)
-        result = FacilitatorRatingChart(study_group).generate()
         self.assertEqual(result, NO_DATA)
 
 

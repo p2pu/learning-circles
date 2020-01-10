@@ -283,7 +283,21 @@ def get_active_facilitators():
 def get_unrated_studygroups():
     today = datetime.datetime.now()
     two_months_ago = today - relativedelta(months=+2)
-    unrated_studygroups = StudyGroup.objects.published().annotate(models.Count('application', filter=Q(application__deleted_at__isnull=True, application__accepted_at__isnull=False))).filter(application__count__gte=1, end_date__gte=two_months_ago, end_date__lt=today, facilitator_rating__isnull=True).order_by('-end_date')
+    unrated_studygroups = StudyGroup.objects.published()\
+        .annotate(
+            models.Count('application', filter=
+                Q(application__deleted_at__isnull=True, application__accepted_at__isnull=False))
+        )\
+        .annotate( models.Count('facilitatorsurveyresponse') )\
+        .filter(
+            application__count__gte=1,
+            end_date__gte=two_months_ago,
+            end_date__lt=today
+        ).filter(
+            facilitator_rating__isnull=True,
+            facilitator_goal_rating__isnull=True,
+            facilitatorsurveyresponse__count=0
+        ).order_by('-end_date')
     return unrated_studygroups
 
 def get_unpublished_studygroups(start_time, end_time):
