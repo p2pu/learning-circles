@@ -214,3 +214,79 @@ def learner_survey_summary(survey_response):
     if survey_response.form_id == settings.TYPEFORM_LEARNER_SURVEY_FORM:
         return _new_learner_survey_summary(survey_response)
     return _old_learner_survey_summary(survey_response)
+
+
+def _new_facilitator_survey_summary(response):
+    summary = {}
+
+    # goal - presedence: study_group.goal > response.goal_alt
+    if response.study_group and response.study_group.facilitator_goal:
+        summary['goal'] = response.study_group.facilitator_goal
+    elif response.get_value_by_ref('goal_alt'):
+        summary['goal'] = response.get_value_by_ref('goal_alt')
+        
+    # goal_rating - presedence: study_group.facilitator_goal_rating > response.goal_rating_alt > repsonse.goal_rating_alt_2
+    if response.study_group and response.study_group.facilitator_goal_rating:
+        summary['goal_rating']: response.study_group.facilitator_goal_rating
+    elif response.get_value_by_ref('goal_rating_alt'):
+        summary['goal_rating'] = response.get_value_by_ref('goal_rating_alt')
+    else:
+        summary['goal_rating'] = response.get_value_by_ref('goal_rating_alt_2')
+
+    survey_fields = [
+        "surprise",
+        "stories",
+        "course_rating",
+        "course_rating_reason",
+        "recommendation_rating",
+        "recommendation_rating_reason",
+    ]
+    for field in survey_fields:
+        summary[field] = response.get_value_by_ref(field)
+    return summary
+
+
+def _old_facilitator_survey_summary(response):
+    summary = {}
+
+    # course_rating
+    # TODO rework this logic
+    # 1. Get rating + max rating
+    # 1. if max rating is different, scale answer
+    # 1. if rating is > max rating and quesion is missing, discard
+
+    # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
+    rating_question = response.get_survey_field("Zm9XlzKGKC66")
+    rating_answer = response.get_response_field("Zm9XlzKGKC66")
+    if rating_answer and 'number' in rating_answer:
+        facilitator_rating = rating_answer['number']
+        if rating_question and 'properties' in rating_question:
+            facilitator_steps = rating_question['properties']['steps']
+            # Normalize the rating if it doesn't match MAX_STAR_RATING
+            if facilitator_steps != MAX_STAR_RATING:
+                facilitator_rating = round(facilitator_rating/facilitator_steps * MAX_STAR_RATING)
+            summary['course_rating'] = facilitator_rating
+        elif facilitator_rating > MAX_STAR_RATING:
+            # if we don't know how many steps the rating has and it exceeds MAX_STAR_RATING
+            # ignore this rating
+            pass
+        else:
+            summary['course_rating'] = facilitator_rating
+
+
+def facilitator_survey_summary(survey_response):
+    """
+    {
+        "goal": "",
+        "goal_rating": 1,
+        "surprise": "",
+        "stories": "",
+        "course_rating": 2,
+        "course_rating_reason": "",
+        "recommendation_score": 4,
+        "recommendation_reason": "",
+    }
+    """
+    if survey_response.form_id == settings.TYPEFORM_FACILITATOR_SURVEY_FORM:
+        return _new_facilitator_survey_summary(survey_response)
+    return _old_facilitator_survey_summary(survey_response)
