@@ -2,6 +2,7 @@ from django.test import TestCase
 
 from studygroups.models import Course
 from .community_feedback import calculate_course_ratings
+import json
 
 
 class TestCommunityFeedback(TestCase):
@@ -16,9 +17,10 @@ class TestCommunityFeedback(TestCase):
 
         calculate_course_ratings(course)
 
-        expected_rating_step_counts = '{"5": 2, "4": 1, "3": 0, "2": 0, "1": 0}'
+        expected_rating_step_counts = {"5": 2, "4": 1, "3": 0, "2": 0, "1": 0}
+        rating_step_counts = json.loads(course.rating_step_counts)
 
         self.assertEqual(course.overall_rating, 4.67)
-        self.assertEqual(course.rating_step_counts, expected_rating_step_counts)
+        self.assertEqual(rating_step_counts, expected_rating_step_counts)
         self.assertEqual(course.total_ratings, 3)
 
