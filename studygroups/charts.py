@@ -658,8 +658,15 @@ class FacilitatorRatingOverTimeChart():
         window_end = window_start + relativedelta(months=+1)
 
         while window_start <= self.end_time:
-            ratings = self.study_groups.filter(end_date__gte=window_start, end_date__lt=window_end)
-            ratings = [s.facilitator_goal_rating if s.facilitator_goal_rating else s.facilitator_rating for s in ratings]
+            lcs = self.study_groups.filter(end_date__gte=window_start, end_date__lt=window_end)
+            # get rating, presedence: goal_rating > faciltator_rating > survey goal rating
+            ratings = list(lcs.filter(facilitator_goal_rating__isnull=False).values_list('facilitator_goal_rating', flat=True))
+            ratings += list(lcs.filter(facilitator_goal_rating__isnull=True, facilitator_rating__isnull=False).values_list('facilitator_rating', flat=True))
+            #ratings = [s.facilitator_goal_rating if s.facilitator_goal_rating else s.facilitator_rating for s in lcs]
+            surveys = FacilitatorSurveyResponse.objects.filter(study_group__in=lcs.filter(facilitator_goal_rating__isnull=True, facilitator_rating__isnull=True))
+            surveys = map(facilitator_survey_summary, surveys)
+            ratings += [r.get('goal_rating') for r in surveys]
+            ratings += [None]*(lcs.count()-len(ratings))  # pad ratings with None's as all other learning circles are considered unrated
             ratings_counter = Counter(ratings)
 
             for rating, collection in data.items():
