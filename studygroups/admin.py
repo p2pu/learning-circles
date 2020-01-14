@@ -37,6 +37,7 @@ class TeamAdmin(admin.ModelAdmin):
 
 class ApplicationAdmin(admin.ModelAdmin):
     list_display = ('name', 'study_group', 'email', 'mobile', 'created_at')
+    search_fields = ['name', 'email', 'mobile']
 
 
 def reminder_course_title(obj):
