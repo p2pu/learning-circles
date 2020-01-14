@@ -304,10 +304,11 @@ class StudyGroupLearnerSurvey(TemplateView):
                     'survey_id': settings.TYPEFORM_LEARNER_SURVEY_FORM,
                     'study_group_uuid': study_group.uuid,
                     'course_title': study_group.course.title,
-                    'goal_met': goal_met,
                     'learner_uuid': application.uuid,
                     'facilitator_name': study_group.facilitator.first_name,
                 }
+                if goal_met:
+                    context['goal_met'] = goal_met
             except ObjectDoesNotExist:
                 context = {
                     'survey_id': settings.TYPEFORM_LEARNER_SURVEY_FORM,
