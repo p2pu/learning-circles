@@ -1,27 +1,19 @@
 # coding: utf-8
 from django.test import TestCase
-from django.test import Client
-from django.utils import timezone
 
-from mock import patch, Mock
+from mock import patch
 
 from studygroups.models import StudyGroup
-from studygroups.models import Meeting
-from studygroups.models import Application
 from surveys.models import LearnerSurveyResponse
-from surveys.models import FacilitatorSurveyResponse
 
 from studygroups.charts import get_question_field
 from studygroups.charts import get_response_field
-from studygroups.charts import save_to_aws
 from studygroups.charts import GoalsMetChart
 from studygroups.charts import NewLearnersChart
-from studygroups.charts import CompletionRateChart
 from studygroups.charts import LearnerRatingChart
 from studygroups.charts import OverallRatingBarChart
 from studygroups.charts import NO_DATA
 
-import json
 import pygal
 
 
@@ -72,7 +64,6 @@ class TestCharts(TestCase):
         study_group = StudyGroup.objects.get(pk=1)
         chart_object = GoalsMetChart(study_group)
         mock_aws.configure_mock(return_value = "test.png")
-        survey_response = LearnerSurveyResponse.objects.filter(study_group=study_group).last()
 
         chart_data = chart_object.get_data()
         self.assertIsNotNone(chart_data.get("Rating"))
@@ -100,7 +91,6 @@ class TestCharts(TestCase):
         study_group = StudyGroup.objects.get(pk=1)
         chart_object = NewLearnersChart(study_group)
         mock_aws.configure_mock(return_value = "test.png")
-        survey_response = LearnerSurveyResponse.objects.filter(study_group=study_group).last()
 
         self.assertTrue(isinstance(chart_object.chart, pygal.graph.solidgauge.SolidGauge))
 
@@ -125,77 +115,11 @@ class TestCharts(TestCase):
         self.assertEqual(result, NO_DATA)
 
 
-    @patch('studygroups.charts.get_response_field')
-    @patch('studygroups.charts.save_to_aws')
-    def test_completion_rate_chart_with_responses(self, mock_aws, mock_get_response_field):
-        study_group = StudyGroup.objects.get(pk=1)
-        chart_object = CompletionRateChart(study_group)
-        mock_aws.configure_mock(return_value = "test.png")
-        mock_get_response_field.configure_mock(wraps=get_response_field)
-        survey_response = LearnerSurveyResponse.objects.filter(study_group=study_group).last()
-
-        self.assertTrue(isinstance(chart_object.chart, pygal.graph.solidgauge.SolidGauge))
-
-        chart_data = chart_object.get_data()
-        mock_get_response_field.assert_called_with(survey_response.response, 'i7ps4iNBVya0')
-        self.assertIsNotNone(chart_data["Completed"][0]["value"])
-        self.assertIsNotNone(chart_data["Completed"][0]["max_value"])
-
-        svg_result = chart_object.generate()
-
-        self.assertIn('xmlns:xlink="http://www.w3.org/1999/xlink"', svg_result)
-
-        png_result = chart_object.generate(output="png")
-
-        mock_aws.assert_called()
-        self.assertIn('Completion rate chart', png_result)
-        self.assertIn("test.png", png_result)
-
-
-    def test_completion_rate_chart_no_responses(self):
-        study_group = StudyGroup.objects.get(pk=2)
-        result = CompletionRateChart(study_group).generate()
-        self.assertEqual(result, NO_DATA)
-
-
-    @patch('studygroups.charts.save_to_aws')
-    def test_completion_rate_chart_with_responses(self, mock_aws, ):
-        study_group = StudyGroup.objects.get(pk=1)
-        # TODO - this would need meetings with feedback or a response to the new survey
-        return
-        chart_object = CompletionRateChart(study_group)
-        mock_aws.configure_mock(return_value = "test.png")
-        survey_response = LearnerSurveyResponse.objects.filter(study_group=study_group).last()
-
-        self.assertTrue(isinstance(chart_object.chart, pygal.graph.solidgauge.SolidGauge))
-
-        chart_data = chart_object.get_data()
-        self.assertIsNotNone(chart_data["Completed"][0]["value"])
-        self.assertIsNotNone(chart_data["Completed"][0]["max_value"])
-
-        svg_result = chart_object.generate()
-
-        self.assertIn('xmlns:xlink="http://www.w3.org/1999/xlink"', svg_result)
-
-        png_result = chart_object.generate(output="png")
-
-        mock_aws.assert_called()
-        self.assertIn('Completion rate chart', png_result)
-        self.assertIn("test.png", png_result)
-
-
-    def test_completion_rate_chart_no_responses(self):
-        study_group = StudyGroup.objects.get(pk=2)
-        result = CompletionRateChart(study_group).generate()
-        self.assertEqual(result, NO_DATA)
-
-
     @patch('studygroups.charts.save_to_aws')
     def test_learner_rating_chart_with_responses(self, mock_aws):
         study_group = StudyGroup.objects.get(pk=1)
         chart_object = LearnerRatingChart(study_group)
         mock_aws.configure_mock(return_value = "test.png")
-        survey_response = LearnerSurveyResponse.objects.filter(study_group=study_group).last()
 
         chart_data = chart_object.get_data()
         self.assertIsNotNone(chart_data["average_rating"])
