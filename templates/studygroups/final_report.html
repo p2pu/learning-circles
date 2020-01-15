@@ -36,10 +36,10 @@
 
           {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=goals_chart %}
           {% include "studygroups/measurement_card.html" with title='Goals Met' description='Did participants reach their learning goals?' chart=goals_met_chart %}
-          {% include "studygroups/measurement_card.html" with title="Confidence in course materials" description="Do participants feel more confident about what they learned?" chart=topic_confidence_chart %}
-          {% include "studygroups/measurement_card.html" with title='Next Steps' description='What do participants want to do with the skills they gained?' chart=next_steps_chart %}
-          {% include "studygroups/measurement_card.html" with title='Recommendable' description='Would participants recommend a learning circle?' chart=recommendation_chart %}
-          {% include "studygroups/measurement_card.html" with title='Recommendable' description='Why would or wouldn\'t participants recommend a learning circle?' chart=recommendation_reasons_chart %}
+          {% include "studygroups/measurement_card.html" with title='Confidence in course materials' description='Do participants feel more confident about what they learned?' chart=topic_confidence_chart %}
+          {% include "studygroups/measurement_card.html" with title='Next Steps' description='How do participants intend to apply what they learned?' chart=next_steps_chart %}
+          {% include "studygroups/measurement_card.html" with title='Net Promoter Score' description='Would participants recommend learning circles to a friend?' chart=recommendation_chart %}
+          {% include "studygroups/measurement_card.html" with title='Why or Why Not?' description='' chart=recommendation_reasons_chart %}
           {% include "studygroups/measurement_card.html" with title='Attendance' chart=attendance_chart %}
       </div>
       {% endif %}
