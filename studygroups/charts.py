@@ -113,7 +113,7 @@ def goals_chart(study_group):
     applications = study_group.application_set.active()
     goals = [ appl.get_goal() for appl in applications if appl.get_goal() ]
     # add all survey responses for which do do not have goals
-    application_ids = [ appl.pk for appl in applications if not appl.get_goal() ]
+    application_ids = [ appl.pk for appl in applications if appl.get_goal() ]
     survey_responses = study_group.learnersurveyresponse_set.exclude(learner__in=application_ids)
     survey_data = map(learner_survey_summary, survey_responses)
     goals += [ response.get("goal") for response in survey_data if response.get("goal")]
