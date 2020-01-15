@@ -49,7 +49,6 @@ class StudyGroupFinalReport(TemplateView):
 
             return context
 
-        completion_rate_chart = charts.CompletionRateChart(study_group)
         goals_met_chart = charts.GoalsMetChart(study_group)
 
         context = {
@@ -62,7 +61,6 @@ class StudyGroupFinalReport(TemplateView):
             'goals_met_chart': goals_met_chart.generate(),
             'topic_confidence_chart': charts.topic_confidence_chart(study_group),
             'next_steps_chart': charts.next_steps_chart(study_group),
-            'completion_rate_chart': completion_rate_chart.generate(),
             'attendance_chart': charts.attendance_chart(study_group),
             'recommendation_chart': charts.recommendation_chart(study_group),
             'recommendation_reasons_chart': charts.recommendation_reasons_chart(study_group),

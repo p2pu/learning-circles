@@ -332,68 +332,6 @@ class NewLearnersChart():
         return self.chart.render(is_unicode=True)
 
 
-class CompletionRateChart():
-    def __init__(self, study_group, **kwargs):
-        style = custom_style()
-        style.value_font_size = 40
-        style.title_font_size = 24
-        self.chart = pygal.SolidGauge(style=style, inner_radius=0.70, show_legend = False, x_title="of participants completed the learning circle", **kwargs)
-        self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
-        self.study_group = study_group
-
-    def get_data(self):
-
-        # get first meeting attendance; precedence: reported in survey, recorded in weekly feedback
-        # get last week attendance, same precedence
-        # completion is last week attendance / first week attendance
-        meetings = self.study_group.meeting_set.active().order_by('meeting_date', 'meeting_time')
-        attendance = [m.feedback_set.first().attendance if m.feedback_set.first() else None for m in meetings]
-        survey_responses = self.study_group.facilitatorsurveyresponse_set.all()
-        attendance_1 = None
-        attendance_n = None
-        if survey_responses.count():
-            facilitator_survey_response = survey_responses.first()  #TODO there could be more than 1 reply
-            attendance_1 = facilitator_survey_response.get_value_by_ref('attendance_1_alt')
-            attendance_2 = facilitator_survey_response.get_value_by_ref('attendance_2_alt')
-            attendance_n = facilitator_survey_response.get_value_by_ref('attendance_n_alt')
-        
-        if not attendance_1:
-            if len(attendance) and attendance[0]:
-                attendance_1 = attendance[0]
-
-        if not attendance_n:
-            if len(attendance) > 2 and attendance[-1]:
-                attendance_n = attendance[-1]
-
-        data = { 'Completed': [ {'value': 0, 'max_value': 100} ]}
-        if attendance_1 and attendance_n:
-            data['Completed'][0]['value'] = percentage(attendance_n, attendance_1)
-            return data
-        else:
-            return None
-
-
-    def generate(self, **opts):
-        chart_data = self.get_data()
-
-        if chart_data is None:
-            return NO_DATA
-
-        for key, value in chart_data.items():
-            self.chart.add(key, value)
-
-        if opts.get('output', None) == "png":
-            filename = "report-{}-completion-rate-chart.png".format(self.study_group.uuid)
-            target_path = os.path.join('/tmp', filename)
-            self.chart.height = 400
-            self.chart.render_to_png(target_path)
-            file = open(target_path, 'rb')
-            img_url = save_to_aws(file, filename)
-            return "<img src={} alt={} width='100%'>".format(img_url, 'Completion rate chart')
-
-        return self.chart.render(is_unicode=True)
-
-
 class LearnerRatingChart():
     def __init__(self, study_group, **kwargs):
         self.study_group = study_group
