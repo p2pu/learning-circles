@@ -145,8 +145,6 @@ def attendance_chart(study_group):
     # precedence: reported in survey, recorded in weekly feedback
     meetings = study_group.meeting_set.active().order_by('meeting_date', 'meeting_time')
     attendance = [m.feedback_set.first().attendance if m.feedback_set.first() else None for m in meetings]
-    rsvp_yes = [m.rsvp_set.filter(attending=True).count() for m in meetings]
-    rsvp_no = [m.rsvp_set.filter(attending=False).count() for m in meetings]
     survey_responses = study_group.facilitatorsurveyresponse_set.all()
     if survey_responses.count():
         facilitator_survey_response = survey_responses.first()  #TODO there could be more than 1 reply
@@ -161,15 +159,13 @@ def attendance_chart(study_group):
             attendance[-1] = attendance_n
         # TODO What happens if there are less than 3 meetings?
 
-    if not sum(filter(lambda i: i, attendance + rsvp_yes + rsvp_no)):
+    if not sum(filter(lambda i: i, attendance)):
         return NO_DATA
 
-    chart = pygal.Line(style=custom_style(), max_scale=10, order_min=0, y_title="Attendance")
-    chart.legend_at_bottom = True
+    chart = pygal.Line(style=custom_style(), max_scale=10, order_min=0, y_title="Attendance", range=(0,max(filter(lambda i: i, attendance))))
+    chart.show_legend = False
     chart.x_labels = [m.meeting_date for m in meetings]
-    chart.add('attendance', attendance)
-    chart.add('rsvp yes', rsvp_yes)
-    chart.add('rsvp no', rsvp_no)
+    chart.add('Attendance', attendance)
     return chart.render(is_unicode=True)
 
 
