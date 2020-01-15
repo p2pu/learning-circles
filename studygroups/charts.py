@@ -112,8 +112,9 @@ def goals_chart(study_group):
     # get all application goals
     applications = study_group.application_set.active()
     goals = [ appl.get_goal() for appl in applications if appl.get_goal() ]
-    # add survey responses without an associated application
-    survey_responses = study_group.learnersurveyresponse_set.filter(learner__isnull=True)
+    # add all survey responses for which do do not have goals
+    application_ids = [ appl.pk for appl in applications if not appl.get_goal() ]
+    survey_responses = study_group.learnersurveyresponse_set.exclude(learner__in=application_ids)
     survey_data = map(learner_survey_summary, survey_responses)
     goals += [ response.get("goal") for response in survey_data if response.get("goal")]
     goals = list(set(goals))
@@ -189,32 +190,20 @@ def recommendation_reasons_chart(study_group):
     survey_responses = study_group.learnersurveyresponse_set.all()
     survey_data = map(learner_survey_summary, survey_responses)
     why = [
-        r.get("recommendation_rating_reason") 
+        (r.get("recommendation_rating_reason"), r.get('recommendation_rating'))
         for r in survey_data 
-        if r.get("recommendation_rating_reason") and r.get('recommendation_rating') and r.get('recommendation_rating') > 3
+        if r.get("recommendation_rating_reason") and r.get('recommendation_rating')
     ]
-    why_not = [
-        r.get("recommendation_rating_reason") 
-        for r in survey_data 
-        if 
-            r.get("recommendation_rating_reason") 
-            and r.get('recommendation_rating') 
-            and r.get('recommendation_rating') < 3
-    ]
-    if not len(why) and not len(why_not):
+    why.sort(key=lambda i: i[1])
+    if not len(why):
         return NO_DATA
     html = "<div>"
     if why:
-        html += "<h2>Why</h2><ul class='quote-list list-unstyled'>"
-        for value in why[:2]:
+        html += "<ul class='quote-list list-unstyled'>"
+        for value, rating in why[:5]:
             html += "<li class='pl-2 my-3 font-italic'>&quot;{}&quot;</li>".format(value)
         html += "</ul>"
 
-    if why_not:
-        html += "<ul class='quote-list list-unstyled'><h2>Why not</h2>"
-        for value in why_not[:2]:
-            html += "<li class='pl-2 my-3 font-italic'>&quot;{}&quot;</li>".format(value)
-        html += "</ul>"
     return html + "</div>"
 
 
