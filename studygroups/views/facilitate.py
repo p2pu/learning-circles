@@ -452,6 +452,25 @@ class StudyGroupPublish(SingleObjectMixin, View):
         return http.HttpResponseRedirect(url)
 
 
+@method_decorator(user_is_group_facilitator, name="dispatch")
+class StudyGroupDidNotHappen(SingleObjectMixin, View):
+    model = StudyGroup
+    pk_url_kwarg = 'study_group_id'
+
+    def post(self, request, *args, **kwargs):
+        study_group = self.get_object()
+        study_group.did_not_happen = True
+        study_group.save()
+        url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
+        return http.HttpResponseRedirect(url)
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            'study_group': self.get_object(),
+        }
+        return render(request, 'studygroups/confirm_did_not_happen.html', context)
+
+
 @user_is_group_facilitator
 @study_group_is_published
 def message_send(request, study_group_id):

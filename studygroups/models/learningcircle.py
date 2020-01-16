@@ -93,6 +93,7 @@ class StudyGroup(LifeTimeTrackingModel):
     facilitator_rating = models.IntegerField(blank=True, null=True)  # Deprecated: 1-5 rating use previously
     facilitator_goal_rating = models.IntegerField(blank=True, null=True)  # Self reported rating of whether the facilitator goal was met.
     attach_ics = models.BooleanField(default=True)
+    did_not_happen = models.NullBooleanField(blank=True, null=True)  # Used by the facilitator to report if the learning circle didn't happen
 
     objects = StudyGroupQuerySet.as_manager()
 

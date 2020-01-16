@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+{% load extras %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+        <h2>{% trans "Please confirm that the learning circle didn't happen" %}</h2>
+      <form action="" method="post">{% csrf_token %}
+          <p><input class="btn btn-primary" type="submit" value="{% trans "It didn't happen" %}" /></p>
+          <p><a href="{% url 'studygroups_facilitator' %}" class="btn btn-primary">{% trans "Whoops, how did I get here?" %}"</a></p>
+      </form>
+      <p><a href="{% url 'studygroups_facilitator' %}">{% trans "Back to dashboard" %}</a></p>
+    </div>
+  </div>
+</div>
+  
+{% endblock %}

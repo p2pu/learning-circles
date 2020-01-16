@@ -116,7 +116,7 @@
             <tr>
               <td>
                 <p class="text-center">- {% trans "or" %} -</p>
-                <p class="text-center"><a href="{{survey_url}}?nostudygroup=true" class="color-green">{% trans "This learning circle didn’t end up happening." %}</a></p>
+                <p class="text-center"><a href="{% url 'studygroups_studygroup_did_not_happen' study_group.pk %}" class="color-green">{% trans "This learning circle didn’t end up happening." %}</a></p>
               </td>
             </tr>
           </tbody>

@@ -194,6 +194,7 @@ class ExportStudyGroupsView(ListView):
             'facilitator survey completed',
             'learner survey',
             'learner survey responses',
+            'did not happen',
         ]
         writer = csv.writer(response)
         writer.writerow(field_names)
@@ -244,6 +245,7 @@ class ExportStudyGroupsView(ListView):
             )
             data += [learner_survey]
             data += [sg.learnersurveyresponse_set.count()]
+            data += [sg.did_not_happen]
 
             writer.writerow(data)
         return response
