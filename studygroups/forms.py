@@ -94,22 +94,11 @@ class ApplicationForm(forms.ModelForm):
             self.fields['custom_question'] = forms.CharField(label=study_group.signup_question)
             self.helper.layout.insert(len(self.helper.layout), 'custom_question')
 
-    #def clean(self):
-    #    cleaned_data = super().clean()
-    #    # TODO - if mobile format is wrong, show error with example format for region
-    #    if self.cleaned_data['goals'] == 'Other':
-    #        if not self.cleaned_data.get('goals_other'):
-    #            msg = _('This field is required.')
-    #            self.add_error('goals_other', msg)
-
     def save(self, commit=True):
         signup_questions = {}
         questions = ['goals', 'support']
         for question in questions:
             signup_questions[question] = self.cleaned_data[question]
-
-        #if self.cleaned_data.get('goals') == 'Other':
-        #    signup_questions['goals'] = 'Other: {}'.format(self.cleaned_data.get('goals_other'))
 
         # add custom signup question to signup_questions if the facilitator specified one
         if self.instance.study_group.signup_question:
