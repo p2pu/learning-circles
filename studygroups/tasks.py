@@ -129,7 +129,7 @@ def _send_facilitator_survey(study_group):
 # If called directly, be sure to activate the current language
 # Should be called every hour at :30
 def send_facilitator_survey(study_group):
-    """ send survey to all facilitators two days before their second to last meeting """
+    """ send survey to all facilitators 1 hour before their last meeting """
     last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
     if not last_meeting:
         return
@@ -179,7 +179,7 @@ def send_facilitator_learner_survey_prompt(study_group):
         facilitator_survey_url = base_url + facilitator_survey_path
         learner_survey_url = base_url + learner_survey_path
         report_url = base_url + report_path
-        learners_without_survey_responses = study_group.application_set.active().filter(goal_met=None)
+        learners_without_survey_responses = study_group.application_set.active().filter(learnersurveyresponse__isnull=True)
 
         context = {
             "facilitator": study_group.facilitator,
@@ -216,6 +216,42 @@ def send_facilitator_learner_survey_prompt(study_group):
         notification.send()
 
 
+def _send_learning_circle_insights(study_group):
+    timezone.deactivate()
+
+    goals_met_chart = charts.GoalsMetChart(study_group)
+    report_path = reverse('studygroups_final_report', kwargs={'study_group_id': study_group.id})
+    recipients = study_group.application_set.active().values_list('email', flat=True)
+    organizers = get_study_group_organizers(study_group)
+    organizers_emails = [organizer.email for organizer in organizers]
+    to = list(recipients) + organizers_emails
+    to.append(study_group.facilitator.email)
+
+    context = {
+        'study_group': study_group,
+        'report_path': report_path,
+        'facilitator_name': study_group.facilitator.first_name,
+        'registrations': study_group.application_set.active().count(),
+        'survey_responses': study_group.learnersurveyresponse_set.count(),
+        'goals_met_chart': goals_met_chart.generate(output="png"),
+        'learner_goals_chart': charts.goals_chart(study_group),
+    }
+
+    subject = render_to_string_ctx('studygroups/email/learning_circle_final_report-subject.txt', context).strip('\n')
+    html = render_html_with_css('studygroups/email/learning_circle_final_report.html', context)
+    txt = html_body_to_text(html)
+
+    notification = EmailMultiAlternatives(
+        subject,
+        txt,
+        settings.DEFAULT_FROM_EMAIL,
+        bcc=to,
+        reply_to=[settings.DEFAULT_FROM_EMAIL]
+    )
+    notification.attach_alternative(html, 'text/html')
+    notification.send()
+
+
 # send learning circle report two days after last meeting
 # should be called every hour at :30
 def send_final_learning_circle_report(study_group):
@@ -235,38 +271,7 @@ def send_final_learning_circle_report(study_group):
     time_to_send = last_meeting.meeting_datetime() + datetime.timedelta(days=7)
 
     if start_of_window <= time_to_send and time_to_send < end_of_window:
-        timezone.deactivate()
-
-        goals_met_chart = charts.GoalsMetChart(study_group)
-        report_path = reverse('studygroups_final_report', kwargs={'study_group_id': study_group.id})
-        recipients = study_group.application_set.values_list('email', flat=True)
-        organizers = get_study_group_organizers(study_group)
-        organizers_emails = [organizer.email for organizer in organizers]
-        to = list(recipients) + organizers_emails
-        to.append(study_group.facilitator.email)
-
-        context = {
-            'study_group': study_group,
-            'report_path': report_path,
-            'facilitator_name': study_group.facilitator.first_name,
-            'registrations': study_group.application_set.active().count(),
-            'survey_responses': study_group.learnersurveyresponse_set.count(),
-            'goals_met_chart': goals_met_chart.generate(output="png"),
-        }
-
-        subject = render_to_string_ctx('studygroups/email/learning_circle_final_report-subject.txt', context).strip('\n')
-        html = render_html_with_css('studygroups/email/learning_circle_final_report.html', context)
-        txt = html_body_to_text(html)
-
-        notification = EmailMultiAlternatives(
-            subject,
-            txt,
-            settings.DEFAULT_FROM_EMAIL,
-            bcc=to,
-            reply_to=[settings.DEFAULT_FROM_EMAIL]
-        )
-        notification.attach_alternative(html, 'text/html')
-        notification.send()
+        _send_learning_circle_insights(study_group)
 
 
 def send_learner_survey(application):
@@ -299,7 +304,7 @@ def send_learner_survey(application):
         txt,
         settings.DEFAULT_FROM_EMAIL,
         to,
-        reply_to=[facilitator_email, settings.DEFAULT_FROM_EMAIL]
+        reply_to=[facilitator_email]
     )
     notification.attach_alternative(html, 'text/html')
     notification.send()
