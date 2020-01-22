@@ -41,18 +41,6 @@ LANGUAGE_CHOICES += [('other', [ (code, name) for code, name in LANGUAGES if cod
 
 class ApplicationForm(forms.ModelForm):
 
-    # TODO remove this after it's removed from charts
-    GOAL_CHOICES = [
-        ('', _('Select one of the following')),
-        ('To increase my employability', _('To increase my employability')),
-        ('Professional development for my current job', _('Professional development for my current job')),
-        ('To accompany other educational programs', _('To accompany other educational programs')),
-        ('Personal interest', _('Personal interest')),
-        ('Social reasons', _('Social reasons')),
-        ('For fun / to try something new', _('For fun / to try something new')),
-        ('Other', _('Other')),
-    ]
-
     mobile = PhoneNumberField(
         required=False,
         label=_('If you’d like to receive weekly text messages reminding you of upcoming learning circle meetings, put your phone number here:'),
