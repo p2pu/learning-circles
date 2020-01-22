@@ -1,16 +1,11 @@
 sudo: required
-dist: trusty
+dist: bionic
 before_install:
 - |
-  curl -sSL "https://get.docker.com/gpg" |
-   sudo -E apt-key add -
-- |
-  echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" |
-   sudo tee -a /etc/apt/sources.list
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+- sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
 - sudo apt-get update
-- |
-  sudo apt-get -o Dpkg::Options::="--force-confdef" \
-   -o Dpkg::Options::="--force-confold" --assume-yes install --allow-unauthenticated docker-engine
+- sudo apt-get install docker-ce docker-ce-cli containerd.io
 - docker version
 
 before_script:

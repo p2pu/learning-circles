@@ -194,6 +194,7 @@ class ExportStudyGroupsView(ListView):
             'facilitator survey completed',
             'learner survey',
             'learner survey responses',
+            'did not happen',
         ]
         writer = csv.writer(response)
         writer.writerow(field_names)
@@ -238,7 +239,7 @@ class ExportStudyGroupsView(ListView):
             base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
             facilitator_survey =  '{}{}'.format(
                 base_url,
-                reverse('studygroups_facilitator_survey', args=(sg.pk,))
+                reverse('studygroups_facilitator_survey', args=(sg.uuid,))
             )
             data += [facilitator_survey]
             data += ['yes' if sg.facilitatorsurveyresponse_set.count() else 'no']
@@ -248,6 +249,7 @@ class ExportStudyGroupsView(ListView):
             )
             data += [learner_survey]
             data += [sg.learnersurveyresponse_set.count()]
+            data += [sg.did_not_happen]
 
             writer.writerow(data)
         return response

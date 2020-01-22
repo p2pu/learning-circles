@@ -62,11 +62,6 @@ class TeamPage(DetailView):
         return context
 
 
-class CourseListView(ListView):
-    def get_queryset(self):
-        return Course.objects.filter(created_by__isnull=True)
-
-
 def city(request, city_name):
     matches = [ c for c in cities.read_autocomplete_list() if c.lower().startswith(city_name.lower()) ]
 
@@ -278,49 +273,48 @@ class StudyGroupLearnerSurvey(TemplateView):
 
     def get(self, request, *args, **kwargs):
         study_group = get_object_or_404(StudyGroup, uuid=kwargs.get('study_group_uuid'))
-        learner_uuid = request.GET.get('learner', None)
-        goal_met = request.GET.get('goal', None)
 
-        if learner_uuid is not None:
+        if request.GET.get('learner', None):
+            # if learner is in the query parameters, 
+            # store data in session and redirect to URL without query params
+            # this is to minize the chance of a learner sharing 'their' survey URL
+            learner_uuid = request.GET.get('learner', None)
+            goal_met = request.GET.get('goal', None)
             try:
                 application = study_group.application_set.get(uuid=learner_uuid)
                 application.goal_met = goal_met
                 application.save()
-
                 request.session['learner_uuid'] = learner_uuid
-                request.session['goal_met'] = goal_met
-
-                redirect_url = reverse('studygroups_learner_survey', kwargs={'study_group_uuid': kwargs.get('study_group_uuid')})
-                return HttpResponseRedirect(redirect_url)
             except ObjectDoesNotExist:
-                redirect_url = reverse('studygroups_learner_survey', kwargs={'study_group_uuid': kwargs.get('study_group_uuid')})
-                return HttpResponseRedirect(redirect_url)
+                pass
+
+            redirect_url = reverse('studygroups_learner_survey', args=(study_group.uuid,))
+            return HttpResponseRedirect(redirect_url)
         else:
             learner_uuid = request.session.get('learner_uuid', None)
-            goal_met = request.session.get('goal_met', None)
-            # consider unsetting session variable here
-
+            # TODO if the users refreshes the page, it will delete the session and log 
+            # the survey as anonymous
+            # Move this to the survey done page
+            if learner_uuid: 
+                del request.session['learner_uuid']
             try:
                 application = study_group.application_set.get(uuid=learner_uuid)
-                signup_questions = json.loads(application.signup_questions)
-                learner_goal = signup_questions.get('goals', None)
-                contact = application.email if application.email else application.mobile
-
+                goal_met = application.goal_met
                 context = {
+                    'survey_id': settings.TYPEFORM_LEARNER_SURVEY_FORM,
                     'study_group_uuid': study_group.uuid,
                     'course_title': study_group.course.title,
-                    'contact': contact,
-                    'goal': learner_goal,
-                    'goal_met': goal_met,
-                    'learner_name': application.name,
-                    'facilitator_name': study_group.facilitator.first_name
+                    'learner_uuid': application.uuid,
+                    'facilitator_name': study_group.facilitator.first_name,
                 }
+                if goal_met:
+                    context['goal_met'] = goal_met
             except ObjectDoesNotExist:
                 context = {
+                    'survey_id': settings.TYPEFORM_LEARNER_SURVEY_FORM,
                     'study_group_uuid': study_group.uuid,
                     'course_title': study_group.course.title,
-                    'facilitator_name': study_group.facilitator.first_name
+                    'facilitator_name': study_group.facilitator.first_name,
                 }
 
-        request.session.clear() #TODO this logs anyone out of learningcircles.p2pu.org when they visit this URL
         return render(request, self.template_name, context)

@@ -247,10 +247,6 @@ CELERYBEAT_SCHEDULE = {
         'task': 'studygroups.tasks.send_all_facilitator_surveys',
         'schedule':  crontab(minute='30'),
     },
-    'send_last_week_group_activity': {
-        'task': 'studygroups.tasks.send_all_last_week_group_activities',
-        'schedule':  crontab(hour='10', minute='0'),
-    },
     'weekly_update': {
         'task': 'studygroups.tasks.weekly_update',
         'schedule': crontab(hour=10, minute=0, day_of_week='monday'),
@@ -331,8 +327,8 @@ DISCOURSE_BOT_API_USERNAME = env('DISCOURSE_BOT_API_USERNAME', '')
 DISCOURSE_COURSES_AND_TOPICS_CATEGORY_ID = env('DISCOURSE_COURSES_AND_TOPICS_CATEGORY_ID', 69)
 
 TYPEFORM_ACCESS_TOKEN = env('TYPEFORM_ACCESS_TOKEN', '')
-TYPEFORM_FACILITATOR_SURVEY_FORM = env('TYPEFORM_FACILITATOR_SURVEY_FORM', '')
-TYPEFORM_LEARNER_SURVEY_FORM = env('TYPEFORM_LEARNER_SURVEY_FORM', '')
+TYPEFORM_FACILITATOR_SURVEY_FORM = env('TYPEFORM_FACILITATOR_SURVEY_FORM', 'NOTSET')
+TYPEFORM_LEARNER_SURVEY_FORM = env('TYPEFORM_LEARNER_SURVEY_FORM', 'NOTSET')
 
 # AWS credentials for email resources
 P2PU_RESOURCES_AWS_ACCESS_KEY = env('RESOURCES_AWS_ACCESS_KEY', '')

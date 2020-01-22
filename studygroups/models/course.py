@@ -54,9 +54,6 @@ class Course(LifeTimeTrackingModel):
     overall_rating = models.FloatField(default=0)
     total_ratings = models.SmallIntegerField(default=0)
     rating_step_counts = models.TextField(default="{}") # JSON value
-    tagdorsements = models.CharField(max_length=256, blank=True)
-    tagdorsement_counts =  models.TextField(default="{}") # JSON value
-    total_reviewers = models.SmallIntegerField(default=0)
     discourse_topic_url = models.URLField(blank=True)
 
     def __str__(self):

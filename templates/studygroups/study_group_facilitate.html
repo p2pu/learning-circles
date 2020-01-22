@@ -40,9 +40,9 @@
           <a class="btn btn-primary" href="{% url 'studygroups_final_report' study_group_id=lc.pk %}">{% trans "View final report" %}</a>
           </p>
           {% if lc.facilitatorsurveyresponse_set.count == 0 %}
-            <p><a class="btn btn-primary" href="{% url 'studygroups_facilitator_survey' lc.id %}">{% trans "Facilitator survey" %}</a></p>
+            <p><a class="btn btn-primary" href="{% url 'studygroups_facilitator_survey' lc.uuid %}">{% trans "Facilitator survey" %}</a></p>
           {% endif %}
-          <p><strong>{% trans "Learner survey link:" %} </strong><a href="https://learningcircles.p2pu.org{% url 'studygroups_learner_survey' lc.uuid %}">https://learningcircles.p2pu.org{% url 'studygroups_learner_survey' lc.uuid %}</a></p>
+          <p><strong>{% trans "Learner survey link:" %} </strong><a href="{{PROTOCOL}}://{{DOMAIN}}{% url 'studygroups_learner_survey' lc.uuid %}">{{PROTOCOL}}://{{DOMAIN}}{% url 'studygroups_learner_survey' lc.uuid %}</a></p>
           {% if lc.draft %}
             <div class="alert alert-info" role="alert">
               <p>{% trans "This learning circle is currently a draft and users won't be able to find it on www.p2pu.org or sign up." %}</p>
@@ -141,9 +141,7 @@
                 <th>{% trans "Name" %}</th>
                 <th>{% trans "Goal" %}</th>
                 <th>{% trans "Support" %}</th>
-                <th>{% trans "Laptop & headphones" %}</th>
                 {% if lc.signup_question %}<th>{{ lc.signup_question }}</th>{% endif %}
-                <th>{% trans "Digital literacy" %}</th>
                 <th></th>
               </tr>
             </thead>
@@ -156,20 +154,7 @@
                 </td>
                 <td>{{ learner.get_signup_questions.goals }}</td>
                 <td>{{ learner.get_signup_questions.support }}</td>
-                <td>{{ learner.get_signup_questions.computer_access }}</td>
                 {% if lc.signup_question %}<td>{{ learner.get_signup_questions.custom_question }}</td>{% endif %}
-                <td class="digital-literacy">
-                  {% with dl=learner.digital_literacy_for_display %}
-                  {% if dl.use_internet %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.use_internet.question_text}}: {{dl.use_internet.answer_text}}"><i class="fa fa-globe level-{{dl.use_internet.answer}}"></i></button>{% endif %}
-                  {% if dl.send_email %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.send_email.question_text}}: {{dl.send_email.answer_text}}"><i class="fa fa-envelope level-{{dl.send_email.answer}}"></i></button>{% endif %}
-                  {% if dl.delete_spam %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.delete_spam.question_text}}: {{dl.delete_spam.answer_text}}"><i class="fa fa-flag level-{{dl.delete_spam.answer}}"></i></button>{% endif %}
-                  {% if dl.search_online %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.search_online.question_text}}: {{dl.search_online.answer_text}}"><i class="fa fa-search level-{{dl.search_online.answer}}"></i></button>{% endif %}
-                  {% if dl.browse_video %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.browse_video.question_text}}: {{dl.browse_video.answer_text}}"><i class="fa fa-youtube-play level-{{dl.browse_video.answer}}"></i></button>{% endif %}
-                  {% if dl.online_shopping %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.online_shopping.question_text}}: {{dl.online_shopping.answer_text}}"><i class="fa fa-shopping-cart level-{{dl.online_shopping.answer}}"></i></button>{% endif %}
-                  {% if dl.mobile_apps %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.mobile_apps.question_text}}: {{dl.mobile_apps.answer_text}}"><i class="fa fa-mobile level-{{dl.mobile_apps.answer}}"></i></button>{% endif %}
-                  {% if dl.web_safety %}<button type="button" data-toggle="popover" data-trigger="focus" data-placement="bottom" data-content="{{dl.web_safety.question_text}}: {{dl.web_safety.answer_text}}"><i class="fa fa-lock level-{{dl.web_safety.answer}}"></i></button>{% endif %}
-                  {% endwith %}
-                </td>
                 <td>
                   <a class="btn btn-primary" href="{% url 'studygroups_application_delete' lc.id learner.id %}">{% trans "Remove" %}</a>
                   <a class="btn btn-primary" href="{% url 'studygroups_application_edit' lc.id learner.id %}">{% trans "Edit" %}</a>

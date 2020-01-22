@@ -39,56 +39,24 @@ LANGUAGE_CHOICES = sorted(LANGUAGE_CHOICES, key=lambda e: e[1])
 LANGUAGE_CHOICES += [('other', [ (code, name) for code, name in LANGUAGES if code not in SUPPORTED_LANGUAGES])]
 
 
-
 class ApplicationForm(forms.ModelForm):
 
-    COMPUTER_ACCESS = (
-        ('', _('Select one of the following')),
-        ('Both', _('Both')),
-        ('Just a laptop', _('Just a laptop')),
-        ('Just headphones', _('Just headphones')),
-        ('Neither', _('Neither')),
-    )
-
-    DIGITAL_LITERACY_CHOICES = (
-        ('', _('Select one of the following')),
-    ) + Application.DIGITAL_LITERACY_CHOICES
-
-    GOAL_CHOICES = [
-        ('', _('Select one of the following')),
-        ('To increase my employability', _('To increase my employability')),
-        ('Professional development for my current job', _('Professional development for my current job')),
-        ('To accompany other educational programs', _('To accompany other educational programs')),
-        ('Personal interest', _('Personal interest')),
-        ('Social reasons', _('Social reasons')),
-        ('For fun / to try something new', _('For fun / to try something new')),
-        ('Other', _('Other')),
-    ]
     mobile = PhoneNumberField(
         required=False,
         label=_('If you’d like to receive weekly text messages reminding you of upcoming learning circle meetings, put your phone number here:'),
         help_text=_('Your number won\'t be shared with other participants.')
     )
-    computer_access = forms.ChoiceField(
-        choices=COMPUTER_ACCESS,
-        label=_('Can you bring a laptop and headphones to the learning circle each week?')
-    )
-    goals = forms.ChoiceField(
-        label=_('What is your goal for taking this learning circle?'),
-        choices=GOAL_CHOICES
-    )
-    goals_other = forms.CharField(
-        label=_('If you selected other, could you specify?'),
-        required=False
+    goals = forms.CharField(
+        label=_('What do you hope to achieve by joining this learning circle?'),
     )
     support = forms.CharField(
         label=_('A successful study group requires the support of all of its members. How will you help your peers achieve their goals?')
     )
-    use_internet = forms.ChoiceField(
-        label=Application.DIGITAL_LITERACY_QUESTIONS['use_internet'],
-        choices=DIGITAL_LITERACY_CHOICES
-    )
 
+    consent = forms.BooleanField(
+        required=True,
+        label=_('I give consent that P2PU can share my signup info with the learning circle facilitator and send me info regarding the learning circle.')
+    )
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -97,11 +65,9 @@ class ApplicationForm(forms.ModelForm):
             'name',
             'email',
             'goals',
-            'goals_other',
             'support',
-            'computer_access',
-            'use_internet',
             'mobile',
+            'consent',
             'communications_opt_in'
         )
         self.helper.add_input(Submit('submit', 'Submit'))
@@ -114,25 +80,13 @@ class ApplicationForm(forms.ModelForm):
         # add custom signup question if the facilitator specified one
         if study_group.signup_question:
             self.fields['custom_question'] = forms.CharField(label=study_group.signup_question)
-            self.helper.layout.insert(len(self.helper.layout),'custom_question')
-
-
-    def clean(self):
-        cleaned_data = super().clean()
-        # TODO - if mobile format is wrong, show error with example format for region
-        if self.cleaned_data['goals'] == 'Other':
-            if not self.cleaned_data.get('goals_other'):
-                msg = _('This field is required.')
-                self.add_error('goals_other', msg)
+            self.helper.layout.insert(len(self.helper.layout), 'custom_question')
 
     def save(self, commit=True):
         signup_questions = {}
-        questions = ['computer_access', 'goals', 'support', 'use_internet']
+        questions = ['goals', 'support']
         for question in questions:
             signup_questions[question] = self.cleaned_data[question]
-
-        if self.cleaned_data.get('goals') == 'Other':
-            signup_questions['goals'] = 'Other: {}'.format(self.cleaned_data.get('goals_other'))
 
         # add custom signup question to signup_questions if the facilitator specified one
         if self.instance.study_group.signup_question:
@@ -140,15 +94,13 @@ class ApplicationForm(forms.ModelForm):
         self.instance.signup_questions = json.dumps(signup_questions)
         return super().save(commit)
 
-
     class Meta:
         model = Application
-        fields = ['study_group', 'name', 'email', 'mobile', 'communications_opt_in']
+        fields = ['study_group', 'name', 'email', 'mobile', 'consent', 'communications_opt_in']
         widgets = {'study_group': forms.HiddenInput}
         labels = {
-            'communications_opt_in': _('Would you like to receive information about other learning opportunities in the future?'),
+            'communications_opt_in': _('I would like to receive information about other learning opportunities in the future.'),
         }
-
 
 
 class OptOutForm(forms.Form):
