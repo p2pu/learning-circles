@@ -100,6 +100,70 @@ class TestLearnerViews(TestCase):
         self.assertEqual(signup_questions['custom_question'], 'an actual answer')
 
 
+    def test_update_application_bug_564(self):
+        """ see https://github.com/p2pu/learning-circles/issues/564 """
+        # Scenario: 
+        # 1. Facilitator manually adds 2 learners, but swaps their mobile numbers
+        # 2. One of the learners signs up with their correct mobile
+        # There should be only 1 signup per email address
+
+        facilitator = User.objects.create_user('bowie', 'hi@example.net', 'password')
+        sg = StudyGroup.objects.get(pk=1)
+        sg.facilitator = facilitator
+        sg.save()
+        c = Client()
+        c.login(username='bowie', password='password')
+        user1 = {'study_group': sg.pk, 'name': 'bob', 'email': 'bob@mail.com', 'mobile': '+27112223333'}
+        user2 = {'study_group': sg.pk, 'name': 'anchovie', 'email': 'anchovie@mail.com', 'mobile': '+27112221111'}
+        resp = c.post(f'/en/studygroup/{sg.pk}/member/add/', user1)
+        resp = c.post(f'/en/studygroup/{sg.pk}/member/add/', user2)
+        self.assertEqual(Application.objects.active().count(), 2)
+        self.assertEqual(len(mail.outbox), 2)
+        mail.outbox = []
+
+        c = Client()
+        application = self.APPLICATION_DATA.copy()
+        application['email'] = user1['email']
+        application['mobile'] = user2['mobile']
+        resp = c.post(f'/en/signup/foo-bob-{sg.pk}/', application)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEqual(Application.objects.active().count(), 2)
+        self.assertEqual(len(mail.outbox), 0)
+        self.assertEqual(Application.objects.active().filter(email__iexact=user1['email']).count(), 1)
+
+
+    def test_update_application_bug_564_2(self):
+        """ see https://github.com/p2pu/learning-circles/issues/564 """
+        # Scenario:
+        # 1. Facilitator add learner with a mobile
+        # 2. Learner signs up with email only
+        # 3. Learner sign up again with email + mobile
+        # There should be only 1 signup per email address
+
+        facilitator = User.objects.create_user('bowie', 'hi@example.net', 'password')
+        sg = StudyGroup.objects.get(pk=1)
+        sg.facilitator = facilitator
+        sg.save()
+        c = Client()
+        c.login(username='bowie', password='password')
+        user1 = {'study_group': sg.pk, 'name': 'bob', 'mobile': '+27112223333'}
+        resp = c.post(f'/en/studygroup/{sg.pk}/member/add/', user1)
+        self.assertEqual(Application.objects.active().count(), 1)
+        self.assertEqual(len(mail.outbox), 1)
+        mail.outbox = []
+
+        c = Client()
+        application = self.APPLICATION_DATA.copy()
+        application['email'] = 'bob@mail.com'
+        resp = c.post(f'/en/signup/foo-bob-{sg.pk}/', application)
+        application['mobile'] = user1['mobile']
+        resp = c.post(f'/en/signup/foo-bob-{sg.pk}/', application)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEqual(Application.objects.active().count(), 2)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(Application.objects.active().filter(email__iexact='bob@mail.com').count(), 1)
+
+
     def test_update_application(self):
         c = Client()
         resp = c.post('/en/signup/foo-bob-1/', self.APPLICATION_DATA)
@@ -111,7 +175,6 @@ class TestLearnerViews(TestCase):
         mail.outbox = []
         resp = c.post('/en/signup/foo-bob-1/', self.APPLICATION_DATA)
         self.assertRedirects(resp, '/en/signup/1/success/')
-
         self.assertEqual(Application.objects.active().count(), 1)
         self.assertEqual(len(mail.outbox), 0)
 

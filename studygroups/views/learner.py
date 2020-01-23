@@ -100,8 +100,7 @@ def signup(request, location, study_group_id):
                 application.pk = old_application.pk
                 application.created_at = old_application.created_at
                 #TODO messages.success(request, 'Your signup details have been updated!')
-
-            if application.mobile and Application.objects.active().filter(mobile=application.mobile, study_group=study_group).exists():
+            elif application.mobile and Application.objects.active().filter(mobile=application.mobile, study_group=study_group).exists():
                 old_application = Application.objects.active().filter(mobile=application.mobile, study_group=study_group).first()
                 application.pk = old_application.pk
                 application.created_at = old_application.created_at
