@@ -21,6 +21,9 @@ class StudyGroupAdmin(admin.ModelAdmin):
 
     list_display = ['course', 'city', 'facilitator', 'start_date', 'day', 'signup_open']
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).active()
+
 
 class TeamMembershipInline(admin.TabularInline):
     model = TeamMembership
@@ -63,7 +66,7 @@ class StudyGroupInline(admin.TabularInline):
 class CourseAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
-        qs = super(CourseAdmin, self).get_queryset(request)
+        qs = super().get_queryset(request)
         return qs.active()
 
     def created_by(course):
