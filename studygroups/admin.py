@@ -29,6 +29,10 @@ class TeamMembershipInline(admin.TabularInline):
     model = TeamMembership
     raw_id_fields = ("user",)
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.active()
+
 
 class TeamAdmin(admin.ModelAdmin):
     list_display = ('name', 'page_slug', 'members')
