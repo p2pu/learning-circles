@@ -14,12 +14,13 @@ from studygroups.models import TeamInvitation
 
 class ApplicationInline(admin.TabularInline):
     model = Application
+    exclude = ['deleted_at']
 
 
 class StudyGroupAdmin(admin.ModelAdmin):
     inlines = [ApplicationInline]
-
     list_display = ['course', 'city', 'facilitator', 'start_date', 'day', 'signup_open']
+    exclude = ['deleted_at']
 
     def get_queryset(self, request):
         return super().get_queryset(request).active()
@@ -27,7 +28,8 @@ class StudyGroupAdmin(admin.ModelAdmin):
 
 class TeamMembershipInline(admin.TabularInline):
     model = TeamMembership
-    raw_id_fields = ("user",)
+    raw_id_fields = ["user"]
+    exclude = ['deleted_at']
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -35,7 +37,7 @@ class TeamMembershipInline(admin.TabularInline):
 
 
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('name', 'page_slug', 'members')
+    list_display = ['name', 'page_slug', 'members']
     inlines = [TeamMembershipInline]
 
     def members(self, obj):
@@ -43,8 +45,12 @@ class TeamAdmin(admin.ModelAdmin):
 
 
 class ApplicationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'study_group', 'email', 'mobile', 'created_at')
+    list_display = ['name', 'study_group', 'email', 'mobile', 'created_at']
     search_fields = ['name', 'email', 'mobile']
+    exclude = ['deleted_at']
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).active()
 
 
 def reminder_course_title(obj):
@@ -52,12 +58,12 @@ def reminder_course_title(obj):
 
 
 class ReminderAdmin(admin.ModelAdmin):
-    list_display = (reminder_course_title, 'email_subject', 'sent_at')
+    list_display = [reminder_course_title, 'email_subject', 'sent_at']
 
 
 class StudyGroupInline(admin.TabularInline):
     model = StudyGroup
-    fields = ('venue_name', 'city', 'start_date', 'day')
+    fields = ['venue_name', 'city', 'start_date', 'day']
     readonly_fields = fields
 
     def has_add_permission(self, request, obj=None):
@@ -88,8 +94,8 @@ class CourseAdmin(admin.ModelAdmin):
         return not course.unlisted
     listed.boolean = True
 
-    list_display = ('id', 'title', 'provider', 'on_demand', 'topics', learning_circles, created_by, email, listed, 'license')
-    exclude = ('deleted_at',)
+    list_display = ['id', 'title', 'provider', 'on_demand', 'topics', learning_circles, created_by, email, listed, 'license']
+    exclude = ['deleted_at']
     inlines = [StudyGroupInline]
     search_fields = ['title', 'provider', 'topics', 'created_by__email', 'license']
 
