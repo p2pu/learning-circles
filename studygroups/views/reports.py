@@ -39,7 +39,7 @@ class StudyGroupFinalReport(TemplateView):
         learner_survey_responses = study_group.learnersurveyresponse_set.count()
         facilitator_survey_responses = study_group.facilitatorsurveyresponse_set.count()
 
-        if learner_survey_responses == 0 and facilitator_survey_responses == 0:
+        if learner_survey_responses == 0 and study_group.application_set.active().count() == 0:
             context = {
                 'study_group': study_group,
                 'registrations': study_group.application_set.active().count(),
