@@ -195,6 +195,7 @@ def recommendation_reasons_chart(study_group):
         if r.get("recommendation_rating_reason") and r.get('recommendation_rating')
     ]
     why.sort(key=lambda i: i[1])
+    why.reverse()
     if not len(why):
         return NO_DATA
     html = "<div>"
@@ -203,6 +204,8 @@ def recommendation_reasons_chart(study_group):
         for value, rating in why[:5]:
             html += "<li class='pl-2 my-3 font-italic'>&quot;{}&quot;</li>".format(value)
         html += "</ul>"
+    if len(why[5:]):
+        html += f"<p>and {len(why[5:])} others</p>"
 
     return html + "</div>"
 
