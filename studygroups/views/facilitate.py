@@ -231,6 +231,9 @@ class CoursePage(DetailView):
     template_name = 'studygroups/course_page.html'
     context_object_name = 'course'
 
+    def get_queryset(self):
+        return super().get_queryset().active()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         usage = StudyGroup.objects.filter(course=self.object.id).count()
