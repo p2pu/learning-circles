@@ -148,38 +148,6 @@
           {% endblocktrans %}
         </div>
       </div>
-
-      <div class="grid-wrapper community-feedback">
-
-        {% for label, value in tagdorsement_counts.items %}
-        {% with width=0 %}
-        {% if course.total_reviewers %}
-          {% widthratio value course.total_reviewers 100 as width %}
-        {% endif %}
-
-        <div class="row my-3">
-          <div class="label minicaps col-12 col-md-3">
-            {{ label }}
-          </div>
-          <div class="grid-item col-12 col-md-6">
-            <div class="progress">
-              <div class="progress-bar" role="progressbar" style="width: {{width}}%" aria-valuenow="{{width}}" aria-valuemin="0" aria-valuemax="100"></div>
-            </div>
-          </div>
-          <div class="grid-item col-12 col-md-3">
-            {% blocktrans count total_reviewers=course.total_reviewers %}
-              {{ value }}/{{ total_reviewers }} reviewer
-            {% plural %}
-              {{ value }}/{{ total_reviewers }} reviewers
-            {% endblocktrans %}
-          </div>
-        </div>
-
-        {% endwith %}
-        {% endfor %}
-
-
-      </div>
     </div>
   </section>
 

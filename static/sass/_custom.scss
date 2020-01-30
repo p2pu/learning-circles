@@ -1,254 +1,299 @@
+.report-measurement.shadow {
+  box-shadow: -2px 2px 6px rgba(0,0,0,0.2);
+}
+
+.report-measurement.gray-border {
+  border: 1px solid #D3D8E6;
+}
+
+.report-measurement {
+  background-color: #ffffff;
+  padding: 1em;
+  margin-bottom: 1em;
+  height: 100%;
+  
+
+
+  .bold {
+    font-weight: bold;
+  }
+
+  .text-uppercase {
+    text-transform: uppercase;
+  }
+
+  .mb-0 {
+    margin-bottom: 0;
+  }
+
+  .small {
+    font-size: 0.8em;
+  }
+}
+
+.report-charts {
+  display: flex;
+  flex-wrap: wrap;
+
+  & > [class*='col-'] {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+
+
 .card-container {
   text-align: center;
-	max-width: 1400px;
-	margin: 0 auto;
-	margin-top: 60px;
+  max-width: 1400px;
+  margin: 0 auto;
+  margin-top: 60px;
 }
 
 .extrabold {
-	font-weight: 800;
+  font-weight: 800;
 }
 
 .lc-card-teal {
-    color: #04b0aa;
+  color: #04b0aa;
 }
 
 .lc-card {
-    @media (min-width: map-get($grid-breakpoints, "sm")){
-	    height: 380px;
-    }
-    max-width: 340px;
-	background-color: #ffffff;
-	border: 1px solid #e1e1e1;
-	position: relative;
-	margin: 0 auto 1em;
-    overflow: hidden;
-    &:hover {
-        overflow: visible;
-    }
+  @media (min-width: map-get($grid-breakpoints, "sm")){
+    height: 380px;
+  }
+  max-width: 340px;
+  background-color: #ffffff;
+  border: 1px solid #e1e1e1;
+  position: relative;
+  margin: 0 auto 1em;
+  overflow: hidden;
+  &:hover {
+    overflow: visible;
+  }
 
-    img {
-        display: block;
-        width: 100%;
-    }
+  img {
+    display: block;
+    width: 100%;
+  }
 
-    div.title-container {
-        position: absolute;
-        left: 0;
-        top: 0;
-        display:table;
-        height:143px;
-        width: 100%;
-        background-image: url("../images/lc-overlay.png"); /* Gradient overlay under the course name to make the text more readable over any kind of image*/
-        background-position: bottom center;
-    }
+  div.title-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display:table;
+    height:143px;
+    width: 100%;
+    background-image: url("../images/lc-overlay.png"); /* Gradient overlay under the course name to make the text more readable over any kind of image*/
+    background-position: bottom center;
+  }
 
-    div.title-container h1 {
-        display: table-cell;
-        vertical-align: bottom;
-        color: #ffffff;
-        font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
-        font-size: 16px;
-        font-weight: 800;
-        padding: 12px 16px
-    }
+  div.title-container h1 {
+    display: table-cell;
+    vertical-align: bottom;
+    color: #ffffff;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    padding: 12px 16px
+  }
 
-    div.body-container {
-        padding: 1em;
-	    background-color: #ffffff;
-    }
+  div.body-container {
+    padding: 1em;
+    background-color: #ffffff;
+  }
 
-    p {
-        position: relative;
-        color: #515665;
-        font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
-        font-size: 12px;
-        font-weight: 300;
-        //padding-left: 48px;
-        text-align: center;
-    }
+  p {
+    position: relative;
+    color: #515665;
+    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 12px;
+    font-weight: 300;
+    //padding-left: 48px;
+    text-align: center;
+  }
 
-    p.facilitator:before{
-        font-family: FontAwesome;
-        content: "\f007";
-        font-size:24px;
-        color: #7e7e7e;
-        position:absolute;
-      	left:18px;
-    }
+  p.facilitator:before{
+    font-family: FontAwesome;
+    content: "\f007";
+    font-size:24px;
+    color: #7e7e7e;
+    position:absolute;
+    left:18px;
+  }
 
-    p.lc-venue {
-        text-transform: uppercase;
-        color: #04b0aa;
-        font-weight: 800;
-    }
+  p.lc-venue {
+    text-transform: uppercase;
+    color: #04b0aa;
+    font-weight: 800;
+  }
 
-    p.lc-venue:before {
-    	font-family: FontAwesome;
-    	content: "\f041";
-    	font-size:24px;
-    	color: #7e7e7e;
-    	position:absolute;
-   	 	left:16px;
-    }
+  p.lc-venue:before {
+    font-family: FontAwesome;
+    content: "\f041";
+    font-size:24px;
+    color: #7e7e7e;
+    position:absolute;
+    left:16px;
+  }
 
-    p.lc-days:before {
-    	font-family: FontAwesome;
-    	content: "\f073";
-    	font-size:24px;
-    	color: #7e7e7e;
-    	position:absolute;
-   	 	left:16px;
-    }
+  p.lc-days:before {
+    font-family: FontAwesome;
+    content: "\f073";
+    font-size:24px;
+    color: #7e7e7e;
+    position:absolute;
+    left:16px;
+  }
 
-    a.link-overlay{
-	    position:absolute;
- 	    width:100%;
- 	    height:100%;
- 	    left: 0;
- 	    z-index: 1;
-    }
+  a.link-overlay{
+    position:absolute;
+    width:100%;
+    height:100%;
+    left: 0;
+    z-index: 1;
+  }
 }
 
 .thumbnail {
-	background-color: $gray-snow;
-	position: relative;
-	@include transition(background-color 0.3s linear);
-    padding: 0;
+  background-color: $gray-snow;
+  position: relative;
+  @include transition(background-color 0.3s linear);
+  padding: 0;
 
-    &:hover {
-		text-decoration: none;
-		background-color: $gray-lighter;
-	}
+  &:hover {
+    text-decoration: none;
+    background-color: $gray-lighter;
+  }
 
-    img {
-        width: 100%;
-    }
+  img {
+    width: 100%;
+  }
 
-	.thumbnail-side {
-		position: relative;
-		text-align: center;
-		background: $primary;
-		color: $white;
-		margin-bottom: 0.5em;
-		font-family: $headings-font-family;
-		font-size: 1em;
-	}
+  .thumbnail-side {
+    position: relative;
+    text-align: center;
+    background: $primary;
+    color: $white;
+    margin-bottom: 0.5em;
+    font-family: $headings-font-family;
+    font-size: 1em;
+  }
 
-	.cotent-wrap {
-		text-align: center;
-		color: grey;
-		font-style: italic;
-		font-size: 0.9em;
-		line-height: 1.5;
-		margin-top: 1em;
-	}
+  .cotent-wrap {
+    text-align: center;
+    color: grey;
+    font-style: italic;
+    font-size: 0.9em;
+    line-height: 1.5;
+    margin-top: 1em;
+  }
 }
 
 .csstransforms .thumbnail {
-	border: 0;
+  border: 0;
 }
 
 .about-teal{
-		color: #04b0aa;
+  color: #04b0aa;
 }
 
 h1.lc-about-header {
-		font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
-    	font-size: 48px;
-    	font-weight: 800;
-    	margin-bottom: 24px;
+  font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 48px;
+  font-weight: 800;
+  margin-bottom: 24px;
 }
 
 .lc-about-section p.about-body{
-		font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
-    	font-size: 15px;
-    	color: #515665;
-    	margin-bottom: 15px;
+  font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 15px;
+  color: #515665;
+  margin-bottom: 15px;
 }
 
 
 .lc-about-section a.lc-about-link:link, a.lc-about-link:visited{
-    text-decoration: underline;
-    color: #04b0aa;
-    font-weight: 800;
-    font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
-    font-size: 15px;
+  text-decoration: underline;
+  color: #04b0aa;
+  font-weight: 800;
+  font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 15px;
 }
 
 
 img.lc-about-image{
-    max-width: 100%;
+  max-width: 100%;
 }
 
 
 
 .bottom-link {
-	margin: 2em 0;
+  margin: 2em 0;
 }
 
 .social-footer {
-	a {
-		padding: 3px 10px;
-		border-radius: 2px;
-		margin-top: -18px;
-		font-size: 0.8em;
+  a {
+    padding: 3px 10px;
+    border-radius: 2px;
+    margin-top: -18px;
+    font-size: 0.8em;
 
-		&.tw {
-			background-color: #00BBF5;
-			border-color: #00BBF5;
-			&:hover {
-				background-color: darken(#00BBF5, 5%);
-			}
-		}
+    &.tw {
+      background-color: #00BBF5;
+      border-color: #00BBF5;
+      &:hover {
+        background-color: darken(#00BBF5, 5%);
+      }
+    }
 
-		&.fb {
-			background-color: #415E9B;
-			border-color: #415E9B;
-			&:hover {
-				background-color: darken(#415E9B, 5%);
-			}
-		}
-	}
+    &.fb {
+      background-color: #415E9B;
+      border-color: #415E9B;
+      &:hover {
+        background-color: darken(#415E9B, 5%);
+      }
+    }
+  }
 }
 
 .connect-icons-wrapper {
-	margin: 50px 0;
+  margin: 50px 0;
 
-	$icon-size-background: 8em;
-	.icon-circle {
-		display: block;
-		margin: 0 auto;
-		background-color: $gray;
-		color: $white;
-		border-radius: 50%;
-		height: $icon-size-background;
-		width: $icon-size-background;
-		text-align: center;
-		line-height: $icon-size-background + 1.5;
-		@include transition(all 0.3s linear);
-	}
+  $icon-size-background: 8em;
+  .icon-circle {
+    display: block;
+    margin: 0 auto;
+    background-color: $gray;
+    color: $white;
+    border-radius: 50%;
+    height: $icon-size-background;
+    width: $icon-size-background;
+    text-align: center;
+    line-height: $icon-size-background + 1.5;
+    @include transition(all 0.3s linear);
+  }
 
-	.item-title {
-		text-align: center;
-		text-transform: uppercase;
-		font-size: 0.8em;
-		margin: 1em 0;
-		line-height: 2;
-		color: $p2pu-blue;
-		@include transition(all 0.3s linear);
-	}
+  .item-title {
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 0.8em;
+    margin: 1em 0;
+    line-height: 2;
+    color: $p2pu-blue;
+    @include transition(all 0.3s linear);
+  }
 
-	&:hover{
-		.icon-circle {
-			background-color: $gray-snow;
-			color: $primary;
-		}
+  &:hover{
+    .icon-circle {
+      background-color: $gray-snow;
+      color: $primary;
+    }
 
-		.item-title {
-			color: $p2pu-orange;
-		}
-	}
+    .item-title {
+      color: $p2pu-orange;
+    }
+  }
 }
 
 .learning-circle-signup, .learning-circle-login {
@@ -331,22 +376,22 @@ img.lc-about-image{
 }
 
 .signup-success {
-    max-width: 100%;
+  max-width: 100%;
 }
 
 .close{
-	color: #FF0000;
-	opacity: 1;
-	font-size: 30px;
+  color: #FF0000;
+  opacity: 1;
+  font-size: 30px;
 }
 
 .digital-literacy {
-    button { border-radius: 0px; border: 1px; }
-    .level-0 { color: #FF3031; }
-    .level-1 { color: #E87A43; }
-    .level-2 { color: #FFCE56; }
-    .level-3 { color: #92B539; }
-    .level-4 { color: #20702B; }
+  button { border-radius: 0px; border: 1px; }
+  .level-0 { color: #FF3031; }
+  .level-1 { color: #E87A43; }
+  .level-2 { color: #FFCE56; }
+  .level-3 { color: #92B539; }
+  .level-4 { color: #20702B; }
 }
 
 .http-error-page, .logged-out-page {
@@ -369,50 +414,50 @@ img.lc-about-image{
 }
 
 .confirmation-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: $padding-md;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $padding-md;
 
-    &.saved {
-        i.material-icons {
-            font-size: 200px;
-            color: $p2pu-blue;
-        }
+  &.saved {
+    i.material-icons {
+      font-size: 200px;
+      color: $p2pu-blue;
     }
+  }
 
-    &.published {
-        i.material-icons {
-            font-size: 200px;
-            color: $p2pu-yellow;
-        }
+  &.published {
+    i.material-icons {
+      font-size: 200px;
+      color: $p2pu-yellow;
     }
+  }
 }
 
 .alert-container {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  position: absolute;
+  padding: 20px 40px;
+  top: 0;
+
+  .alert {
+    position: relative;
+    z-index: 1050;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
     display: flex;
-    width: 100%;
-    justify-content: center;
-    position: absolute;
-    padding: 20px 40px;
-    top: 0;
 
-    .alert {
-        position: relative;
-        z-index: 1050;
-        box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
-        display: flex;
-
-        .alert-content {
-            margin-right: 20px;
-        }
-
-        button.close {
-            color: white;
-            opacity: 0.7;
-        }
+    .alert-content {
+      margin-right: 20px;
     }
+
+    button.close {
+      color: white;
+      opacity: 0.7;
+    }
+  }
 }
 
 /* CSS loader */
@@ -649,10 +694,10 @@ img.lc-about-image{
 }
 
 table.inner-table {
-    width: 100%;
-    line-height: 1.4;
-    border-collapse: collapse;
-  }
+  width: 100%;
+  line-height: 1.4;
+  border-collapse: collapse;
+}
 
 table.inner-table thead tr {
   font-weight: bold;

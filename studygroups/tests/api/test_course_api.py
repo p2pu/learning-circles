@@ -37,8 +37,6 @@ class TestCourseApi(TestCase):
             'overall_rating',
             'total_ratings',
             'rating_step_counts',
-            'tagdorsements',
-            'tagdorsement_counts',
             'course_page_url',
             'course_page_path',
             'course_edit_path',

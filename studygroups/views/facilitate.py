@@ -231,16 +231,17 @@ class CoursePage(DetailView):
     template_name = 'studygroups/course_page.html'
     context_object_name = 'course'
 
+    def get_queryset(self):
+        return super().get_queryset().active()
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         usage = StudyGroup.objects.filter(course=self.object.id).count()
         rating_step_counts = json.loads(self.object.rating_step_counts)
-        tagdorsement_counts = json.loads(self.object.tagdorsement_counts)
         similar_courses = [ _course_to_json(course) for course in self.object.similar_courses()]
 
         context['usage'] = usage
         context['rating_counts_chart'] = OverallRatingBarChart(rating_step_counts).generate()
-        context['tagdorsement_counts'] = tagdorsement_counts
         context['rating_step_counts'] = rating_step_counts
         context['similar_courses'] = json.dumps(similar_courses, cls=DjangoJSONEncoder)
         context['default_discourse_text'] = self.object.discourse_topic_default_body()
@@ -452,6 +453,25 @@ class StudyGroupPublish(SingleObjectMixin, View):
 
         url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
         return http.HttpResponseRedirect(url)
+
+
+@method_decorator(user_is_group_facilitator, name="dispatch")
+class StudyGroupDidNotHappen(SingleObjectMixin, View):
+    model = StudyGroup
+    pk_url_kwarg = 'study_group_id'
+
+    def post(self, request, *args, **kwargs):
+        study_group = self.get_object()
+        study_group.did_not_happen = True
+        study_group.save()
+        url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
+        return http.HttpResponseRedirect(url)
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            'study_group': self.get_object(),
+        }
+        return render(request, 'studygroups/confirm_did_not_happen.html', context)
 
 
 @user_is_group_facilitator
@@ -674,27 +694,30 @@ class InvitationConfirm(FormView):
         return super(InvitationConfirm, self).form_valid(form)
 
 
-
-@method_decorator(user_is_group_facilitator, name='dispatch')
 class StudyGroupFacilitatorSurvey(TemplateView):
     template_name = 'studygroups/facilitator_survey.html'
 
-    def get(self, request, *args, **kwargs):
-        study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
-        study_group.facilitator_rating = request.GET.get('rating', None)
-        study_group.save()
-        response = super().get(request, *args, **kwargs)
-        return response
-
     def get_context_data(self, **kwargs):
+        study_group = get_object_or_404(StudyGroup, uuid=kwargs.get('study_group_uuid'))
+        study_group.facilitator_goal_rating = self.request.GET.get('goal_rating', None)
+        study_group.save()
+
         context = super(StudyGroupFacilitatorSurvey, self).get_context_data(**kwargs)
-        study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
-        context['study_group_uuid'] = study_group.uuid
-        context['study_group_name'] = study_group.course.title
-        context['facilitator'] = self.request.user
-        context['facilitator_name'] = self.request.user.first_name
-        context['rating'] = self.request.GET.get('rating', None)
-        context['no_studygroup'] = self.request.GET.get('nostudygroup', False)
+        context['survey_id'] = settings.TYPEFORM_FACILITATOR_SURVEY_FORM
+        context['studygroup_uuid'] = study_group.uuid
+        context['course'] = study_group.course.title
+        context['goal'] = study_group.facilitator_goal
+        context['goal_rating'] = self.request.GET.get('goal_rating', '')
+        meetings = study_group.meeting_set.active().order_by('meeting_date', 'meeting_time')
+        attendance = [m.feedback_set.first().attendance if m.feedback_set.first() else None for m in meetings]
+        if len(attendance) and attendance[0]:
+            context['attendance_1'] = attendance[0]
+        if len(attendance) > 1 and attendance[1]:
+            context['attendance_2'] = attendance[1]
+        if len(attendance) > 2 and attendance[-1]:
+            context['attendance_n'] = attendance[-1]
+
+        # TODO context['no_studygroup'] = self.request.GET.get('nostudygroup', False)
         return context
 
 

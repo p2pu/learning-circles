@@ -22,67 +22,25 @@
         <p class="my-0">{{ study_group.city }}</p>
       </div>
     </div>
-    {% if learner_survey_responses == 0 and facilitator_survey_responses == 0 %}
+    {% if learner_survey_responses == 0 and registrations == 0 %}
       <div class="row">
         <div class="col">{% trans "Not enough data available." %}</div>
       </div>
 
     {% else %}
-      <div class="row mt-4">
+      <div class="row mt-4 report-charts">
         <div class="col-12 mb-4">
             <h2>{% trans "Summary" %}</h2>
             <p class="my-0">{{ registrations }} {% trans "learners signed up" %}; {{ learner_survey_responses }} {% trans "responded to the survey" %}</p>
         </div>
 
-          {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart %}
-
+          {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=goals_chart %}
           {% include "studygroups/measurement_card.html" with title='Goals Met' description='Did participants reach their learning goals?' chart=goals_met_chart %}
-
-          {% include "studygroups/measurement_card.html" with title='Skills Learned' description='Participants expressed increased comfort…' chart=skills_learned_chart %}
-
-          {% include "studygroups/measurement_card.html" with title='Next Steps' description='What do participants want to do with the skills they gained?' chart=next_steps_chart %}
-
-          {% include "studygroups/measurement_card.html" with title='Reasons for Success' description='Participants succeeded because they…' chart=reasons_for_success_chart %}
-
-          {% include "studygroups/measurement_card.html" with title='Ideas for Next Time' description='What other topics do participants want to take a learning circle in?' chart=ideas_chart %}
-      </div>
-
-      <div class="row mt-4">
-        <div class="col-12 mb-4">
-            <h2>{% trans "Participation" %}</h2>
-        </div>
-
-          {% include "studygroups/measurement_card.html" with title='New Learners' chart=new_learners_chart %}
-
-          {% include "studygroups/measurement_card.html" with title='Completion Rate' chart=completion_rate_chart %}
-
-          {% include "studygroups/measurement_card.html" with title='Promotion and Outreach' description='How did people hear about the learning circle?' chart=promotion_chart %}
-
-          {% include "studygroups/measurement_card.html" with title='Library Usage' description='Aside from the learning circle, how often do participants visit the library?' chart=library_usage_chart %}
-      </div>
-
-      <div class="row mt-4">
-        <div class="col-12 mb-4">
-            <h2>{% trans "Course Quality" %}</h2>
-            <p class="my-0">{% trans "Course used" %}: <a href="{% url 'studygroups_course_page' course.id %}">{{ course.title }}</a></p>
-        </div>
-          {% include "studygroups/measurement_card.html" with title="Facilitator's Rating" description="How well did this course work as a learning circle?" chart=facilitator_rating_chart %}
-
-          {% include "studygroups/measurement_card.html" with title="Learners' Rating" description="How well did this course work as a learning circle?" chart=learner_rating_chart %}
-      </div>
-
-      <div class="row mt-4">
-        <div class="col-12 mb-4">
-          <h2>
-            {% blocktrans with facilitator=study_group.facilitator.first_name %}
-              {{ facilitator }}'s Reflections
-            {% endblocktrans %}
-          </h2>
-        </div>
-          {% include "studygroups/measurement_card.html" with title="Resources, activities, and experiences that were particularly rewarding" chart=additional_resources_chart %}
-
-          {% include "studygroups/measurement_card.html" with title="New skills gained as a facilitator" chart=facilitator_new_skills_chart %}
-          {% include "studygroups/measurement_card.html" with title="Tips for future facilitators" chart=facilitator_tips_chart %}
+          {% include "studygroups/measurement_card.html" with title='Confidence in course materials' description='Do participants feel more confident about what they learned?' chart=topic_confidence_chart %}
+          {% include "studygroups/measurement_card.html" with title='Next Steps' description='How do participants intend to apply what they learned?' chart=next_steps_chart %}
+          {% include "studygroups/measurement_card.html" with title='Net Promoter Score' description='Would participants recommend learning circles to a friend?' chart=recommendation_chart %}
+          {% include "studygroups/measurement_card.html" with title='Why or Why Not?' description='' chart=recommendation_reasons_chart %}
+          {% include "studygroups/measurement_card.html" with title='Attendance' chart=attendance_chart %}
       </div>
       {% endif %}
   </div>

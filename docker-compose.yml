@@ -2,36 +2,64 @@ version: '3'
 services:
   postgres:
     image: postgres:11
-    ports:
-    - "5432:5432"
+  rabbitmq:
+    image: rabbitmq:3
   email:
     image: djfarrelly/maildev
     ports:
     - 1080:80
   learning-circles:
     build: .
-    image: learning-circles
+    image: p2pu/learning-circles:local
     ports:
-    - "8000:8000"
+    - 8000:8000
     volumes:
     - .:/opt/app
     depends_on:
+    - rabbitmq
     - postgres
     - email
-    command: /opt/django-venv/bin/python manage.py runserver 0.0.0.0:8000
     environment:
+    - ADMIN_EMAIL=admin@localhost
+    - BROKER_URL=amqp://guest:guest@rabbitmq//
+    - COMMUNITY_MANAGER=user@mail.com
     - DATABASE_URL=postgres://lc:password@postgres:5432/lc
+    - DEBUG=true
+    - DEFAULT_FROM_EMAIL=notify@mail.com
+    - EMAIL_HOST=email
     - PROTOCOL=http
     - SECRET_KEY=321
-    - BROKER_URL=amqp://guest:guest@rabbitmq//
-    - EMAIL_HOST=email
-    - COMMUNITY_MANAGER=user@mail.com
-    - DEFAULT_FROM_EMAIL=notify@mail.com
-    - ADMIN_EMAIL=admin@localhost
-    - DEBUG=true
-  frontend:
-    image: p2pu/js-build:carbon-alpine
+    command: /opt/django-venv/bin/python manage.py runserver 0.0.0.0:8000
+  celery:
+    image: p2pu/learning-circles:local
+    depends_on:
+    - rabbitmq
+    - postgres
+    - email
+    user: celery
     volumes:
     - .:/opt/app
     working_dir: /opt/app
-    command: sh -c "npm i && npm run watch"
+    command: /opt/django-venv/bin/celery worker -A learnwithpeople --loglevel=INFO
+    environment:
+    - ADMIN_EMAIL=admin@localhost
+    - BROKER_URL=amqp://guest:guest@rabbitmq//
+    - COMMUNITY_MANAGER=user@mail.com
+    - DATABASE_URL=postgres://lc:password@postgres:5432/lc
+    - DEBUG=true
+    - DEFAULT_FROM_EMAIL=notify@mail.com
+    - EMAIL_HOST=email
+    - PROTOCOL=http
+    - SECRET_KEY=321
+  celery-beat:
+    image: p2pu/learning-circles:local
+    depends_on:
+    - rabbitmq
+    - postgres
+    user: celery
+    working_dir: /opt/app
+    command: /opt/django-venv/bin/celery beat -A learnwithpeople --loglevel=DEBUG --pidfile=/var/lib/celery/celerybeat.pid --schedule=/var/lib/celery/celerybeat-schedule
+    environment:
+    - DATABASE_URL=postgres://lc:password@postgres:5432/lc
+    - SECRET_KEY=321
+    - BROKER_URL=amqp://guest:guest@rabbitmq//

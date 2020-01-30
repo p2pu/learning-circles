@@ -49,6 +49,7 @@ class TestFacilitatorViews(TestCase):
         'goals': 'Social reasons',
         'support': 'thinking how to?',
         'computer_access': 'Both',
+        'consent': True,
         'use_internet': '2'
     }
 
@@ -100,7 +101,6 @@ class TestFacilitatorViews(TestCase):
         assertForbidden('/en/studygroup/1/meeting/2/edit/')
         assertForbidden('/en/studygroup/1/meeting/2/delete/')
         assertForbidden('/en/studygroup/1/meeting/2/feedback/create/')
-        assertForbidden('/en/studygroup/1/facilitator_survey/')
 
 
     def test_facilitator_access(self):
@@ -129,7 +129,6 @@ class TestFacilitatorViews(TestCase):
         assertStatus('/en/studygroup/1/meeting/2/edit/', 404)
         assertStatus('/en/studygroup/1/meeting/2/delete/', 404)
         assertStatus('/en/studygroup/1/meeting/2/feedback/create/', 404)
-        assertAllowed('/en/studygroup/1/facilitator_survey/')
 
 
     def test_create_study_group(self):
@@ -685,16 +684,16 @@ class TestFacilitatorViews(TestCase):
         sg.save()
         c = Client()
         c.login(username='bowie', password='password')
-        feedback_url = '/en/studygroup/{}/facilitator_survey/?rating=5'.format(sg.pk)
+        feedback_url = '/en/studygroup/{}/facilitator_survey/?goal_rating=5'.format(sg.uuid)
         response = c.get(feedback_url)
 
         sg.refresh_from_db()
-        self.assertEqual(sg.facilitator_rating, 5)
+        self.assertEqual(sg.facilitator_goal_rating, 5)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context_data['study_group_uuid'], sg.uuid)
-        self.assertEqual(response.context_data['study_group_name'], course.title)
-        self.assertEqual(response.context_data['facilitator'], facilitator)
-        self.assertEqual(response.context_data['facilitator_name'], facilitator.first_name)
+        self.assertEqual(response.context_data['study_group_uuid'], str(sg.uuid))
+        self.assertEqual(response.context_data['course'], course.title)
+        self.assertEqual(response.context_data['goal'], sg.facilitator_goal)
+        self.assertEqual(response.context_data['goal_rating'], str(sg.facilitator_goal_rating))
 
 
     def test_facilitator_active_learning_circles(self):
@@ -740,13 +739,11 @@ class TestFacilitatorViews(TestCase):
         self.assertEqual(response.status_code, 200)
 
         expected_create_studygroup_url = reverse('studygroups_facilitator_studygroup_create') + "?course_id={}".format(course.id)
-        expected_tagdorsement_counts = json.loads(course.tagdorsement_counts)
         expected_rating_step_counts = json.loads(course.rating_step_counts)
         expected_generate_discourse_topic_url = reverse('studygroups_generate_course_discourse_topic', args=(course.id,))
 
         self.assertEqual(response.context_data['usage'], 1)
         self.assertIsNotNone(response.context_data['rating_counts_chart'])
-        self.assertEqual(response.context_data['tagdorsement_counts'], expected_tagdorsement_counts)
         self.assertEqual(response.context_data['rating_step_counts'], expected_rating_step_counts)
         self.assertEqual(len(json.loads(response.context_data['similar_courses'])), 3)
         self.assertIn(expected_create_studygroup_url, str(response.content))

@@ -1,0 +1,20 @@
+[
+{
+    "fields": {
+      "first_name": "Facilitator1",
+      "last_name": "Lastname1",
+      "username": "facilitator",
+      "password": "facilitator123",
+      "email": "facilitator@example.net"
+   },
+   "model": "auth.user",
+   "pk": 1
+},
+{
+    "fields": {
+      "user": 1
+   },
+   "model": "studygroups.profile",
+   "pk": 1
+}
+]

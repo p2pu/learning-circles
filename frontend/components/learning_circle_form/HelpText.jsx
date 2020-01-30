@@ -64,6 +64,7 @@ export const Step4 = () => (
     <div className='content'>
       <ul>
         <li>In the welcome message, include something about yourself, why you’re facilitating this learning circle, or anything else you want people to know when they sign up.</li>
+        <li>The &quot;extra question&quot; field is optional. Use it if there is one other question you want to ask participants. If you have a number of additional questions, we recommend you send those to learners in a separate email through the dashboard, or reach out to us about ways to streamline the process.</li>
         <li>Make your learning circle stand out by uploading a picture or a .gif. It could be related to the location, subject matter, or anything else you want to identify your learning circle with!</li>
         <li>This is an example of how your custom content will be used on the sign up form: <br />
           <img src='/static/images/signup-form-screenshot.png' alt='Learning circle sign up form'/>
