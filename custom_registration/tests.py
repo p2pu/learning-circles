@@ -80,20 +80,20 @@ class TestCustomRegistrationViews(TestCase):
 
     # Test /accounts/password_reset/ for correct handling of case
     def test_password_reset_submit(self):
-        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
+        user = User.objects.create_user('bob123', 'boB@example.net', 'password')
         c = Client()
         resp = c.post('/en/accounts/password_reset/', {
             'email': 'bob@example.net'
         })
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].to[0], 'bob@example.net')
+        self.assertEqual(mail.outbox[0].to[0], 'boB@example.net')
 
         mail.outbox = []
         resp = c.post('/en/accounts/password_reset/', {
             'email': 'BOB@example.net'
         })
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].to[0], 'BOB@example.net')
+        self.assertEqual(mail.outbox[0].to[0], 'boB@example.net')
 
 
     # Test /reset/uuidb64/token/ to verify url and test automatic login
