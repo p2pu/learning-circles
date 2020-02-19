@@ -28,7 +28,7 @@
     "@babel/preset-react": "^7.0.0",
     "@typeform/embed": "^0.5.12",
     "aos": "^3.0.0-beta.6",
-    "axios": "^0.17.1",
+    "axios": "^0.18.1",
     "babel-loader": "^8.0.6",
     "babel-polyfill": "^6.26.0",
     "css-loader": "^0.26.4",
@@ -40,7 +40,7 @@
     "moment": "^2.18.1",
     "node-sass": "^4.9.3",
     "p2pu-input-fields": "0.5.24",
-    "p2pu-search-cards": "^0.14.1",
+    "p2pu-search-cards": "^0.14.18",
     "p2pu-theme": "^1.1.2",
     "places.js": "^1.4.18",
     "promise-polyfill": "^6.0.2",
@@ -67,7 +67,7 @@
   },
   "devDependencies": {
     "uglifyjs-webpack-plugin": "^1.2.5",
-    "webpack-bundle-analyzer": "^2.13.1"
+    "webpack-bundle-analyzer": "^3.3.2"
   },
   "babel": {
     "presets": [

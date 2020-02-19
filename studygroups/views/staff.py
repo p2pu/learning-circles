@@ -194,6 +194,7 @@ class ExportStudyGroupsView(ListView):
             'facilitator survey completed',
             'learner survey',
             'learner survey responses',
+            'did not happen',
         ]
         writer = csv.writer(response)
         writer.writerow(field_names)
@@ -216,25 +217,29 @@ class ExportStudyGroupsView(ListView):
             ]
             if sg.meeting_set.active().last():
                 data += [sg.meeting_set.active().order_by('meeting_date', 'meeting_time').last().meeting_date]
+            elif sg.deleted_at:
+                data += [sg.start_date]
             else:
                 data += ['']
 
             if sg.meeting_set.active().first():
                 data += [sg.meeting_set.active().order_by('meeting_date', 'meeting_time').first().meeting_date]
+            elif sg.deleted_at:
+                data += [sg.end_date]
             else:
                 data += ['']
 
             data += [sg.application_set.count()]
             # team
-            if hasattr(sg.facilitator, 'teammembership'):
-                data += [sg.facilitator.teammembership.team.name]
+            if sg.facilitator.teammembership_set.active().count():
+                data += [sg.facilitator.teammembership_set.active().first().team.name]
             else:
                 data += ['']
 
             base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
             facilitator_survey =  '{}{}'.format(
                 base_url,
-                reverse('studygroups_facilitator_survey', args=(sg.pk,))
+                reverse('studygroups_facilitator_survey', args=(sg.uuid,))
             )
             data += [facilitator_survey]
             data += ['yes' if sg.facilitatorsurveyresponse_set.count() else 'no']
@@ -244,6 +249,7 @@ class ExportStudyGroupsView(ListView):
             )
             data += [learner_survey]
             data += [sg.learnersurveyresponse_set.count()]
+            data += [sg.did_not_happen]
 
             writer.writerow(data)
         return response

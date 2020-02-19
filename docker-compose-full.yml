@@ -12,7 +12,7 @@ services:
     build: .
     image: p2pu/learning-circles:local
     ports:
-    - "8000:80"
+    - 8000:8000
     volumes:
     - .:/opt/app
     depends_on:
@@ -29,6 +29,7 @@ services:
     - EMAIL_HOST=email
     - PROTOCOL=http
     - SECRET_KEY=321
+    command: /opt/django-venv/bin/python manage.py runserver 0.0.0.0:8000
   celery:
     image: p2pu/learning-circles:local
     depends_on:

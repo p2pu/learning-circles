@@ -1,5 +1,6 @@
 # coding=utf-8
 from django.db import models
+from django.conf import settings
 from studygroups.models import StudyGroup
 from studygroups.models import Application
 
@@ -7,18 +8,32 @@ import json
 
 MAX_STAR_RATING = 5
 
-
-class FacilitatorSurveyResponse(models.Model):
+class TypeformSurveyResponse(models.Model):
     typeform_key = models.CharField(max_length=64, unique=True) #Called token in the JSON response
-    study_group = models.ForeignKey(StudyGroup, blank=True, null=True)
+    form_id = models.CharField(max_length=12)
     survey = models.TextField()
     response = models.TextField() #This will be a JSON value
     responded_at = models.DateTimeField()
 
+    class Meta:
+        abstract = True
+
     def get_response_field(self, question_id):
         response = json.loads(self.response)
-        answers = response['answers']
+        answers = response.get('answers', [])
         return next((answer for answer in answers if answer["field"]["id"] == question_id), None)
+
+    def get_value_by_ref(self, ref):
+        response = json.loads(self.response)
+        answers = response.get('answers', [])
+        answer = next((answer for answer in answers if answer["field"]["ref"] == ref), None)
+        if not answer:
+            return None
+        type_ = answer.get('type')
+        value = answer.get(type_)
+        if type_ == 'choice':
+            value = value.get('label')
+        return value
 
     def get_survey_field(self, field_id):
         survey = json.loads(self.survey)
@@ -26,24 +41,13 @@ class FacilitatorSurveyResponse(models.Model):
         return next((field for field in survey_fields if field["id"] == field_id), None)
 
 
+class FacilitatorSurveyResponse(TypeformSurveyResponse):
+    study_group = models.ForeignKey(StudyGroup, blank=True, null=True)
 
-class LearnerSurveyResponse(models.Model):
-    typeform_key = models.CharField(max_length=64, unique=True) #Called token in the JSON response
+
+class LearnerSurveyResponse(TypeformSurveyResponse):
     study_group = models.ForeignKey(StudyGroup, blank=True, null=True)
     learner = models.ForeignKey(Application, blank=True, null=True)
-    survey = models.TextField()
-    response = models.TextField() #This will be a JSON value
-    responded_at = models.DateTimeField()
-
-    def get_response_field(self, question_id):
-        response = json.loads(self.response)
-        answers = response['answers']
-        return next((answer for answer in answers if answer["field"]["id"] == question_id), None)
-
-    def get_survey_field(self, field_id):
-        survey = json.loads(self.survey)
-        survey_fields = survey['fields']
-        return next((field for field in survey_fields if field["id"] == field_id), None)
 
 
 def find_field(field_id, typeform_survey):
@@ -115,7 +119,7 @@ def get_all_results(query_set):
     fields = {} # dict of all fields
     for response in query_set:
         data = normalize_data(response)
-        # update headins
+        # update headings
         for field_id, value in data.items():
             fields[field_id] = value.get('field_title')
 
@@ -132,3 +136,159 @@ def get_all_results(query_set):
         'data': data
     }
 
+
+def _old_learner_survey_summary(response):
+    data = {
+        "learned_extra": None,
+        "confidence": None,
+        "recommendation_rating": None,
+        "recommendation_rating_reason": None,
+        "course_rating_reason": None,
+    }
+
+    # goal = signup goal OR survey goal OR None
+    if response.learner and response.learner.get_goal():
+        data['goal'] = response.learner.get_goal()
+    elif response.get_value_by_ref('1929769b-dc20-4cd6-a849-c07ddd780456'):
+        data['goal'] = response.get_value_by_ref('1929769b-dc20-4cd6-a849-c07ddd780456')
+
+    # goal_rating = application.goal_met or survey goal met x2
+    if response.learner and response.learner.goal_met:
+        data['goal_rating'] = response.learner.goal_met
+    else:
+        goal_rating = response.get_value_by_ref('06677105-57d8-4b18-99d7-02f77165cca8')
+        if not goal_rating:
+            goal_rating = response.get_value_by_ref('47b94cfa-13fe-430d-b1d0-2414beedd865')
+        if goal_rating:
+            data['goal_rating'] = goal_rating
+
+    # next_steps = survey next steps
+    data['next_steps'] = response.get_value_by_ref('3fa8908a-665d-4dfe-9d77-26a76294a253')
+
+    # course rating = survey course rating
+    data['course_rating'] = response.get_value_by_ref('d8915ce4-0116-4469-b240-80e11fb4e362')
+    return data
+
+
+def _new_learner_survey_summary(response):
+    summary = {}
+    if response.learner and response.learner.get_goal():
+        summary['goal'] = response.learner.get_goal()
+    else:
+        summary['goal'] = response.get_value_by_ref('goal')
+
+    if response.learner and response.learner.goal_met:
+        summary['goal_rating'] = response.learner.goal_met
+    else:
+        summary['goal_rating'] = response.get_value_by_ref('goal_rating_alt')
+
+    survey_fields = [
+        "goal_extra",
+        "subject_confidence",
+        "next_steps",
+        "course_rating",
+        "course_rating_reason",
+        "recommendation_rating",
+        "recommendation_rating_reason",
+    ]
+    for field in survey_fields:
+        summary[field] = response.get_value_by_ref(field)
+    return summary
+
+
+def learner_survey_summary(survey_response):
+    """
+    Take a survey response, and return the following summary:
+    {
+        "goal": "blah",
+        "goal_rating": 1,
+        "goal_extra": "nah",
+        "subject_confidence": 1,
+        "next_steps": "none",
+        "course_rating": 4,
+        "course_rating_reason": "blah",
+        "recommendation_rating": 1,
+        "recommendation_rating_reason": "blah",
+    }
+    """
+    # decide based on form ID how to get the data
+    if survey_response.form_id == settings.TYPEFORM_LEARNER_SURVEY_FORM:
+        return _new_learner_survey_summary(survey_response)
+    return _old_learner_survey_summary(survey_response)
+
+
+def _new_facilitator_survey_summary(response):
+    summary = {}
+
+    # goal - presedence: study_group.goal > response.goal_alt
+    if response.study_group and response.study_group.facilitator_goal:
+        summary['goal'] = response.study_group.facilitator_goal
+    elif response.get_value_by_ref('goal_alt'):
+        summary['goal'] = response.get_value_by_ref('goal_alt')
+        
+    # goal_rating - presedence: study_group.facilitator_goal_rating > response.goal_rating_alt > repsonse.goal_rating_alt_2
+    if response.study_group and response.study_group.facilitator_goal_rating:
+        summary['goal_rating']: response.study_group.facilitator_goal_rating
+    elif response.get_value_by_ref('goal_rating_alt'):
+        summary['goal_rating'] = response.get_value_by_ref('goal_rating_alt')
+    else:
+        summary['goal_rating'] = response.get_value_by_ref('goal_rating_alt_2')
+
+    survey_fields = [
+        "surprise",
+        "stories",
+        "course_rating",
+        "course_rating_reason",
+        "recommendation_rating",
+        "recommendation_rating_reason",
+    ]
+    for field in survey_fields:
+        summary[field] = response.get_value_by_ref(field)
+    return summary
+
+
+def _old_facilitator_survey_summary(response):
+    summary = {}
+
+    # course_rating
+    # TODO rework this logic
+    # 1. Get rating + max rating
+    # 1. if max rating is different, scale answer
+    # 1. if rating is > max rating and quesion is missing, discard
+
+    # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
+    rating_question = response.get_survey_field("Zm9XlzKGKC66")
+    rating_answer = response.get_response_field("Zm9XlzKGKC66")
+    if rating_answer and 'number' in rating_answer:
+        facilitator_rating = rating_answer['number']
+        if rating_question and 'properties' in rating_question:
+            facilitator_steps = rating_question['properties']['steps']
+            # Normalize the rating if it doesn't match MAX_STAR_RATING
+            if facilitator_steps != MAX_STAR_RATING:
+                facilitator_rating = round(facilitator_rating/facilitator_steps * MAX_STAR_RATING)
+            summary['course_rating'] = facilitator_rating
+        elif facilitator_rating > MAX_STAR_RATING:
+            # if we don't know how many steps the rating has and it exceeds MAX_STAR_RATING
+            # ignore this rating
+            pass
+        else:
+            summary['course_rating'] = facilitator_rating
+    return summary
+
+
+def facilitator_survey_summary(survey_response):
+    """
+    {
+        "goal": "",
+        "goal_rating": 1,
+        "surprise": "",
+        "stories": "",
+        "course_rating": 2,
+        "course_rating_reason": "",
+        "recommendation_score": 4,
+        "recommendation_reason": "",
+    }
+    """
+    if survey_response.form_id == settings.TYPEFORM_FACILITATOR_SURVEY_FORM:
+        return _new_facilitator_survey_summary(survey_response)
+    return _old_facilitator_survey_summary(survey_response)

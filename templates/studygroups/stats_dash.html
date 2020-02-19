@@ -111,7 +111,7 @@
                   {% for item in low_rated_courses %}
                     {% with course=item.0 rating=item.1 %}
                     <tr>
-                      <td><a href="{{course.link}}">{{ course.title }}</a></td>
+                      <td><a href="{% url 'studygroups_course_page' course.id %}">{{ course.title }}</a></td>
                       <td>{{ rating }}</td>
                     </tr>
                     {% endwith %}
@@ -130,7 +130,6 @@
         <h2>{% trans "Learners" %}</h2>
       </div>
           {% include "studygroups/measurement_card.html" with title='Learners who met their goal' chart=learner_goal_reached_chart web=True %}
-          {% include "studygroups/measurement_card.html" with title='Skills improvement' description="Percentage of learners who reported improvement" chart=skills_improved_chart web=True %}
           {% include "studygroups/measurement_card.html" with title='Participants' chart=participants_over_time_chart web=True %}
           {% include "studygroups/measurement_card.html" with title='Learner survey response rate' chart=learner_response_rate_chart web=True %}
     </div>

@@ -25,13 +25,13 @@ from studygroups.views import StudyGroupPublish
 from studygroups.views import StudyGroupList
 from studygroups.views import StudyGroupLearnerSurvey
 from studygroups.views import StudyGroupFacilitatorSurvey
+from studygroups.views import StudyGroupDidNotHappen
 from studygroups.views import LeaveTeam
 from studygroups.views import MeetingList
 from studygroups.views import TeamMembershipDelete
 from studygroups.views import TeamInvitationCreate
 from studygroups.views import InvitationConfirm
 from studygroups.views import OptOutView
-from studygroups.views import CourseListView
 from studygroups.views import TeamPage
 from studygroups.views import ExportSignupsView
 from studygroups.views import ExportFacilitatorsView
@@ -70,6 +70,7 @@ urlpatterns = [
     url(r'^studygroup/(?P<study_group_id>[\d]+)/toggle_signup/$', StudyGroupToggleSignup.as_view(), name='studygroups_studygroup_toggle_signup'),
 
     url(r'^studygroup/(?P<study_group_id>[\d]+)/publish/$', StudyGroupPublish.as_view(), name='studygroups_studygroup_publish'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/did_not_happen/$', StudyGroupDidNotHappen.as_view(), name='studygroups_studygroup_did_not_happen'),
 
     url(r'^studygroup/(?P<study_group_id>[\d]+)/message/compose/$', views.message_send, name='studygroups_message_send'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/message/edit/(?P<message_id>[\d]+)/$', views.message_edit, name='studygroups_message_edit'),
@@ -77,11 +78,10 @@ urlpatterns = [
     url(r'^studygroup/(?P<study_group_id>[\d]+)/member/add/$', views.add_member, name='studygroups_add_member'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/member/(?P<pk>[0-9]+)/edit/$', ApplicationUpdate.as_view(), name='studygroups_application_edit'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/member/(?P<pk>[0-9]+)/delete/$', ApplicationDelete.as_view(), name='studygroups_application_delete'),
-    url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/feedback/$', StudyGroupLearnerSurvey.as_view()), #TODO remove after Aug 2018
+
     url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/survey/$', StudyGroupLearnerSurvey.as_view(), name='studygroups_learner_survey'),
     url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/survey/done/$', TemplateView.as_view(template_name='studygroups/learner_survey_done.html'), name='studygroups_learnear_survey_done'),
-    url(r'^studygroup/(?P<study_group_id>[\w-]+)/facilitator_feedback/$', StudyGroupFacilitatorSurvey.as_view()), #TODO remove after Aug 2018
-    url(r'^studygroup/(?P<study_group_id>[\w-]+)/facilitator_survey/$', StudyGroupFacilitatorSurvey.as_view(), name='studygroups_facilitator_survey'),
+    url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/facilitator_survey/$', StudyGroupFacilitatorSurvey.as_view(), name='studygroups_facilitator_survey'),
     url(r'^facilitator_survey/$', TemplateView.as_view(template_name='studygroups/anonymous_facilitator_survey.html'), name='anonymous_facilitator_survey'),
     url(r'^facilitator_survey/done/$', TemplateView.as_view(template_name='studygroups/facilitator_survey_done.html'), name='studygroups_facilitator_survey_done'),
 

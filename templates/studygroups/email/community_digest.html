@@ -201,14 +201,36 @@
 <div class="report-section">
   <h2>
     <span class="section-header">
-      {% blocktrans count new_learners_count=new_learners_count %}
-        {{ new_learners_count }} learner signed up for a learning circle
+      {% blocktrans count number=new_applications|length %}
+        {{ number }} learner signed up for a learning circle
       {% plural %}
-        {{ new_learners_count }} learners signed up for a learning circle
+        {{ number }} learners signed up for a learning circle
       {% endblocktrans %}
     </span>
   </h2>
-  {% include "studygroups/measurement_card.html" with title='Learner Goals' description='Why did people sign up?' chart=learner_goals_chart fullwidth=web%}
+
+  {% if new_applications|length > 0 %}
+    {% trans 'Learner Goals' %}
+    <table class="inner-table">
+      <thead>
+        <tr>
+          <td>{% trans "Course" %}</td>
+          <td>{% trans "Goal for signing up?" %}</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% for signup in new_applications %}
+          <tr>
+            <td>{{ signup.study_group.course.title | title }}</td>
+            {% with answers=signup.get_signup_questions %}
+              <td>{{ answers.goals }}</td>
+            {% endwith %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
 </div>
 
 <div class="report-section">

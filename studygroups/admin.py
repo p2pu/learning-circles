@@ -2,44 +2,69 @@ from django.contrib import admin
 
 # Register your models here.
 from studygroups.models import Course
-from studygroups.models import StudyGroup 
-from studygroups.models import Meeting 
-from studygroups.models import Application 
-from studygroups.models import Reminder 
+from studygroups.models import StudyGroup
+from studygroups.models import Meeting
+from studygroups.models import Application
+from studygroups.models import Reminder
 from studygroups.models import Profile
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 
+
 class ApplicationInline(admin.TabularInline):
     model = Application
+    exclude = ['deleted_at']
+
 
 class StudyGroupAdmin(admin.ModelAdmin):
-    inlines = [ ApplicationInline ]
-
+    inlines = [ApplicationInline]
     list_display = ['course', 'city', 'facilitator', 'start_date', 'day', 'signup_open']
+    exclude = ['deleted_at']
+    search_fields = ['course__title', 'uuid', 'city', 'facilitator__first_name']
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).active()
+
 
 class TeamMembershipInline(admin.TabularInline):
     model = TeamMembership
-    raw_id_fields = ("user",)
+    raw_id_fields = ["user"]
+    exclude = ['deleted_at']
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.active()
+
 
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('name', 'page_slug')
-    inlines = [ TeamMembershipInline ]
+    list_display = ['name', 'page_slug', 'members']
+    inlines = [TeamMembershipInline]
+
+    def members(self, obj):
+        return obj.teammembership_set.active().count()
+
 
 class ApplicationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'study_group', 'email', 'mobile', 'created_at')
+    list_display = ['name', 'study_group', 'email', 'mobile', 'created_at']
+    search_fields = ['name', 'email', 'mobile']
+    exclude = ['deleted_at']
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).active()
+
 
 def reminder_course_title(obj):
     return obj.study_group.course.title
 
+
 class ReminderAdmin(admin.ModelAdmin):
-    list_display = (reminder_course_title, 'email_subject', 'sent_at')
+    list_display = [reminder_course_title, 'email_subject', 'sent_at']
 
 
 class StudyGroupInline(admin.TabularInline):
     model = StudyGroup
-    fields = ('venue_name', 'city', 'start_date', 'day')
+    fields = ['venue_name', 'city', 'start_date', 'day']
     readonly_fields = fields
 
     def has_add_permission(self, request, obj=None):
@@ -48,10 +73,11 @@ class StudyGroupInline(admin.TabularInline):
     def has_delete_permission(self, request, obj=None):
         return False
 
+
 class CourseAdmin(admin.ModelAdmin):
-   
+
     def get_queryset(self, request):
-        qs = super(CourseAdmin, self).get_queryset(request)
+        qs = super().get_queryset(request)
         return qs.active()
 
     def created_by(course):
@@ -69,8 +95,8 @@ class CourseAdmin(admin.ModelAdmin):
         return not course.unlisted
     listed.boolean = True
 
-    list_display = ('id', 'title', 'provider', 'on_demand', 'topics', learning_circles, created_by, email, listed, 'license')
-    exclude = ('deleted_at',)
+    list_display = ['id', 'title', 'provider', 'on_demand', 'topics', learning_circles, created_by, email, listed, 'license']
+    exclude = ['deleted_at']
     inlines = [StudyGroupInline]
     search_fields = ['title', 'provider', 'topics', 'created_by__email', 'license']
 
@@ -81,7 +107,6 @@ class ProfileAdmin(admin.ModelAdmin):
     list_display = [user, 'mailing_list_signup', 'communication_opt_in']
     search_fields = ['user__email']
 
- 
 
 admin.site.register(Course, CourseAdmin)
 admin.site.register(StudyGroup, StudyGroupAdmin)

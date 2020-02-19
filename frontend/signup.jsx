@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import MobileInput from './components/mobile-input'
 
 const element = document.getElementById('div_id_mobile');
-let label = element.querySelector('.control-label');
+let label = element.querySelector('label');
 let hint = element.querySelector('#hint_id_mobile');
 let error = element.querySelector('#error_1_id_mobile');
 let input = element.querySelector('#id_mobile');

@@ -1,4 +1,3 @@
-
 # TODOs:
 # - document which survey question each typeform id represents
 # - finish adding png condition to all the charts
@@ -28,8 +27,14 @@ from studygroups.models import get_studygroups_with_meetings
 from surveys.models import FacilitatorSurveyResponse
 from surveys.models import LearnerSurveyResponse
 from surveys.models import MAX_STAR_RATING
+from surveys.models import learner_survey_summary
+from surveys.models import facilitator_survey_summary
 
-SKILLS_LEARNED_THRESHOLD = 3
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 GOAL_MET_THRESHOLD = 4
 NO_DATA = "<p>No data</p>"
 
@@ -102,84 +107,130 @@ def percentage(total, divisor):
 
     return round((total / divisor) * 100)
 
-class LearnerGoalsChart():
-    def __init__(self, study_group, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, x_title="Learners", **kwargs)
-        self.study_group = study_group
 
-    def get_data(self):
-        data = {}
-        for choice in reversed(ApplicationForm.GOAL_CHOICES):
-            data[choice[0]] = 0
+def goals_chart(study_group):
+    # get all application goals
+    applications = study_group.application_set.active()
+    goals = [ appl.get_goal() for appl in applications if appl.get_goal() ]
+    # add all survey responses for which do do not have goals
+    application_ids = [ appl.pk for appl in applications if appl.get_goal() ]
+    survey_responses = study_group.learnersurveyresponse_set.exclude(learner__in=application_ids)
+    survey_data = map(learner_survey_summary, survey_responses)
+    goals += [ response.get("goal") for response in survey_data if response.get("goal")]
+    goals = list(set(goals))
+    if not len(goals):
+        return NO_DATA
+    html = "<div><ul class='quote-list list-unstyled'>"
+    for goal in goals[:5]:
+        html += "<li class='pl-2 my-3 font-italic'>&quot;{}&quot;</li>".format(goal)
+    html += "</ul>"
+    if len(goals[5:]):
+        html += f"<p>and {len(goals[5:])} others</p>"
+    return html + "</div>"
 
-        signup_questions = self.study_group.application_set.values_list('signup_questions', flat=True)
-        if len(signup_questions) == 0:
-            return None
 
-        # check for responses for field id UXwfFPX0On3f in typeform responses
-        # check if the email for those responses already exists in application_set
+def next_steps_chart(study_group):
+    html = "<div><ul class='quote-list list-unstyled'>"
+    chart_data = map(learner_survey_summary, study_group.learnersurveyresponse_set.all())
+    values = [ response.get("next_steps") for response in chart_data if response.get("next_steps")]
+    values = list(set(values))
+    for value in values[:5]:
+        html += "<li class='pl-2 my-3 font-italic'>&quot;{}&quot;</li>".format(value)
+    html += "</ul>"
+    if len(values[5:]):
+        html += f"<p>and {len(values[5:])} others</p>"
+    return html + "</div>"
 
-        for answer_str in signup_questions:
-            answer = json.loads(answer_str)
-            goal = answer.get('goals', None)
 
-            if goal in data:
-                data[goal] += 1
+def attendance_chart(study_group):
+    # precedence: reported in survey, recorded in weekly feedback
+    meetings = study_group.meeting_set.active().order_by('meeting_date', 'meeting_time')
+    attendance = [m.feedback_set.first().attendance if m.feedback_set.first() else None for m in meetings]
+    survey_responses = study_group.facilitatorsurveyresponse_set.all()
+    if survey_responses.count():
+        facilitator_survey_response = survey_responses.first()  #TODO there could be more than 1 reply
+        attendance_1 = facilitator_survey_response.get_value_by_ref('attendance_1_alt')
+        attendance_2 = facilitator_survey_response.get_value_by_ref('attendance_2_alt')
+        attendance_n = facilitator_survey_response.get_value_by_ref('attendance_n_alt')
+        if attendance_1 and len(attendance):
+            attendance[0] = attendance_1
+        if attendance_2 and len(attendance) > 1:
+            attendance[1] = attendance_2
+        if attendance_n and len(attendance) > 2:
+            attendance[-1] = attendance_n
+        # TODO What happens if there are less than 3 meetings?
 
-        return data
+    if not sum(filter(lambda i: i, attendance)):
+        return NO_DATA
 
-    def generate(self, **opts):
-        chart_data = self.get_data()
+    chart = pygal.Line(style=custom_style(), max_scale=10, order_min=0, y_title="Attendance", range=(0,max(filter(lambda i: i, attendance))))
+    chart.show_legend = False
+    chart.x_labels = [m.meeting_date for m in meetings]
+    chart.add('Attendance', attendance)
+    return chart.render(is_unicode=True)
 
-        if chart_data is None:
-            return NO_DATA
 
-        labels = chart_data.keys()
-        serie = chart_data.values()
+def recommendation_chart(study_group):
+    applications = study_group.application_set.active()
+    survey_responses = study_group.learnersurveyresponse_set.all()
+    survey_data = map(learner_survey_summary, survey_responses)
+    recommendations = [ response.get("recommendation_rating") for response in survey_data if response.get("recommendation_rating")]
+    if not len(recommendations):
+        return NO_DATA
+    counts = [ sum(1 for x in recommendations if x == i) for i in range(1,6) ]
+    x_title = "Rating (1: No, 3: Maybe, 5: Yes)"
+    chart = pygal.Bar(style=custom_style(), show_legend=False, max_scale=10, order_min=0, y_title="Participants", x_title=x_title)
+    chart.x_labels = map(str, range(1,6))
+    chart.add('Recommendation score', counts)
+    return chart.render(is_unicode=True)
 
-        self.chart.add('Number of learners', serie)
-        self.chart.x_labels = labels
 
-        if opts.get('output', None) == "png":
-            filename = "report-{}-learner-goals-chart.png".format(self.study_group.uuid)
-            target_path = os.path.join('/tmp', filename)
-            self.chart.height = 400
-            self.chart.render_to_png(target_path)
-            file = open(target_path, 'rb')
-            img_url = save_to_aws(file, filename)
+def recommendation_reasons_chart(study_group):
+    applications = study_group.application_set.active()
+    survey_responses = study_group.learnersurveyresponse_set.all()
+    survey_data = map(learner_survey_summary, survey_responses)
+    why = [
+        (r.get("recommendation_rating_reason"), r.get('recommendation_rating'))
+        for r in survey_data 
+        if r.get("recommendation_rating_reason") and r.get('recommendation_rating')
+    ]
+    why.sort(key=lambda i: i[1])
+    why.reverse()
+    if not len(why):
+        return NO_DATA
+    html = "<div>"
+    if why:
+        html += "<ul class='quote-list list-unstyled'>"
+        for value, rating in why[:5]:
+            html += "<li class='pl-2 my-3 font-italic'>&quot;{}&quot;</li>".format(value)
+        html += "</ul>"
+    if len(why[5:]):
+        html += f"<p>and {len(why[5:])} others</p>"
 
-            return "<img src={} alt={} width='100%'>".format(img_url, 'Learner goals chart')
-
-        return self.chart.render(is_unicode=True)
+    return html + "</div>"
 
 
 class GoalsMetChart():
-
     def __init__(self, study_group, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=10, order_min=0, x_title="Learners", **kwargs)
-        self.chart.x_labels = ["Not at all", "Not very much", "Moderately", "Very much", "Completely"]
+        x_title = "Rating (1: Not at all, 3: Somewhat, 5: Completely)"
+        self.chart = pygal.Bar(style=custom_style(), show_legend=False, max_scale=10, order_min=0, y_title="Participants", x_title=x_title, **kwargs)
+        self.chart.x_labels = map(str, range(1,6))
         self.study_group = study_group
 
     def get_data(self):
-        data = { 'Rating': [0,0,0,0,0] }
-        survey_responses = get_typeform_survey_learner_responses(self.study_group)
-
-        if len(survey_responses) < 1:
+        """ Combine data from applications and surveys """
+        rating_counts = [0]*5
+        survey_responses = self.study_group.learnersurveyresponse_set.all()
+        survey_summaries = map(learner_survey_summary, survey_responses)
+        goal_ratings = [res.get('goal_rating') for res in survey_summaries if res.get('goal_rating')]
+        applications = self.study_group.application_set.filter(goal_met__isnull=False, learnersurveyresponse__isnull=True)
+        goal_ratings += [app.goal_met for app in applications]
+        if not len(goal_ratings):
             return None
+        for rating in goal_ratings:
+            rating_counts[rating-1] += 1
 
-        # G6AXyEuG2NRQ = "When you signed up for {{hidden:course}}, you said that your primary goal was: {{hidden:goal}}. To what extent did you meet your goal?"
-        # IO9ALWvVYE3n = "To what extent did you meet your goal?"
-
-        for response in survey_responses:
-            field = get_response_field(response, "G6AXyEuG2NRQ")
-
-            if field is None:
-                field = get_response_field(response, "IO9ALWvVYE3n")
-
-            if field is not None:
-                data['Rating'][field["number"] - 1] += 1
-
-        return data
+        return { 'Rating': rating_counts }
 
     def generate(self, **opts):
         chart_data = self.get_data()
@@ -202,74 +253,23 @@ class GoalsMetChart():
         return self.chart.render(is_unicode=True)
 
 
-class SkillsLearnedChart():
-
-    def __init__(self, study_group, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend = False, max_scale=5, order_min=0, x_title="Learners (multiple selections)", **kwargs)
-        self.study_group = study_group
-
-    def get_data(self):
-        data = {
-            "Using the internet": [],
-            "Speaking in public": [],
-            "Feeling connected to my community": [],
-            "Working with others":[],
-            "Navigating online courses": [],
-            "Setting goals for myself": [],
-        }
-
-        survey_responses = get_typeform_survey_learner_responses(self.study_group)
-
-        if len(survey_responses) < 1:
-            return None
-
-        for response_str in survey_responses:
-            response = json.loads(response_str)
-            answers = response['answers']
-
-            questions = [
-                ("QH6akGDy6aHK", "Using the internet"),
-                ("itpQxFRlOsOe", "Working with others"),
-                ("g0is1ZBXECbh", "Navigating online courses"),
-                ("ycB6quFHzH85", "Setting goals for myself"),
-                ("zH8IomUmmoaH", "Speaking in public"),
-                ("tO3TFJDBmH60", "Feeling connected to my community")
-            ]
-
-            for question in questions:
-                field = next((answer for answer in answers if answer["field"]["id"] == question[0]), None)
-                if field is not None and field['number'] > SKILLS_LEARNED_THRESHOLD:
-                    data[question[1]].append(field['number'])
-
-        return data
-
-    def generate(self, **opts):
-        chart_data = self.get_data()
-
-        if chart_data is None:
-            return NO_DATA
-
-        averages = []
-        for key, value in chart_data.items():
-            total = len(value)
-            averages.append(total)
-
-        self.chart.add('Number of learners', averages)
-        self.chart.x_labels = list(chart_data)
-
-        if opts.get('output', None) == "png":
-            filename = "report-{}-skills_learned-chart.png".format(self.study_group.uuid)
-            target_path = os.path.join('/tmp', filename)
-            self.chart.height = 400
-            self.chart.render_to_png(target_path)
-            file = open(target_path, 'rb')
-            img_url = save_to_aws(file, filename)
-            return "<img src={} alt={} width='100%'>".format(img_url, 'Skills learned chart')
-
-        return self.chart.render(is_unicode=True)
+def topic_confidence_chart(study_group):
+    survey_data = map(learner_survey_summary, study_group.learnersurveyresponse_set.all())
+    ratings = [res.get('subject_confidence') for res in survey_data if res.get('subject_confidence')]
+    if not len(ratings):
+        return NO_DATA
+    counts = [0]*5
+    for rating in ratings:
+        counts[rating-1] += 1
+    x_title = "Confidence (1: No, 3: Somewhat, 5: Yes)"
+    chart = pygal.Bar(style=custom_style(), show_legend=False, max_scale=10, order_min=0, y_title="Participants", x_title=x_title)
+    chart.x_labels = map(str, range(1,6))
+    chart.add('Confidence', counts)
+    return chart.render(is_unicode=True)
 
 
 class NewLearnersChart():
+    # TODO - either remove this data or calculate from signup data
 
     def __init__(self, study_group, **kwargs):
         style = custom_style()
@@ -320,279 +320,6 @@ class NewLearnersChart():
         return self.chart.render(is_unicode=True)
 
 
-class CompletionRateChart():
-    def __init__(self, study_group, **kwargs):
-        style = custom_style()
-        style.value_font_size = 40
-        style.title_font_size = 24
-        self.chart = pygal.SolidGauge(style=style, inner_radius=0.70, show_legend = False, x_title="of participants completed the learning circle", **kwargs)
-        self.chart.value_formatter = lambda x: '{:.10g}%'.format(x)
-        self.study_group = study_group
-
-    def get_data(self):
-        data = { 'Completed': [ {'value': 0, 'max_value': 100} ]}
-        survey_responses = get_typeform_survey_learner_responses(self.study_group)
-
-        if len(survey_responses) < 1:
-            return None
-
-        completed = 0
-
-        for response_str in survey_responses:
-            field = get_response_field(response_str, "i7ps4iNBVya0")
-            # i7ps4iNBVya0 = "Which best describes you?"
-
-            if field is not None and field["choice"]["label"] == "I completed the learning circle":
-                completed += 1
-
-        value = percentage(completed, len(survey_responses))
-        data['Completed'][0]['value'] = value
-
-        return data
-
-    def generate(self, **opts):
-        chart_data = self.get_data()
-
-        if chart_data is None:
-            return NO_DATA
-
-        for key, value in chart_data.items():
-            self.chart.add(key, value)
-
-        if opts.get('output', None) == "png":
-            filename = "report-{}-completion-rate-chart.png".format(self.study_group.uuid)
-            target_path = os.path.join('/tmp', filename)
-            self.chart.height = 400
-            self.chart.render_to_png(target_path)
-            file = open(target_path, 'rb')
-            img_url = save_to_aws(file, filename)
-            return "<img src={} alt={} width='100%'>".format(img_url, 'Completion rate chart')
-
-        return self.chart.render(is_unicode=True)
-
-
-class ReasonsForSuccessChart():
-    def __init__(self, study_group, **kwargs):
-        self.study_group = study_group
-
-    def get_data(self):
-        data = {}
-        survey_responses = get_typeform_survey_learner_responses(self.study_group)
-
-        if len(survey_responses) < 1:
-            return None
-
-        for response_str in survey_responses:
-            field = get_response_field(response_str, "BBZ52adAzbGJ")
-            #BBZ52adAzbGJ = "I succeeded in the learning circle because I..."
-
-            if field is not None:
-                response = json.loads(response_str)
-                data[response['landing_id']] = field["text"]
-
-        return data
-
-    def generate(self):
-        chart_data = self.get_data()
-
-        if chart_data is None:
-            return NO_DATA
-
-        quotes = "<ul class='quote-list list-unstyled'>"
-
-        for key, value in chart_data.items():
-            quotes += "<li class='pl-2 my-3 font-italic'>\"{}\"</li>".format(value)
-
-        return quotes + "</ul>"
-
-
-class NextStepsChart():
-    def __init__(self, study_group, **kwargs):
-        self.study_group = study_group
-
-    def get_data(self):
-        data = {}
-        survey_responses = get_typeform_survey_learner_responses(self.study_group)
-
-        if len(survey_responses) < 1:
-            return None
-
-        for response_str in survey_responses:
-            field = get_response_field(response_str, "qf8iCyr2dw4G")
-            #qf8iCyr2dw4G = "What do you want to do with the skills you've developed in the learning circle?"
-
-            if field is not None:
-                response = json.loads(response_str)
-                data[response['landing_id']] = field["text"]
-
-        return data
-
-    def generate(self):
-        chart_data = self.get_data()
-
-        if chart_data is None:
-            return NO_DATA
-
-        quotes = "<ul class='quote-list list-unstyled'>"
-
-        for key, value in chart_data.items():
-            quotes += "<li class='pl-2 my-3 font-italic'>\"{}\"</li>".format(value)
-
-        return quotes + "</ul>"
-
-
-class IdeasChart():
-    def __init__(self, study_group, **kwargs):
-        self.study_group = study_group
-
-    def get_data(self):
-        data = {}
-        survey_responses = get_typeform_survey_learner_responses(self.study_group)
-
-        if len(survey_responses) < 1:
-            return None
-
-        for response_str in survey_responses:
-            field = get_response_field(response_str, "ll0ZbuEnCkiW")
-            #ll0ZbuEnCkiW = "Another topic that I'd like to take a learning circle in is"
-
-            if field is not None:
-                response = json.loads(response_str)
-                data[response['landing_id']] = field["text"]
-
-        return data
-
-    def generate(self):
-        chart_data = self.get_data()
-
-        if chart_data is None:
-            return NO_DATA
-
-        quotes = "<ul class='quote-list list-unstyled'>"
-
-        for key, value in chart_data.items():
-            quotes += "<li class='pl-2 my-3 font-italic'>\"{}\"</li>".format(value)
-
-        return quotes + "</ul>"
-
-
-class PromotionChart():
-    def __init__(self, study_group, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, x_title="Learners", **kwargs)
-        self.study_group = study_group
-
-    def get_data(self):
-        data = { 'Other': 0 }
-
-        question_field = get_question_field(self.study_group, "lYX1qfcSKARQ")
-        if question_field is not None:
-            choices = question_field['properties']['choices']
-
-            for choice in choices:
-                data[choice['label']] = 0
-
-        survey_responses = get_typeform_survey_learner_responses(self.study_group)
-
-        if len(survey_responses) < 1:
-            return None
-
-        for response_str in survey_responses:
-            field = get_response_field(response_str, "lYX1qfcSKARQ")
-
-            if field is not None:
-                selections = field['choices'].get('labels', None)
-                if selections is not None:
-                    for label in selections:
-                        if label in data:
-                            data[label] += 1
-                else:
-                    selection = field['choices'].get('other', None)
-                    if selection is not None:
-                        data['Other'] += 1
-
-        return data
-
-    def generate(self, **opts):
-        chart_data = self.get_data()
-
-        if chart_data is None:
-            return NO_DATA
-
-        serie = chart_data.values()
-        labels = chart_data.keys()
-
-        self.chart.add('Number of learners', serie)
-        self.chart.x_labels = labels
-
-        if opts.get('output', None) == "png":
-            filename = "report-{}-promotion-chart.png".format(self.study_group.uuid)
-            target_path = os.path.join('/tmp', filename)
-            self.chart.height = 400
-            self.chart.render_to_png(target_path)
-            file = open(target_path, 'rb')
-            img_url = save_to_aws(file, filename)
-            return "<img src={} alt={} width='100%'>".format(img_url, 'Promotion chart')
-
-        return self.chart.render(is_unicode=True)
-
-
-class LibraryUsageChart():
-    def __init__(self, study_group, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, x_title="Learners", **kwargs)
-        self.study_group = study_group
-
-    def get_data(self):
-        data = {}
-
-        survey_responses = get_typeform_survey_learner_responses(self.study_group)
-        if len(survey_responses) < 1:
-            return None
-
-        question_field = get_question_field(self.study_group, "LQGB3S5v0rUk")
-        # LQGB3S5v0rUk = "Aside from the learning circle, how often do you visit the library?"
-        if question_field is not None:
-            choices = question_field['properties']['choices']
-
-            for choice in choices:
-                data[choice['label']] = 0
-
-        for response_str in survey_responses:
-            field = get_response_field(response_str, "LQGB3S5v0rUk")
-
-            if field is not None:
-                label = field['choice'].get('label', None)
-                if label in data:
-                    data[label] += 1
-
-        return data
-
-    def generate(self, **opts):
-        chart_data = self.get_data()
-
-        if chart_data is None:
-            return NO_DATA
-
-        serie = chart_data.values()
-        labels = chart_data.keys()
-
-        if sum(serie) == 0:
-            return None
-
-        self.chart.add('Number of learners', serie)
-        self.chart.x_labels = labels
-
-        if opts.get('output', None) == "png":
-            filename = "report-{}-library-usage-chart.png".format(self.study_group.uuid)
-            target_path = os.path.join('/tmp', filename)
-            self.chart.height = 400
-            self.chart.render_to_png(target_path)
-            file = open(target_path, 'rb')
-            img_url = save_to_aws(file, filename)
-            return "<img src={} alt={} width='100%'>".format(img_url, 'Library usage chart')
-
-        return self.chart.render(is_unicode=True)
-
-
 class LearnerRatingChart():
     def __init__(self, study_group, **kwargs):
         self.study_group = study_group
@@ -638,151 +365,6 @@ class LearnerRatingChart():
             stars += "<i class='far fa-star'></i>"
 
         return stars + "</div>"
-
-
-class FacilitatorRatingChart():
-    def __init__(self, study_group, **kwargs):
-        self.study_group = study_group
-
-    def get_data(self):
-        data = { 'average_rating': 0, 'maximum': 0 }
-        response = self.study_group.facilitatorsurveyresponse_set.first()
-
-        if response is None:
-            return None
-
-        survey_questions = response.survey
-        survey_responses = get_typeform_survey_facilitator_responses(self.study_group)
-
-        ratings = []
-
-        for response_str in survey_responses:
-            field = get_response_field(response_str, "Zm9XlzKGKC66")
-            # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
-            if field is not None:
-                ratings.append(field['number'])
-
-        average_rating = average(sum(ratings), len(ratings))
-
-        survey_fields = json.loads(survey_questions)['fields']
-        selected_field = next((field for field in survey_fields if field["id"] == "Zm9XlzKGKC66"), None)
-        steps = selected_field['properties']['steps']
-
-        # Make sure rating is out of 5
-        if steps > MAX_STAR_RATING:
-            multiplier = MAX_STAR_RATING / steps
-            steps = MAX_STAR_RATING
-            average_rating = average_rating * multiplier
-
-        data = {
-            'average_rating': round(average_rating),
-            'maximum': steps
-        }
-
-        return data
-
-    def generate(self):
-        chart_data = self.get_data()
-
-        if chart_data is None:
-            return NO_DATA
-
-        remainder = chart_data['maximum'] - chart_data['average_rating']
-
-        stars = "<div class='course-rating row justify-content-around text-warning'>"
-
-        for x in range(0, chart_data['average_rating']):
-            stars += "<i class='fas fa-star'></i>"
-
-        for x in range(0, remainder):
-            stars += "<i class='far fa-star'></i>"
-
-        return stars + "</div>"
-
-
-class AdditionalResourcesChart():
-    def __init__(self, study_group, **kwargs):
-        self.study_group = study_group
-
-    def get_data(self):
-        data = {}
-        response = self.study_group.facilitatorsurveyresponse_set.first()
-
-        if response is None:
-            return None
-
-        response_str = response.response
-        field = get_response_field(response_str, "jB4WMEz4S6gt")
-
-        if field is not None:
-            data['text'] = field['text']
-
-        return data
-
-    def generate(self):
-        chart_data = self.get_data()
-
-        if chart_data is None:
-            return NO_DATA
-
-        return "<ul class='quote-list list-unstyled'><li class='pl-2 my-3 font-italic'>\"{}\"</li></ul>".format(chart_data.get('text'))
-
-
-class FacilitatorNewSkillsChart():
-
-    def __init__(self, study_group, **kwargs):
-        self.study_group = study_group
-
-    def get_data(self):
-        data = {}
-        response = self.study_group.facilitatorsurveyresponse_set.first()
-
-        if response is None:
-            return None
-
-        response_str = response.response
-        field = get_response_field(response_str, "TYrhfYZxLH2p")
-
-        if field is not None:
-            data['text'] = field['text']
-
-        return data
-
-    def generate(self):
-        chart_data = self.get_data()
-
-        if chart_data is None:
-            return NO_DATA
-
-        return "<ul class='quote-list list-unstyled'><li class='pl-2 my-3 font-italic'>\"{}\"</li></ul>".format(chart_data.get('text'))
-
-
-class FacilitatorTipsChart():
-    def __init__(self, study_group, **kwargs):
-        self.study_group = study_group
-
-    def get_data(self):
-        data = {}
-        response = self.study_group.facilitatorsurveyresponse_set.first()
-
-        if response is None:
-            return None
-
-        response_str = response.response
-        field = get_response_field(response_str, "dP7B4zDIZRcF")
-
-        if field is not None:
-            data['text'] = field['text']
-
-        return data
-
-    def generate(self):
-        chart_data = self.get_data()
-
-        if chart_data is None:
-            return NO_DATA
-
-        return "<ul class='quote-list list-unstyled'><li class='pl-2 my-3 font-italic'>\"{}\"</li></ul>".format(chart_data.get('text'))
 
 
 class LearningCircleMeetingsChart():
@@ -888,49 +470,6 @@ class LearningCircleCountriesChart():
         return self.chart.render(is_unicode=True)
 
 
-class NewLearnerGoalsChart():
-
-    def __init__(self, report_date, applications, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), height=400, show_legend=False, order_min=0, max_scale=10, x_title="Learners", **kwargs)
-        self.applications = applications
-        self.report_date = report_date
-
-    def get_data(self):
-        data = {}
-        for choice in reversed(ApplicationForm.GOAL_CHOICES):
-            data[choice[0]] = 0
-
-        signup_questions = self.applications.values_list('signup_questions', flat=True)
-
-        for answer_str in signup_questions:
-            answer = json.loads(answer_str)
-            goal = answer.get('goals', None)
-
-            if goal in data:
-                data[goal] += 1
-
-        return data
-
-    def generate(self, **opts):
-        chart_data = self.get_data()
-        labels = chart_data.keys()
-        serie = chart_data.values()
-
-        self.chart.add('Number of learners', serie)
-        self.chart.x_labels = labels
-
-        if opts.get('output', None) == "png":
-            filename = "community-digest-{}-learner-goals-chart.png".format(self.report_date.isoformat())
-            target_path = os.path.join('/tmp', filename)
-            self.chart.height = 400
-            self.chart.render_to_png(target_path)
-            file = open(target_path, 'rb')
-            img_url = save_to_aws(file, filename)
-            return "<img src={} alt={} width='100%'>".format(img_url, 'Learner Goals')
-
-        return self.chart.render(is_unicode=True)
-
-
 class TopTopicsChart():
 
     def __init__(self, report_date, study_group_ids, **kwargs):
@@ -981,55 +520,6 @@ class TopTopicsChart():
 
         return self.chart.render(is_unicode=True)
 
-
-class NewLearnersGoalsChart():
-    def __init__(self, start_time, end_time, applications, team=None, **kwargs):
-        self.chart = pygal.HorizontalBar(style=custom_style(), show_legend=False, max_scale=5, order_min=0, x_title="Learners", **kwargs)
-        self.start_time = start_time
-        self.end_time = end_time
-        self.applications = applications
-        self.team = team
-
-    def get_data(self):
-        data = {}
-        for choice in reversed(ApplicationForm.GOAL_CHOICES):
-            data[choice[0]] = 0
-
-        if self.applications.count() == 0:
-            return None
-
-        for application in self.applications:
-            answer = json.loads(application.signup_questions)
-            goal = answer.get('goals', None)
-
-            if goal in data:
-                data[goal] += 1
-
-        return data
-
-    def generate(self, **opts):
-        chart_data = self.get_data()
-        if chart_data is None:
-            return NO_DATA
-
-        labels = chart_data.keys()
-        serie = chart_data.values()
-
-        self.chart.add('Number of learners', serie)
-        self.chart.x_labels = labels
-
-        if opts.get('output', None) == "png":
-            team = self.team.id if self.team else 'staff'
-            filename = "weekly-update-{}-{}-learner-goals-chart.png".format(self.end_time.date().isoformat(), team)
-            target_path = os.path.join('/tmp', filename)
-            self.chart.height = 400
-            self.chart.render_to_png(target_path)
-            file = open(target_path, 'rb')
-            img_url = save_to_aws(file, filename)
-
-            return "<img src={} alt={} width='100%'>".format(img_url, 'Learner goals chart')
-
-        return self.chart.render(is_unicode=True)
 
 class TotalLearnersChart():
 
@@ -1094,8 +584,15 @@ class FacilitatorRatingOverTimeChart():
         window_end = window_start + relativedelta(months=+1)
 
         while window_start <= self.end_time:
-
-            ratings = self.study_groups.filter(end_date__gte=window_start, end_date__lt=window_end).values_list('facilitator_rating', flat=True)
+            lcs = self.study_groups.filter(end_date__gte=window_start, end_date__lt=window_end)
+            # get rating, presedence: goal_rating > faciltator_rating > survey goal rating
+            ratings = list(lcs.filter(facilitator_goal_rating__isnull=False).values_list('facilitator_goal_rating', flat=True))
+            ratings += list(lcs.filter(facilitator_goal_rating__isnull=True, facilitator_rating__isnull=False).values_list('facilitator_rating', flat=True))
+            #ratings = [s.facilitator_goal_rating if s.facilitator_goal_rating else s.facilitator_rating for s in lcs]
+            surveys = FacilitatorSurveyResponse.objects.filter(study_group__in=lcs.filter(facilitator_goal_rating__isnull=True, facilitator_rating__isnull=True))
+            surveys = map(facilitator_survey_summary, surveys)
+            ratings += [r.get('goal_rating') for r in surveys]
+            ratings += [None]*(lcs.count()-len(ratings))  # pad ratings with None's as all other learning circles are considered unrated
             ratings_counter = Counter(ratings)
 
             for rating, collection in data.items():
@@ -1105,7 +602,6 @@ class FacilitatorRatingOverTimeChart():
 
             window_start = window_end
             window_end = window_start + relativedelta(months=+1)
-
 
         return { "data": data, "dates": dates }
 
@@ -1157,16 +653,10 @@ class FacilitatorCourseApprovalChart():
         window_end = window_start + relativedelta(months=+1)
 
         while window_start <= self.end_time:
-            survey_responses = FacilitatorSurveyResponse.objects.filter(study_group__in=self.study_groups, responded_at__gte=window_start, responded_at__lt=window_end).values_list('response', flat=True)
+            survey_responses = FacilitatorSurveyResponse.objects.filter(study_group__in=self.study_groups, responded_at__gte=window_start, responded_at__lt=window_end)
 
-            ratings = []
-
-            for response_str in survey_responses:
-                field = get_response_field(response_str, "Zm9XlzKGKC66")
-                # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
-                if field is not None:
-                    ratings.append(field['number'])
-
+            ratings = map(facilitator_survey_summary, survey_responses)
+            ratings = [r.get('course_rating') for r in ratings if r.get('course_rating')]
 
             ratings_counter = Counter(ratings)
 
@@ -1227,17 +717,10 @@ class LearnerCourseApprovalChart():
         window_end = window_start + relativedelta(months=+1)
 
         while window_start <= self.end_time:
-            survey_responses = LearnerSurveyResponse.objects.filter(study_group__in=self.study_groups, responded_at__gte=window_start, responded_at__lt=window_end).values_list('response', flat=True)
+            survey_responses = LearnerSurveyResponse.objects.filter(study_group__in=self.study_groups, responded_at__gte=window_start, responded_at__lt=window_end)
 
-            ratings = []
-
-            for response_str in survey_responses:
-                field = get_response_field(response_str, "iGWRNCyniE7s")
-                # iGWRNCyniE7s = "How well did the online course {{hidden:course}} work as a learning circle?"
-                if field is not None:
-                    ratings.append(field['number'])
-
-
+            ratings = map(learner_survey_summary, survey_responses)
+            ratings = [r.get('course_rating') for r in ratings if r.get('course_rating')]
             ratings_counter = Counter(ratings)
 
             for rating, collection in data.items():
@@ -1459,106 +942,6 @@ class LearnerGoalsPercentageChart():
         return self.chart.render(is_unicode=True)
 
 
-class SkillsImprovedChart():
-
-    def __init__(self, start_time, end_time, study_groups, **kwargs):
-        self.chart = pygal.Line(style=custom_style(), range=(0,100), x_label_rotation=30, **kwargs)
-        self.start_time = start_time
-        self.end_time = end_time
-        self.study_groups = study_groups
-
-    def get_data(self):
-        data = {
-            "Using the internet": [],
-            "Speaking in public": [],
-            "Feeling connected to my community": [],
-            "Working with others":[],
-            "Navigating online courses": [],
-            "Setting goals for myself": [],
-        }
-
-        dates = []
-
-        if self.study_groups.count() < 1:
-            return
-
-        window_start = self.start_time
-        window_end = window_start + relativedelta(months=+1)
-
-        while window_start <= self.end_time:
-            survey_responses = LearnerSurveyResponse.objects.filter(study_group__in=self.study_groups, responded_at__gte=window_start, responded_at__lt=window_end).values_list('response', flat=True)
-
-            skills_improved = {
-                "Using the internet": 0,
-                "Working with others": 0,
-                "Navigating online courses": 0,
-                "Setting goals for myself": 0,
-                "Speaking in public": 0,
-                "Feeling connected to my community": 0,
-            }
-
-            response_count = 0
-
-            for response_str in survey_responses:
-                response = json.loads(response_str)
-                answers = response['answers']
-
-                questions = [
-                    ("QH6akGDy6aHK", "Using the internet"),
-                    ("itpQxFRlOsOe", "Working with others"),
-                    ("g0is1ZBXECbh", "Navigating online courses"),
-                    ("ycB6quFHzH85", "Setting goals for myself"),
-                    ("zH8IomUmmoaH", "Speaking in public"),
-                    ("tO3TFJDBmH60", "Feeling connected to my community")
-                ]
-
-                responded = False
-
-                for question in questions:
-
-                    field = next((answer for answer in answers if answer["field"]["id"] == question[0]), None)
-                    if field is not None:
-                        responded = True
-
-                    if field is not None and field['number'] > SKILLS_LEARNED_THRESHOLD:
-                        skills_improved[question[1]] += 1
-
-                if responded:
-                    response_count += 1
-
-            for skill, count in skills_improved.items():
-                value = percentage(count, response_count)
-                data[skill].append(value)
-
-            dates.append(window_start.strftime("%b %Y"))
-            window_start = window_end
-            window_end = window_start + relativedelta(months=+1)
-
-        return { "data": data, "dates": dates }
-
-    def generate(self, **opts):
-        chart_data = self.get_data()
-
-        if chart_data is None:
-            return NO_DATA
-
-        for key, value in chart_data["data"].items():
-            self.chart.add(key, value)
-
-        self.chart.x_labels = chart_data["dates"]
-
-        if opts.get('output', None) == "png":
-            filename = "stats-dash-{}-skills-improved-chart.png".format(self.study_group.uuid)
-            target_path = os.path.join('tmp', filename)
-            self.chart.height = 400
-            self.chart.render_to_png(target_path)
-            file = open(target_path, 'rb')
-            img_url = save_to_aws(file, filename)
-            return "<img src={} alt={} width='100%'>".format(img_url, 'Skills improved chart')
-
-        return self.chart.render(is_unicode=True)
-
-
 class TopCoursesChart():
 
     def __init__(self, start_time, end_time, study_groups, **kwargs):
@@ -1663,62 +1046,6 @@ class MeetingsOverTimeChart():
         return self.chart.render(is_unicode=True)
 
 
-# class DraftLearningCirclesChart():
-#     def __init__(self, start_time, end_time, **kwargs):
-#         self.chart = pygal.Line(style=custom_style(), height=400, max_scale=10, order_min=0, y_title="Draft learning circles", x_label_rotation=30, **kwargs)
-#         self.start_time = start_time
-#         self.end_time = end_time
-
-#     def get_data(self):
-#         data = { "current_year": [], "previous_year": [], "dates": [] }
-
-#         window_start = self.start_time
-#         window_end = window_start + relativedelta(months=+1)
-
-#         while window_start <= self.end_time:
-#             three_months_ago = window_start - relativedelta(months=+3)
-#             current_published_studygroups = StudyGroup.objects.published()
-#             draft_learning_circles = Meeting.objects.active().filter(meeting_date__gte=window_start, meeting_date__lt=window_end, study_group__deleted_at__isnull=True, study_group__draft=False).count()
-
-#             data["dates"].append(window_start.strftime("%b"))
-#             data["previous_year"].append(meetings_count)
-
-#             window_start = window_end
-#             window_end = window_start + relativedelta(months=+1)
-
-
-#         window_start = self.end_time.replace(month=1, day=1)
-#         window_end = window_start + relativedelta(months=+1)
-
-#         while window_start <= self.end_time:
-#             meetings_count = Meeting.objects.active().filter(meeting_date__gte=window_start, meeting_date__lt=window_end, study_group__deleted_at__isnull=True, study_group__draft=False).count()
-
-#             data["current_year"].append(meetings_count)
-
-#             window_start = window_end
-#             window_end = window_start + relativedelta(months=+1)
-
-#         return data
-
-
-#     def generate(self, **opts):
-#         chart_data = self.get_data()
-
-#         self.chart.add(str(self.previous_year), chart_data["previous_year"])
-#         self.chart.add(str(self.current_year), chart_data["current_year"], allow_interruptions=True)
-#         self.chart.x_labels = chart_data["dates"]
-
-#         if opts.get('output', None) == "png":
-#             filename = "stats-dash-{}-meetings-chart.png".format(self.end_time.isoformat())
-#             target_path = os.path.join('tmp', filename)
-#             self.chart.render_to_png(target_path)
-#             file = open(target_path, 'rb')
-#             img_url = save_to_aws(file, filename)
-
-#             return "<img src={} alt={} width='100%'>".format(img_url, 'Number of meetings over time')
-
-#         return self.chart.render(is_unicode=True)
-
 class StudygroupsByCountryOverTimeChart():
 
     def __init__(self, start_time, end_time, study_groups, **kwargs):
@@ -1767,7 +1094,7 @@ class StudygroupsByCountryOverTimeChart():
         self.chart.x_labels = chart_data["dates"]
 
         all_values = chart_data["data"].values()
-        print(all_values)
+        logger.debug(all_values)
 
         months = len(chart_data["dates"])
         monthly_values = [sum([row[i] for row in all_values]) for i in range(months)]
@@ -1809,32 +1136,21 @@ class LearnerGoalReachedChart():
         window_end = window_start + relativedelta(months=+1)
 
         while window_start <= self.end_time:
-            survey_responses = LearnerSurveyResponse.objects.filter(study_group__in=self.study_groups, responded_at__gte=window_start, responded_at__lt=window_end).values_list('response', flat=True)
-
-            ratings = []
-
-            # G6AXyEuG2NRQ = "When you signed up for {{hidden:course}}, you said that your primary goal was: {{hidden:goal}}. To what extent did you meet your goal?"
-            # IO9ALWvVYE3n = "To what extent did you meet your goal?"
-
-            for response in survey_responses:
-                field = get_response_field(response, "G6AXyEuG2NRQ")
-
-                if field is None:
-                    field = get_response_field(response, "IO9ALWvVYE3n")
-
-                if field is not None:
-                    ratings.append(field['number'])
-
+            survey_responses = LearnerSurveyResponse.objects.filter(study_group__in=self.study_groups, responded_at__gte=window_start, responded_at__lt=window_end)
+            ratings = [
+                r.get('goal_rating') for r in map(learner_survey_summary, survey_responses)
+                if r.get('goal_rating')
+            ]
+            
             ratings_counter = Counter(ratings)
-
+            
             for rating, collection in data.items():
                 collection.append(ratings_counter[rating])
-
+            
             dates.append(window_start.strftime("%b %Y"))
 
             window_start = window_end
             window_end = window_start + relativedelta(months=+1)
-
 
         return { "data": data, "dates": dates }
 
@@ -1861,7 +1177,6 @@ class LearnerGoalReachedChart():
         return self.chart.render(is_unicode=True)
 
 
-
 class LearnerResponseRateChart():
     def __init__(self, start_time, end_time, study_groups, **kwargs):
         style = custom_style()
@@ -1884,6 +1199,7 @@ class LearnerResponseRateChart():
         while window_start <= self.end_time:
             applications = Application.objects.filter(study_group__in=self.study_groups, study_group__end_date__gte=window_start, study_group__end_date__lt=window_end)
             applications_with_responses = applications.filter(goal_met__isnull=False)
+            # TODO This doesn't take surveys without learned data into account
 
             value = percentage(applications_with_responses.count(), applications.count())
             data.append(value)
@@ -1891,7 +1207,6 @@ class LearnerResponseRateChart():
 
             window_start = window_end
             window_end = window_start + relativedelta(months=+1)
-
 
         return { "data": data, "dates": dates }
 
@@ -1935,6 +1250,3 @@ class OverallRatingBarChart():
         self.chart.x_labels = labels
 
         return self.chart.render(is_unicode=True)
-
-
-

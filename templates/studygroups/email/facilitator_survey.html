@@ -51,79 +51,79 @@
 
         <p>{% blocktrans %}You made it! Now that your learning circle is finished, could we have five more minutes of your time? Your reflections (both good and bad) are vital for the future of P2PU.{% endblocktrans %}</p>
 
-        {% url 'studygroups_generate_course_discourse_topic' study_group.course.pk as course_discourse_url %}
-        <p>{% blocktrans %}<strong>First:</strong> Please leave <a href="{{ course_discourse_url }}">feedback about the online course on our community forum</a>. This will help future facilitators who want to run a learning circle on the same topic.{% endblocktrans %}</p>
 
-        <p>{% blocktrans %}<strong>Second:</strong> Please take this five minute survey about the learning circle experience. This will help us at P2PU better support facilitators in the future.{% endblocktrans %}</p>
-
-        <p>{% trans "How did the learning circle go?" %}</p>
+        {% if study_group.facilitator_goal %}
+        <p>{% blocktrans with facilitator_goal=study_group.facilitator_goal %}When you signed up, we asked what you hoped to achieve by facilitating a learning circle, and you wrote <strong>"{{facilitator_goal}}"</strong>. To what extent did you achieve this?{% endblocktrans %}</p>
+        {% else %}
+        <p>{% blocktrans %}Please take <a href="{{survey_url}}">this five minute survey</a> about your learning circle experience. This will help us at P2PU better support facilitators in the future.{% endblocktrans %}</p>
+        {% endif %}
       </td>
     </tr>
     <tr>
       <td>
         <table align="center" class="rating-scale">
           <tbody>
+            {% if study_group.facilitator_goal %}
             <tr>
               <td>
                 <table border="0" cellspacing="0" cellpadding="0" >
                   <tbody>
                     <tr>
                       <td>
-                        <a href="{{survey_url}}?rating=1">
+                        <a href="{{survey_url}}?goal_rating=1">
                           <div class="cell first-cell">1</div>
                         </a>
                       </td>
                       <td>
-                        <a href="{{survey_url}}?rating=2">
+                        <a href="{{survey_url}}?goal_rating=2">
                           <div class="cell middle-cell">2</div>
                         </a>
                       </td>
                       <td>
-                        <a href="{{survey_url}}?rating=3">
+                        <a href="{{survey_url}}?goal_rating=3">
                           <div class="cell middle-cell">3</div>
                         </a>
                       </td>
                       <td>
-                        <a href="{{survey_url}}?rating=4">
+                        <a href="{{survey_url}}?goal_rating=4">
                           <div class="cell middle-cell">4</div>
                         </a>
                       </td>
                       <td>
-                        <a href="{{survey_url}}?rating=5">
+                        <a href="{{survey_url}}?goal_rating=5">
                           <div class="cell last-cell">5</div>
                         </a>
                       </td>
                     </tr>
-                  </tbody>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <table width="100%">
-                  <tbody>
                     <tr>
                       <td class="label">
-                        <small>{% trans "Terrible" %}</small>
+                        <small>{% trans "Not at all" %}</small>
                       </td>
-                      <td class="label align-right">
-                        <small>{% trans "Excellent" %}</small>
+                      <td class="label"></td>
+                      <td class="label">
+                        <small>{% trans "Somewhat" %}</small>
+                      </td>
+                      <td class="label"></td>
+                      <td class="label">
+                        <small>{% trans "Completely!" %}</small>
                       </td>
                     </tr>
                   </tbody>
                 </table>
               </td>
             </tr>
+            {% endif %}
             <tr>
               <td>
                 <p class="text-center">- {% trans "or" %} -</p>
-                <p class="text-center"><a href="{{survey_url}}?nostudygroup=true" class="color-green">{% trans "This learning circle didn’t end up happening." %}</a></p>
+                <p class="text-center"><a href="{% url 'studygroups_studygroup_did_not_happen' study_group.pk %}" class="color-green">{% trans "This learning circle didn’t end up happening." %}</a></p>
               </td>
             </tr>
           </tbody>
         </table>
       </td>
     </tr>
+
     <tr>
       <td>
         <p>{% trans "Cheers" %},</p>
