@@ -123,7 +123,7 @@ class WhoAmIView(View):
         user_data = {
             "user": "anonymous",
         }
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             user_data["user"] = request.user.first_name
             user_data["links"] = [
                 {"text": "Dashboard", "url": reverse('studygroups_facilitator')},
@@ -163,7 +163,7 @@ class EmailConfirmView(View):
         user = self.get_user(kwargs['uidb64'])
         if user is not None:
             token = kwargs['token']
-            if self.request.user.is_authenticated() and user.pk != self.request.user.pk:
+            if self.request.user.is_authenticated and user.pk != self.request.user.pk:
                 # make sure logged in user and user confirming emails are the same people
                 messages.warning(self.request, _('There is a problem with your password confirmation URL. Please try logging out and then click the link in the email we sent you.'))
                 url = reverse('studygroups_login_redirect')

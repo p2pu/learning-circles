@@ -219,7 +219,7 @@ class OrganizerGuideForm(FormView):
     def get(self, request, *args, **kwargs):
         user = self.request.user
         # redirect to the guide on discourse if user is organizer
-        if user.is_authenticated():
+        if user.is_authenticated:
             if TeamMembership.objects.active().filter(user=user, role=TeamMembership.ORGANIZER).exists():
                 url = 'https://community.p2pu.org/t/julianas-organizer-guide-how-to-start-a-learning-circle-community/3160'
                 return http.HttpResponseRedirect(url)
@@ -230,7 +230,7 @@ class OrganizerGuideForm(FormView):
     def get_context_data(self, **kwargs):
         context = super(OrganizerGuideForm, self).get_context_data(**kwargs)
 
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             context['form'] = self.form_class(self.request.user)
 
         return context
