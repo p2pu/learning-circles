@@ -63,7 +63,7 @@ def send_email_confirm_email(user):
     context = {
         "user": user,
         "profile": user.profile,
-        "uid": urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+        "uid": urlsafe_base64_encode(force_bytes(user.pk)),
         "token": generate_user_token(user),
     }
 
