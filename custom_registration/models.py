@@ -42,10 +42,7 @@ class EmailConfirmTokenGenerator(PasswordResetTokenGenerator):
         # Remove last login timestamp from hash and replace with date
         # that email address was confirmed
         confirm_timestamp = '' if user.profile.email_confirmed_at is None else user.profile.email_confirmed_at.replace(microsecond=0, tzinfo=None)
-        return (
-            six.text_type(user.pk) + user.password + six.text_type(timestamp) +
-            six.text_type(confirm_timestamp)
-        )
+        return str(user.pk) + user.password + str(timestamp) + str(confirm_timestamp)
 
 
 def generate_user_token(user):
@@ -66,7 +63,7 @@ def send_email_confirm_email(user):
     context = {
         "user": user,
         "profile": user.profile,
-        "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+        "uid": urlsafe_base64_encode(force_bytes(user.pk)).decode(),
         "token": generate_user_token(user),
     }
 

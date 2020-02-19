@@ -4,7 +4,6 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import ugettext as _
-from django.utils.encoding import force_text
 from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.cache import never_cache
@@ -193,8 +192,8 @@ class EmailConfirmView(View):
 
     def get_user(self, uidb64):
         try:
-            # urlsafe_base64_decode() decodes to bytestring on Python 3
-            uid = force_text(urlsafe_base64_decode(uidb64))
+            # urlsafe_base64_decode() decodes to bytestring
+            uid = urlsafe_base64_decode(uidb64).decode()
             user = User._default_manager.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
