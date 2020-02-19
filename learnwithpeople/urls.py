@@ -2,17 +2,13 @@ from django.conf.urls import include, url
 from django.conf.urls.i18n import i18n_patterns
 from django.conf import settings
 from django.contrib import admin
-from django.views.i18n import javascript_catalog
+from django.views.i18n import JavaScriptCatalog
 from django.urls import reverse, reverse_lazy
-
-js_info_dict = {
-    'packages': ('studygroups',),
-}
 
 urlpatterns = i18n_patterns(
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/', include('custom_registration.urls')),
-    url(r'^jsi18n/$', javascript_catalog, js_info_dict, name='javascript-catalog'),
+    url(r'^jsi18n/$', JavaScriptCatalog.as_view(packages=['studygroups']), name='javascript-catalog'),
     url(r'^discourse/', include('discourse_sso.urls')),
     url(r'^surveys/', include('surveys.urls')),
     url(r'^community_calendar/', include('community_calendar.urls')),
