@@ -47,7 +47,7 @@ class ModeratedQuerySet(models.QuerySet):
 class Moderatable(models.Model):
     """ When moderating, deleted_at will be set to indicate spam """
     moderated_at = models.DateTimeField(blank=True, null=True)
-    moderated_by = models.ForeignKey(User, blank=True, null=True, related_name='moderator')
+    moderated_by = models.ForeignKey(User, blank=True, null=True, related_name='moderator', on_delete=models.SET_NULL)
     moderation_approved = models.NullBooleanField(blank=True, null=True)
     moderation_note = models.CharField(max_length=256, blank=True)
 
