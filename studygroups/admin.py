@@ -21,6 +21,7 @@ class StudyGroupAdmin(admin.ModelAdmin):
     inlines = [ApplicationInline]
     list_display = ['course', 'city', 'facilitator', 'start_date', 'day', 'signup_open']
     exclude = ['deleted_at']
+    search_fields = ['course__title', 'uuid', 'city', 'facilitator__first_name']
 
     def get_queryset(self, request):
         return super().get_queryset(request).active()
