@@ -42,12 +42,12 @@ class TypeformSurveyResponse(models.Model):
 
 
 class FacilitatorSurveyResponse(TypeformSurveyResponse):
-    study_group = models.ForeignKey(StudyGroup, blank=True, null=True)
+    study_group = models.ForeignKey(StudyGroup, blank=True, null=True, on_delete=models.SET_NULL)
 
 
 class LearnerSurveyResponse(TypeformSurveyResponse):
-    study_group = models.ForeignKey(StudyGroup, blank=True, null=True)
-    learner = models.ForeignKey(Application, blank=True, null=True)
+    study_group = models.ForeignKey(StudyGroup, blank=True, null=True, on_delete=models.SET_NULL)
+    learner = models.ForeignKey(Application, blank=True, null=True, on_delete=models.SET_NULL)
 
 
 def find_field(field_id, typeform_survey):

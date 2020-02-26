@@ -50,7 +50,7 @@ class ApplicationForm(forms.ModelForm):
         label=_('What do you hope to achieve by joining this learning circle?'),
     )
     support = forms.CharField(
-        label=_('A successful study group requires the support of all of its members. How will you help your peers achieve their goals?')
+        label=_('A successful learning circle requires the support of all of its members. How will you help your peers achieve their goals?')
     )
 
     consent = forms.BooleanField(

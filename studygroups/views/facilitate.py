@@ -728,7 +728,7 @@ class FacilitatorDashboard(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(FacilitatorDashboard, self).get_context_data(**kwargs)
 
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             email_validated = hasattr(self.request.user, 'profile') and self.request.user.profile.email_confirmed_at is not None
 
             if not email_validated:

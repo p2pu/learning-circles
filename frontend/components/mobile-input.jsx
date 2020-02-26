@@ -24,7 +24,7 @@ export default class MobileInput extends React.Component{
     let errorSpan = null;
     if (error) {
       errorSpan = (
-        <span id="error_1_id_mobile" className="help-block"><strong>{error}</strong></span> 
+        <span id="error_1_id_mobile" className="invalid-feedback"><strong>{error}</strong></span>
       );
     }
     return (
@@ -32,15 +32,16 @@ export default class MobileInput extends React.Component{
         <label htmlFor="id_mobile" className="control-label ">{label}</label>
         <div className="controls "> 
 
-          <input id="id_mobile" type="hidden" name="mobile" value={this.cleanFormatting(this.state.phone)} />
           <ReactTelInput
             placeholder="Enter phone number"
             flagsImagePath="/static/images/flags.png"
             value={ this.state.phone }
             onChange={ phone => this.setState({ phone }) }
             defaultCountry="us" />
+          <input id="id_mobile" class={error && "form-control is-invalid" || "form-control"} type="hidden" name="mobile" value={this.cleanFormatting(this.state.phone)} />
           {errorSpan}
-          <p id="hint_id_mobile" className="help-block">{hint}</p> 
+
+          <small id="hint_id_mobile" class="form-text text-muted">{hint}</small> 
         </div> 
       </div>
     );

@@ -9,7 +9,7 @@ import pytz
 class Event(Moderatable):
     title = models.CharField(max_length=256)
     description = models.TextField(max_length=500)
-    created_by = models.ForeignKey(User)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     datetime = models.DateTimeField()
     timezone = models.CharField(max_length=128)
