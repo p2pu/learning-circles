@@ -39,7 +39,7 @@
     "mini-css-extract-plugin": "^0.6.0",
     "moment": "^2.18.1",
     "node-sass": "^4.9.3",
-    "p2pu-input-fields": "0.5.24",
+    "p2pu-input-fields": "0.5.26",
     "p2pu-search-cards": "^0.14.18",
     "p2pu-theme": "^1.1.2",
     "places.js": "^1.4.18",
