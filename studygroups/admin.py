@@ -104,7 +104,7 @@ class CourseAdmin(admin.ModelAdmin):
 class ProfileAdmin(admin.ModelAdmin):
     def user(profile):
         return " ".join([profile.user.first_name, profile.user.last_name])
-    list_display = [user, 'mailing_list_signup', 'communication_opt_in']
+    list_display = [user, 'communication_opt_in']
     search_fields = ['user__email']
 
 
