@@ -44,12 +44,11 @@ class TestApiSignupView(TestCase):
             'name': 'User name',
             'email': 'user@mail.com',
             'communications_opt_in': 'false',
+            'consent': 'true',
             'mobile': '+12812344321',
             'signup_questions': {
                 'goals': 'Learn new stuff',
-                'support': 'Help my fellow learners',
-                'computer_access': 'Both',
-                'use_internet': '4' #Expert
+                'support': 'Help my fellow learners'
             }
         }
         resp = c.post(url, data=json.dumps(signup_data), content_type='application/json')
@@ -68,13 +67,12 @@ class TestApiSignupView(TestCase):
             'learning_circle': '1',
             'name': 'User name',
             'email': 'user@mail.com',
+            'consent': 'true',
             'communications_opt_in': 'true',
             'mobile': '+12812344321',
             'signup_questions': {
                 'goals': 'Learn new stuff',
-                'support': 'Help my fellow learners',
-                'computer_access': 'Both',
-                'use_internet': '4' #Expert
+                'support': 'Help my fellow learners'
             }
         }
         resp = c.post(url, data=json.dumps(signup_data), content_type='application/json')
@@ -92,16 +90,15 @@ class TestApiSignupView(TestCase):
             'learning_circle': '1',
             'name': 'User name',
             'email': 'user@mail.com',
+            'consent': 'true',
             'signup_questions': {
                 'goals': 'Learn new stuff',
-                'support': 'Help my fellow learners',
-                'computer_access': 'Both',
-                'use_internet': '4' #Expert
+                'support': 'Help my fellow learners'
             }
         }
 
         # test required fields
-        required_fields = ['learning_circle', 'name', 'email']
+        required_fields = ['learning_circle', 'name', 'email', 'consent']
         for field in required_fields:
             data = dict(signup_data)
             del data[field]
@@ -112,6 +109,40 @@ class TestApiSignupView(TestCase):
             self.assertEqual(Application.objects.all().count(), 0)
 
 
+    def test_custom_signup_question(self):
+        sg = StudyGroup.objects.get(pk=1)
+        sg.signup_question = 'This is a mandatory extra question'
+        sg.save()
+        c = Client()
+        url = '/api/signup/'
+        signup_data = {
+            'learning_circle': '1',
+            'name': 'User name',
+            'email': 'user@mail.com',
+            'consent': 'true',
+            'communications_opt_in': 'true',
+            'mobile': '+12812344321',
+            'signup_questions': {
+                'goals': 'Learn new stuff',
+                'support': 'Help my fellow learners'
+            }
+        }
+        resp = c.post(url, data=json.dumps(signup_data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json().get('status'), "error")
+        self.assertEqual(Application.objects.all().count(), 0)
+        self.assertEqual(len(mail.outbox), 0)
+
+        signup_data['signup_questions']['custom_question'] = 'this is my answer'
+        resp = c.post(url, data=json.dumps(signup_data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json(), {"status": "created"})
+        self.assertEqual(Application.objects.all().count(), 1)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn('facilitator@example.net', mail.outbox[0].cc)
+        self.assertEqual(mail.outbox[0].to[0], 'user@mail.com')
+
+
     def test_invalid_learning_circle(self):
         c = Client()
         url = '/api/signup/'
@@ -119,6 +150,7 @@ class TestApiSignupView(TestCase):
             'learning_circle': '99',
             'name': 'User name',
             'email': 'user@mail.com',
+            'consent': 'true',
             'communications_opt_in': 'false',
             'signup_questions': {
                 'goals': 'Learn new stuff',
