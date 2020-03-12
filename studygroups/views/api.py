@@ -751,7 +751,7 @@ class SignupView(View):
         # Not sure how to cleanly implement validation like this using the schema?
         if study_group.signup_question:
             if not clean_data.get('signup_questions').get('custom_question'):
-                return json_response(request, {"status": "error", "errors": { "signup_questions": {"custom_question": "Field is required"}}})
+                return json_response(request, {"status": "error", "errors": { "signup_questions": [{"custom_question": ["Field is required"]}]}})
 
         if Application.objects.active().filter(email__iexact=clean_data.get('email'), study_group=study_group).exists():
             application = Application.objects.active().get(email__iexact=clean_data.get('email'), study_group=study_group)
