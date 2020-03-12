@@ -140,6 +140,8 @@ def _map_to_json(sg):
         data["next_meeting_date"] = sg.next_meeting_date
     if hasattr(sg, 'last_meeting_date'):
         data["last_meeting_date"] = sg.last_meeting_date
+    if sg.signup_question:
+        data["signup_question"] = sg.signup_question
     return data
 
 
