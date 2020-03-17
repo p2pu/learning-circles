@@ -72,6 +72,7 @@ class TestFacilitatorViews(TestCase):
         'meeting_time': '19:00',
         'duration': '90',
         'timezone': 'Africa/Johannesburg',
+        'facilitator_concerns': 'how do i market',
         'venue_website': 'http://venue.com',
     }
 
@@ -149,6 +150,7 @@ class TestFacilitatorViews(TestCase):
         self.assertEquals(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.course.title, lc.city))
         self.assertIn('bob@example.net', mail.outbox[0].to)
+        self.assertIn('thepeople@p2pu.org', mail.outbox[0].cc)
         self.assertIn('community@localhost', mail.outbox[0].cc)
 
 
