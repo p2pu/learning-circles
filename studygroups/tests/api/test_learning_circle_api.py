@@ -11,6 +11,7 @@ from freezegun import freeze_time
 from studygroups.models import generate_all_meetings
 from studygroups.models import StudyGroup
 from studygroups.models import Profile
+from studygroups.models import Team, TeamMembership
 from custom_registration.models import create_user
 
 
@@ -50,7 +51,8 @@ class TestLearningCircleApi(TestCase):
             "meeting_time": "17:01",
             "duration": 50,
             "timezone": "UTC",
-            "image": "/media/image.png"
+            "image": "/media/image.png",
+            "facilitator_concerns": "blah blah",
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
@@ -96,6 +98,7 @@ class TestLearningCircleApi(TestCase):
             "place_id": "1",
             "language": "en",
             "start_date": "2018-02-12",
+            "facilitator_concerns": "blah blah",
             "weeks": 2,
             "meeting_time": "17:01",
             "duration": 50,
@@ -160,6 +163,97 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(StudyGroup.objects.last().draft, True)
         self.assertEqual(len(mail.outbox), 1)
 
+
+    def test_create_learning_circle_welcome(self):
+        c = Client()
+        c.login(username='faci@example.net', password='password')
+        data = {
+            "course": 3,
+            "description": "Lets learn something",
+            "venue_name": "75 Harrington",
+            "venue_details": "top floor",
+            "venue_address": "75 Harrington",
+            "city": "Cape Town",
+            "country": "South Africa",
+            "country_en": "South Africa",
+            "region": "Western Cape",
+            "latitude": 3.1,
+            "longitude": "1.3",
+            "place_id": "1",
+            "language": "en",
+            "start_date": "2018-02-12",
+            "weeks": 2,
+            "meeting_time": "17:01",
+            "duration": 50,
+            "timezone": "UTC",
+            "image": "/media/image.png"
+        }
+        url = '/api/learning-circle/'
+        self.assertEqual(StudyGroup.objects.all().count(), 4)
+
+        # Test without concern only p2pu should be CC-ed
+        resp = c.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+
+        lc = StudyGroup.objects.all().last()
+        self.assertEqual(resp.json(), {
+            "status": "created",
+            "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
+        })
+        self.assertEqual(StudyGroup.objects.all().count(), 5)
+        self.assertEqual(lc.course.id, 3)
+        self.assertEqual(lc.description, 'Lets learn something')
+        self.assertEqual(lc.start_date, datetime.date(2018,2,12))
+        self.assertEqual(lc.meeting_time, datetime.time(17,1))
+        self.assertEqual(lc.meeting_set.all().count(), 0)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.course.title, lc.city))
+        self.assertIn('faci@example.net', mail.outbox[0].to)
+        self.assertIn('thepeople@p2pu.org', mail.outbox[0].cc)
+        self.assertEqual(len(mail.outbox[0].cc), 1)
+
+        # Test with concern - welcome committee should be cc-ed
+        mail.outbox = []
+        data['facilitator_concerns'] = 'How should I advertise'
+        resp = c.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.course.title, lc.city))
+        self.assertIn('faci@example.net', mail.outbox[0].to)
+        self.assertIn('thepeople@p2pu.org', mail.outbox[0].cc)
+        self.assertIn('community@localhost', mail.outbox[0].cc)
+        self.assertIn(data['facilitator_concerns'], mail.outbox[0].body)
+        self.assertEqual(len(mail.outbox[0].cc), 2)
+
+        # Test as part of team with concern - organizer and welcome should be CC-ed
+        team = Team.objects.create(name='awesome team')
+        team.save()
+        organizer = create_user('org@niz.er', 'organ', 'izer', False)
+        TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
+        TeamMembership.objects.create(team=team, user=self.facilitator, role=TeamMembership.MEMBER)
+
+        mail.outbox = []
+        resp = c.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.course.title, lc.city))
+        self.assertIn('faci@example.net', mail.outbox[0].to)
+        self.assertIn('thepeople@p2pu.org', mail.outbox[0].cc)
+        self.assertIn('community@localhost', mail.outbox[0].cc)
+        self.assertIn('org@niz.er', mail.outbox[0].cc)
+        self.assertEqual(len(mail.outbox[0].cc), 3)
+
+        # Test as part of team - team organizer should be cc-ed
+        mail.outbox = []
+        del data['facilitator_concerns']
+        resp = c.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.course.title, lc.city))
+        self.assertIn('faci@example.net', mail.outbox[0].to)
+        self.assertIn('thepeople@p2pu.org', mail.outbox[0].cc)
+        self.assertIn('org@niz.er', mail.outbox[0].cc)
+        self.assertEqual(len(mail.outbox[0].cc), 2)
 
     def test_update_learning_circle(self):
         self.facilitator.profile.email_confirmed_at = timezone.now()

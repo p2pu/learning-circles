@@ -10,6 +10,7 @@ from studygroups.email_helper import render_html_with_css
 from .models import Application
 from .models import StudyGroup
 from .models import Course
+from .models import get_study_group_organizers
 
 from .utils import html_body_to_text
 from .utils import use_language
@@ -77,13 +78,21 @@ def handle_new_study_group_creation(sender, instance, created, **kwargs):
     html_body = render_html_with_css('studygroups/email/learning_circle_created.html', context)
     text_body = html_body_to_text(html_body)
 
+    # on all learning circles, CC p2pu
+    cc = [settings.TEAM_EMAIL]
+    # if the user is part of a team, send to the organizer(s)
+    cc += [ o.email for o in get_study_group_organizers(study_group)]
+    # if there is a question, send to the welcoming comitte
+    if study_group.facilitator_concerns:
+        cc += [settings.COMMUNITY_MANAGER]
+
     notification = EmailMultiAlternatives(
         subject,
         text_body,
         settings.DEFAULT_FROM_EMAIL,
         [study_group.facilitator.email],
-        cc=[settings.COMMUNITY_MANAGER],
-        reply_to=[study_group.facilitator.email, settings.COMMUNITY_MANAGER]
+        cc=cc,
+        reply_to=[study_group.facilitator.email] + cc
     )
     notification.attach_alternative(html_body, 'text/html')
     notification.send()
