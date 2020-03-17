@@ -334,7 +334,7 @@ export default class FacilitatorDashboard extends React.Component {
                       <div className="bold text-center text-white">In light of the worldwide Coronavirus, meeting in person is probably not an option for your learning circle right now. How do we learn together when we cannot meet in person?
                       </div>
                       <div className="text-center mt-3">
-                        <a href="" className="p2pu-btn light btn-sm">Learn more and share your experiance</a>
+                        <a href="" className="p2pu-btn light btn-sm">Learn more and share your experience</a>
                       </div>
                     </Card>
                   </div>
