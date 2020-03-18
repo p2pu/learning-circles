@@ -140,6 +140,8 @@ def _map_to_json(sg):
         data["next_meeting_date"] = sg.next_meeting_date
     if hasattr(sg, 'last_meeting_date'):
         data["last_meeting_date"] = sg.last_meeting_date
+    if sg.signup_question:
+        data["signup_question"] = sg.signup_question
     return data
 
 
@@ -735,7 +737,7 @@ class SignupView(View):
             "consent": schema.chain([
                 schema.boolean(),
                 lambda consent: (None, 'Consent is needed to sign up') if not consent else (consent, None),
-            ]),
+            ], required=True),
             "mobile": schema.mobile(),
             "signup_questions": schema.schema(signup_questions, required=True)
         }
@@ -745,6 +747,11 @@ class SignupView(View):
             return json_response(request, {"status": "error", "errors": errors})
 
         study_group = clean_data.get('learning_circle')
+
+        # Not sure how to cleanly implement validation like this using the schema?
+        if study_group.signup_question:
+            if not clean_data.get('signup_questions').get('custom_question'):
+                return json_response(request, {"status": "error", "errors": { "signup_questions": [{"custom_question": ["Field is required"]}]}})
 
         if Application.objects.active().filter(email__iexact=clean_data.get('email'), study_group=study_group).exists():
             application = Application.objects.active().get(email__iexact=clean_data.get('email'), study_group=study_group)

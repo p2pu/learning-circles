@@ -38,6 +38,7 @@ const CourseSection = (props) => {
           !props.learningCircle.course.id &&
           <Search
             searchSubject={'courses'}
+            initialState={{languages: ['en']}}
             Browse={BrowseCourses}
             onSelectResult={handleSelectResult}
             origin={window.location.origin}

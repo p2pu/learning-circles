@@ -85,7 +85,6 @@ export default class FacilitatorDashboard extends React.Component {
   }
 
   render() {
-    console.log(this.state.events)
     return (
       <div className="bg-light">
         <Alert
@@ -317,17 +316,15 @@ export default class FacilitatorDashboard extends React.Component {
                 </div>
               </Card>
             </div>
-
           </div>
 
           <div className="col-12 col-lg-4">
-
             <div data-aos='fade'>
-              <Card className="bg-dark feedback-survey">
-                <div className="bold text-center text-white">What do you think about your new learning circles dashboard?</div>
+              <Card className="bg-warning feedback-survey d-block w-100">
+                <div className="bold text-center text-white">In light of the worldwide coronavirus pandemic, meeting in person is probably not an option for your learning circle right now. How do we learn together when we cannot meet in person?
+                </div>
                 <div className="text-center mt-3">
-                  <a href="https://p2pu.typeform.com/to/WwRKql?first_impression=like" className="p2pu-btn light btn-sm">😍 I like it!</a>
-                  <a href="https://p2pu.typeform.com/to/WwRKql?first_impression=dislike" className="p2pu-btn light btn-sm">😕 Meh</a>
+                  <a href="https://community.p2pu.org/t/how-do-we-learn-together-when-we-cant-meet-together-a-place-to-talk-about-how-were-responding-to-covid-19/4366" className="p2pu-btn light btn-sm" target="_blank">Learn more and share your experience</a>
                 </div>
               </Card>
             </div>

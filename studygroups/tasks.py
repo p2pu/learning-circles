@@ -246,7 +246,7 @@ def _send_learning_circle_insights(study_group):
         txt,
         settings.DEFAULT_FROM_EMAIL,
         bcc=to,
-        reply_to=[settings.DEFAULT_FROM_EMAIL]
+        reply_to=[study_group.facilitator.email]
     )
     notification.attach_alternative(html, 'text/html')
     notification.send()

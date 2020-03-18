@@ -190,8 +190,7 @@ class TestReportViews(TestCase):
     @patch('studygroups.charts.LearningCircleMeetingsChart.generate')
     @patch('studygroups.charts.LearningCircleCountriesChart.generate')
     @patch('studygroups.charts.TopTopicsChart.generate')
-    @patch('studygroups.views.reports.community_digest_data')
-    def test_community_digest(self, community_digest_data, topics_chart_generate, countries_chart_generate, meetings_chart_generate):
+    def test_community_digest(self, topics_chart_generate, countries_chart_generate, meetings_chart_generate):
         today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
         end_date = today
         start_date = end_date - datetime.timedelta(days=21)
@@ -205,7 +204,6 @@ class TestReportViews(TestCase):
         self.assertIsNotNone(response.context_data['meetings_chart'])
         self.assertIsNotNone(response.context_data['countries_chart'])
         self.assertIsNotNone(response.context_data['top_topics_chart'])
-        community_digest_data.assert_called_with(start_date, end_date)
         topics_chart_generate.assert_called()
         countries_chart_generate.assert_called()
         meetings_chart_generate.assert_called()

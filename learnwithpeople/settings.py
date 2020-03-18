@@ -197,12 +197,15 @@ ALLOWED_HOSTS = ['*']
 # CORS config
 CORS_ORIGIN_WHITELIST = [
     "https://www.p2pu.org",
-    "https://berlin.p2pu.org",
-    "http://berlin.p2pu.org",
     "https://p2pu.github.io",
 ]
 if DEBUG:
     CORS_ORIGIN_WHITELIST.append('http://localhost:8000')
+    CORS_ORIGIN_WHITELIST.append('http://localhost:3001')
+
+CORS_ORIGIN_REGEX_WHITELIST = [
+    r"^https://\w+\.p2pu\.org$",
+]
 
 AUTHENTICATION_BACKENDS = ['custom_registration.backend.CaseInsensitiveBackend']
 
