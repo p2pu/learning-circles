@@ -1,0 +1,490 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+# Translators:
+# Małgorzata Makowska <malgorzata.makowska@frsi.org.pl>, 2020
+# Agnieszka Koszowska <agnieszka.koszowska@frsi.org.pl>, 2020
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-04-25 15:06+0000\n"
+"PO-Revision-Date: 2019-09-12 13:12+0000\n"
+"Last-Translator: Agnieszka Koszowska <agnieszka.koszowska@frsi.org.pl>, 2020\n"
+"Language-Team: Polish (https://www.transifex.com/p2pu/teams/103124/pl/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: pl\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+
+#: email/facilitator_meeting_reminder-subject.txt:1
+#: email/learner_meeting_reminder-subject.txt:1 email/reminder-subject.txt:1
+#, python-format
+msgid ""
+"%(course_title)s learning circle meeting this %(meeting_date)s at %(venue)s."
+msgstr ""
+"%(course_title)s klub wiedzy spotyka się %(meeting_date)s w %(venue)s."
+
+#: email/facilitator_meeting_reminder.html:5
+#: email/facilitator_meeting_reminder.txt:5
+msgid "Hi there,"
+msgstr "Dzień dobry,"
+
+#: email/facilitator_meeting_reminder.html:7
+#: email/facilitator_meeting_reminder.txt:7
+msgid "The following message has been sent to your learning circle."
+msgstr "Ta wiadomość została wysłana do uczestników Twojego klubu wiedzy. "
+
+#: email/facilitator_meeting_reminder.html:14
+#, python-format
+msgid ""
+"To see how many learners RSVPed or to record feedback after the meeting, you"
+" can visit <a href=\"%(PROTOCOL)s://%(DOMAIN)s%(dash_url)s\">your "
+"dashboard</a>."
+msgstr ""
+"Jeśli chcesz sprawdzić, ilu uczestników odpowiedziało na wiadomość lub "
+"zamieścić uwagi po spotkaniu, zaloguj się na <a "
+"href=\"%(PROTOCOL)s://%(DOMAIN)s%(dash_url)s\">swoje konto</a>."
+
+#: email/facilitator_meeting_reminder.html:16
+#: email/facilitator_meeting_reminder.txt:13 email/learner_signup.html:55
+#: email/optout_confirm.html:12 email/optout_confirm.txt:9
+msgid "Cheers"
+msgstr "Pozdrawiamy"
+
+#: email/facilitator_meeting_reminder.txt:11
+#, python-format
+msgid ""
+"To see how many learners RSVP-ed or to record feedback after the meeting, "
+"you can visit your dashboard (%(PROTOCOL)s://%(DOMAIN)s%(dash_url)s)."
+msgstr ""
+"Jeśli chcesz sprawdzić, ilu uczestników odpowiedziało na wiadomość lub "
+"zamieścić uwagi po spotkaniu, zaloguj się na swoje konto "
+"(%(PROTOCOL)s://%(DOMAIN)s%(dash_url)s)."
+
+#: email/facilitator_message.html:8
+#, python-format
+msgid ""
+"To leave this learning circle and stop receiving messages, <a "
+"href=\"%(PROTOCOL)s://%(DOMAIN)s%(link)s\">click here</a>"
+msgstr ""
+"Jeśli chcesz zrezygnować z uczestnictwa w tym klubie i nie otrzymywać "
+"wiadomości, <a href=\"%(PROTOCOL)s://%(DOMAIN)s%(link)s\">kliknij tutaj</a>"
+
+#: email/facilitator_message.txt:5
+#, python-format
+msgid ""
+"To leave this learning circle and stop receiving messages, click here: "
+"%(PROTOCOL)s://%(DOMAIN)s%(link)s"
+msgstr ""
+"Jeśli chcesz zrezygnować z uczestnictwa w tym klubie i nie otrzymywać "
+"wiadomości, kliknij tutaj: %(PROTOCOL)s://%(DOMAIN)s%(link)s"
+
+#: email/learner_meeting_reminder.html:32 email/learner_meeting_reminder.txt:5
+msgid ""
+"Please let us know if you can make it by visiting the appropriate link "
+"below."
+msgstr ""
+"Prosimy o kliknięcie w poniższy link, aby poinformować nas o przybyciu na "
+"spotkanie."
+
+#: email/learner_meeting_reminder.html:34 email/learner_meeting_reminder.txt:7
+msgid "Yes, I can make it"
+msgstr "Tak, przyjdę"
+
+#: email/learner_meeting_reminder.html:36 email/learner_meeting_reminder.txt:8
+msgid "No, I can't make it"
+msgstr "Nie, nie przyjdę"
+
+#: email/learner_meeting_reminder.html:38
+#: email/learner_meeting_reminder.txt:10 email/meeting_changed.html:9
+msgid "See you soon."
+msgstr "Do zobaczenia wkrótce."
+
+#: email/learner_meeting_reminder.html:40 email/meeting_changed.html:12
+#, python-format
+msgid ""
+"To leave this learning circle and stop receiving messages, <a "
+"href=\"%(link)s\">click here</a>"
+msgstr ""
+"Jeśli chcesz zrezygnować z uczestnictwa w tym klubie i nie otrzymywać "
+"wiadomości, <a href=\"%(link)s\">kliknij tutaj</a>"
+
+#: email/learner_meeting_reminder.txt:12
+#, python-format
+msgid ""
+"To leave this learning circle and stop receiving messages, click here: "
+"%(link)s"
+msgstr ""
+"Żeby zrezygnować z tego kursu i nie otrzymywać wiadomości, kliknij tutaj: "
+"%(link)s"
+
+#: email/learner_signup-subject.txt:1 email/learner_signup.html:43
+msgid "Welcome to P2PU"
+msgstr "Witamy w P2PU"
+
+#: email/learner_signup.html:6
+#, python-format
+msgid "Hi %(name)s,"
+msgstr "Dzień dobry %(name)s,"
+
+#: email/learner_signup.html:8
+msgid "Welcome to your learning circle!"
+msgstr "Witamy w klubie wiedzy!"
+
+#: email/learner_signup.html:11
+#, python-format
+msgid ""
+"You signed up for %(course_title)s! The first meeting will be on "
+"%(meeting_date)s at %(meeting_time)s.\n"
+msgstr ""
+"Potwierdzamy rejestrację na %(course_title)s! Pierwsze spotkanie odbędzie "
+"się %(meeting_date)s o %(meeting_time)s.\n"
+
+#: email/learner_signup.html:16
+#, python-format
+msgid ""
+"\n"
+"The address for the meeting is:<br/>\n"
+"%(venue_details)s<br/>\n"
+"%(venue_name)s<br/>\n"
+"%(venue_address)s<br/>\n"
+" "
+msgstr ""
+"\n"
+"Spotkanie odbędzie się w:<br/>\n"
+"%(venue_details)s<br/>\n"
+"%(venue_name)s<br/>\n"
+"%(venue_address)s<br/>\n"
+" "
+
+#: email/learner_signup.html:24
+msgid "Meet your facilitator"
+msgstr "Poznaj swojego moderatora"
+
+#: email/learner_signup.html:26
+#, python-format
+msgid ""
+"Your facilitator is <strong>%(facilitator_first_name)s "
+"%(facilitator_last_name)s</strong> and is copied on this email. If you have "
+"any questions you can simply reply. To help your facilitator better assist "
+"you, we’re including your answers to the signup questions below:"
+msgstr ""
+"Ten klub moderuje: <strong>%(facilitator_first_name)s "
+"%(facilitator_last_name)s</strong> i otrzymuje  kopię tej wiadomości. W "
+"przypadku pytań prosimy na nią odpisać. Do wysyłanej wiadomości dołączymy "
+"odpowiedzi udzielane podczas rejestracji, by ułatwić moderatorom świadczenie"
+" wsparcia dostosowanego do potrzeb uczestników."
+
+#: email/learner_signup.html:30
+msgid "Q: What is your goal for taking this learning circle?"
+msgstr "Pytanie: Co chcesz osiągnąć zapisując się na ten kurs?"
+
+#: email/learner_signup.html:31 email/learner_signup.html:34
+#: email/learner_signup.html:38
+#, python-format
+msgid "A: %(answer)s"
+msgstr "Odpowiedź: %(answer)s"
+
+#: email/learner_signup.html:33
+msgid "Q: How will you help your peers achieve their goals?"
+msgstr "Pytanie: Jak możesz pomóc innym uczestnikom osiągnąć ich cele?"
+
+#: email/learner_signup.html:37
+#, python-format
+msgid "Q: %(question)s"
+msgstr "Pytanie: %(question)s"
+
+#: email/learner_signup.html:45
+#, python-format
+msgid ""
+"By signing up for this learning circle, you are joining the P2PU community "
+"of learners and facilitators. We work with libraries and community centers "
+"in %(city)s and around the world to create this program free of charge for "
+"you, and we really hope you enjoy it."
+msgstr ""
+"Zapisując się do klubu wiedzy dołączasz do społeczności uczestników i "
+"moderatorów P2PU . Współpracujemy z  bibliotekami  i innymi instytucjami w "
+"%(city)s i na całym świecie - po to, by udostępnić Ci tę ofertę bezpłatnie. "
+"Mamy nadzieję, że Ci się spodoba!"
+
+#: email/learner_signup.html:47
+#, python-format
+msgid ""
+"Here is some advice from %(name)s in %(city)s, %(country)s who just finished"
+" a learning circle in %(topic)s: "
+msgstr ""
+"Tutaj znajdziesz komentarze osób, które właśnie ukończyły kurs%(topic)s. "
+"Przeczytaj: %(name)s (%(city)s, %(country)s) : "
+
+#: email/learner_signup.html:53
+msgid ""
+"Want more? Check out <a href=\"https://www.p2pu.org/\">P2PU’s website</a> to"
+" learn more about how we support equitable, social learning opportunities "
+"outside of school. You can also read <a "
+"href=\"http://info.p2pu.org/2018/03/06/tips/\">more tips</a> from learners "
+"around the world."
+msgstr ""
+"Chcesz dowiedzieć się więcej? Odwiedź <a "
+"href=\"https://www.p2pu.org/\">stronę P2PU </a> i przeczytaj o możliwościach"
+" wspierania samokształcenia, społecznościowego uczenia się oraz edukacji "
+"pozaformalnej. Zapoznaj się ze <a "
+"href=\"http://info.p2pu.org/2018/03/06/tips/\">wskazówkami</a> uczestników "
+"kursów z całego świata."
+
+#: email/learner_signup.html:58
+#, python-format
+msgid ""
+"If you’d no longer like to participate in this learning circle, you can "
+"unenroll through <a href=\"%(unapply_link)s\">this link</a>."
+msgstr ""
+"Jeśli chcesz zrezygnować z tego kursu, możesz się wypisać klikając w <a "
+"href=\"%(unapply_link)s\">ten link</a>."
+
+#: email/meeting_changed-sms.txt:1
+#, python-format
+msgid ""
+"Your learning circle on %(meeting_date)s has been rescheduled. Reply STOP to"
+" unsubscribe."
+msgstr ""
+"Spotkanie grupy klubu wiedzy z dnia %(meeting_date)s zostało przełożone. "
+"Odpowiedz STOP, żeby  się wypisać."
+
+#: email/meeting_changed-subject.txt:1
+#, python-format
+msgid ""
+"%(course_title)s learning circle at %(venue)s now meets %(meeting_date)s."
+msgstr ""
+"Nowy termin spotkania klubu%(course_title)sw  %(venue)s to %(meeting_date)s."
+
+#: email/meeting_changed.html:5
+#, python-format
+msgid ""
+"Your %(course_title)s learning circle meeting scheduled for %(old_date)s has"
+" been moved to %(new_date)s."
+msgstr ""
+"Spotkanie grupy  %(course_title)s klubu wiedzy zaplanowane na %(old_date)s "
+"zostało przełożone na  %(new_date)s."
+
+#: email/meeting_changed.html:7
+msgid ""
+"You will receive a reminder 2 days before the new scheduled meeting time"
+msgstr "Otrzymasz powiadomienie 2 dni przed nowo ustaloną datą spotkania"
+
+#: email/optout_confirm-subject.txt:1
+#, python-format
+msgid "Opt out of %(title)s %(day)ss %(time)s at %(venue_name)s."
+msgstr ""
+"Wypisz się z grupy klubu%(title)s, która spotyka się w %(day)so godzinie "
+"%(time)s,  w %(venue_name)s."
+
+#: email/optout_confirm.html:4 email/optout_confirm.txt:1
+msgid "Hi there"
+msgstr "Dzień dobry"
+
+#: email/optout_confirm.html:6 email/optout_confirm.txt:3
+msgid ""
+"You requested to be removed from the learning circle mentioned in the "
+"subject. Visit the link below to confirm:"
+msgstr ""
+"Otrzymaliśmy prośbę o usunięcie z grupy klubu wiedzy wskazanej w tytule "
+"wiadomości.  Kliknij w poniższy link, aby potwierdzić chęć wypisania się:"
+
+#: email/optout_confirm.html:10 email/optout_confirm.txt:7
+msgid ""
+"If you didn't request to be removed from the learning circle, you can safely"
+" ignore this message."
+msgstr ""
+"Jeśli nie chcesz zrezygnować z uczestnictwa w tym klubie, możesz zignorować "
+"tę wiadomość."
+
+#: email/optout_confirm_text.txt:1
+#, python-format
+msgid ""
+"You successfully left %(title)s %(day)ss %(time)s at "
+"%(application.study_group.venue_name)s."
+msgstr ""
+"Potwierdzamy wypisanie się z grupy klubu wiedzy %(title)s, która spotyka się"
+" w %(day)so %(time)s w %(application.study_group.venue_name)s."
+
+#: email/reminder.txt:1
+msgid "Hi there!"
+msgstr "Dzień dobry"
+
+#: email/reminder.txt:3
+#, python-format
+msgid ""
+"The %(course_title)s learning circle will meet this %(meeting_date)s at "
+"%(venue_name)s, %(venue_details)s."
+msgstr ""
+"Spotkanie grupy klubu wiedzy%(course_title)s  odbędzie się %(meeting_date)s "
+"w %(venue_name)s, więcej informacji: %(venue_details)s. "
+
+#: email/reminder.txt:5
+#, python-format
+msgid "From last week's meeting: %(feedback_text)s"
+msgstr "Z ostatniego tygodnia: %(feedback_text)s"
+
+#: email/reminder_notification.html:4 email/reminder_notification.txt:1
+#, python-format
+msgid "Hi there %(first_name)s"
+msgstr "Dzień dobry %(first_name)s"
+
+#: email/reminder_notification.html:6 email/reminder_notification.txt:3
+#, python-format
+msgid ""
+"We've generated a reminder for the learning circle meeting this "
+"%(meeting_date)s. The reminder will be sent automatically in 2 days from "
+"now."
+msgstr ""
+"Utworzyliśmy powiadomienie dla uczestników spotkania grupy klubu wiedzy, "
+"które odbędzie się  %(meeting_date)s. Powiadomienie zostanie wysłane "
+"automatycznie za 2 dni."
+
+#: email/reminder_notification.html:8 email/reminder_notification.txt:5
+msgid "This is what the reminder will look like."
+msgstr "Tak będzie wyglądało powiadomienie. "
+
+#: email/reminder_notification.html:10 email/reminder_notification.txt:7
+msgid "Email to learning circle participants"
+msgstr "Wiadomość dla uczestników kursu klubu wiedzy. "
+
+#: email/reminder_notification.html:16
+msgid ""
+"We'll insert RSVP links below for learners to indicate if they can attend "
+"the meeting"
+msgstr ""
+"Poniżej wstawimy linki dla uczestników, żeby mogli potwierdzić obecność lub "
+"poinformować nas o rezygnacji ze spotkania."
+
+#: email/reminder_notification.html:18 email/reminder_notification.txt:11
+msgid "Text message to learning circle participants"
+msgstr "Wiadomość dla uczestników klubu wiedzy"
+
+#: email/reminder_notification.html:25
+#, python-format
+msgid ""
+"If you wish to edit the reminder, you can follow <a "
+"href=\"%(PROTOCOL)s://%(DOMAIN)s%(message_edit_url)s\">this link</a>."
+msgstr ""
+"Jeśli chcesz zmienić treść powiadomienia, kliknij w <a "
+"href=\"%(PROTOCOL)s://%(DOMAIN)s%(message_edit_url)s\">ten link</a>."
+
+#: email/reminder_notification.html:27 email/reminder_notification.txt:17
+msgid "Regards"
+msgstr "Pozdrawiamy"
+
+#: email/reminder_notification.txt:15
+#, python-format
+msgid ""
+"If you wish to edit the reminder, you can follow this link: "
+"%(PROTOCOL)s://%(DOMAIN)s%(message_edit_url)s."
+msgstr ""
+"Jeśli chcesz zmienić treść powiadomienia, kliknij ten link: "
+"%(PROTOCOL)s://%(DOMAIN)s%(message_edit_url)s."
+
+#: email/sms.txt:1
+#, python-format
+msgid ""
+"Your learning circle is meeting %(meeting_date)s. Reply STOP to unsubscribe."
+msgstr ""
+"Twoja grupa klubu wiedzy spotyka się %(meeting_date)s. Odpowiedz STOP, żeby "
+"się wypisać."
+
+#: email_base.html:71
+#, python-format
+msgid ""
+"You can manage your message preferences from <a "
+"href=\"%(PROTOCOL)s://%(DOMAIN)s%(account_settings_url)s\">your "
+"dashboard</a>"
+msgstr ""
+"Możesz zarządzać ustawieniami wiadomości na <a "
+"href=\"%(PROTOCOL)s://%(DOMAIN)s%(account_settings_url)s\">swoim panelu</a>"
+
+#: rsvp_success.html:9
+msgid "Thank you for letting us know!"
+msgstr "Dziękujemy za informację!"
+
+#: rsvp_success.html:12
+msgid ""
+"If you want to change your RSVP status, just visit the appropriate link in "
+"your reminder email."
+msgstr ""
+"Jeśli chcesz zaktualizować informację o obecności na spotkaniu, kliknij "
+"odpowiedni link w powiadomieniu. "
+
+#: signup.html:11
+#, python-format
+msgid "Sign up for %(course_title)s"
+msgstr "Zapisy na %(course_title)s"
+
+#: signup.html:23
+#, python-format
+msgid "Facilitated by %(first_name)s %(last_name)s"
+msgstr "Klub moderuje:%(first_name)s %(last_name)s"
+
+#: signup.html:24
+#, python-format
+msgid ""
+"Course materials provided by <a href=\"%(link)s\" "
+"target=\"_blank\">%(provider)s</a>"
+msgstr ""
+"Materiały na kurs zapewnia <a href=\"%(link)s\" "
+"target=\"_blank\">%(provider)s</a>"
+
+#: signup.html:26
+#, python-format
+msgid ""
+"\n"
+"      This learning circle meets every <strong>%(day)s</strong> from <strong>%(meeting_time)s to %(end_time)s</strong> %(timezone)s starting <strong>%(start_date)s</strong> for %(meeting_count)s week.\n"
+"      "
+msgid_plural ""
+"\n"
+"      This learning circle meets every<strong> %(day)s</strong> from <strong>%(meeting_time)s to %(end_time)s</strong> %(timezone)s starting <strong>%(start_date)s</strong> for %(meeting_count)s weeks.</strong>\n"
+"      "
+msgstr[0] ""
+"\n"
+"      This learning circle meets every <strong>%(day)s</strong> from <strong>%(meeting_time)s to %(end_time)s</strong> %(timezone)s starting <strong>%(start_date)s</strong> for %(meeting_count)s week.\n"
+"      "
+msgstr[1] ""
+"\n"
+"      This learning circle meets every <strong>%(day)s</strong> from <strong>%(meeting_time)s to %(end_time)s</strong> %(timezone)s starting <strong>%(start_date)s</strong> for %(meeting_count)s week.\n"
+"      "
+msgstr[2] ""
+"\n"
+"      Ta grupa klubu wiedzy spotyka się w: <strong>%(day)s</strong>, w godzinach od: <strong>%(meeting_time)s do: %(end_time)s</strong>, strefa czasowa: %(timezone)s, począwszy od: <strong>%(start_date)s</strong>, przez %(meeting_count)s tygodni.\n"
+"      "
+msgstr[3] ""
+"\n"
+"      This learning circle meets every<strong> %(day)s</strong> from <strong>%(meeting_time)s to %(end_time)s</strong> %(timezone)s starting <strong>%(start_date)s</strong> for %(meeting_count)s weeks.</strong>\n"
+"      "
+
+#: signup.html:32
+msgid "At"
+msgstr "W"
+
+#: signup.html:37
+msgid "Signup for this learning circle is not open yet."
+msgstr "Zapisy na ten kurs jeszcze się nie rozpoczęły. "
+
+#: signup.html:42
+msgid "Unfortunately this learning circle is now closed for signup."
+msgstr "Niestety zapisy na ten kurs już się zakończyły. "
+
+#: signup_success.html:9
+msgid "You successfully signed up!"
+msgstr "Potwierdzamy rejestrację!"
+
+#: signup_success.html:12
+#, python-format
+msgid ""
+"\n"
+"        Thank you for signing up for &quot;%(course_title)s&quot; at %(venue_name)s. The first meeting will be on <strong>%(start_date)s, %(meeting_time)s</strong>. Your facilitator will be in contact before then."
+msgstr ""
+"\n"
+"        Dziękujemy za zapisanie się na kurs &quot;%(course_title)s&quot; w %(venue_name)s. Pierwsze spotkanie odbędzie się <strong>%(start_date)s, %(meeting_time)s</strong>. Twój moderator wcześniej się z Tobą skontaktuje."

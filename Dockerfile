@@ -54,7 +54,7 @@ RUN mkdir -p /var/lib/celery && \
     addgroup -g 1000 -S celery && \
     adduser -u 1000 -S celery -G celery && \
     chown celery:celery /var/lib/celery/
-RUN /opt/django-venv/bin/python /opt/app/manage.py compilemessages -l de
+RUN /opt/django-venv/bin/python /opt/app/manage.py compilemessages -l de -l fi -l pl -l pt -l ro
 ENV DATABASE_URL="sqlite:////var/app/db.sqlite3" \
     ADMIN_EMAIL="" \
     SECRET_KEY="" \
