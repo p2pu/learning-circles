@@ -28,7 +28,7 @@
       {% endwith %}
       </div>
       {% if user == feedback.study_group_meeting.study_group.facilitator %}
-      <p><a href="{% url 'studygroups_facilitator' %}">{% trans "Back to dashboard" %}</a></p>
+      <p><a href="{% url 'studygroups_view_study_group' feedback.study_group_meeting.study_group.pk %}">{% trans "Back to dashboard" %}</a></p>
       {% else %}
       <p><a href="{% url 'studygroups_organize' %}">{% trans "Back to dashboard" %}</a></p>
       {% endif %}
