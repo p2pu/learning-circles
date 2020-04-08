@@ -268,15 +268,16 @@ class AccountDeleteView(DeleteView):
         user.studygroup_set.update(deleted_at=timezone.now())
 
         # delete profile data
-        user.profile.avatar = None
-        user.profile.bio = None
-        user.profile.contact_url = None
-        user.profile.latitude = None
-        user.profile.longitude = None
-        user.profile.city = None
-        user.profile.region = None
-        user.profile.country = None
-        user.profile.save()
+        profile = user.profile
+        profile.avatar = ''
+        profile.bio = ''
+        profile.contact_url = ''
+        profile.latitude = None
+        profile.longitude = None
+        profile.city = ''
+        profile.region = ''
+        profile.country = ''
+        profile.save()
 
         # delete discourse user if any
         anonymize_discourse_user(user)
