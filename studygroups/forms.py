@@ -75,7 +75,7 @@ class ApplicationForm(forms.ModelForm):
         self.fields['email'].required = True
         study_group = kwargs.get('initial', {}).get('study_group')
         if study_group and study_group.country == 'United States of America':
-            self.fields['mobile'].help_text += ' Ex. +1 281-234-5678'
+            self.fields['mobile'].help_text = 'Ex. +1 281-234-5678. ' + self.fields['mobile'].help_text 
 
         # add custom signup question if the facilitator specified one
         if study_group.signup_question:
