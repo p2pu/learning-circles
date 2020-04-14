@@ -274,6 +274,7 @@ class AccountDeleteView(DeleteView):
         profile.contact_url = ''
         profile.latitude = None
         profile.longitude = None
+        profile.place_id = ''
         profile.city = ''
         profile.region = ''
         profile.country = ''
