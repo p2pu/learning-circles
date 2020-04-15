@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.global_settings import LANGUAGES
 from django.utils.translation import ugettext as _
 from django.utils import timezone
+from django.utils.text import slugify
 from django.contrib.auth.models import User
 from studygroups.utils import render_to_string_ctx
 from studygroups.email_helper import render_html_with_css
@@ -256,6 +257,11 @@ class StudyGroupForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+
+        if not len(slugify(self.cleaned_data['venue_name'], allow_unicode=True)):
+            msg_ = _('Venue name should include at least one alpha-numeric character.')
+            self.add_error("venue_name", msg_)
+
         # If date is changed, see if we can
         end_date = self.cleaned_data['start_date'] + datetime.timedelta(weeks=self.cleaned_data['weeks'] - 1)
 
