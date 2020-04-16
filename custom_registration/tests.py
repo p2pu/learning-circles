@@ -239,11 +239,11 @@ class TestCustomRegistrationViews(TestCase):
     @patch('custom_registration.views.anonymize_discourse_user')
     def test_user_deletion(self, anonymize_discourse_user):
         c = Client()
-        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
-        c.login(username='bob123', password='password')
+        user = create_user('bob@example.net', 'bob', 'cat', 'password')
+        c.login(username='bob@example.net', password='password')
         resp = c.post('/en/accounts/delete/', follow=True)
         anon = User.objects.get(pk=user.id)
-        self.assertTrue(anonymize_discourse_user.called)
         self.assertFalse(anon.is_active)
         self.assertNotEqual(anon.email, 'bob@example.net')
+        self.assertTrue(anonymize_discourse_user.called)
 

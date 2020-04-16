@@ -335,6 +335,23 @@ class TestFacilitatorViews(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertIn('/en/signup/%D0%B1%D1%8B%D1%81%D1%82%D1%80%D0%B5%D0%B5-%D0%B8-%D0%BB%D1%83%D1%87%D1%88%D0%B5-', resp.content.decode("utf-8"))
 
+
+    @patch('custom_registration.signals.handle_new_facilitator')
+    def test_create_study_group_venue_name_validation(self, handle_new_facilitator):
+        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
+        c = Client()
+        c.login(username='bob123', password='password')
+        data = self.STUDY_GROUP_DATA.copy()
+        data['start_date'] = '07/25/2019',
+        data['meeting_time'] = '07:00 PM',
+        data['venue_name'] = '#@$@'
+        with freeze_time('2019-07-20'):
+            resp = c.post('/en/studygroup/create/legacy/', data)
+            self.assertEquals(resp.status_code, 200)
+        study_groups = StudyGroup.objects.filter(facilitator=user)
+        self.assertEquals(study_groups.count(), 0)
+
+
     @patch('studygroups.views.facilitate.send_meeting_change_notification')
     def test_edit_meeting(self, send_meeting_change_notification):
         # Create studygroup

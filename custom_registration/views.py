@@ -267,6 +267,19 @@ class AccountDeleteView(DeleteView):
         # delete any active or future learning circles
         user.studygroup_set.update(deleted_at=timezone.now())
 
+        # delete profile data
+        profile = user.profile
+        profile.avatar = ''
+        profile.bio = ''
+        profile.contact_url = ''
+        profile.latitude = None
+        profile.longitude = None
+        profile.place_id = ''
+        profile.city = ''
+        profile.region = ''
+        profile.country = ''
+        profile.save()
+
         # delete discourse user if any
         anonymize_discourse_user(user)
 

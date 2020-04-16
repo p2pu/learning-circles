@@ -13,6 +13,7 @@ from freezegun import freeze_time
 from studygroups.models import Course
 from studygroups.models import StudyGroup
 from studygroups.models import Meeting
+from studygroups.models import Feedback
 from studygroups.models import Application
 from studygroups.models import Reminder
 from studygroups.models import Rsvp
@@ -236,6 +237,13 @@ class TestStudyGroupTasks(TestCase):
         application.save()
         mail.outbox = []
         generate_all_meetings(sg)
+        meeting = sg.meeting_set.filter(meeting_date__lte=now).last()
+        feedback = Feedback.objects.create(
+            study_group_meeting=meeting,
+            feedback="This is my feedback y'all",
+            attendance=3,
+            rating='3'
+        )
         generate_reminder(sg)
         self.assertEqual(Reminder.objects.all().count(), 1)
         reminder = Reminder.objects.all()[0]
@@ -247,6 +255,45 @@ class TestStudyGroupTasks(TestCase):
         self.assertIn('{0}/{1}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={2}&attending=yes&sig='.format(settings.DOMAIN, get_language(), urllib.parse.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].alternatives[0][0])
         self.assertIn('{0}/{1}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={2}&attending=no&sig='.format(settings.DOMAIN, get_language(), urllib.parse.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].alternatives[0][0])
         self.assertIn('{0}/{1}/optout/confirm/?user='.format(settings.DOMAIN, get_language()), mail.outbox[1].alternatives[0][0])
+        self.assertIn("This is my feedback y'all", mail.outbox[1].alternatives[0][0])
+
+
+    @patch('studygroups.tasks.send_message')
+    def test_send_malicious_reminder_email(self, send_message):
+        now = timezone.now()
+        sg = StudyGroup.objects.get(pk=1)
+        sg.timezone = now.strftime("%Z")
+        sg.start_date = now - datetime.timedelta(days=5)
+        sg.meeting_time = sg.start_date.time()
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=2)
+        sg.save()
+        sg = StudyGroup.objects.get(pk=1)
+        data = self.APPLICATION_DATA
+        data['study_group'] = sg
+        application = Application(**data)
+        accept_application(application)
+        application.save()
+        mail.outbox = []
+        generate_all_meetings(sg)
+        meeting = sg.meeting_set.filter(meeting_date__lte=now).last()
+        feedback = Feedback.objects.create(
+            study_group_meeting=meeting,
+            feedback='<a href="https://evil.ink/">this awesome link</a>',
+            attendance=3,
+            rating='3'
+        )
+        generate_reminder(sg)
+        self.assertEqual(Reminder.objects.all().count(), 1)
+        reminder = Reminder.objects.all()[0]
+        self.assertEqual(len(mail.outbox), 1)
+        send_reminder(reminder)
+        self.assertEqual(len(mail.outbox), 3) # should be sent to facilitator & application
+        self.assertEqual(mail.outbox[1].to[0], data['email'])
+        self.assertFalse(send_message.called)
+        self.assertIn('{0}/{1}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={2}&attending=yes&sig='.format(settings.DOMAIN, get_language(), urllib.parse.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].alternatives[0][0])
+        self.assertIn('{0}/{1}/rsvp/?user=test%40mail.com&study_group=1&meeting_date={2}&attending=no&sig='.format(settings.DOMAIN, get_language(), urllib.parse.quote(sg.next_meeting().meeting_datetime().isoformat())), mail.outbox[1].alternatives[0][0])
+        self.assertIn('{0}/{1}/optout/confirm/?user='.format(settings.DOMAIN, get_language()), mail.outbox[1].alternatives[0][0])
+        self.assertIn('&lt;a href="https://evil.ink/"&gt;this awesome link&lt;/a&gt;', mail.outbox[1].alternatives[0][0])
 
 
     @patch('studygroups.tasks.send_message')
