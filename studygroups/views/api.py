@@ -925,7 +925,11 @@ def serialize_team_data(team):
         "member_count": team.teammembership_set.active().count(),
         "zoom": team.zoom,
         "date_established": team.created_at.strftime("%B %Y"),
-        "organizers": [],
+        "intro_text": team.intro_text,
+        "website": team.website,
+        "email_address": team.email_address,
+        "location": team.location,
+        "facilitators": []
     }
 
     members = team.teammembership_set.active().values('user')
@@ -933,19 +937,20 @@ def serialize_team_data(team):
 
     serialized_team["studygroup_count"] = studygroup_count
 
-    organizers = team.teammembership_set.active().filter(role=TeamMembership.ORGANIZER)
-    for organizer in organizers:
-        serialized_organizer = {
-            "first_name": organizer.user.first_name,
-            "city": organizer.user.profile.city,
-            "bio": organizer.user.profile.bio,
-            "contact_url": organizer.user.profile.contact_url,
+    facilitators = team.teammembership_set.active()
+    for facilitator in facilitators:
+        serialized_facilitator = {
+            "first_name": facilitator.user.first_name,
+            "city": facilitator.user.profile.city,
+            "bio": facilitator.user.profile.bio,
+            "contact_url": facilitator.user.profile.contact_url,
+            "role": facilitator.user.role,
         }
 
-        if organizer.user.profile.avatar:
-            serialized_organizer["avatar_url"] = f"{settings.PROTOCOL}://{settings.DOMAIN}" + organizer.user.profile.avatar.url
+        if facilitator.user.profile.avatar:
+            serialized_facilitator["avatar_url"] = f"{settings.PROTOCOL}://{settings.DOMAIN}" + facilitator.user.profile.avatar.url
 
-        serialized_team["organizers"].append(serialized_organizer)
+        serialized_team["facilitators"].append(serialized_facilitator)
 
     if team.page_image:
         serialized_team["image_url"] = f"{settings.PROTOCOL}://{settings.DOMAIN}" + team.page_image.url

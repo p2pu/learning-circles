@@ -20,6 +20,10 @@ class Team(models.Model):
     created_at = models.DateTimeField(default=now)
     email_domain = models.CharField(max_length=128, blank=True)
     invitation_token = models.UUIDField(null=True, blank=True, unique=True)
+    email_address = models.CharField(max_length=128, blank=True)
+    website = models.CharField(max_length=128, blank=True)
+    location = models.CharField(max_length=128, blank=True)
+    intro_text = models.TextField(max_length=500, blank=True)
 
     def __str__(self):
         return self.name
