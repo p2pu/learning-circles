@@ -929,7 +929,7 @@ def serialize_team_data(team):
         "website": team.website,
         "email_address": team.email_address,
         "location": team.location,
-        "facilitators": []
+        "facilitators": [],
     }
 
     members = team.teammembership_set.active().values('user')
@@ -937,14 +937,14 @@ def serialize_team_data(team):
 
     serialized_team["studygroup_count"] = studygroup_count
 
-    facilitators = team.teammembership_set.active()
+    facilitators = team.teammembership_set.active().filter(role=TeamMembership.ORGANIZER)
     for facilitator in facilitators:
         serialized_facilitator = {
             "first_name": facilitator.user.first_name,
             "city": facilitator.user.profile.city,
             "bio": facilitator.user.profile.bio,
             "contact_url": facilitator.user.profile.contact_url,
-            "role": facilitator.user.role,
+            "role": facilitator.role,
         }
 
         if facilitator.user.profile.avatar:
@@ -954,6 +954,9 @@ def serialize_team_data(team):
 
     if team.page_image:
         serialized_team["image_url"] = f"{settings.PROTOCOL}://{settings.DOMAIN}" + team.page_image.url
+
+    if team.logo:
+        serialized_team["logo_url"] = f"{settings.PROTOCOL}://{settings.DOMAIN}" + team.logo.url
 
     if team.latitude and team.longitude:
         serialized_team["coordinates"] = {
