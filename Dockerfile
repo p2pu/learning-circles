@@ -23,23 +23,8 @@ RUN apt-get update \
         libcairo2-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-#   && apk --no-cache add --virtual .build-deps \
-#       gcc \
-#       make \
-#       musl-dev \
-#       linux-headers \
-#       postgresql-dev \
-#       jpeg-dev \
-#       zlib-dev \
-#       libffi-dev \
-#       freetype-dev \
-#       lcms2-dev \
-#       tk-dev \
-#       tcl-dev \
-#       py-lxml \
 RUN python3 -m venv /opt/django-venv
 RUN /opt/django-venv/bin/pip install --no-cache-dir -r /opt/app/requirements.txt
-#    && apk del .build-deps
 COPY . /opt/app/
 # Copy CSS & compiled JavaScript
 COPY --from=frontend /opt/app/assets assets
