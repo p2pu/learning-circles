@@ -17,10 +17,10 @@ RUN apt-get update \
         libjpeg-dev \
         openssl \
         libxslt-dev \
-        libxml2-dev \
+        libxml2 \
         wget \
         gettext \
-        libcairo2-dev \
+        libcairo2\
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 RUN python3 -m venv /opt/django-venv
@@ -35,7 +35,7 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 RUN mkdir -p /var/lib/celery && \
     addgroup --gid 1000 celery && \
-    adduser --uid 1000 --gid 1000 celery && \
+    useradd --no-log-init --uid 1000 --gid 1000 celery && \
     chown celery:celery /var/lib/celery/
 RUN /opt/django-venv/bin/python /opt/app/manage.py compilemessages -l de -l fi -l pl -l pt -l ro
 ENV DATABASE_URL="sqlite:////var/app/db.sqlite3" \
