@@ -20,6 +20,7 @@ RUN apt-get update \
         libxml2-dev \
         wget \
         gettext \
+        libcairo2-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 #   && apk --no-cache add --virtual .build-deps \
