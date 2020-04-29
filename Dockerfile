@@ -8,40 +8,37 @@ RUN apk --no-cache add --virtual native-deps \
 COPY . /opt/app/
 RUN npm run build
 
-FROM python:3.6-alpine3.10
+FROM python:3.6-slim
 WORKDIR /opt/app/
 COPY requirements.txt /opt/app/
-RUN apk --no-cache add --virtual .python-rundeps \
-        libpq \
-        libjpeg \
-        zlib \
-        postgresql \
-        build-base \
-        cairo-dev \
-        cairo \
-        cairo-tools \
-        openjpeg-dev \
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y \
+        libpq-dev \
+        libjpeg-dev \
         openssl \
-        tiff-dev \
         libxslt-dev \
         libxml2-dev \
-    && apk --no-cache add --virtual .build-deps \
-        gcc \
-        make \
-        musl-dev \
-        linux-headers \
-        postgresql-dev \
-        jpeg-dev \
-        zlib-dev \
-        libffi-dev \
-        freetype-dev \
-        lcms2-dev \
-        tk-dev \
-        tcl-dev \
-        py-lxml \
-    && python3 -m venv /opt/django-venv \
-    && /opt/django-venv/bin/pip install --no-cache-dir -r /opt/app/requirements.txt \
-    && apk del .build-deps
+        wget \
+        gettext \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+#   && apk --no-cache add --virtual .build-deps \
+#       gcc \
+#       make \
+#       musl-dev \
+#       linux-headers \
+#       postgresql-dev \
+#       jpeg-dev \
+#       zlib-dev \
+#       libffi-dev \
+#       freetype-dev \
+#       lcms2-dev \
+#       tk-dev \
+#       tcl-dev \
+#       py-lxml \
+RUN python3 -m venv /opt/django-venv
+RUN /opt/django-venv/bin/pip install --no-cache-dir -r /opt/app/requirements.txt
+#    && apk del .build-deps
 COPY . /opt/app/
 # Copy CSS & compiled JavaScript
 COPY --from=frontend /opt/app/assets assets
@@ -51,8 +48,8 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
     && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
     && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 RUN mkdir -p /var/lib/celery && \
-    addgroup -g 1000 -S celery && \
-    adduser -u 1000 -S celery -G celery && \
+    addgroup --gid 1000 celery && \
+    adduser --uid 1000 --gid 1000 celery && \
     chown celery:celery /var/lib/celery/
 RUN /opt/django-venv/bin/python /opt/app/manage.py compilemessages -l de -l fi -l pl -l pt -l ro
 ENV DATABASE_URL="sqlite:////var/app/db.sqlite3" \
