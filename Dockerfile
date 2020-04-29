@@ -40,7 +40,7 @@ RUN apk --no-cache add --virtual .python-rundeps \
         tcl-dev \
         py-lxml \
     && python3 -m venv /opt/django-venv \
-    && /opt/django-venv/bin/pip install -r /opt/app/requirements.txt \
+    && /opt/django-venv/bin/pip install --no-cache-dir -r /opt/app/requirements.txt \
     && apk del .build-deps
 COPY . /opt/app/
 # Copy CSS & compiled JavaScript
