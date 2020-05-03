@@ -908,13 +908,17 @@ class FinalReportListView(View):
 class InstagramFeed(View):
     def get(self, request):
         url = "https://api.instagram.com/v1/users/self/media/recent/?access_token={}".format(settings.INSTAGRAM_TOKEN)
-        response = get_json_response(url)
+        try:
+            response = get_json_response(url)
+            if response["meta"]["code"] != 200:
+                logger.error('Could not make request to Instagram')
+                return json_response(request, { "status": "error", "errors": response["meta"]["error_message"] })
 
-        if response["meta"]["code"] != 200:
+            return json_response(request, { "items": response["data"] })
+
+        except ConnectionError as e:
             logger.error('Could not make request to Instagram')
-            return json_response(request, { "status": "error", "errors": response["meta"]["error_message"] })
-
-        return json_response(request, { "items": response["data"] })
+            return json_response(request, { "status": "error", "errors": str(e) })
 
 
 def serialize_team_data(team):

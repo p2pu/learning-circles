@@ -5,7 +5,10 @@ import ErrorBoundary from './components/error-boundary'
 
 const element = document.getElementById('facilitator-dashboard')
 
+console.log("element.dataset.userProfile", element.dataset.userProfile)
+
 const user = element.dataset.user === "AnonymousUser" ? null : element.dataset.user;
+const userProfile = element.dataset.userProfile === "None" ? null : element.dataset.userProfile;
 const teamId = element.dataset.teamId === "None" ? null : element.dataset.teamId;
 const teamName = element.dataset.teamName === "None" ? null : element.dataset.teamName;
 const teamOrganizerName = element.dataset.teamOrganizerName === "None" ? null : element.dataset.teamOrganizerName;
@@ -20,6 +23,7 @@ const teamMemberInvitationUrl = element.dataset.teamMemberInvitationUrl === "Non
 ReactDOM.render(
   <ErrorBoundary scope="facilitator-dashboard">
     <FacilitatorDashboard
+      userData={element.dataset}
       user={user}
       teamId={teamId}
       teamName={teamName}

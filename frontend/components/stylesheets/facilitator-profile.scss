@@ -1,0 +1,76 @@
+@import 'variables';
+
+.card-outer {
+
+  .grid-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+
+    .label {
+      font-weight: bold;
+    }
+
+    div {
+      padding-top: 0.25rem;
+      padding-bottom: 0.25rem;
+      padding-right: 0.5rem;
+      padding-left: 0.5rem;
+      border-bottom: 1px solid $gray-light;
+    }
+  }
+
+  .profile-info {
+    h4 {
+      font-family: $font-family-sans-serif;
+    }
+  }
+
+  .card-upper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    padding-top: 45px;
+    z-index: 1;
+    transition: all ease-in-out 0.3s;
+  }
+  .card-lower {
+    margin-top: -4rem;
+    padding-top: 4rem;
+    width: 100%;
+    border: none;
+    border-radius: 0;
+    z-index: 0;
+    transition: all ease-in-out 0.3s;
+  }
+
+  .card-actions {
+    padding-top: 1rem;
+  }
+
+  .card-img {
+    object-fit: cover;
+    height: 250px;
+    width: 250px;
+    border-radius: 6px;
+    z-index: 2;
+    transition: all ease-in-out 0.3s;
+  }
+
+  .circle-bg {
+    height: 280px;
+    width: 280px;
+    background: $p2pu-blue;
+    border-radius: 100%;
+    position: absolute;
+    top: 0;
+    transform: translateX(-45px);
+    z-index: 1;
+    transition: all ease-in-out 0.3s;
+  }
+
+  &:hover {
+    .circle-bg, .card-img, .card {
+      box-shadow: -3px 3px 6px 2px rgba(0, 0, 0, 0.2);
+    }
+  }
+}
