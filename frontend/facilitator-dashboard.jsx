@@ -5,8 +5,6 @@ import ErrorBoundary from './components/error-boundary'
 
 const element = document.getElementById('facilitator-dashboard')
 
-console.log("element.dataset.userProfile", element.dataset.userProfile)
-
 const user = element.dataset.user === "AnonymousUser" ? null : element.dataset.user;
 const userProfile = element.dataset.userProfile === "None" ? null : element.dataset.userProfile;
 const teamId = element.dataset.teamId === "None" ? null : element.dataset.teamId;

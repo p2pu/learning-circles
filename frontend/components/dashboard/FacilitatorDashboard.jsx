@@ -96,7 +96,7 @@ export default class FacilitatorDashboard extends React.Component {
         </Alert>
         <div className="row">
           <div className="col-12">
-            <Title />
+            <Title user={this.state.user} userData={this.props.userData} />
           </div>
         </div>
 
