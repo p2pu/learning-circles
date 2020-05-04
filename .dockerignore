@@ -11,3 +11,4 @@ learnwithpeople/settings_local.pyc
 static_serve/
 .envrc
 upload
+Dockerfile
