@@ -937,14 +937,15 @@ def serialize_team_data(team):
 
     serialized_team["studygroup_count"] = studygroup_count
 
-    facilitators = team.teammembership_set.active().filter(role=TeamMembership.ORGANIZER)
+    facilitators = team.teammembership_set.active()
     for facilitator in facilitators:
+        facilitator_role = "FACILITATOR" if facilitator.role == TeamMembership.MEMBER else facilitator.role
         serialized_facilitator = {
             "first_name": facilitator.user.first_name,
             "city": facilitator.user.profile.city,
             "bio": facilitator.user.profile.bio,
             "contact_url": facilitator.user.profile.contact_url,
-            "role": facilitator.role,
+            "role": facilitator_role,
         }
 
         if facilitator.user.profile.avatar:

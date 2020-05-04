@@ -32,9 +32,13 @@ class TestTeamsApi(TestCase):
             'studygroup_count',
             'zoom',
             'coordinates',
-            'organizers',
+            'facilitators',
             'image_url',
-            'date_established'
+            'date_established',
+            'intro_text',
+            'website',
+            'location',
+            'email_address'
         ]
 
         resp_keys = list(res_data["items"][1].keys())
@@ -53,7 +57,11 @@ class TestTeamsApi(TestCase):
             'studygroup_count',
             'zoom',
             'date_established',
-            'organizers'
+            'facilitators',
+            'intro_text',
+            'website',
+            'location',
+            'email_address'
         ]
 
         resp_keys = list(res_data["items"][0].keys())
@@ -78,7 +86,7 @@ class TestTeamsApi(TestCase):
         organizer_studygroups_count = StudyGroup.objects.filter(facilitator=organizer).count()
 
         self.assertEqual(team_json["member_count"], team.teammembership_set.active().count())
-        self.assertEqual(team_json["organizers"][0]["first_name"], organizer.first_name)
+        self.assertEqual(team_json["facilitators"][0]["first_name"], organizer.first_name)
         self.assertEqual(team_json["studygroup_count"], organizer_studygroups_count)
         self.assertEqual(team_json["image_url"], f"{settings.PROTOCOL}://{settings.DOMAIN}" + team.page_image.url)
 
