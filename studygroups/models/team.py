@@ -14,12 +14,17 @@ class Team(models.Model):
     name = models.CharField(max_length=128)
     page_slug = models.SlugField(max_length=256, blank=True)
     page_image = models.ImageField(blank=True)
+    logo = models.ImageField(blank=True)
     latitude = models.DecimalField(max_digits=8, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     zoom = models.IntegerField(default=7)
     created_at = models.DateTimeField(default=now)
     email_domain = models.CharField(max_length=128, blank=True)
     invitation_token = models.UUIDField(null=True, blank=True, unique=True)
+    email_address = models.CharField(max_length=128, blank=True)
+    website = models.CharField(max_length=128, blank=True)
+    location = models.CharField(max_length=128, blank=True)
+    intro_text = models.TextField(max_length=500, blank=True)
 
     def __str__(self):
         return self.name
