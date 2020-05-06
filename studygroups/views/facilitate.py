@@ -737,9 +737,11 @@ class FacilitatorDashboard(TemplateView):
 
             context["first_name"] = user.first_name
             context["last_name"] = user.last_name
-            context["city"] = user.profile.city
-            context["bio"] = user.profile.bio
-            context["avatar_url"] = f"{settings.PROTOCOL}://{settings.DOMAIN}" + user.profile.avatar.url if user.profile.avatar else None
+
+            if hasattr(user, 'profile'):
+                context["city"] = user.profile.city
+                context["bio"] = user.profile.bio
+                context["avatar_url"] = f"{settings.PROTOCOL}://{settings.DOMAIN}" + user.profile.avatar.url if user.profile.avatar else None
 
             team_membership = TeamMembership.objects.active().filter(user=user).first()
             if team_membership:
