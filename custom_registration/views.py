@@ -34,6 +34,7 @@ from .models import confirm_user_email
 from .models import send_email_confirm_email
 from .forms import SignupForm
 from .forms import ProfileForm
+from .forms import UserForm
 from .decorators import user_is_not_logged_in
 from discourse_sso.utils import anonymize_discourse_user
 
@@ -204,11 +205,13 @@ class EmailConfirmView(View):
 class AccountSettingsView(TemplateView):
     template_name = 'custom_registration/settings.html'
     profile_form = ProfileForm
+    user_form = UserForm
     team_membership_form = TeamMembershipForm
 
     def get_context_data(self, **kwargs):
         context = super(AccountSettingsView, self).get_context_data(**kwargs)
         context['profile_form'] = self.profile_form(prefix='profile', instance=self.request.user.profile)
+        context['user_form'] = self.user_form(prefix='user', instance=self.request.user)
         team_membership = TeamMembership.objects.active().filter(user=self.request.user).first()
         if team_membership is not None:
             context['team_membership'] = team_membership
@@ -217,16 +220,6 @@ class AccountSettingsView(TemplateView):
 
 
     def post(self, request, *args, **kwargs):
-        if 'profile' in request.POST:
-            profile_form = self.profile_form(request.POST, request.FILES, prefix='profile', instance=request.user.profile)
-
-            if profile_form.is_valid():
-                profile_form.save()
-                messages.success(request, "Profile settings saved successfully")
-
-            context = self.get_context_data(profile_form=profile_form)
-            return super(AccountSettingsView, self).render_to_response(context)
-
         if 'team_membership' in request.POST:
             team_membership = TeamMembership.objects.active().filter(user=request.user).first()
             team_membership_form = self.team_membership_form(request.POST, prefix='team_membership', instance=team_membership)
@@ -237,6 +230,18 @@ class AccountSettingsView(TemplateView):
 
             context = self.get_context_data(team_membership_form=team_membership_form)
             return super(AccountSettingsView, self).render_to_response(context)
+
+
+        profile_form = self.profile_form(request.POST, request.FILES, prefix='profile', instance=request.user.profile)
+        user_form = self.user_form(request.POST, prefix="user", instance=request.user)
+
+        if profile_form.is_valid() and user_form.is_valid():
+            profile_form.save()
+            user_form.save()
+            messages.success(request, "Profile settings saved successfully")
+
+        context = self.get_context_data(user_form=user_form)
+        return super(AccountSettingsView, self).render_to_response(context)
 
 
 @method_decorator(login_required, name='dispatch')
