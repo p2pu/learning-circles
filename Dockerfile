@@ -10,7 +10,6 @@ RUN npm run build
 
 FROM python:3.6-slim
 WORKDIR /opt/app/
-COPY requirements.txt /opt/app/
 RUN apt-get update \
     && apt-get install --no-install-recommends -y \
         libpq-dev \
@@ -23,16 +22,17 @@ RUN apt-get update \
         libcairo2\
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-RUN python3 -m venv /opt/django-venv
-RUN /opt/django-venv/bin/pip install --no-cache-dir -r /opt/app/requirements.txt
+COPY requirements.txt /opt/app/
+RUN python3 -m venv /opt/django-venv \
+    && /opt/django-venv/bin/pip install --no-cache-dir -r /opt/app/requirements.txt
 COPY . /opt/app/
 # Copy CSS & compiled JavaScript
 COPY --from=frontend /opt/app/assets assets
 COPY config/docker-entry.sh /docker-entry.sh
-ENV DOCKERIZE_VERSION v0.6.0
-RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
-    && rm dockerize-alpine-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+ENV DOCKERIZE_VERSION v0.6.1
+RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz \
+    && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
 RUN mkdir -p /var/lib/celery && \
     addgroup --gid 1000 celery && \
     useradd --no-log-init --uid 1000 --gid 1000 celery && \
