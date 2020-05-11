@@ -18,6 +18,8 @@ from studygroups.models import TeamInvitation
 from studygroups.models import Feedback
 from studygroups.utils import gen_rsvp_querystring
 
+from custom_registration.models import create_user
+
 import datetime
 import urllib.request, urllib.parse, urllib.error
 import json
@@ -32,25 +34,28 @@ class TestOrganizerViews(TestCase):
 
 
     def setUp(self):
-        user = User.objects.create_user('admin', 'admin@test.com', 'password')
+        user = create_user('admin@test.com', 'admin', 'h', 'password')
         user.is_superuser = True
         user.is_staff = True
+
+        #organizer = create_user('organ@team.com', 'organ', 'test', 'password', False)
+        #faci1 = create_user('faci1@team.com', 'faci1', 'test', 'password', False)
         user.save()
 
 
     def test_organizer_login_redirect(self):
-        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
+        user = create_user('bob@example.net', 'bob', 'uncle', 'password')
         team = Team.objects.create(name='test team')
         TeamMembership.objects.create(team=team, user=user, role=TeamMembership.ORGANIZER)
         c = Client()
-        c.login(username='bob123', password='password')
+        c.login(username='bob@example.net', password='password')
         resp = c.get('/en/login_redirect/')
         self.assertRedirects(resp, '/en/organize/{}/'.format(team.pk))
 
 
     def test_organizer_access(self):
-        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
-        faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', '1234')
+        user = create_user('bob@example.net', 'bob', 'uncle', 'password', False)
+        faci1 = create_user('faci1@team.com', 'faci1', 'test', 'password', False)
 
         team = Team.objects.create(name='test team')
         TeamMembership.objects.create(team=team, user=user, role=TeamMembership.ORGANIZER)
@@ -61,7 +66,7 @@ class TestOrganizerViews(TestCase):
         sg.save()
 
         c = Client()
-        c.login(username='bob123', password='password')
+        c.login(username='bob@example.net', password='password')
 
         def assertAllowed(url):
             resp = c.get(url)
@@ -108,7 +113,7 @@ class TestOrganizerViews(TestCase):
 
     def test_staff_access(self):
         c = Client()
-        c.login(username='admin', password='password')
+        c.login(username='admin@test.com', password='password')
 
         def assertAllowed(url):
             resp = c.get(url)
@@ -140,9 +145,9 @@ class TestOrganizerViews(TestCase):
 
 
     def test_organizer_dash(self):
-        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', '1234')
-        faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', '1234')
-        faci2 = User.objects.create_user('faci2@team.com', 'faci2@team.com', '1234')
+        organizer = create_user('organ@team.com', 'organ', 'test', 'password', False)
+        faci1 = create_user('faci1@team.com', 'faci1', 'test', 'password', False)
+        faci2 = create_user('faci2@team.com', 'faci2', 'test', 'password', False)
 
         sg = StudyGroup.objects.get(pk=1)
         sg.facilitator = faci1
@@ -159,7 +164,7 @@ class TestOrganizerViews(TestCase):
         TeamMembership.objects.create(team=team, user=faci2, role=TeamMembership.MEMBER)
 
         c = Client()
-        c.login(username='organ@team.com', password='1234')
+        c.login(username='organ@team.com', password='password')
         resp = c.get('/en/organize/')
         self.assertRedirects(resp, '/en/organize/{}/'.format(team.pk))
 
@@ -173,7 +178,7 @@ class TestOrganizerViews(TestCase):
 
     def test_organizer_dash_for_staff(self):
         c = Client()
-        c.login(username='admin', password='password')
+        c.login(username='admin@test.com', password='password')
         resp = c.get('/en/organize/')
         self.assertEqual(resp.status_code, 200)
 
@@ -182,8 +187,8 @@ class TestOrganizerViews(TestCase):
 
 
     def test_weekly_report(self):
-        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
-        faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', 'password')
+        organizer = create_user('organ@team.com', 'organ', 'test', 'password', False)
+        faci1 = create_user('faci1@team.com', 'faci1', 'test', 'password', False)
         StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
         StudyGroup.objects.filter(pk=3).update(facilitator=faci1)
         StudyGroup.objects.filter(pk=3).update(deleted_at=timezone.now())
@@ -222,11 +227,12 @@ class TestOrganizerViews(TestCase):
 
 
     def test_invite_new_user(self):
-        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
+        organizer = create_user('organ@team.com', 'organ', 'test', 'password', False)
         organizer.first_name = 'Orgaborga'
         organizer.save()
         team = Team.objects.create(name='test team')
         TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
+        mail.outbox = []
         
         c = Client()
         c.login(username='organ@team.com', password='password')
@@ -242,12 +248,13 @@ class TestOrganizerViews(TestCase):
 
 
     def test_invite_existing_user(self):
-        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
+        organizer = create_user('organ@team.com', 'organ', 'test', 'password', False)
         organizer.first_name = 'Orgaborga'
         organizer.save()
-        faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', 'password')
+        faci1 = create_user('faci1@team.com', 'faci1', 'test', 'password', False)
         faci1.first_name = 'Bobobob'
         faci1.save()
+        mail.outbox = []
 
         team = Team.objects.create(name='test team')
         TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
@@ -265,12 +272,13 @@ class TestOrganizerViews(TestCase):
 
 
     def test_invite_existing_user_with_email_mixed_case(self):
-        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
+        organizer = create_user('organ@team.com', 'organ', 'test', 'password', False)
         organizer.first_name = 'Orgaborga'
         organizer.save()
-        faci1 = User.objects.create_user('faci1@team.com', 'fAcI1@team.com', 'password')
+        faci1 = create_user('faci1@team.com', 'faci1', 'test', 'password', False)
         faci1.first_name = 'Bobobob'
         faci1.save()
+        mail.outbox = []
 
         team = Team.objects.create(name='test team')
         TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
@@ -290,7 +298,7 @@ class TestOrganizerViews(TestCase):
 
 
     def test_only_group_organizer_can_invite(self):
-        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
+        organizer = create_user('organ@team.com', 'organ', 'test', 'password', False)
         organizer.first_name = 'Orgaborga'
         organizer.save()
         team = Team.objects.create(name='test team')
@@ -305,7 +313,7 @@ class TestOrganizerViews(TestCase):
 
 
     def test_valid_invite(self):
-        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
+        organizer = create_user('organ@team.com', 'organ', 'test', 'password', False)
         organizer.first_name = 'Orgaborga'
         organizer.save()
         team = Team.objects.create(name='test team')

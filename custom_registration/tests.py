@@ -67,9 +67,9 @@ class TestCustomRegistrationViews(TestCase):
 
 
     def test_login_redirect(self):
-        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
+        user = create_user('bob@example.net', 'bob', 'cat', 'password')
         c = Client()
-        c.login(username='bob123', password='password')
+        c.login(username='bob@example.net', password='password')
         resp = c.get('/en/accounts/login/', follow=True)
         self.assertEqual(resp.redirect_chain, [
             ('/login_redirect/', 302),
@@ -80,7 +80,8 @@ class TestCustomRegistrationViews(TestCase):
 
     # Test /accounts/password_reset/ for correct handling of case
     def test_password_reset_submit(self):
-        user = User.objects.create_user('bob123', 'boB@example.net', 'password')
+        user = create_user('boB@example.net', 'bob', 'cat', 'password')
+        mail.outbox = []
         c = Client()
         resp = c.post('/en/accounts/password_reset/', {
             'email': 'bob@example.net'
@@ -98,7 +99,8 @@ class TestCustomRegistrationViews(TestCase):
 
     # Test /reset/uuidb64/token/ to verify url and test automatic login
     def test_password_reset_complete(self):
-        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
+        user = create_user('bob@example.net', 'bob', 'cat', 'password')
+        mail.outbox = []
         c = Client()
         resp = c.post('/en/accounts/password_reset/', {
             'email': 'bob@example.net'
