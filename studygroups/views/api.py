@@ -68,7 +68,7 @@ def studygroups(request):
             "time_zone": sg.timezone_display(),
             "end_time": sg.end_time(),
             "weeks": sg.meeting_set.active().count(),
-            "url": f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_signup', args=(slugify(sg.venue_name), sg.id,)),
+            "url": f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
         }
         if sg.image:
             data["image_url"] = f"{settings.PROTOCOL}://{settings.DOMAIN}" + sg.image.url
@@ -545,6 +545,10 @@ def _studygroup_check(studygroup_id):
     else:
         return StudyGroup.objects.get(pk=int(studygroup_id)), None
 
+def _venue_name_check(venue_name):
+    if len(slugify(venue_name, allow_unicode=True)):
+        return venue_name, None
+    return None, 'Venue name should include at least one alpha-numeric character.'
 
 def _make_learning_circle_schema(request):
     post_schema = {
@@ -553,7 +557,10 @@ def _make_learning_circle_schema(request):
             _course_check,
         ], required=True),
         "description": schema.text(required=True, length=500),
-        "venue_name": schema.text(required=True, length=256),
+        "venue_name": schema.chain([
+            schema.text(required=True, length=256),
+            _venue_name_check,
+        ], required=True),
         "venue_details": schema.text(required=True, length=128),
         "venue_address": schema.text(required=True, length=256),
         "venue_website": schema.text(),
@@ -592,7 +599,7 @@ class LearningCircleCreateView(View):
         data = json.loads(request.body)
         data, errors = schema.validate(post_schema, data)
         if errors != {}:
-            logger.error('schema error {0}'.format(json.dumps(errors)))
+            logger.debug('schema error {0}'.format(json.dumps(errors)))
             return json_response(request, {"status": "error", "errors": errors})
 
         # create learning circle

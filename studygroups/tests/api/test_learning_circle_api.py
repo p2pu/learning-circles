@@ -555,11 +555,51 @@ class TestLearningCircleApi(TestCase):
             })
             self.assertEqual(StudyGroup.objects.all().count(), 5)
 
-
         c = Client()
         resp = c.get('/api/learningcircles/')
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()["count"], 5)
+
+
+    def test_get_learning_circles_invalid_venue_name(self):
+        self.facilitator.profile.email_confirmed_at = timezone.now()
+        self.facilitator.profile.save()
+        c = Client()
+        c.login(username='faci@example.net', password='password')
+        data = {
+            "course": 3,
+            "description": "Lets learn something",
+            "venue_name": "/@@",
+            "venue_details": "top floor",
+            "venue_address": "75 Harrington",
+            "city": "Cape Town",
+            "country": "South Africa",
+            "country_en": "South Africa",
+            "region": "Western Cape",
+            "latitude": 3.1,
+            "longitude": "1.3",
+            "place_id": "4",
+            "language": "en",
+            "start_date": "2018-02-12",
+            "weeks": 2,
+            "meeting_time": "17:01",
+            "duration": 50,
+            "timezone": "UTC",
+            "image": "/media/image.png",
+            "draft": False,
+        }
+        url = '/api/learning-circle/'
+        self.assertEqual(StudyGroup.objects.all().count(), 4)
+        with freeze_time('2018-01-20'):
+            resp = c.post(url, data=json.dumps(data), content_type='application/json')
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.json(), {
+                "status": "error",
+                "errors": {"venue_name": [
+                    'Venue name should include at least one alpha-numeric character.'
+                ]},
+            })
+            self.assertEqual(StudyGroup.objects.all().count(), 4)
 
 
     def test_get_learning_circles_exclude_drafts(self):
