@@ -39,7 +39,7 @@ class TestAnnounceViews(TestCase):
 
     def setUp(self):
         # create staff user
-        create_user('admin@example.net', 'user', 'One', 'password')
+        user = create_user('admin@example.net', 'user', 'One', 'password')
         user.is_superuser = True
         user.is_staff = True
         user.save()
