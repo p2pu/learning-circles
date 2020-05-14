@@ -19,6 +19,8 @@ from studygroups.models import Feedback
 from studygroups.models import generate_all_meetings
 from studygroups.utils import gen_rsvp_querystring
 
+from custom_registration.models import create_user
+
 from freezegun import freeze_time
 
 import datetime
@@ -47,11 +49,7 @@ class TestLearnerViews(TestCase):
     }
 
     def setUp(self):
-        user = User.objects.create_user('admin', 'admin@test.com', 'password')
-        user.is_superuser = True
-        user.is_staff = True
-        user.save()
-
+        pass
 
     def test_submit_application(self):
         c = Client()
@@ -107,12 +105,13 @@ class TestLearnerViews(TestCase):
         # 2. One of the learners signs up with their correct mobile
         # There should be only 1 signup per email address
 
-        facilitator = User.objects.create_user('bowie', 'hi@example.net', 'password')
+        facilitator = create_user('hi@example.net', 'bowie', 'wowie', 'password')
+        mail.outbox = []
         sg = StudyGroup.objects.get(pk=1)
         sg.facilitator = facilitator
         sg.save()
         c = Client()
-        c.login(username='bowie', password='password')
+        c.login(username='hi@example.net', password='password')
         user1 = {'study_group': sg.pk, 'name': 'bob', 'email': 'bob@mail.com', 'mobile': '+27112223333'}
         user2 = {'study_group': sg.pk, 'name': 'anchovie', 'email': 'anchovie@mail.com', 'mobile': '+27112221111'}
         resp = c.post(f'/en/studygroup/{sg.pk}/member/add/', user1)
@@ -140,12 +139,13 @@ class TestLearnerViews(TestCase):
         # 3. Learner sign up again with email + mobile
         # There should be only 1 signup per email address
 
-        facilitator = User.objects.create_user('bowie', 'hi@example.net', 'password')
+        facilitator = create_user('hi@example.net', 'bowie', 'wowie', 'password')
+        mail.outbox = []
         sg = StudyGroup.objects.get(pk=1)
         sg.facilitator = facilitator
         sg.save()
         c = Client()
-        c.login(username='bowie', password='password')
+        c.login(username='hi@example.net', password='password')
         user1 = {'study_group': sg.pk, 'name': 'bob', 'mobile': '+27112223333'}
         resp = c.post(f'/en/studygroup/{sg.pk}/member/add/', user1)
         self.assertEqual(Application.objects.active().count(), 1)

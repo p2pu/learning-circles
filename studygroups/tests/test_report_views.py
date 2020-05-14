@@ -11,6 +11,7 @@ from studygroups.models import StudyGroup
 from studygroups.models import Application
 from studygroups.models import Course
 from studygroups.models import accept_application
+from custom_registration.models import create_user
 
 from surveys.models import LearnerSurveyResponse
 from surveys.models import FacilitatorSurveyResponse
@@ -40,7 +41,7 @@ class TestReportViews(TestCase):
         return "image"
 
     def setUp(self):
-        user = User.objects.create_user('admin', 'admin@test.com', 'password')
+        user = create_user('admin@test.com', 'admin', 'smadmin', 'password')
         user.is_superuser = True
         user.is_staff = True
         user.save()
@@ -67,7 +68,7 @@ class TestReportViews(TestCase):
         return FacilitatorSurveyResponse.objects.create(**survey_data)
 
     def test_study_group_final_report_with_no_responses(self):
-        facilitator = User.objects.create_user('bowie', 'hi@example.net', 'password')
+        facilitator = create_user('hi@example.net', 'bowie', 'wowie', 'password')
         course_data = dict(
             title='Course 1011',
             provider='CourseMagick',
@@ -106,7 +107,7 @@ class TestReportViews(TestCase):
     def test_study_group_final_report_with_only_facilitator_response(self):
         # TODO
         return
-        facilitator = User.objects.create_user('bowie', 'hi@example.net', 'password')
+        facilitator = create_user('hi@example.net', 'bowie', 'wowie', 'password')
         course_data = dict(
             title='Course 1011',
             provider='CourseMagick',
@@ -148,7 +149,7 @@ class TestReportViews(TestCase):
     def test_study_group_final_report_with_responses(self):
         # TODO
         return
-        facilitator = User.objects.create_user('bowie', 'hi@example.net', 'password')
+        facilitator = create_user('hi@example.net', 'bowie', 'wowie', 'password')
         course_data = dict(
             title='Course 1011',
             provider='CourseMagick',

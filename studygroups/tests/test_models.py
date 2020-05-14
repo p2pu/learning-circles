@@ -13,12 +13,13 @@ from studygroups.models import Rsvp
 from studygroups.models import accept_application
 from studygroups.models import create_rsvp
 from studygroups.models import generate_all_meetings
+from studygroups.models.course import KNOWN_COURSE_PLATFORMS
 from studygroups.utils import gen_rsvp_querystring
 from studygroups.utils import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
 from studygroups.tasks import send_meeting_change_notification
 
-from studygroups.models.course import KNOWN_COURSE_PLATFORMS
+from custom_registration.models import create_user
 
 from unittest.mock import patch
 import datetime
@@ -51,9 +52,10 @@ class TestSignupModels(TestCase):
     }
 
     def setUp(self):
-        user = User.objects.create_user('admin', 'admin@test.com', 'password')
+        user = create_user('admin@test.com', 'admin', 'b', 'password')
         user.is_staff = True
         user.save()
+        mail.outbox = []
 
     def test_accept_application(self):
         # TODO remove this test
@@ -157,7 +159,8 @@ class TestSignupModels(TestCase):
         self.assertFalse(Rsvp.objects.all().first().attending)
 
     def test_new_study_group_email(self):
-        facilitator = User.objects.create_user('facil', 'facil@test.com', 'password')
+        facilitator = create_user('facil@test.com', 'facil', 'itate', 'password')
+        mail.outbox = []
         sg = StudyGroup(
             course=Course.objects.first(),
             facilitator=facilitator,

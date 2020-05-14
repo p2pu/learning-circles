@@ -24,6 +24,7 @@ import UpcomingEventNotification from './UpcomingEventNotification'
 import TeamMembersTable from './TeamMembersTable'
 import TeamInvitationsTable from './TeamInvitationsTable'
 import OrganizerTeamInvitations from './OrganizerTeamInvitations'
+import FacilitatorProfile from './FacilitatorProfile'
 
 import 'react-tabs/style/react-tabs.css';
 import 'aos/dist/aos.css';
@@ -95,7 +96,7 @@ export default class FacilitatorDashboard extends React.Component {
         </Alert>
         <div className="row">
           <div className="col-12">
-            <Title />
+            <Title user={this.state.user} userData={this.props.userData} />
           </div>
         </div>
 
@@ -319,6 +320,9 @@ export default class FacilitatorDashboard extends React.Component {
           </div>
 
           <div className="col-12 col-lg-4">
+            <div data-aos="fade">
+              <FacilitatorProfile facilitator={this.props.userData} themeColor={"blue"} />
+            </div>
             <div data-aos='fade'>
               <Card className="bg-warning feedback-survey d-block w-100">
                 <div className="bold text-center text-white">In light of the worldwide coronavirus pandemic, meeting in person is probably not an option for your learning circle right now. How do we learn together when we cannot meet in person?

@@ -77,16 +77,16 @@ class TestFacilitatorViews(TestCase):
     }
 
     def setUp(self):
-        user = User.objects.create_user('admin', 'admin@test.com', 'password')
+        user = create_user('admin@test.com', 'admin', 'admin', 'password')
         user.is_superuser = True
         user.is_staff = True
         user.save()
 
 
     def test_user_forbidden(self):
-        user = User.objects.create_user('bob', 'bob@example.net', 'password')
+        user = create_user('bob@example.net', 'bob', 'test', 'password')
         c = Client()
-        c.login(username='bob', password='password')
+        c.login(username='bob@example.net', password='password')
         def assertForbidden(url):
             resp = c.get(url)
             self.assertEqual(resp.status_code, 403)
@@ -105,13 +105,12 @@ class TestFacilitatorViews(TestCase):
 
 
     def test_facilitator_access(self):
-        User.objects.create_user('bob123', 'bob@example.net', 'password')
-        user = User.objects.get(username='bob123')
+        user = create_user('bob@example.net', 'bob', 'test', 'password')
         sg = StudyGroup.objects.get(pk=1)
         sg.facilitator = user
         sg.save()
         c = Client()
-        c.login(username='bob123', password='password')
+        c.login(username='bob@example.net', password='password')
         def assertAllowed(url):
             resp = c.get(url)
             #TODO not sure if it's a good idea to include 404 here!
@@ -133,9 +132,10 @@ class TestFacilitatorViews(TestCase):
 
 
     def test_create_study_group(self):
-        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
+        user = create_user('bob@example.net', 'bob', 'test', 'password')
+        mail.outbox = []
         c = Client()
-        c.login(username='bob123', password='password')
+        c.login(username='bob@example.net', password='password')
         data = self.STUDY_GROUP_DATA.copy()
         data['start_date'] = '07/25/2018',
         data['meeting_time'] = '07:00 PM',
@@ -338,9 +338,9 @@ class TestFacilitatorViews(TestCase):
 
     @patch('custom_registration.signals.handle_new_facilitator')
     def test_create_study_group_venue_name_validation(self, handle_new_facilitator):
-        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
+        user = create_user('bob@example.net', 'bob123', 'test', 'password', False)
         c = Client()
-        c.login(username='bob123', password='password')
+        c.login(username='bob@example.net', password='password')
         data = self.STUDY_GROUP_DATA.copy()
         data['start_date'] = '07/25/2019',
         data['meeting_time'] = '07:00 PM',
@@ -454,7 +454,7 @@ class TestFacilitatorViews(TestCase):
     def test_send_email(self, send_message):
         # Test sending a message
         c = Client()
-        c.login(username='admin', password='password')
+        c.login(username='admin@test.com', password='password')
         signup_data = self.APPLICATION_DATA.copy()
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
         self.assertRedirects(resp, '/en/signup/1/success/')
@@ -482,7 +482,7 @@ class TestFacilitatorViews(TestCase):
     @patch('studygroups.tasks.send_message')
     def test_send_sms(self, send_message):
         c = Client()
-        c.login(username='admin', password='password')
+        c.login(username='admin@test.com', password='password')
         signup_data = self.APPLICATION_DATA.copy()
         signup_data['mobile'] = '+12812345678'
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
@@ -506,7 +506,7 @@ class TestFacilitatorViews(TestCase):
     @patch('studygroups.tasks.send_message')
     def test_dont_send_blank_sms(self, send_message):
         c = Client()
-        c.login(username='admin', password='password')
+        c.login(username='admin@test.com', password='password')
         signup_data = self.APPLICATION_DATA.copy()
         signup_data['mobile'] = '+12812345678'
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
@@ -527,9 +527,10 @@ class TestFacilitatorViews(TestCase):
 
 
     def test_feedback_submit(self):
-        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', '1234')
-        faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', '1234')
+        organizer = create_user('organ@team.com', 'organ', 'test', '1234', False)
+        faci1 = create_user('faci1@team.com', 'faci1', 'test', '1234', False)
         StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
+        mail.outbox = []
 
         # create team
         team = Team.objects.create(name='test team')
@@ -562,8 +563,8 @@ class TestFacilitatorViews(TestCase):
 
 
     def test_user_accept_invitation(self):
-        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', '1234')
-        faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', '1234')
+        organizer = create_user('organ@team.com', 'organ', 'test', '1234', False)
+        faci1 = create_user('faci1@team.com', 'faci1', 'test', '1234', False)
         StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
 
         # create team
@@ -585,8 +586,8 @@ class TestFacilitatorViews(TestCase):
 
 
     def test_user_reject_invitation(self):
-        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', '1234')
-        faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', '1234')
+        organizer = create_user('organ@team.com', 'organ', 'test', '1234', False)
+        faci1 = create_user('faci1@team.com', 'faci1', 'test', '1234', False)
         StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
 
         # create team
@@ -606,7 +607,7 @@ class TestFacilitatorViews(TestCase):
 
 
     def test_edit_course(self):
-        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
+        user = create_user('bob@example.net', 'bob', 'test', 'password')
         course_data = dict(
             title='Course 1011',
             provider='CourseMagick',
@@ -619,7 +620,7 @@ class TestFacilitatorViews(TestCase):
         )
         course = Course.objects.create(**course_data)
         c = Client()
-        c.login(username='bob123', password='password')
+        c.login(username='bob@example.net', password='password')
         # make sure bob123 can edit the course
         course_url = '/en/course/{}/edit/'.format(course.id)
         resp = c.get(course_url)
@@ -630,8 +631,8 @@ class TestFacilitatorViews(TestCase):
 
 
     def test_cant_edit_other_facilitators_course(self):
-        User.objects.create_user('bob321', 'bob2@example.net', 'password')
-        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
+        create_user('bob2@example.net', 'bob2', '2', 'password')
+        user = create_user('bob@example.net', 'bob123', '123', 'password')
         course_data = dict(
             title='Course 1011',
             provider='CourseMagick',
@@ -644,7 +645,7 @@ class TestFacilitatorViews(TestCase):
         )
         course = Course.objects.create(**course_data)
         c = Client()
-        c.login(username='bob321', password='password')
+        c.login(username='bob2@example.net', password='password')
         course_url = '/en/course/{}/edit/'.format(course.id)
         resp = c.get(course_url)
         self.assertEqual(resp.status_code, 403)
@@ -655,8 +656,8 @@ class TestFacilitatorViews(TestCase):
 
 
     def test_cant_edit_used_course(self):
-        user = User.objects.create_user('bob123', 'bob@example.net', 'password')
-        user2 = User.objects.create_user('bob1234', 'bob2@example.net', 'password')
+        user = create_user('bob@example.net', 'first', 'last', 'password')
+        user2 = create_user('bob2@example.net', 'first', 'last', 'password')
         course_data = dict(
             title='Course 1011',
             provider='CourseMagick',
@@ -673,7 +674,7 @@ class TestFacilitatorViews(TestCase):
         sg.facilitator = user2
         sg.save()
         c = Client()
-        c.login(username='bob123', password='password')
+        c.login(username='bob@example.net', password='password')
         # make sure bob123 can edit the course
         course_url = '/en/course/{}/edit/'.format(course.id)
         resp = c.get(course_url)
@@ -685,7 +686,7 @@ class TestFacilitatorViews(TestCase):
 
 
     def test_study_group_facilitator_survey(self):
-        facilitator = User.objects.create_user('bowie', 'hi@example.net', 'password')
+        facilitator = create_user('hi@example.net', 'bowie', 'wowie', 'password')
         course_data = dict(
             title='Course 1011',
             provider='CourseMagick',
@@ -702,7 +703,7 @@ class TestFacilitatorViews(TestCase):
         sg.facilitator = facilitator
         sg.save()
         c = Client()
-        c.login(username='bowie', password='password')
+        c.login(username='hi@example.net', password='password')
         feedback_url = '/en/studygroup/{}/facilitator_survey/?goal_rating=5'.format(sg.uuid)
         response = c.get(feedback_url)
 
@@ -716,7 +717,7 @@ class TestFacilitatorViews(TestCase):
 
 
     def test_facilitator_active_learning_circles(self):
-        facilitator = User.objects.create_user('bowie', 'hi@example.net', 'password')
+        facilitator = create_user('hi@example.net', 'bowie', 'wowie', 'password')
         sg = StudyGroup.objects.get(pk=1)
         sg.facilitator = facilitator
         sg.start_date = datetime.date(2018, 5, 24)
@@ -725,9 +726,9 @@ class TestFacilitatorViews(TestCase):
         sg.save()
         sg.meeting_set.delete()
         c = Client()
+        c.login(username='hi@example.net', password='password')
 
         with freeze_time("2018-05-02"):
-            c.login(username='bowie', password='password')
             resp = c.get('/en/facilitator/')
             self.assertEqual(resp.status_code, 200)
             self.assertIn(sg, resp.context['current_study_groups'])
@@ -737,13 +738,11 @@ class TestFacilitatorViews(TestCase):
         generate_all_meetings(sg)
 
         with freeze_time("2018-05-02"):
-            c.login(username='bowie', password='password')
             resp = c.get('/en/facilitator/')
             self.assertEqual(resp.status_code, 200)
             self.assertIn(sg, resp.context['current_study_groups'])
 
         with freeze_time("2018-07-16"):
-            c.login(username='bowie', password='password')
             resp = c.get('/en/facilitator/')
             self.assertEqual(resp.status_code, 200)
             self.assertNotIn(sg, resp.context['current_study_groups'])

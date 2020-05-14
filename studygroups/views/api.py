@@ -583,7 +583,7 @@ def _make_learning_circle_schema(request):
         "signup_question": schema.text(length=256),
         "facilitator_goal": schema.text(length=256),
         "facilitator_concerns": schema.text(length=256),
-        "image": schema.chain([
+        "image_url": schema.chain([
             schema.text(),
             _image_check(),
         ], required=False),
@@ -625,7 +625,7 @@ class LearningCircleCreateView(View):
             meeting_time=data.get('meeting_time'),
             duration=data.get('duration'),
             timezone=data.get('timezone'),
-            image=data.get('image'),
+            image=data.get('image_url'),
             signup_question=data.get('signup_question', ''),
             facilitator_goal=data.get('facilitator_goal', ''),
             facilitator_concerns=data.get('facilitator_concerns', '')
@@ -707,7 +707,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         study_group.meeting_time = data.get('meeting_time')
         study_group.duration = data.get('duration')
         study_group.timezone = data.get('timezone')
-        study_group.image = data.get('image')
+        study_group.image = data.get('image_url')
         study_group.signup_question = data.get('signup_question', '')
         study_group.facilitator_goal = data.get('facilitator_goal', '')
         study_group.facilitator_concerns = data.get('facilitator_concerns', '')
@@ -915,13 +915,17 @@ class FinalReportListView(View):
 class InstagramFeed(View):
     def get(self, request):
         url = "https://api.instagram.com/v1/users/self/media/recent/?access_token={}".format(settings.INSTAGRAM_TOKEN)
-        response = get_json_response(url)
+        try:
+            response = get_json_response(url)
+            if response["meta"]["code"] != 200:
+                logger.error('Could not make request to Instagram')
+                return json_response(request, { "status": "error", "errors": response["meta"]["error_message"] })
 
-        if response["meta"]["code"] != 200:
+            return json_response(request, { "items": response["data"] })
+
+        except ConnectionError as e:
             logger.error('Could not make request to Instagram')
-            return json_response(request, { "status": "error", "errors": response["meta"]["error_message"] })
-
-        return json_response(request, { "items": response["data"] })
+            return json_response(request, { "status": "error", "errors": str(e) })
 
 
 def serialize_team_data(team):

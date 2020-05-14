@@ -37,6 +37,8 @@ from studygroups.tasks import send_facilitator_learner_survey_prompt
 from studygroups.tasks import send_final_learning_circle_report
 from studygroups.tasks import send_out_community_digest
 
+from custom_registration.models import create_user
+
 import calendar
 import datetime
 import pytz
@@ -66,9 +68,10 @@ class TestStudyGroupTasks(TestCase):
         return "image"
 
     def setUp(self):
-        user = User.objects.create_user('admin', 'admin@test.com', 'password')
+        user = create_user('admin@test.com', 'admin', 'k', 'password')
         user.is_staff = True
         user.save()
+        mail.outbox = []
 
 
     def test_dont_generate_reminder_4days_before(self):
@@ -423,9 +426,10 @@ class TestStudyGroupTasks(TestCase):
 
 
     def test_send_weekly_report(self):
-        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
-        faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', 'password')
+        organizer = create_user('organ@team.com', 'organ', 'test', '1234', False)
+        faci1 = create_user('faci1@team.com', 'faci', 'test', 'password', False)
         StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
+        mail.outbox = []
 
         team = Team.objects.create(name='test team')
         TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
@@ -445,7 +449,6 @@ class TestStudyGroupTasks(TestCase):
         meeting.meeting_date = datetime.date(2018, 8, 22)
         meeting.save()
 
-
         with freeze_time("2018-08-28 10:01:00"):
             send_weekly_update()
 
@@ -456,9 +459,10 @@ class TestStudyGroupTasks(TestCase):
 
 
     def test_dont_send_weekly_report(self):
-        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
-        faci1 = User.objects.create_user('faci1@team.com', 'faci1@team.com', 'password')
+        organizer = create_user('organ@team.com', 'organ', 'test', '1234', False)
+        faci1 = create_user('faci1@team.com', 'faci', 'test', 'password', False)
         StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
+        mail.outbox = []
 
         team = Team.objects.create(name='test team')
         TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
@@ -614,8 +618,8 @@ class TestStudyGroupTasks(TestCase):
 
     @patch('studygroups.charts.GoalsMetChart.generate', mock_generate)
     def test_send_final_learning_circle_report_email(self):
-        organizer = User.objects.create_user('organ@team.com', 'organ@team.com', 'password')
-        facilitator = User.objects.create_user('faci1@team.com', 'faci1@team.com', 'password')
+        organizer = create_user('organ@team.com', 'organ', 'test', '1234', False)
+        facilitator = create_user('faci1@team.com', 'faci', 'test', 'password', False)
         StudyGroup.objects.filter(pk=1).update(facilitator=facilitator)
 
         team = Team.objects.create(name='test team')
