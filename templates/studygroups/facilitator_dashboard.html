@@ -11,7 +11,7 @@
   data-last-name="{{ last_name }}"
   data-city="{{ city }}"
   data-bio="{{ bio }}"
-  data-avatar-url="{{ avatar_url }}"
+  {% if avatar_url %}data-avatar-url="{{ avatar_url }}"{% endif %}
   data-team-id="{{ team_id }}"
   data-team-role="{{ team_role }}"
   data-team-name="{{ team_name }}"
