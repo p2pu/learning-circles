@@ -5,8 +5,8 @@ import ImageUploader from 'p2pu-input-fields/dist/ImageUploader'
 import UrlInput from './UrlInput'
 
 const CustomizeSection = (props) => {
-  const handleImageUpload = (pictures) => {
-    props.updateFormData({ image: pictures })
+  const handleImageUpload = ({image}) => {
+    props.updateFormData({ image_url: image })
   }
 
   return (
@@ -40,10 +40,10 @@ const CustomizeSection = (props) => {
       />
       <ImageUploader
         label={'Care to add an image?'}
-        handleChange={props.updateFormData}
+        handleChange={handleImageUpload}
         name={'image'}
         id={'id_image'}
-        image={props.learningCircle.image || props.learningCircle.image_url}
+        image={props.learningCircle.image_url}
         errorMessage={props.errors.image}
         imageUploadUrl='/api/upload_image/'
       />
