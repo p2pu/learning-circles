@@ -1,6 +1,4 @@
 import React from 'react';
-import axios from "axios";
-import { API_ENDPOINTS } from "../../helpers/constants";
 
 const DashboardTitle = ({ user, userData }) => {
   if (user) {
