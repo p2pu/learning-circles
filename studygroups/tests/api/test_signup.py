@@ -30,11 +30,7 @@ class TestApiSignupView(TestCase):
     }
 
     def setUp(self):
-        user = User.objects.create_user('admin', 'admin@test.com', 'password')
-        user.is_superuser = True
-        user.is_staff = True
-        user.save()
-
+        pass
 
     def test_valid_signup(self):
         c = Client()

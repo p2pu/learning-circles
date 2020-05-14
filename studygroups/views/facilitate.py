@@ -727,16 +727,25 @@ class FacilitatorDashboard(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(FacilitatorDashboard, self).get_context_data(**kwargs)
+        user = self.request.user
 
-        if self.request.user.is_authenticated:
-            email_validated = hasattr(self.request.user, 'profile') and self.request.user.profile.email_confirmed_at is not None
+        if user.is_authenticated:
+            email_validated = hasattr(user, 'profile') and user.profile.email_confirmed_at is not None
 
             if not email_validated:
                 context["email_confirmation_url"] = reverse("email_confirm_request")
 
-            team_membership = TeamMembership.objects.active().filter(user=self.request.user).first()
+            context["first_name"] = user.first_name
+            context["last_name"] = user.last_name
+            context["city"] = user.profile.city
+            context["bio"] = user.profile.bio
+            context["avatar_url"] = f"{settings.PROTOCOL}://{settings.DOMAIN}" + user.profile.avatar.url if user.profile.avatar else None
+
+            team_membership = TeamMembership.objects.active().filter(user=user).first()
             if team_membership:
                 context['team_id'] = team_membership.team.id
+                context['team_name'] = team_membership.team.name
+                context['team_role'] = team_membership.role
 
                 # add context for team organizers
                 if team_membership.role == TeamMembership.ORGANIZER:

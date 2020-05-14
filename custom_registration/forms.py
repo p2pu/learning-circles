@@ -41,6 +41,11 @@ class CustomPasswordResetForm(PasswordResetForm):
 
         return email
 
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name']
+
 
 class ProfileForm(forms.ModelForm):
     class Meta:
@@ -58,6 +63,7 @@ class ProfileForm(forms.ModelForm):
         }
         help_texts = {
              'contact_url': _('Where can potential team members find your contact information? i.e. Staff page, Twitter, personal website, etc.'),
+             'communication_opt_in': _('Check this box if you want to receive updates from the P2PU community about upcoming events and gathering.')
         }
         widgets = {
             'bio': forms.Textarea(attrs={'rows':5, 'cols':10}),
