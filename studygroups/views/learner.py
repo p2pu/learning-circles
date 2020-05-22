@@ -117,6 +117,8 @@ def signup(request, location, study_group_id):
     context = {
         'form': form,
         'study_group': study_group,
+        'meetings': study_group.meeting_set.active(),
+        'mapbox_token': settings.MAPBOX_TOKEN
     }
     return render(request, 'studygroups/signup.html', context)
 
@@ -274,7 +276,7 @@ class StudyGroupLearnerSurvey(TemplateView):
         study_group = get_object_or_404(StudyGroup, uuid=kwargs.get('study_group_uuid'))
 
         if request.GET.get('learner', None):
-            # if learner is in the query parameters, 
+            # if learner is in the query parameters,
             # store data in session and redirect to URL without query params
             # this is to minize the chance of a learner sharing 'their' survey URL
             learner_uuid = request.GET.get('learner', None)
@@ -291,10 +293,10 @@ class StudyGroupLearnerSurvey(TemplateView):
             return HttpResponseRedirect(redirect_url)
         else:
             learner_uuid = request.session.get('learner_uuid', None)
-            # TODO if the users refreshes the page, it will delete the session and log 
+            # TODO if the users refreshes the page, it will delete the session and log
             # the survey as anonymous
             # Move this to the survey done page
-            if learner_uuid: 
+            if learner_uuid:
                 del request.session['learner_uuid']
             try:
                 application = study_group.application_set.get(uuid=learner_uuid)
