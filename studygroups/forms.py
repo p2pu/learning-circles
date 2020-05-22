@@ -60,23 +60,11 @@ class ApplicationForm(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
-        self.helper = FormHelper()
-        self.helper.layout = Layout(
-            'study_group',
-            'name',
-            'email',
-            'goals',
-            'support',
-            'mobile',
-            'consent',
-            'communications_opt_in'
-        )
-        self.helper.add_input(Submit('submit', 'Submit'))
         super().__init__(*args, **kwargs)
         self.fields['email'].required = True
         study_group = kwargs.get('initial', {}).get('study_group')
         if study_group and study_group.country == 'United States of America':
-            self.fields['mobile'].help_text = 'Ex. +1 281-234-5678. ' + self.fields['mobile'].help_text 
+            self.fields['mobile'].help_text = 'Ex. +1 281-234-5678. ' + self.fields['mobile'].help_text
 
         # add custom signup question if the facilitator specified one
         if study_group.signup_question:
@@ -97,7 +85,7 @@ class ApplicationForm(forms.ModelForm):
 
     class Meta:
         model = Application
-        fields = ['study_group', 'name', 'email', 'mobile', 'consent', 'communications_opt_in']
+        fields = ['study_group', 'name', 'email', 'mobile', 'goals', 'support', 'consent', 'communications_opt_in']
         widgets = {'study_group': forms.HiddenInput}
         labels = {
             'communications_opt_in': _('I would like to receive information about other learning opportunities in the future.'),

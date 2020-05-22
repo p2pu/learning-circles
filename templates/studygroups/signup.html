@@ -141,7 +141,13 @@
               {% if study_group.draft %}
                 <p>{% trans "Signup for this learning circle is not open yet." %}</p>
               {% else %}
-                {% crispy form %}
+                <div class="form">
+                  <form action="" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button type="submit" class="btn p2pu-btn yellow">{% trans "Submit" %}</button>
+                  </form>
+                </div>
               {% endif %}
             {% else %}
             <p>{% trans "Unfortunately this learning circle is now closed for signup." %}</p>
@@ -154,6 +160,11 @@
         <div class="card drop-shadow border-0 rounded-0">
           <div class="card-body small">
             <h3 class="minicaps text-left">Meetings</h3>
+            <ul>
+            {% for meeting in meetings %}
+              <li>{{ meeting.meeting_date}} at {{ meeting.meeting_time }}</li>
+            {% endfor %}
+            </ul>
             <h3 class="minicaps text-left">Location</h3>
             <p>
               {% if study_group.venue_website %}<a href="{{study_group.venue_website}}">{{ study_group.venue_name }}</a>{% else %}{{study_group.venue_name}}{% endif %}, {{study_group.venue_details}}, {{study_group.city}}
@@ -161,7 +172,7 @@
 
           </div>
           <div class="card-image">
-            map goes here
+            <img class="card-img-top" src="https://api.mapbox.com/styles/v1/mapbox/light-v9/static/pin-s+FFBC1A({{ study_group.longitude }},{{ study_group.latitude }})/{{ study_group.longitude }},{{ study_group.latitude }},12,0,0/400x200?access_token={{ mapbox_token }}&logo=false" />
           </div>
         </div>
       </div>
