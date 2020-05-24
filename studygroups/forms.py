@@ -85,7 +85,15 @@ class ApplicationForm(forms.ModelForm):
         # add custom signup question if the facilitator specified one
         if study_group.signup_question:
             self.fields['custom_question'] = forms.CharField(label=study_group.signup_question)
-            self.helper.layout.insert(len(self.helper.layout), 'custom_question')
+            self.helper.layout.insert(len(self.helper.layout), 'custom_question') # insert before consent and communications_opt_in checkboxes
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # check honeypot field and raise error if it is not empty
+        empty_values = [None, '']
+        if not cleaned_data.get('last_name') in empty_values:
+            raise forms.ValidationError(_('Gotcha'))
 
     def clean(self):
         cleaned_data = super().clean()
