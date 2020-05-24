@@ -373,7 +373,9 @@ class StudyGroupCreateLegacy(CreateView):
     def form_valid(self, form):
         study_group = form.save(commit=False)
         study_group.facilitator = self.request.user
+
         study_group.save()
+
         #generate_all_meetings(study_group)
         messages.success(self.request, _('You created a new learning circle! Check your email for next steps.'))
         success_url = reverse_lazy('studygroups_view_study_group', args=(study_group.id,))

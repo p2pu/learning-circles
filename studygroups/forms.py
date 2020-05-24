@@ -325,7 +325,9 @@ class StudyGroupForm(forms.ModelForm):
             'meeting_time',
             'timezone',
             'duration',
+            'name',
             'description',
+            'course_description',
             'signup_question',
             'venue_website',
             'image',
@@ -334,7 +336,9 @@ class StudyGroupForm(forms.ModelForm):
         ]
         labels = {
             'course': _('Choose the course that your learning circle will study.'),
+            'name': _('Set a title for your learning circle.'),
             'description': _('Share a welcome message with potential learners.'),
+            'course_description': _('Describe the course materials that you will be using.'),
             'venue_name': _('Where will you meet?'),
             'venue_details': _('Where is the specific meeting spot?'),
             'venue_address': _('What is the address of the venue?'),
@@ -350,7 +354,9 @@ class StudyGroupForm(forms.ModelForm):
         }
         help_texts = {
             'course': '',
+            'name': _('Leave this blank to use the course title.'),
             'description': _('You can include a bit about yourself, why you’re facilitating this course, and anything else you want people to know before they sign up.'),
+            'course_description': _('Leave this blank to use the course description.'),
             'venue_name': _('Name of the venue, e.g. Pretoria Library or Bekka\'s house'),
             'venue_details': _('e.g. second floor kitchen or Room 409 (third floor)'),
             'venue_address': _('Write it out like you were mailing a letter.'),

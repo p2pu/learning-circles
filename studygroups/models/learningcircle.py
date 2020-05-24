@@ -22,30 +22,6 @@ import json
 import uuid
 
 
-# TODO - remove this
-STUDY_GROUP_NAMES = [
-    "The Riders",
-    "The Master Minds of Mars",
-    "The Efficiency Experts",
-    "The Red Hawks",
-    "The Bandits of Hell's Bend",
-    "Apache Devils",
-    "The Wizards of Venus",
-    "Swords of Mars",
-    "The Beasts of Tarzan",
-    "Tarzan and the Castaways",
-    "Pirates of Venus",
-    "The People that Time Forgot",
-    "The Eternal Lovers"
-]
-
-
-def _study_group_name():
-    idx = 1 + StudyGroup.objects.count()
-    num_names = len(STUDY_GROUP_NAMES)
-    return ' '.join([STUDY_GROUP_NAMES[idx % num_names], "I"*(idx//num_names)])
-
-
 # TODO remove organizer model - only use Facilitator model + Team Membership
 class Organizer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -62,7 +38,7 @@ class StudyGroupQuerySet(SoftDeleteQuerySet):
 
 
 class StudyGroup(LifeTimeTrackingModel):
-    name = models.CharField(max_length=64, default=_study_group_name)
+    name = models.CharField(max_length=64, blank=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     description = models.CharField(max_length=500)
     course_description = models.CharField(max_length=500, blank=True)
