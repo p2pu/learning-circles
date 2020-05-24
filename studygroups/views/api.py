@@ -636,16 +636,6 @@ class LearningCircleCreateView(View):
             facilitator_concerns=data.get('facilitator_concerns', '')
         )
 
-        # use course.caption if course_description is not set
-        if study_group.course_description is None:
-            course = Course.objects.get(pk=int(study_group.course))
-            study_group.course_description = course.caption
-
-        # use course.title if name is not set
-        if study_group.name is None:
-            course = Course.objects.get(pk=int(study_group.course))
-            study_group.name = course.title
-
         # only update value for draft if the use verified their email address
         if request.user.profile.email_confirmed_at is not None:
             study_group.draft = data.get('draft', True)
@@ -707,10 +697,10 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
             published = study_group.draft is True
             study_group.draft = False
 
-        study_group.name = data.get('name')
+        study_group.name = data.get('name', None)
         study_group.course = data.get('course')
         study_group.description = data.get('description')
-        study_group.course_description = data.get('course_description')
+        study_group.course_description = data.get('course_description', None)
         study_group.venue_name = data.get('venue_name')
         study_group.venue_address = data.get('venue_address')
         study_group.venue_details = data.get('venue_details')

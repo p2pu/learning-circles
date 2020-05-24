@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from studygroups.utils import render_to_string_ctx
 from django.core.mail import EmailMultiAlternatives, send_mail
@@ -63,6 +63,18 @@ def handle_new_application(sender, instance, created, **kwargs):
     )
     welcome_message.attach_alternative(learner_signup_html, 'text/html')
     welcome_message.send()
+
+@receiver(pre_save, sender=StudyGroup)
+def set_default_fields(sender, instance, created, **kwargs):
+    # use course.caption if course_description is not set
+    if instance.course_description is None:
+        course = Course.objects.get(pk=int(instance.course))
+        instance.course_description = course.caption
+
+    # use course.title if name is not set
+    if instance.name is None:
+        course = Course.objects.get(pk=int(instance.course))
+        instance.name = course.title
 
 
 @receiver(post_save, sender=StudyGroup)

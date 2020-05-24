@@ -15,7 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='studygroup',
             name='name',
-            field=models.CharField(default=studygroups.models.learningcircle._study_group_name, max_length=128),
-            preserve_default=True,
+            field=models.CharField(max_length=128)
         ),
     ]
