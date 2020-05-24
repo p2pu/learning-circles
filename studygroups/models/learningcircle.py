@@ -65,6 +65,7 @@ class StudyGroup(LifeTimeTrackingModel):
     name = models.CharField(max_length=128, default=_study_group_name)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     description = models.CharField(max_length=500)
+    course_description = models.CharField(max_length=500, blank=True)
     venue_name = models.CharField(max_length=256)
     venue_address = models.CharField(max_length=256)
     venue_details = models.CharField(max_length=128)

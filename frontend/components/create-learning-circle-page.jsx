@@ -238,6 +238,7 @@ export default class CreateLearningCirclePage extends React.Component {
           onSubmitForm={this.onSubmitForm}
           isSaving={this.state.isSaving}
           isPublishing={this.state.isPublishing}
+          showAlert={this.showAlert}
         />
         <HelpContainer currentTab={this.state.currentTab} />
         <RegistrationModal

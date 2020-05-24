@@ -114,12 +114,19 @@ def signup(request, location, study_group_id):
     else:
         form = ApplicationForm(initial={'study_group': study_group})
 
+    print(study_group.facilitator)
+
     context = {
         'form': form,
         'study_group': study_group,
-        'meetings': study_group.meeting_set.active(),
+        'meetings': study_group.meeting_set.active().order_by('meeting_date'),
         'mapbox_token': settings.MAPBOX_TOKEN
     }
+
+    team_membership = TeamMembership.objects.active().filter(user=study_group.facilitator).first()
+    if team_membership:
+        context['team_name'] = team_membership.team.name
+
     return render(request, 'studygroups/signup.html', context)
 
 
