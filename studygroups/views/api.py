@@ -109,6 +109,7 @@ def _map_to_json(sg):
             "discourse_topic_url": sg.course.discourse_topic_url if sg.course.discourse_topic_url else settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_generate_course_discourse_topic", args=(sg.course.id,)),
         },
         "id": sg.id,
+        "name": sg.name,
         "facilitator": sg.facilitator.first_name,
         "venue": sg.venue_name,
         "venue_address": sg.venue_address + ", " + sg.city,
@@ -552,11 +553,13 @@ def _venue_name_check(venue_name):
 
 def _make_learning_circle_schema(request):
     post_schema = {
+        "name": schema.text(length=64),
         "course": schema.chain([
             schema.integer(),
             _course_check,
         ], required=True),
         "description": schema.text(required=True, length=500),
+        "course_description": schema.text(required=True, length=500),
         "venue_name": schema.chain([
             schema.text(required=True, length=256),
             _venue_name_check,
@@ -605,7 +608,9 @@ class LearningCircleCreateView(View):
         # create learning circle
         end_date = data.get('start_date') + datetime.timedelta(weeks=data.get('weeks') - 1)
         study_group = StudyGroup(
+            name=data.get('name', None),
             course=data.get('course'),
+            course_description=data.get('course_description', None),
             facilitator=request.user,
             description=data.get('description'),
             venue_name=data.get('venue_name'),
@@ -630,9 +635,23 @@ class LearningCircleCreateView(View):
             facilitator_goal=data.get('facilitator_goal', ''),
             facilitator_concerns=data.get('facilitator_concerns', '')
         )
+
+        # use course.caption if course_description is not set
+        if study_group.course_description is None:
+            course = Course.objects.get(pk=int(study_group.course))
+            study_group.course_description = course.caption
+
+        # use course.title if name is not set
+        if study_group.name is None:
+            course = Course.objects.get(pk=int(study_group.course))
+            study_group.name = course.title
+
         # only update value for draft if the use verified their email address
         if request.user.profile.email_confirmed_at is not None:
             study_group.draft = data.get('draft', True)
+
+        print(study_group.name)
+        print(study_group.course_description)
         study_group.save()
 
         # generate all meetings if the learning circle has been published
@@ -688,8 +707,10 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
             published = study_group.draft is True
             study_group.draft = False
 
+        study_group.name = data.get('name')
         study_group.course = data.get('course')
         study_group.description = data.get('description')
+        study_group.course_description = data.get('course_description')
         study_group.venue_name = data.get('venue_name')
         study_group.venue_address = data.get('venue_address')
         study_group.venue_details = data.get('venue_details')

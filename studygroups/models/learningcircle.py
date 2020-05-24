@@ -62,7 +62,7 @@ class StudyGroupQuerySet(SoftDeleteQuerySet):
 
 
 class StudyGroup(LifeTimeTrackingModel):
-    name = models.CharField(max_length=128, default=_study_group_name)
+    name = models.CharField(max_length=64, default=_study_group_name)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     description = models.CharField(max_length=500)
     course_description = models.CharField(max_length=500, blank=True)
@@ -155,9 +155,11 @@ class StudyGroup(LifeTimeTrackingModel):
         sg = self  # TODO - this logic is repeated in the API class
         data = {
             "id": sg.pk,
+            "name": sg.name,
             "course": sg.course.id,
             "course_title": sg.course.title,
             "description": sg.description,
+            "course_description": sg.course_description,
             "venue_name": sg.venue_name,
             "venue_details": sg.venue_details,
             "venue_address": sg.venue_address,
@@ -199,7 +201,7 @@ class StudyGroup(LifeTimeTrackingModel):
         return json.dumps(self.to_dict(), cls=DjangoJSONEncoder)
 
     def __str__(self):
-        return '{0} - {1}s {2} at the {3}'.format(self.course.title, self.day(), self.meeting_time, self.venue_name)
+        return '{0} - {1}s {2} at the {3}'.format(self.name, self.day(), self.meeting_time, self.venue_name)
 
 
 class Application(LifeTimeTrackingModel):
