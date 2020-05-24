@@ -118,6 +118,19 @@ html {
     }
   }
 
+  .image-preview {
+    height: 250px;
+    padding-top: 10px;
+
+    img {
+      border-radius: 250px;
+      float: left;
+      background: $p2pu-yellow;
+      border: 12px solid $p2pu-yellow;
+      object-fit: cover;
+    }
+  }
+
   .action-bar {
     z-index: 2;
     position: absolute;
