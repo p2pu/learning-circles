@@ -38,7 +38,7 @@ class StudyGroupQuerySet(SoftDeleteQuerySet):
 
 
 class StudyGroup(LifeTimeTrackingModel):
-    name = models.CharField(max_length=64, blank=True)
+    name = models.CharField(max_length=128, blank=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     description = models.CharField(max_length=500)
     course_description = models.CharField(max_length=500, blank=True)
@@ -104,6 +104,9 @@ class StudyGroup(LifeTimeTrackingModel):
         base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
         path = reverse('studygroups_final_report', kwargs={'study_group_id': self.id})
         return base_url + path
+
+    def signup_url(self):
+        return f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_signup', args=(slugify(self.venue_name, allow_unicode=True), self.id,))
 
     def can_update_meeting_datetime(self):
         """ check to see if you can update the date """
@@ -282,7 +285,7 @@ class Meeting(LifeTimeTrackingModel):
 
     def __str__(self):
         # TODO i18n
-        return '{0}, {1} at {2}'.format(self.study_group.course.title, self.meeting_datetime(), self.study_group.venue_name)
+        return '{0}, {1} at {2}'.format(self.study_group.name, self.meeting_datetime(), self.study_group.venue_name)
 
     def to_json(self):
         data = {

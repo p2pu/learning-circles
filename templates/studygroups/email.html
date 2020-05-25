@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container">
     <a href="{% url 'studygroups_facilitator' %}">{% trans "Back to dashboard" %}</a>
-    <h2>{% blocktrans with course_title=study_group.course.title venue_name=study_group.venue_name %}Send an email to &quot;{{course_title}}&quot; at {{venue_name}}{% endblocktrans %}</h2>
+    <h2>{% blocktrans with studygroup_name=study_group.name venue_name=study_group.venue_name %}Send an email to &quot;{{studygroup_name}}&quot; at {{venue_name}}{% endblocktrans %}</h2>
     <p>{% trans "Send a message to everyone in your learning circle. If any of the participants provided a mobile number when they signed up, you should also provide a text message to be sent. Your email address will be included in the reminder as the 'reply to' address." %}</p>
     <form action="" method="POST">
       {% csrf_token %}

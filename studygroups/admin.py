@@ -55,7 +55,7 @@ class ApplicationAdmin(admin.ModelAdmin):
 
 
 def reminder_course_title(obj):
-    return obj.study_group.course.title
+    return obj.study_group.name
 
 
 class ReminderAdmin(admin.ModelAdmin):

@@ -71,7 +71,7 @@ def generate_reminder(study_group):
             reminder.save()
 
             with use_language(reminder.study_group.language):
-                facilitator_notification_subject = _('A reminder for %(course_title)s was generated' % {"course_title": study_group.course.title})
+                facilitator_notification_subject = _('A reminder for %(studygroup_name)s was generated' % {"studygroup_name": study_group.name})
                 facilitator_notification_html = render_html_with_css(
                     'studygroups/email/reminder_notification.html',
                     context
@@ -105,6 +105,7 @@ def _send_facilitator_survey(study_group):
         'facilitator_name': facilitator_name,
         'survey_url': survey_url,
         'course_title': study_group.course.title,
+        'study_group_name': study_group.name,
     }
 
     timezone.deactivate()
@@ -187,6 +188,7 @@ def send_facilitator_learner_survey_prompt(study_group):
             'learner_survey_url': learner_survey_url,
             'facilitator_survey_url': facilitator_survey_url,
             'course_title': study_group.course.title,
+            'study_group_name': study_group.name,
             'learners_without_survey_responses': learners_without_survey_responses,
             'learner_responses_count': study_group.learnersurveyresponse_set.count(),
             'report_url': report_url,

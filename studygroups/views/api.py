@@ -57,6 +57,7 @@ def studygroups(request):
 
     def to_json(sg):
         data = {
+            "name": sg.name,
             "course_title": sg.course.title,
             "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
             "venue": sg.venue_name,
@@ -349,7 +350,7 @@ def _studygroup_object_for_map(sg):
 
     data = {
         "id": sg.id,
-        "title": sg.course.title,
+        "title": sg.name,
         "latitude": sg.latitude,
         "longitude": sg.longitude,
         "city": sg.city,

@@ -3,14 +3,14 @@
 {% load i18n %}
 {% load l10n %}
 
-{% with study_group=application.study_group course=application.study_group.course first_meeting=application.study_group.next_meeting %}
+{% with study_group=application.study_group first_meeting=application.study_group.next_meeting %}
 <p>{% blocktrans with name=application.name %}Hi {{name}},{% endblocktrans%}</p>
 
 <h2>{% trans "Welcome to your learning circle!" %}</h2>
 
 <p>
 {% localize on %}
-{% blocktrans with course_title=course.title meeting_date=first_meeting.meeting_date|date:"l, j N" meeting_time=first_meeting.meeting_time|time %}You signed up for {{course_title}}! The first meeting will be on {{meeting_date}} at {{meeting_time}}.
+{% blocktrans with studygroup_name=study_group.name meeting_date=first_meeting.meeting_date|date:"l, j N" meeting_time=first_meeting.meeting_time|time %}You signed up for {{studygroup_name}}! The first meeting will be on {{meeting_date}} at {{meeting_time}}.
 {% endblocktrans %}
 {% endlocalize %}
 </p>

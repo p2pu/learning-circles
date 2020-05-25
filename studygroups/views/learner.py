@@ -311,6 +311,7 @@ class StudyGroupLearnerSurvey(TemplateView):
                 context = {
                     'survey_id': settings.TYPEFORM_LEARNER_SURVEY_FORM,
                     'study_group_uuid': study_group.uuid,
+                    'study_group_name': study_group.name,
                     'course_title': study_group.course.title,
                     'learner_uuid': application.uuid,
                     'facilitator_name': study_group.facilitator.first_name,
@@ -321,6 +322,7 @@ class StudyGroupLearnerSurvey(TemplateView):
                 context = {
                     'survey_id': settings.TYPEFORM_LEARNER_SURVEY_FORM,
                     'study_group_uuid': study_group.uuid,
+                    'study_group_name': study_group.name,
                     'course_title': study_group.course.title,
                     'facilitator_name': study_group.facilitator.first_name,
                 }

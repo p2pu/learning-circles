@@ -11,7 +11,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         study_groups = StudyGroup.objects.active().filter(country='').exclude(place_id='')
         for study_group in study_groups:
-            print(study_group.course.title, study_group.city)
+            print(study_group.name, study_group.city)
             url = 'https://places-dsn.algolia.net/1/places/{}'.format(study_group.place_id)
             res = requests.get(url)
             if res.status_code != 200:
