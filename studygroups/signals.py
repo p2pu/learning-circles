@@ -65,7 +65,8 @@ def handle_new_application(sender, instance, created, **kwargs):
     welcome_message.send()
 
 @receiver(pre_save, sender=StudyGroup)
-def set_default_fields(sender, instance, created, **kwargs):
+def set_default_fields(sender, instance, **kwargs):
+
     # use course.caption if course_description is not set
     if instance.course_description is None:
         course = Course.objects.get(pk=int(instance.course))
@@ -75,7 +76,6 @@ def set_default_fields(sender, instance, created, **kwargs):
     if instance.name is None:
         course = Course.objects.get(pk=int(instance.course))
         instance.name = course.title
-
 
 @receiver(post_save, sender=StudyGroup)
 def handle_new_study_group_creation(sender, instance, created, **kwargs):

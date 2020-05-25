@@ -65,7 +65,7 @@
               <thead>
                 <tr>
                   <td>{% trans "Facilitator" %}</td>
-                  <td>{% trans "Course" %}</td>
+                  <td>{% trans "Learning circle" %}</td>
                   <td>{% trans "Date created" %}</td>
                   <td>{% trans "Start date" %}</td>
                 </tr>
@@ -74,7 +74,7 @@
                 {% for studygroup in unpublished_studygroups %}
                   <tr>
                     <td><a href="mailto:{{studygroup.facilitator.email}}">{{studygroup.facilitator.first_name}} {{studygroup.facilitator.last_name}}</a></td>
-                    <td>{{ studygroup.course.title }}</td>
+                    <td>{{ studygroup.name }}</td>
                     <td>{{ studygroup.created_at|date }}</td>
                     <td>{{ studygroup.start_date|date }}</td>
                   </tr>
@@ -184,7 +184,7 @@
                 {% for studygroup in unrated_studygroups %}
                   <tr>
                     <td><a href="mailto:{{studygroup.facilitator.email}}">{{studygroup.facilitator.first_name}} {{studygroup.facilitator.last_name}}</a></td>
-                    <td>{{studygroup.course.title}}</td>
+                    <td>{{studygroup.name}}</td>
                     <td>{{studygroup.end_date}}</td>
                   </tr>
                 {% endfor %}

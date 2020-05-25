@@ -3,7 +3,7 @@
 {
   "@context": "http://schema.org",
   "@type": "Event",
-  "name": "{{ lc.course.title | safe }}",
+  "name": "{{ lc.name | safe }}",
   "startDate": "{{meeting.meeting_datetime | date:'c' }}",
   "endDate": "{{meeting.meeting_datetime_end | date:'c' }}",
   "location": {

@@ -13,7 +13,6 @@ register = template.Library()
 def unicode_slugify(text):
     return slugify(text, allow_unicode=True)
 
-
 @register.filter
 def first_weekday_date(date):
     """

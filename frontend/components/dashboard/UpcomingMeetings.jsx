@@ -107,7 +107,7 @@ export default class UpcomingMeetings extends Component {
 
                   <div className="info">
                     <p className='meeting-info mb-0'>
-                      <span className="">{meeting.facilitator}</span> is facilitating a learning circle on <span className="">{meeting.course.title}</span> at { meeting.venue }
+                      <span className="">{meeting.facilitator}</span> is facilitating <span className="font-italic">{meeting.name}</span> at { meeting.venue }
                     </p>
                   </div>
 

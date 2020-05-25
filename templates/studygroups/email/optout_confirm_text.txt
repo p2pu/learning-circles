@@ -1,1 +1,1 @@
-{% load i18n %}{% blocktrans with title=application.study_group.course.title|safe day=application.study_group.day time=application.study_group.meeting_time|date:"fA" %}You successfully left {{title}} {{day}}s {{time}} at {{ application.study_group.venue_name }}.{% endblocktrans %}
+{% load i18n %}{% blocktrans with title=application.study_group.name|safe day=application.study_group.day time=application.study_group.meeting_time|date:"fA" %}You successfully left {{title}} {{day}}s {{time}} at {{ application.study_group.venue_name }}.{% endblocktrans %}

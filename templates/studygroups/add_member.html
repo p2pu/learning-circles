@@ -9,7 +9,7 @@
         {% if object %}
         <h1>{% blocktrans with name=object.name %}Update details for {{name}} {% endblocktrans %}</h1>
         {% else %}
-        <h1>{% blocktrans with course_title=study_group.course.title %}Add a new member to {{course_title}} {% endblocktrans %}</h1>
+        <h1>{% blocktrans with studygroup_name=study_group.name %}Add a new member to {{studygroup_name}} {% endblocktrans %}</h1>
         {% endif %}
     </div>
   </div>
