@@ -205,7 +205,7 @@ class TestSignupModels(TestCase):
         self.assertIn('signup1@mail.com', mail.outbox[0].bcc)
         self.assertIn('signup2@mail.com', mail.outbox[0].bcc)
         self.assertEqual(meeting.meeting_time, datetime.time(18, 30))
-        self.assertEqual(mail.outbox[0].subject, 'The Riders learning circle at Harold Washington now meets Monday, 1 April, 6:30PM.')
+        self.assertEqual(mail.outbox[0].subject, 'Test learning circle at Harold Washington now meets Monday, 1 April, 6:30PM.')
         send_message.assert_called_with('+27713213213', 'Your learning circle on Monday, 23 March, 6:30PM has been rescheduled. Reply STOP to unsubscribe.')
 
 
