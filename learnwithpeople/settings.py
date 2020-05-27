@@ -346,6 +346,9 @@ ANNOUNCE_EMAIL = env('ANNOUNCE_EMAIL', 'announce@localhost')
 # Instagram token
 INSTAGRAM_TOKEN = env('INSTAGRAM_TOKEN', '')
 
+# Mapbox access token
+MAPBOX_TOKEN = env('MAPBOX_TOKEN', '')
+
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
