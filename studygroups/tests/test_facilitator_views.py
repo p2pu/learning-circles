@@ -55,6 +55,7 @@ class TestFacilitatorViews(TestCase):
 
     STUDY_GROUP_DATA = {
         'course': '1',
+        'name': "Motorcycles FTW",
         'venue_name': 'мой дом',
         'venue_details': 'Garrage at my house',
         'venue_address': 'Rosemary Street 6',
@@ -148,7 +149,7 @@ class TestFacilitatorViews(TestCase):
         lc = study_groups.first()
         self.assertEquals(study_groups.first().meeting_set.count(), 0)
         self.assertEquals(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.course.title, lc.city))
+        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.name, lc.city))
         self.assertIn('bob@example.net', mail.outbox[0].to)
         self.assertIn('thepeople@p2pu.org', mail.outbox[0].cc)
         self.assertIn('community@localhost', mail.outbox[0].cc)

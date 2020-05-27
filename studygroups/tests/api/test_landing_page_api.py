@@ -97,7 +97,7 @@ class TestLandingPageApi(TestCase):
                 'latitude': '41.850030',
                 'longitude': '-87.650050',
                 'start_date': '2015-03-23',
-                'title': 'Public Speaking',
+                'title': 'Test learning circle',
                 'url': settings.PROTOCOL + '://' + settings.DOMAIN + '/en/signup/harold-washington-1/'
             })
 
@@ -110,7 +110,7 @@ class TestLandingPageApi(TestCase):
                 "longitude" : "-87.650050",
                 'report_url': settings.PROTOCOL + '://' + settings.DOMAIN + '/en/studygroup/2/report/',
                 'start_date': '2015-03-23',
-                'title': 'Academic Writing',
+                'title': 'The Riders',
             })
 
             other_item = next(item for item in data["items"] if item["id"] == 4)
@@ -121,5 +121,5 @@ class TestLandingPageApi(TestCase):
                 'latitude': '41.850030',
                 'longitude': '-87.650050',
                 'start_date': '2015-03-23',
-                'title': 'Programming with Python'
+                'title': "The Bandits of Hell's Bend"
             })
