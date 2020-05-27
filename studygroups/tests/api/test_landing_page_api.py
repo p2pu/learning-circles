@@ -104,19 +104,19 @@ class TestLandingPageApi(TestCase):
             finished_item = next(item for item in data["items"] if item["id"] == finished_studygroup.id)
             self.assertEqual(finished_item, {
                 'active': False,
-                'city': 'Chicago',
+                'city': 'Kansas City',
                 'id': 2,
                 "latitude" : "41.850030",
                 "longitude" : "-87.650050",
                 'report_url': settings.PROTOCOL + '://' + settings.DOMAIN + '/en/studygroup/2/report/',
                 'start_date': '2015-03-23',
-                'title': 'The Riders',
+                'title': 'No More Riders!',
             })
 
             other_item = next(item for item in data["items"] if item["id"] == 4)
             self.assertEqual(other_item, {
                 'active': False,
-                'city': 'Chicago',
+                'city': 'Toronto',
                 'id': 4,
                 'latitude': '41.850030',
                 'longitude': '-87.650050',

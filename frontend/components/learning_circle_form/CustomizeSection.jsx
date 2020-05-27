@@ -43,8 +43,6 @@ const CourseDescriptionInput = (props) => {
 
 const TitleInput = (props) => {
   const onChange = (e) => {
-    console.log('props.name', props.name)
-    console.log('e.currentTarget.value', e.currentTarget.value)
     props.handleChange({ [props.name]: e.currentTarget.value })
   }
 
@@ -90,8 +88,6 @@ const CustomizeSection = (props) => {
   const handleImageUpload = ({image}) => {
     props.updateFormData({ image_url: image })
   }
-
-  console.log(props.learningCircle)
 
   return (
     <div>
