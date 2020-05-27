@@ -84,7 +84,7 @@ class ApplicationForm(forms.ModelForm):
         # add custom signup question if the facilitator specified one
         if study_group.signup_question:
             self.fields['custom_question'] = forms.CharField(label=study_group.signup_question)
-            self.helper.layout.insert(len(self.helper.layout), 'custom_question') # insert before consent and communications_opt_in checkboxes
+            self.helper.layout.insert(len(self.helper.layout), 'custom_question')
 
     def clean(self):
         cleaned_data = super().clean()
