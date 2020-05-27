@@ -69,13 +69,11 @@ def set_default_fields(sender, instance, **kwargs):
 
     # use course.caption if course_description is not set
     if instance.course_description is None:
-        course = Course.objects.get(pk=int(instance.course))
-        instance.course_description = course.caption
+        instance.course_description = instance.course.caption
 
     # use course.title if name is not set
     if instance.name is None:
-        course = Course.objects.get(pk=int(instance.course))
-        instance.name = course.title
+        instance.name = instance.course.title
 
 @receiver(post_save, sender=StudyGroup)
 def handle_new_study_group_creation(sender, instance, created, **kwargs):

@@ -228,6 +228,7 @@ class LearningCircleListView(View):
             study_groups = study_groups.annotate(
                 search = SearchVector(
                     'city',
+                    'name',
                     'course__title',
                     'course__provider',
                     'course__topics',
@@ -554,13 +555,13 @@ def _venue_name_check(venue_name):
 
 def _make_learning_circle_schema(request):
     post_schema = {
-        "name": schema.text(length=64),
+        "name": schema.text(length=128, required=False),
         "course": schema.chain([
             schema.integer(),
             _course_check,
         ], required=True),
         "description": schema.text(required=True, length=500),
-        "course_description": schema.text(required=True, length=500),
+        "course_description": schema.text(required=False, length=500),
         "venue_name": schema.chain([
             schema.text(required=True, length=256),
             _venue_name_check,
@@ -641,8 +642,6 @@ class LearningCircleCreateView(View):
         if request.user.profile.email_confirmed_at is not None:
             study_group.draft = data.get('draft', True)
 
-        print(study_group.name)
-        print(study_group.course_description)
         study_group.save()
 
         # generate all meetings if the learning circle has been published
