@@ -3,6 +3,7 @@ import * as typeformEmbed from '@typeform/embed';
 const element = document.getElementById('studygroup-facilitator-feedback');
 const surveyId = element.dataset.surveyId;
 const studygroup_uuid = element.dataset.studygroupUuid || '';
+const studygroup_name = element.dataset.studygroupName || '';
 const course = element.dataset.course ? encodeURIComponent(element.dataset.course) : '';
 const goal = element.dataset.goal || '';
 const goal_rating = element.dataset.goalRating || '';
@@ -12,6 +13,7 @@ const attendance_n = element.dataset.attendance_n || '';
 
 const params = {
   studygroup_uuid,
+  studygroup_name,
   course,
   goal,
   goal_rating,

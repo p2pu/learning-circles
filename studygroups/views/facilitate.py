@@ -706,7 +706,8 @@ class StudyGroupFacilitatorSurvey(TemplateView):
 
         context = super(StudyGroupFacilitatorSurvey, self).get_context_data(**kwargs)
         context['survey_id'] = settings.TYPEFORM_FACILITATOR_SURVEY_FORM
-        context['studygroup_uuid'] = study_group.uuid
+        context['study_group_uuid'] = study_group.uuid
+        context['study_group_name'] = study_group.name
         context['course'] = study_group.course.title
         context['goal'] = study_group.facilitator_goal
         context['goal_rating'] = self.request.GET.get('goal_rating', '')
