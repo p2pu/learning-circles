@@ -325,10 +325,10 @@ export default class FacilitatorDashboard extends React.Component {
             </div>
             <div data-aos='fade'>
               <Card className="bg-warning feedback-survey d-block w-100">
-                <div className="bold text-center text-white">In light of the worldwide coronavirus pandemic, meeting in person is probably not an option for your learning circle right now. How do we learn together when we cannot meet in person?
+                <div className="bold text-center text-white">Exploring virtual solutions for learning circles during quarantine? The P2PU community created a handbook to offer insight and support as you move your programs online.
                 </div>
                 <div className="text-center mt-3">
-                  <a href="https://community.p2pu.org/t/how-do-we-learn-together-when-we-cant-meet-together-a-place-to-talk-about-how-were-responding-to-covid-19/4366" className="p2pu-btn light btn-sm" target="_blank">Learn more and share your experience</a>
+                  <a href="https://www.p2pu.org/virtual-handbook" className="p2pu-btn light btn-sm" target="_blank">View handbook</a>
                 </div>
               </Card>
             </div>
