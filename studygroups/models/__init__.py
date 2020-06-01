@@ -285,10 +285,10 @@ def get_unrated_studygroups():
     two_months_ago = today - relativedelta(months=+2)
     unrated_studygroups = StudyGroup.objects.published()\
         .annotate(
-            models.Count('application', filter=
+            application__count = models.Count('application', filter=
                 Q(application__deleted_at__isnull=True, application__accepted_at__isnull=False))
         )\
-        .annotate( models.Count('facilitatorsurveyresponse') )\
+        .annotate( facilitatorsurveyresponse__count = models.Count('facilitatorsurveyresponse') )\
         .filter(
             application__count__gte=1,
             end_date__gte=two_months_ago,
