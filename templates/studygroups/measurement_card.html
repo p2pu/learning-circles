@@ -2,14 +2,14 @@
 
 {% if chart is not None %}
     {% if fullwidth %}
-    <div class="col-12 avoid-page-break">
+    <div class="col-12 pb-4 avoid-page-break">
     {% else %}
-    <div class="col-12 col-md-6 avoid-page-break">
+    <div class="col-12 col-md-6 pb-4 avoid-page-break">
     {% endif %}
         {% if not web %}
-        <div class="report-measurement bg-white p-4 mb-4 gray-border">
+        <div class="report-measurement bg-white p-4 gray-border">
         {% else %}
-        <div class="report-measurement bg-white p-4 mb-4 shadow">
+        <div class="report-measurement bg-white p-4 shadow">
         {% endif %}
             <header>
                 <p class="bold text-uppercase mb-0">{{ title }}</p>
