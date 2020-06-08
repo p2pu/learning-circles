@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import InputWithLabel from 'p2pu-input-fields/dist/InputWithLabel'
+import { InputWithLabel } from 'p2pu-components'
 import axios from "axios"
 
 export default class OrganizerTeamInvitations extends Component {

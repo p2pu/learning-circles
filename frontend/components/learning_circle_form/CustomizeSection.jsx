@@ -1,7 +1,5 @@
 import React from 'react'
-import TextareaWithLabel from 'p2pu-input-fields/dist/TextareaWithLabel'
-import InputWithLabel from 'p2pu-input-fields/dist/InputWithLabel'
-import ImageUploader from 'p2pu-input-fields/dist/ImageUploader'
+import {TextareaWithLabel, InputWithLabel, ImageUploader} from 'p2pu-components'
 import UrlInput from './UrlInput'
 
 

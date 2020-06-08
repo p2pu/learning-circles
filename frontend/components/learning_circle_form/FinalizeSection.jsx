@@ -1,5 +1,5 @@
 import React from 'react'
-import TextareaWithLabel from 'p2pu-input-fields/dist/TextareaWithLabel'
+import { TextareaWithLabel } from 'p2pu-components'
 
 const FinalizeSection = (props) => (
   <div>
