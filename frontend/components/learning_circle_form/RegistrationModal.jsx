@@ -2,13 +2,12 @@ import React from 'react';
 import axios from 'axios';
 
 import Modal from 'react-responsive-modal';
-import CheckboxWithLabel from 'p2pu-input-fields/dist/CheckboxWithLabel'
-import InputWithLabel from 'p2pu-input-fields/dist/InputWithLabel'
+import { CheckboxWithLabel, InputWithLabel } from 'p2pu-components'
 
 import { API_ENDPOINTS } from '../../helpers/constants'
 
 import '../stylesheets/learning-circle-form.scss';
-import 'p2pu-input-fields/dist/build.css';
+import 'p2pu-components/dist/build.css';
 
 
 axios.defaults.xsrfCookieName = 'csrftoken'

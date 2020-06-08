@@ -1,5 +1,5 @@
 import React from 'react'
-import InputWithLabel from 'p2pu-input-fields/dist/InputWithLabel'
+import { InputWithLabel } from 'p2pu-components'
 
 Location
 

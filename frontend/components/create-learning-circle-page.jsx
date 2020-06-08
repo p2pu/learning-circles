@@ -15,7 +15,7 @@ import {
 } from '../helpers/constants';
 
 import './stylesheets/learning-circle-form.scss';
-import 'p2pu-input-fields/dist/build.css';
+import 'p2pu-components/dist/build.css';
 
 
 export default class CreateLearningCirclePage extends React.Component {
