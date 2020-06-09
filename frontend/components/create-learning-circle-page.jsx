@@ -142,6 +142,7 @@ export default class CreateLearningCirclePage extends React.Component {
       latitude: place._geoloc ? place._geoloc.lat : null,
       longitude: place._geoloc ? place._geoloc.lng : null,
       place_id: place.objectID ? place.objectID : null,
+      place: null, // remove original place object from Algolia
     }
 
     return placeData
@@ -187,6 +188,7 @@ export default class CreateLearningCirclePage extends React.Component {
         const msg = 'There was an error saving your learning circle. Please try again.'
         const type = 'danger'
         this.showAlert(msg, type)
+        this.setState({ isSaving: false, isPublishing: false })
       }
 
       const opts = { data, onSuccess, onError, onFail };

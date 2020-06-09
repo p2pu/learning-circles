@@ -75,11 +75,11 @@ export default class RegistrationModal extends React.Component {
           }
           {
             this.state.registration &&
-            <p>In order to save your learning circle, you need to register or <button className="p2pu-btn btn-secondary" onClick={this.toggleModalType}>log in.</button></p>
+            <p>In order to save your learning circle, you need to register or <button className="btn p2pu-btn btn-secondary" onClick={this.toggleModalType}>log in.</button></p>
           }
           {
             !this.state.registration &&
-            <p>In order to save your learning circle, you need to log in or <button className="p2pu-btn btn-secondary" onClick={this.toggleModalType}>register.</button></p>
+            <p>In order to save your learning circle, you need to log in or <button className="btn p2pu-btn btn-secondary" onClick={this.toggleModalType}>register.</button></p>
           }
           <form id='registration-form' onSubmit={this.submitForm}>
             { this.state.registration &&
@@ -136,12 +136,12 @@ export default class RegistrationModal extends React.Component {
               </div>
             }
             <div className="modal-actions">
-              <a onClick={this.toggleModalType}>
+              <a href="#" onClick={this.toggleModalType}>
                 { this.state.registration ? 'Already have an account? Log in here.' : 'Don\'t have an account? Register here.' }
               </a>
               <div className="buttons">
-                <button className="p2pu-btn dark" onClick={(e) => {e.preventDefault(); this.props.closeModal()}}>Cancel</button>
-                <button type='submit' className="p2pu-btn blue">{ this.state.registration ? 'Register' : 'Log in' }</button>
+                <button className="btn p2pu-btn dark" onClick={(e) => {e.preventDefault(); this.props.closeModal()}}>Cancel</button>
+                <button type='submit' className="btn p2pu-btn blue">{ this.state.registration ? 'Register' : 'Log in' }</button>
               </div>
             </div>
           </form>
