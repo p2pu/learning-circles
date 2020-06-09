@@ -26,6 +26,7 @@ from studygroups.models import Meeting
 from studygroups.models import Feedback
 from studygroups.models import Course
 from studygroups.models import TeamMembership
+from studygroups.models import Team
 from studygroups.sms import send_message
 
 import logging
@@ -76,7 +77,7 @@ class ApplicationForm(forms.ModelForm):
         self.fields['email'].required = True
         study_group = kwargs.get('initial', {}).get('study_group')
         if study_group and study_group.country == 'United States of America':
-            self.fields['mobile'].help_text = 'Ex. +1 281-234-5678. ' + self.fields['mobile'].help_text 
+            self.fields['mobile'].help_text = 'Ex. +1 281-234-5678. ' + self.fields['mobile'].help_text
 
         # add custom signup question if the facilitator specified one
         if study_group.signup_question:
@@ -449,4 +450,21 @@ class OrganizerGuideForm(forms.Form):
         email.attach_file("static/files/organizer_guide.pdf")
         email.send()
 
+
+class TeamForm(forms.ModelForm):
+    class Meta:
+        model = Team
+        fields = ['name', 'page_image', 'logo', 'website', 'email_address', 'intro_text']
+        labels = {
+            'page_image': _('Header image'),
+            'intro_text': _('About us'),
+        }
+        help_texts = {
+            'page_image': _('The image will be cropped into a circle. A square image would be best.'),
+            'intro_text': _('If you leave this field blank, we will use the default text below.'),
+            'email_address': _('This will be public, so you probably don\'t want to use your personal email address.'),
+        }
+        widgets = {
+            'intro_text': forms.Textarea(attrs={'placeholder': _('How would you like to introduce your organization?')}),
+        }
 
