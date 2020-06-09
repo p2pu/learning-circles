@@ -84,10 +84,6 @@ const TitleInput = (props) => {
 }
 
 const CustomizeSection = (props) => {
-  const handleImageUpload = ({image}) => {
-    props.updateFormData({ image_url: image })
-  }
-
   return (
     <div>
       <TitleInput
@@ -137,9 +133,9 @@ const CustomizeSection = (props) => {
       />
       <ImageUploader
         label={'Care to add an image?'}
-        handleChange={handleImageUpload}
-        name={'image'}
-        id={'id_image'}
+        handleChange={props.updateFormData}
+        name={'image_url'}
+        id={'id_image_url'}
         image={props.learningCircle.image_url}
         errorMessage={props.errors.image}
         imageUploadUrl='/api/upload_image/'
