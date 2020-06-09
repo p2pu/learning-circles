@@ -754,6 +754,7 @@ class FacilitatorDashboard(TemplateView):
                     context['create_team_invitation_url'] = reverse('api_teams_create_invitation_url', args=(team_membership.team.id,))
                     context['delete_team_invitation_url'] = reverse('api_teams_delete_invitation_url', args=(team_membership.team.id,))
                     context['team_member_invitation_url'] = reverse('studygroups_team_member_invite', args=(team_membership.team.id,))
+                    context['edit_team_url'] = reverse('studygroups_team_edit', args=(team_membership.team.id,))
 
         return context
 
