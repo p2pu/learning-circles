@@ -85,12 +85,6 @@ export default class CreateLearningCirclePage extends React.Component {
     }
   }
 
-  componentDidUpdate(prevProps,prevState) {
-    if (prevState.learningCircle !== this.state.learningCircle) {
-      console.log("this.state.learningCircle", this.state.learningCircle)
-    }
-  }
-
   _updateFormData(data, callback=null) {
     this.setState({
       learningCircle: {
@@ -142,7 +136,7 @@ export default class CreateLearningCirclePage extends React.Component {
       latitude: place._geoloc ? place._geoloc.lat : null,
       longitude: place._geoloc ? place._geoloc.lng : null,
       place_id: place.objectID ? place.objectID : null,
-      place: null, // remove original place object from Algolia
+      place: null, // remove Algolia place object
     }
 
     return placeData
