@@ -36,7 +36,7 @@ const CustomizeSection = (props) => {
         label={'Care to add an image?'}
         handleChange={props.updateFormData}
         name={'image_url'}
-        id={'id_image_url'}
+        id={'id_image'}
         image={props.learningCircle.image_url}
         errorMessage={props.errors.image}
         imageUploadUrl='/api/upload_image/'
