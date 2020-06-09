@@ -3,8 +3,8 @@
 
 <tr>
     <td>
-        {% blocktrans with meeting_number=meeting.meeting_number|ordinal course_title=meeting.study_group.course.title venue_name=meeting.study_group.venue_name %}
-        {{meeting_number}} meeting for {{course_title}} <br/> at {{venue_name}}</td>
+        {% blocktrans with meeting_number=meeting.meeting_number|ordinal studygroup_name=meeting.study_group.name venue_name=meeting.study_group.venue_name %}
+        {{meeting_number}} meeting for {{studygroup_name}} <br/> at {{venue_name}}</td>
         {% endblocktrans %}
     <td>
         {% blocktrans with first_name=meeting.study_group.facilitator.first_name last_name=meeting.study_group.facilitator.last_name %}

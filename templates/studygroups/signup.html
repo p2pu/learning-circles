@@ -5,45 +5,194 @@
 {% load i18n %}
 
 {% block content %}
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <h1>{% blocktrans with course_title=study_group.course.title %}Sign up for {{course_title}}{% endblocktrans %}</h1>
-      <p>{{study_group.course.caption}}</p>
+<div class="lc-signup">
+  <section id="lc-info">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4">
+          <a href="https://www.p2pu.org/en/learning-circles" class="p2pu-btn btn small dark secondary mb-5 py-1 px-3"><span class="material-icons">keyboard_backspace</span>{% trans "Back to search" %}</a>
+          <h1>{{study_group.name}}</h1>
+          <p class="tagline mt-4">{% trans "A" %} <img src="{% static 'images/p2pu-logo.png' %}" alt="P2PU" /> {% trans "learning circle" %}</p>
+        </div>
+
+        <div class="col-lg-8">
+          <div class="lc-image">
+            {% if study_group.image %}
+              {# <img class="drop-shadow" src="{% static 'images/learning-circle-default.jpg' %}"> #}
+              <img class="drop-shadow" src="{{study_group.image.url}}">
+            {% else %}
+              <img class="drop-shadow default-image" src="{% static 'images/learning-circle-default.jpg' %}">
+            {% endif %}
+          </div>
+
+          <div class="info">
+
+            <div class="bullet facilitator">
+              <div class="icon-container drop-shadow">
+                <span class="material-icons">face</span>
+              </div>
+              <div class="text">
+                {% blocktrans with first_name=study_group.facilitator.first_name %}Facilitated by {{first_name}}{% endblocktrans %}
+              </div>
+            </div>
+
+            <div class="bullet course">
+              <div class="icon-container drop-shadow">
+                <span class="material-icons">class</span>
+              </div>
+              <div class="text">
+                {% blocktrans with link=study_group.course.link provider=study_group.course.provider %}Course materials provided by <a href="{{ link }}" target="_blank">{{ provider }}</a>{% endblocktrans %}
+              </div>
+            </div>
+
+            <div class="bullet location">
+              <div class="icon-container drop-shadow">
+                <span class="material-icons">location_on</span>
+              </div>
+              <div class="text">
+                {% trans "Taking place at" %} {% if study_group.venue_website %}<a href="{{study_group.venue_website}}">{{ study_group.venue_name }}</a>{% else %}{{study_group.venue_name}}{% endif %}, {{study_group.venue_details}}, {{study_group.city}}
+              </div>
+            </div>
+
+            <div class="bullet schedule">
+              <div class="icon-container drop-shadow">
+                <span class="material-icons">schedule</span>
+              </div>
+              <div class="text">
+                {% blocktrans with day=study_group.day meeting_time=study_group.meeting_time|time:"fA" end_time=study_group.end_time|time:"fA" timezone=study_group.timezone_display start_date=study_group.start_date|date:"j N" count meeting_count=study_group.meeting_set.active.count %}
+                This learning circle meets every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} week.
+                {% plural %}
+                This learning circle meets every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} weeks.
+                {% endblocktrans %}
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-4 col-sm-12">
-      {% if study_group.image %}
-      <img class="img-fluid" src="{{study_group.image.url}}">
-      {% else %}
-      <img class="img-fluid" src="{% static 'images/learning-circle-default.jpg' %}">
-      {% endif %}
-      <p>{{study_group.description}}</p>
-      <p>{% blocktrans with first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name %}Facilitated by {{first_name}} {{last_name}}{% endblocktrans %}</p>
-      <p>{% blocktrans with link=study_group.course.link provider=study_group.course.provider %}Course materials provided by <a href="{{ link }}" target="_blank">{{ provider }}</a>{% endblocktrans %}</p>
-      <p>
-      {% blocktrans with day=study_group.day meeting_time=study_group.meeting_time|time:"fA" end_time=study_group.end_time|time:"fA" timezone=study_group.timezone_display start_date=study_group.start_date|date:"j N" count meeting_count=study_group.meeting_set.active.count %}
-      This learning circle meets every <strong>{{day}}</strong> from <strong>{{meeting_time}} to {{end_time}}</strong> {{timezone}} starting <strong>{{start_date}}</strong> for {{meeting_count}} week.
-      {% plural %}
-      This learning circle meets every<strong> {{day}}</strong> from <strong>{{meeting_time}} to {{end_time}}</strong> {{timezone}} starting <strong>{{start_date}}</strong> for {{meeting_count}} weeks.</strong>
-      {% endblocktrans %}
-      </p>
-      <p>{% trans "At" %} {% if study_group.venue_website %}<a href="{{study_group.venue_website}}">{{ study_group.venue_name }}</a>{% else %}<strong>{{study_group.venue_name}}</strong>{% endif %}, {{study_group.venue_details}}, {{study_group.city}}</p>
+  </section>
+
+  <section id="lc-description">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-4 d-flex justify-content-center">
+
+          <div class="pos-relative card-outer">
+            <div class="pos-relative card-upper">
+              <div class="circle-bg"></div>
+
+              {% if study_group.facilitator.profile.avatar %}
+                <img class="img-fluid card-img drop-shadow" src="{{ study_group.facilitator.profile.avatar.url }}" alt="Facilitator image" />
+              {% else %}
+                <img class="img-fluid card-img drop-shadow" src="{% static 'images/avatars/p2pu_avatar_blue.png' %}">
+              {% endif %}
+            </div>
+
+            <div class="card card-lower card-body drop-shadow">
+              <div class="profile-info text-center">
+                <p class="mt-4 mb-1 small">{% trans "Facilitated by" %}</p>
+                <h4 class="mb-3 mt-1">{{ study_group.facilitator.first_name }}</h4>
+                {% if study_group.facilitator.profile.bio %}
+                <p class="text-left">{{ study_group.facilitator.profile.bio }}</p>
+                {% endif %}
+              </div>
+
+              <div class="grid-wrapper small">
+                {% if team_name %}
+                  <div class="label">{% trans "Team" %}</div>
+                  <div>{{ team_name }}</div>
+                {% endif %}
+
+                {% if study_group.facilitator.profile.city %}
+                  <div class="label">{% trans "City" %}</div>
+                  <div>{{ study_group.facilitator.profile.city }}</div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="col-lg-8">
+          <h2 class="description-title">{% trans "Welcome!" %}</h2>
+          <div class="description">
+            {{study_group.description}}
+          </div>
+
+          <h3>{% trans "Course materials we'll use" %}</h3>
+          <div class="description">
+            {% if study_group.course_description %}
+              {{study_group.course_description}}
+            {% else %}
+              {{study_group.course.caption}}
+            {% endif %}
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="col-md-8 col-sm-12">
-      {% if study_group.signup_open %}
-        {% if study_group.draft %}
-          <p>{% trans "Signup for this learning circle is not open yet." %}</p>
-        {% else %}
-          {% crispy form %}
-        {% endif %}
-      {% else %}
-      <p>{% trans "Unfortunately this learning circle is now closed for signup." %}</p>
-      {% endif %}
+  </section>
+
+  <section id="lc-registration">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 order-2 order-md-1">
+          <div class="card border-0 rounded-0 drop-shadow">
+            <div class="card-body">
+              <h2>{% trans "Join this learning circle" %}</h2>
+              {% blocktrans %}
+                <p>What is a learning circle? <a href="https://p2pu.org/en/learning-circles-faq/" target="_blank" rel="noopener noreferrer">Read the FAQs.</a></p>
+              {% endblocktrans %}
+              {% if study_group.signup_open %}
+                {% if study_group.draft %}
+                  <p>{% trans "Signup for this learning circle is not open yet." %}</p>
+                {% else %}
+                  <div class="form">
+                    <form action="" method="POST" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      {{ form|crispy }}
+                      <button type="submit" class="btn p2pu-btn yellow">{% trans "Submit" %}</button>
+                    </form>
+                  </div>
+                {% endif %}
+              {% else %}
+              <p>{% trans "Unfortunately this learning circle is now closed for signup." %}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 order-1 order-md-2 mb-3">
+          <div class="card drop-shadow border-0 rounded-0">
+            <div class="card-body small meetings">
+              <h3 class="minicaps text-left">{% trans "Meetings" %}</h3>
+              <ul>
+              {% for meeting in meetings|slice:'8' %}
+                <li>{{ meeting.meeting_date|date:"N j"}} {% trans "at" %} {{ meeting.meeting_time|time:"fA" }} {{study_group.timezone_display}}</li>
+              {% endfor %}
+              {% if meetings|length > 8 %}
+                {% blocktrans with remainder=meetings|length|add:"-8"%}
+                    <li>... and {{remainder}} more.</li>
+                {% endblocktrans %}
+              {% endif %}
+              </ul>
+              <h3 class="minicaps text-left">{% trans "Location" %}</h3>
+              <p>
+                {% if study_group.venue_website %}<a href="{{study_group.venue_website}}">{{ study_group.venue_name }}</a>{% else %}{{study_group.venue_name}}{% endif %}, {{study_group.venue_details}}, {{study_group.city}}
+              </p>
+
+            </div>
+            <div class="card-image">
+              <img class="card-img-top" src="https://api.mapbox.com/styles/v1/mapbox/light-v9/static/pin-s+FFBC1A({{ study_group.longitude }},{{ study_group.latitude }})/{{ study_group.longitude }},{{ study_group.latitude }},12,0,0/400x200?access_token={{ mapbox_token }}&logo=false" />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 </div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -51,5 +200,3 @@
 {% render_bundle 'common' %}
 {% render_bundle 'signup' %}
 {% endblock %}
-
-

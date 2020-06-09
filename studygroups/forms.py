@@ -59,11 +59,15 @@ class ApplicationForm(forms.ModelForm):
         label=_('I give consent that P2PU can share my signup info with the learning circle facilitator and send me info regarding the learning circle.')
     )
 
+    # honeypot field to mitigate spam submissions
+    last_name = forms.CharField(required=False)
+
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             'study_group',
             'name',
+            'last_name',
             'email',
             'goals',
             'support',
@@ -71,17 +75,24 @@ class ApplicationForm(forms.ModelForm):
             'consent',
             'communications_opt_in'
         )
-        self.helper.add_input(Submit('submit', 'Submit'))
         super().__init__(*args, **kwargs)
         self.fields['email'].required = True
         study_group = kwargs.get('initial', {}).get('study_group')
         if study_group and study_group.country == 'United States of America':
-            self.fields['mobile'].help_text = 'Ex. +1 281-234-5678. ' + self.fields['mobile'].help_text 
+            self.fields['mobile'].help_text = 'Ex. +1 281-234-5678. ' + self.fields['mobile'].help_text
 
         # add custom signup question if the facilitator specified one
         if study_group.signup_question:
             self.fields['custom_question'] = forms.CharField(label=study_group.signup_question)
             self.helper.layout.insert(len(self.helper.layout), 'custom_question')
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # check honeypot field and raise error if it is not empty
+        empty_values = [None, '']
+        if not cleaned_data.get('last_name') in empty_values:
+            raise forms.ValidationError(_('Gotcha'))
 
     def save(self, commit=True):
         signup_questions = {}
@@ -97,7 +108,7 @@ class ApplicationForm(forms.ModelForm):
 
     class Meta:
         model = Application
-        fields = ['study_group', 'name', 'email', 'mobile', 'consent', 'communications_opt_in']
+        fields = ['study_group', 'name', 'last_name', 'email', 'mobile', 'goals', 'support', 'consent', 'communications_opt_in']
         widgets = {'study_group': forms.HiddenInput}
         labels = {
             'communications_opt_in': _('I would like to receive information about other learning opportunities in the future.'),
@@ -314,7 +325,9 @@ class StudyGroupForm(forms.ModelForm):
             'meeting_time',
             'timezone',
             'duration',
+            'name',
             'description',
+            'course_description',
             'signup_question',
             'venue_website',
             'image',
@@ -323,7 +336,9 @@ class StudyGroupForm(forms.ModelForm):
         ]
         labels = {
             'course': _('Choose the course that your learning circle will study.'),
+            'name': _('Set a title for your learning circle.'),
             'description': _('Share a welcome message with potential learners.'),
+            'course_description': _('Describe the course materials that you will be using.'),
             'venue_name': _('Where will you meet?'),
             'venue_details': _('Where is the specific meeting spot?'),
             'venue_address': _('What is the address of the venue?'),
@@ -339,7 +354,9 @@ class StudyGroupForm(forms.ModelForm):
         }
         help_texts = {
             'course': '',
+            'name': _('Leave this blank to use the course title.'),
             'description': _('You can include a bit about yourself, why you’re facilitating this course, and anything else you want people to know before they sign up.'),
+            'course_description': _('Leave this blank to use the course description.'),
             'venue_name': _('Name of the venue, e.g. Pretoria Library or Bekka\'s house'),
             'venue_details': _('e.g. second floor kitchen or Room 409 (third floor)'),
             'venue_address': _('Write it out like you were mailing a letter.'),

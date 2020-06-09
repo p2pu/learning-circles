@@ -11,24 +11,36 @@
    "pk": 1
 },
 {
+    "fields": {
+      "user": 1
+   },
+   "model": "studygroups.profile",
+   "pk": 1
+},
+{
    "fields": {
       "created_at": "2015-03-23T15:18:39.462Z",
       "updated_at": "2015-03-23T15:18:39.462Z",
-      "name": "The Riders",
+      "name": "Test learning circle",
       "course": 3,
+      "course_description": "Course number three",
       "start_date": "2015-03-23",
       "meeting_time": "18:30:00",
       "end_date": "2015-04-23",
       "duration": 120,
       "timezone": "US/Central",
+      "latitude" : "41.850030",
+      "longitude" : "-87.650050",
+      "language" : "en",
+      "place_id" : "",
       "facilitator": 1,
       "venue_name": "Harold Washington",
       "venue_address": "123 Street",
       "venue_details": "3rd floor",
       "city": "Chicago",
-      "language" : "en",
       "image": "http://image-url.png",
-      "draft": false
+      "draft": false,
+      "signup_open" : true
    },
    "model": "studygroups.studygroup",
    "pk": 1
@@ -37,8 +49,9 @@
    "fields": {
       "created_at": "2015-03-23T15:19:04.318Z",
       "updated_at": "2015-03-23T15:18:39.462Z",
-      "name": "The Riders",
+      "name": "No More Riders!",
       "course": 2,
+      "course_description": "Course number two",
       "start_date": "2015-03-23",
       "meeting_time": "18:00:00",
       "end_date": "2015-03-23",
@@ -48,7 +61,9 @@
       "venue_name": "Harold Washington",
       "venue_address": "123 Street",
       "venue_details": "3rd floor",
-      "city": "Chicago",
+      "city": "Kansas City",
+      "latitude" : "41.850030",
+      "longitude" : "-87.650050",
       "language" : "en",
       "image": "http://image-url.png",
       "draft": false
@@ -60,8 +75,9 @@
    "fields": {
       "created_at": "2015-03-25T14:35:02.227Z",
       "updated_at": "2015-03-23T15:18:39.462Z",
-      "name": "The Red Hawks ",
+      "name": "The Red Hawks",
       "course": 4,
+      "course_description": "Course number four",
       "start_date": "2015-03-23",
       "meeting_time": "18:30:00",
       "end_date": "2015-03-23",
@@ -71,7 +87,9 @@
       "venue_name": "Harold Washington",
       "venue_address": "123 Street",
       "venue_details": "3rd floor",
-      "city": "Chicago",
+      "city": "Boston",
+      "latitude" : "41.850030",
+      "longitude" : "-87.650050",
       "language" : "en",
       "image": "http://image-url.png",
       "draft": false
@@ -83,8 +101,9 @@
    "fields": {
       "created_at": "2015-03-25T15:55:44.525Z",
       "updated_at": "2015-03-23T15:18:39.462Z",
-      "name": "The Bandits of Hell's Bend ",
+      "name": "The Bandits of Hell's Bend",
       "course": 1,
+      "course_description": "Course number one",
       "start_date": "2015-03-23",
       "meeting_time": "10:00:00",
       "end_date": "2015-03-23",
@@ -94,7 +113,9 @@
       "venue_name": "Harold Washington",
       "venue_address": "123 Street",
       "venue_details": "3rd floor",
-      "city": "Chicago",
+      "city": "Toronto",
+      "latitude" : "41.850030",
+      "longitude" : "-87.650050",
       "language" : "en",
       "image": "http://image-url.png",
       "draft": false

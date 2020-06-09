@@ -2,15 +2,15 @@
 {% load i18n %}
 {% load extras %}
 {% block body %}
- 
+
 <p>{% blocktrans with name=study_group.facilitator.first_name %}Hi {{name}}{% endblocktrans %},</p>
 
 {% url 'studygroups_signup' location=study_group.venue_name|unicode_slugify study_group_id=study_group.pk as study_group_url%}
 <h2>{% trans "Your learning circle has been created!" %}</h2>
 
 <p>
-  {% blocktrans with course_title=study_group.course.title city=study_group.city %}
-    Congratulations! You created a learning circle on “{{course_title}}” in {{city}}.
+  {% blocktrans with studygroup_name=study_group.name city=study_group.city %}
+    Congratulations! You created a learning circle called “{{studygroup_name}}” in {{city}}.
   {% endblocktrans %}
   {% if study_group.draft %}
     {% blocktrans %}You can view a draft signup page at  <a href="{{PROTOCOL}}://{{DOMAIN}}{{study_group_url}}">{{PROTOCOL}}://{{DOMAIN}}{{study_group_url}}</a>

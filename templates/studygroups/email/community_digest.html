@@ -214,14 +214,14 @@
     <table class="inner-table">
       <thead>
         <tr>
-          <td>{% trans "Course" %}</td>
+          <td>{% trans "Learning Circle" %}</td>
           <td>{% trans "Goal for signing up?" %}</td>
         </tr>
       </thead>
       <tbody>
         {% for signup in new_applications %}
           <tr>
-            <td>{{ signup.study_group.course.title | title }}</td>
+            <td>{{ signup.study_group.name | title }}</td>
             {% with answers=signup.get_signup_questions %}
               <td>{{ answers.goals }}</td>
             {% endwith %}
@@ -304,7 +304,7 @@
   <p>{% trans "The following learning circles have reports available. Click to view the report:" %}</p>
   <ul>
     {% for studygroup in studygroups_with_survey_responses %}
-      <li><a href="{{ studygroup.report_url }}">{{ studygroup.course.title }}</a> {% trans "in" %} {{ studygroup.city }}</li>
+      <li><a href="{{ studygroup.report_url }}">{{ studygroup.name }}</a> {% trans "in" %} {{ studygroup.city }}</li>
     {% endfor %}
   </ul>
 </div>

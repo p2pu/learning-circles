@@ -22,30 +22,6 @@ import json
 import uuid
 
 
-# TODO - remove this
-STUDY_GROUP_NAMES = [
-    "The Riders",
-    "The Master Minds of Mars",
-    "The Efficiency Experts",
-    "The Red Hawks",
-    "The Bandits of Hell's Bend",
-    "Apache Devils",
-    "The Wizards of Venus",
-    "Swords of Mars",
-    "The Beasts of Tarzan",
-    "Tarzan and the Castaways",
-    "Pirates of Venus",
-    "The People that Time Forgot",
-    "The Eternal Lovers"
-]
-
-
-def _study_group_name():
-    idx = 1 + StudyGroup.objects.count()
-    num_names = len(STUDY_GROUP_NAMES)
-    return ' '.join([STUDY_GROUP_NAMES[idx % num_names], "I"*(idx//num_names)])
-
-
 # TODO remove organizer model - only use Facilitator model + Team Membership
 class Organizer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -62,9 +38,10 @@ class StudyGroupQuerySet(SoftDeleteQuerySet):
 
 
 class StudyGroup(LifeTimeTrackingModel):
-    name = models.CharField(max_length=128, default=_study_group_name)
+    name = models.CharField(max_length=128, blank=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     description = models.CharField(max_length=500)
+    course_description = models.CharField(max_length=500, blank=True)
     venue_name = models.CharField(max_length=256)
     venue_address = models.CharField(max_length=256)
     venue_details = models.CharField(max_length=128)
@@ -97,6 +74,15 @@ class StudyGroup(LifeTimeTrackingModel):
 
     objects = StudyGroupQuerySet.as_manager()
 
+    def save(self, *args, **kwargs):
+        # use course.caption if course_description is not set
+        if self.course_description is None:
+            self.course_description = self.course.caption
+        # use course.title if name is not set
+        if self.name is None:
+            self.name = self.course.title
+        super().save(*args, **kwargs)
+
     def day(self):
         return calendar.day_name[self.start_date.weekday()]
 
@@ -128,6 +114,9 @@ class StudyGroup(LifeTimeTrackingModel):
         path = reverse('studygroups_final_report', kwargs={'study_group_id': self.id})
         return base_url + path
 
+    def signup_url(self):
+        return f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_signup', args=(slugify(self.venue_name, allow_unicode=True), self.id,))
+
     def can_update_meeting_datetime(self):
         """ check to see if you can update the date """
         # if it's a draft, you can edit
@@ -154,9 +143,11 @@ class StudyGroup(LifeTimeTrackingModel):
         sg = self  # TODO - this logic is repeated in the API class
         data = {
             "id": sg.pk,
+            "name": sg.name,
             "course": sg.course.id,
             "course_title": sg.course.title,
             "description": sg.description,
+            "course_description": sg.course_description,
             "venue_name": sg.venue_name,
             "venue_details": sg.venue_details,
             "venue_address": sg.venue_address,
@@ -198,7 +189,7 @@ class StudyGroup(LifeTimeTrackingModel):
         return json.dumps(self.to_dict(), cls=DjangoJSONEncoder)
 
     def __str__(self):
-        return '{0} - {1}s {2} at the {3}'.format(self.course.title, self.day(), self.meeting_time, self.venue_name)
+        return '{0} - {1}s {2} at the {3}'.format(self.name, self.day(), self.meeting_time, self.venue_name)
 
 
 class Application(LifeTimeTrackingModel):
@@ -303,7 +294,7 @@ class Meeting(LifeTimeTrackingModel):
 
     def __str__(self):
         # TODO i18n
-        return '{0}, {1} at {2}'.format(self.study_group.course.title, self.meeting_datetime(), self.study_group.venue_name)
+        return '{0}, {1} at {2}'.format(self.study_group.name, self.meeting_datetime(), self.study_group.venue_name)
 
     def to_json(self):
         data = {

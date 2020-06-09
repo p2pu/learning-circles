@@ -16,7 +16,7 @@
 
     <div class="row">
       <div class="col-12">
-        <h1 class="mt-4">{{ study_group.course.title }}</h1>
+        <h1 class="mt-4">{{ study_group.name }}</h1>
         <h4>{% blocktrans with facilitator_name=study_group.facilitator.first_name %}with {{ facilitator_name }}{% endblocktrans %}</h4>
         <p class="my-0">{{ study_group.start_date }} {% trans "to" %} {{ study_group.end_date }} {% trans "at" %} {{ study_group.venue_name }}</p>
         <p class="my-0">{{ study_group.city }}</p>

@@ -114,10 +114,19 @@ def signup(request, location, study_group_id):
     else:
         form = ApplicationForm(initial={'study_group': study_group})
 
+    print(study_group.facilitator)
+
     context = {
         'form': form,
         'study_group': study_group,
+        'meetings': study_group.meeting_set.active().order_by('meeting_date'),
+        'mapbox_token': settings.MAPBOX_TOKEN
     }
+
+    team_membership = TeamMembership.objects.active().filter(user=study_group.facilitator).first()
+    if team_membership:
+        context['team_name'] = team_membership.team.name
+
     return render(request, 'studygroups/signup.html', context)
 
 
@@ -274,7 +283,7 @@ class StudyGroupLearnerSurvey(TemplateView):
         study_group = get_object_or_404(StudyGroup, uuid=kwargs.get('study_group_uuid'))
 
         if request.GET.get('learner', None):
-            # if learner is in the query parameters, 
+            # if learner is in the query parameters,
             # store data in session and redirect to URL without query params
             # this is to minize the chance of a learner sharing 'their' survey URL
             learner_uuid = request.GET.get('learner', None)
@@ -291,10 +300,10 @@ class StudyGroupLearnerSurvey(TemplateView):
             return HttpResponseRedirect(redirect_url)
         else:
             learner_uuid = request.session.get('learner_uuid', None)
-            # TODO if the users refreshes the page, it will delete the session and log 
+            # TODO if the users refreshes the page, it will delete the session and log
             # the survey as anonymous
             # Move this to the survey done page
-            if learner_uuid: 
+            if learner_uuid:
                 del request.session['learner_uuid']
             try:
                 application = study_group.application_set.get(uuid=learner_uuid)
@@ -302,6 +311,7 @@ class StudyGroupLearnerSurvey(TemplateView):
                 context = {
                     'survey_id': settings.TYPEFORM_LEARNER_SURVEY_FORM,
                     'study_group_uuid': study_group.uuid,
+                    'study_group_name': study_group.name,
                     'course_title': study_group.course.title,
                     'learner_uuid': application.uuid,
                     'facilitator_name': study_group.facilitator.first_name,
@@ -312,6 +322,7 @@ class StudyGroupLearnerSurvey(TemplateView):
                 context = {
                     'survey_id': settings.TYPEFORM_LEARNER_SURVEY_FORM,
                     'study_group_uuid': study_group.uuid,
+                    'study_group_name': study_group.name,
                     'course_title': study_group.course.title,
                     'facilitator_name': study_group.facilitator.first_name,
                 }

@@ -65,7 +65,7 @@
               <thead>
                 <tr>
                   <td>{% trans "Facilitator" %}</td>
-                  <td>{% trans "Course" %}</td>
+                  <td>{% trans "Learning circle" %}</td>
                   <td>{% trans "Date created" %}</td>
                   <td>{% trans "Start date" %}</td>
                 </tr>
@@ -74,7 +74,7 @@
                 {% for studygroup in unpublished_studygroups %}
                   <tr>
                     <td><a href="mailto:{{studygroup.facilitator.email}}">{{studygroup.facilitator.first_name}} {{studygroup.facilitator.last_name}}</a></td>
-                    <td>{{ studygroup.course.title }}</td>
+                    <td>{{ studygroup.name }}</td>
                     <td>{{ studygroup.created_at|date }}</td>
                     <td>{{ studygroup.start_date|date }}</td>
                   </tr>
@@ -140,8 +140,8 @@
         <h2>{% trans "People Stuff" %}</h2>
       </div>
 
-      <div class="col-12 col-md-6 avoid-page-break">
-        <div class="report-measurement bg-white p-4 mb-4 shadow">
+      <div class="col-12 col-md-6 pb-4 avoid-page-break">
+        <div class="report-measurement bg-white p-4 shadow">
           <header>
               <p class="bold text-uppercase mb-0">{% trans "Active teams" %}</p>
           </header>
@@ -166,7 +166,7 @@
         </div>
       </div>
 
-      <div class="col-12 col-md-6 avoid-page-break">
+      <div class="col-12 col-md-6 pb-4 avoid-page-break">
         <div class="report-measurement bg-white p-4 mb-4 shadow">
           <header>
               <p class="bold text-uppercase mb-0">{% trans "Unrated Learning Circles" %}</p>
@@ -184,7 +184,7 @@
                 {% for studygroup in unrated_studygroups %}
                   <tr>
                     <td><a href="mailto:{{studygroup.facilitator.email}}">{{studygroup.facilitator.first_name}} {{studygroup.facilitator.last_name}}</a></td>
-                    <td>{{studygroup.course.title}}</td>
+                    <td>{{studygroup.name}}</td>
                     <td>{{studygroup.end_date}}</td>
                   </tr>
                 {% endfor %}
@@ -194,7 +194,7 @@
         </div>
       </div>
 
-      <div class="col-12 avoid-page-break">
+      <div class="col-12 pb-4 avoid-page-break">
         <div class="report-measurement bg-white p-4 mb-4 shadow">
           <header>
             <p class="bold text-uppercase mb-0">{% trans "Active facilitators" %}</p>

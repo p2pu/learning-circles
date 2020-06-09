@@ -1,7 +1,7 @@
 {% load i18n %}
 {% trans "Hi there" %}
 {% with study_group=study_group_meeting.study_group %}
-{% blocktrans with first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name course_title=study_group.course.title venue_name=study_group.venue_name meeting_date=study_group_meeting.meeting_datetime|date:"fA, l, j F" %}{{first_name}} {{last_name}} submitted feedback for the "{{course_title}}" learning circle meeting at {{venue_name}}, {{meeting_date}}.{% endblocktrans %}
+{% blocktrans with first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name studygroup_name=study_group.name venue_name=study_group.venue_name meeting_date=study_group_meeting.meeting_datetime|date:"fA, l, j F" %}{{first_name}} {{last_name}} submitted feedback for the "{{studygroup_name}}" learning circle meeting at {{venue_name}}, {{meeting_date}}.{% endblocktrans %}
 
   # {% trans "Learning circle summary" %}
   {{ feedback.feedback }}
@@ -19,7 +19,7 @@ P2PU
 
 Hi there
 {% with study_group_meeting.study_group as study_group %}
-{{ study_group.facilitator.first_name }} {{ study_group.facilitator.last_name }} submitted feedback for the "{{ study_group.course.title|safe }}" learning circle meeting at {{ study_group.venue_name }}, {{ study_group_meeting.meeting_datetime|date:"fA, l, j F"  }}.
+{{ study_group.facilitator.first_name }} {{ study_group.facilitator.last_name }} submitted feedback for the "{{ study_group.name|safe }}" learning circle meeting at {{ study_group.venue_name }}, {{ study_group_meeting.meeting_datetime|date:"fA, l, j F"  }}.
 
   # learning circle summary
   {{ feedback.feedback|safe }}
