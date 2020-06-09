@@ -3,7 +3,6 @@ import React, { Fragment } from 'react'
 import "../stylesheets/facilitator-profile.scss"
 
 const FacilitatorProfile = ({ facilitator, themeColor }) => {
-  console.log("facilitator", facilitator)
   return (
     <div className="pos-relative card-outer">
       <div className="pos-relative card-upper">

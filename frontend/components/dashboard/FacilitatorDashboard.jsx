@@ -202,34 +202,37 @@ export default class FacilitatorDashboard extends React.Component {
               <div data-aos='fade'>
                 <Card>
                   <div className="card-title">Team Management</div>
-                    <Tabs defaultIndex={0}>
-                      <TabList>
-                        <Tab><span className="minicaps bold text-xs">Team members</span></Tab>
-                        <Tab><span className="minicaps bold text-xs">Pending invitations</span></Tab>
-                        <Tab><span className="minicaps bold text-xs">Invite new members</span></Tab>
-                      </TabList>
-                      <TabPanel>
-                        <div data-aos='fade'>
-                          <TeamMembersTable teamId={this.props.teamId} />
-                        </div>
-                      </TabPanel>
-                      <TabPanel>
-                        <div data-aos='fade'>
-                          <TeamInvitationsTable teamId={this.props.teamId} />
-                        </div>
-                      </TabPanel>
-                      <TabPanel>
-                        <div data-aos='fade'>
-                          <OrganizerTeamInvitations
-                            teamInvitationUrl={this.props.teamInvitationUrl}
-                            createTeamInvitationUrl={this.props.createTeamInvitationUrl}
-                            deleteTeamInvitationUrl={this.props.deleteTeamInvitationUrl}
-                            teamMemberInvitationUrl={this.props.teamMemberInvitationUrl}
-                            showAlert={this.showAlert}
-                          />
-                        </div>
-                      </TabPanel>
-                    </Tabs>
+                  <Tabs defaultIndex={0}>
+                    <TabList>
+                      <Tab><span className="minicaps bold text-xs">Team members</span></Tab>
+                      <Tab><span className="minicaps bold text-xs">Pending invitations</span></Tab>
+                      <Tab><span className="minicaps bold text-xs">Invite new members</span></Tab>
+                    </TabList>
+                    <TabPanel>
+                      <div data-aos='fade'>
+                        <TeamMembersTable teamId={this.props.teamId} />
+                      </div>
+                    </TabPanel>
+                    <TabPanel>
+                      <div data-aos='fade'>
+                        <TeamInvitationsTable teamId={this.props.teamId} />
+                      </div>
+                    </TabPanel>
+                    <TabPanel>
+                      <div data-aos='fade'>
+                        <OrganizerTeamInvitations
+                          teamInvitationUrl={this.props.teamInvitationUrl}
+                          createTeamInvitationUrl={this.props.createTeamInvitationUrl}
+                          deleteTeamInvitationUrl={this.props.deleteTeamInvitationUrl}
+                          teamMemberInvitationUrl={this.props.teamMemberInvitationUrl}
+                          showAlert={this.showAlert}
+                        />
+                      </div>
+                    </TabPanel>
+                  </Tabs>
+                  <div className="text-right">
+                    <a href={this.props.editTeamUrl}>Edit team information</a>
+                  </div>
                 </Card>
               </div>
             }
