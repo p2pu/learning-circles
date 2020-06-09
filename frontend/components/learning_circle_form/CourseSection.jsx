@@ -42,6 +42,8 @@ const CourseSection = (props) => {
             Browse={BrowseCourses}
             onSelectResult={handleSelectResult}
             origin={window.location.origin}
+            scrollContainer={'.tabs-container'}
+            NoResultsComponent={() => <p className="my-4">{`There are no matching courses.`}<a className="btn p2pu-btn btn-secondary" href={`${window.location.origin}${window.location.pathname}`}>Start over</a></p>}
           />
         }
     </div>
