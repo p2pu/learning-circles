@@ -74,6 +74,15 @@ class StudyGroup(LifeTimeTrackingModel):
 
     objects = StudyGroupQuerySet.as_manager()
 
+    def save(self, *args, **kwargs):
+        # use course.caption if course_description is not set
+        if self.course_description is None:
+            self.course_description = self.course.caption
+        # use course.title if name is not set
+        if self.name is None:
+            self.name = self.course.title
+        super().save(*args, **kwargs)
+
     def day(self):
         return calendar.day_name[self.start_date.weekday()]
 
