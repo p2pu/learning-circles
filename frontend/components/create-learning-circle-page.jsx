@@ -85,6 +85,12 @@ export default class CreateLearningCirclePage extends React.Component {
     }
   }
 
+  componentDidUpdate(prevProps,prevState) {
+    if (prevState.learningCircle !== this.state.learningCircle) {
+      console.log("this.state.learningCircle", this.state.learningCircle)
+    }
+  }
+
   _updateFormData(data, callback=null) {
     this.setState({
       learningCircle: {
@@ -125,15 +131,33 @@ export default class CreateLearningCirclePage extends React.Component {
     this.setState({ alert: { show: false }})
   }
 
+  extractPlaceData = place => {
+    const country = place.country ? place.country.default : null;
+    const country_en = place.country && place.country.en ? place.country.en : country;
+    const placeData = {
+      city: place.locale_names.default[0],
+      region: place.administrative ? place.administrative[0] : null,
+      country: country,
+      country_en: country_en,
+      latitude: place._geoloc ? place._geoloc.lat : null,
+      longitude: place._geoloc ? place._geoloc.lng : null,
+      place_id: place.objectID ? place.objectID : null,
+    }
+
+    return placeData
+  }
+
   _onSubmitForm(draft=true) {
     if (!this.state.user) {
       this.showModal();
     } else {
       this.setState({ isSaving: draft, isPublishing: !draft })
+      const placeData = this.extractPlaceData(this.state.learningCircle.place)
       const data = {
         ...this.state.learningCircle,
+        ...placeData,
         course: this.state.learningCircle.course.id,
-        draft: draft
+        draft: draft,
       }
 
       const onSuccess = (data) => {

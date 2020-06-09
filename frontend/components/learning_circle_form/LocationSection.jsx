@@ -11,11 +11,11 @@ const LocationSection = (props) => {
     <div>
       <PlaceSelect
         label={'Start typing any city name'}
-        name={'city'}
+        name={'place'}
         classes="form-group"
-        value={{ place_id: props.learningCircle.place_id, city: props.learningCircle.city }}
+        value={props.learningCircle.place}
         handleChange={props.updateFormData}
-        errorMessage={props.errors.city}
+        errorMessage={props.errors.place}
       />
       <InputWithLabel
         label={'Where will you meet?'}
