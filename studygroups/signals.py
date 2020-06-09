@@ -64,16 +64,6 @@ def handle_new_application(sender, instance, created, **kwargs):
     welcome_message.attach_alternative(learner_signup_html, 'text/html')
     welcome_message.send()
 
-@receiver(pre_save, sender=StudyGroup)
-def set_default_fields(sender, instance, **kwargs):
-
-    # use course.caption if course_description is not set
-    if instance.course_description is None:
-        instance.course_description = instance.course.caption
-
-    # use course.title if name is not set
-    if instance.name is None:
-        instance.name = instance.course.title
 
 @receiver(post_save, sender=StudyGroup)
 def handle_new_study_group_creation(sender, instance, created, **kwargs):
