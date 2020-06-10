@@ -56,7 +56,7 @@ def user_is_team_member(func):
 
 def user_is_team_organizer(func):
     def decorated(*args, **kwargs):
-        team_id = kwargs.get('team_id') if kwargs.get('team_id', None) else kwargs.get('pk')
+        team_id = kwargs.get('team_id')
         team = Team.objects.filter(pk=team_id).first()
         if team is None:
             raise PermissionDenied
