@@ -247,5 +247,6 @@ class TeamUpdate(UpdateView):
     model = Team
     form_class = TeamForm
     success_url = reverse_lazy('studygroups_facilitator')
+    pk_url_kwarg = 'team_id'
 
 
