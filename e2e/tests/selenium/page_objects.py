@@ -40,7 +40,7 @@ class LearningCircleCreationPage(BasePage):
         self.fill_text_field(LearningCircleCreationPageLocators.START_DATE_FIELD, self.start_date, Keys.ENTER)
         self.fill_text_field(LearningCircleCreationPageLocators.WEEKS_FIELD, Keys.BACKSPACE, "8")
 
-        self.fill_meeting_time_field("7:00 pm")
+        self.fill_text_field(LearningCircleCreationPageLocators.MEETING_TIME_FIELD, "7:00 PM", Keys.ENTER)
         self.fill_text_field(LearningCircleCreationPageLocators.DURATION_FIELD, "60")
 
         self.click_next_button()
@@ -73,14 +73,6 @@ class LearningCircleCreationPage(BasePage):
         city_select.send_keys(location)
         self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.CITY_SELECT_OPTION))
         city_select.send_keys(Keys.ARROW_DOWN, Keys.ENTER)
-
-
-    def fill_meeting_time_field(self, time):
-        meeting_time_field = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.MEETING_TIME_FIELD))
-        meeting_time_field.click()
-        meeting_time_input = self.wait.until(expected_conditions.visibility_of_element_located(LearningCircleCreationPageLocators.MEETING_TIME_INPUT))
-        meeting_time_input.send_keys(time)
-
 
     def click_next_button(self):
         next_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.NEXT_TAB_BUTTON))
