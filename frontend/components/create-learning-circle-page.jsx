@@ -126,6 +126,8 @@ export default class CreateLearningCirclePage extends React.Component {
   }
 
   extractPlaceData = place => {
+    if (!place) return null
+
     const country = place.country ? place.country.default : null;
     const country_en = place.country && place.country.en ? place.country.en : country;
     const placeData = {

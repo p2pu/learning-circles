@@ -15,6 +15,7 @@ class BasePage(object):
 
     def fill_text_field(self, locator, *text):
         input_field = self.driver.find_element(*locator)
+        input_field.clear()
         input_field.send_keys(*text)
 
 
@@ -23,7 +24,7 @@ class LearningCircleCreationPage(BasePage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Date needs to be 4 days in the future - UI disables earlier dates
-        self.start_date = (datetime.datetime.now() + datetime.timedelta(days=5)).date().strftime("%m/%d/%Y")
+        self.start_date = (datetime.datetime.now() + datetime.timedelta(days=5)).date().strftime("%B %-d, %Y")
 
     def fill_out_form_correctly(self):
         self.select_first_course()
@@ -37,10 +38,10 @@ class LearningCircleCreationPage(BasePage):
 
         self.click_next_button()
 
-        self.fill_text_field(LearningCircleCreationPageLocators.START_DATE_FIELD, self.start_date, Keys.ENTER)
-        self.fill_text_field(LearningCircleCreationPageLocators.WEEKS_FIELD, Keys.BACKSPACE, "8")
+        self.fill_text_field(LearningCircleCreationPageLocators.START_DATE_FIELD, self.start_date)
+        self.fill_text_field(LearningCircleCreationPageLocators.WEEKS_FIELD, "8")
 
-        self.fill_text_field(LearningCircleCreationPageLocators.MEETING_TIME_FIELD, "7:00 PM", Keys.ENTER)
+        self.fill_text_field(LearningCircleCreationPageLocators.MEETING_TIME_FIELD, "7:00 PM")
         self.fill_text_field(LearningCircleCreationPageLocators.DURATION_FIELD, "60")
 
         self.click_next_button()
@@ -72,7 +73,7 @@ class LearningCircleCreationPage(BasePage):
         city_select = self.wait.until(expected_conditions.visibility_of_element_located(LearningCircleCreationPageLocators.CITY_SELECT_INPUT))
         city_select.send_keys(location)
         self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.CITY_SELECT_OPTION))
-        city_select.send_keys(Keys.ARROW_DOWN, Keys.ENTER)
+        city_select.send_keys(Keys.ENTER)
 
     def click_next_button(self):
         next_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.NEXT_TAB_BUTTON))
