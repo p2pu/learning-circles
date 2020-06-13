@@ -191,7 +191,7 @@ def recommendation_reasons_chart(study_group):
     survey_data = map(learner_survey_summary, survey_responses)
     why = [
         (r.get("recommendation_rating_reason"), r.get('recommendation_rating'))
-        for r in survey_data 
+        for r in survey_data
         if r.get("recommendation_rating_reason") and r.get('recommendation_rating')
     ]
     why.sort(key=lambda i: i[1])
@@ -1141,12 +1141,12 @@ class LearnerGoalReachedChart():
                 r.get('goal_rating') for r in map(learner_survey_summary, survey_responses)
                 if r.get('goal_rating')
             ]
-            
+
             ratings_counter = Counter(ratings)
-            
+
             for rating, collection in data.items():
                 collection.append(ratings_counter[rating])
-            
+
             dates.append(window_start.strftime("%b %Y"))
 
             window_start = window_end
@@ -1241,10 +1241,10 @@ class OverallRatingBarChart():
         self.chart_data = chart_data
 
     def generate(self, **opts):
-
         colours = ["#05C6B4", "#B7D500", "#FFBC1A", "#FC7100", "#4c7e80"]
-        serie = [ { "value": value, "color": colours.pop(0) } for value in self.chart_data.values() ]
-        labels = [ "{} ★".format(key) for key in self.chart_data.keys() ]
+        keys = sorted(self.chart_data.keys(), reverse=True)
+        labels = [ "{} ★".format(key) for key in keys ]
+        serie = [ { "value": self.chart_data[key], "color": colours.pop(0) } for key in keys ]
 
         self.chart.add("Rating", serie)
         self.chart.x_labels = labels
