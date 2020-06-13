@@ -84,11 +84,6 @@ const TitleInput = (props) => {
 }
 
 const CustomizeSection = (props) => {
-
-  const handleImageUpload = ({image}) => {
-    props.updateFormData({ image_url: image })
-  }
-
   return (
     <div>
       <TitleInput

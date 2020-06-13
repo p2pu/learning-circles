@@ -10,9 +10,9 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-4">
-          <a href="https://www.p2pu.org/en/learning-circles" class="p2pu-btn btn small dark secondary mb-5 py-1 px-3"><span class="material-icons">keyboard_backspace</span>{% trans "Back to search" %}</a>
-          <h1>{{study_group.name}}</h1>
-          <p class="tagline mt-4">{% trans "A" %} <img src="{% static 'images/p2pu-logo.png' %}" alt="P2PU" /> {% trans "learning circle" %}</p>
+          <a id="back-button" href="https://www.p2pu.org/en/learning-circles" class="p2pu-btn btn small dark secondary mb-5 py-1 px-3"><span class="material-icons">keyboard_backspace</span>{% trans "Back to search" %}</a>
+          <h1 data-aos='fade'>{{study_group.name}}</h1>
+          <p data-aos='fade'class="tagline mt-4">{% trans "A" %} <img src="{% static 'images/p2pu-logo.png' %}" alt="P2PU" /> {% trans "learning circle" %}</p>
         </div>
 
         <div class="col-lg-8">
@@ -27,7 +27,7 @@
 
           <div class="info">
 
-            <div class="bullet facilitator">
+            <div class="bullet facilitator" data-aos='fade' data-aos-delay="250">
               <div class="icon-container drop-shadow">
                 <span class="material-icons">face</span>
               </div>
@@ -36,7 +36,7 @@
               </div>
             </div>
 
-            <div class="bullet course">
+            <div class="bullet course" data-aos='fade' data-aos-delay="300">
               <div class="icon-container drop-shadow">
                 <span class="material-icons">class</span>
               </div>
@@ -45,7 +45,7 @@
               </div>
             </div>
 
-            <div class="bullet location">
+            <div class="bullet location" data-aos='fade' data-aos-delay="350">
               <div class="icon-container drop-shadow">
                 <span class="material-icons">location_on</span>
               </div>
@@ -54,16 +54,24 @@
               </div>
             </div>
 
-            <div class="bullet schedule">
+            <div class="bullet schedule" data-aos='fade' data-aos-delay="400">
               <div class="icon-container drop-shadow">
                 <span class="material-icons">schedule</span>
               </div>
               <div class="text">
-                {% blocktrans with day=study_group.day meeting_time=study_group.meeting_time|time:"fA" end_time=study_group.end_time|time:"fA" timezone=study_group.timezone_display start_date=study_group.start_date|date:"j N" count meeting_count=study_group.meeting_set.active.count %}
-                This learning circle meets every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} week.
-                {% plural %}
-                This learning circle meets every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} weeks.
-                {% endblocktrans %}
+                {% if study_group.draft %}
+                  {% blocktrans with day=study_group.day meeting_time=study_group.meeting_time|time:"fA" end_time=study_group.end_time|time:"fA" timezone=study_group.timezone_display start_date=study_group.start_date|date:"j N" count meeting_count=study_group.weeks %}
+                  This learning circle meets every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} week.
+                  {% plural %}
+                  This learning circle meets every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} weeks.
+                  {% endblocktrans %}
+                {% else %}
+                  {% blocktrans with day=study_group.day meeting_time=study_group.meeting_time|time:"fA" end_time=study_group.end_time|time:"fA" timezone=study_group.timezone_display start_date=study_group.start_date|date:"j N" count meeting_count=study_group.meeting_set.active.count %}
+                  This learning circle meets every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} week.
+                  {% plural %}
+                  This learning circle meets every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} weeks.
+                  {% endblocktrans %}
+                {% endif %}
               </div>
             </div>
 
@@ -116,18 +124,22 @@
 
 
         <div class="col-lg-8">
-          <h2 class="description-title">{% trans "Welcome!" %}</h2>
-          <div class="description">
-            {{study_group.description}}
+          <div class="description" data-aos='fade'>
+            <h2 class="description-title">{% trans "Welcome!" %}</h2>
+            <div class="description">
+              {{study_group.description}}
+            </div>
           </div>
 
-          <h3>{% trans "Course materials we'll use" %}</h3>
-          <div class="description">
-            {% if study_group.course_description %}
-              {{study_group.course_description}}
-            {% else %}
-              {{study_group.course.caption}}
-            {% endif %}
+          <div class="course-materials" data-aos='fade' data-aos-delay="200">
+            <h3>{% trans "Course materials we'll use" %}</h3>
+            <div class="description">
+              {% if study_group.course_description %}
+                {{study_group.course_description}}
+              {% else %}
+                {{study_group.course.caption}}
+              {% endif %}
+            </div>
           </div>
         </div>
       </div>
@@ -138,7 +150,7 @@
     <div class="container">
       <div class="row">
         <div class="col-md-8 order-2 order-md-1">
-          <div class="card border-0 rounded-0 drop-shadow">
+          <div class="card border-0 rounded-0 drop-shadow" data-aos='fade'>
             <div class="card-body">
               <h2>{% trans "Join this learning circle" %}</h2>
               {% blocktrans %}
@@ -164,7 +176,7 @@
         </div>
 
         <div class="col-md-4 order-1 order-md-2 mb-3">
-          <div class="card drop-shadow border-0 rounded-0">
+          <div class="card drop-shadow border-0 rounded-0" data-aos='fade' data-aos-delay="400">
             <div class="card-body small meetings">
               <h3 class="minicaps text-left">{% trans "Meetings" %}</h3>
               <ul>
@@ -197,6 +209,23 @@
 
 {% block scripts %}
 <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+<script type="text/javascript">
+  // initialize scroll animations
+  AOS.init({
+    duration: 500,
+    delay: 100
+  })
+
+  // set URL for back button
+  try {
+    var params = new URLSearchParams(window.location.search);
+    if (params.has('prev')) {
+      document.getElementById('back-button').params.get('prev')
+    }
+  } catch(e) {
+    // no-op
+  }
+</script>
 {% render_bundle 'common' %}
 {% render_bundle 'signup' %}
 {% endblock %}
