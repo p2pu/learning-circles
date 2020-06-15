@@ -373,7 +373,9 @@ class StudyGroupCreateLegacy(CreateView):
     def form_valid(self, form):
         study_group = form.save(commit=False)
         study_group.facilitator = self.request.user
+
         study_group.save()
+
         #generate_all_meetings(study_group)
         messages.success(self.request, _('You created a new learning circle! Check your email for next steps.'))
         success_url = reverse_lazy('studygroups_view_study_group', args=(study_group.id,))
@@ -704,7 +706,8 @@ class StudyGroupFacilitatorSurvey(TemplateView):
 
         context = super(StudyGroupFacilitatorSurvey, self).get_context_data(**kwargs)
         context['survey_id'] = settings.TYPEFORM_FACILITATOR_SURVEY_FORM
-        context['studygroup_uuid'] = study_group.uuid
+        context['study_group_uuid'] = study_group.uuid
+        context['study_group_name'] = study_group.name
         context['course'] = study_group.course.title
         context['goal'] = study_group.facilitator_goal
         context['goal_rating'] = self.request.GET.get('goal_rating', '')
@@ -754,6 +757,7 @@ class FacilitatorDashboard(TemplateView):
                     context['create_team_invitation_url'] = reverse('api_teams_create_invitation_url', args=(team_membership.team.id,))
                     context['delete_team_invitation_url'] = reverse('api_teams_delete_invitation_url', args=(team_membership.team.id,))
                     context['team_member_invitation_url'] = reverse('studygroups_team_member_invite', args=(team_membership.team.id,))
+                    context['edit_team_url'] = reverse('studygroups_team_edit', args=(team_membership.team.id,))
 
         return context
 

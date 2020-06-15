@@ -7,8 +7,8 @@
   <div class="row">
     <div class="col-md-12">
         <h2>
-          {% blocktrans with course_title=feedback.study_group_meeting.study_group.course.title venue_name=feedback.study_group_meeting.study_group.venue_name %}
-            {{course_title}} at {{venue_name}}
+          {% blocktrans with studygroup_name=feedback.study_group_meeting.study_group.name venue_name=feedback.study_group_meeting.study_group.venue_name %}
+            {{studygroup_name}} at {{venue_name}}
           {% endblocktrans %}
         </h2>
         <h3>

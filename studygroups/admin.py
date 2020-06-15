@@ -19,7 +19,7 @@ class ApplicationInline(admin.TabularInline):
 
 class StudyGroupAdmin(admin.ModelAdmin):
     inlines = [ApplicationInline]
-    list_display = ['course', 'city', 'facilitator', 'start_date', 'day', 'signup_open']
+    list_display = ['course', 'city', 'facilitator', 'start_date', 'day', 'signup_open', 'uuid']
     exclude = ['deleted_at']
     search_fields = ['course__title', 'uuid', 'city', 'facilitator__first_name']
 
@@ -55,7 +55,7 @@ class ApplicationAdmin(admin.ModelAdmin):
 
 
 def reminder_course_title(obj):
-    return obj.study_group.course.title
+    return obj.study_group.name
 
 
 class ReminderAdmin(admin.ModelAdmin):

@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from studygroups.utils import render_to_string_ctx
 from django.core.mail import EmailMultiAlternatives, send_mail

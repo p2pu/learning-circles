@@ -86,11 +86,11 @@ export default class GlobalSuccesses extends Component {
                   <div className="info">
                     {
                       lc.signup_count &&
-                      <p className='meeting-info my-1'><span className="bold">{lc.signup_count}</span> people learned <span className="bold">{lc.course.title}</span> together in { formattedCity }</p>
+                      <p className='meeting-info my-1'><span className="bold">{lc.signup_count}</span> people participated in <span className="bold">{lc.name}</span> in { formattedCity }</p>
                     }
                     {
                       !lc.signup_count &&
-                      <p className='meeting-info my-1'>A learning circle on <span className="bold">{lc.course.title}</span> wrapped up in { formattedCity }</p>
+                      <p className='meeting-info my-1'><span className="bold">{lc.name}</span> wrapped up in { formattedCity }</p>
                     }
                     <a href={lc.report_url}>See the final report</a>
                   </div>

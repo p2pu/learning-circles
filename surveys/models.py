@@ -97,6 +97,10 @@ def normalize_data(typeform_response):
             'field_title': 'Learning circle ID',
             'answer': typeform_response.study_group.id,
         }
+        answers['study_group_name'] = {
+            'field_title': 'Learning circle name',
+            'answer': typeform_response.study_group.name
+        }
         answers['course'] = {
             'field_title': 'Course',
             'answer': typeform_response.study_group.course.title,
@@ -225,7 +229,7 @@ def _new_facilitator_survey_summary(response):
         summary['goal'] = response.study_group.facilitator_goal
     elif response.get_value_by_ref('goal_alt'):
         summary['goal'] = response.get_value_by_ref('goal_alt')
-        
+
     # goal_rating - presedence: study_group.facilitator_goal_rating > response.goal_rating_alt > repsonse.goal_rating_alt_2
     if response.study_group and response.study_group.facilitator_goal_rating:
         summary['goal_rating']: response.study_group.facilitator_goal_rating
