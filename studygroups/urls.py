@@ -44,6 +44,7 @@ from studygroups.views import CommunityDigestView
 from studygroups.views import DigestGenerateView
 from studygroups.views import FacilitatorDashboard
 from studygroups.views import OrganizerGuideForm
+from studygroups.views import TeamUpdate
 
 from . import views
 
@@ -121,6 +122,7 @@ urlpatterns = [
     url(r'^organize/studygroup_meetings/$', MeetingList.as_view(), name='studygroups_organizer_studygroup_meetings'),
     url(r'^organize/teammembership/(?P<team_id>[\d]+)/(?P<user_id>[\d]+)/delete/$', TeamMembershipDelete.as_view(), name='studygroups_teammembership_delete'),
     url(r'^organize/team/(?P<team_id>[\d]+)/member/invite/$', TeamInvitationCreate.as_view(), name='studygroups_team_member_invite'),
+    url(r'^organize/team/(?P<team_id>[\d]+)/edit/$', TeamUpdate.as_view(), name='studygroups_team_edit'),
 
     url(r'^get-organizer-guide/$', OrganizerGuideForm.as_view(), name='studygroups_organizer_guide_form'),
 

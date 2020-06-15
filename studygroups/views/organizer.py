@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.views.generic.base import View
-from django.views.generic.edit import CreateView, DeleteView, FormView
+from django.views.generic.edit import CreateView, DeleteView, FormView, UpdateView
 from django.views.generic import ListView
 from django.contrib import messages
 
@@ -32,6 +32,7 @@ from studygroups.decorators import user_is_organizer
 from studygroups.decorators import user_is_team_member
 from studygroups.decorators import user_is_team_organizer
 from studygroups.forms import OrganizerGuideForm
+from studygroups.forms import TeamForm
 
 @user_is_organizer
 def organize(request):
@@ -240,5 +241,12 @@ class OrganizerGuideForm(FormView):
         messages.success(self.request, _('We have sent the Organizer Guide to you by email, please check your inbox!'))
         return super().form_valid(form)
 
+
+@method_decorator(user_is_team_organizer, name='dispatch')
+class TeamUpdate(UpdateView):
+    model = Team
+    form_class = TeamForm
+    success_url = reverse_lazy('studygroups_facilitator')
+    pk_url_kwarg = 'team_id'
 
 

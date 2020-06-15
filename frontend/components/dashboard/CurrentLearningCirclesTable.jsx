@@ -61,7 +61,7 @@ export default class LearningCirclesTable extends Component {
           <table className="table">
             <thead>
               <tr>
-                <td>Course</td>
+                <td>Learning circle</td>
                 <td>Venue</td>
                 { this.props.teamId && <td>Facilitator</td>}
                 <td>Signups</td>
@@ -77,7 +77,7 @@ export default class LearningCirclesTable extends Component {
 
                   return(
                     <tr key={ lc.id } className={`${classes}`}>
-                      <td>{`${lc.draft ? "[DRAFT] " : ""}${lc.course.title}`}</td>
+                      <td>{`${lc.draft ? "[DRAFT] " : ""}${lc.name}`}</td>
                       <td>{ lc.venue }</td>
                       { this.props.teamId && <td>{ lc.facilitator }</td> }
                       <td>{ lc.signup_count }</td>
@@ -98,7 +98,7 @@ export default class LearningCirclesTable extends Component {
 
               return(
                 <div className={`meeting-card p-2 ${classes}`} key={lc.id}>
-                  <a className="bold" href={ lc.course.course_page_url }>{`${lc.draft ? "[DRAFT] " : ""}${lc.course.title}`}</a>
+                  <a className="bold" href={ lc.signup_url }>{`${lc.draft ? "[DRAFT] " : ""}${lc.name}`}</a>
 
                   <div className="d-flex">
                     <div className="pr-2">

@@ -72,7 +72,7 @@ class ExportSignupsView(ListView):
         response['Content-Disposition'] = 'attachment; filename="signups-{}.csv"'.format(ts)
         signup_questions = ['support', 'goals', 'computer_access']
         field_names = [
-            'id', 'uuid', 'study group id', 'study group uuid', 'course',
+            'id', 'uuid', 'study group id', 'study group uuid', 'study group name', 'course',
             'location', 'name', 'email', 'mobile', 'signed up at'
         ] + signup_questions + ['use_internet', 'survey completed']
         writer = csv.writer(response)
@@ -88,6 +88,7 @@ class ExportSignupsView(ListView):
                     signup.uuid,
                     signup.study_group_id,
                     signup.study_group.uuid,
+                    signup.study_group.name,
                     signup.study_group.course.title,
                     signup.study_group.venue_name,
                     signup.name,
@@ -127,6 +128,7 @@ class ExportFacilitatorsView(ListView):
             'communication opt-in',
             'learning circles run',
             'last learning circle date',
+            'last learning cirlce name',
             'last learning circle course',
             'last learning circle venue',
         ]
@@ -145,6 +147,7 @@ class ExportFacilitatorsView(ListView):
             if last_study_group:
                 data += [
                     last_study_group.start_date,
+                    last_study_group.name,
                     last_study_group.course.title,
                     last_study_group.venue_name
                 ]
@@ -174,6 +177,7 @@ class ExportStudyGroupsView(ListView):
         field_names = [
             'id',
             'uuid',
+            'name',
             'date created',
             'date deleted',
             'draft',
@@ -202,6 +206,7 @@ class ExportStudyGroupsView(ListView):
             data = [
                 sg.pk,
                 sg.uuid,
+                sg.name,
                 sg.created_at,
                 sg.deleted_at,
                 'yes' if sg.draft else 'no',

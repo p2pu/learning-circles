@@ -57,6 +57,7 @@ def studygroups(request):
 
     def to_json(sg):
         data = {
+            "name": sg.name,
             "course_title": sg.course.title,
             "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
             "venue": sg.venue_name,
@@ -109,6 +110,7 @@ def _map_to_json(sg):
             "discourse_topic_url": sg.course.discourse_topic_url if sg.course.discourse_topic_url else settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_generate_course_discourse_topic", args=(sg.course.id,)),
         },
         "id": sg.id,
+        "name": sg.name,
         "facilitator": sg.facilitator.first_name,
         "venue": sg.venue_name,
         "venue_address": sg.venue_address + ", " + sg.city,
@@ -126,11 +128,12 @@ def _map_to_json(sg):
         "meeting_time": sg.meeting_time,
         "time_zone": sg.timezone_display(),
         "end_time": sg.end_time(),
-        "weeks": sg.meeting_set.active().count(),
+        "weeks": sg.weeks if sg.draft else sg.meeting_set.active().count(),
         "url": f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
         "report_url": sg.report_url(),
         "studygroup_path": reverse('studygroups_view_study_group', args=(sg.id,)),
         "draft": sg.draft,
+        "signup_count": sg.application_set.count()
     }
 
     if sg.image:
@@ -190,14 +193,11 @@ class LearningCircleListView(View):
             return json_response(request, {"status": "error", "errors": errors})
 
         study_groups = StudyGroup.objects.published().order_by('id')
-
         if 'draft' in request.GET:
             study_groups = StudyGroup.objects.active().order_by('id')
-
         if 'id' in request.GET:
             id = request.GET.get('id')
             study_groups = StudyGroup.objects.filter(pk=int(id))
-
         if 'user' in request.GET:
             user_id = request.user.id
             study_groups = study_groups.filter(facilitator=user_id)
@@ -207,14 +207,11 @@ class LearningCircleListView(View):
             today = datetime.date.today()
             active_meetings = Meeting.objects.filter(study_group=OuterRef('pk'), deleted_at__isnull=True).order_by('meeting_date')
             upcoming_meetings = Meeting.objects.filter(study_group=OuterRef('pk'), deleted_at__isnull=True, meeting_date__gte=today).order_by('meeting_date')
-            if scope == "upcoming":
+
+            if scope == "active":
                 study_groups = study_groups\
-                .annotate(first_meeting_date=Subquery(active_meetings.values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
-                .filter(Q(first_meeting_date__gt=today) | Q(draft=True))
-            elif scope == "current":
-                study_groups = study_groups\
-                .annotate(first_meeting_date=Subquery(active_meetings.values('meeting_date')[:1]), last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
-                .filter(first_meeting_date__lte=today, last_meeting_date__gte=today)
+                .annotate(last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
+                .filter(Q(last_meeting_date__gte=today) | Q(draft=True))
             elif scope == "completed":
                 study_groups = study_groups\
                 .annotate(last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]))\
@@ -226,6 +223,7 @@ class LearningCircleListView(View):
             study_groups = study_groups.annotate(
                 search = SearchVector(
                     'city',
+                    'name',
                     'course__title',
                     'course__provider',
                     'course__topics',
@@ -348,7 +346,7 @@ def _studygroup_object_for_map(sg):
 
     data = {
         "id": sg.id,
-        "title": sg.course.title,
+        "title": sg.name,
         "latitude": sg.latitude,
         "longitude": sg.longitude,
         "city": sg.city,
@@ -552,11 +550,13 @@ def _venue_name_check(venue_name):
 
 def _make_learning_circle_schema(request):
     post_schema = {
+        "name": schema.text(length=128, required=False),
         "course": schema.chain([
             schema.integer(),
             _course_check,
         ], required=True),
         "description": schema.text(required=True, length=500),
+        "course_description": schema.text(required=False, length=500),
         "venue_name": schema.chain([
             schema.text(required=True, length=256),
             _venue_name_check,
@@ -605,7 +605,9 @@ class LearningCircleCreateView(View):
         # create learning circle
         end_date = data.get('start_date') + datetime.timedelta(weeks=data.get('weeks') - 1)
         study_group = StudyGroup(
+            name=data.get('name', None),
             course=data.get('course'),
+            course_description=data.get('course_description', None),
             facilitator=request.user,
             description=data.get('description'),
             venue_name=data.get('venue_name'),
@@ -630,9 +632,11 @@ class LearningCircleCreateView(View):
             facilitator_goal=data.get('facilitator_goal', ''),
             facilitator_concerns=data.get('facilitator_concerns', '')
         )
+
         # only update value for draft if the use verified their email address
         if request.user.profile.email_confirmed_at is not None:
             study_group.draft = data.get('draft', True)
+
         study_group.save()
 
         # generate all meetings if the learning circle has been published
@@ -688,8 +692,10 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
             published = study_group.draft is True
             study_group.draft = False
 
+        study_group.name = data.get('name', None)
         study_group.course = data.get('course')
         study_group.description = data.get('description')
+        study_group.course_description = data.get('course_description', None)
         study_group.venue_name = data.get('venue_name')
         study_group.venue_address = data.get('venue_address')
         study_group.venue_details = data.get('venue_details')

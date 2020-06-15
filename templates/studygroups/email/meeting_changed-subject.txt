@@ -1,1 +1,1 @@
-{% load i18n %}{% blocktrans with course_title=learning_circle.course.title|safe meeting_date=new_meeting.meeting_datetime|date:"l, j N, fA" venue=learning_circle.venue_name|safe %}{{course_title}} learning circle at {{venue}} now meets {{meeting_date}}.{% endblocktrans %}
+{% load i18n %}{% blocktrans with studygroup_name=learning_circle.name|safe meeting_date=new_meeting.meeting_datetime|date:"l, j N, fA" venue=learning_circle.venue_name|safe %}{{studygroup_name}} at {{venue}} now meets {{meeting_date}}.{% endblocktrans %}

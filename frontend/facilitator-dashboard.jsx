@@ -17,6 +17,9 @@ const teamInvitationUrl = element.dataset.teamInvitationUrl === "None" ? null : 
 const createTeamInvitationUrl = element.dataset.createTeamInvitationUrl === "None" ? null : element.dataset.createTeamInvitationUrl;
 const deleteTeamInvitationUrl = element.dataset.deleteTeamInvitationUrl === "None" ? null : element.dataset.deleteTeamInvitationUrl;
 const teamMemberInvitationUrl = element.dataset.teamMemberInvitationUrl === "None" ? null : element.dataset.teamMemberInvitationUrl;
+const editTeamUrl = element.dataset.editTeamUrl === "None" ? null : element.dataset.editTeamUrl;
+
+
 
 ReactDOM.render(
   <ErrorBoundary scope="facilitator-dashboard">
@@ -33,6 +36,10 @@ ReactDOM.render(
       createTeamInvitationUrl={createTeamInvitationUrl}
       deleteTeamInvitationUrl={deleteTeamInvitationUrl}
       teamMemberInvitationUrl={teamMemberInvitationUrl}
+      editTeamUrl={editTeamUrl}
     />
   </ErrorBoundary>
   , element)
+
+
+

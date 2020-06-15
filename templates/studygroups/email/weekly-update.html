@@ -2,6 +2,7 @@
 {% load humanize %}
 {% load static %}
 {% load i18n %}
+{% load extras %}
 {% block body %}
 
 <style type="text/css">
@@ -160,18 +161,17 @@
       <thead>
         <tr>
           <td>{% trans "Facilitator" %}</td>
-          <td>{% trans "Course" %}</td>
+          <td>{% trans "Learning circle" %}</td>
           <td>{% trans "Venue" %}</td>
           <td>{% trans "Final report" %}</td>
         </tr>
       </thead>
       <tbody>
         {% for studygroup in finished_studygroups %}
-          {% url 'studygroups_course_page' studygroup.course.pk as course_url %}
-          {% blocktrans with first_name=studygroup.facilitator.first_name last_name=studygroup.facilitator.last_name email=studygroup.facilitator.email venue=studygroup.venue_name|title course=studygroup.course.title report_url=studygroup.report_url %}
+          {% blocktrans with first_name=studygroup.facilitator.first_name last_name=studygroup.facilitator.last_name email=studygroup.facilitator.email venue=studygroup.venue_name|title learning_circle=studygroup.name report_url=studygroup.report_url studygroup_url=studygroup.signup_url %}
           <tr>
             <td><a href="mailto:{{email}}">{{first_name}} {{last_name}}</a></td>
-            <td><a href="{{ course_url }}">{{ course }}</a></td>
+            <td><a href="{{ studygroup_url }}">{{ learning_circle }}</a></td>
             <td>{{ venue }}</td>
           {% endblocktrans %}
             {% if studygroup in studygroups_with_survey_responses %}
@@ -208,7 +208,7 @@
         <thead>
           <tr>
             <td>{% trans "Facilitator" %}</td>
-            <td>{% trans "Course" %}</td>
+            <td>{% trans "Learning circle" %}</td>
             <td>{% trans "Venue" %}</td>
             <td>{% trans "Meeting date" %}</td>
             <td>{% trans "Meeting number" %}</td>
@@ -217,11 +217,10 @@
         <tbody>
           {% for meeting in meetings|dictsort:"meeting_datetime" %}
             {% with study_group=meeting.study_group %}
-            {% url 'studygroups_course_page' study_group.course.pk as course_url %}
-            {% blocktrans with meeting_date=meeting.meeting_datetime|date:"fA, l, M j" meeting_number=meeting.meeting_number course=study_group.course.title venue=study_group.venue_name first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name email=study_group.facilitator.email meeting_count=study_group.meeting_set.active.count %}
+            {% blocktrans with meeting_date=meeting.meeting_datetime|date:"fA, l, M j" meeting_number=meeting.meeting_number learning_circle=study_group.name venue=study_group.venue_name first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name email=study_group.facilitator.email meeting_count=study_group.meeting_set.active.count studygroup_url=study_group.signup_url %}
             <tr>
               <td><a href="mailto:{{email}}">{{first_name}} {{last_name}}</a></td>
-              <td><a href="{{course_url}}">{{course}}</a></td>
+              <td><a href="{{ studygroup_url }}">{{ learning_circle }}</a></td>
               <td>{{venue}}</td>
               <td>{{ meeting_date }}</td>
               <td>{{meeting_number}} of {{meeting_count}}</td>
@@ -245,7 +244,7 @@
     {% for feedback_response in feedback %}
       {% with study_group=feedback_response.study_group_meeting.study_group %}
         <li>
-          <h3>{% blocktrans with course=study_group.course.title %}{{course}}{% endblocktrans %}</h3>
+          <h3>{% blocktrans with studygroup_name=study_group.name %}{{studygroup_name}}{% endblocktrans %}</h3>
           <p>
             {% blocktrans with venue=study_group.venue_name first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name %}
               Facilitated by {{first_name}} {{last_name}} at {{venue}}
@@ -277,17 +276,17 @@
       <thead>
         <tr>
           <td>{% trans "Facilitator" %}</td>
-          <td>{% trans "Course" %}</td>
+          <td>{% trans "Learning circle" %}</td>
           <td>{% trans "Venue" %}</td>
         </tr>
       </thead>
       <tbody>
         {% for studygroup in upcoming_studygroups %}
           {% url 'studygroups_course_page' studygroup.course.pk as course_url %}
-          {% blocktrans with first_name=studygroup.facilitator.first_name|title last_name=studygroup.facilitator.last_name|title email=studygroup.facilitator.email venue=studygroup.venue_name|title studygroup_url=studygroup.course.link course=studygroup.course.title report_url=studygroup.report_url %}
+          {% blocktrans with first_name=studygroup.facilitator.first_name|title last_name=studygroup.facilitator.last_name|title email=studygroup.facilitator.email venue=studygroup.venue_name|title studygroup_name=studygroup.name|title studygroup_url=studygroup.signup_url %}
           <tr>
             <td><a href="mailto:{{email}}">{{first_name}} {{last_name}}</a></td>
-            <td><a href="{{ course_url }}">{{ course }}</a></td>
+            <td><a href="{{ studygroup_url }}">{{ studygroup_name }}</a></td>
             <td>{{ venue }}</td>
           </tr>
           {% endblocktrans %}
@@ -312,14 +311,14 @@
       <table class="inner-table">
         <thead>
           <tr>
-            <td>{% trans "Course" %}</td>
+            <td>{% trans "Learning circle" %}</td>
             <td>{% trans "Goal for signing up?" %}</td>
           </tr>
         </thead>
         <tbody>
           {% for signup in new_applications|slice:":10" %}
             <tr>
-              <td>{{ signup.study_group.course.title | title }}</td>
+              <td>{{ signup.study_group.name | title }}</td>
               {% with answers=signup.get_signup_questions %}
                 <td>{{ answers.goals }}</td>
               {% endwith %}

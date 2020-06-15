@@ -38,7 +38,7 @@
     "lodash": "^4.17.13",
     "mini-css-extract-plugin": "^0.6.0",
     "moment": "^2.18.1",
-    "node-sass": "^4.9.3",
+    "node-sass": "^4.14.1",
     "p2pu-input-fields": "0.5.27",
     "p2pu-search-cards": "^0.14.18",
     "p2pu-theme": "^1.1.2",

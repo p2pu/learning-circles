@@ -33,6 +33,58 @@ class TestLearningCircleApi(TestCase):
         c = Client()
         c.login(username='faci@example.net', password='password')
         data = {
+            "name": "Test learning circle",
+            "course": 3,
+            "description": "Lets learn something",
+            "course_description": "A real great course",
+            "venue_name": "75 Harrington",
+            "venue_details": "top floor",
+            "venue_address": "75 Harrington",
+            "city": "Cape Town",
+            "country": "South Africa",
+            "country_en": "South Africa",
+            "region": "Western Cape",
+            "latitude": 3.1,
+            "longitude": "1.3",
+            "place_id": "1",
+            "language": "en",
+            "start_date": "2018-02-12",
+            "weeks": 2,
+            "meeting_time": "17:01",
+            "duration": 50,
+            "timezone": "UTC",
+            "image": "/media/image.png",
+            "facilitator_concerns": "blah blah",
+        }
+        url = '/api/learning-circle/'
+        self.assertEqual(StudyGroup.objects.all().count(), 4)
+
+        resp = c.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+
+        lc = StudyGroup.objects.all().last()
+        self.assertEqual(resp.json(), {
+            "status": "created",
+            "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
+        })
+        self.assertEqual(StudyGroup.objects.all().count(), 5)
+        self.assertEqual(lc.course.id, 3)
+        self.assertEqual(lc.name, "Test learning circle")
+        self.assertEqual(lc.description, 'Lets learn something')
+        self.assertEqual(lc.course_description, 'A real great course')
+        self.assertEqual(lc.start_date, datetime.date(2018,2,12))
+        self.assertEqual(lc.meeting_time, datetime.time(17,1))
+        self.assertEqual(lc.meeting_set.all().count(), 0)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.name, lc.city))
+        self.assertIn('faci@example.net', mail.outbox[0].to)
+        self.assertIn('community@localhost', mail.outbox[0].cc)
+
+
+    def test_create_learning_circle_without_name_or_course_description(self):
+        c = Client()
+        c.login(username='faci@example.net', password='password')
+        data = {
             "course": 3,
             "description": "Lets learn something",
             "venue_name": "75 Harrington",
@@ -66,15 +118,8 @@ class TestLearningCircleApi(TestCase):
             "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
-        self.assertEqual(lc.course.id, 3)
-        self.assertEqual(lc.description, 'Lets learn something')
-        self.assertEqual(lc.start_date, datetime.date(2018,2,12))
-        self.assertEqual(lc.meeting_time, datetime.time(17,1))
-        self.assertEqual(lc.meeting_set.all().count(), 0)
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.course.title, lc.city))
-        self.assertIn('faci@example.net', mail.outbox[0].to)
-        self.assertIn('community@localhost', mail.outbox[0].cc)
+        self.assertEqual(lc.name, lc.course.title)
+        self.assertEqual(lc.course_description, lc.course.caption)
 
 
     @freeze_time('2018-01-20')
@@ -84,8 +129,10 @@ class TestLearningCircleApi(TestCase):
         self.facilitator.profile.email_confirmed_at = timezone.now()
         self.facilitator.profile.save()
         data = {
+            "name": "Test learning circle",
             "course": 3,
             "description": "Lets learn something",
+            "course_description": "A real great course",
             "venue_name": "75 Harrington",
             "venue_details": "top floor",
             "venue_address": "75 Harrington",
@@ -118,12 +165,14 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(StudyGroup.objects.all().count(), 5)
         self.assertEqual(lc.course.id, 3)
         self.assertEqual(lc.draft, False)
+        self.assertEqual(lc.name, "Test learning circle")
         self.assertEqual(lc.description, 'Lets learn something')
+        self.assertEqual(lc.course_description, 'A real great course')
         self.assertEqual(lc.start_date, datetime.date(2018,2,12))
         self.assertEqual(lc.meeting_time, datetime.time(17,1))
         self.assertEqual(lc.meeting_set.all().count(), 2)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.course.title, lc.city))
+        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.name, lc.city))
         self.assertIn('faci@example.net', mail.outbox[0].to)
         self.assertIn('community@localhost', mail.outbox[0].cc)
 
@@ -133,7 +182,9 @@ class TestLearningCircleApi(TestCase):
         c = Client()
         c.login(username='faci@example.net', password='password')
         data = {
+            "name": "Storytelling with Sharon",
             "course": 3,
+            "course_description": "A real great course",
             "description": "Lets learn something",
             "venue_name": "75 Harrington",
             "venue_details": "top floor",
@@ -170,6 +221,7 @@ class TestLearningCircleApi(TestCase):
         data = {
             "course": 3,
             "description": "Lets learn something",
+            "course_description": "A real great course",
             "venue_name": "75 Harrington",
             "venue_details": "top floor",
             "venue_address": "75 Harrington",
@@ -207,7 +259,7 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(lc.meeting_time, datetime.time(17,1))
         self.assertEqual(lc.meeting_set.all().count(), 0)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.course.title, lc.city))
+        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.name, lc.city))
         self.assertIn('faci@example.net', mail.outbox[0].to)
         self.assertIn('thepeople@p2pu.org', mail.outbox[0].cc)
         self.assertEqual(len(mail.outbox[0].cc), 1)
@@ -218,7 +270,7 @@ class TestLearningCircleApi(TestCase):
         resp = c.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.course.title, lc.city))
+        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.name, lc.city))
         self.assertIn('faci@example.net', mail.outbox[0].to)
         self.assertIn('thepeople@p2pu.org', mail.outbox[0].cc)
         self.assertIn('community@localhost', mail.outbox[0].cc)
@@ -236,7 +288,7 @@ class TestLearningCircleApi(TestCase):
         resp = c.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.course.title, lc.city))
+        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.name, lc.city))
         self.assertIn('faci@example.net', mail.outbox[0].to)
         self.assertIn('thepeople@p2pu.org', mail.outbox[0].cc)
         self.assertIn('community@localhost', mail.outbox[0].cc)
@@ -249,7 +301,7 @@ class TestLearningCircleApi(TestCase):
         resp = c.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.course.title, lc.city))
+        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.name, lc.city))
         self.assertIn('faci@example.net', mail.outbox[0].to)
         self.assertIn('thepeople@p2pu.org', mail.outbox[0].cc)
         self.assertIn('org@niz.er', mail.outbox[0].cc)
@@ -263,6 +315,7 @@ class TestLearningCircleApi(TestCase):
         data = {
             "course": 3,
             "description": "Lets learn something",
+            "course_description": "A real great course",
             "venue_name": "75 Harrington",
             "venue_details": "top floor",
             "venue_address": "75 Harrington",
@@ -321,6 +374,7 @@ class TestLearningCircleApi(TestCase):
         data = {
             "course": 3,
             "description": "Lets learn something",
+            "course_description": "A real great course",
             "venue_name": "75 Harrington",
             "venue_details": "top floor",
             "venue_address": "75 Harrington",
@@ -394,6 +448,7 @@ class TestLearningCircleApi(TestCase):
         data = {
             "course": 3,
             "description": "Lets learn something",
+            "course_description": "A real great course",
             "venue_name": "75 Harrington",
             "venue_details": "top floor",
             "venue_address": "75 Harrington",
@@ -469,6 +524,7 @@ class TestLearningCircleApi(TestCase):
         data = {
             "course": 3,
             "description": "Lets learn something",
+            "course_description": "A real great course",
             "venue_name": "75 Harrington",
             "venue_details": "top floor",
             "venue_address": "75 Harrington",
@@ -524,6 +580,7 @@ class TestLearningCircleApi(TestCase):
         data = {
             "course": 3,
             "description": "Lets learn something",
+            "course_description": "A real great course",
             "venue_name": "الصحة النفسية للطفل",
             "venue_details": "top floor",
             "venue_address": "75 Harrington",
@@ -569,6 +626,7 @@ class TestLearningCircleApi(TestCase):
         data = {
             "course": 3,
             "description": "Lets learn something",
+            "course_description": "A real great course",
             "venue_name": "/@@",
             "venue_details": "top floor",
             "venue_address": "75 Harrington",
@@ -718,20 +776,15 @@ class TestLearningCircleApi(TestCase):
 
         c = Client()
 
-        # upcoming scope
-        resp = c.get('/api/learningcircles/?scope=upcoming&draft=true')
+        # active scope
+        resp = c.get('/api/learningcircles/?scope=active&draft=true')
         data = resp.json()
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(data["count"], 2)
+        self.assertEqual(data["count"], 3)
         self.assertEqual(data["items"][0]["id"], 1)
-        self.assertEqual(data["items"][1]["id"], 4)
-
-        # current scope
-        resp = c.get('/api/learningcircles/?scope=current')
-        data = resp.json()
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json()["count"], 1)
-        self.assertEqual(data["items"][0]["id"], 2)
+        self.assertEqual(data["items"][1]["id"], 2)
+        self.assertEqual(data["items"][2]["id"], 4)
+        self.assertEqual(data["items"][2]["draft"], True)
 
         # completed scope
         resp = c.get('/api/learningcircles/?scope=completed')
@@ -752,7 +805,7 @@ class TestLearningCircleApi(TestCase):
 
         c = Client()
 
-        resp = c.get('/api/learningcircles/?scope=current')
+        resp = c.get('/api/learningcircles/?scope=active')
         data = resp.json()
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()["count"], 1)

@@ -15,7 +15,6 @@ export default class FormTabs extends React.Component{
     super(props);
     this.state = {};
     this.switchTab = (tab) => this._switchTab(tab);
-    this.updateFormData = (data) => this._updateFormData(data);
   }
 
   _switchTab(tab) {
@@ -75,6 +74,7 @@ export default class FormTabs extends React.Component{
                 updateFormData={this.props.updateFormData}
                 learningCircle={this.props.learningCircle}
                 errors={this.props.errors}
+                showAlert={this.props.showAlert}
               />
             </div>
           </TabPanel>

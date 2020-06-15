@@ -14,7 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='studygroup',
             name='name',
-            field=models.CharField(default='The Riders', max_length=128),
-            preserve_default=False,
+            field=models.CharField(max_length=128, blank=True)
         ),
     ]
