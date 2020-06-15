@@ -128,11 +128,12 @@ def _map_to_json(sg):
         "meeting_time": sg.meeting_time,
         "time_zone": sg.timezone_display(),
         "end_time": sg.end_time(),
-        "weeks": sg.meeting_set.active().count(),
+        "weeks": sg.weeks if sg.draft else sg.meeting_set.active().count(),
         "url": f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
         "report_url": sg.report_url(),
         "studygroup_path": reverse('studygroups_view_study_group', args=(sg.id,)),
         "draft": sg.draft,
+        "signup_count": sg.application_set.count()
     }
 
     if sg.image:
@@ -192,14 +193,11 @@ class LearningCircleListView(View):
             return json_response(request, {"status": "error", "errors": errors})
 
         study_groups = StudyGroup.objects.published().order_by('id')
-
         if 'draft' in request.GET:
             study_groups = StudyGroup.objects.active().order_by('id')
-
         if 'id' in request.GET:
             id = request.GET.get('id')
             study_groups = StudyGroup.objects.filter(pk=int(id))
-
         if 'user' in request.GET:
             user_id = request.user.id
             study_groups = study_groups.filter(facilitator=user_id)
@@ -209,14 +207,11 @@ class LearningCircleListView(View):
             today = datetime.date.today()
             active_meetings = Meeting.objects.filter(study_group=OuterRef('pk'), deleted_at__isnull=True).order_by('meeting_date')
             upcoming_meetings = Meeting.objects.filter(study_group=OuterRef('pk'), deleted_at__isnull=True, meeting_date__gte=today).order_by('meeting_date')
-            if scope == "upcoming":
+
+            if scope == "active":
                 study_groups = study_groups\
-                .annotate(first_meeting_date=Subquery(active_meetings.values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
-                .filter(Q(first_meeting_date__gt=today) | Q(draft=True))
-            elif scope == "current":
-                study_groups = study_groups\
-                .annotate(first_meeting_date=Subquery(active_meetings.values('meeting_date')[:1]), last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
-                .filter(first_meeting_date__lte=today, last_meeting_date__gte=today)
+                .annotate(last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
+                .filter(Q(last_meeting_date__gte=today) | Q(draft=True))
             elif scope == "completed":
                 study_groups = study_groups\
                 .annotate(last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]))\

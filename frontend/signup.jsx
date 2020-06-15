@@ -8,9 +8,8 @@ let hint = element.querySelector('#hint_id_mobile');
 let error = element.querySelector('#error_1_id_mobile');
 let input = element.querySelector('#id_mobile');
 
-
 ReactDOM.render(
-  <MobileInput 
+  <MobileInput
     label={label.textContent}
     hint={hint.textContent}
     error={error?error.textContent:null}

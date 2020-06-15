@@ -12,6 +12,7 @@ import CoursesTable from './CoursesTable';
 import EventsTable from './EventsTable';
 import UpcomingLearningCirclesTable from './UpcomingLearningCirclesTable';
 import CurrentLearningCirclesTable from './CurrentLearningCirclesTable';
+import ActiveLearningCirclesTable from './ActiveLearningCirclesTable';
 import CompletedLearningCirclesTable from './CompletedLearningCirclesTable';
 import UpcomingMeetings from './UpcomingMeetings';
 import RecommendedResources from "./RecommendedResources";
@@ -46,7 +47,7 @@ export default class FacilitatorDashboard extends React.Component {
 
   componentDidMount(){
     this.populateInvitationNotifications()
-    this.populateUpcomingEvents()
+    // this.populateUpcomingEvents()
     AOS.init({
       duration: 500,
       delay: 100
@@ -129,18 +130,12 @@ export default class FacilitatorDashboard extends React.Component {
                   this.state.user &&
                   <Tabs defaultIndex={0}>
                     <TabList>
-                      <Tab><span className="minicaps bold text-xs">Upcoming</span></Tab>
-                      <Tab><span className="minicaps bold text-xs">Current</span></Tab>
+                      <Tab><span className="minicaps bold text-xs">Active & Upcoming</span></Tab>
                       <Tab><span className="minicaps bold text-xs">Completed</span></Tab>
                     </TabList>
                     <TabPanel>
                       <div data-aos='fade'>
-                        <UpcomingLearningCirclesTable user={true} />
-                      </div>
-                    </TabPanel>
-                    <TabPanel>
-                      <div data-aos='fade'>
-                        <CurrentLearningCirclesTable user={true} />
+                        <ActiveLearningCirclesTable user={true} />
                       </div>
                     </TabPanel>
                     <TabPanel>
