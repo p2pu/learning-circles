@@ -1,3 +1,7 @@
+.bg-yellow {
+  background: $p2pu-yellow;
+}
+
 .lc-signup {
   section {
     padding-top: $padding-lg;
@@ -93,6 +97,10 @@
           .material-icons {
             font-size: 36px;
           }
+        }
+
+        a {
+          text-decoration: underline;
         }
       }
     }
@@ -232,6 +240,10 @@
           height: auto;
           font-size: 16px;
           color: $gray-darker;
+
+          a {
+            text-decoration: none;
+          }
 
           .icon-container {
             height: 40px;

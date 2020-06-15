@@ -776,20 +776,15 @@ class TestLearningCircleApi(TestCase):
 
         c = Client()
 
-        # upcoming scope
-        resp = c.get('/api/learningcircles/?scope=upcoming&draft=true')
+        # active scope
+        resp = c.get('/api/learningcircles/?scope=active&draft=true')
         data = resp.json()
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(data["count"], 2)
+        self.assertEqual(data["count"], 3)
         self.assertEqual(data["items"][0]["id"], 1)
-        self.assertEqual(data["items"][1]["id"], 4)
-
-        # current scope
-        resp = c.get('/api/learningcircles/?scope=current')
-        data = resp.json()
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json()["count"], 1)
-        self.assertEqual(data["items"][0]["id"], 2)
+        self.assertEqual(data["items"][1]["id"], 2)
+        self.assertEqual(data["items"][2]["id"], 4)
+        self.assertEqual(data["items"][2]["draft"], True)
 
         # completed scope
         resp = c.get('/api/learningcircles/?scope=completed')
@@ -810,7 +805,7 @@ class TestLearningCircleApi(TestCase):
 
         c = Client()
 
-        resp = c.get('/api/learningcircles/?scope=current')
+        resp = c.get('/api/learningcircles/?scope=active')
         data = resp.json()
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()["count"], 1)
