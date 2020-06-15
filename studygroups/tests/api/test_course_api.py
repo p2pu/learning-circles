@@ -10,6 +10,10 @@ from mock import patch
 
 from studygroups.models import StudyGroup
 from studygroups.models import Application
+from studygroups.models import Team
+from studygroups.models import TeamMembership
+from studygroups.models import Course
+from custom_registration.models import create_user
 
 import datetime
 import json
@@ -167,4 +171,37 @@ class TestCourseApi(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()["platform"], "")
 
+    def test_team_unlisted(self):
+        c = Client()
 
+        # create team with 2 users
+        organizer = create_user('organ@team.com', 'organ', 'test', '1234', False)
+        faci1 = create_user('faci1@team.com', 'faci1', 'test', '1234', False)
+        StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
+        mail.outbox = []
+
+        # create team
+        team = Team.objects.create(name='test team')
+        TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
+        TeamMembership.objects.create(team=team, user=faci1, role=TeamMembership.MEMBER)
+
+        # add some courses
+        self.assertEqual(Course.objects.count(), 4)
+        Course.objects.filter(pk=1).update(created_by=faci1)
+        Course.objects.filter(pk=2).update(created_by=faci1)
+        Course.objects.filter(pk=3).update(created_by=organizer)
+        Course.objects.filter(pk=4).update(created_by=faci1)
+
+        # unlist some
+        Course.objects.filter(pk=1).update(unlisted=True)
+
+        # test that when logged out, only listed are shown
+        resp = c.get('/api/courses/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["count"], 3)
+
+        # test when logged in as any team member, unlisted are also shown
+        c.login(username='faci1@team.com', password='1234')
+        resp = c.get('/api/courses/')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["count"], 4)
