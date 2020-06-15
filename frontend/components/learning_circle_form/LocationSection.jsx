@@ -50,7 +50,7 @@ const LocationSection = (props) => {
         required={true}
       />
       <LanguageSelect
-        label={'What is the primary language for this learning circle?'}
+        label={'What language should P2PU use to communicate details about your learning circle?'}
         value={props.learningCircle.language}
         handleChange={props.updateFormData}
         placeholder={'Pick a language'}
