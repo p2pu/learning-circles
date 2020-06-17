@@ -9,6 +9,7 @@ FROM python:3.6-slim
 WORKDIR /opt/app/
 RUN apt-get update \
     && apt-get install --no-install-recommends -y \
+        bzip2 \
         gettext \
         libcairo2 \
         libjpeg-dev \
