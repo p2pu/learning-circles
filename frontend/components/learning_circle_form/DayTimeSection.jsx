@@ -110,6 +110,7 @@ export default class  DayTimeSection extends React.Component {
           type={'number'}
           errorMessage={props.errors.duration}
           required={true}
+          min={0}
         />
       </div>
     );

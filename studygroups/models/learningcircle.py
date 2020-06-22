@@ -58,7 +58,7 @@ class StudyGroup(LifeTimeTrackingModel):
     start_date = models.DateField()
     meeting_time = models.TimeField()
     end_date = models.DateField()  # TODO consider storing number of weeks/meetings instead of end_date
-    duration = models.IntegerField(default=90)  # meeting duration in minutes
+    duration = models.PositiveIntegerField(default=90)  # meeting duration in minutes
     timezone = models.CharField(max_length=128)
     signup_open = models.BooleanField(default=True)
     draft = models.BooleanField(default=True)

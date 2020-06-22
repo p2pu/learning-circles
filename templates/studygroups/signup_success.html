@@ -13,7 +13,7 @@
               <img src="{% static "images/thankyou1.gif" %}" alt="You have successfully signed up!" style="max-height: 300px; max-width: 100%; width: auto;"/>
           {% endif %}
         </div>
-        <h2 class="centered my-3">✨ {% trans "You're in!" %} ✨</h2>
+        <h2 class="centered my-3">✨ s{% trans "You're in!" %} ✨</h2>
         <p>{% blocktrans with start_date=study_group.start_date|date:"l j F" meeting_time=study_group.meeting_time|time:"fA" studygroup_name=study_group.name venue_name=study_group.venue_name %}
         Thank you for signing up for &quot;{{studygroup_name}}&quot; at {{venue_name}}. The first meeting will be on <strong>{{start_date}}, {{meeting_time}}</strong>. Your facilitator will be in contact before then.{% endblocktrans %}</p>
       </section>

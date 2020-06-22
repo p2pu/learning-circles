@@ -102,6 +102,18 @@
         a {
           text-decoration: underline;
         }
+
+        &.location {
+          .text {
+            /* proprietary and undocumented CSS property https://css-tricks.com/almanac/properties/l/line-clamp */
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            max-height: 90px; /* backup to line-clamp for IE11 */
+          }
+        }
       }
     }
 
