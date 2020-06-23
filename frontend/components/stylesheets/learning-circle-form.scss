@@ -1,4 +1,5 @@
 @import 'variables';
+@import 'loader';
 
 html {
   font-size: 100%;
@@ -52,12 +53,6 @@ html {
 
   &.hide-help {
     width: 100%;
-
-    .search-results {
-      .result-item {
-        width: 33%;
-      }
-    }
   }
 
   .tabs-container {

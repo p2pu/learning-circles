@@ -37,6 +37,7 @@ const CourseSection = (props) => {
         {
           !props.learningCircle.course.id &&
           <Search
+            columnBreakpoints={props.showHelp ? 1 : 3}
             searchSubject={'courses'}
             initialState={{languages: ['en']}}
             Browse={BrowseCourses}

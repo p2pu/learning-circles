@@ -2,6 +2,8 @@ var path = require("path");
 var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CompressionPlugin = require('compression-webpack-plugin');
+
 
 var fs = require("fs");
 
@@ -69,7 +71,8 @@ const reactBuild = {
   },
   plugins: [
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-    new BundleTracker({filename: './assets/frontend-webpack-manifest.json'})
+    new BundleTracker({filename: './assets/frontend-webpack-manifest.json'}),
+    new CompressionPlugin()
   ],
   resolve: {
     modules: [
@@ -104,7 +107,7 @@ const styleBuild = {
             options: {
               sourceMap: true,
             },
-          }, 
+          },
           {
             loader: 'sass-loader',
             options: {
@@ -123,7 +126,7 @@ const styleBuild = {
   plugins: [
     new MiniCssExtractPlugin({filename: "[name].[hash].css"}),
     new BundleTracker({filename: './assets/style-webpack-manifest.json'}),
-  ]
+  ],
 }
 
 module.exports = [reactBuild, styleBuild]
