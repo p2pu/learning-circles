@@ -88,9 +88,11 @@ def update_post(post_id, raw):
 def remove_empty_discourse_links():
     """ this was used to fix incorrect course URLs"""
     topics = list(get_course_topics())
-
-    for topic in topics:
-        topic1 = get_topic(topic.get('id'))
+    courses = Course.objects.exclude(discourse_topic_url='')
+    for course in courses:
+        print(course.discourse_topic_url)
+        topic_id = course.discourse_topic_url.split('/')[-1]
+        topic1 = get_topic(topic_id)
         posts = topic1.get('post_stream', {}).get('posts', [])
         if len(posts) == 1:
             post1_id = posts[0].get('id')
@@ -101,6 +103,5 @@ def remove_empty_discourse_links():
                 course_id = match.groups()[1]
                 print(f'Unsetting discourse link for {course_id}.')
                 Course.objects.filter(pk=course_id).update(discourse_topic_url='')
-            #update_post(post1_id, raw)
         else:
             print('Topic has more than 1 post')
