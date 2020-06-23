@@ -19,7 +19,7 @@ export default class  DayTimeSection extends React.Component {
   render(){
     const props = this.props;
     let reminderWarning = null;
-    let minDate = null;
+    let minDate = new Date();
     let minTime = null;
 
     if (props.learningCircle.draft == false ){
@@ -46,20 +46,21 @@ export default class  DayTimeSection extends React.Component {
         );
       }
 
-      minDate = plus2Days;
       if (start_datetime && start_datetime.isSame(plus2Days, 'days')){
         minTime = meeting_time;
         // TODO time input doesn't support a range
       }
 
+      minDate = plus2Days.toDate();
     }
+
     return (
       <div>
         {reminderWarning}
         <DatePickerWithLabel
           label={'What is the date of the first learning circle?'}
           value={props.learningCircle.start_date}
-          placeholder={'Eg. 6 January, 2018'}
+          placeholder={'Eg. 2020-06-31'}
           handleChange={props.updateFormData}
           name={'start_date'}
           id={'id_start_date'}
@@ -67,6 +68,7 @@ export default class  DayTimeSection extends React.Component {
           errorMessage={props.errors.start_date}
           required={true}
           minDate={minDate}
+          helpText={"The date format is YYYY-MM-DD"}
         />
         <InputWithLabel
           label={'How many weeks will the learning circle run for?'}
