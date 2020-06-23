@@ -244,7 +244,6 @@ class CoursePage(DetailView):
         context['rating_counts_chart'] = OverallRatingBarChart(rating_step_counts).generate()
         context['rating_step_counts'] = rating_step_counts
         context['similar_courses'] = json.dumps(similar_courses, cls=DjangoJSONEncoder)
-        context['default_discourse_text'] = self.object.discourse_topic_default_body()
 
         return context
 

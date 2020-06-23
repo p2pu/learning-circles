@@ -4,6 +4,8 @@ import logging
 
 from django.conf import settings
 
+from .models import Course
+
 logger = logging.getLogger(__name__)
 
 def _get_auth():
@@ -83,18 +85,22 @@ def update_post(post_id, raw):
         print(r.status_code)
 
 
-def fix_course_urls():
+def remove_empty_discourse_links():
     """ this was used to fix incorrect course URLs"""
     topics = list(get_course_topics())
 
     for topic in topics:
-        print('')
         topic1 = get_topic(topic.get('id'))
-        post1_id = topic1.get('post_stream', {}).get('posts', [])[0].get('id')
-        post1 = get_post(post1_id)
-        raw = post1.get('raw')
-        if re.search(r"href='https://learningcircles.p2pu.org/([A-Za-z\-]+)/course/", raw):
-            print('topic already has correct URL')
-            continue
-        raw = re.sub(r"href='/([A-Za-z\-]+)/course/", r"href='https://learningcircles.p2pu.org/\1/course/", raw)
-        update_post(post1_id, raw)
+        posts = topic1.get('post_stream', {}).get('posts', [])
+        if len(posts) == 1:
+            post1_id = posts[0].get('id')
+            post1 = get_post(post1_id)
+            raw = post1.get('raw')
+            match = re.search(r"href='https://learningcircles.p2pu.org/([A-Za-z\-]+)/course/(\d+)", raw)
+            if match:
+                course_id = match.groups()[1]
+                print(f'Unsetting discourse link for {course_id}.')
+                Course.objects.filter(pk=course_id).update(discourse_topic_url='')
+            #update_post(post1_id, raw)
+        else:
+            print('Topic has more than 1 post')
