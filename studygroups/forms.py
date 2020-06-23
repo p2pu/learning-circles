@@ -14,6 +14,7 @@ from phonenumber_field.formfields import PhoneNumberField
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Fieldset, HTML
+from tinymce.widgets import TinyMCE
 
 import pytz, datetime, json
 
@@ -482,6 +483,6 @@ class TeamForm(forms.ModelForm):
             'email_address': _('This will be public, so you probably don\'t want to use your personal email address.'),
         }
         widgets = {
-            'intro_text': forms.Textarea(attrs={'placeholder': _('How would you like to introduce your organization?')}),
+            'intro_text': TinyMCE(attrs={'placeholder': _('How would you like to introduce your organization?')}),
         }
 

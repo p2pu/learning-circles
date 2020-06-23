@@ -5,6 +5,7 @@ from django.db import IntegrityError
 from django.conf import settings
 from django.urls import reverse
 from django.utils.timezone import now
+from tinymce.models import HTMLField
 
 from .base import LifeTimeTrackingModel
 
@@ -24,7 +25,8 @@ class Team(models.Model):
     email_address = models.CharField(max_length=128, blank=True)
     website = models.CharField(max_length=128, blank=True)
     location = models.CharField(max_length=128, blank=True)
-    intro_text = models.TextField(max_length=500, blank=True)
+    intro_text = HTMLField(max_length=500, blank=True)
+
 
     def __str__(self):
         return self.name

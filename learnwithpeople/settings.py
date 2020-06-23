@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'webpack_loader',
+    'tinymce',
     # own
     'studygroups',
     'backup',

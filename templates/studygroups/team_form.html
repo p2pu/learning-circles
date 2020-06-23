@@ -1,42 +1,96 @@
-{% extends 'base.html' %}
-{% load crispy_forms_tags %}
 {% load static %}
+{% load analytics %}
 {% load i18n %}
+{% load crispy_forms_tags %}
+{% load render_bundle from webpack_loader %}
 
-{% block content %}
-<div class="container my-5">
-  <div class="row mb-3">
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="{{language}}" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="{{language}}" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="{{language}}" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="{{language}}" class="no-js"> <!--<![endif]-->
+  <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <title>{% trans "Learning circles" %}</title>
+      <link rel="icon" href="{% static 'images/favicon.ico' %}">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="{{ site.description }}">
+      <meta property="og:title" content="Learning circles" />
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://learningcircles.p2pu.org/" />
+      <link rel="canonical" href="">
+      <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+      {% render_bundle 'p2pu-strap' 'css' 'STYLEBUILD' %}
 
-    <div class="col-12">
-      <h2>
-        {% blocktrans with team_name=object.name %}
-            Edit {{ team_name }}
-        {% endblocktrans %}
-      </h2>
+      {% block css %}{% endblock %}
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <script src="{% static 'js/vendor/modernizr-2.6.2.min.js' %}"></script>
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+      <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+      {{ form.media }}
+  </head>
+
+    <body>
+
+  {% include 'nav.html' %}
+
+    <main class="page-content">
+    {% for message in messages %}
+      <div class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %}" role="alert">
+        <div class="container">{{ message }}</div>
+      </div>
+    {% endfor %}
+
+      <div class="wrap">
+        <div class="container my-5">
+          <div class="row mb-3">
+
+            <div class="col-12">
+              <h2>
+                {% blocktrans with team_name=object.name %}
+                    Edit {{ team_name }}
+                {% endblocktrans %}
+              </h2>
 
 
-      <form action="" method="POST" enctype="multipart/form-data">
-      {% csrf_token %}
-      {{ form|crispy }}
-        <p><input type="submit" class="btn p2pu-btn blue" /></p>
-    </form>
+              <form action="" method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              {{ form|crispy }}
+                <p><input type="submit" class="btn p2pu-btn blue" /></p>
+            </form>
 
-    </div>
-  </div>
+            </div>
+          </div>
 
-  <div class="row">
-    <div class="col-12">
-      <h3>
-        {% trans "Default 'About Us' Text" %}
-      </h3>
-        <p>
-          {% blocktrans with team_name=object.name location=object.location %}
-          {{ team_name }} is proud to partner with P2PU to bring learning circles to our community. Join your neighbors and peers as we gather to learn something together. Interested in creating your own learning circle? Check out our facilitation resources at <a href="https://www.p2pu.org/en/facilitate/">www.p2pu.org/en/facilitate</a> to learn more.
-          {% endblocktrans %}
-        </p>
-    </div>
-  </div>
+          <div class="row">
+            <div class="col-12">
+              <h3>
+                {% trans "Default 'About Us' Text" %}
+              </h3>
+                <p>
+                  {% blocktrans with team_name=object.name location=object.location %}
+                  {{ team_name }} is proud to partner with P2PU to bring learning circles to our community. Join your neighbors and peers as we gather to learn something together. Interested in creating your own learning circle? Check out our facilitation resources at <a href="https://www.p2pu.org/en/facilitate/">www.p2pu.org/en/facilitate</a> to learn more.
+                  {% endblocktrans %}
+                </p>
+            </div>
+          </div>
 
-</div>
-{% endblock %}
+        </div>
+
+      </div>
+    </main>
+
+    {% if hide_footer != True %}
+      {% include 'footer.html' %}
+    {% endif %}
+
+    {% include 'scripts.html' %}
+    {% block scripts %}{% endblock %}
+
+    {% ga_tracking_code %}
+
+    </body>
+</html>
+
 
