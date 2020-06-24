@@ -483,6 +483,6 @@ class TeamForm(forms.ModelForm):
             'email_address': _('This will be public, so you probably don\'t want to use your personal email address.'),
         }
         widgets = {
-            'intro_text': TinyMCE(attrs={'placeholder': _('How would you like to introduce your organization?')}),
+            'intro_text': TinyMCE(),
         }
 
