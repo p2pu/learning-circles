@@ -203,6 +203,7 @@ CORS_ORIGIN_WHITELIST = [
 if DEBUG:
     CORS_ORIGIN_WHITELIST.append('http://localhost:8000')
     CORS_ORIGIN_WHITELIST.append('http://localhost:3001')
+    CORS_ORIGIN_WHITELIST.append('http://localhost:4000')
 
 CORS_ORIGIN_REGEX_WHITELIST = [
     r"^https://\w+\.p2pu\.org$",
