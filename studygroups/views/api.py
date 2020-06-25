@@ -635,13 +635,11 @@ class LearningCircleCreateView(View):
 
         # use course.caption if course_description is not set
         if study_group.course_description is None:
-            course = Course.objects.get(pk=int(study_group.course))
-            study_group.course_description = course.caption
+            study_group.course_description = study_group.course.caption
 
         # use course.title if name is not set
         if study_group.name is None:
-            course = Course.objects.get(pk=int(study_group.course))
-            study_group.name = course.title
+            study_group.name = study_group.course.title
 
         # only update value for draft if the use verified their email address
         if request.user.profile.email_confirmed_at is not None:

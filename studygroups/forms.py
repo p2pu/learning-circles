@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from studygroups.utils import render_to_string_ctx
 from studygroups.email_helper import render_html_with_css
 from django.core.mail import EmailMultiAlternatives
+from django.utils.safestring import mark_safe
 
 from phonenumber_field.formfields import PhoneNumberField
 
@@ -57,7 +58,8 @@ class ApplicationForm(forms.ModelForm):
 
     consent = forms.BooleanField(
         required=True,
-        label=_('I give consent that P2PU can share my signup info with the learning circle facilitator and send me info regarding the learning circle.')
+        label=_('I give consent that P2PU can share my signup info with the learning circle facilitator and send me info regarding the learning circle.'),
+        help_text=_(mark_safe('For more information see our <a href="https://www.p2pu.org/en/privacy/" target="_blank" rel="noreferrer noopener">privacy policy</a>'))
     )
 
     # honeypot field to mitigate spam submissions
