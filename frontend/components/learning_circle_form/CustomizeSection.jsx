@@ -5,8 +5,6 @@ import { DEFAULT_LC_IMAGE } from '../../helpers/constants'
 
 const TitleInput = (props) => {
   const onChange = (e) => {
-    console.log('props.name', props.name)
-    console.log('e.currentTarget.value', e.currentTarget.value)
     props.handleChange({ [props.name]: e.currentTarget.value })
   }
 

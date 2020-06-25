@@ -105,6 +105,14 @@ class ApplicationForm(forms.ModelForm):
         if not cleaned_data.get('last_name') in empty_values:
             raise forms.ValidationError(_('Gotcha'))
 
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # check honeypot field and raise error if it is not empty
+        empty_values = [None, '']
+        if not cleaned_data.get('last_name') in empty_values:
+            raise forms.ValidationError(_('Gotcha'))
+
     def save(self, commit=True):
         signup_questions = {}
         questions = ['goals', 'support']
