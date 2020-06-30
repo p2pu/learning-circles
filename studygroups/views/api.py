@@ -425,7 +425,13 @@ class CourseListView(View):
         # by user to avoid filtering out unlisted courses
         if request.GET.get('include_unlisted', "false") == "false" or 'user' not in request.GET:
             # return only courses that is not unlisted
-            courses = courses.filter(unlisted=False)
+            # if the user is part of a team, include unlisted courses from the team
+            if request.user.is_authenticated:
+                team_query = TeamMembership.objects.active().filter(user=request.user).values('team')
+                team_ids = TeamMembership.objects.active().filter(team__in=team_query).values('user')
+                courses = courses.filter(Q(unlisted=False) | Q(unlisted=True, created_by__in=team_ids))
+            else:
+                courses = courses.filter(unlisted=False)
 
         courses = courses.annotate(
             num_learning_circles=Sum(
