@@ -124,8 +124,8 @@ def signup(request, location, study_group_id):
         'mapbox_token': settings.MAPBOX_TOKEN,
     }
 
-    if study_group.venue_address:
-        context['map_url'] = "https://www.google.com/maps/search/?api=1&query={}".format(urllib.parse.quote(study_group.venue_address))
+    #if study_group.venue_address:
+    #    context['map_url'] = "https://www.google.com/maps/search/?api=1&query={}".format(urllib.parse.quote(study_group.venue_address))
 
     team_membership = TeamMembership.objects.active().filter(user=study_group.facilitator).first()
     if team_membership:
