@@ -2,7 +2,6 @@ var path = require("path");
 var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const CompressionPlugin = require('compression-webpack-plugin');
 
 
 var fs = require("fs");
@@ -72,7 +71,6 @@ const reactBuild = {
   plugins: [
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new BundleTracker({filename: './assets/frontend-webpack-manifest.json'}),
-    new CompressionPlugin()
   ],
   resolve: {
     modules: [
