@@ -63,14 +63,14 @@ class ApplicationForm(forms.ModelForm):
     )
 
     # honeypot field to mitigate spam submissions
-    last_name = forms.CharField(required=False)
+    # last_name = forms.CharField(required=False)
 
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             'study_group',
             'name',
-            'last_name',
+            #'last_name',
             'email',
             'goals',
             'support',
@@ -92,26 +92,10 @@ class ApplicationForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
 
-        # check honeypot field and raise error if it is not empty
-        empty_values = [None, '']
-        if not cleaned_data.get('last_name') in empty_values:
-            raise forms.ValidationError(_('Gotcha'))
-
-    def clean(self):
-        cleaned_data = super().clean()
-
-        # check honeypot field and raise error if it is not empty
-        empty_values = [None, '']
-        if not cleaned_data.get('last_name') in empty_values:
-            raise forms.ValidationError(_('Gotcha'))
-
-    def clean(self):
-        cleaned_data = super().clean()
-
-        # check honeypot field and raise error if it is not empty
-        empty_values = [None, '']
-        if not cleaned_data.get('last_name') in empty_values:
-            raise forms.ValidationError(_('Gotcha'))
+        #   # check honeypot field and raise error if it is not empty
+        #   empty_values = [None, '']
+        #   if not cleaned_data.get('last_name') in empty_values:
+        #       raise forms.ValidationError(_('Gotcha'))
 
     def save(self, commit=True):
         signup_questions = {}
@@ -127,7 +111,7 @@ class ApplicationForm(forms.ModelForm):
 
     class Meta:
         model = Application
-        fields = ['study_group', 'name', 'last_name', 'email', 'mobile', 'goals', 'support', 'consent', 'communications_opt_in']
+        fields = ['study_group', 'name', 'email', 'mobile', 'goals', 'support', 'consent', 'communications_opt_in']
         widgets = {'study_group': forms.HiddenInput}
         labels = {
             'communications_opt_in': _('I would like to receive information about other learning opportunities in the future.'),
