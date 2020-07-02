@@ -63,7 +63,6 @@
     "whatwg-url": "^6.4.0"
   },
   "devDependencies": {
-    "compression-webpack-plugin": "^4.0.0",
     "uglifyjs-webpack-plugin": "^1.2.5",
     "webpack-bundle-analyzer": "^3.3.2"
   },
