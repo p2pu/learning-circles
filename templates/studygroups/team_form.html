@@ -24,6 +24,20 @@
       </div>
 
     </div>
+    {% if not object.intro_text %}
+      <script type="text/javascript">
+        if (typeof(tinyMCE) !== "undefined") {
+          tinyMCE.on('AddEditor', function(e) {
+            e.editor.on('init', function(editor) {
+              tinyMCE.editors.id_intro_text.setContent("<p>{{ team.name }} is proud to partner with P2PU to bring learning circles to our community. Join your neighbors and peers as we gather to learn something together.</p><p>Interested in creating your own learning circle? Check out our facilitation resources at <a href='https://www.p2pu.org/facilitate'>www.p2pu.org/facilitate</a> to learn more.</p>")
+            })
+          })
+        }
+      </script>
+    {% endif %}
 {% endblock %}
+
+
+
 
 

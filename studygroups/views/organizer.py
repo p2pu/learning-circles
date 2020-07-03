@@ -249,16 +249,4 @@ class TeamUpdate(UpdateView):
     success_url = reverse_lazy('studygroups_facilitator')
     pk_url_kwarg = 'team_id'
 
-    def get_context_data(self, **kwargs):
-        team = self.get_object()
-        if team.intro_text is '':
-            team_name = team.name
-            facilitate_url = "https://www.p2pu.org/facilitate/"
-            facilitate_anchor = "www.p2pu.org/facilitate"
-            team.intro_text = "<p>{} is proud to partner with P2PU to bring learning circles to our community. Join your neighbors and peers as we gather to learn something together.</p><p>Interested in creating your own learning circle? Check out our facilitation resources at <a href='{}'>{}</a> to learn more.</p>".format(team_name, facilitate_url, facilitate_anchor)
 
-        self.object = team
-
-        context = super().get_context_data(**kwargs)
-
-        return context
