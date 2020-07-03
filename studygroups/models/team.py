@@ -5,7 +5,8 @@ from django.db import IntegrityError
 from django.conf import settings
 from django.urls import reverse
 from django.utils.timezone import now
-from tinymce.models import HTMLField
+from django_bleach.models import BleachField
+
 
 from .base import LifeTimeTrackingModel
 
@@ -25,7 +26,11 @@ class Team(models.Model):
     email_address = models.CharField(max_length=128, blank=True)
     website = models.URLField(max_length=128, blank=True)
     location = models.CharField(max_length=128, blank=True)
-    intro_text = HTMLField(max_length=1000, blank=True)
+    intro_text = BleachField(
+        max_length=1000,
+        blank=True,
+        allowed_tags=['p', 'ul', 'ol', 'li', 'em', 'strong', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'div', 'span']
+    )
 
 
     def __str__(self):
