@@ -361,3 +361,12 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
+
+# TinyMCE configuration
+TINYMCE_DEFAULT_CONFIG = {
+    'menubar': False,
+    'plugins': 'link lists',
+    'toolbar': 'undo redo | formatselect | bold italic | bullist numlist | link | removeformat',
+    'valid_elements': 'p h1 h2 h3 h4 h5 h6 strong em a ul ol li div span',
+}
+

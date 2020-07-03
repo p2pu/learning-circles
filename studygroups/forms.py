@@ -479,7 +479,8 @@ class TeamForm(forms.ModelForm):
         }
         help_texts = {
             'page_image': _('The image will be cropped into a circle. A square image would be best.'),
-            'intro_text': _('If you leave this field blank, we will use the default text below.'),
+            'logo': _('The logo will be cropped into a circle. A square image would be best.'),
+            'intro_text': _('We\'ve written some default text for you, but please rewrite it as you see fit!'),
             'email_address': _('This will be public, so you probably don\'t want to use your personal email address.'),
         }
         widgets = {

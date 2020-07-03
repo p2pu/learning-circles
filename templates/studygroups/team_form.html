@@ -1,4 +1,4 @@
-{% extends 'form_base.html' %}
+{% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% load i18n %}
 
@@ -20,19 +20,6 @@
             <p><input type="submit" class="btn p2pu-btn blue" /></p>
         </form>
 
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-12">
-          <h3>
-            {% trans "Default 'About Us' Text" %}
-          </h3>
-            <p>
-              {% blocktrans with team_name=object.name location=object.location %}
-              {{ team_name }} is proud to partner with P2PU to bring learning circles to our community. Join your neighbors and peers as we gather to learn something together. Interested in creating your own learning circle? Check out our facilitation resources at <a href="https://www.p2pu.org/en/facilitate/">www.p2pu.org/en/facilitate</a> to learn more.
-              {% endblocktrans %}
-            </p>
         </div>
       </div>
 

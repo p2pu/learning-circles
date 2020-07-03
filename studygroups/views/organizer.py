@@ -249,4 +249,14 @@ class TeamUpdate(UpdateView):
     success_url = reverse_lazy('studygroups_facilitator')
     pk_url_kwarg = 'team_id'
 
+    def get_context_data(self, **kwargs):
+        team = self.get_object()
+        if team.intro_text is '':
+            team.intro_text = team.default_intro_text()
 
+        self.object = team
+
+        context = super().get_context_data(**kwargs)
+        context['use_tinymce'] = True
+
+        return context

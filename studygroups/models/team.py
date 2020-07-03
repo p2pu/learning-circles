@@ -23,13 +23,18 @@ class Team(models.Model):
     email_domain = models.CharField(max_length=128, blank=True)
     invitation_token = models.UUIDField(null=True, blank=True, unique=True)
     email_address = models.CharField(max_length=128, blank=True)
-    website = models.CharField(max_length=128, blank=True)
+    website = models.URLField(max_length=128, blank=True)
     location = models.CharField(max_length=128, blank=True)
-    intro_text = HTMLField(max_length=500, blank=True)
+    intro_text = HTMLField(max_length=1000, blank=True)
 
 
     def __str__(self):
         return self.name
+
+    def default_intro_text(self):
+        facilitate_url = "https://www.p2pu.org/facilitate"
+        facilitate_anchor = "www.p2pu.org/facilitate"
+        return "<p>{} is proud to partner with P2PU to bring learning circles to our community. Join your neighbors and peers as we gather to learn something together. Interested in creating your own learning circle? Check out our facilitation resources at <a href='{}'>{}</a> to learn more.</p>".format(self.name, facilitate_url, facilitate_anchor)
 
     def generate_invitation_token(self):
         try:
