@@ -26,20 +26,11 @@ class Team(models.Model):
     email_address = models.CharField(max_length=128, blank=True)
     website = models.URLField(max_length=128, blank=True)
     location = models.CharField(max_length=128, blank=True)
-    intro_text = BleachField(
-        max_length=1000,
-        blank=True,
-        allowed_tags=['p', 'ul', 'ol', 'li', 'em', 'strong', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'div', 'span']
-    )
+    intro_text = BleachField(max_length=1000, blank=True, allowed_tags=settings.TINYMCE_DEFAULT_CONFIG.get('valid_elements', '').split(','), allowed_attributes={'a': ['href', 'title', 'rel', 'target']})
 
 
     def __str__(self):
         return self.name
-
-    def default_intro_text(self):
-        facilitate_url = "https://www.p2pu.org/facilitate"
-        facilitate_anchor = "www.p2pu.org/facilitate"
-        return "<p>{} is proud to partner with P2PU to bring learning circles to our community. Join your neighbors and peers as we gather to learn something together. Interested in creating your own learning circle? Check out our facilitation resources at <a href='{}'>{}</a> to learn more.</p>".format(self.name, facilitate_url, facilitate_anchor)
 
     def generate_invitation_token(self):
         try:

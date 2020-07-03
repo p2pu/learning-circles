@@ -369,7 +369,8 @@ TINYMCE_DEFAULT_CONFIG = {
     'menubar': False,
     'plugins': 'link lists',
     'toolbar': 'undo redo | formatselect | bold italic | bullist numlist | link | removeformat',
-    'valid_elements': 'p h1 h2 h3 h4 h5 h6 strong em a ul ol li div span',
+    'valid_elements': 'p,h3,h4,h5,h6,strong,em,a,a[href|target=_blank|rel=noopener],ul,ol,li,div,span',
+    'block_formats': 'Paragraph=p; Heading 1=h3; Heading 2=h4; Heading 3=h5',
 }
 
 BLEACH_DEFAULT_WIDGET = 'tinymce.widgets.TinyMCE'
