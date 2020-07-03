@@ -11,7 +11,6 @@ from studygroups.email_helper import render_html_with_css
 from django.core.mail import EmailMultiAlternatives
 
 from phonenumber_field.formfields import PhoneNumberField
-from django_bleach.models import BleachField
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Fieldset, HTML
