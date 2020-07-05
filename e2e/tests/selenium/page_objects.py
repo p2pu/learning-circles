@@ -15,8 +15,12 @@ class BasePage(object):
 
     def fill_text_field(self, locator, *text):
         input_field = self.driver.find_element(*locator)
-        input_field.clear()
-        input_field.send_keys(*text)
+        try:
+            input_field.clear()
+        except:
+            pass
+        finally:
+            input_field.send_keys(*text)
 
 
 class LearningCircleCreationPage(BasePage):
@@ -24,7 +28,7 @@ class LearningCircleCreationPage(BasePage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Date needs to be 4 days in the future - UI disables earlier dates
-        self.start_date = (datetime.datetime.now() + datetime.timedelta(days=5)).date().strftime("%B %-d, %Y")
+        self.start_date = (datetime.datetime.now() + datetime.timedelta(days=5)).date().strftime("%Y%m%d")
 
     def fill_out_form_correctly(self):
         self.select_first_course()
@@ -41,12 +45,14 @@ class LearningCircleCreationPage(BasePage):
         self.fill_text_field(LearningCircleCreationPageLocators.START_DATE_FIELD, self.start_date)
         self.fill_text_field(LearningCircleCreationPageLocators.WEEKS_FIELD, "8")
 
-        self.fill_text_field(LearningCircleCreationPageLocators.MEETING_TIME_FIELD, "7:00 PM")
+        self.fill_text_field(LearningCircleCreationPageLocators.MEETING_TIME_FIELD, "7:00 PM", Keys.ENTER)
         self.fill_text_field(LearningCircleCreationPageLocators.DURATION_FIELD, "60")
 
         self.click_next_button()
 
+        self.fill_text_field(LearningCircleCreationPageLocators.TITLE_FIELD, "Sharon's Learning Circle")
         self.fill_text_field(LearningCircleCreationPageLocators.DESCRIPTION_FIELD, "Welcome to my learning circle!")
+        self.fill_text_field(LearningCircleCreationPageLocators.COURSE_DESCRIPTION_FIELD, "This is the course description")
         self.fill_text_field(LearningCircleCreationPageLocators.SIGNUP_QUESTION_FIELD, "What do you want to learn?")
         self.fill_text_field(LearningCircleCreationPageLocators.VENUE_WEBSITE_FIELD, "https://www.kpl.org")
 
