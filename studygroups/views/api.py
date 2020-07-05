@@ -212,6 +212,14 @@ class LearningCircleListView(View):
                 study_groups = study_groups\
                 .annotate(last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
                 .filter(Q(last_meeting_date__gte=today) | Q(draft=True))
+            elif scope == "upcoming":
+                study_groups = study_groups\
+                .annotate(first_meeting_date=Subquery(active_meetings.values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
+                .filter(Q(first_meeting_date__gt=today) | Q(draft=True))
+            elif scope == "current":
+                study_groups = study_groups\
+                .annotate(first_meeting_date=Subquery(active_meetings.values('meeting_date')[:1]), last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
+                .filter(first_meeting_date__lte=today, last_meeting_date__gte=today)
             elif scope == "completed":
                 study_groups = study_groups\
                 .annotate(last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]))\

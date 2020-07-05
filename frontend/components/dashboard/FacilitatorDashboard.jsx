@@ -164,18 +164,12 @@ export default class FacilitatorDashboard extends React.Component {
                     this.state.user &&
                     <Tabs defaultIndex={0}>
                       <TabList>
-                        <Tab><span className="minicaps bold text-xs">Upcoming</span></Tab>
-                        <Tab><span className="minicaps bold text-xs">Current</span></Tab>
+                        <Tab><span className="minicaps bold text-xs">Active & Upcoming</span></Tab>
                         <Tab><span className="minicaps bold text-xs">Completed</span></Tab>
                       </TabList>
                       <TabPanel>
                         <div data-aos='fade'>
-                          <UpcomingLearningCirclesTable teamId={this.props.teamId} userIsOrganizer={this.props.userIsOrganizer} />
-                        </div>
-                      </TabPanel>
-                      <TabPanel>
-                        <div data-aos='fade'>
-                          <CurrentLearningCirclesTable teamId={this.props.teamId} userIsOrganizer={this.props.userIsOrganizer} />
+                          <ActiveLearningCirclesTable teamId={this.props.teamId} userIsOrganizer={this.props.userIsOrganizer} />
                         </div>
                       </TabPanel>
                       <TabPanel>
