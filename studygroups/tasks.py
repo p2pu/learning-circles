@@ -670,6 +670,8 @@ def send_out_community_digest():
 
 @shared_task
 def refresh_instagram_token():
+    """ Refresh long-lived user access token for Instagram Basic Display API """
+    """ https://developers.facebook.com/docs/instagram-basic-display-api/reference/refresh_access_token """
     url = "https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token={}".format(settings.INSTAGRAM_TOKEN)
     response = get_json_response(url)
     new_token = response.get("access_token", None)

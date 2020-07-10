@@ -942,6 +942,8 @@ class FinalReportListView(View):
 
 class InstagramFeed(View):
     def get(self, request):
+        """ Get user media from Instagram Basic Diplay API """
+        """ https://developers.facebook.com/docs/instagram-basic-display-api/reference/media """
         url = "https://graph.instagram.com/me/media?fields=id,permalink&access_token={}".format(settings.INSTAGRAM_TOKEN)
         try:
             response = get_json_response(url)
