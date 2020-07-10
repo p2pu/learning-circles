@@ -44,7 +44,7 @@ export default class Announcements extends Component {
     };
 
     return (
-      <div className="">
+      <div className="announcements">
         {
           this.state.announcements.map((announcement, index) => {
             return(
