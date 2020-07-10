@@ -36,29 +36,29 @@ class EmbeddedPost extends Component {
   }
 }
 
-const DisplayPost = ({ post }) => {
-  return(
-    <div className="meeting-card py-3 row">
-      { post.images &&
-        <div className="col-12">
-          <img className="img-fluid" src={post.images.low_resolution.url} />
-        </div>
-      }
+// const DisplayPost = ({ post }) => {
+//   return(
+//     <div className="meeting-card py-3 row">
+//       { post.images &&
+//         <div className="col-12">
+//           <img className="img-fluid" src={post.images.low_resolution.url} />
+//         </div>
+//       }
 
-      {
-        post.caption &&
-        <div className={`content col-12`}>
-          <p className='my-1'>
-          { post.caption.text }
-          </p>
-        </div>
-      }
-      <div className="col-12">
-        <a href={post.link}>See this post on Instagram</a>
-      </div>
-    </div>
-  )
-}
+//       {
+//         post.caption &&
+//         <div className={`content col-12`}>
+//           <p className='my-1'>
+//           { post.caption.text }
+//           </p>
+//         </div>
+//       }
+//       <div className="col-12">
+//         <a href={post.link}>See this post on Instagram</a>
+//       </div>
+//     </div>
+//   )
+// }
 
 export default class InstagramFeed extends Component {
   constructor(props) {
@@ -105,7 +105,7 @@ export default class InstagramFeed extends Component {
         {
           latestPosts.map(post => {
             return(
-              <EmbeddedPost postUrl={post.link} key={post.id} />
+              <EmbeddedPost postUrl={post.permalink} key={post.id} />
             )
           })
         }

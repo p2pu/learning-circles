@@ -942,15 +942,19 @@ class FinalReportListView(View):
 
 class InstagramFeed(View):
     def get(self, request):
-        url = "https://api.instagram.com/v1/users/self/media/recent/?access_token={}".format(settings.INSTAGRAM_TOKEN)
+        url = "https://graph.instagram.com/me/media?fields=id,media_url,permalink&access_token={}".format(settings.INSTAGRAM_TOKEN)
         try:
             response = get_json_response(url)
-            if response["meta"]["code"] != 200:
-                logger.error('Could not make request to Instagram')
-                return json_response(request, { "status": "error", "errors": response["meta"]["error_message"] })
+            print(response)
+            if response.get("data", None):
+                return json_response(request, { "items": response["data"] })
 
-            return json_response(request, { "items": response["data"] })
 
+            if response.get("error", None):
+                return json_response(request, { "status": "error", "errors": response["error"]["message"] })
+                logger.error('Could not make request to Instagram: {}'.format(response["error"]["message"]))
+
+            return json_response(request, { "status": "error", "errors": "Could not make request to Instagram" })
         except ConnectionError as e:
             logger.error('Could not make request to Instagram')
             return json_response(request, { "status": "error", "errors": str(e) })
