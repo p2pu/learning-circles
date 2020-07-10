@@ -274,6 +274,10 @@ CELERYBEAT_SCHEDULE = {
         'task': 'studygroups.tasks.send_out_community_digest',
         'schedule': crontab(day_of_week='monday', hour=11, minute=0),
     },
+    'refresh_instagram_token': {
+        'task': 'studygroups.tasks.refresh_instagram_token',
+        'schedule': crontab(day_of_month=[1], hour=1, minute=0)
+    }
 }
 
 LOGGING = {

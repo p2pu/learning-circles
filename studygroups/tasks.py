@@ -14,6 +14,7 @@ from studygroups.models import StudyGroup, Meeting, Reminder, Team, TeamMembersh
 from studygroups.models import report_data
 from studygroups.models import community_digest_data
 from studygroups.models import get_study_group_organizers
+from studygroups.models import get_json_response
 from studygroups import charts
 from studygroups.sms import send_message
 from studygroups.utils import render_to_string_ctx
@@ -26,6 +27,7 @@ from .ics import make_meeting_ics
 import datetime
 import logging
 import pytz
+import os
 
 
 logger = logging.getLogger(__name__)
@@ -665,3 +667,19 @@ def send_out_community_digest():
 
     if iso_week % 3 == 0:
         send_community_digest(start_date, end_date)
+
+@shared_task
+def refresh_instagram_token():
+    url = "https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token={}".format(settings.INSTAGRAM_TOKEN)
+    response = get_json_response(url)
+    new_token = response.get("access_token", None)
+    request_error = response.get("error", None)
+
+    if new_token:
+        os.environ["INSTAGRAM_TOKEN"] = new_token
+        logger.info("Set refreshed Instagram token to os.environ.INSTAGRAM_TOKEN")
+    elif request_error:
+        logger.error('Could not refresh Instagram token: {}'.format(request_error.get("message")))
+    else:
+        logger.error('Could not refresh Instagram token: {}'.format(response))
+
