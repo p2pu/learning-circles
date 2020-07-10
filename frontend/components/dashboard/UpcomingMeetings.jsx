@@ -1,7 +1,9 @@
 import React, { Component } from "react";
-import ApiHelper from "../../helpers/ApiHelper";
 import moment from "moment";
 import AOS from 'aos';
+
+import ApiHelper from "../../helpers/ApiHelper";
+import { DEFAULT_LC_IMAGE } from "../../helpers/constants"
 
 
 export default class UpcomingMeetings extends Component {
@@ -74,13 +76,14 @@ export default class UpcomingMeetings extends Component {
             const formattedStartTime = nextMeeting.format('h:mma');
             const formattedCity = meeting.city.replace(/United States of America/, 'USA');
             const delay = index * 100;
+            const imageSrc = meeting.image_url || DEFAULT_LC_IMAGE;
 
             return(
               <div className="meeting-card py-3 row" key={`meeting-${meeting.course.id}-${index}`} data-aos='fade-up' data-aos-delay={delay}>
                 <div className="d-none d-sm-block col-sm-4 col-md-2 image-thumbnail">
-                  { meeting.image_url &&
-                    <img className="img-thumbnail" src={meeting.image_url} />
-                  }
+                   <a href={meeting.url}>
+                    <img className="img-thumbnail" src={imageSrc} />
+                  </a>
                 </div>
 
                 <div className="content col-12 col-sm-8 col-md-10">
@@ -95,19 +98,11 @@ export default class UpcomingMeetings extends Component {
                       <i className="material-icons pr-1">location_on</i>
                       <span className="bold">{formattedCity}</span>
                     </div>
-
-                    <a href={meeting.course.discourse_topic_url}>
-                      <div className="minicaps text-xs d-flex align-items-center mr-3">
-                        <i className="material-icons pr-1">launch</i>
-                        <span className="bold">Course thread</span>
-                      </div>
-                    </a>
-
                   </div>
 
                   <div className="info">
                     <p className='meeting-info mb-0'>
-                      <span className="">{meeting.facilitator}</span> is facilitating <span className="font-italic">{meeting.name}</span> at { meeting.venue }
+                      <span className="">{meeting.facilitator}</span> is facilitating <a href={meeting.url}>{meeting.name}</a> at { meeting.venue }
                     </p>
                   </div>
 

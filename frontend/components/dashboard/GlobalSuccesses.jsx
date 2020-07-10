@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import ApiHelper from "../../helpers/ApiHelper";
 import AOS from 'aos';
+import { DEFAULT_LC_IMAGE } from "../../helpers/constants"
 
 const PAGE_LIMIT = 3;
 const TOTAL_LIMIT = 9;
@@ -72,16 +73,15 @@ export default class GlobalSuccesses extends Component {
           this.state.items.map((lc, index) => {
             const formattedCity = lc.city.replace(/United States of America/, 'USA');
             const delay = index * 100;
+            const imageSrc = lc.image_url || DEFAULT_LC_IMAGE
 
             return(
               <div className="meeting-card py-3 row" key={lc.id} data-aos='fade-up' data-aos-delay={delay}>
-                { lc.image_url &&
-                  <div className="col-4 image-thumbnail">
-                    <img src={lc.image_url} />
-                  </div>
-                }
+                <div className="col-4 image-thumbnail">
+                  <img src={imageSrc} />
+                </div>
 
-                <div className={`content ${lc.image_url ? 'col-8' : 'col-12'}`}>
+                <div className="content col-8">
 
                   <div className="info">
                     {

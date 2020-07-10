@@ -919,8 +919,9 @@ class CourseLanguageListView(View):
 class FinalReportListView(View):
     def get(self, request):
         today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        studygroups = StudyGroup.objects.published().filter(end_date__lt=today)
-        studygroups = filter_studygroups_with_survey_responses(studygroups)
+        completed_studygroups = StudyGroup.objects.published().filter(end_date__lt=today)
+        with_responses = filter(lambda sg: sg.learnersurveyresponse_set.count() > 0, completed_studygroups)
+        studygroups = sorted(with_responses, key=lambda sg: sg.end_date, reverse=True)
         data = {}
 
         if 'offset' in request.GET or 'limit' in request.GET:

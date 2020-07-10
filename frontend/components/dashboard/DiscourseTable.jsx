@@ -27,7 +27,7 @@ export default class DiscourseTable extends Component {
   }
 
   _populateResources() {
-    const apiEndpoint = `${DISCOURSE_API_URL}/latest.json`;
+    const apiEndpoint = `${DISCOURSE_API_URL}/latest.json?order=created`;
 
     axios.get(apiEndpoint).then(res => {
       this.setState({ topics: res.data.topic_list.topics, users: res.data.users });
