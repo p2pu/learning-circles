@@ -1,0 +1,24 @@
+[
+  {
+    "model": "studygroups.announcement",
+    "pk": 1,
+    "fields": {
+      "display": false,
+      "text": "I'm an old announcement that should not show up",
+      "link": "/",
+      "link_text": "Dashboard",
+      "color": "green"
+    }
+  },
+  {
+    "model": "studygroups.announcement",
+    "pk": 2,
+    "fields": {
+      "display": true,
+      "text": "Exploring virtual solutions for learning circles during quarantine? The P2PU community created a handbook to offer insight and support as you move your programs online.",
+      "link": "https://www.p2pu.org/virtual-handbook",
+      "link_text": "View handbook",
+      "color": "yellow"
+    }
+  }
+]

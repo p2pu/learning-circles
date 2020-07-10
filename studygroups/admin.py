@@ -10,6 +10,7 @@ from studygroups.models import Profile
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
+from studygroups.models import Announcement
 
 
 class ApplicationInline(admin.TabularInline):
@@ -116,3 +117,4 @@ admin.site.register(Reminder, ReminderAdmin)
 admin.site.register(Team, TeamAdmin)
 admin.site.register(TeamInvitation)
 admin.site.register(Profile, ProfileAdmin)
+admin.site.register(Announcement)

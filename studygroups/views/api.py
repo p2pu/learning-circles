@@ -33,6 +33,7 @@ from studygroups.models import Meeting
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
+from studygroups.models import Announcement
 from studygroups.models import generate_all_meetings
 from studygroups.models import filter_studygroups_with_survey_responses
 from studygroups.models import get_json_response
@@ -1209,4 +1210,21 @@ def delete_team_invitation_url(request, team_id):
 
     return json_response(request, { "status": "deleted", "team_invitation_url": None })
 
+def serialize_announcement(announcement):
+    return {
+        "text": announcement.text,
+        "link": announcement.link,
+        "link_text": announcement.link_text,
+        "color": announcement.color,
+    }
+
+class AnnouncementListView(View):
+    def get(self, request):
+        announcements = Announcement.objects.filter(display=True)
+        data = {
+            "count": announcements.count(),
+            "items": [ serialize_announcement(announcement) for announcement in announcements ]
+        }
+
+        return json_response(request, data)
 

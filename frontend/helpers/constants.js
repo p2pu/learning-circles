@@ -79,6 +79,10 @@ export const API_ENDPOINTS = {
   invitationNotifications: {
     baseUrl: '/api/facilitator/invitations/?',
     searchParams: []
+  },
+  announcements: {
+    baseUrl: '/api/announcements/',
+    searchParams: []
   }
 };
 
