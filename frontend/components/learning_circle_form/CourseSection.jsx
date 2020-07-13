@@ -1,7 +1,7 @@
 import React from 'react'
-import { Search, BrowseCourses, CourseCard } from 'p2pu-search-cards';
+import { Search, BrowseCourses, CourseCard } from 'p2pu-components';
 
-import 'p2pu-search-cards/dist/build.css';
+import 'p2pu-components/dist/build.css';
 
 
 const CourseSection = (props) => {
@@ -37,11 +37,14 @@ const CourseSection = (props) => {
         {
           !props.learningCircle.course.id &&
           <Search
+            columnBreakpoints={props.showHelp ? 1 : 3}
             searchSubject={'courses'}
             initialState={{languages: ['en']}}
             Browse={BrowseCourses}
             onSelectResult={handleSelectResult}
             origin={window.location.origin}
+            scrollContainer={'.tabs-container'}
+            NoResultsComponent={() => <p className="my-4">{`There are no matching courses.`}<a className="btn p2pu-btn btn-secondary" href={`${window.location.origin}${window.location.pathname}`}>Start over</a></p>}
           />
         }
     </div>

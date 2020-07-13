@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types';
-import { CourseCard } from 'p2pu-search-cards'
+import { CourseCard } from 'p2pu-components'
 
-import 'p2pu-search-cards/dist/build.css';
+import 'p2pu-components/dist/build.css';
 
 
 const SimilarCoursesPreview = ({ courses }) => {

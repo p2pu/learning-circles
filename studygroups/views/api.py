@@ -639,6 +639,14 @@ class LearningCircleCreateView(View):
             facilitator_concerns=data.get('facilitator_concerns', '')
         )
 
+        # use course.caption if course_description is not set
+        if study_group.course_description is None:
+            study_group.course_description = study_group.course.caption
+
+        # use course.title if name is not set
+        if study_group.name is None:
+            study_group.name = study_group.course.title
+
         # only update value for draft if the use verified their email address
         if request.user.profile.email_confirmed_at is not None:
             study_group.draft = data.get('draft', True)

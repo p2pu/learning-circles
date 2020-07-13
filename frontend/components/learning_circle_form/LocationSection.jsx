@@ -1,27 +1,24 @@
 import React from 'react'
-import PlaceSelect from 'p2pu-input-fields/dist/PlaceSelect'
-import InputWithLabel from 'p2pu-input-fields/dist/InputWithLabel'
-import LanguageSelect from 'p2pu-input-fields/dist/LanguageSelect'
+import {
+  PlaceSelect,
+  InputWithLabel,
+  LanguageSelect
+} from 'p2pu-components'
 
 
 const LocationSection = (props) => {
+  const place = !!props.learningCircle.place_id ? { objectID: props.learningCircle.place_id } : props.learningCircle.place
   return (
     <div>
-      <div className={`input-with-label form-group`} >
-        <label htmlFor={props.city}>In which city is this happening? *</label>
-        <PlaceSelect
-          name={'city'}
-          id={'id_city'}
-          label='Start typing any city name'
-          place_id={props.learningCircle.place_id}
-          city={props.learningCircle.city}
-          region={props.learningCircle.region}
-          country={props.learningCircle.country}
-          country_en={props.learningCircle.country_en}
-          handleSelect={props.updateFormData}
-          errorMessage={props.errors.city}
-        />
-      </div>
+      <PlaceSelect
+        label={'Start typing any city name'}
+        name={'place'}
+        id={'place_id'}
+        classes="form-group"
+        value={place}
+        handleChange={props.updateFormData}
+        errorMessage={props.errors.place}
+      />
       <InputWithLabel
         label={'Where will you meet?'}
         value={props.learningCircle.venue_name || ''}
@@ -60,7 +57,8 @@ const LocationSection = (props) => {
         name={'language'}
         id={'id_language'}
         errorMessage={props.errors.language}
-        helpText={'We\'ll use the language selected on the sign up page and in messages sent to participants.'}
+        helpText={'Participants will receive communications in this language.'}
+        isMulti={false}
       />
     </div>
   );

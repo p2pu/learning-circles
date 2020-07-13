@@ -100,3 +100,5 @@ export const FACILITATOR_RESOURCE_TYPES = [
   'video', 'activity', 'blog', 'template', 'thread'
 ]
 
+export const DEFAULT_LC_IMAGE = '/static/images/learning-circle-default.jpg'
+

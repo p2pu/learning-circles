@@ -15,7 +15,7 @@ import {
 } from '../helpers/constants';
 
 import './stylesheets/learning-circle-form.scss';
-import 'p2pu-input-fields/dist/build.css';
+import 'p2pu-components/dist/build.css';
 
 
 export default class CreateLearningCirclePage extends React.Component {
@@ -125,15 +125,36 @@ export default class CreateLearningCirclePage extends React.Component {
     this.setState({ alert: { show: false }})
   }
 
+  extractPlaceData = place => {
+    if (!place) return null
+
+    const country = place.country ? place.country.default : null;
+    const country_en = place.country && place.country.en ? place.country.en : country;
+    const placeData = {
+      city: place.locale_names.default[0],
+      region: place.administrative ? place.administrative[0] : null,
+      country: country,
+      country_en: country_en,
+      latitude: place._geoloc ? place._geoloc.lat : null,
+      longitude: place._geoloc ? place._geoloc.lng : null,
+      place_id: place.objectID ? place.objectID : null,
+      place: null, // remove Algolia place object
+    }
+
+    return placeData
+  }
+
   _onSubmitForm(draft=true) {
     if (!this.state.user) {
       this.showModal();
     } else {
       this.setState({ isSaving: draft, isPublishing: !draft })
+      const placeData = this.extractPlaceData(this.state.learningCircle.place)
       const data = {
         ...this.state.learningCircle,
+        ...placeData,
         course: this.state.learningCircle.course.id,
-        draft: draft
+        draft: draft,
       }
 
       const onSuccess = (data) => {
@@ -163,6 +184,7 @@ export default class CreateLearningCirclePage extends React.Component {
         const msg = 'There was an error saving your learning circle. Please try again.'
         const type = 'danger'
         this.showAlert(msg, type)
+        this.setState({ isSaving: false, isPublishing: false })
       }
 
       const opts = { data, onSuccess, onError, onFail };
