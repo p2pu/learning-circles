@@ -5,6 +5,8 @@ from django.db import IntegrityError
 from django.conf import settings
 from django.urls import reverse
 from django.utils.timezone import now
+from django_bleach.models import BleachField
+
 
 from .base import LifeTimeTrackingModel
 
@@ -22,9 +24,10 @@ class Team(models.Model):
     email_domain = models.CharField(max_length=128, blank=True)
     invitation_token = models.UUIDField(null=True, blank=True, unique=True)
     email_address = models.CharField(max_length=128, blank=True)
-    website = models.CharField(max_length=128, blank=True)
+    website = models.URLField(max_length=128, blank=True)
     location = models.CharField(max_length=128, blank=True)
-    intro_text = models.TextField(max_length=500, blank=True)
+    intro_text = BleachField(max_length=1000, blank=True, allowed_tags=settings.TINYMCE_DEFAULT_CONFIG.get('valid_elements', '').split(','), allowed_attributes={'a': ['href', 'title', 'rel', 'target']})
+
 
     def __str__(self):
         return self.name
