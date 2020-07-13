@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('studygroups', '0129_set_learning_circle_name'),
+        ('studygroups', '0131_auto_20200703_0444'),
     ]
 
     operations = [
