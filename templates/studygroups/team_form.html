@@ -1,42 +1,43 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
-{% load static %}
 {% load i18n %}
 
 {% block content %}
-<div class="container my-5">
-  <div class="row mb-3">
+    <div class="container my-5">
+      <div class="row mb-3">
 
-    <div class="col-12">
-      <h2>
-        {% blocktrans with team_name=object.name %}
-            Edit {{ team_name }}
-        {% endblocktrans %}
-      </h2>
+        <div class="col-12">
+          <h2>
+            {% blocktrans with team_name=object.name %}
+                Edit {{ team_name }}
+            {% endblocktrans %}
+          </h2>
 
 
-      <form action="" method="POST" enctype="multipart/form-data">
-      {% csrf_token %}
-      {{ form|crispy }}
-        <p><input type="submit" class="btn p2pu-btn blue" /></p>
-    </form>
+          <form action="" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ form|crispy }}
+            <p><input type="submit" class="btn p2pu-btn blue" /></p>
+        </form>
+
+        </div>
+      </div>
 
     </div>
-  </div>
-
-  <div class="row">
-    <div class="col-12">
-      <h3>
-        {% trans "Default 'About Us' Text" %}
-      </h3>
-        <p>
-          {% blocktrans with team_name=object.name location=object.location %}
-          {{ team_name }} is proud to partner with P2PU to bring learning circles to our community. Join your neighbors and peers as we gather to learn something together. Interested in creating your own learning circle? Check out our facilitation resources at <a href="https://www.p2pu.org/en/facilitate/">www.p2pu.org/en/facilitate</a> to learn more.
-          {% endblocktrans %}
-        </p>
-    </div>
-  </div>
-
-</div>
+    {% if not object.intro_text %}
+      <script type="text/javascript">
+        if (typeof(tinyMCE) !== "undefined") {
+          tinyMCE.on('AddEditor', function(e) {
+            e.editor.on('init', function(editor) {
+              tinyMCE.editors.id_intro_text.setContent("<p>Learning circles are free study groups for people who want to learn new things with others. This format of peer learning was started by Peer 2 Peer University (P2PU) in 2015 and has spread to libraries and community centers across the globe. You can see all of the learning circles happening across our team on this website. If you have any questions or need any accommodations in order to attend a learning circle please reach out to the facilitator directly.</p><p>Interested in running your own learning circle? Check out the facilitation resources at <a href='https://www.p2pu.org/facilitate/' target='_blank' rel='noopener'>www.p2pu.org/facilitate</a> and contact the library to learn more.</p>")
+            })
+          })
+        }
+      </script>
+    {% endif %}
 {% endblock %}
+
+
+
+
 
