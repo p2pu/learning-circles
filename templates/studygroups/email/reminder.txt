@@ -1,5 +1,5 @@
-{% load i18n %}{% load l10n %}{% trans "Hi there!" %}
+{% load i18n %}{% load l10n %}{% load tz %}{% trans "Hi there!" %}
 
-{% localize on %}{% blocktrans with studygroup_name=study_group.name|safe meeting_date=next_meeting.meeting_datetime|date meeting_time=next_meeting.meeting_datetime|time venue_name=study_group.venue_name|safe venue_details=study_group.venue_details|safe %}Your learning circle, {{studygroup_name}}, will meet this {{meeting_date}}, {{meeting_time}} at {{venue_name}}, {{venue_details}}.{% endblocktrans %}{% endlocalize %}
+{% localtime off %}{% localize on %}{% blocktrans with studygroup_name=study_group.name|safe meeting_date=next_meeting.meeting_datetime|date meeting_time=next_meeting.meeting_datetime|time meeting_timezone=next_meeting.meeting_datetime|date:"e" venue_name=study_group.venue_name|safe venue_details=study_group.venue_details|safe %}Your learning circle, {{studygroup_name}}, will meet this {{meeting_date}}, {{meeting_time}} {{meeting_timezone}} at {{venue_name}}, {{venue_details}}.{% endblocktrans %}{% endlocalize %}{% endlocaltime %}
 
 {% if feedback %}{% blocktrans with feedback_text=feedback.feedback|safe %}From last week's meeting: {{feedback_text}}{% endblocktrans %}{% endif %}
