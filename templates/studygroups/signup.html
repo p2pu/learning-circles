@@ -3,6 +3,7 @@
 {% load crispy_forms_tags %}
 {% load static %}
 {% load i18n %}
+{% load tz %}
 
 {% block content %}
 <div class="lc-signup">
@@ -190,7 +191,7 @@
               <h3 class="minicaps text-left">{% trans "Meetings" %}</h3>
               <ul>
               {% for meeting in meetings|slice:'8' %}
-                <li>{{ meeting.meeting_date|date:"N j"}} {% trans "at" %} {{ meeting.meeting_time|time:"fA" }} {{study_group.timezone_display}}</li>
+                <li>{{ meeting.meeting_date|date:"N j"}} {% trans "at" %} {{ meeting.meeting_time|time:"fA" }} {% localtime off %}{{meeting.meeting_datetime|date:"e"}}{% endlocaltime %}</li>
               {% endfor %}
               {% if meetings|length > 8 %}
                 {% blocktrans with remainder=meetings|length|add:"-8"%}
