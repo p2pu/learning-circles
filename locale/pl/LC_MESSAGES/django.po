@@ -2249,15 +2249,12 @@ msgid "Welcome to your learning circle!"
 msgstr "Witamy w klubie wiedzy!"
 
 #: templates/studygroups/email/learner_signup.html:13
-#, fuzzy, python-format
-#| msgid ""
-#| "You signed up for %(course_title)s! The first meeting will be on "
-#| "%(meeting_date)s at %(meeting_time)s.\n"
+#, python-format
 msgid ""
 "You signed up for %(studygroup_name)s! The first meeting will be on "
 "%(meeting_date)s at %(meeting_time)s.\n"
 msgstr ""
-"Potwierdzamy rejestrację na %(course_title)s! Pierwsze spotkanie odbędzie "
+"Potwierdzamy rejestrację na %(studygroup_name)s! Pierwsze spotkanie odbędzie "
 "się %(meeting_date)s o %(meeting_time)s.\n"
 
 #: templates/studygroups/email/learner_signup.html:19
@@ -2547,23 +2544,18 @@ msgstr ""
 "Odpowiedz STOP, żeby  się wypisać."
 
 #: templates/studygroups/email/meeting_changed-subject.txt:1
-#, fuzzy, python-format
-#| msgid ""
-#| "%(course_title)s learning circle at %(venue)s now meets %(meeting_date)s."
+#, python-format
 msgid "%(studygroup_name)s at %(venue)s now meets %(meeting_date)s."
 msgstr ""
-"Nowy termin spotkania klubu%(course_title)sw  %(venue)s to %(meeting_date)s."
+"Nowy termin spotkania klubu%(studygroup_name)sw  %(venue)s to %(meeting_date)s."
 
 #: templates/studygroups/email/meeting_changed.html:5
-#, fuzzy, python-format
-#| msgid ""
-#| "Your %(course_title)s learning circle meeting scheduled for %(old_date)s "
-#| "has been moved to %(new_date)s."
+#, python-format
 msgid ""
 "Your %(studygroup_name)s learning circle meeting scheduled for %(old_date)s "
 "has been moved to %(new_date)s."
 msgstr ""
-"Spotkanie grupy  %(course_title)s klubu wiedzy zaplanowane na %(old_date)s "
+"Spotkanie grupy %(studygroup_name)s klubu wiedzy zaplanowane na %(old_date)s "
 "zostało przełożone na  %(new_date)s."
 
 #: templates/studygroups/email/meeting_changed.html:7
@@ -3548,13 +3540,7 @@ msgid "You're in!"
 msgstr ""
 
 #: templates/studygroups/signup_success.html:17
-#, fuzzy, python-format
-#| msgid ""
-#| "\n"
-#| "        Thank you for signing up for &quot;%(course_title)s&quot; at "
-#| "%(venue_name)s. The first meeting will be on <strong>%(start_date)s, "
-#| "%(meeting_time)s</strong>. Your facilitator will be in contact before "
-#| "then."
+#, python-format
 msgid ""
 "\n"
 "        Thank you for signing up for &quot;%(studygroup_name)s&quot; at "
@@ -3562,7 +3548,7 @@ msgid ""
 "%(meeting_time)s</strong>. Your facilitator will be in contact before then."
 msgstr ""
 "\n"
-"        Dziękujemy za zapisanie się na kurs &quot;%(course_title)s&quot; w "
+"        Dziękujemy za zapisanie się na kurs &quot;%(studygroup_name)s&quot; w "
 "%(venue_name)s. Pierwsze spotkanie odbędzie się <strong>%(start_date)s, "
 "%(meeting_time)s</strong>. Twój moderator wcześniej się z Tobą skontaktuje."
 
