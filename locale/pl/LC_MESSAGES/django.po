@@ -2297,10 +2297,9 @@ msgid "Q: What is your goal for taking this learning circle?"
 msgstr "Pytanie: Co chcesz osiągnąć zapisując się na ten kurs?"
 
 #: templates/studygroups/email/learner_signup.html:35
-#, fuzzy, python-format
-#| msgid "A: %(answer)s"
+#, python-format
 msgid "A: %(goal_answer)s"
-msgstr "Odpowiedź: %(answer)s"
+msgstr "Odpowiedź: %(goal_answer)s"
 
 #: templates/studygroups/email/learner_signup.html:37
 msgid "Q: How will you help your peers achieve their goals?"
