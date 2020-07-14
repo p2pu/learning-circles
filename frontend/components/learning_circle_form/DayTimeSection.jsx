@@ -19,7 +19,7 @@ export default class  DayTimeSection extends React.Component {
   render(){
     const props = this.props;
     let reminderWarning = null;
-    let minDate = new Date();
+    let minDate = null;
     let minTime = null;
 
     if (props.learningCircle.draft == false ){
