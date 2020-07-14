@@ -5,7 +5,7 @@ from django.contrib.postgres.search import SearchQuery
 from django.contrib.postgres.search import SearchVector
 from django.core.files.storage import get_storage_class
 from django.db import models
-from django.db.models import Q, F, Case, When, Value, Sum, Min, Max, OuterRef, Subquery
+from django.db.models import Q, F, Case, When, Value, Sum, Min, Max, OuterRef, Subquery, Count
 from django.views import View
 from django.views.generic.detail import SingleObjectMixin
 from django.urls import reverse
@@ -35,7 +35,6 @@ from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 from studygroups.models import Announcement
 from studygroups.models import generate_all_meetings
-from studygroups.models import filter_studygroups_with_survey_responses
 from studygroups.models import get_json_response
 from studygroups.models.course import course_platform_from_url
 from studygroups.models.team import eligible_team_by_email_domain
@@ -920,9 +919,8 @@ class CourseLanguageListView(View):
 class FinalReportListView(View):
     def get(self, request):
         today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        completed_studygroups = StudyGroup.objects.published().filter(end_date__lt=today)
-        with_responses = filter(lambda sg: sg.learnersurveyresponse_set.count() > 0, completed_studygroups)
-        studygroups = sorted(with_responses, key=lambda sg: sg.end_date, reverse=True)
+        studygroups = StudyGroup.objects.published().annotate(surveys=Count('learnersurveyresponse')).filter(surveys__gt=0, end_date__lt=today).order_by('-end_date')
+
         data = {}
 
         if 'offset' in request.GET or 'limit' in request.GET:
