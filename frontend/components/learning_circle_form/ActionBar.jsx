@@ -1,5 +1,4 @@
 import React from 'react'
-import ReactLoading from 'react-loading';
 
 const NextButton = (props) => (
   <button className="p2pu-btn blue next-tab" onClick={props.onClick}>
@@ -15,14 +14,14 @@ const BackButton = (props) => (
 
 const PublishButton = (props) => (
   <button className="p2pu-btn orange publish" onClick={props.onClick}>
-    <span style={{ opacity: Number(props.isPublishing), position: "absolute" }}><ReactLoading height={28} width={28} type="bubbles" /></span>
+    <span style={{ opacity: Number(props.isPublishing), position: "absolute", top: '-4px', left: 'calc(50% - 10px)' }}><div className="btn-loader white" /></span>
     <span style={{ opacity: Number(!props.isPublishing) }}>Publish</span>
   </button>
 )
 
 const SaveButton = (props) => (
   <button className="p2pu-btn yellow save" onClick={props.onClick}>
-    <span style={{ opacity: Number(props.isSaving), position: "absolute" }}><ReactLoading height={28} width={28} type="bubbles" /></span>
+    <span style={{ opacity: Number(props.isSaving), position: "absolute", top: '-4px', left: 'calc(50% - 10px)' }}><div className="btn-loader white" /></span>
     <span style={{ opacity: Number(!props.isSaving) }}>{props.text}</span>
   </button>
 )

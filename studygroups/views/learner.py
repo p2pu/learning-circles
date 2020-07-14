@@ -37,6 +37,7 @@ from studygroups.utils import check_unsubscribe_signature
 import string
 import cities
 import json
+import urllib
 
 
 class TeamPage(DetailView):
@@ -90,7 +91,6 @@ def signup(request, location, study_group_id):
     if not study_group.deleted_at is None:
         return http.HttpResponseGone() ## TODO
 
-
     if request.method == 'POST':
         form = ApplicationForm(request.POST, initial={'study_group': study_group})
         if form.is_valid() and study_group.signup_open == True and study_group.draft == False:
@@ -114,18 +114,20 @@ def signup(request, location, study_group_id):
     else:
         form = ApplicationForm(initial={'study_group': study_group})
 
-    print(study_group.facilitator)
-
     context = {
         'form': form,
         'study_group': study_group,
         'meetings': study_group.meeting_set.active().order_by('meeting_date'),
-        'mapbox_token': settings.MAPBOX_TOKEN
+        'mapbox_token': settings.MAPBOX_TOKEN,
     }
+
+    #if study_group.venue_address:
+    #    context['map_url'] = "https://www.google.com/maps/search/?api=1&query={}".format(urllib.parse.quote(study_group.venue_address))
 
     team_membership = TeamMembership.objects.active().filter(user=study_group.facilitator).first()
     if team_membership:
         context['team_name'] = team_membership.team.name
+        context['team_page_slug'] = team_membership.team.page_slug
 
     return render(request, 'studygroups/signup.html', context)
 

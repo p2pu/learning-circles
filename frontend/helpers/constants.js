@@ -79,6 +79,10 @@ export const API_ENDPOINTS = {
   invitationNotifications: {
     baseUrl: '/api/facilitator/invitations/?',
     searchParams: []
+  },
+  announcements: {
+    baseUrl: '/api/announcements/',
+    searchParams: []
   }
 };
 
@@ -99,4 +103,6 @@ export const DISCOURSE_API_URL = 'https://community.p2pu.org';
 export const FACILITATOR_RESOURCE_TYPES = [
   'video', 'activity', 'blog', 'template', 'thread'
 ]
+
+export const DEFAULT_LC_IMAGE = '/static/images/learning-circle-default.jpg'
 

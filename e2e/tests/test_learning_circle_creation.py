@@ -32,9 +32,11 @@ class LearningCircleCreation(StaticLiveServerTestCase):
         chrome_options.add_argument('--disable-gpu')
         #chrome_options.add_argument('--auto-open-devtools-for-tabs')
         #chrome_options.add_argument('--start-maximized')
+        capabilities = DesiredCapabilities.CHROME
+        capabilities['loggingPrefs'] = { 'browser':'ALL' }
         cls.driver = webdriver.Remote(
           command_executor='http://selenium:4444/wd/hub',
-          desired_capabilities=DesiredCapabilities.CHROME,
+          desired_capabilities=capabilities,
           options=chrome_options
         )
         timeout = 10
@@ -141,6 +143,7 @@ class LearningCircleCreation(StaticLiveServerTestCase):
 
         creation_page.click_save_button()
 
+        data = self.driver.get_log('browser')
 
         self.wait.until(expected_conditions.url_changes('%s%s' % (self.live_server_url, '/en/studygroup/create/')))
 
@@ -179,6 +182,8 @@ class LearningCircleCreation(StaticLiveServerTestCase):
         self.wait.until(expected_conditions.staleness_of(overlay))
 
         creation_page.click_publish_button()
+
+        data = self.driver.get_log('browser')
 
         self.wait.until(expected_conditions.url_changes('%s%s' % (self.live_server_url, '/en/studygroup/create/')))
 

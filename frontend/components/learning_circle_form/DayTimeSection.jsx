@@ -1,8 +1,10 @@
 import React from 'react';
-import InputWithLabel from 'p2pu-input-fields/dist/InputWithLabel'
-import TimePickerWithLabel from 'p2pu-input-fields/dist/TimePickerWithLabel'
-import DatePickerWithLabel from 'p2pu-input-fields/dist/DatePickerWithLabel'
-import TimeZoneSelect from 'p2pu-input-fields/dist/TimeZoneSelect'
+import {
+  InputWithLabel,
+  TimePickerWithLabel,
+  DatePickerWithLabel,
+  TimeZoneSelect
+} from 'p2pu-components'
 import moment from 'moment'
 
 export default class  DayTimeSection extends React.Component {
@@ -44,20 +46,21 @@ export default class  DayTimeSection extends React.Component {
         );
       }
 
-      minDate = plus2Days;
       if (start_datetime && start_datetime.isSame(plus2Days, 'days')){
         minTime = meeting_time;
         // TODO time input doesn't support a range
       }
 
+      minDate = plus2Days.toDate();
     }
+
     return (
       <div>
         {reminderWarning}
         <DatePickerWithLabel
           label={'What is the date of the first learning circle?'}
           value={props.learningCircle.start_date}
-          placeholder={'Eg. 6 January, 2018'}
+          placeholder={'Eg. 2020-06-31'}
           handleChange={props.updateFormData}
           name={'start_date'}
           id={'id_start_date'}
@@ -65,6 +68,7 @@ export default class  DayTimeSection extends React.Component {
           errorMessage={props.errors.start_date}
           required={true}
           minDate={minDate}
+          helpText={"The date format is YYYY-MM-DD"}
         />
         <InputWithLabel
           label={'How many weeks will the learning circle run for?'}
@@ -79,7 +83,6 @@ export default class  DayTimeSection extends React.Component {
         />
         <TimePickerWithLabel
           label={'What time will your learning circle meet each week?'}
-          open={true}
           handleChange={props.updateFormData}
           name={'meeting_time'}
           id={'id_meeting_time'}
@@ -87,18 +90,17 @@ export default class  DayTimeSection extends React.Component {
           errorMessage={props.errors.meeting_time}
           required={true}
         />
-        <div className={`input-with-label form-group`} >
-          <label htmlFor={props.timezone}>What time zone are you in? *</label>
-          <TimeZoneSelect
-            value={props.learningCircle.timezone}
-            latitude={props.learningCircle.latitude}
-            longitude={props.learningCircle.longitude}
-            handleChange={props.updateFormData}
-            name={'timezone'}
-            id={'id_timezone'}
-            errorMessage={props.errors.timezone}
-          />
-        </div>
+        <TimeZoneSelect
+          label={'What time zone are you in?'}
+          value={props.learningCircle.timezone}
+          latitude={props.learningCircle.latitude}
+          longitude={props.learningCircle.longitude}
+          handleChange={props.updateFormData}
+          name={'timezone'}
+          id={'id_timezone'}
+          errorMessage={props.errors.timezone}
+          required={true}
+        />
         <InputWithLabel
           label={'How long will each session last (in minutes)?'}
           value={props.learningCircle.duration}
@@ -108,6 +110,7 @@ export default class  DayTimeSection extends React.Component {
           type={'number'}
           errorMessage={props.errors.duration}
           required={true}
+          min={0}
         />
       </div>
     );

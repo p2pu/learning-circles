@@ -7,7 +7,7 @@ import CustomizeSection from './CustomizeSection';
 import FinalizeSection from './FinalizeSection';
 
 import 'react-tabs/style/react-tabs.css';
-import 'p2pu-input-fields/dist/build.css';
+import 'p2pu-components/dist/build.css';
 
 
 export default class FormTabs extends React.Component{

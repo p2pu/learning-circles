@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'webpack_loader',
+    'tinymce',
+    'django_bleach',
     # own
     'studygroups',
     'backup',
@@ -202,6 +204,7 @@ CORS_ORIGIN_WHITELIST = [
 if DEBUG:
     CORS_ORIGIN_WHITELIST.append('http://localhost:8000')
     CORS_ORIGIN_WHITELIST.append('http://localhost:3001')
+    CORS_ORIGIN_WHITELIST.append('http://localhost:4000')
 
 CORS_ORIGIN_REGEX_WHITELIST = [
     r"^https://\w+\.p2pu\.org$",
@@ -274,6 +277,10 @@ CELERYBEAT_SCHEDULE = {
         'task': 'studygroups.tasks.send_out_community_digest',
         'schedule': crontab(day_of_week='monday', hour=11, minute=0),
     },
+    'refresh_instagram_token': {
+        'task': 'studygroups.tasks.refresh_instagram_token',
+        'schedule': crontab(day_of_month=[1], hour=1, minute=0)
+    }
 }
 
 LOGGING = {
@@ -359,3 +366,16 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
+
+# Rich text editor configurations
+
+TINYMCE_DEFAULT_CONFIG = {
+    'menubar': False,
+    'plugins': 'link lists',
+    'toolbar': 'undo redo | formatselect | bold italic | bullist numlist | link | removeformat',
+    'valid_elements': 'p,h3,h4,h5,h6,strong,em,a,a[href|target=_blank|rel=noopener],ul,ol,li,div,span',
+    'block_formats': 'Paragraph=p; Heading 1=h3; Heading 2=h4; Heading 3=h5',
+}
+
+BLEACH_DEFAULT_WIDGET = 'tinymce.widgets.TinyMCE'
+

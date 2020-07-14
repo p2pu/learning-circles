@@ -26,6 +26,7 @@ import TeamMembersTable from './TeamMembersTable'
 import TeamInvitationsTable from './TeamInvitationsTable'
 import OrganizerTeamInvitations from './OrganizerTeamInvitations'
 import FacilitatorProfile from './FacilitatorProfile'
+import Announcements from './Announcements'
 
 import 'react-tabs/style/react-tabs.css';
 import 'aos/dist/aos.css';
@@ -47,7 +48,6 @@ export default class FacilitatorDashboard extends React.Component {
 
   componentDidMount(){
     this.populateInvitationNotifications()
-    // this.populateUpcomingEvents()
     AOS.init({
       duration: 500,
       delay: 100
@@ -62,14 +62,6 @@ export default class FacilitatorDashboard extends React.Component {
     }
 
     api.fetchResource({ callback: onSuccess, params: {} })
-  }
-
-  populateUpcomingEvents = (params={}) => {
-    // TODO - this doesn't make sense
-    // let apiUrl = '/api/community_calendar/events/?format=json&user=self&limit=1'
-    // fetch(apiUrl).then( resp => resp.json()).then( data => {
-    //   this.setState({events: data.results});
-    // });
   }
 
   showAlert = (message, type) => {
@@ -164,18 +156,12 @@ export default class FacilitatorDashboard extends React.Component {
                     this.state.user &&
                     <Tabs defaultIndex={0}>
                       <TabList>
-                        <Tab><span className="minicaps bold text-xs">Upcoming</span></Tab>
-                        <Tab><span className="minicaps bold text-xs">Current</span></Tab>
+                        <Tab><span className="minicaps bold text-xs">Active & Upcoming</span></Tab>
                         <Tab><span className="minicaps bold text-xs">Completed</span></Tab>
                       </TabList>
                       <TabPanel>
                         <div data-aos='fade'>
-                          <UpcomingLearningCirclesTable teamId={this.props.teamId} userIsOrganizer={this.props.userIsOrganizer} />
-                        </div>
-                      </TabPanel>
-                      <TabPanel>
-                        <div data-aos='fade'>
-                          <CurrentLearningCirclesTable teamId={this.props.teamId} userIsOrganizer={this.props.userIsOrganizer} />
+                          <ActiveLearningCirclesTable teamId={this.props.teamId} userIsOrganizer={this.props.userIsOrganizer} />
                         </div>
                       </TabPanel>
                       <TabPanel>
@@ -260,7 +246,7 @@ export default class FacilitatorDashboard extends React.Component {
 
             <div data-aos='fade'>
               <Card>
-                <div className="card-title">My Courses</div>
+                <div className="card-title">Courses I've Added</div>
                 {
                   !this.state.user &&
                   <p>You must be logged in to see your courses. <a className="p2pu-btn btn-dark btn-sm" href={"/en/login_redirect/"}>Log in or register</a></p>
@@ -322,13 +308,7 @@ export default class FacilitatorDashboard extends React.Component {
               <FacilitatorProfile facilitator={this.props.userData} themeColor={"blue"} />
             </div>
             <div data-aos='fade'>
-              <Card className="bg-warning feedback-survey d-block w-100">
-                <div className="bold text-center text-white">Exploring virtual solutions for learning circles during quarantine? The P2PU community created a handbook to offer insight and support as you move your programs online.
-                </div>
-                <div className="text-center mt-3">
-                  <a href="https://www.p2pu.org/virtual-handbook" className="p2pu-btn light btn-sm" target="_blank">View handbook</a>
-                </div>
-              </Card>
+              <Announcements />
             </div>
 
             <div data-aos='fade'>

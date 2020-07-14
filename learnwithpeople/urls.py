@@ -20,6 +20,7 @@ urlpatterns += [
     url(r'^api/community_calendar/', include('community_calendar.api_urls')),
     url(r'^announce/', include('announce.urls')),
     url(r'^log/', include('client_logging.urls')),
+    url(r'^tinymce/', include('tinymce.urls')),
 ]
 
 if settings.DEBUG:

@@ -15,7 +15,12 @@ class BasePage(object):
 
     def fill_text_field(self, locator, *text):
         input_field = self.driver.find_element(*locator)
-        input_field.send_keys(*text)
+        try:
+            input_field.clear()
+        except:
+            pass
+        finally:
+            input_field.send_keys(*text)
 
 
 class LearningCircleCreationPage(BasePage):
@@ -23,7 +28,7 @@ class LearningCircleCreationPage(BasePage):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Date needs to be 4 days in the future - UI disables earlier dates
-        self.start_date = (datetime.datetime.now() + datetime.timedelta(days=5)).date().strftime("%m/%d/%Y")
+        self.start_date = (datetime.datetime.now() + datetime.timedelta(days=5)).date().strftime("%Y%m%d")
 
     def fill_out_form_correctly(self):
         self.select_first_course()
@@ -37,15 +42,17 @@ class LearningCircleCreationPage(BasePage):
 
         self.click_next_button()
 
-        self.fill_text_field(LearningCircleCreationPageLocators.START_DATE_FIELD, self.start_date, Keys.ENTER)
-        self.fill_text_field(LearningCircleCreationPageLocators.WEEKS_FIELD, Keys.BACKSPACE, "8")
+        self.fill_text_field(LearningCircleCreationPageLocators.START_DATE_FIELD, self.start_date)
+        self.fill_text_field(LearningCircleCreationPageLocators.WEEKS_FIELD, "8")
 
-        self.fill_meeting_time_field("7:00 pm")
+        self.fill_text_field(LearningCircleCreationPageLocators.MEETING_TIME_FIELD, "7:00 PM", Keys.ENTER)
         self.fill_text_field(LearningCircleCreationPageLocators.DURATION_FIELD, "60")
 
         self.click_next_button()
 
+        self.fill_text_field(LearningCircleCreationPageLocators.TITLE_FIELD, "Sharon's Learning Circle")
         self.fill_text_field(LearningCircleCreationPageLocators.DESCRIPTION_FIELD, "Welcome to my learning circle!")
+        self.fill_text_field(LearningCircleCreationPageLocators.COURSE_DESCRIPTION_FIELD, "This is the course description")
         self.fill_text_field(LearningCircleCreationPageLocators.SIGNUP_QUESTION_FIELD, "What do you want to learn?")
         self.fill_text_field(LearningCircleCreationPageLocators.VENUE_WEBSITE_FIELD, "https://www.kpl.org")
 
@@ -72,15 +79,7 @@ class LearningCircleCreationPage(BasePage):
         city_select = self.wait.until(expected_conditions.visibility_of_element_located(LearningCircleCreationPageLocators.CITY_SELECT_INPUT))
         city_select.send_keys(location)
         self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.CITY_SELECT_OPTION))
-        city_select.send_keys(Keys.ARROW_DOWN, Keys.ENTER)
-
-
-    def fill_meeting_time_field(self, time):
-        meeting_time_field = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.MEETING_TIME_FIELD))
-        meeting_time_field.click()
-        meeting_time_input = self.wait.until(expected_conditions.visibility_of_element_located(LearningCircleCreationPageLocators.MEETING_TIME_INPUT))
-        meeting_time_input.send_keys(time)
-
+        city_select.send_keys(Keys.ENTER)
 
     def click_next_button(self):
         next_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.NEXT_TAB_BUTTON))

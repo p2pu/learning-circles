@@ -5,7 +5,7 @@ from django.contrib.postgres.search import SearchQuery
 from django.contrib.postgres.search import SearchVector
 from django.core.files.storage import get_storage_class
 from django.db import models
-from django.db.models import Q, F, Case, When, Value, Sum, Min, Max, OuterRef, Subquery
+from django.db.models import Q, F, Case, When, Value, Sum, Min, Max, OuterRef, Subquery, Count
 from django.views import View
 from django.views.generic.detail import SingleObjectMixin
 from django.urls import reverse
@@ -33,8 +33,8 @@ from studygroups.models import Meeting
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
+from studygroups.models import Announcement
 from studygroups.models import generate_all_meetings
-from studygroups.models import filter_studygroups_with_survey_responses
 from studygroups.models import get_json_response
 from studygroups.models.course import course_platform_from_url
 from studygroups.models.team import eligible_team_by_email_domain
@@ -212,6 +212,14 @@ class LearningCircleListView(View):
                 study_groups = study_groups\
                 .annotate(last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
                 .filter(Q(last_meeting_date__gte=today) | Q(draft=True))
+            elif scope == "upcoming":
+                study_groups = study_groups\
+                .annotate(first_meeting_date=Subquery(active_meetings.values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
+                .filter(Q(first_meeting_date__gt=today) | Q(draft=True))
+            elif scope == "current":
+                study_groups = study_groups\
+                .annotate(first_meeting_date=Subquery(active_meetings.values('meeting_date')[:1]), last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
+                .filter(first_meeting_date__lte=today, last_meeting_date__gte=today)
             elif scope == "completed":
                 study_groups = study_groups\
                 .annotate(last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]))\
@@ -425,7 +433,13 @@ class CourseListView(View):
         # by user to avoid filtering out unlisted courses
         if request.GET.get('include_unlisted', "false") == "false" or 'user' not in request.GET:
             # return only courses that is not unlisted
-            courses = courses.filter(unlisted=False)
+            # if the user is part of a team, include unlisted courses from the team
+            if request.user.is_authenticated:
+                team_query = TeamMembership.objects.active().filter(user=request.user).values('team')
+                team_ids = TeamMembership.objects.active().filter(team__in=team_query).values('user')
+                courses = courses.filter(Q(unlisted=False) | Q(unlisted=True, created_by__in=team_ids))
+            else:
+                courses = courses.filter(unlisted=False)
 
         courses = courses.annotate(
             num_learning_circles=Sum(
@@ -632,6 +646,14 @@ class LearningCircleCreateView(View):
             facilitator_goal=data.get('facilitator_goal', ''),
             facilitator_concerns=data.get('facilitator_concerns', '')
         )
+
+        # use course.caption if course_description is not set
+        if study_group.course_description is None:
+            study_group.course_description = study_group.course.caption
+
+        # use course.title if name is not set
+        if study_group.name is None:
+            study_group.name = study_group.course.title
 
         # only update value for draft if the use verified their email address
         if request.user.profile.email_confirmed_at is not None:
@@ -897,8 +919,8 @@ class CourseLanguageListView(View):
 class FinalReportListView(View):
     def get(self, request):
         today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        studygroups = StudyGroup.objects.published().filter(end_date__lt=today)
-        studygroups = filter_studygroups_with_survey_responses(studygroups)
+        studygroups = StudyGroup.objects.published().annotate(surveys=Count('learnersurveyresponse')).filter(surveys__gt=0, end_date__lt=today).order_by('-end_date')
+
         data = {}
 
         if 'offset' in request.GET or 'limit' in request.GET:
@@ -920,18 +942,24 @@ class FinalReportListView(View):
 
 class InstagramFeed(View):
     def get(self, request):
-        url = "https://api.instagram.com/v1/users/self/media/recent/?access_token={}".format(settings.INSTAGRAM_TOKEN)
+        """ Get user media from Instagram Basic Diplay API """
+        """ https://developers.facebook.com/docs/instagram-basic-display-api/reference/media """
+        url = "https://graph.instagram.com/me/media?fields=id,permalink&access_token={}".format(settings.INSTAGRAM_TOKEN)
         try:
             response = get_json_response(url)
-            if response["meta"]["code"] != 200:
-                logger.error('Could not make request to Instagram')
-                return json_response(request, { "status": "error", "errors": response["meta"]["error_message"] })
 
-            return json_response(request, { "items": response["data"] })
+            if response.get("data", None):
+                return json_response(request, { "items": response["data"] })
 
+            if response.get("error", None):
+                return json_response(request, { "status": "error", "errors": response["error"]["message"] })
+                logger.error('Could not make request to Instagram: {}'.format(response["error"]["message"]))
+
+            return json_response(request, { "status": "error", "errors": "Could not make request to Instagram" })
         except ConnectionError as e:
             logger.error('Could not make request to Instagram')
             return json_response(request, { "status": "error", "errors": str(e) })
+
 
 
 def serialize_team_data(team):
@@ -1180,4 +1208,21 @@ def delete_team_invitation_url(request, team_id):
 
     return json_response(request, { "status": "deleted", "team_invitation_url": None })
 
+def serialize_announcement(announcement):
+    return {
+        "text": announcement.text,
+        "link": announcement.link,
+        "link_text": announcement.link_text,
+        "color": announcement.color,
+    }
+
+class AnnouncementListView(View):
+    def get(self, request):
+        announcements = Announcement.objects.filter(display=True)
+        data = {
+            "count": announcements.count(),
+            "items": [ serialize_announcement(announcement) for announcement in announcements ]
+        }
+
+        return json_response(request, data)
 

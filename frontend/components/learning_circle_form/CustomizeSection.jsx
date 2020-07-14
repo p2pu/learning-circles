@@ -1,105 +1,40 @@
 import React from 'react'
-import TextareaWithLabel from 'p2pu-input-fields/dist/TextareaWithLabel'
-import InputWithLabel from 'p2pu-input-fields/dist/InputWithLabel'
-import ImageUploader from 'p2pu-input-fields/dist/ImageUploader'
-import UrlInput from './UrlInput'
+import { TextareaWithLabel, InputWithLabel, ImageUploader, URLInputWithLabel } from "p2pu-components";
+import { DEFAULT_LC_IMAGE } from '../../helpers/constants'
 
 
-const CourseDescriptionInput = (props) => {
-  const onChange = (e) => {
-    props.handleChange({ [props.name]: e.currentTarget.value })
-  }
-
+const CustomizeSection = (props) => {
   const insertCourseDescription = (e) => {
     e.preventDefault()
-    if (!props.course.caption) {
+    if (!props.learningCircle.course.caption) {
       return props.showAlert('Please select a course.', 'warning')
     }
 
-    props.handleChange({ [props.name]: props.course.caption })
-  }
+    console.log("props.learningCircle.course", props.learningCircle.course)
 
-  return(
-    <div className={`input-with-label form-group ${props.classes}`}>
-      <label htmlFor={props.name}>
-        <div>{`Describe the course materials you'll be using. `}<a href="#" onClick={insertCourseDescription}>Copy in the course description.</a></div>
-      </label>
-      <textarea
-        className='form-control'
-        type={props.type || 'text'}
-        name={props.name}
-        id={props.id}
-        onChange={onChange}
-        value={props.value}
-        placeholder={props.placeholder}
-      />
-      {
-        props.errorMessage &&
-        <div className='error-message minicaps'>
-          { props.errorMessage }
-        </div>
-      }
-    </div>
-  )
-}
-
-const TitleInput = (props) => {
-  const onChange = (e) => {
-    props.handleChange({ [props.name]: e.currentTarget.value })
+    props.updateFormData({ course_description: props.learningCircle.course.caption })
   }
 
   const insertCourseTitle = (e) => {
     e.preventDefault()
-    if (!props.course.caption) {
+    if (!props.learningCircle.course.caption) {
       return props.showAlert('Please select a course.', 'warning')
     }
 
-    props.handleChange({ [props.name]: props.course.title })
-  }
-
-  return(
-    <div className={`input-with-label form-group ${props.classes}`}>
-      <label htmlFor={props.name}>
-        <div>{`Set a custom title for your learning circle. `}<a href="#" onClick={insertCourseTitle}>Copy in the course title.</a></div>
-      </label>
-      <input
-        className='form-control'
-        type={props.type || 'text'}
-        name={props.name}
-        id={props.id}
-        onChange={onChange}
-        value={props.value || props.defaultValue}
-        placeholder={props.placeholder}
-        required={props.required || false}
-        min={props.min}
-        max={props.max}
-        disabled={props.disabled}
-      />
-      {
-        props.errorMessage &&
-        <div className='error-message minicaps'>
-          { props.errorMessage }
-        </div>
-      }
-    </div>
-  )
-}
-
-const CustomizeSection = (props) => {
-  const handleImageUpload = ({image}) => {
-    props.updateFormData({ image_url: image })
+    props.updateFormData({ name: props.learningCircle.course.title })
   }
 
   return (
     <div>
-      <TitleInput
+      <InputWithLabel
         value={props.learningCircle.name || ''}
         handleChange={props.updateFormData}
         name={'name'}
         id={'id_name'}
         errorMessage={props.errors.name}
-        course={props.learningCircle.course}
-        showAlert={props.showAlert}
+        label={<div>{`Set a custom title for your learning circle. `}<a href="#" onClick={insertCourseTitle}>Copy in the course title.</a></div>}
+        maxLength={125}
+        helpText={'Maximum 125 characters'}
       />
       <TextareaWithLabel
         label={'Share a welcome message with potential learners.'}
@@ -109,15 +44,18 @@ const CustomizeSection = (props) => {
         id={'id_description'}
         errorMessage={props.errors.description}
         required={true}
+        maxLength={500}
+        helpText={'Maximum 500 characters'}
       />
-      <CourseDescriptionInput
+      <TextareaWithLabel
         value={props.learningCircle.course_description || ''}
         handleChange={props.updateFormData}
         name={'course_description'}
         id={'id_course_description'}
         errorMessage={props.errors.course_description}
-        course={props.learningCircle.course}
-        showAlert={props.showAlert}
+        label={<div>{`Describe the course materials you'll be using. `}<a href="#" onClick={insertCourseDescription}>Copy in the course description.</a></div>}
+        helpText={'Maximum 500 characters'}
+        maxLength={500}
       />
       <InputWithLabel
         label={'Is there another question that you want people to answer when they sign up for your learning circle? If so, write that here:'}
@@ -128,10 +66,10 @@ const CustomizeSection = (props) => {
         id={'id_signup_question'}
         errorMessage={props.errors.signup_question}
       />
-      <UrlInput
+      <URLInputWithLabel
         label={'Do you have a website you want to link to?'}
         value={props.learningCircle.venue_website || ''}
-        placeholder={'E.g. www.pretorialibrary.com'}
+        placeholder={'E.g. https://www.pretorialibrary.com'}
         handleChange={props.updateFormData}
         name={'venue_website'}
         id={'id_venue_website'}
@@ -139,13 +77,13 @@ const CustomizeSection = (props) => {
       />
       <ImageUploader
         label={'Care to add an image?'}
-        handleChange={handleImageUpload}
-        name={'image'}
+        handleChange={props.updateFormData}
+        name={'image_url'}
         id={'id_image'}
-        image={props.learningCircle.image_url}
+        image={props.learningCircle.image_url || DEFAULT_LC_IMAGE}
         errorMessage={props.errors.image}
         imageUploadUrl='/api/upload_image/'
-
+        helpText="If you don't upload your own image, we'll use the default one shown below."
       />
     </div>
   )
