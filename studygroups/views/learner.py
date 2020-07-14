@@ -91,7 +91,6 @@ def signup(request, location, study_group_id):
     if not study_group.deleted_at is None:
         return http.HttpResponseGone() ## TODO
 
-
     if request.method == 'POST':
         form = ApplicationForm(request.POST, initial={'study_group': study_group})
         if form.is_valid() and study_group.signup_open == True and study_group.draft == False:
@@ -114,8 +113,6 @@ def signup(request, location, study_group_id):
             return http.HttpResponseRedirect(url)
     else:
         form = ApplicationForm(initial={'study_group': study_group})
-
-    print(study_group.facilitator)
 
     context = {
         'form': form,
