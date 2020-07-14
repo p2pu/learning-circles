@@ -4,7 +4,7 @@ import {MobileInput} from 'p2pu-components'
 import 'p2pu-components/dist/build.css'
 
 const SignupMobileInput = (props) => {
-  const [ value, setValue ] = useState(props.phone)
+  const [ value, setValue ] = useState(props.value)
 
   const cleanFormatting = (phoneNumber) => {
     const num = phoneNumber.replace(/[()\ -]/g, '');
@@ -21,17 +21,21 @@ const SignupMobileInput = (props) => {
         <span id="error_1_id_mobile" className="invalid-feedback"><strong>{error}</strong></span>
       );
     }
-    return (
+  return (
+    <div>
+      <input id="id_mobile" type="hidden" name="mobile" value={cleanFormatting(value)} />
       <MobileInput
-        name="mobile"
-        id="id_mobile"
+        name="mobileBOB"
+        id="id_mobileBOB"
         label={label}
         helpText={hint}
         placeholder="Enter phone number"
         value={props.phone}
+        handleChange={({mobileBOB}) => setValue(mobileBOB)}
         flagsImagePath="/static/images/flags.png"
         errorMessage={errorSpan}
       />
+    </div>
     );
 }
 
