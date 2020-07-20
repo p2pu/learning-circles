@@ -100,6 +100,10 @@ class CustomSearchQuery(SearchQuery):
 
 
 def _map_to_json(sg):
+    last_meeting = sg.last_meeting()
+    today = datetime.date.today()
+    signup_open = (sg.signup_open and last_meeting.meeting_date > today) if last_meeting else False
+
     data = {
         "course": {
             "id": sg.course.pk,
@@ -133,7 +137,9 @@ def _map_to_json(sg):
         "report_url": sg.report_url(),
         "studygroup_path": reverse('studygroups_view_study_group', args=(sg.id,)),
         "draft": sg.draft,
-        "signup_count": sg.application_set.count()
+        "signup_count": sg.application_set.count(),
+        "signup_open": signup_open,
+        "last_meeting_date": last_meeting.meeting_date if last_meeting else sg.end_date,
     }
 
     if sg.image:
@@ -186,15 +192,16 @@ class LearningCircleListView(View):
             "scope": schema.text(),
             "draft": schema.boolean(),
             "team_id": schema.integer(),
+            "order": lambda v: (v, None) if v in ['name', 'start_date', 'created_at', None] else (None, "must be 'name', 'created_at', or 'start_date'"),
         }
         data = schema.django_get_to_dict(request.GET)
         clean_data, errors = schema.validate(query_schema, data)
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        study_groups = StudyGroup.objects.published().order_by('id')
+        study_groups = StudyGroup.objects.published().order_by('-id')
         if 'draft' in request.GET:
-            study_groups = StudyGroup.objects.active().order_by('id')
+            study_groups = StudyGroup.objects.active().order_by('-id')
         if 'id' in request.GET:
             id = request.GET.get('id')
             study_groups = StudyGroup.objects.filter(pk=int(id))
@@ -311,6 +318,14 @@ class LearningCircleListView(View):
                 weekday = int(weekday) + 2 % 7
                 query = query | Q(start_date__week_day=weekday) if query else Q(start_date__week_day=weekday)
             study_groups = study_groups.filter(query)
+
+        order = request.GET.get('order', None)
+        if order == 'name':
+            study_groups = study_groups.order_by('name')
+        elif order == 'start_date':
+            study_groups = study_groups.order_by('-start_date')
+        elif order == 'created_at':
+            study_groups = study_groups.order_by('-created_at')
 
         data = {
             'count': len(study_groups)
