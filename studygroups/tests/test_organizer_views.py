@@ -42,17 +42,6 @@ class TestOrganizerViews(TestCase):
         #faci1 = create_user('faci1@team.com', 'faci1', 'test', 'password', False)
         user.save()
 
-
-    def test_organizer_login_redirect(self):
-        user = create_user('bob@example.net', 'bob', 'uncle', 'password')
-        team = Team.objects.create(name='test team')
-        TeamMembership.objects.create(team=team, user=user, role=TeamMembership.ORGANIZER)
-        c = Client()
-        c.login(username='bob@example.net', password='password')
-        resp = c.get('/en/login_redirect/')
-        self.assertRedirects(resp, '/en/organize/{}/'.format(team.pk))
-
-
     def test_organizer_access(self):
         user = create_user('bob@example.net', 'bob', 'uncle', 'password', False)
         faci1 = create_user('faci1@team.com', 'faci1', 'test', 'password', False)

@@ -56,11 +56,7 @@ logger = logging.getLogger(__name__)
 
 @login_required
 def login_redirect(request):
-    if TeamMembership.objects.active().filter(user=request.user, role=TeamMembership.ORGANIZER).exists():
-        team = TeamMembership.objects.active().get(user=request.user, role=TeamMembership.ORGANIZER).team
-        url = reverse('studygroups_organize_team', args=(team.pk,))
-    else:
-        url = reverse('studygroups_facilitator')
+    url = reverse('studygroups_facilitator')
     return http.HttpResponseRedirect(url)
 
 
