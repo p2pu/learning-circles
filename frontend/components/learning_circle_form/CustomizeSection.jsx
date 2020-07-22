@@ -1,6 +1,7 @@
 import React from 'react'
 import { TextareaWithLabel, InputWithLabel, ImageUploader, URLInputWithLabel } from "p2pu-components";
 import { DEFAULT_LC_IMAGE } from '../../helpers/constants'
+import RichTextEditor from './RichTextEditor'
 
 
 const CustomizeSection = (props) => {
@@ -36,7 +37,7 @@ const CustomizeSection = (props) => {
         maxLength={125}
         helpText={'Maximum 125 characters'}
       />
-      <TextareaWithLabel
+      <RichTextEditor
         label={'Share a welcome message with potential learners.'}
         value={props.learningCircle.description || ''}
         handleChange={props.updateFormData}
@@ -44,18 +45,18 @@ const CustomizeSection = (props) => {
         id={'id_description'}
         errorMessage={props.errors.description}
         required={true}
-        maxLength={500}
-        helpText={'Maximum 500 characters'}
+        maxLength={1000}
+        helpText={'Maximum 1,000 characters'}
       />
-      <TextareaWithLabel
+      <RichTextEditor
         value={props.learningCircle.course_description || ''}
         handleChange={props.updateFormData}
         name={'course_description'}
         id={'id_course_description'}
         errorMessage={props.errors.course_description}
         label={<div>{`Describe the course materials you'll be using. `}<a href="#" onClick={insertCourseDescription}>Copy in the course description.</a></div>}
-        helpText={'Maximum 500 characters'}
-        maxLength={500}
+        helpText={'Maximum 1,000 characters'}
+        maxLength={1000}
       />
       <InputWithLabel
         label={'Is there another question that you want people to answer when they sign up for your learning circle? If so, write that here:'}
