@@ -12,6 +12,17 @@
     <div class="minicaps bold">Draft learning circle</div>
   </div>
   {% endif %}
+
+  {% if form.errors %}
+  <div class="alert-container" style="position:absolute;z-index:10000;">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">There are some errors in your form. Please correct them and submit the form again.
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close" style="color:#833b00;">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  </div>
+  {% endif %}
+
   <section id="lc-info">
     <div class="container">
       <div class="row">
