@@ -137,7 +137,7 @@
           <div class="description">
             <h2 class="description-title">{% trans "Welcome!" %}</h2>
             <div class="description">
-              {{study_group.description}}
+              {{study_group.description|safe }}
             </div>
           </div>
 
@@ -145,7 +145,7 @@
             <h3>{% trans "Course materials we'll use" %}</h3>
             <div class="description">
               {% if study_group.course_description %}
-                {{study_group.course_description}}
+                {{study_group.course_description|safe}}
               {% else %}
                 {{study_group.course.caption}}
               {% endif %}

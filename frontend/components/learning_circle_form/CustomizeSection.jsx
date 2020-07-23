@@ -10,8 +10,6 @@ const CustomizeSection = (props) => {
       return props.showAlert('Please select a course.', 'warning')
     }
 
-    console.log("props.learningCircle.course", props.learningCircle.course)
-
     props.updateFormData({ course_description: props.learningCircle.course.caption })
   }
 
