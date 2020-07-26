@@ -5,7 +5,7 @@ from django.contrib.postgres.search import SearchQuery
 from django.contrib.postgres.search import SearchVector
 from django.core.files.storage import get_storage_class
 from django.db import models
-from django.db.models import Q, F, Case, When, Value, Sum, Min, Max, OuterRef, Subquery, Count
+from django.db.models import Q, F, Case, When, Value, Sum, Min, Max, OuterRef, Subquery, Count, BooleanField
 from django.views import View
 from django.views.generic.detail import SingleObjectMixin
 from django.urls import reverse
@@ -100,10 +100,7 @@ class CustomSearchQuery(SearchQuery):
 
 
 def _map_to_json(sg):
-    last_meeting = sg.last_meeting()
     today = datetime.date.today()
-    signup_open = (sg.signup_open and last_meeting.meeting_date > today) if last_meeting else False
-
     data = {
         "course": {
             "id": sg.course.pk,
@@ -138,8 +135,8 @@ def _map_to_json(sg):
         "studygroup_path": reverse('studygroups_view_study_group', args=(sg.id,)),
         "draft": sg.draft,
         "signup_count": sg.application_set.count(),
-        "signup_open": signup_open,
-        "last_meeting_date": last_meeting.meeting_date if last_meeting else sg.end_date,
+        "last_meeting_date": sg.last_meeting_date,
+        "signup_open": sg.signup_open and sg.last_meeting_date is not None and sg.last_meeting_date > today
     }
 
     if sg.image:
@@ -201,7 +198,7 @@ class LearningCircleListView(View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        study_groups = StudyGroup.objects.published().order_by('-id')
+        study_groups = StudyGroup.objects.published().prefetch_related('course', 'meeting_set', 'application_set').order_by('-id')
         if 'draft' in request.GET:
             study_groups = StudyGroup.objects.active().order_by('-id')
         if 'id' in request.GET:
@@ -211,15 +208,16 @@ class LearningCircleListView(View):
             user_id = request.user.id
             study_groups = study_groups.filter(facilitator=user_id)
 
+        today = datetime.date.today()
+
         if 'scope' in request.GET:
             scope = request.GET.get('scope')
-            today = datetime.date.today()
             active_meetings = Meeting.objects.filter(study_group=OuterRef('pk'), deleted_at__isnull=True).order_by('meeting_date')
             upcoming_meetings = Meeting.objects.filter(study_group=OuterRef('pk'), deleted_at__isnull=True, meeting_date__gte=today).order_by('meeting_date')
 
             if scope == "active":
                 study_groups = study_groups\
-                .annotate(last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
+                .annotate(next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
                 .filter(Q(last_meeting_date__gte=today) | Q(draft=True))
             elif scope == "upcoming":
                 study_groups = study_groups\
@@ -227,11 +225,10 @@ class LearningCircleListView(View):
                 .filter(Q(first_meeting_date__gt=today) | Q(draft=True))
             elif scope == "current":
                 study_groups = study_groups\
-                .annotate(first_meeting_date=Subquery(active_meetings.values('meeting_date')[:1]), last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
+                .annotate(first_meeting_date=Subquery(active_meetings.values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
                 .filter(first_meeting_date__lte=today, last_meeting_date__gte=today)
             elif scope == "completed":
                 study_groups = study_groups\
-                .annotate(last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]))\
                 .filter(last_meeting_date__lt=today)
 
         q = request.GET.get('q', None)
@@ -269,19 +266,12 @@ class LearningCircleListView(View):
             team_users = User.objects.filter(pk__in=members)
             study_groups = study_groups.filter(facilitator__in=team_users)
 
-        if 'signup' in request.GET:
-            signup_open = request.GET.get('signup') == 'open'
-            study_groups = study_groups.filter(signup_open=signup_open)
-
         if 'active' in request.GET:
             active = request.GET.get('active') == 'true'
-            study_group_ids = Meeting.objects.active().filter(
-                meeting_date__gte=timezone.now()
-            ).values('study_group')
             if active:
-                study_groups = study_groups.filter(id__in=study_group_ids)
+                study_groups = study_groups.filter(last_meeting_date__gte=today)
             else:
-                study_groups = study_groups.exclude(id__in=study_group_ids)
+                study_groups = study_groups.exclude(last_meeting_date__gte=today)
 
         if 'latitude' in request.GET and 'longitude' in request.GET:
             # work with floats for ease
@@ -329,8 +319,19 @@ class LearningCircleListView(View):
         elif order == 'created_at':
             study_groups = study_groups.order_by('-created_at')
 
+        study_groups_annotated = study_groups.annotate(signupable=Case(When(signup_open=True, last_meeting_date__gt=today, then=Value(True)), default=Value(False), output_field=BooleanField()))
+
+        studygroups_open_count = study_groups_annotated.filter(signupable=True).count()
+        studygroups_closed_count = study_groups_annotated.filter(signupable=False).count()
+
+        if 'signup' in request.GET:
+            signup_open = request.GET.get('signup') == 'open'
+            study_groups = study_groups_annotated.filter(signupable=signup_open)
+
         data = {
-            'count': len(study_groups)
+            'count': study_groups.count(),
+            'signup_open_count': studygroups_open_count,
+            'signup_closed_count': studygroups_closed_count,
         }
 
         if 'offset' in request.GET or 'limit' in request.GET:

@@ -379,3 +379,5 @@ TINYMCE_DEFAULT_CONFIG = {
 
 BLEACH_DEFAULT_WIDGET = 'tinymce.widgets.TinyMCE'
 
+TINYMCE_API_KEY = 'nwofs8vkvkz211crump56pwxlr5hir4xx3vtvcn88k205y7j'
+

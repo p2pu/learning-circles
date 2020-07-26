@@ -71,6 +71,7 @@ class StudyGroup(LifeTimeTrackingModel):
     facilitator_goal_rating = models.IntegerField(blank=True, null=True)  # Self reported rating of whether the facilitator goal was met.
     attach_ics = models.BooleanField(default=True)
     did_not_happen = models.NullBooleanField(blank=True, null=True)  # Used by the facilitator to report if the learning circle didn't happen
+    last_meeting_date = models.DateField(null=True)
 
     objects = StudyGroupQuerySet.as_manager()
 
@@ -134,6 +135,10 @@ class StudyGroup(LifeTimeTrackingModel):
             return True
 
         return False
+
+    def signupable(self):
+        datetime
+        self.last_meeting_date < today
 
     @property
     def weeks(self):
