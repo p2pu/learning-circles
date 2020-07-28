@@ -16,6 +16,7 @@ from django.utils.text import slugify
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponseForbidden
+from django.core.mail import EmailMultiAlternatives, send_mail
 
 from collections import Counter
 import json
@@ -38,6 +39,8 @@ from studygroups.models import generate_all_meetings
 from studygroups.models import get_json_response
 from studygroups.models.course import course_platform_from_url
 from studygroups.models.team import eligible_team_by_email_domain
+from studygroups.utils import render_to_string_ctx, html_body_to_text
+from studygroups.email_helper import render_html_with_css
 
 from uxhelpers.utils import json_response
 
@@ -1225,4 +1228,34 @@ class AnnouncementListView(View):
         }
 
         return json_response(request, data)
+
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+@require_http_methods(["POST"])
+def contact_form(request):
+    body = json.loads(request.body)
+    context =  {
+        "name": body.get('name', ''),
+        "email": body.get('email', ''),
+        "phone": body.get('phone', ''),
+        "message": body.get('message', ''),
+    }
+
+    subject = render_to_string_ctx('studygroups/email/contact_form-subject.txt', context).strip(' \n')
+    html_body = render_html_with_css('studygroups/email/contact_form.html', context)
+    text_body = html_body_to_text(html_body)
+
+    email = EmailMultiAlternatives(
+        subject,
+        text_body,
+        settings.DEFAULT_FROM_EMAIL,
+        [settings.COMMUNITY_MANAGER],
+    )
+    email.attach_alternative(html_body, 'text/html')
+    email.send()
+
+    data = { "status": "success" }
+
+    return json_response(request, data)
 

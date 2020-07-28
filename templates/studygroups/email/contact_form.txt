@@ -1,0 +1,10 @@
+{% load i18n %}
+
+{% trans "We've received a new message from the contact form!" %}
+
+Name: {{ name }}
+Email: {{ email }}
+{% if phone %}
+Phone: {{ phone }}
+{%endif%}
+Message: {{ message }}

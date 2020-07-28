@@ -28,5 +28,6 @@ urlpatterns = [
     url(r'^teams/invitations/$', views.TeamInvitationListView.as_view(), name='api_team_invitations'),
     url(r'^facilitator/invitations/$', views.facilitator_invitation_notifications, name='api_facilitator_invitations'),
     url(r'^announcements/$', views.AnnouncementListView.as_view(), name='api_announcements'),
+    url(r'^contact-form/$', views.contact_form, name='api_contact_form'),
 
 ]

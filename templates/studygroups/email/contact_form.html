@@ -1,0 +1,14 @@
+{% extends 'email_base.html' %}
+{% load i18n %}
+{% block body %}
+
+<p>{% trans "We've received a new message from the contact form!" %}</p>
+
+<p><strong>Name:</strong> {{ name }}</p>
+<p><strong>Email:</strong> {{ email }}</p>
+{% if phone %}
+<p><strong>Phone:</strong> {{ phone }}</p>
+{% endif %}
+<p><strong>Message:</strong> {{ message }}</p>
+
+{% endblock %}
