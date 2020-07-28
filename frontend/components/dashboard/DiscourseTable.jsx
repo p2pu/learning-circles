@@ -27,7 +27,7 @@ export default class DiscourseTable extends Component {
   }
 
   _populateResources() {
-    const apiEndpoint = `${DISCOURSE_API_URL}/latest.json?order=created`;
+    const apiEndpoint = `${DISCOURSE_API_URL}${this.props.endpoint}`;
 
     axios.get(apiEndpoint).then(res => {
       this.setState({ topics: res.data.topic_list.topics, users: res.data.users });
@@ -73,4 +73,8 @@ export default class DiscourseTable extends Component {
       </div>
     );
   }
+}
+
+DiscourseTable.defaultProps = {
+  endpoint: '/latest.json?order=created'
 }
