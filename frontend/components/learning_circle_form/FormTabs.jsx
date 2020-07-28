@@ -75,7 +75,7 @@ export default class FormTabs extends React.Component{
                 learningCircle={this.props.learningCircle}
                 errors={this.props.errors}
                 showAlert={this.props.showAlert}
-                tinymceApiKey={this.props.tinymceApiKey}
+                tinymceScriptSrc={this.props.tinymceScriptSrc}
               />
             </div>
           </TabPanel>

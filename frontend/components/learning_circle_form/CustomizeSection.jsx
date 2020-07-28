@@ -44,7 +44,7 @@ const CustomizeSection = (props) => {
         required={true}
         maxLength={1000}
         helpText={'Maximum 1,000 characters'}
-        apiKey={props.tinymceApiKey}
+        tinymceScriptSrc={props.tinymceScriptSrc}
       />
       <RichTextWithLabel
         value={props.learningCircle.course_description || ''}
@@ -55,7 +55,7 @@ const CustomizeSection = (props) => {
         label={<div>{`Describe the course materials you'll be using. `}<a href="#" onClick={insertCourseDescription}>Copy in the course description.</a></div>}
         helpText={'Maximum 1,000 characters'}
         maxLength={1000}
-        apiKey={props.tinymceApiKey}
+        tinymceScriptSrc={props.tinymceScriptSrc}
       />
       <InputWithLabel
         label={'Is there another question that you want people to answer when they sign up for your learning circle? If so, write that here:'}

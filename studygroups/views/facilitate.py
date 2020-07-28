@@ -351,7 +351,6 @@ class StudyGroupCreate(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(StudyGroupCreate, self).get_context_data(**kwargs)
         context['hide_footer'] = True
-        context['tinymce_api_key'] = settings.TINYMCE_API_KEY
         return context
 
 
@@ -388,7 +387,6 @@ class StudyGroupUpdate(SingleObjectMixin, TemplateView):
         self.object = self.get_object()
         context = super().get_context_data(**kwargs)
         context['hide_footer'] = True
-        context['tinymce_api_key'] = settings.TINYMCE_API_KEY
         return context
 
 
