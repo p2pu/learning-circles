@@ -10,24 +10,24 @@ logger = logging.getLogger(__name__)
 
 def _get_auth():
     return {
-        'api_key': settings.DISCOURSE_BOT_API_KEY,
-        'api_username': settings.DISCOURSE_BOT_API_USERNAME,
+        'Api-Key': settings.DISCOURSE_BOT_API_KEY,
+        'Api-Username': settings.DISCOURSE_BOT_API_USERNAME,
     }
 
 
 def create_discourse_topic(title, category, raw):
     create_topic_url = f'{settings.DISCOURSE_BASE_URL}/posts.json'
 
-    request_data = _get_auth()
-    request_data.update({
+    request_data = {
         'title': title,
         'category': category,
         'raw': raw,
-    })
-
-    request_headers = {
-        'Content-Type': 'multipart/form-data'
     }
+
+    request_headers = _get_auth()
+    request_headers.update({
+        'Content-Type': 'multipart/form-data'
+    })
 
     response = requests.post(create_topic_url, data=request_data, headers=request_headers)
 
@@ -60,13 +60,13 @@ def get_course_topics():
 
 def get_topic(topic_id):
     url = f'{settings.DISCOURSE_BASE_URL}/t/{topic_id}.json'
-    r = requests.get(url, params=_get_auth())
+    r = requests.get(url, headers=_get_auth())
     return r.json()
 
 
 def get_post(post_id):
     url = f'{settings.DISCOURSE_BASE_URL}/posts/{post_id}.json'
-    r = requests.get(url, params=_get_auth())
+    r = requests.get(url, headers=_get_auth())
     return r.json()
 
 
