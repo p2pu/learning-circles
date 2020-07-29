@@ -101,6 +101,7 @@ class StudyGroup(LifeTimeTrackingModel):
         return tz.localize(date)
 
     def timezone_display(self):
+        # NOTE: This only applies to the first meeting!
         return self.local_start_date().strftime("%Z")
 
     def last_meeting(self):

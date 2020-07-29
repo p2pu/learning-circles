@@ -14,13 +14,8 @@ const SignupMobileInput = (props) => {
     return num;
   }
 
-    const {label, hint, error} = props;
-    let errorSpan = null;
-    if (error) {
-      errorSpan = (
-        <span id="error_1_id_mobile" className="invalid-feedback"><strong>{error}</strong></span>
-      );
-    }
+  const {label, hint, error} = props;
+
   return (
     <div>
       <input id="id_mobile" type="hidden" name="mobile" value={cleanFormatting(value)} />
@@ -30,10 +25,10 @@ const SignupMobileInput = (props) => {
         label={label}
         helpText={hint}
         placeholder="Enter phone number"
-        value={props.phone}
+        value={value}
         handleChange={({mobileBOB}) => setValue(mobileBOB)}
         flagsImagePath="/static/images/flags.png"
-        errorMessage={errorSpan}
+        errorMessage={error}
       />
     </div>
     );
