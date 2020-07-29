@@ -25,7 +25,7 @@ const SignupMobileInput = (props) => {
         label={label}
         helpText={hint}
         placeholder="Enter phone number"
-        value={props.phone}
+        value={value}
         handleChange={({mobileBOB}) => setValue(mobileBOB)}
         flagsImagePath="/static/images/flags.png"
         errorMessage={error}
