@@ -9,7 +9,6 @@ import Card from './Card';
 import Notification from './Notification';
 import DiscourseTable from './DiscourseTable';
 import CoursesTable from './CoursesTable';
-import EventsTable from './EventsTable';
 import UpcomingLearningCirclesTable from './UpcomingLearningCirclesTable';
 import CurrentLearningCirclesTable from './CurrentLearningCirclesTable';
 import ActiveLearningCirclesTable from './ActiveLearningCirclesTable';
@@ -263,20 +262,10 @@ export default class FacilitatorDashboard extends React.Component {
 
             <div data-aos='fade'>
               <Card>
-                <div className="card-title">My Events</div>
-                {
-                  !this.state.user &&
-                  <p>You must be logged in to see events you've added. <a className="p2pu-btn btn-dark btn-sm" href={"/en/login_redirect/"}>Log in or register</a></p>
-                }
-                {
-                  this.state.user &&
-                  <EventsTable />
-                }
-                <div className="">
-                  <a className="p2pu-btn btn-sm dark" href="/en/community_calendar/event/add/">Add an event</a>
-                </div>
+                <div className="card-title">Community Events</div>
+                <DiscourseTable endpoint={'/c/community-events.json?order=created'} />
                 <div className="text-right">
-                  <a href={"https://www.p2pu.org/en/events/"}>See all events</a>
+                  <a href={"https://community.p2pu.org/c/community-events/"}>See all events</a>
                 </div>
               </Card>
             </div>
@@ -285,7 +274,7 @@ export default class FacilitatorDashboard extends React.Component {
             <div data-aos='fade'>
               <Card>
                 <div className="card-title">Latest Discussion</div>
-                <DiscourseTable />
+                <DiscourseTable endpoint={'/latest.json?order=created'} />
                 <div className="text-right">
                   <a href={"https://community.p2pu.org/"}>Go to the forum</a>
                 </div>

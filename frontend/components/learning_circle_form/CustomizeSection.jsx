@@ -84,6 +84,7 @@ const CustomizeSection = (props) => {
         errorMessage={props.errors.image}
         imageUploadUrl='/api/upload_image/'
         helpText="If you don't upload your own image, we'll use the default one shown below."
+        imgStyles={{ height: '250px', width: '250px' }}
       />
     </div>
   )
