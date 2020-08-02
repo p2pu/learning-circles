@@ -102,9 +102,9 @@ def handle_new_study_group_creation(sender, instance, created, **kwargs):
 def update_studygroup_last_meeting_date(sender, instance, created, **kwargs):
     meeting = instance
     study_group = meeting.study_group
-    last_meeting = study_group.last_meeting()
 
-    if last_meeting is not None and last_meeting.meeting_date != study_group.last_meeting_date:
-        study_group.last_meeting_date = last_meeting.meeting_date
+    if study_group.last_meeting_date is None or meeting.meeting_date > study_group.last_meeting_date:
+        study_group.last_meeting_date = meeting.meeting_date
+        study_group.save()
 
 

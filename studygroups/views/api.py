@@ -231,6 +231,7 @@ class LearningCircleListView(View):
                 study_groups = study_groups\
                 .filter(last_meeting_date__lt=today)
 
+
         q = request.GET.get('q', None)
         if q:
             tsquery = CustomSearchQuery(q, config='simple')

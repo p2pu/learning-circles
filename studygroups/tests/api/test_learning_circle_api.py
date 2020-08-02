@@ -659,7 +659,6 @@ class TestLearningCircleApi(TestCase):
             })
             self.assertEqual(StudyGroup.objects.all().count(), 4)
 
-
     def test_get_learning_circles_exclude_drafts(self):
         c = Client()
         sg = StudyGroup.objects.get(pk=1)
@@ -693,29 +692,29 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(resp.status_code, 200)
         data = resp.json()
         self.assertEqual(data["count"], 2)
-        self.assertEqual(data["items"][0]["course"]["title"], "Academic Writing")
-        self.assertEqual(data["items"][1]["course"]["provider"], "Khan Academy")
+        self.assertEqual(data["items"][1]["course"]["title"], "Academic Writing")
+        self.assertEqual(data["items"][0]["course"]["provider"], "Khan Academy")
 
         resp = c.get('/api/learningcircles/', {'q': 'acad'})
         self.assertEqual(resp.status_code, 200)
         data = resp.json()
         self.assertEqual(data["count"], 2)
-        self.assertEqual(data["items"][0]["course"]["title"], "Academic Writing")
-        self.assertEqual(data["items"][1]["course"]["provider"], "Khan Academy")
+        self.assertEqual(data["items"][1]["course"]["title"], "Academic Writing")
+        self.assertEqual(data["items"][0]["course"]["provider"], "Khan Academy")
 
         resp = c.get('/api/learningcircles/', {'q': 'acade'})
         self.assertEqual(resp.status_code, 200)
         data = resp.json()
         self.assertEqual(data["count"], 2)
-        self.assertEqual(data["items"][0]["course"]["title"], "Academic Writing")
-        self.assertEqual(data["items"][1]["course"]["provider"], "Khan Academy")
+        self.assertEqual(data["items"][1]["course"]["title"], "Academic Writing")
+        self.assertEqual(data["items"][0]["course"]["provider"], "Khan Academy")
 
         resp = c.get('/api/learningcircles/', {'q': 'academ'})
         self.assertEqual(resp.status_code, 200)
         data = resp.json()
         self.assertEqual(data["count"], 2)
-        self.assertEqual(data["items"][0]["course"]["title"], "Academic Writing")
-        self.assertEqual(data["items"][1]["course"]["provider"], "Khan Academy")
+        self.assertEqual(data["items"][1]["course"]["title"], "Academic Writing")
+        self.assertEqual(data["items"][0]["course"]["provider"], "Khan Academy")
 
         resp = c.get('/api/learningcircles/', {'q': 'writ'})
         self.assertEqual(resp.status_code, 200)
@@ -781,18 +780,18 @@ class TestLearningCircleApi(TestCase):
         data = resp.json()
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(data["count"], 3)
-        self.assertEqual(data["items"][0]["id"], 1)
+        self.assertEqual(data["items"][0]["id"], 4)
         self.assertEqual(data["items"][1]["id"], 2)
-        self.assertEqual(data["items"][2]["id"], 4)
-        self.assertEqual(data["items"][2]["draft"], True)
+        self.assertEqual(data["items"][2]["id"], 1)
+        self.assertEqual(data["items"][0]["draft"], True)
 
         # upcoming scope
         resp = c.get('/api/learningcircles/?scope=upcoming&draft=true')
         data = resp.json()
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(data["count"], 2)
-        self.assertEqual(data["items"][0]["id"], 1)
-        self.assertEqual(data["items"][1]["id"], 4)
+        self.assertEqual(data["items"][0]["id"], 4)
+        self.assertEqual(data["items"][1]["id"], 1)
 
         # current scope
         resp = c.get('/api/learningcircles/?scope=current')
@@ -843,3 +842,86 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()["count"], 1)
         self.assertEqual(data["items"][0]["last_meeting_date"], "2019-05-15")
+
+
+    @freeze_time("2019-05-31")
+    def test_get_learning_signup_open(self):
+        sg = StudyGroup.objects.get(pk=1)
+        sg.start_date = datetime.date(2019,6,1)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=2)
+        sg.save()
+        sg.refresh_from_db()
+        generate_all_meetings(sg)
+
+        # closed for signup because it's over
+        sg = StudyGroup.objects.get(pk=2)
+        sg.start_date = datetime.date(2019,5,30)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=2)
+        sg.save()
+        sg.refresh_from_db()
+        generate_all_meetings(sg)
+
+        sg = StudyGroup.objects.get(pk=3)
+        sg.start_date = datetime.date(2019,5,1)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=2)
+        sg.save()
+        sg.refresh_from_db()
+        generate_all_meetings(sg)
+
+        sg = StudyGroup.objects.get(pk=4)
+        sg.start_date = datetime.date(2019,5,30)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=2)
+        sg.draft = True
+        sg.save()
+
+        c = Client()
+        resp = c.get('/api/learningcircles/?signup=open')
+        result = resp.json()
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(result["count"], 2)
+        self.assertEqual(result["signup_open_count"], 2)
+        self.assertEqual(result["signup_closed_count"], 1)
+        self.assertEqual(result['items'][0]['signup_open'], True)
+        self.assertEqual(result['items'][1]['signup_open'], True)
+
+
+    @freeze_time("2019-05-31")
+    def test_get_learning_signup_closed(self):
+        sg = StudyGroup.objects.get(pk=1)
+        sg.start_date = datetime.date(2019,6,1)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=2)
+        sg.save()
+        sg.refresh_from_db()
+        generate_all_meetings(sg)
+
+        sg = StudyGroup.objects.get(pk=2)
+        sg.start_date = datetime.date(2019,5,30)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=2)
+        sg.save()
+        sg.refresh_from_db()
+        generate_all_meetings(sg)
+
+        # closed for signup because it's over
+        sg = StudyGroup.objects.get(pk=3)
+        sg.start_date = datetime.date(2019,5,1)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=2)
+        sg.save()
+        sg.refresh_from_db()
+        generate_all_meetings(sg)
+
+        sg = StudyGroup.objects.get(pk=4)
+        sg.start_date = datetime.date(2019,5,30)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=2)
+        sg.signup_open = False
+        sg.save()
+
+        c = Client()
+        resp = c.get('/api/learningcircles/?signup=closed')
+        self.assertEqual(resp.status_code, 200)
+        result = resp.json()
+        self.assertEqual(result["count"], 2)
+        self.assertEqual(result["signup_open_count"], 2)
+        self.assertEqual(result["signup_closed_count"], 2)
+        self.assertEqual(result['items'][0]['signup_open'], False)
+
+
