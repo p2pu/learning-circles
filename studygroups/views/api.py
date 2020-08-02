@@ -136,7 +136,7 @@ def _map_to_json(sg):
         "draft": sg.draft,
         "signup_count": sg.application_set.count(),
         "last_meeting_date": sg.last_meeting_date,
-        "signup_open": sg.signup_open and sg.last_meeting_date is not None and sg.last_meeting_date > today
+        "signup_open": sg.signup_open,
     }
 
     if sg.image:
@@ -271,7 +271,7 @@ class LearningCircleListView(View):
             if active:
                 study_groups = study_groups.filter(last_meeting_date__gte=today)
             else:
-                study_groups = study_groups.exclude(last_meeting_date__gte=today)
+                study_groups = study_groups.filter(last_meeting_date__lt=today)
 
         if 'latitude' in request.GET and 'longitude' in request.GET:
             # work with floats for ease
@@ -311,6 +311,16 @@ class LearningCircleListView(View):
                 query = query | Q(start_date__week_day=weekday) if query else Q(start_date__week_day=weekday)
             study_groups = study_groups.filter(query)
 
+        study_groups_signup_open = study_groups.filter(signup_open=True, last_meeting_date__gte=today)
+        study_groups_signup_closed = study_groups.filter(Q(signup_open=False) | Q(last_meeting_date__lt=today))
+
+        if 'signup' in request.GET:
+            signup_open = request.GET.get('signup') == 'open'
+            if signup_open:
+                study_groups = study_groups_signup_open
+            else:
+                study_groups = study_groups_signup_closed
+
         order = request.GET.get('order', None)
         if order == 'name':
             study_groups = study_groups.order_by('name')
@@ -319,19 +329,10 @@ class LearningCircleListView(View):
         elif order == 'created_at':
             study_groups = study_groups.order_by('-created_at')
 
-        study_groups_annotated = study_groups.annotate(signupable=Case(When(signup_open=True, last_meeting_date__gt=today, then=Value(True)), default=Value(False), output_field=BooleanField()))
-
-        studygroups_open_count = study_groups_annotated.filter(signupable=True).count()
-        studygroups_closed_count = study_groups_annotated.filter(signupable=False).count()
-
-        if 'signup' in request.GET:
-            signup_open = request.GET.get('signup') == 'open'
-            study_groups = study_groups_annotated.filter(signupable=signup_open)
-
         data = {
             'count': study_groups.count(),
-            'signup_open_count': studygroups_open_count,
-            'signup_closed_count': studygroups_closed_count,
+            'signup_open_count': study_groups_signup_open.count(),
+            'signup_closed_count': study_groups_signup_closed.count(),
         }
 
         if 'offset' in request.GET or 'limit' in request.GET:
