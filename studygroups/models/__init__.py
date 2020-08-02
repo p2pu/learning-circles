@@ -55,7 +55,7 @@ def create_rsvp(contact, study_group, meeting_datetime, attending):
     # expect meeting_date as python datetime
     # contact is an email address of mobile number
     # study_group is the study group id
-    study_group_meeting = Meeting.objects.get(study_group__id=study_group, meeting_date=meeting_datetime.date(), meeting_time=meeting_datetime.time())
+    study_group_meeting = Meeting.objects.active().get(study_group__id=study_group, meeting_date=meeting_datetime.date(), meeting_time=meeting_datetime.time())
     application = None
     if '@' in contact:
         application = Application.objects.active().get(study_group__id=study_group, email__iexact=contact)
