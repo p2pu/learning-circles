@@ -120,8 +120,8 @@ class ApplicationForm(forms.ModelForm):
 
 
 class OptOutForm(forms.Form):
-    email = forms.EmailField(help_text=_('Email address used to sign up.'), required=False)
-    mobile = PhoneNumberField(required=False, label=_('Phone Number for SMS'), help_text=_('Phone number used to sign up.'))
+    email = forms.EmailField(required=False)
+    mobile = PhoneNumberField(required=False, label=_('Phone Number for SMS'))
 
     def clean(self):
         cleaned_data = super().clean()

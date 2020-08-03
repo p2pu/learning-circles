@@ -4,7 +4,7 @@
 {% block content %}
   <div class="container">
       <h1>Opt Out</h1>
-      <p>Please enter the email address or mobile number you used to sign up for a learning circle to opt out.</p>
+      <p>Please enter either the email address or mobile number you used to sign up in order to unenroll from the learning circle and stop receiving all future messages.</p>
     <form action="" method="POST">
       {% csrf_token %}
       {{ form|crispy }}
