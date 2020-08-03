@@ -136,7 +136,7 @@ def _map_to_json(sg):
         "draft": sg.draft,
         "signup_count": sg.application_set.count(),
         "last_meeting_date": sg.last_meeting_date,
-        "signup_open": sg.signup_open,
+        "signup_open": sg.signup_open and sg.last_meeting_date and sg.last_meeting_date > today,
     }
 
     if sg.image:
@@ -206,7 +206,7 @@ class LearningCircleListView(View):
             study_groups = StudyGroup.objects.filter(pk=int(id))
         if 'user' in request.GET:
             user_id = request.user.id
-            study_groups = study_groups.filter(facilitator=user_id)
+            study_groups = study_groups.filter(facilitator=user_id).order_by('-id')
 
         today = datetime.date.today()
 
