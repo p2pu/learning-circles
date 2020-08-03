@@ -117,6 +117,7 @@ class StudyGroupList(ListView):
 @method_decorator(user_is_organizer, name='dispatch')
 class MeetingList(ListView):
     model = Meeting
+    paginate_by = 10
 
     def get_queryset(self):
         study_groups = StudyGroup.objects.published()
