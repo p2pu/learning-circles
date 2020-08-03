@@ -20,6 +20,7 @@ from studygroups.views import StudyGroupCreateLegacy
 from studygroups.views import StudyGroupUpdate
 from studygroups.views import StudyGroupUpdateLegacy
 from studygroups.views import StudyGroupDelete
+from studygroups.views import StudyGroupGone
 from studygroups.views import StudyGroupToggleSignup
 from studygroups.views import StudyGroupPublish
 from studygroups.views import StudyGroupList
@@ -68,6 +69,7 @@ urlpatterns = [
     url(r'^studygroup/(?P<study_group_id>[\d]+)/edit/$', StudyGroupUpdate.as_view(), name='studygroups_edit_study_group'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/edit/legacy/$', StudyGroupUpdateLegacy.as_view(), name='studygroups_studygroup_edit_legacy'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/delete/$', StudyGroupDelete.as_view(), name='studygroups_studygroup_delete'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/gone/(?P<next>[\w-]+)/$', StudyGroupGone.as_view(), name='studygroups_studygroup_gone'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/toggle_signup/$', StudyGroupToggleSignup.as_view(), name='studygroups_studygroup_toggle_signup'),
 
     url(r'^studygroup/(?P<study_group_id>[\d]+)/publish/$', StudyGroupPublish.as_view(), name='studygroups_studygroup_publish'),

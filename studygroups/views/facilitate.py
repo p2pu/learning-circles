@@ -88,8 +88,11 @@ def facilitator(request):
 
 @user_is_group_facilitator
 def view_study_group(request, study_group_id):
-    # TODO - redirect user if the study group has been deleted
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+    if not study_group.deleted_at is None:
+        url = reverse('studygroups_studygroup_gone', args=(study_group_id, 'dashboard'))
+        return http.HttpResponseRedirect(url)
+
     user_is_facilitator = study_group.facilitator == request.user
     facilitator_is_organizer = TeamMembership.objects.active().filter(user=request.user, role=TeamMembership.ORGANIZER).exists()
     dashboard_url = reverse('studygroups_facilitator')
@@ -103,6 +106,17 @@ def view_study_group(request, study_group_id):
         'dashboard_url': dashboard_url
     }
     return render(request, 'studygroups/view_study_group.html', context)
+
+class StudyGroupGone(SingleObjectMixin, View):
+    model = StudyGroup
+    pk_url_kwarg = 'study_group_id'
+
+    def get(self, request, *args, **kwargs):
+        context = {
+            'next': self.kwargs.get('next'),
+            'study_group': self.get_object(),
+        }
+        return render(request, 'studygroups/studygroup_gone.html', context)
 
 
 class FacilitatorRedirectMixin(object):

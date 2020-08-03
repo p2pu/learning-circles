@@ -89,7 +89,8 @@ def city(request, city_name):
 def signup(request, location, study_group_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
     if not study_group.deleted_at is None:
-        return http.HttpResponseGone() ## TODO
+        url = reverse('studygroups_studygroup_gone', args=(study_group_id, 'search') )
+        return http.HttpResponseRedirect(url)
 
     if request.method == 'POST':
         form = ApplicationForm(request.POST, initial={'study_group': study_group})
