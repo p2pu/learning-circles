@@ -239,7 +239,7 @@ class StudyGroupForm(forms.ModelForm):
     TIMEZONES = [('', _('Select one of the following')),] + list(zip(pytz.common_timezones, pytz.common_timezones))
 
     meeting_time = forms.TimeField(input_formats=['%I:%M %p'], label=_('What time will your learning circle meet each week?'), help_text=_('We recommend establishing a consistent weekly meeting time. You can always change individual meeting times from your Dashboard later.'), initial=datetime.time(16))
-    weeks = forms.IntegerField(min_value=1, label=_('How many weeks will your learning circle run for?'), help_text=_('If you\'re not sure, six weeks is generally a good bet!'))
+    weeks = forms.IntegerField(required=True, initial=6, min_value=1, label=_('How many weeks will your learning circle run for?'), help_text=_('If you\'re not sure, six weeks is generally a good bet!'))
     timezone = forms.ChoiceField(choices=TIMEZONES, label=_('What timezone is your learning circle happening in?'))
 
     latitude = forms.DecimalField(required=False, widget=forms.HiddenInput)
@@ -272,6 +272,11 @@ class StudyGroupForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+
+        if self.cleaned_data.get('weeks', None) == None:
+            msg_ = _('Please provide the length of the learning circle in weeks')
+            self.add_error("weeks", msg_)
+            return
 
         if not len(slugify(self.cleaned_data['venue_name'], allow_unicode=True)):
             msg_ = _('Venue name should include at least one alpha-numeric character.')
