@@ -226,6 +226,8 @@ class LearningCircleListView(View):
                 .filter(last_meeting_date__lt=today)
 
         q = request.GET.get('q', None)
+        q = q.strip()
+
         if q:
             tsquery = CustomSearchQuery(q, config='simple')
             study_groups = study_groups.annotate(
@@ -472,6 +474,8 @@ class CourseListView(View):
             courses = courses.order_by('-num_learning_circles', 'title')
 
         query = request.GET.get('q', None)
+        query = query.strip()
+
         if query:
             tsquery = CustomSearchQuery(query, config='simple')
             courses = courses.annotate(
