@@ -45,7 +45,7 @@ class StudyGroup(LifeTimeTrackingModel):
     venue_name = models.CharField(max_length=256)
     venue_address = models.CharField(max_length=256)
     venue_details = models.CharField(max_length=128)
-    venue_website = models.URLField(blank=True)
+    venue_website = models.URLField(max_length=256, blank=True)
     city = models.CharField(max_length=256)
     region = models.CharField(max_length=256, blank=True)  # schema.org. Algolia => administrative
     country = models.CharField(max_length=256, blank=True)
