@@ -186,8 +186,14 @@ class CourseForm(forms.ModelForm):
         ('Other', _('Other')),
         ('Not sure', _('Not sure')),
     )
-    license = forms.ChoiceField(choices=LICENSES, initial='', required=False)
 
+    AVAILABILITY_CHOICES = (
+        (True, _('Always available')),
+        (False, _('Not always available')),
+        (False, _('Not sure')),
+    )
+    license = forms.ChoiceField(choices=LICENSES, initial='', required=False)
+    on_demand = forms.ChoiceField(choices=AVAILABILITY_CHOICES, initial=True, label= _('Availability'), help_text=_('Select “Always available” if the course is openly licensed or on-demand, meaning that there are no scheduled start and end dates for course availability.'))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -196,11 +202,6 @@ class CourseForm(forms.ModelForm):
             self.helper.add_input(Submit('submit', 'Save'))
         else:
             self.helper.add_input(Submit('submit', 'Create course'))
-        self.helper.layout.insert(5, HTML("""
-            <p><label class="from-control requiredField">
-                Availability<span class="asteriskField">*</span>
-            </label></p>
-        """))
 
     class Meta:
         model = Course
@@ -220,9 +221,8 @@ class CourseForm(forms.ModelForm):
             'provider': _('Course creator'),
             'platform': _('Course platform'),
             'link': _('Course website'),
-            'caption': _('Course description (200 character limit)'),
+            'caption': _('Course description (500 character limit)'),
             'topic': _('Course topics'),
-            'on_demand': _('Always available'),
             'license': _('Course license'),
         }
         help_texts = {
@@ -231,7 +231,6 @@ class CourseForm(forms.ModelForm):
              'link': _('Paste full URL above.'),
              'caption': _('Write 1-2 sentences that describe what people will accomplish if they take this course. This description is what learners will see when signing up for learning circles, and what facilitators will see when selecting a course.'),
              'topics': _('Select or create a few topics that will help learners and future facilitators find this course.'),
-             'on_demand': _('Select “always available” if the course is openly licensed or on-demand, meaning that there are no start and end dates for course availability.')
         }
 
 
