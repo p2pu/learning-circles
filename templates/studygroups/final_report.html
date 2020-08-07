@@ -2,6 +2,10 @@
 {% load i18n %}
 {% load static %}
 
+{% block page_title %}
+  {{ study_group.name }}
+{% endblock %}
+
 {% block content %}
 <div class="bg-light">
   <div class="container" id="learning-circle-report">

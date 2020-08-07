@@ -2,6 +2,10 @@
 {% load static %}
 {% load i18n %}
 
+{% block page_title %}
+  {% trans "Community Digest" %}
+{% endblock %}
+
 {% block content %}
     {% include 'studygroups/email/community_digest.html' with web=web %}
 {% endblock %}

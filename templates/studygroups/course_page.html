@@ -3,6 +3,17 @@
 {% load static %}
 {% load i18n %}
 
+{% block page_title %}
+  {{ course.title }}
+{% endblock %}
+
+{% block page_meta %}
+  <meta name="description" content="{{ course.caption }}">
+  <meta property="og:title" content="{{ course.title }}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="{{ request.get_full_path }}" />
+{% endblock %}
+
 {% block content %}
 <div class="course-page">
   <section>

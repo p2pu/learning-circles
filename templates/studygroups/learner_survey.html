@@ -2,6 +2,10 @@
 {% load render_bundle from webpack_loader %}
 {% load i18n %}
 
+{% block page_title %}
+  {% trans "Learner Survey" %}
+{% endblock %}
+
 {% block content %}
 <div class="typeform-container" style="height: 90vh">
   <div

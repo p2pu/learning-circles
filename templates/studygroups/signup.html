@@ -5,11 +5,27 @@
 {% load i18n %}
 {% load tz %}
 
+{% block page_title %}
+  {{study_group.name}}
+{% endblock %}
+
+{% block page_meta %}
+  <meta name="description" content="Sign up for the learning circle {{ study_group.name }}">
+  <meta property="og:title" content="{{ study_group.name }}" />
+  {% if study_group.image %}
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ study_group.image.url }}" />
+  {% else %}
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'images/learning-circle-default.jpg' %}" />
+  {% endif %}
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+{% endblock %}
+
 {% block content %}
 <div class="lc-signup">
   {% if study_group.draft %}
   <div class="draft-warning bg-yellow p-1">
-    <div class="minicaps bold">Draft learning circle</div>
+    <div class="minicaps bold">{% trans "Draft learning circle" %}</div>
   </div>
   {% endif %}
 
@@ -36,7 +52,6 @@
         <div class="col-lg-8">
           <div class="lc-image">
             {% if study_group.image %}
-              {# <img class="drop-shadow" src="{% static 'images/learning-circle-default.jpg' %}"> #}
               <img class="drop-shadow" src="{{study_group.image.url}}">
             {% else %}
               <img class="drop-shadow default-image" src="{% static 'images/learning-circle-default.jpg' %}">

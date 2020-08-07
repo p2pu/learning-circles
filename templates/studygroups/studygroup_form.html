@@ -3,6 +3,10 @@
 {% load static %}
 {% load i18n %}
 
+{% block page_title %}
+  {% trans "Create a learning circle" %}
+{% endblock %}
+
 {% block content %}
 <div id='create-learning-circle-form' data-user="{{ request.user }}">
   <div class="loader"></div>
