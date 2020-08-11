@@ -137,10 +137,6 @@ class StudyGroup(LifeTimeTrackingModel):
 
         return False
 
-    def signupable(self):
-        datetime
-        self.last_meeting_date < today
-
     @property
     def weeks(self):
         return (self.end_date - self.start_date).days//7 + 1

@@ -140,9 +140,7 @@ def _map_to_json(sg):
     }
 
     if sg.image:
-        # -----------------> SHARON CHANGE THIS BACK!!! <-------------------- #
-        # data["image_url"] = settings.PROTOCOL + '://' + settings.DOMAIN + sg.image.url
-        data["image_url"] = "https://learningcircles.p2pu.org" + sg.image.url
+        data["image_url"] = settings.PROTOCOL + '://' + settings.DOMAIN + sg.image.url
     # TODO else set default image URL
     if hasattr(sg, 'next_meeting_date'):
         data["next_meeting_date"] = sg.next_meeting_date

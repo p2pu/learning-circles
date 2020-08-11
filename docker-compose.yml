@@ -2,8 +2,6 @@ version: '3'
 services:
   postgres:
     image: postgres:11
-    environment:
-    - POSTGRES_PASSWORD=password
   rabbitmq:
     image: rabbitmq:3
   email:
@@ -26,7 +24,6 @@ services:
     - BROKER_URL=amqp://guest:guest@rabbitmq//
     - COMMUNITY_MANAGER=user@mail.com
     - DATABASE_URL=postgres://lc:password@postgres:5432/lc
-    - POSTGRES_PASSWORD=password
     - DEBUG=true
     - DEFAULT_FROM_EMAIL=notify@mail.com
     - EMAIL_HOST=email
