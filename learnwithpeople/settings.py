@@ -378,4 +378,3 @@ TINYMCE_DEFAULT_CONFIG = {
 }
 
 BLEACH_DEFAULT_WIDGET = 'tinymce.widgets.TinyMCE'
-
