@@ -26,8 +26,8 @@ class LearningCircleCreationPageLocators(object):
     MEETING_TIME_FIELD = (By.CSS_SELECTOR, "#meeting_time input")
     DURATION_FIELD = (By.ID, "duration")
     TITLE_FIELD = (By.ID, "name")
-    DESCRIPTION_FIELD = (By.ID, "description")
-    COURSE_DESCRIPTION_FIELD = (By.ID, "course_description")
+    DESCRIPTION_FIELD = (By.ID, "description_ifr")
+    COURSE_DESCRIPTION_FIELD = (By.ID, "course_description_ifr")
     SIGNUP_QUESTION_FIELD = (By.ID, "signup_question")
     VENUE_WEBSITE_FIELD = (By.ID, "venue_website")
     FACILITATOR_GOAL_FIELD = (By.ID, "facilitator_goal")
@@ -39,6 +39,7 @@ class LearningCircleCreationPageLocators(object):
     PUBLISH_BUTTON = (By.CSS_SELECTOR, ".action-bar button.publish")
     SAVE_BUTTON = (By.CSS_SELECTOR, ".action-bar button.save")
     ERROR_MESSAGE = (By.CSS_SELECTOR, ".error-message.minicaps")
+    TINYMCE_FIELD = (By.ID, "tinymce")
 
 
 class RegistrationModalLocators(object):

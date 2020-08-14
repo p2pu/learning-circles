@@ -6,6 +6,7 @@ from e2e.tests.selenium.locators import LearningCircleCreationPageLocators
 from e2e.tests.selenium.locators import RegistrationModalLocators
 
 import datetime
+import time
 
 class BasePage(object):
 
@@ -21,6 +22,13 @@ class BasePage(object):
             pass
         finally:
             input_field.send_keys(*text)
+
+    def fill_rich_text_field(self, locator, *text):
+        tinymce_iframe = self.wait.until(expected_conditions.presence_of_element_located(locator))
+        self.driver.switch_to_frame(tinymce_iframe)
+        rich_text_field = self.wait.until(expected_conditions.presence_of_element_located(LearningCircleCreationPageLocators.TINYMCE_FIELD))
+        rich_text_field.send_keys(*text)
+        self.driver.switch_to_default_content()
 
 
 class LearningCircleCreationPage(BasePage):
@@ -51,8 +59,8 @@ class LearningCircleCreationPage(BasePage):
         self.click_next_button()
 
         self.fill_text_field(LearningCircleCreationPageLocators.TITLE_FIELD, "Sharon's Learning Circle")
-        self.fill_text_field(LearningCircleCreationPageLocators.DESCRIPTION_FIELD, "Welcome to my learning circle!")
-        self.fill_text_field(LearningCircleCreationPageLocators.COURSE_DESCRIPTION_FIELD, "This is the course description")
+        self.fill_rich_text_field(LearningCircleCreationPageLocators.DESCRIPTION_FIELD, "Welcome to my learning circle!")
+        self.fill_rich_text_field(LearningCircleCreationPageLocators.COURSE_DESCRIPTION_FIELD, "This is the course description")
         self.fill_text_field(LearningCircleCreationPageLocators.SIGNUP_QUESTION_FIELD, "What do you want to learn?")
         self.fill_text_field(LearningCircleCreationPageLocators.VENUE_WEBSITE_FIELD, "https://www.kpl.org")
 
