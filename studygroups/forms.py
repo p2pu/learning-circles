@@ -376,6 +376,8 @@ class StudyGroupForm(forms.ModelForm):
             'place_id': forms.HiddenInput,
             'country': forms.HiddenInput,
             'region': forms.HiddenInput,
+            'description': TinyMCE(),
+            'course_description': TinyMCE(),
         }
 
 
