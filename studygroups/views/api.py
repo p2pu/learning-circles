@@ -129,14 +129,20 @@ def _map_to_json(sg):
         "meeting_time": sg.meeting_time,
         "time_zone": sg.timezone_display(),
         "end_time": sg.end_time(),
-        "weeks": sg.weeks if sg.draft else sg.meeting_set.active().count(),
+        "weeks": sg.weeks if sg.draft else sg.meeting_set.active().count(), # TODO 
         "url": f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
         "report_url": sg.report_url(),
         "studygroup_path": reverse('studygroups_view_study_group', args=(sg.id,)),
         "draft": sg.draft,
-        "signup_count": sg.application_set.count()
+        "signup_count": sg.application_set.count(),
+        "signup_open": sg.signup_open,
     }
 
+    if hasattr(sg, 'last_meeting_date'):
+        # NOTE: consider adding a custom manager to StudyGroup to ensure last_meeting_date
+        # annotation is always present (https://stackoverflow.com/questions/42519663/adding-annotations-to-all-querysets-with-a-custom-queryset-as-manager)
+        data["last_meeting_date"] = sg.last_meeting_date,
+        data['signup_open'] = sg.signup_open and sg.last_meeting_date > today
     if sg.image:
         data["image_url"] = settings.PROTOCOL + '://' + settings.DOMAIN + sg.image.url
     # TODO else set default image URL
@@ -187,13 +193,14 @@ class LearningCircleListView(View):
             "scope": schema.text(),
             "draft": schema.boolean(),
             "team_id": schema.integer(),
+            "order": lambda v: (v, None) if v in ['name', 'start_date', 'created_at', None] else (None, "must be 'name', 'created_at', or 'start_date'"),
         }
         data = schema.django_get_to_dict(request.GET)
         clean_data, errors = schema.validate(query_schema, data)
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        study_groups = StudyGroup.objects.published().order_by('id')
+        study_groups = StudyGroup.objects.published().prefetch_related('course', 'meeting_set', 'application_set').order_by('id')
         if 'draft' in request.GET:
             study_groups = StudyGroup.objects.active().order_by('id')
         if 'id' in request.GET:
@@ -203,15 +210,16 @@ class LearningCircleListView(View):
             user_id = request.user.id
             study_groups = study_groups.filter(facilitator=user_id)
 
+        today = datetime.date.today()
+        active_meetings = Meeting.objects.filter(study_group=OuterRef('pk'), deleted_at__isnull=True).order_by('meeting_date')
+        study_groups = study_groups.annotate(last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]))
         if 'scope' in request.GET:
             scope = request.GET.get('scope')
-            today = datetime.date.today()
-            active_meetings = Meeting.objects.filter(study_group=OuterRef('pk'), deleted_at__isnull=True).order_by('meeting_date')
             upcoming_meetings = Meeting.objects.filter(study_group=OuterRef('pk'), deleted_at__isnull=True, meeting_date__gte=today).order_by('meeting_date')
 
             if scope == "active":
                 study_groups = study_groups\
-                .annotate(last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
+                .annotate(next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
                 .filter(Q(last_meeting_date__gte=today) | Q(draft=True))
             elif scope == "upcoming":
                 study_groups = study_groups\
@@ -219,11 +227,10 @@ class LearningCircleListView(View):
                 .filter(Q(first_meeting_date__gt=today) | Q(draft=True))
             elif scope == "current":
                 study_groups = study_groups\
-                .annotate(first_meeting_date=Subquery(active_meetings.values('meeting_date')[:1]), last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
+                .annotate(first_meeting_date=Subquery(active_meetings.values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
                 .filter(first_meeting_date__lte=today, last_meeting_date__gte=today)
             elif scope == "completed":
                 study_groups = study_groups\
-                .annotate(last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]))\
                 .filter(last_meeting_date__lt=today)
 
         q = request.GET.get('q', None)
@@ -261,19 +268,12 @@ class LearningCircleListView(View):
             team_users = User.objects.filter(pk__in=members)
             study_groups = study_groups.filter(facilitator__in=team_users)
 
-        if 'signup' in request.GET:
-            signup_open = request.GET.get('signup') == 'open'
-            study_groups = study_groups.filter(signup_open=signup_open)
-
         if 'active' in request.GET:
             active = request.GET.get('active') == 'true'
-            study_group_ids = Meeting.objects.active().filter(
-                meeting_date__gte=timezone.now()
-            ).values('study_group')
             if active:
-                study_groups = study_groups.filter(id__in=study_group_ids)
+                study_groups = study_groups.filter(last_meeting_date__gte=today)
             else:
-                study_groups = study_groups.exclude(id__in=study_group_ids)
+                study_groups = study_groups.filter(last_meeting_date__lt=today)
 
         if 'latitude' in request.GET and 'longitude' in request.GET:
             # work with floats for ease
@@ -313,8 +313,33 @@ class LearningCircleListView(View):
                 query = query | Q(start_date__week_day=weekday) if query else Q(start_date__week_day=weekday)
             study_groups = study_groups.filter(query)
 
+        # TODO this conflates signup open and active
+        study_groups_signup_open = study_groups.filter(signup_open=True, last_meeting_date__gte=today)
+        study_groups_signup_closed = study_groups.filter(Q(signup_open=False) | Q(last_meeting_date__lt=today))
+
+        if 'signup' in request.GET:
+            signup_open = request.GET.get('signup') == 'open'
+            if signup_open:
+                study_groups = study_groups_signup_open
+            else:
+                study_groups = study_groups_signup_closed
+
+        #if 'signup' in request.GET:
+        #    signup_open = request.GET.get('signup') == 'open'
+        #    study_groups = study_groups.filter(signup_open=signup_open)
+
+        order = request.GET.get('order', None)
+        if order == 'name':
+            study_groups = study_groups.order_by('name')
+        elif order == 'start_date':
+            study_groups = study_groups.order_by('-start_date')
+        elif order == 'created_at':
+            study_groups = study_groups.order_by('-created_at')
+
         data = {
-            'count': len(study_groups)
+            'count': study_groups.count(),
+            'signup_open_count': study_groups_signup_open.count(),
+            'signup_closed_count': study_groups_signup_closed.count(),
         }
 
         if 'offset' in request.GET or 'limit' in request.GET:
