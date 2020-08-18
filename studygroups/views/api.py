@@ -142,7 +142,7 @@ def _map_to_json(sg):
         # NOTE: consider adding a custom manager to StudyGroup to ensure last_meeting_date
         # annotation is always present (https://stackoverflow.com/questions/42519663/adding-annotations-to-all-querysets-with-a-custom-queryset-as-manager)
         data["last_meeting_date"] = sg.last_meeting_date,
-        data['signup_open'] = sg.signup_open and sg.last_meeting_date > today
+        data['signup_open'] = sg.signup_open and sg.last_meeting_date > datetime.date.today()
     if sg.image:
         data["image_url"] = settings.PROTOCOL + '://' + settings.DOMAIN + sg.image.url
     # TODO else set default image URL
