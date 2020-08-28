@@ -7,6 +7,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.urls import reverse  # TODO ideally this shouldn't be in the model
+from django_bleach.models import BleachField
 
 from studygroups.utils import gen_unsubscribe_querystring
 from studygroups.utils import gen_rsvp_querystring
@@ -40,8 +41,8 @@ class StudyGroupQuerySet(SoftDeleteQuerySet):
 class StudyGroup(LifeTimeTrackingModel):
     name = models.CharField(max_length=128, blank=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    description = models.CharField(max_length=500)
-    course_description = models.CharField(max_length=500, blank=True)
+    description = BleachField(max_length=1000, blank=True, allowed_tags=settings.TINYMCE_DEFAULT_CONFIG.get('valid_elements', '').split(','), allowed_attributes={'a': ['href', 'title', 'rel', 'target']})
+    course_description = BleachField(max_length=1000, blank=True, allowed_tags=settings.TINYMCE_DEFAULT_CONFIG.get('valid_elements', '').split(','), allowed_attributes={'a': ['href', 'title', 'rel', 'target']})
     venue_name = models.CharField(max_length=256)
     venue_address = models.CharField(max_length=256)
     venue_details = models.CharField(max_length=128)

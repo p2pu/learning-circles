@@ -114,6 +114,7 @@ def _map_to_json(sg):
         "facilitator": sg.facilitator.first_name,
         "venue": sg.venue_name,
         "venue_address": sg.venue_address + ", " + sg.city,
+        "venue_website": sg.venue_website,
         "city": sg.city,
         "region": sg.region,
         "country": sg.country,

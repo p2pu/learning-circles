@@ -239,6 +239,7 @@ export default class CreateLearningCirclePage extends React.Component {
           isSaving={this.state.isSaving}
           isPublishing={this.state.isPublishing}
           showAlert={this.showAlert}
+          tinymceScriptSrc={this.props.tinymceScriptSrc}
         />
         <HelpContainer currentTab={this.state.currentTab} />
         <RegistrationModal
