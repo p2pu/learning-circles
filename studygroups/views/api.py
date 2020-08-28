@@ -228,7 +228,7 @@ class LearningCircleListView(View):
 
         q = request.GET.get('q', '').strip()
 
-        if len(q) > 0:
+        if q:
             tsquery = CustomSearchQuery(q, config='simple')
             study_groups = study_groups.annotate(
                 search = SearchVector(
@@ -475,7 +475,7 @@ class CourseListView(View):
 
         query = request.GET.get('q', '').strip()
 
-        if len(query) > 0:
+        if query:
             tsquery = CustomSearchQuery(query, config='simple')
             courses = courses.annotate(
                 search=SearchVector('topics', 'title', 'caption', 'provider', config='simple')
