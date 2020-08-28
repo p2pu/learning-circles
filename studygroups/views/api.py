@@ -233,7 +233,8 @@ class LearningCircleListView(View):
                 study_groups = study_groups\
                 .filter(last_meeting_date__lt=today)
 
-        q = request.GET.get('q', None)
+        q = request.GET.get('q', '').strip()
+
         if q:
             tsquery = CustomSearchQuery(q, config='simple')
             study_groups = study_groups.annotate(
@@ -497,7 +498,8 @@ class CourseListView(View):
         else:
             courses = courses.order_by('-num_learning_circles', 'title')
 
-        query = request.GET.get('q', None)
+        query = request.GET.get('q', '').strip()
+
         if query:
             tsquery = CustomSearchQuery(query, config='simple')
             courses = courses.annotate(
@@ -603,7 +605,7 @@ def _make_learning_circle_schema(request):
         ], required=True),
         "venue_details": schema.text(required=True, length=128),
         "venue_address": schema.text(required=True, length=256),
-        "venue_website": schema.text(),
+        "venue_website": schema.text(length=256),
         "city": schema.text(required=True, length=256),
         "region": schema.text(required=True, length=256),
         "country": schema.text(required=True, length=256),

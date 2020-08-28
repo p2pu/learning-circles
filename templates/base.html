@@ -11,13 +11,15 @@
   <head>
       <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <title>{% trans "Learning circles" %}</title>
+      <title>{% block page_title %}{% trans "P2PU Learning Circles" %}{% endblock %}</title>
       <link rel="icon" href="{% static 'images/favicon.ico' %}">
       <meta name="viewport" content="width=device-width, initial-scale=1">
+      {% block page_meta %}
       <meta name="description" content="{{ site.description }}">
       <meta property="og:title" content="Learning circles" />
       <meta property="og:type" content="website" />
-      <meta property="og:url" content="https://learningcircles.p2pu.org/" />
+      <meta property="og:url" content="{{ request.get_full_path }}" />
+      {% endblock %}
       <link rel="canonical" href="">
       <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
       {% render_bundle 'p2pu-strap' 'css' 'STYLEBUILD' %}

@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
+{% block page_title %}
+  {% trans "Learning circles meetings" %}
+{% endblock %}
+
 {% block content %}
-<div class="container">
+<div class="container my-5">
   <div class="row">
     <div class="col-md-12">
       <a href={% url 'studygroups_organize' %}>{% trans "back to organizer dashboard" %}</a>
@@ -23,6 +27,24 @@
         {% endfor %}
         </tbody>
       </table>
+
+      <div class="pagination justify-content-center">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
     </div>
   </div>
 </div>

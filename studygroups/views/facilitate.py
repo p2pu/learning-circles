@@ -88,8 +88,10 @@ def facilitator(request):
 
 @user_is_group_facilitator
 def view_study_group(request, study_group_id):
-    # TODO - redirect user if the study group has been deleted
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+    if study_group.deleted_at:
+        raise http.Http404(_("Learning circle does not exist."))
+
     user_is_facilitator = study_group.facilitator == request.user
     facilitator_is_organizer = TeamMembership.objects.active().filter(user=request.user, role=TeamMembership.ORGANIZER).exists()
     dashboard_url = reverse('studygroups_facilitator')

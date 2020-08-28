@@ -2,6 +2,11 @@
 {% load render_bundle from webpack_loader %}
 {% load i18n %}
 
+{% block page_title %}
+  {% trans "Facilitator Survey" %}
+{% endblock %}
+
+
 {% block content %}
 <div class="typeform-container" style="height: 90vh">
   <div id='studygroup-facilitator-feedback' style="height: 100%"
