@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^learningcircles/$', views.LearningCircleListView.as_view(), name='api_learningcircles'),
     url(r'^learningcircles/successes/$', views.FinalReportListView.as_view(), name='api_learningcircles_successes'),
     url(r'^learningcircles/topics/$', views.LearningCircleTopicListView.as_view(), name='api_learningcircle_topics'),
+    url(r'^learningcircles/cities/$', views.cities, name='api_learningcircles_cities'),
     url(r'^courses/$', views.CourseListView.as_view(), name='api_courses'),
     url(r'^courses/topics/$', views.CourseTopicListView.as_view(), name='api_course_topics'),
     url(r'^courses/languages/$', views.CourseLanguageListView.as_view(), name='api_course_languages'),
@@ -27,6 +28,5 @@ urlpatterns = [
     url(r'^teams/members/$', views.TeamMembershipListView.as_view(), name='api_team_memberships'),
     url(r'^teams/invitations/$', views.TeamInvitationListView.as_view(), name='api_team_invitations'),
     url(r'^facilitator/invitations/$', views.facilitator_invitation_notifications, name='api_facilitator_invitations'),
-    url(r'^announcements/$', views.AnnouncementListView.as_view(), name='api_announcements'),
-
+    url(r'^announcements/$', views.AnnouncementListView.as_view(), name='api_announcements')
 ]

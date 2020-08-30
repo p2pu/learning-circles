@@ -28,7 +28,7 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-4">
-          <a id="back-button" href="https://www.p2pu.org/en/learning-circles" class="p2pu-btn btn small dark secondary mb-5 py-1 px-3"><span class="material-icons">keyboard_backspace</span>{% trans "Back to search" %}</a>
+          <a id="back-button" href="javascript:window.history.back();" class="p2pu-btn btn small dark secondary mb-5 py-1 px-3"><span class="material-icons">keyboard_backspace</span>{% trans "Back to search" %}</a>
           <h1 data-aos='fade'>{{study_group.name}}</h1>
           <p data-aos='fade'class="tagline mt-4">{% trans "A" %} <img src="{% static 'images/p2pu-logo.png' %}" alt="P2PU" /> {% trans "learning circle" %}</p>
         </div>
@@ -77,14 +77,20 @@
                 <span class="material-icons">schedule</span>
               </div>
               <div class="text">
-                {% if study_group.draft %}
-                  {% blocktrans with day=study_group.day meeting_time=study_group.meeting_time|time:"fA" end_time=study_group.end_time|time:"fA" timezone=study_group.timezone_display start_date=study_group.start_date|date:"j N" count meeting_count=study_group.weeks %}
+                {% if completed %}
+                  {% blocktrans with day=study_group.day meeting_time=study_group.meeting_time|time:"fA" end_time=study_group.end_time|time:"fA" timezone=study_group.timezone_display start_date=study_group.start_date|date:"j F, Y" count meeting_count=study_group.weeks %}
+                  This learning circle met every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} week.
+                  {% plural %}
+                  This learning circle met every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} weeks.
+                  {% endblocktrans %}
+                {% elif study_group.draft %}
+                  {% blocktrans with day=study_group.day meeting_time=study_group.meeting_time|time:"fA" end_time=study_group.end_time|time:"fA" timezone=study_group.timezone_display start_date=study_group.start_date|date:"j F, Y" count meeting_count=study_group.weeks %}
                   This learning circle meets every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} week.
                   {% plural %}
                   This learning circle meets every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} weeks.
                   {% endblocktrans %}
                 {% else %}
-                  {% blocktrans with day=study_group.day meeting_time=study_group.meeting_time|time:"fA" end_time=study_group.end_time|time:"fA" timezone=study_group.timezone_display start_date=study_group.start_date|date:"j N" count meeting_count=study_group.meeting_set.active.count %}
+                  {% blocktrans with day=study_group.day meeting_time=study_group.meeting_time|time:"fA" end_time=study_group.end_time|time:"fA" timezone=study_group.timezone_display start_date=study_group.start_date|date:"j F, Y" count meeting_count=study_group.meeting_set.active.count %}
                   This learning circle meets every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} week.
                   {% plural %}
                   This learning circle meets every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} weeks.
@@ -178,7 +184,7 @@
               {% blocktrans %}
                 <p>What is a learning circle? <a href="https://p2pu.org/en/learning-circles-faq/" target="_blank" rel="noopener noreferrer">Read the FAQs.</a></p>
               {% endblocktrans %}
-              {% if study_group.signup_open %}
+              {% if study_group.signup_open and not completed %}
                 {% if study_group.draft %}
                   <p>{% trans "Signup for this learning circle is not open yet." %}</p>
                 {% else %}
@@ -243,16 +249,6 @@
     duration: 500,
     delay: 100
   })
-
-  // set URL for back button
-  try {
-    var params = new URLSearchParams(window.location.search);
-    if (params.has('prev')) {
-      document.getElementById('back-button').params.get('prev')
-    }
-  } catch(e) {
-    // no-op
-  }
 </script>
 {% render_bundle 'common' %}
 {% render_bundle 'signup' %}
