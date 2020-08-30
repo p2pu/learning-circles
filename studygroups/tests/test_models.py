@@ -217,3 +217,24 @@ class TestCourseModel(TestCase):
         self.assertEqual(course.platform, "")
         course.detect_platform_from_link()
         self.assertEqual(course.platform, KNOWN_COURSE_PLATFORMS["www.khanacademy.org/"])
+
+
+class TestStudyGroupModel(TestCase):
+    fixtures = ['test_courses.json', 'test_studygroups.json']
+
+    def test_last_meeting_signal(self):
+        sg = StudyGroup.objects.get(pk=1)
+        sg.start_date = datetime.datetime(2020, 8, 1)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=5)
+        sg.save()
+        self.assertEqual(Meeting.objects.all().count(), 0)
+        generate_all_meetings(sg)
+        self.assertEqual(Meeting.objects.all().count(), 6)
+        self.assertEqual(sg.last_meeting().meeting_date, sg.last_meeting_date)
+
+        # delete the last meeting
+        sg.last_meeting().delete()
+        self.assertEqual(sg.last_meeting().meeting_date, sg.last_meeting_date)
+
+
+
