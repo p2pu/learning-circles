@@ -6,6 +6,7 @@ from django.contrib.postgres.search import SearchVector
 from django.core.files.storage import get_storage_class
 from django.db import models
 from django.db.models import Q, F, Case, When, Value, Sum, Min, Max, OuterRef, Subquery, Count
+from django.db.models.functions import Length
 from django.views import View
 from django.views.generic.detail import SingleObjectMixin
 from django.urls import reverse
@@ -16,6 +17,7 @@ from django.utils.text import slugify
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponseForbidden
+from django.views.decorators.cache import cache_control
 
 from collections import Counter
 import json
@@ -129,7 +131,7 @@ def _map_to_json(sg):
         "meeting_time": sg.meeting_time,
         "time_zone": sg.timezone_display(),
         "end_time": sg.end_time(),
-        "weeks": sg.weeks if sg.draft else sg.meeting_set.active().count(), # TODO 
+        "weeks": sg.weeks if sg.draft else sg.meeting_set.active().count(), # TODO
         "url": f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
         "report_url": sg.report_url(),
         "studygroup_path": reverse('studygroups_view_study_group', args=(sg.id,)),
@@ -180,6 +182,7 @@ def _limit_offset(request):
     return limit, offset
 
 
+@method_decorator(cache_control(max_age=15*60), name='dispatch')
 class LearningCircleListView(View):
     def get(self, request):
         query_schema = {
@@ -193,7 +196,7 @@ class LearningCircleListView(View):
             "scope": schema.text(),
             "draft": schema.boolean(),
             "team_id": schema.integer(),
-            "order": lambda v: (v, None) if v in ['name', 'start_date', 'created_at', None] else (None, "must be 'name', 'created_at', or 'start_date'"),
+            "order": lambda v: (v, None) if v in ['name', 'start_date', 'created_at', 'first_meeting_date', 'last_meeting_date', None] else (None, "must be 'name', 'created_at', 'first_meeting_date', 'last_meeting_date', or 'start_date'"),
         }
         data = schema.django_get_to_dict(request.GET)
         clean_data, errors = schema.validate(query_schema, data)
@@ -212,7 +215,8 @@ class LearningCircleListView(View):
 
         today = datetime.date.today()
         active_meetings = Meeting.objects.filter(study_group=OuterRef('pk'), deleted_at__isnull=True).order_by('meeting_date')
-        study_groups = study_groups.annotate(last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]))
+        study_groups = study_groups.annotate(last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]), first_meeting_date=Subquery(active_meetings.values('meeting_date')[:1]))
+
         if 'scope' in request.GET:
             scope = request.GET.get('scope')
             upcoming_meetings = Meeting.objects.filter(study_group=OuterRef('pk'), deleted_at__isnull=True, meeting_date__gte=today).order_by('meeting_date')
@@ -223,17 +227,18 @@ class LearningCircleListView(View):
                 .filter(Q(last_meeting_date__gte=today) | Q(draft=True))
             elif scope == "upcoming":
                 study_groups = study_groups\
-                .annotate(first_meeting_date=Subquery(active_meetings.values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
+                .annotate(next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
                 .filter(Q(first_meeting_date__gt=today) | Q(draft=True))
             elif scope == "current":
                 study_groups = study_groups\
-                .annotate(first_meeting_date=Subquery(active_meetings.values('meeting_date')[:1]), next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
+                .annotate(next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
                 .filter(first_meeting_date__lte=today, last_meeting_date__gte=today)
             elif scope == "completed":
                 study_groups = study_groups\
                 .filter(last_meeting_date__lt=today)
 
-        q = request.GET.get('q', None)
+        q = request.GET.get('q', '').strip()
+
         if q:
             tsquery = CustomSearchQuery(q, config='simple')
             study_groups = study_groups.annotate(
@@ -335,6 +340,10 @@ class LearningCircleListView(View):
             study_groups = study_groups.order_by('-start_date')
         elif order == 'created_at':
             study_groups = study_groups.order_by('-created_at')
+        elif order == 'first_meeting_date':
+            study_groups = study_groups.order_by('-first_meeting_date')
+        elif order == 'last_meeting_date':
+            study_groups = study_groups.order_by('-last_meeting_date')
 
         data = {
             'count': study_groups.count(),
@@ -497,7 +506,8 @@ class CourseListView(View):
         else:
             courses = courses.order_by('-num_learning_circles', 'title')
 
-        query = request.GET.get('q', None)
+        query = request.GET.get('q', '').strip()
+
         if query:
             tsquery = CustomSearchQuery(query, config='simple')
             courses = courses.annotate(
@@ -603,7 +613,7 @@ def _make_learning_circle_schema(request):
         ], required=True),
         "venue_details": schema.text(required=True, length=128),
         "venue_address": schema.text(required=True, length=256),
-        "venue_website": schema.text(),
+        "venue_website": schema.text(length=256),
         "city": schema.text(required=True, length=256),
         "region": schema.text(required=True, length=256),
         "country": schema.text(required=True, length=256),
@@ -1251,4 +1261,14 @@ class AnnouncementListView(View):
         }
 
         return json_response(request, data)
+
+def cities(request):
+    cities = StudyGroup.objects.published().annotate(city_len=Length('city')).filter(city_len__gt=1).values_list('city', flat=True).distinct('city')
+
+    data = {
+        "count": cities.count(),
+        "items": [{ "label": city, "value": city.split(',')[0].lower().replace(' ', '_') } for city in cities]
+    }
+
+    return json_response(request, data)
 

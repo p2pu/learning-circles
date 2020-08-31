@@ -2,6 +2,12 @@
 {% load crispy_forms_tags %}
 {% load i18n %}
 
+{% block page_title %}
+  {% blocktrans with team_name=object.name %}
+      Edit {{ team_name }}
+  {% endblocktrans %}
+{% endblock %}
+
 {% block content %}
     <div class="container my-5">
       <div class="row mb-3">

@@ -315,6 +315,15 @@ class TestFacilitatorViews(TestCase):
             (datetime.date(2019,1,7), datetime.time(19,0)),
         ])
 
+        # missing weeks
+        with freeze_time("2018-12-20"):
+            del data['weeks']
+            resp = c.post('/en/studygroup/create/legacy/', data)
+            self.assertEqual(resp.status_code, 200)
+            expected_error_message = 'Please provide the length of the learning circle in weeks'
+            self.assertFormError(resp, 'form', 'weeks', expected_error_message)
+
+
 
     @patch('custom_registration.signals.handle_new_facilitator')
     def test_study_group_unicode_venue_name(self, handle_new_facilitator):

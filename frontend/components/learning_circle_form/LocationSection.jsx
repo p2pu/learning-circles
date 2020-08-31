@@ -17,7 +17,8 @@ const LocationSection = (props) => {
         classes="form-group"
         value={place}
         handleChange={props.updateFormData}
-        errorMessage={props.errors.place}
+        errorMessage={props.errors.city}
+        required={true}
       />
       <InputWithLabel
         label={'Where will you meet?'}

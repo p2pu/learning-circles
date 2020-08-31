@@ -89,7 +89,7 @@ def city(request, city_name):
 def signup(request, location, study_group_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
     if not study_group.deleted_at is None:
-        return http.HttpResponseGone() ## TODO
+        raise http.Http404(_("Learning circle does not exist"))
 
     if request.method == 'POST':
         form = ApplicationForm(request.POST, initial={'study_group': study_group})
@@ -114,11 +114,15 @@ def signup(request, location, study_group_id):
     else:
         form = ApplicationForm(initial={'study_group': study_group})
 
+    meetings = study_group.meeting_set.active().order_by('meeting_date')
+    last_meeting = meetings.last()
+
     context = {
         'form': form,
         'study_group': study_group,
-        'meetings': study_group.meeting_set.active().order_by('meeting_date'),
+        'meetings': meetings,
         'mapbox_token': settings.MAPBOX_TOKEN,
+        'completed': last_meeting is not None and last_meeting.meeting_date < datetime.date.today(),
     }
 
     #if study_group.venue_address:
