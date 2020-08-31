@@ -1044,6 +1044,6 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(result["items"][0], { 'label': 'Boston', 'value': 'boston' })
         self.assertEqual(result["items"][1], { 'label': 'Chicago', 'value': 'chicago' })
         self.assertEqual(result["items"][2], { 'label': 'Kansas City', 'value': 'kansas_city' })
-        self.assertEqual(result["items"][3], { 'label': 'Toronto, Ontario, Canada', 'value': 'toronto' })
+        self.assertEqual(result["items"][3], { 'label': 'Toronto', 'value': 'toronto' })
 
 
