@@ -35,5 +35,16 @@
          "created_at": "2019-06-14T15:10:00.002Z",
          "updated_at": "2019-06-14T15:10:00.002Z"
       }
+   },
+   {
+      "model": "studygroups.teammembership",
+      "pk": 2,
+      "fields": {
+         "team": 2,
+         "user": 2,
+         "role": "MEMBER",
+         "created_at": "2019-06-14T15:10:00.002Z",
+         "updated_at": "2019-06-14T15:10:00.002Z"
+      }
    }
 ]
