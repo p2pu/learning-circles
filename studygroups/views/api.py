@@ -341,7 +341,7 @@ class LearningCircleListView(View):
         elif order == 'created_at':
             study_groups = study_groups.order_by('-created_at')
         elif order == 'first_meeting_date':
-            study_groups = study_groups.order_by('-first_meeting_date')
+            study_groups = study_groups.order_by('first_meeting_date')
         elif order == 'last_meeting_date':
             study_groups = study_groups.order_by('-last_meeting_date')
 

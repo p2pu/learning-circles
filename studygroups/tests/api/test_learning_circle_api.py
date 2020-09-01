@@ -857,7 +857,7 @@ class TestLearningCircleApi(TestCase):
 
 
     @freeze_time("2019-05-31")
-    def test_get_learning_signup_open(self):
+    def test_get_learning_circles_signup_open(self):
         # open for signup
         sg = StudyGroup.objects.get(pk=1)
         sg.start_date = datetime.date(2019,6,1)
@@ -912,6 +912,58 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(result["signup_closed_count"], 2)
         self.assertEqual(result['items'][0]['signup_open'], False)
         self.assertEqual(result['items'][1]['signup_open'], False)
+
+
+    @freeze_time("2019-05-31")
+    def test_get_learning_cirlces_order(self):
+        sg = StudyGroup.objects.get(pk=1)
+        sg.start_date = datetime.date(2019,5,1)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=2)
+        sg.signup_open = True
+        sg.save()
+        sg.refresh_from_db()
+        generate_all_meetings(sg)
+
+        sg = StudyGroup.objects.get(pk=2)
+        sg.start_date = datetime.date(2019,5,8)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=2)
+        sg.signup_open = True
+        sg.save()
+        sg.refresh_from_db()
+        generate_all_meetings(sg)
+
+        sg = StudyGroup.objects.get(pk=3)
+        sg.start_date = datetime.date(2019,5,15)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=2)
+        sg.signup_open = True
+        sg.save()
+        sg.refresh_from_db()
+        generate_all_meetings(sg)
+
+        sg = StudyGroup.objects.get(pk=4)
+        sg.start_date = datetime.date(2019,5,30)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=2)
+        sg.signup_open = True
+        sg.save()
+
+        c = Client()
+
+        # ordered by first meeting date (asc)
+        resp = c.get('/api/learningcircles/?order=first_meeting_date')
+        result = resp.json()
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(result["count"], 4)
+        self.assertEqual(result['items'][0]['id'], 1)
+        self.assertEqual(result['items'][1]['id'], 2)
+
+        # ordered by last meeting date (desc)
+        resp = c.get('/api/learningcircles/?order=last_meeting_date')
+        self.assertEqual(resp.status_code, 200)
+        result = resp.json()
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(result["count"], 4)
+        self.assertEqual(result['items'][0]['id'], 4)
+        self.assertEqual(result['items'][1]['id'], 3)
 
 
     def test_get_learning_circles_by_topics(self):
@@ -1045,5 +1097,4 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(result["items"][1], { 'label': 'Chicago', 'value': 'chicago' })
         self.assertEqual(result["items"][2], { 'label': 'Kansas City', 'value': 'kansas_city' })
         self.assertEqual(result["items"][3], { 'label': 'Toronto', 'value': 'toronto' })
-
 
