@@ -5,7 +5,7 @@ from django.contrib.postgres.search import SearchQuery
 from django.contrib.postgres.search import SearchVector
 from django.core.files.storage import get_storage_class
 from django.db import models
-from django.db.models import Q, F, Case, When, Value, Sum, Min, Max, OuterRef, Subquery, Count
+from django.db.models import Q, F, Case, When, Value, Sum, Min, Max, OuterRef, Subquery, Count, CharField
 from django.db.models.functions import Length
 from django.views import View
 from django.views.generic.detail import SingleObjectMixin
@@ -150,6 +150,8 @@ def _map_to_json(sg):
     # TODO else set default image URL
     if hasattr(sg, 'next_meeting_date'):
         data["next_meeting_date"] = sg.next_meeting_date
+    if hasattr(sg, 'last_meeting_date'):
+        data["last_meeting_date"] = sg.last_meeting_date
     if sg.signup_question:
         data["signup_question"] = sg.signup_question
     return data
@@ -219,11 +221,13 @@ class LearningCircleListView(View):
         ).annotate(
             last_meeting_date=Case(
                 When(last_meeting_date_value__isnull=True, then='start_date'),
-                default=F('last_meeting_date_value')
+                default=F('last_meeting_date_value'),
+                output_field=CharField(),
             ),
             first_meeting_date=Case(
                 When(first_meeting_date_value__isnull=True, then='start_date'),
-                default=F('first_meeting_date_value')
+                default=F('first_meeting_date_value'),
+                output_field=CharField(),
             )
         )
 
