@@ -150,8 +150,6 @@ def _map_to_json(sg):
     # TODO else set default image URL
     if hasattr(sg, 'next_meeting_date'):
         data["next_meeting_date"] = sg.next_meeting_date
-    if hasattr(sg, 'last_meeting_date'):
-        data["last_meeting_date"] = sg.last_meeting_date
     if sg.signup_question:
         data["signup_question"] = sg.signup_question
     return data
@@ -215,7 +213,19 @@ class LearningCircleListView(View):
 
         today = datetime.date.today()
         active_meetings = Meeting.objects.filter(study_group=OuterRef('pk'), deleted_at__isnull=True).order_by('meeting_date')
-        study_groups = study_groups.annotate(last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]), first_meeting_date=Subquery(active_meetings.values('meeting_date')[:1]))
+        study_groups = study_groups.annotate(
+            last_meeting_date_value=Subquery(active_meetings.reverse().values('meeting_date')[:1]),
+            first_meeting_date_value=Subquery(active_meetings.values('meeting_date')[:1])
+        ).annotate(
+            last_meeting_date=Case(
+                When(last_meeting_date_value__isnull=True, then='start_date'),
+                default=F('last_meeting_date_value')
+            ),
+            first_meeting_date=Case(
+                When(first_meeting_date_value__isnull=True, then='start_date'),
+                default=F('first_meeting_date_value')
+            )
+        )
 
         if 'scope' in request.GET:
             scope = request.GET.get('scope')
