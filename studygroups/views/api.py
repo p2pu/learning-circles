@@ -5,7 +5,7 @@ from django.contrib.postgres.search import SearchQuery
 from django.contrib.postgres.search import SearchVector
 from django.core.files.storage import get_storage_class
 from django.db import models
-from django.db.models import Q, F, Case, When, Value, Sum, Min, Max, OuterRef, Subquery, Count
+from django.db.models import Q, F, Case, When, Value, Sum, Min, Max, OuterRef, Subquery, Count, CharField
 from django.db.models.functions import Length
 from django.views import View
 from django.views.generic.detail import SingleObjectMixin
@@ -215,7 +215,21 @@ class LearningCircleListView(View):
 
         today = datetime.date.today()
         active_meetings = Meeting.objects.filter(study_group=OuterRef('pk'), deleted_at__isnull=True).order_by('meeting_date')
-        study_groups = study_groups.annotate(last_meeting_date=Subquery(active_meetings.reverse().values('meeting_date')[:1]), first_meeting_date=Subquery(active_meetings.values('meeting_date')[:1]))
+        study_groups = study_groups.annotate(
+            last_meeting_date_value=Subquery(active_meetings.reverse().values('meeting_date')[:1]),
+            first_meeting_date_value=Subquery(active_meetings.values('meeting_date')[:1])
+        ).annotate(
+            last_meeting_date=Case(
+                When(last_meeting_date_value__isnull=True, then='start_date'),
+                default=F('last_meeting_date_value'),
+                output_field=CharField(),
+            ),
+            first_meeting_date=Case(
+                When(first_meeting_date_value__isnull=True, then='start_date'),
+                default=F('first_meeting_date_value'),
+                output_field=CharField(),
+            )
+        )
 
         if 'scope' in request.GET:
             scope = request.GET.get('scope')
@@ -341,7 +355,7 @@ class LearningCircleListView(View):
         elif order == 'created_at':
             study_groups = study_groups.order_by('-created_at')
         elif order == 'first_meeting_date':
-            study_groups = study_groups.order_by('-first_meeting_date')
+            study_groups = study_groups.order_by('first_meeting_date')
         elif order == 'last_meeting_date':
             study_groups = study_groups.order_by('-last_meeting_date')
 
