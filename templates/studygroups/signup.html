@@ -241,10 +241,10 @@
             <div class="card-image">
               {% if map_url %}
                 <a href="{{ map_url }}" target="_blank" rel="noopener noreferrer">
-                  <img class="card-img-top" src="https://api.mapbox.com/styles/v1/mapbox/light-v9/static/pin-s+FFBC1A({{ study_group.longitude }},{{ study_group.latitude }})/{{ study_group.longitude }},{{ study_group.latitude }},12,0,0/400x200?access_token={{ mapbox_token }}&logo=false" />
+                  <img class="card-img-top" src="https://api.mapbox.com/styles/v1/mapbox/light-v9/static/{{ study_group.longitude }},{{ study_group.latitude }},12,0,0/400x200?access_token={{ mapbox_token }}&logo=false" />
                 </a>
               {% else %}
-                <img class="card-img-top" src="https://api.mapbox.com/styles/v1/mapbox/light-v9/static/pin-s+FFBC1A({{ study_group.longitude }},{{ study_group.latitude }})/{{ study_group.longitude }},{{ study_group.latitude }},12,0,0/400x200?access_token={{ mapbox_token }}&logo=false" />
+                <img class="card-img-top" src="https://api.mapbox.com/styles/v1/mapbox/light-v9/static/{{ study_group.longitude }},{{ study_group.latitude }},12,0,0/400x200?access_token={{ mapbox_token }}&logo=false" />
               {% endif %}
             </div>
           </div>
