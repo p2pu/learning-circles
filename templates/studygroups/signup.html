@@ -9,9 +9,13 @@
   {{study_group.name}}
 {% endblock %}
 
+
+<!-- SEO -->
+
 {% block page_meta %}
-  <meta name="description" content="Sign up for the learning circle {{ study_group.name }}">
   <meta property="og:title" content="{{ study_group.name }}" />
+  <meta name="description" content="Sign up for the learning circle {{ study_group.name }}" />
+  <meta property="og:description" content="Sign up for the learning circle {{ study_group.name }}" />
   {% if study_group.image %}
     <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ study_group.image.url }}" />
   {% else %}
@@ -19,7 +23,9 @@
   {% endif %}
   <meta property="og:type" content="website" />
   <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+  <link rel="canonical" href="{{ request.build_absolute_uri }}">
 {% endblock %}
+
 
 {% block content %}
 <div class="lc-signup">

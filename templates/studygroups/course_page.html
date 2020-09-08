@@ -7,12 +7,17 @@
   {{ course.title }}
 {% endblock %}
 
+<!-- SEO -->
+
 {% block page_meta %}
-  <meta name="description" content="{{ course.caption }}">
   <meta property="og:title" content="{{ course.title }}" />
+  <meta name="description" content="{{ course.caption }}" />
+  <meta property="og:description" content="{{ course.caption }}" />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="{{ request.get_full_path }}" />
+  <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+  <link rel="canonical" href="{{ request.build_absolute_uri }}">
 {% endblock %}
+
 
 {% block content %}
 <div class="course-page">
