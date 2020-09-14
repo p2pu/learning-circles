@@ -14,8 +14,11 @@
   <meta name="description" content="{{ course.caption }}" />
   <meta property="og:description" content="{{ course.caption }}" />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="{{ request.build_absolute_uri }}" />
-  <link rel="canonical" href="{{ request.build_absolute_uri }}">
+  <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.get_full_path }}" />
+  <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.get_full_path }}">
+  <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'images/p2pu-ogimg-default.jpg' %}" />
+  <meta property="og:image:height" content="628" />
+  <meta property="og:image:width" content="1200" />
 {% endblock %}
 
 
