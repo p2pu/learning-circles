@@ -154,6 +154,8 @@ def _map_to_json(sg):
         data["last_meeting_date"] = sg.last_meeting_date
     if sg.signup_question:
         data["signup_question"] = sg.signup_question
+    if hasattr(sg, 'status'):
+        data["status"] = sg.status
     return data
 
 
@@ -229,6 +231,15 @@ class LearningCircleListView(View):
                 default=F('first_meeting_date_value'),
                 output_field=CharField(),
             )
+        ).annotate(
+            status=Case(
+                When(signup_open=True, first_meeting_date__gt=today, then=Value('upcoming')),
+                When(signup_open=True, first_meeting_date__lte=today, last_meeting_date__gte=today, then=Value('in_progress')),
+                When(Q(signup_open=False) | Q(last_meeting_date__lt=today), then=Value('completed')),
+                When(signup_open=False, first_meeting_date__lte=today, last_meeting_date__gte=today, then=Value('closed')),
+                default=Value('completed'),
+                output_field=CharField(),
+            ),
         )
 
         if 'scope' in request.GET:
