@@ -221,7 +221,7 @@ div.modal-overlay {
   background: rgba(255,255,255,0.9) ;
   top: $navbar-height;
 
-  .registration-modal {
+  .p2pu-modal {
     padding: 3em;
     border-radius: 20px;
     border: 4px solid #05C6B4; /*p2pu-blue*/
@@ -233,15 +233,14 @@ div.modal-overlay {
       align-items: baseline;
       flex-wrap: wrap;
       margin-top: 20px;
+    }
 
-      .buttons {
-        flex-wrap: nowrap;
-        display: flex;
+    .buttons {
+      flex-wrap: nowrap;
+      display: flex;
 
-        button {
-          margin-left: 8px;
-          padding: 0.6em 1.2em;
-        }
+      button {
+        padding: 0.6em 1.2em;
       }
     }
   }
@@ -249,7 +248,7 @@ div.modal-overlay {
 
 .error-message {
   font-weight: bold;
-  color: #FC7100; /*p2pu-orange*/
+  color: $p2pu-orange;
   text-align: left !important;
 }
 
@@ -274,6 +273,87 @@ div.modal-overlay {
 .help-text img {
   width: 100%;
 }
+
+.meeting-scheduler {
+  .calendar {
+    display: flex;
+  }
+
+  .selected-dates {
+    margin-left: 10px;
+    flex: 1 1 auto;
+    background-color: $gray-lighter;
+    border-radius: 0.25rem;
+    border: 1px solid $gray-light;
+  }
+
+  .capitalize::first-letter {
+    text-transform: capitalize;
+  }
+
+  .form-control:disabled {
+    background-color: #f2f2f2;
+    border: 1px solid #e6e6e6;
+    color: #999999;
+  }
+
+  .DayPicker {
+    padding-top: 20px;
+  }
+
+  .DayPicker-Day {
+    padding: 0.25vw 0.6vw;
+    border-radius: 0;
+    border: 6px solid white;
+  }
+
+  .DayPicker-Month {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+  }
+
+  .DayPicker-NavButton {
+    top: 2px;
+    right: 10px;
+  }
+
+  .DayPicker-Day--selected:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside) {
+    background-color: #05C6B4;
+  }
+
+  .DayPicker-Day--selected:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside):hover {
+    background-color: #5f9ea0;
+  }
+
+  .DayPicker:not(.DayPicker--interactionDisabled) .DayPicker-Day:not(.DayPicker-Day--disabled):not(.DayPicker-Day--selected):not(.DayPicker-Day--outside):hover {
+    background-color: #dff6f5;
+  }
+
+  .DayPicker-Day--today {
+    color: inherit;
+  }
+
+  .list-unstyled {
+    font-size: 14px;
+  }
+
+  .heading {
+    font-weight: 700;
+    font-size: 1.15em
+  }
+}
+
+.p2pu-modal {
+  width: 600px;
+  max-width: 80vw;
+}
+
+.text-bold, .DayPicker-Caption > div {
+  font-weight: 700;
+  font-size: 1.15em;
+}
+
 
 @media (max-width: 768px) {
   .form-container, .help-container {

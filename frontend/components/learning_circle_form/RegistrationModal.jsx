@@ -63,7 +63,7 @@ export default class RegistrationModal extends React.Component {
 
   render() {
     return (
-      <Modal open={this.props.open} onClose={this.props.closeModal} classNames={{modal: 'registration-modal', overlay: 'modal-overlay'}}>
+      <Modal open={this.props.open} onClose={this.props.closeModal} classNames={{modal: 'p2pu-modal', overlay: 'modal-overlay'}}>
         <div className='registration-modal-content'>
           {
             this.state.registration &&
