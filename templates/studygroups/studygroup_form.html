@@ -26,7 +26,10 @@
 <script>
   window.lc = window.lc || {};
   var learningCircle = {{ object.to_json|safe }};
+  var meetings = {{ meetings|safe }};
+
   window.lc = learningCircle;
+  window.lc.meetings = meetings;
 </script>
 {% endif %}
 
