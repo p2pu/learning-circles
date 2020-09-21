@@ -25,7 +25,6 @@ export default class CreateLearningCirclePage extends React.Component {
     this.state = {
       currentTab: 0,
       learningCircle: !!this.props.learningCircle ? this.props.learningCircle : LC_DEFAULTS,
-      meetings: !!this.props.meetings ? this.props.meetings : [],
       showModal: false,
       showHelp: window.screen.width > DESKTOP_BREAKPOINT,
       user: this.props.user,
@@ -215,7 +214,6 @@ export default class CreateLearningCirclePage extends React.Component {
   }
 
   render() {
-    console.log("LC", this.state.learningCircle)
     return (
       <div className='page-container'>
         <Alert

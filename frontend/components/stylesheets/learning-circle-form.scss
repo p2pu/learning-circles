@@ -11,7 +11,7 @@ html {
 }
 
 .close {
-  color: #515665; /*gray-darker*/
+  color: $gray-darker;
 }
 
 .page-container {
@@ -71,9 +71,9 @@ html {
     }
 
     .tabs-item {
-      background: #F3F4F8; /*gray-lighter*/
+      background: $gray-lighter;
       flex-grow: 1;
-      border-right: 1px solid #AAB0BF; /*gray*/
+      border-right: 1px solid $gray;
       padding: 6px 10px 3px;
       cursor: pointer;
 
@@ -103,7 +103,7 @@ html {
       .rc-time-picker {
         .rc-time-picker-input {
           font-size: 16px;
-          color: #515665;
+          color: $gray-darker;
           height: auto;
         }
       }
@@ -160,37 +160,37 @@ html {
 
       &.transparent {
         background: transparent;
-        color: #515665; /*gray-darker*/
-        border: 2px solid #515665;
+        color: $gray-darker;
+        border: 2px solid $gray-darker;
         &:before {
           background: rgba(255,255,255,0.4);
         }
       }
 
       &.blue {
-        background: #05C6B4;
+        background: $p2pu-blue;
         color: white;
 
         &:before {
-          background: lighten(#05C6B4, 1%);
+          background: lighten($p2pu-blue, 1%);
         }
       }
 
       &.orange {
-        background: #FC7100;
+        background: $p2pu-orange;
         color: white;
 
         &:before {
-          background: lighten(#FC7100, 3%);
+          background: lighten($p2pu-orange, 3%);
         }
       }
 
       &.yellow {
-        background: #FFBC1A;
+        background: $p2pu-yellow;
         color: white;
 
         &:before {
-          background: lighten(#FFBC1A, 3%);
+          background: lighten($p2pu-yellow, 3%);
         }
       }
 
@@ -204,7 +204,7 @@ html {
 }
 
 .help-container {
-  background-color: #F3F4F8; /*gray-lighter*/
+  background-color: $gray-lighter;
   right: 0;
   padding-top: 104px;
   padding-bottom: 90px;
@@ -224,7 +224,7 @@ div.modal-overlay {
   .p2pu-modal {
     padding: 3em;
     border-radius: 20px;
-    border: 4px solid #05C6B4; /*p2pu-blue*/
+    border: 4px solid $p2pu-blue; /*p2pu-blue*/
     font-size: 16px;
 
     .modal-actions {
@@ -319,7 +319,7 @@ div.modal-overlay {
   }
 
   .DayPicker-Day--selected:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside) {
-    background-color: #05C6B4;
+    background-color: $p2pu-blue;
   }
 
   .DayPicker-Day--selected:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside):hover {
