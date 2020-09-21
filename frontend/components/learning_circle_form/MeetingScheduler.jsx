@@ -18,31 +18,14 @@ import 'react-day-picker/lib/style.css';
 
 /*
 
-WTF are we doing with dates
+Notes about dates
+=================
 
-the DB stores local dates as a date string formatted as YYYY-MM-DD
-
-the DayPicker (calendar) should display local dates
-
-dates need to be converted to UTC for rrule to generate the rules
-
-
-==== Creating new LC ====
-user selects local start date
-we convert it to UTC for rrule
-rrule returns a collection of dates in UTC
-we convert them to local time to display
-we convert them to date string to send to DB
-
-=== Editing existing meetings ====
-
-convert meeting date string to local date for display
-convert to UTC if editing recurrence using rrule
-convert back to local time for display
-convert back to date string for DB
+- the DB stores local dates as a date string formatted as YYYY-MM-DD
+- the DayPicker (calendar) displays local dates
+- dates need to be converted to UTC for rrule
 
 */
-
 
 
 const weekdays = [
