@@ -94,6 +94,8 @@ export const LC_DEFAULTS = {
   course: {},
   draft: true,
   language: 'en',
+  meeting_time: '12:00',
+  meetings: [],
 };
 
 // TODO - this needs to be configured, not baked into the code

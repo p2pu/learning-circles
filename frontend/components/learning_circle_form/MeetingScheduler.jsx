@@ -64,32 +64,31 @@ class MeetingScheduler extends React.Component {
   constructor(props) {
     super(props)
     this.initialState = {
-      meetings: props.learningCircle.meetings ? props.learningCircle.meetings.map(m => JSON.parse(m)['meeting_date']) : [],
-      patternString: '',
+      patternString: 'Custom selection',
       showModal: false,
       recurrenceRules: defaultRecurrenceRules
     }
     this.state = this.initialState
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.props.learningCircle.start_date && prevProps.learningCircle.start_date !== this.props.learningCircle.start_date) {
+      const localDate = this.dbDateStringToLocalDate(this.props.learningCircle.start_date)
+      this.setState({
+        ...this.state,
+        recurrenceRules: {
+          ...this.state.recurrenceRules,
+           weekday: [weekdays[localDate.getDay()].value]
+        }
+      })
+    }
+  }
+
   // date conversion utils
 
   localDateToUtcDate = (localDate) => {
-    const date = new Date(localDate)
-    const UTCDate = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes()))
+    const utcDate = new Date(Date.UTC(localDate.getUTCFullYear(), localDate.getUTCMonth(), localDate.getUTCDate(), localDate.getUTCHours(), localDate.getUTCMinutes()))
     return utcDate
-  }
-
-  utcDateToLocalDate = (utcDate, tz) => {
-    const options = {
-      year: '2-digit', month: '2-digit', day: '2-digit',
-      hour: '2-digit', minute: '2-digit', second: '2-digit',
-      timeZone: tz || Intl.DateTimeFormat().resolvedOptions().timeZone,
-      timeZoneName: 'short'
-    }
-    const formatter = new Intl.DateTimeFormat('default', options)
-
-    return formatter.format(utcDate)
   }
 
   dateObjectToStringForDB = (date) => {
@@ -108,17 +107,37 @@ class MeetingScheduler extends React.Component {
     return date
   }
 
+  dbDateStringToUtcDate = (dateStr, timeStr="00:00") => {
+    const [year, month, day] = dateStr.split('-')
+    const [hour, minute] = timeStr.split(':')
+    const date = new Date(Date.UTC(year, month-1, day, hour, minute))
+
+    return date
+  }
+
+  meetingsToOrderedDates = (meetings) => {
+    const dates = meetings.map(m => this.dbDateStringToLocalDate(m))
+    return dates.sort((a,b) => (a - b))
+  }
+
   // recurrence modal functions
 
-  resetState = () => this.setState(this.initialState)
   openModal = () => this.setState({ ...this.state, showModal: true })
   closeModal = () => this.setState({ ...this.state, showModal: false })
 
   generateMeetings = () => {
+    const { learningCircle } = this.props;
+    const { recurrenceRules } = this.state;
+
     if (!learningCircle['start_date']) { return }
-    const date = dbDateStringToUtcDate(learningCircle['start_date'], learningCircle['meeting_time'])
+
+    const formattedStartDate = learningCircle['start_date']
+    const timeString = learningCircle['meeting_time']
+    const startDate = this.dbDateStringToLocalDate(formattedStartDate, timeString)
+    const utcDate = this.localDateToUtcDate(startDate)
+
     let opts = {
-      dtstart: date,
+      dtstart: utcDate,
       count: parseInt(recurrenceRules.meetingCount),
     }
 
@@ -134,80 +153,88 @@ class MeetingScheduler extends React.Component {
 
     const rule = new RRule(opts)
     const recurringMeetings = rule.all()
-    const pattern = rule.toText()
+    const patternString = rule.toText()
+    const meetingDates = recurringMeetings.map(m => this.dateObjectToStringForDB(m))
 
-    setState({
-      ...state,
-      pattern,
+    this.setState({
+      ...this.state,
+      patternString,
       showModal: false,
-      meetings: recurringMeetings
     })
+
+    this.props.updateFormData({ meetings: meetingDates })
   }
 
 
   // input handlers
 
   handleChange = (newContent) => {
-    let presets = {};
-    let newState = {
-      ...state
-    }
-
     const key = Object.keys(newContent)[0]
     if (key === 'start_date') {
-      const [year, month, day] = newContent.start_date.split('-')
-      const [hour, minute] = learningCircle['meeting_time'] ? learningCircle['meeting_time'].split(':') : ['00', '00']
-      const date = new Date(year, month-1, day, hour, minute)
-      presets.weekday = [weekdays[date.getDay()].value]
-      newState.meetings = [date]
+      this.setState({
+        showModal: true
+      })
     }
+    this.props.updateFormData({ ...newContent, meetings: [ newContent.start_date ] })
+  }
 
-
-    newState.content = {
-      ...content,
-      ...newContent,
-      ...presets,
-    }
-
-    setState(newState)
-    props.updateFormData({ ...newContent })
+  handleRRuleChange = newContent => {
+    this.setState({
+      ...this.state,
+      recurrenceRules: {
+        ...this.state.recurrenceRules,
+        ...newContent
+      }
+    })
   }
 
   handleDayClick = (day, { selected, disabled }) => {
     if (disabled) {
       return;
     }
-    const selectedDays = [...meetings]
-    const isStartDate = selectedDays.length === 0
+    const selectedDays = [...this.props.learningCircle.meetings]
+    const isFirstDate = selectedDays.length === 0
 
-    if (isStartDate) {
-      const formattedDate = dateObjectToStringForDB(day)
-      handleChange({ start_date: formattedDate })
-    }
-
-    if (selectedDays.length > 0) {
+    if (isFirstDate) {
+      const formattedDate = this.dateObjectToStringForDB(day)
+      this.handleChange({ start_date: formattedDate })
+    } else {
+      const formattedDate = this.dateObjectToStringForDB(day)
       const selectedIndex = selectedDays.findIndex(meeting =>
-        DateUtils.isSameDay(meeting, day)
+        meeting === formattedDate
       );
 
       if (selectedIndex >= 0) {
         selectedDays.splice(selectedIndex, 1);
       } else {
-        selectedDays.push(day);
+        selectedDays.push(formattedDate);
       }
 
-      setState({
-        ...state,
-        meetings: selectedDays,
-        pattern: 'Custom selection'
+      const meetingDates = this.meetingsToOrderedDates(selectedDays)
+      const formattedStartDate = this.dateObjectToStringForDB(meetingDates[0])
+      this.props.updateFormData({ start_date: formattedStartDate })
+
+      this.setState({
+        ...this.state,
+        patternString: 'Custom selection'
       });
+
+      this.props.updateFormData({ meetings: selectedDays })
     }
   }
 
+  clearDates = () => {
+    this.setState({ ...this.state, patternString: 'Custom selection', recurrenceRules: defaultRecurrenceRules })
+    this.props.updateFormData({ "start_date": '', meetings: [] })
+  }
+
   render() {
-    const { resetState, openModal, closeModal, handleChange, handleDayClick, generateMeetings } = this;
-    const { patternString, showModal, recurrenceRules, meetings } = this.state;
-    const { learningCircle, errors, updateFormData } = this.props
+    const { clearDates, openModal, closeModal, handleChange, handleRRuleChange, handleDayClick, generateMeetings, dbDateStringToLocalDate } = this;
+    const { patternString, showModal, recurrenceRules } = this.state;
+    const { learningCircle, errors, updateFormData } = this.props;
+    const { meetings } = learningCircle;
+
+    const displayMeetings = meetings.map(m => dbDateStringToLocalDate(m, learningCircle.meeting_time))
     let reminderWarning = null;
     let minDate = null;
     let minTime = null;
@@ -276,7 +303,7 @@ class MeetingScheduler extends React.Component {
           <div className="row calendar my-3">
             <div className="col-12 col-lg-6 d-flex justify-content-center" style={{ flex: '1 1 auto' }}>
               <DayPicker
-                selectedDays={meetings.map((m => new Date(m.toString())))}
+                selectedDays={displayMeetings}
                 onDayClick={handleDayClick}
                 disabledDays={{ before: new Date() } }
               />
@@ -288,20 +315,20 @@ class MeetingScheduler extends React.Component {
                   htmlFor="selected-dates"
                   className='input-label left text-bold'
                 >
-                { `Selected dates (${meetings.length})` }
+                { `Selected dates (${displayMeetings.length})` }
                 </label>
-                <p className="d-flex align-center">
-                  {
-                    meetings.length > 0 &&
+                {
+                  displayMeetings.length > 0 &&
+                  <p className="d-flex align-center">
                     <span className="material-icons" style={{ fontSize: '20px', paddingTop: '2px', paddingRight: '6px' }}>
                       date_range
                     </span>
-                  }
-                  <span className="capitalize" style={{ lineHeight: '1.5' }}>{patternString}</span>
-                </p>
+                    <span className="capitalize" style={{ lineHeight: '1.5' }}>{patternString}</span>
+                  </p>
+                }
                 <ul id="selected-dates" className="list-unstyled">
                   {
-                    meetings.sort((a,b) => {
+                    displayMeetings.sort((a,b) => {
                       return a - b
                     }).map(meeting => <li key={meeting.toString()} className="mb-2">{meeting.toLocaleString('default', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}</li>)
                   }
@@ -309,7 +336,7 @@ class MeetingScheduler extends React.Component {
               </div>
             </div>
           </div>
-          <button className="p2pu-btn dark" onClick={resetState}>Clear dates</button>
+          <button className="p2pu-btn dark" onClick={clearDates}>Clear dates</button>
         </div>
 
         <TimePickerWithLabel
@@ -360,7 +387,7 @@ class MeetingScheduler extends React.Component {
               ]}
               name='weekday'
               value={recurrenceRules['weekday']}
-              handleChange={handleChange}
+              handleChange={handleRRuleChange}
               label="On which days will you meet?"
               isMulti={true}
               isClearable={false}
@@ -372,7 +399,7 @@ class MeetingScheduler extends React.Component {
               ]}
               name='frequency'
               value={recurrenceRules['frequency']}
-              handleChange={handleChange}
+              handleChange={handleRRuleChange}
               label="How often will you meet?"
               isClearable={false}
             />
@@ -380,7 +407,7 @@ class MeetingScheduler extends React.Component {
               name="meetingCount"
               label="How many times will you meet?"
               value={recurrenceRules['meetingCount']}
-              handleChange={handleChange}
+              handleChange={handleRRuleChange}
               type={'number'}
             />
             <div className="d-flex justify-content-between buttons">

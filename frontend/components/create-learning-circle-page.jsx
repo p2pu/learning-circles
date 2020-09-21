@@ -156,6 +156,7 @@ export default class CreateLearningCirclePage extends React.Component {
         ...placeData,
         course: this.state.learningCircle.course.id,
         draft: draft,
+        meetings: this.state.learningCircle.meetings.join(',')
       }
 
       const onSuccess = (data) => {
@@ -214,6 +215,7 @@ export default class CreateLearningCirclePage extends React.Component {
   }
 
   render() {
+    console.log("LC", this.state.learningCircle)
     return (
       <div className='page-container'>
         <Alert

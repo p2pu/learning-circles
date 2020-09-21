@@ -37,6 +37,7 @@ from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 from studygroups.models import Announcement
 from studygroups.models import generate_all_meetings
+from studygroups.models import generate_meetings_from_dates
 from studygroups.models import get_json_response
 from studygroups.models.course import course_platform_from_url
 from studygroups.models.team import eligible_team_by_email_domain
@@ -662,7 +663,8 @@ def _make_learning_circle_schema(request):
             schema.text(),
             _image_check(),
         ], required=False),
-        "draft": schema.boolean()
+        "draft": schema.boolean(),
+        "meetings": schema.text(required=False)
     }
     return post_schema
 
@@ -723,8 +725,7 @@ class LearningCircleCreateView(View):
         study_group.save()
 
         # generate all meetings if the learning circle has been published
-        if study_group.draft is False:
-            generate_all_meetings(study_group)
+        generate_meetings_from_dates(study_group, data.get('meetings'))
 
         studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
         return json_response(request, { "status": "created", "studygroup_url": studygroup_url })
@@ -804,11 +805,11 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
 
         # generate all meetings if the learning circle has been published
         if published:
-            generate_all_meetings(study_group)
+            generate_meetings_from_dates(study_group, data.get('meetings'))
         elif study_group.draft is False and date_changed:
             # if the lc was already published and the date was changed, update meetings
             study_group.meeting_set.delete()
-            generate_all_meetings(study_group)
+            generate_meetings_from_dates(study_group, data.get('meetings'))
 
         studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
         return json_response(request, { "status": "updated", "studygroup_url": studygroup_url })

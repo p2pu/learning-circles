@@ -85,6 +85,28 @@ def generate_all_meetings(study_group):
         meeting_date += datetime.timedelta(days=7)
 
 
+def generate_meetings_from_dates(study_group, meeting_dates):
+    existing_meetings = Meeting.objects.active().filter(study_group=study_group)
+    meetings_to_keep = []
+
+    date_strings = meeting_dates.split(',')
+
+    for date in date_strings:
+        this_meeting = existing_meetings.filter(meeting_date=date, meeting_time=study_group.meeting_time).first()
+        if not this_meeting:
+            this_meeting = Meeting(
+                study_group=study_group,
+                meeting_date=date,
+                meeting_time=study_group.meeting_time
+            )
+            this_meeting.save()
+        meetings_to_keep.append(this_meeting)
+
+    for meeting in existing_meetings:
+        if meeting not in meetings_to_keep:
+            meeting.delete()
+
+
 def get_all_meeting_times(study_group):
     # sorted ascending according to date
     # times are in the study group timezone
