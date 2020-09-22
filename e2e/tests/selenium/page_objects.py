@@ -106,6 +106,10 @@ class LearningCircleCreationPage(BasePage):
         publish_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.SAVE_BUTTON))
         publish_button.click()
 
+    def click_modal_button(self):
+        modal_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.MODAL_BUTTON))
+        modal_button.click()
+
     def click_schedule_meetings_button(self):
         meetings_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.SCHEDULE_MEETINGS_BUTTON))
         meetings_button.click()

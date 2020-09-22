@@ -153,12 +153,12 @@ class MeetingScheduler extends React.Component {
 
   handleChange = (newContent) => {
     const key = Object.keys(newContent)[0]
-    if (key === 'start_date') {
-      this.setState({
-        showModal: true
-      })
+    if (key === 'start_date' && /\d{4}-\d{2}-\d{2}/.test(newContent.start_date)) {
+      this.openModal()
+      this.props.updateFormData({ ...newContent, meetings: [ newContent.start_date ] })
+    } else {
+      this.props.updateFormData(newContent)
     }
-    this.props.updateFormData({ ...newContent, meetings: [ newContent.start_date ] })
   }
 
   handleRRuleChange = newContent => {
@@ -219,7 +219,7 @@ class MeetingScheduler extends React.Component {
 
     const displayMeetings = meetings.map(m => dbDateStringToLocalDate(m, learningCircle.meeting_time))
     let reminderWarning = null;
-    let minDate = null;
+    let minDate = new Date;
     let minTime = null;
 
     if (learningCircle.draft == false ){
@@ -252,6 +252,7 @@ class MeetingScheduler extends React.Component {
       }
 
       minDate = plus2Days.toDate();
+
     }
 
     return(
@@ -278,7 +279,7 @@ class MeetingScheduler extends React.Component {
 
             {
               learningCircle["start_date"] &&
-              <button className="p2pu-btn dark" onClick={openModal}>Schedule recurring meetings</button>
+              <button id="recurrence-modal-btn" className={`p2pu-btn ${displayMeetings.length === 1 ? 'blue' : 'dark'}`} onClick={openModal}>Schedule recurring meetings</button>
             }
 
           </div>
@@ -395,7 +396,7 @@ class MeetingScheduler extends React.Component {
             />
             <div className="d-flex justify-content-between buttons">
               <button className="p2pu-btn dark" onClick={closeModal}>Select custom dates</button>
-              <button className="p2pu-btn blue" onClick={generateMeetings}>Schedule meetings</button>
+              <button id="schedule-meetings-btn" className="p2pu-btn blue" onClick={generateMeetings}>Schedule meetings</button>
             </div>
           </div>
         </Modal>

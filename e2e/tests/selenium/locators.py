@@ -38,7 +38,8 @@ class LearningCircleCreationPageLocators(object):
     COURSE_CARDS = (By.CSS_SELECTOR, "#react-tabs-1 .search-results .result-item")
     PUBLISH_BUTTON = (By.CSS_SELECTOR, ".action-bar button.publish")
     SAVE_BUTTON = (By.CSS_SELECTOR, ".action-bar button.save")
-    SCHEDULE_MEETINGS_BUTTON = (By.CSS_SELECTOR, ".p2pu-modal .buttons .p2pu-btn.blue")
+    MODAL_BUTTON = (By.ID, "recurrence-modal-btn")
+    SCHEDULE_MEETINGS_BUTTON = (By.ID, "schedule-meetings-btn")
     ERROR_MESSAGE = (By.CSS_SELECTOR, ".error-message.minicaps")
     TINYMCE_FIELD = (By.ID, "tinymce")
 

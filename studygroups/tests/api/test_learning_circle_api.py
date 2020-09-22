@@ -1101,7 +1101,6 @@ class TestLearningCircleApi(TestCase):
         result = resp.json()
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(result["count"], 4)
-        print(result["items"])
         self.assertEqual(result["items"][0], { 'label': 'Boston', 'value': 'boston' })
         self.assertEqual(result["items"][1], { 'label': 'Chicago', 'value': 'chicago' })
         self.assertEqual(result["items"][2], { 'label': 'Kansas City', 'value': 'kansas_city' })
@@ -1139,7 +1138,6 @@ class TestLearningCircleApi(TestCase):
         resp = c.get('/api/learningcircles/?signup=open')
         result = resp.json()
 
-        print(result)
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(result["count"], 2)
 
