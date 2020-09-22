@@ -39,7 +39,7 @@ const weekdays = [
 ]
 
 const defaultRecurrenceRules = {
-  meetingCount: 6,
+  meeting_count: 6,
   frequency: 'weekly',
 }
 
@@ -121,7 +121,7 @@ class MeetingScheduler extends React.Component {
 
     let opts = {
       dtstart: utcDate,
-      count: parseInt(recurrenceRules.meetingCount),
+      count: parseInt(recurrenceRules.meeting_count),
     }
 
     if (recurrenceRules.frequency === 'weekly') {
@@ -387,9 +387,9 @@ class MeetingScheduler extends React.Component {
               isClearable={false}
             />
             <InputWithLabel
-              name="meetingCount"
+              name="meeting_count"
               label="How many times will you meet?"
-              value={recurrenceRules['meetingCount']}
+              value={recurrenceRules['meeting_count']}
               handleChange={handleRRuleChange}
               type={'number'}
             />

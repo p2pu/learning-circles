@@ -726,7 +726,7 @@ class LearningCircleCreateView(View):
 
         # generate all meetings if the learning circle has been published
         if study_group.draft is False:
-            generate_meetings_from_dates(study_group, data.get('meetings'))
+            generate_meetings_from_dates(study_group, data.get('meetings', ''))
 
         studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
         return json_response(request, { "status": "created", "studygroup_url": studygroup_url })
@@ -806,11 +806,11 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
 
         # generate all meetings if the learning circle has been published
         if published:
-            generate_meetings_from_dates(study_group, data.get('meetings'))
+            generate_meetings_from_dates(study_group, data.get('meetings', ''))
         elif study_group.draft is False and date_changed:
             # if the lc was already published and the date was changed, update meetings
             study_group.meeting_set.delete()
-            generate_meetings_from_dates(study_group, data.get('meetings'))
+            generate_meetings_from_dates(study_group, data.get('meetings', ''))
 
         studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
         return json_response(request, { "status": "updated", "studygroup_url": studygroup_url })

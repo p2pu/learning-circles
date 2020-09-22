@@ -85,7 +85,7 @@ def generate_all_meetings(study_group):
         meeting_date += datetime.timedelta(days=7)
 
 
-def generate_meetings_from_dates(study_group, meeting_dates):
+def generate_meetings_from_dates(study_group, meeting_dates=""):
     existing_meetings = Meeting.objects.active().filter(study_group=study_group)
     meetings_to_keep = []
 

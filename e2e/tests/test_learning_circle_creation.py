@@ -184,6 +184,7 @@ class LearningCircleCreation(StaticLiveServerTestCase):
         creation_page.click_publish_button()
 
         data = self.driver.get_log('browser')
+        print(data)
 
         self.wait.until(expected_conditions.url_changes('%s%s' % (self.live_server_url, '/en/studygroup/create/')))
 

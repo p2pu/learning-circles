@@ -165,6 +165,7 @@ export default class CreateLearningCirclePage extends React.Component {
       }
 
       const onError = (data) => {
+        console.log(`Error saving the learning circle: ${JSON.stringify(data.errors)}`)
         this.setState({
           isSaving: false,
           isPublishing: false,

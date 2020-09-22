@@ -75,6 +75,7 @@ class TestFacilitatorViews(TestCase):
         'timezone': 'Africa/Johannesburg',
         'facilitator_concerns': 'how do i market',
         'venue_website': 'http://venue.com',
+        'meetings': '2018-07-25,2018-08-01,2018-08-08,2018-08-15,2018-08-22,2018-08-29',
     }
 
     def setUp(self):
@@ -338,10 +339,11 @@ class TestFacilitatorViews(TestCase):
         resp = c.post('/api/learning-circle/', data=json.dumps(sgd), content_type='application/json')
         self.assertEqual(resp.json()['status'], 'created')
         study_groups = StudyGroup.objects.filter(facilitator=user)
+        study_group = study_groups.first()
         self.assertEqual(study_groups.count(), 1)
-        self.assertEqual(study_groups.first().meeting_set.count(), 6)
+        self.assertEqual(study_group.meeting_set.count(), 6)
 
-        resp = c.get('/en/facilitator/')
+        resp = c.get('/en/studygroup/{}/'.format(study_group.id))
         self.assertEqual(resp.status_code, 200)
         self.assertIn('/en/signup/%D0%B1%D1%8B%D1%81%D1%82%D1%80%D0%B5%D0%B5-%D0%B8-%D0%BB%D1%83%D1%87%D1%88%D0%B5-', resp.content.decode("utf-8"))
 

@@ -51,7 +51,12 @@ class LearningCircleCreationPage(BasePage):
         self.click_next_button()
 
         self.fill_text_field(LearningCircleCreationPageLocators.START_DATE_FIELD, self.start_date)
-        self.fill_text_field(LearningCircleCreationPageLocators.WEEKS_FIELD, "8")
+
+        # recurring meetings modal
+        self.wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, '.p2pu-modal')))
+        self.fill_text_field(LearningCircleCreationPageLocators.MEETING_COUNT_FIELD, "8")
+        self.click_schedule_meetings_button()
+        self.wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, '#selected-dates li')))
 
         self.fill_text_field(LearningCircleCreationPageLocators.MEETING_TIME_FIELD, "7:00 PM", Keys.ENTER)
         self.fill_text_field(LearningCircleCreationPageLocators.DURATION_FIELD, "60")
@@ -100,6 +105,10 @@ class LearningCircleCreationPage(BasePage):
     def click_save_button(self):
         publish_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.SAVE_BUTTON))
         publish_button.click()
+
+    def click_schedule_meetings_button(self):
+        meetings_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.SCHEDULE_MEETINGS_BUTTON))
+        meetings_button.click()
 
     def click_login_link(self):
         self.driver.find_element_by_css_selector('.registration-modal-content button:first-child').click()
