@@ -13,6 +13,7 @@ from studygroups.models import Rsvp
 from studygroups.models import accept_application
 from studygroups.models import create_rsvp
 from studygroups.models import generate_all_meetings
+from studygroups.models import generate_meetings_from_dates
 from studygroups.models.course import KNOWN_COURSE_PLATFORMS
 from studygroups.utils import gen_rsvp_querystring
 from studygroups.utils import check_rsvp_signature
@@ -104,6 +105,33 @@ class TestSignupModels(TestCase):
         self.assertEqual(sg.next_meeting().meeting_datetime().tzinfo.zone, 'US/Central')
         for meeting in Meeting.objects.all():
             self.assertEqual(meeting.meeting_datetime().time(), datetime.time(16,0))
+
+    def test_generate_meetings_from_dates(self):
+        sg = StudyGroup.objects.get(pk=1)
+        sg.timezone = 'US/Central'
+        sg.meeting_time = '16:00'
+        meeting_dates = "2020-09-30,2020-10-07,2020-10-14,2020-10-21,2020-10-28,2020-11-04"
+        sg_meetings_count = Meeting.objects.active().filter(study_group=sg).count()
+        self.assertEqual(sg_meetings_count, 0)
+
+        generate_meetings_from_dates(sg, meeting_dates)
+
+        self.assertEqual(sg.meeting_set.count(), 6)
+        self.assertEqual(sg.next_meeting().meeting_datetime().tzinfo.zone, 'US/Central')
+
+        meeting_dates_arr = meeting_dates.split(',')
+        for date in meeting_dates_arr:
+            self.assertTrue(Meeting.objects.active().filter(study_group=sg, meeting_date=date).exists())
+
+        # update meetings
+        new_meeting_dates = "2020-10-07,2020-10-14,2020-10-21,2020-10-28,2020-11-04,2020-11-05"
+
+        generate_meetings_from_dates(sg, new_meeting_dates)
+
+        self.assertEqual(sg.meeting_set.active().count(), 6)
+        self.assertFalse(Meeting.objects.active().filter(study_group=sg, meeting_date="2020-09-30").exists())
+        self.assertTrue(Meeting.objects.active().filter(study_group=sg, meeting_date="2020-11-05").exists())
+
 
     def test_unapply_signing(self):
         data = self.APPLICATION_DATA
