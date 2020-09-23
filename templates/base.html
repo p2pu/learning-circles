@@ -9,29 +9,41 @@
 <!--[if IE 8]>         <html lang="{{language}}" class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!--> <html lang="{{language}}" class="no-js"> <!--<![endif]-->
   <head>
-      <meta charset="utf-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <title>{% block page_title %}{% trans "P2PU Learning Circles" %}{% endblock %}</title>
-      <link rel="icon" href="{% static 'images/favicon.ico' %}">
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      {% block page_meta %}
-      <meta name="description" content="{{ site.description }}">
-      <meta property="og:title" content="Learning circles" />
-      <meta property="og:type" content="website" />
-      <meta property="og:url" content="{{ request.get_full_path }}" />
-      {% endblock %}
-      <link rel="canonical" href="">
-      <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
-      {% render_bundle 'p2pu-strap' 'css' 'STYLEBUILD' %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block page_title %}{% trans "P2PU Learning Circles" %}{% endblock %}</title>
 
-      {% block css %}{% endblock %}
-      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-      <script src="{% static 'js/vendor/modernizr-2.6.2.min.js' %}"></script>
-      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-      <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-      {% if form and form.media %}
-        {{ form.media }}
-      {% endif %}
+    {% block page_meta %}
+
+      <!-- SEO -->
+
+      <meta property="og:title" content="{% trans "P2PU Learning Circles" %}" />
+      <meta name="description" content="{% trans "Grassroots community supporting equitable, empowering peer learning in public spaces worldwide. Learning for the people, by the people!" %}" />
+      <meta property="og:description" content="{% trans "Grassroots community supporting equitable, empowering peer learning in public spaces worldwide. Learning for the people, by the people!" %}" />
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.get_full_path }}" />
+      <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.get_full_path }}">
+      <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'images/p2pu-ogimg-default.jpg' %}" />
+      <meta property="og:image:height" content="628" />
+      <meta property="og:image:width" content="1200" />
+
+      <meta property="og:site_name" content="{% trans "P2PU Learning Circles" %}" />
+
+    {% endblock %}
+
+    {% render_bundle 'p2pu-strap' 'css' 'STYLEBUILD' %}
+
+    {% block css %}{% endblock %}
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="{% static 'js/vendor/modernizr-2.6.2.min.js' %}"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    {% if form and form.media %}
+      {{ form.media }}
+    {% endif %}
+
   </head>
 
     <body>

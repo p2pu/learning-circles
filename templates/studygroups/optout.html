@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load crispy_forms_tags %}
 
 {% block page_title %}
@@ -7,12 +8,12 @@
 
 {% block content %}
   <div class="container">
-      <h1>Opt Out</h1>
-      <p>Please enter either the email address or mobile number you used to sign up in order to unenroll from the learning circle and stop receiving all future messages.</p>
+      <h1>{% trans "Opt Out" %}</h1>
+      <p>{% trans "Please enter either the email address or mobile number you used to sign up in order to unenroll from the learning circle and stop receiving all future messages." %}</p>
     <form action="" method="POST">
       {% csrf_token %}
       {{ form|crispy }}
-      <p><button type="submit" class="btn btn-primary">Opt out</button></p>
+      <p><button type="submit" class="btn btn-primary">{% trans "Opt out" %}</button></p>
     </form>
   </div>
 {% endblock %}
