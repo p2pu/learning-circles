@@ -49,21 +49,37 @@ class MeetingScheduler extends React.Component {
     this.initialState = {
       patternString: 'Custom selection',
       showModal: false,
-      recurrenceRules: defaultRecurrenceRules
+      recurrenceRules: defaultRecurrenceRules,
+      timeoutId: null,
     }
     this.state = this.initialState
   }
 
   componentDidUpdate(prevProps) {
     if (this.props.learningCircle.start_date && prevProps.learningCircle.start_date !== this.props.learningCircle.start_date) {
-      const localDate = this.dbDateStringToLocalDate(this.props.learningCircle.start_date)
-      this.setState({
-        ...this.state,
-        recurrenceRules: {
-          ...this.state.recurrenceRules,
-           weekday: [weekdays[localDate.getDay()].value]
+      const date = this.props.learningCircle.start_date
+
+      if (/\d{4}-\d{2}-\d{2}/.test(date)) {
+        if (this.state.timeoutId) {
+          window.clearTimeout(this.state.timeoutId)
         }
-      })
+
+        const timeoutId = window.setTimeout(() => {
+          const localDate = this.dbDateStringToLocalDate(date)
+          const weekday = weekdays[localDate.getDay()] ? [weekdays[localDate.getDay()].value] : null;
+          this.setState({
+            ...this.state,
+            showModal: true,
+            recurrenceRules: {
+              ...this.state.recurrenceRules,
+               weekday: weekday
+            }
+          }, this.props.updateFormData({ meetings: [ date ] }))
+        }, 1000)
+
+        this.setState({ timeoutId })
+      }
+
     }
   }
 
@@ -152,13 +168,7 @@ class MeetingScheduler extends React.Component {
   // input handlers
 
   handleChange = (newContent) => {
-    const key = Object.keys(newContent)[0]
-    if (key === 'start_date' && /\d{4}-\d{2}-\d{2}/.test(newContent.start_date)) {
-      this.openModal()
-      this.props.updateFormData({ ...newContent, meetings: [ newContent.start_date ] })
-    } else {
-      this.props.updateFormData(newContent)
-    }
+    this.props.updateFormData(newContent)
   }
 
   handleRRuleChange = newContent => {
@@ -279,7 +289,7 @@ class MeetingScheduler extends React.Component {
 
             {
               learningCircle["start_date"] &&
-              <button id="recurrence-modal-btn" className={`p2pu-btn ${displayMeetings.length === 1 ? 'blue' : 'dark'}`} onClick={openModal}>Schedule recurring meetings</button>
+              <button id="recurrence-modal-btn" className={`p2pu-btn dark`} onClick={openModal}>Schedule recurring meetings</button>
             }
 
           </div>
