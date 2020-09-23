@@ -235,7 +235,7 @@ class LearningCircleListView(View):
             status=Case(
                 When(signup_open=True, first_meeting_date__gt=today, then=Value('upcoming')),
                 When(signup_open=True, first_meeting_date__lte=today, last_meeting_date__gte=today, then=Value('in_progress')),
-                When(signup_open=False, then=Value('closed')),
+                When(signup_open=False, last_meeting_date__gte=today, then=Value('closed')),
                 When(last_meeting_date__lt=today, then=Value('completed')),
                 default=Value('completed'),
                 output_field=CharField(),
