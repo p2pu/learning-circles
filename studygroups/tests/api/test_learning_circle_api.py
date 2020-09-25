@@ -1190,3 +1190,53 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(result['items'][3]['status'], 'completed')
 
 
+    @freeze_time("2019-05-31")
+    def test_get_learning_circles_status_closed_completed(self):
+        # closed upcoming
+        sg = StudyGroup.objects.get(pk=1)
+        sg.start_date = datetime.date(2019,6,1)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=2)
+        sg.signup_open = False
+        sg.save()
+        sg.refresh_from_db()
+        generate_all_meetings(sg)
+
+        # closed in progress
+        sg = StudyGroup.objects.get(pk=2)
+        sg.start_date = datetime.date(2019,5,30)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=2)
+        sg.signup_open = False
+        sg.save()
+        sg.refresh_from_db()
+        generate_all_meetings(sg)
+
+        # closed in past (should be completed status)
+        sg = StudyGroup.objects.get(pk=3)
+        sg.start_date = datetime.date(2019,4,1)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=2)
+        sg.signup_open = False
+        sg.save()
+        sg.refresh_from_db()
+        generate_all_meetings(sg)
+
+        # open in past (should be completed status)
+        sg = StudyGroup.objects.get(pk=4)
+        sg.start_date = datetime.date(2019,4,1)
+        sg.end_date = sg.start_date + datetime.timedelta(weeks=2)
+        sg.signup_open = True
+        sg.save()
+
+        c = Client()
+
+        resp = c.get('/api/learningcircles/')
+        result = resp.json()
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(result["count"], 4)
+        self.assertEqual(result["signup_open_count"], 0)
+        self.assertEqual(result["signup_closed_count"], 4)
+        self.assertEqual(result['items'][0]['status'], 'closed')
+        self.assertEqual(result['items'][1]['status'], 'closed')
+        self.assertEqual(result['items'][2]['status'], 'completed')
+        self.assertEqual(result['items'][3]['status'], 'completed')
+
+
