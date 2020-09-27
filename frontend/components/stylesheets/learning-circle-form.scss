@@ -297,10 +297,6 @@ div.modal-overlay {
     color: #999999;
   }
 
-  .DayPicker {
-    padding-top: 20px;
-  }
-
   .DayPicker-Day {
     padding: 0.25vw 0.6vw;
     border-radius: 0;
@@ -334,8 +330,24 @@ div.modal-overlay {
     color: inherit;
   }
 
+  .DayPicker-Day--suggested:not(.DayPicker-Day--outside) {
+    background-color: $p2pu-light-blue;
+    color: $gray-darker;
+  }
+
   .list-unstyled {
     font-size: 14px;
+  }
+
+  li.selected-date {
+    display: flex;
+    flex-wrap: nowrap;
+
+    .p2pu-btn {
+      height: 24px;
+      width: 24px;
+      padding: 0;
+    }
   }
 
   .heading {

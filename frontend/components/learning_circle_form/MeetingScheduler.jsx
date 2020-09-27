@@ -47,41 +47,45 @@ class MeetingScheduler extends React.Component {
   constructor(props) {
     super(props)
     this.initialState = {
-      patternString: 'Custom selection',
+      pattern: 'Custom selection',
       showModal: false,
       recurrenceRules: defaultRecurrenceRules,
       timeoutId: null,
+      suggestedDates: []
     }
     this.state = this.initialState
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.learningCircle.start_date && prevProps.learningCircle.start_date !== this.props.learningCircle.start_date) {
-      const date = this.props.learningCircle.start_date
+  // componentDidUpdate(prevProps) {
+  //   if (this.props.learningCircle.start_date && prevProps.learningCircle.start_date !== this.props.learningCircle.start_date) {
+  //     const date = this.props.learningCircle.start_date
 
-      if (/\d{4}-\d{2}-\d{2}/.test(date)) {
-        if (this.state.timeoutId) {
-          window.clearTimeout(this.state.timeoutId)
-        }
+  //     if (/\d{4}-\d{2}-\d{2}/.test(date)) {
+  //       if (this.state.timeoutId) {
+  //         // the native date input pads the month and days with 0
+  //         // so when typing in a double digit date the first digit of would match the regex
+  //         // this timeout gives the user time to finish typing the date before opening the modal
+  //         window.clearTimeout(this.state.timeoutId)
+  //       }
 
-        const timeoutId = window.setTimeout(() => {
-          const localDate = this.dbDateStringToLocalDate(date)
-          const weekday = weekdays[localDate.getDay()] ? [weekdays[localDate.getDay()].value] : null;
-          this.setState({
-            ...this.state,
-            showModal: true,
-            recurrenceRules: {
-              ...this.state.recurrenceRules,
-               weekday: weekday
-            }
-          }, this.props.updateFormData({ meetings: [ date ] }))
-        }, 1000)
+  //       const timeoutId = window.setTimeout(() => {
+  //         const localDate = this.dbDateStringToLocalDate(date)
+  //         const weekday = weekdays[localDate.getDay()] ? [weekdays[localDate.getDay()].value] : null;
+  //         this.setState({
+  //           ...this.state,
+  //           showModal: true,
+  //           recurrenceRules: {
+  //             ...this.state.recurrenceRules,
+  //              weekday: weekday
+  //           }
+  //         }, this.props.updateFormData({ meetings: [ date ] }))
+  //       }, 1000)
 
-        this.setState({ timeoutId })
-      }
+  //       this.setState({ timeoutId })
+  //     }
 
-    }
-  }
+  //   }
+  // }
 
   // date conversion utils
 
@@ -152,16 +156,13 @@ class MeetingScheduler extends React.Component {
 
     const rule = new RRule(opts)
     const recurringMeetings = rule.all()
-    const patternString = rule.toText()
+    const pattern = rule.toText()
     const meetingDates = recurringMeetings.map(m => this.dateObjectToStringForDB(m))
 
     this.setState({
-      ...this.state,
-      patternString,
-      showModal: false,
+      suggestedDates: meetingDates,
+      pattern: pattern
     })
-
-    this.props.updateFormData({ meetings: meetingDates })
   }
 
 
@@ -190,7 +191,17 @@ class MeetingScheduler extends React.Component {
 
     if (isFirstDate) {
       const formattedDate = this.dateObjectToStringForDB(day)
-      this.handleChange({ start_date: formattedDate })
+      this.props.updateFormData({ start_date: formattedDate, meetings: [formattedDate] })
+
+      const weekday = weekdays[day.getDay()] ? [weekdays[day.getDay()].value] : null;
+      this.setState({
+        ...this.state,
+        recurrenceRules: {
+          ...this.state.recurrenceRules,
+           weekday: weekday
+        }
+      }, () => this.generateMeetings())
+
     } else {
       const formattedDate = this.dateObjectToStringForDB(day)
       const selectedIndex = selectedDays.findIndex(meeting =>
@@ -209,7 +220,7 @@ class MeetingScheduler extends React.Component {
 
       this.setState({
         ...this.state,
-        patternString: 'Custom selection'
+        pattern: 'Custom selection'
       });
 
       this.props.updateFormData({ meetings: selectedDays })
@@ -217,20 +228,53 @@ class MeetingScheduler extends React.Component {
   }
 
   clearDates = () => {
-    this.setState({ ...this.state, patternString: 'Custom selection', recurrenceRules: defaultRecurrenceRules })
+    this.setState({ ...this.state, pattern: 'Custom selection', recurrenceRules: defaultRecurrenceRules })
     this.props.updateFormData({ "start_date": '', meetings: [] })
   }
 
-  render() {
-    const { clearDates, openModal, closeModal, handleChange, handleRRuleChange, handleDayClick, generateMeetings, dbDateStringToLocalDate } = this;
-    const { patternString, showModal, recurrenceRules } = this.state;
-    const { learningCircle, errors, updateFormData } = this.props;
-    const { meetings } = learningCircle;
+  clearSuggestedDates = () => {
+    this.setState({ ...this.state, pattern: 'Custom selection', suggestedDates: [] })
+  }
 
-    const displayMeetings = meetings.map(m => dbDateStringToLocalDate(m, learningCircle.meeting_time))
+  useSuggestedDates = () => {
+    this.props.updateFormData({ meetings: this.state.suggestedDates })
+    this.setState({ ...this.state, suggestedDates: [] })
+  }
+
+  deleteMeeting = (date) => {
+    const meetings = [...this.props.learningCircle.meetings]
+    const formattedDate = this.dateObjectToStringForDB(date)
+    const selectedIndex = meetings.findIndex(m =>
+      m === formattedDate
+    );
+
+    if (selectedIndex >= 0) {
+      meetings.splice(selectedIndex, 1);
+    }
+
+    this.props.updateFormData({ meetings })
+    this.setState({ ...this.state, pattern: 'Custom selection' })
+  }
+
+  render() {
+    const { clearDates, openModal, closeModal, handleChange, handleRRuleChange, handleDayClick, generateMeetings, dbDateStringToLocalDate, useSuggestedDates, clearSuggestedDates, deleteMeeting } = this;
+    const { pattern, showModal, recurrenceRules, suggestedDates } = this.state;
+    const { learningCircle, errors, updateFormData } = this.props;
+    const { meetings, start_date } = learningCircle;
+
+    const selectedDates = meetings.map(m => dbDateStringToLocalDate(m, learningCircle.meeting_time))
+    const displayMeetings = selectedDates.concat(suggestedDates)
+
     let reminderWarning = null;
     let minDate = new Date;
     let minTime = null;
+
+    const modifiers = {
+      suggested: (d) => {
+        const date = this.dateObjectToStringForDB(d)
+        return suggestedDates.includes(date) && !meetings.includes(date)
+      },
+    };
 
     if (learningCircle.draft == false ){
       let {start_date, meeting_time} = this.props;
@@ -270,36 +314,12 @@ class MeetingScheduler extends React.Component {
         {reminderWarning}
 
         <div className="meeting-scheduler mb-4">
-
-          <div className="form">
-            <DatePickerWithLabel
-              handleChange={handleChange}
-              helpText="Enter a date below or select one on the calendar"
-              required
-              label={'What is the date of the first learning circle?'}
-              value={learningCircle.start_date}
-              placeholder={'Eg. 2020-06-31'}
-              name={'start_date'}
-              id={'id_start_date'}
-              type={'date'}
-              errorMessage={errors.start_date}
-              required={true}
-              minDate={minDate}
-            />
-
-            {
-              learningCircle["start_date"] &&
-              <button id="recurrence-modal-btn" className={`p2pu-btn dark`} onClick={openModal}>Schedule recurring meetings</button>
-            }
-
-          </div>
-
           <div className="row calendar my-3">
             <div className="col-12 col-lg-6 d-flex justify-content-center" style={{ flex: '1 1 auto' }}>
               <DayPicker
                 selectedDays={displayMeetings}
                 onDayClick={handleDayClick}
-                disabledDays={{ before: new Date() } }
+                modifiers={modifiers}
               />
             </div>
 
@@ -309,27 +329,36 @@ class MeetingScheduler extends React.Component {
                   htmlFor="selected-dates"
                   className='input-label left text-bold'
                 >
-                { `Selected dates (${displayMeetings.length})` }
+                { `Selected dates (${selectedDates.length})` }
                 </label>
                 {
-                  displayMeetings.length > 0 &&
+                  selectedDates.length > 1 &&
                   <p className="d-flex align-center">
                     <span className="material-icons" style={{ fontSize: '20px', paddingTop: '2px', paddingRight: '6px' }}>
                       date_range
                     </span>
-                    <span className="capitalize" style={{ lineHeight: '1.5' }}>{patternString}</span>
+                    <span className="capitalize" style={{ lineHeight: '1.5' }}>{pattern}</span>
                   </p>
                 }
                 <ul id="selected-dates" className="list-unstyled">
                   {
-                    displayMeetings.sort((a,b) => {
+                    selectedDates.sort((a,b) => {
                       return a - b
-                    }).map(meeting => <li key={meeting.toString()} className="mb-2">{meeting.toLocaleString('default', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}</li>)
+                    }).map(date => {
+                      return (
+                        <li key={date.toString()} className="mb-2 selected-date">
+                          {date.toLocaleString('default', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}
+                          <button className="btn p2pu-btn ml-1" onClick={() => deleteMeeting(date)}>x</button>
+                        </li>
+                      )
+                    })
                   }
                 </ul>
               </div>
             </div>
           </div>
+          { Boolean(suggestedDates.length) && <button className="p2pu-btn blue" onClick={useSuggestedDates}>Use suggested dates</button> }
+          { Boolean(suggestedDates.length) && <button className="p2pu-btn dark" onClick={clearSuggestedDates}>Clear suggested dates</button> }
           <button className="p2pu-btn dark" onClick={clearDates}>Clear dates</button>
         </div>
 
