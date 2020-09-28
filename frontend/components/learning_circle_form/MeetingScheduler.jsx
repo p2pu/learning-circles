@@ -323,16 +323,18 @@ class MeetingScheduler extends React.Component {
 
         <div className="meeting-scheduler mb-4">
           <div className="row calendar my-3">
-            <div className="col-12 col-lg-6 d-flex justify-content-center" style={{ flex: '1 1 auto' }}>
-              <DayPicker
-                selectedDays={displayMeetings}
-                onDayClick={handleDayClick}
-                modifiers={modifiers}
-                numberOfMonths={window.screen.width >= 1200 ? 2 : 1}
-              />
+            <div className="col-12 col-xl-6 d-flex justify-content-center" style={{ flex: '1 1 auto' }}>
+              <div>
+                <DayPicker
+                  selectedDays={displayMeetings}
+                  onDayClick={handleDayClick}
+                  modifiers={modifiers}
+                  numberOfMonths={window.screen.width >= 1200 ? 2 : 1}
+                />
+              </div>
             </div>
 
-            <div className="col-12 col-lg-6 d-flex flex-column">
+            <div className="col-12 col-xl-6 d-flex flex-column">
 
               <div className="mb-2">
                 <Alert show={Boolean(suggestedDates.length)} type="info" closeAlert={clearSuggestedDates}>

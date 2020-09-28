@@ -347,7 +347,7 @@ div.modal-overlay {
   }
 
   .DayPicker-Day--today {
-    color: inherit;
+    color: $p2pu-orange;
   }
 
   .DayPicker-Day--selected.DayPicker-Day--suggested:not(.DayPicker-Day--outside) {
