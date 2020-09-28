@@ -98,24 +98,30 @@
                 <span class="material-icons">schedule</span>
               </div>
               <div class="text">
-                {% if completed %}
-                  {% blocktrans with day=study_group.day meeting_time=study_group.meeting_time|time:"fA" end_time=study_group.end_time|time:"fA" timezone=study_group.timezone_display start_date=study_group.start_date|date:"j F, Y" count meeting_count=study_group.weeks %}
-                  This learning circle met every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} week.
-                  {% plural %}
-                  This learning circle met every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} weeks.
-                  {% endblocktrans %}
-                {% elif study_group.draft %}
-                  {% blocktrans with day=study_group.day meeting_time=study_group.meeting_time|time:"fA" end_time=study_group.end_time|time:"fA" timezone=study_group.timezone_display start_date=study_group.start_date|date:"j F, Y" count meeting_count=study_group.weeks %}
-                  This learning circle meets every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} week.
-                  {% plural %}
-                  This learning circle meets every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} weeks.
-                  {% endblocktrans %}
+                {% if study_group.meeting_frequency %}
+                  {% if completed %}
+                    {% blocktrans with meeting_frequency=study_group.meeting_frequency meeting_time=study_group.meeting_time|time:"fA" end_time=study_group.end_time|time:"fA" timezone=study_group.timezone_display start_date=study_group.start_date|date:"j F, Y" %}
+                    This learning circle met from {{meeting_time}} to {{end_time}} {{timezone}} {{ meeting_frequency }} starting {{start_date}}.
+                    {% endblocktrans %}
+                  {% else %}
+                    {% blocktrans with meeting_frequency=study_group.meeting_frequency meeting_time=study_group.meeting_time|time:"fA" end_time=study_group.end_time|time:"fA" timezone=study_group.timezone_display start_date=study_group.start_date|date:"j F, Y" %}
+                    This learning circle meets from {{meeting_time}} to {{end_time}} {{timezone}} {{ meeting_frequency }} starting {{start_date}}.
+                    {% endblocktrans %}
+                  {% endif %}
                 {% else %}
-                  {% blocktrans with day=study_group.day meeting_time=study_group.meeting_time|time:"fA" end_time=study_group.end_time|time:"fA" timezone=study_group.timezone_display start_date=study_group.start_date|date:"j F, Y" count meeting_count=study_group.meeting_set.active.count %}
-                  This learning circle meets every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} week.
-                  {% plural %}
-                  This learning circle meets every {{day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} weeks.
-                  {% endblocktrans %}
+                  {% if completed %}
+                    {% blocktrans with meeting_time=study_group.meeting_time|time:"fA" end_time=study_group.end_time|time:"fA" timezone=study_group.timezone_display start_date=study_group.start_date|date:"l j F, Y" count meeting_count=meetings|length %}
+                    This learning circle met once on {{start_date}} from {{meeting_time}} to {{end_time}} {{timezone}}.
+                    {% plural %}
+                    This learning circle met {{ meeting_count }} times starting {{start_date}} from {{meeting_time}} to {{end_time}} {{timezone}}.
+                    {% endblocktrans %}
+                  {% else %}
+                    {% blocktrans with meeting_time=study_group.meeting_time|time:"fA" end_time=study_group.end_time|time:"fA" timezone=study_group.timezone_display start_date=study_group.start_date|date:"l j F, Y" count meeting_count=meetings|length %}
+                    This learning circle meets once on {{start_date}} from {{meeting_time}} to {{end_time}} {{timezone}}.
+                    {% plural %}
+                    This learning circle meets {{ meeting_count }} times starting {{start_date}} from {{meeting_time}} to {{end_time}} {{timezone}}.
+                    {% endblocktrans %}
+                  {% endif %}
                 {% endif %}
               </div>
             </div>

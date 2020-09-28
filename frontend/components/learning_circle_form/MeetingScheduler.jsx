@@ -33,7 +33,9 @@ Notes about dates
 
 */
 
-const MAX_MEETING_COUNT = 50
+const MAX_MEETING_COUNT = 52
+const MIN_MEETING_COUNT = 1
+const DEFAULT_MEETING_COUNT = 6
 const CUSTOM_SELECTION_TEXT = 'Custom selection'
 
 const weekdays = [
@@ -55,7 +57,7 @@ class MeetingScheduler extends React.Component {
   constructor(props) {
     super(props)
     this.initialState = {
-      pattern: null,
+      meeting_frequency: null,
       showModal: false,
       recurrenceRules: defaultRecurrenceRules,
       timeoutId: null,
@@ -100,7 +102,7 @@ class MeetingScheduler extends React.Component {
 
     if (!learningCircle['start_date']) { return }
     const utcDate = this.localDateToUtcDate(learningCircle['start_date'])
-    const count = parseInt(recurrenceRules.meeting_count) <= MAX_MEETING_COUNT ? parseInt(recurrenceRules.meeting_count) : MAX_MEETING_COUNT
+    const count = parseInt(recurrenceRules.meeting_count) <= MAX_MEETING_COUNT && parseInt(recurrenceRules.meeting_count) >= MIN_MEETING_COUNT ? parseInt(recurrenceRules.meeting_count) : DEFAULT_MEETING_COUNT;
 
     let opts = {
       dtstart: utcDate,
@@ -119,12 +121,12 @@ class MeetingScheduler extends React.Component {
 
     const rule = new RRule(opts)
     const recurringMeetings = rule.all()
-    const pattern = rule.toText()
+    const rruleText = rule.toText()
     const meetingDates = recurringMeetings.map(m => this.utcDateToLocalDate(m))
 
     this.setState({
       suggestedDates: meetingDates,
-      pattern: pattern,
+      rruleText: rruleText,
       showModal: false,
     })
   }
@@ -178,14 +180,12 @@ class MeetingScheduler extends React.Component {
 
       const meetingDates = selectedDays.sort((a,b) => (a - b))
       const startDate = meetingDates[0]
-      this.props.updateFormData({ start_date: startDate })
+      this.props.updateFormData({ start_date: startDate, meetings: selectedDays, meeting_frequency: null })
 
       this.setState({
         ...this.state,
-        pattern: null
+        rruleText: null
       });
-
-      this.props.updateFormData({ meetings: selectedDays })
     }
   }
 
@@ -200,16 +200,16 @@ class MeetingScheduler extends React.Component {
   }
 
   clearDates = () => {
-    this.setState({ ...this.state, pattern: null, recurrenceRules: defaultRecurrenceRules })
-    this.props.updateFormData({ "start_date": '', meetings: [] })
+    this.setState({ ...this.state, meeting_frequency: null, recurrenceRules: defaultRecurrenceRules })
+    this.props.updateFormData({ "start_date": '', meetings: [], meeting_frequency: null })
   }
 
   clearSuggestedDates = () => {
-    this.setState({ ...this.state, pattern: null, suggestedDates: [] })
+    this.setState({ ...this.state, meeting_frequency: null, suggestedDates: [] })
   }
 
   useSuggestedDates = () => {
-    this.props.updateFormData({ meetings: this.state.suggestedDates })
+    this.props.updateFormData({ meetings: this.state.suggestedDates, meeting_frequency: this.state.rruleText })
     this.setState({ ...this.state, suggestedDates: [] })
   }
 
@@ -223,17 +223,17 @@ class MeetingScheduler extends React.Component {
       meetings.splice(selectedIndex, 1);
     }
 
-    this.props.updateFormData({ meetings })
-    this.setState({ ...this.state, pattern: null })
+    this.props.updateFormData({ meetings, meeting_frequency: null })
+    this.setState({ ...this.state, rruleText: null })
   }
 
   render() {
     const { clearDates, openModal, closeModal, handleChange, handleRRuleChange, handleDayClick, generateMeetings, useSuggestedDates, clearSuggestedDates, deleteMeeting } = this;
-    const { pattern, showModal, recurrenceRules, suggestedDates } = this.state;
+    const { showModal, recurrenceRules, suggestedDates } = this.state;
     const { learningCircle, errors, updateFormData } = this.props;
-    const { meetings, start_date } = learningCircle;
+    const { meetings, start_date, meeting_frequency } = learningCircle;
 
-    const suggestedDatesArr = suggestedDates.filter(sd => !meetings.includes(sd))
+    const suggestedDatesArr = suggestedDates.filter(sd => !meetings.find(m => DateUtils.isSameDay(m, sd)))
 
     const selectedDates = meetings.sort((a,b) => { return a - b })
     const suggestedDatesObj = suggestedDatesArr.sort((a,b) => { return a - b })
@@ -324,7 +324,7 @@ class MeetingScheduler extends React.Component {
                       <span className="material-icons" style={{ fontSize: '20px', paddingTop: '2px', paddingRight: '6px' }}>
                         date_range
                       </span>
-                      <span className="capitalize" style={{ lineHeight: '1.5' }}>{pattern || CUSTOM_SELECTION_TEXT }</span>
+                      <span className="capitalize" style={{ lineHeight: '1.5' }}>{meeting_frequency || CUSTOM_SELECTION_TEXT }</span>
                     </p>
                   }
                   <ul id="selected-dates" className="list-unstyled">
@@ -426,6 +426,7 @@ class MeetingScheduler extends React.Component {
               value={recurrenceRules['meeting_count']}
               handleChange={handleRRuleChange}
               type={'number'}
+              min={MIN_MEETING_COUNT}
               max={MAX_MEETING_COUNT}
             />
             <div className="d-flex justify-content-end buttons">

@@ -139,6 +139,7 @@ def _map_to_json(sg):
         "draft": sg.draft,
         "signup_count": sg.application_set.count(),
         "signup_open": sg.signup_open,
+        "meeting_frequency": sg.meeting_frequency,
     }
 
     if hasattr(sg, 'last_meeting_date'):
@@ -664,7 +665,8 @@ def _make_learning_circle_schema(request):
             _image_check(),
         ], required=False),
         "draft": schema.boolean(),
-        "meetings": schema.text(required=False)
+        "meetings": schema.text(required=False),
+        "meeting_frequency": schema.text(length=256, required=False)
     }
     return post_schema
 
@@ -726,7 +728,7 @@ class LearningCircleCreateView(View):
 
         # generate all meetings if the learning circle has been published
         if study_group.draft is False:
-            generate_meetings_from_dates(study_group, data.get('meetings', ''))
+            generate_meetings_from_dates(study_group, data.get('meetings', []))
 
         studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
         return json_response(request, { "status": "created", "studygroup_url": studygroup_url })
@@ -802,6 +804,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         study_group.signup_question = data.get('signup_question', '')
         study_group.facilitator_goal = data.get('facilitator_goal', '')
         study_group.facilitator_concerns = data.get('facilitator_concerns', '')
+        study_group.meeting_frequency = data.get('meeting_frequency', '')
         study_group.save()
 
         # generate all meetings if the learning circle has been published

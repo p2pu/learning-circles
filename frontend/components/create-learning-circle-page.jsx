@@ -26,11 +26,12 @@ export default class CreateLearningCirclePage extends React.Component {
   constructor(props){
     super(props);
     console.log(this.props.learningCircle)
+    const meetings = this.props.learningCircle.meetings.map(m => this.parseMeetingDate(m)).sort((a,b) => a - b)
     this.state = {
       currentTab: 0,
       learningCircle: {
         ...this.props.learningCircle,
-        meetings: this.props.learningCircle.meetings.map(m => this.parseMeetingDate(m))
+        meetings: meetings
       },
       showModal: false,
       showHelp: window.screen.width > DESKTOP_BREAKPOINT,
