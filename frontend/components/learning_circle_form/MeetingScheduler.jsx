@@ -14,6 +14,8 @@ import {
   SelectWithLabel,
 } from 'p2pu-components'
 
+import Alert from './Alert'
+
 import 'react-day-picker/lib/style.css';
 
 /*
@@ -27,6 +29,7 @@ Notes about dates
 
 */
 
+const MAX_MEETING_COUNT = 50
 
 const weekdays = [
   { label: 'Sunday', value: RRule.SU },
@@ -138,10 +141,11 @@ class MeetingScheduler extends React.Component {
     const timeString = learningCircle['meeting_time']
     const startDate = this.dbDateStringToLocalDate(formattedStartDate, timeString)
     const utcDate = this.localDateToUtcDate(startDate)
+    const count = parseInt(recurrenceRules.meeting_count) <= MAX_MEETING_COUNT ? parseInt(recurrenceRules.meeting_count) : MAX_MEETING_COUNT
 
     let opts = {
       dtstart: utcDate,
-      count: parseInt(recurrenceRules.meeting_count),
+      count: count,
     }
 
     if (recurrenceRules.frequency === 'weekly') {
@@ -161,7 +165,8 @@ class MeetingScheduler extends React.Component {
 
     this.setState({
       suggestedDates: meetingDates,
-      pattern: pattern
+      pattern: pattern,
+      showModal: false,
     })
   }
 
@@ -262,8 +267,11 @@ class MeetingScheduler extends React.Component {
     const { learningCircle, errors, updateFormData } = this.props;
     const { meetings, start_date } = learningCircle;
 
-    const selectedDates = meetings.map(m => dbDateStringToLocalDate(m, learningCircle.meeting_time))
-    const displayMeetings = selectedDates.concat(suggestedDates)
+    const suggestedDatesArr = suggestedDates.filter(sd => !meetings.includes(sd))
+
+    const selectedDates = meetings.map(m => dbDateStringToLocalDate(m, learningCircle.meeting_time)).sort((a,b) => { return a - b })
+    const suggestedDatesObj = suggestedDatesArr.map(m => dbDateStringToLocalDate(m, learningCircle.meeting_time)).sort((a,b) => { return a - b })
+    const displayMeetings = selectedDates.concat(suggestedDatesObj)
 
     let reminderWarning = null;
     let minDate = new Date;
@@ -320,46 +328,65 @@ class MeetingScheduler extends React.Component {
                 selectedDays={displayMeetings}
                 onDayClick={handleDayClick}
                 modifiers={modifiers}
+                numberOfMonths={window.screen.width >= 1200 ? 2 : 1}
               />
             </div>
 
-            <div className="col-12 col-lg-6 d-flex justify-content-center">
-              <div className="selected-dates p-4" style={{ paddingTop: '20px' }}>
-                <label
-                  htmlFor="selected-dates"
-                  className='input-label left text-bold'
-                >
-                { `Selected dates (${selectedDates.length})` }
-                </label>
-                {
-                  selectedDates.length > 1 &&
-                  <p className="d-flex align-center">
-                    <span className="material-icons" style={{ fontSize: '20px', paddingTop: '2px', paddingRight: '6px' }}>
-                      date_range
-                    </span>
-                    <span className="capitalize" style={{ lineHeight: '1.5' }}>{pattern}</span>
-                  </p>
-                }
-                <ul id="selected-dates" className="list-unstyled">
+            <div className="col-12 col-lg-6 d-flex flex-column">
+
+              <div className="mb-2">
+                <Alert show={Boolean(suggestedDates.length)} type="info" closeAlert={clearSuggestedDates}>
+                  <p className="text-dark mb-2">Use suggested dates?</p>
+                  <button className="p2pu-btn transparent" onClick={clearSuggestedDates}>No</button>
+                  <button className="p2pu-btn dark" onClick={useSuggestedDates}>Yes</button>
+                  <p className="text-small mb-0"><a href="#" onClick={openModal}>Change date pattern</a></p>
+                </Alert>
+                { !Boolean(suggestedDates.length) && Boolean(selectedDates.length) && <button className="p2pu-btn dark d-flex align-items-center" onClick={clearDates}><span className="material-icons mr-1">clear_all</span>Clear dates</button> }
+              </div>
+
+                <div className="selected-dates p-4" style={{ paddingTop: '20px' }}>
+                  <label
+                    htmlFor="selected-dates"
+                    className='input-label left text-bold'
+                  >
+                  { `Selected dates (${selectedDates.length})` }
+                  </label>
                   {
-                    selectedDates.sort((a,b) => {
-                      return a - b
-                    }).map(date => {
-                      return (
-                        <li key={date.toString()} className="mb-2 selected-date">
-                          {date.toLocaleString('default', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}
-                          <button className="btn p2pu-btn ml-1" onClick={() => deleteMeeting(date)}>x</button>
-                        </li>
-                      )
-                    })
+                    selectedDates.length > 1 &&
+                    <p className="d-flex align-center">
+                      <span className="material-icons" style={{ fontSize: '20px', paddingTop: '2px', paddingRight: '6px' }}>
+                        date_range
+                      </span>
+                      <span className="capitalize" style={{ lineHeight: '1.5' }}>{pattern}</span>
+                    </p>
                   }
-                </ul>
+                  <ul id="selected-dates" className="list-unstyled">
+                    <React.Fragment>
+                      {
+                        selectedDates.map(date => {
+                          return (
+                            <li key={date.toString()} className="mb-2 selected-date">
+                              {date.toLocaleString('default', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                              <button className="btn p2pu-btn ml-1" onClick={() => deleteMeeting(date)}>x</button>
+                            </li>
+                          )
+                        })
+                      }
+                      {
+                        suggestedDatesObj.map(date => {
+                          return (
+                            <li key={date.toString()} className="mb-2 selected-date suggested-date">
+                              {date.toLocaleString('default', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            </li>
+                          )
+                        })
+                      }
+                    </React.Fragment>
+                  </ul>
+
               </div>
             </div>
           </div>
-          { Boolean(suggestedDates.length) && <button className="p2pu-btn blue" onClick={useSuggestedDates}>Use suggested dates</button> }
-          { Boolean(suggestedDates.length) && <button className="p2pu-btn dark" onClick={clearSuggestedDates}>Clear suggested dates</button> }
-          <button className="p2pu-btn dark" onClick={clearDates}>Clear dates</button>
         </div>
 
         <TimePickerWithLabel
@@ -432,10 +459,10 @@ class MeetingScheduler extends React.Component {
               value={recurrenceRules['meeting_count']}
               handleChange={handleRRuleChange}
               type={'number'}
+              max={MAX_MEETING_COUNT}
             />
-            <div className="d-flex justify-content-between buttons">
-              <button className="p2pu-btn dark" onClick={closeModal}>Select custom dates</button>
-              <button id="schedule-meetings-btn" className="p2pu-btn blue" onClick={generateMeetings}>Schedule meetings</button>
+            <div className="d-flex justify-content-end buttons">
+              <button id="schedule-meetings-btn" className="p2pu-btn blue" onClick={generateMeetings}>Update suggestions</button>
             </div>
           </div>
         </Modal>

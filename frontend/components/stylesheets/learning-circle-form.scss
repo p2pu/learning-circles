@@ -275,12 +275,33 @@ div.modal-overlay {
 }
 
 .meeting-scheduler {
+
+  .alert-container {
+    display: block;
+    position: relative;
+    padding: 0;
+
+    .alert-dismissible {
+      padding-right: unset;
+    }
+
+    .p2pu-btn.transparent {
+      background: transparent;
+      border-color: $gray-darker;
+      color: $gray-darker;
+    }
+
+    .text-small a {
+      font-size: 0.8em;
+      color: $gray-darker;
+    }
+  }
+
   .calendar {
     display: flex;
   }
 
   .selected-dates {
-    margin-left: 10px;
     flex: 1 1 auto;
     background-color: $gray-lighter;
     border-radius: 0.25rem;
@@ -304,8 +325,7 @@ div.modal-overlay {
   }
 
   .DayPicker-Month {
-    margin-left: 0;
-    margin-right: 0;
+    margin-bottom: 1rem;
     margin-top: 0;
   }
 
@@ -318,7 +338,7 @@ div.modal-overlay {
     background-color: $p2pu-blue;
   }
 
-  .DayPicker-Day--selected:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside):hover {
+  .DayPicker-Day--selected:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside):not(.DayPicker-Day--suggested):hover {
     background-color: #5f9ea0;
   }
 
@@ -330,7 +350,7 @@ div.modal-overlay {
     color: inherit;
   }
 
-  .DayPicker-Day--suggested:not(.DayPicker-Day--outside) {
+  .DayPicker-Day--selected.DayPicker-Day--suggested:not(.DayPicker-Day--outside) {
     background-color: $p2pu-light-blue;
     color: $gray-darker;
   }
@@ -341,12 +361,19 @@ div.modal-overlay {
 
   li.selected-date {
     display: flex;
+    align-items: baseline;
     flex-wrap: nowrap;
+    line-height: 1.5;
 
     .p2pu-btn {
       height: 24px;
       width: 24px;
       padding: 0;
+    }
+
+    &.suggested-date {
+      color: $gray;
+      font-style: italic;
     }
   }
 
