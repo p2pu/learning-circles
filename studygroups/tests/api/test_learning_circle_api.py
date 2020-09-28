@@ -154,7 +154,10 @@ class TestLearningCircleApi(TestCase):
             "timezone": "UTC",
             "image": "/media/image.png",
             "draft": False,
-            "meetings": "2018-02-12,2018-02-19",
+            "meetings": [
+                { "meeting_date": "2018-02-12", "meeting_time": "17:01" },
+                { "meeting_date": "2018-02-19", "meeting_time": "17:01" },
+            ]
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
@@ -206,7 +209,10 @@ class TestLearningCircleApi(TestCase):
             "timezone": "UTC",
             "image": "/media/image.png",
             "draft": False,
-            "meetings": "2018-02-12,2018-02-19",
+            "meetings": [
+                { "meeting_date": "2018-02-12", "meeting_time": "17:01" },
+                { "meeting_date": "2018-02-19", "meeting_time": "17:01" },
+            ]
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
@@ -243,7 +249,10 @@ class TestLearningCircleApi(TestCase):
             "duration": 50,
             "timezone": "UTC",
             "image": "/media/image.png",
-            "meetings": "2018-02-12,2018-02-19",
+            "meetings": [
+                { "meeting_date": "2018-02-12", "meeting_time": "17:01" },
+                { "meeting_date": "2018-02-19", "meeting_time": "17:01" },
+            ]
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
@@ -339,7 +348,10 @@ class TestLearningCircleApi(TestCase):
             "timezone": "UTC",
             "image": "/media/image.png",
             "draft": False,
-            "meetings": "2018-12-12,2018-12-19"
+            "meetings": [
+                { "meeting_date": "2018-02-12", "meeting_time": "17:01" },
+                { "meeting_date": "2018-02-19", "meeting_time": "17:01" },
+            ]
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
@@ -399,7 +411,10 @@ class TestLearningCircleApi(TestCase):
             "timezone": "UTC",
             "image": "/media/image.png",
             "draft": False,
-            "meetings": "2018-12-15,2018-12-22",
+            "meetings": [
+                { "meeting_date": "2018-12-15", "meeting_time": "17:01" },
+                { "meeting_date": "2018-12-22", "meeting_time": "17:01" },
+            ]
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
@@ -417,7 +432,10 @@ class TestLearningCircleApi(TestCase):
         # update less than 2 days before start
         with freeze_time("2018-12-14"):
             data['start_date'] = '2018-12-20'
-            data['meetings'] = "2018-12-20,2018-12-27"
+            data['meetings'] = [
+                { "meeting_date": "2018-12-20", "meeting_time": "17:01" },
+                { "meeting_date": "2018-12-27", "meeting_time": "17:01" },
+            ]
             url = '/api/learning-circle/{}/'.format(lc.pk)
             resp = c.post(url, data=json.dumps(data), content_type='application/json')
             self.assertEqual(resp.status_code, 200)
@@ -433,7 +451,10 @@ class TestLearningCircleApi(TestCase):
         # update more than 2 days before start
         with freeze_time("2018-12-12"):
             data['start_date'] = '2018-12-20'
-            data['meetings'] = "2018-12-20,2018-12-27"
+            data['meetings'] = [
+                { "meeting_date": "2018-12-20", "meeting_time": "17:01" },
+                { "meeting_date": "2018-12-27", "meeting_time": "17:01" },
+            ]
             url = '/api/learning-circle/{}/'.format(lc.pk)
             resp = c.post(url, data=json.dumps(data), content_type='application/json')
             self.assertEqual(resp.json(), {
@@ -474,7 +495,10 @@ class TestLearningCircleApi(TestCase):
             "timezone": "UTC",
             "image": "/media/image.png",
             "draft": True,
-            "meetings": "2018-12-15,2018-12-22",
+            "meetings": [
+                { "meeting_date": "2018-12-15", "meeting_time": "17:01" },
+                { "meeting_date": "2018-12-22", "meeting_time": "17:01" },
+            ]
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
@@ -550,7 +574,10 @@ class TestLearningCircleApi(TestCase):
             "duration": 50,
             "timezone": "UTC",
             "image": "/media/image.png",
-            "meetings": "2018-02-12,2018-02-19"
+            "meetings": [
+                { "meeting_date": "2018-02-12", "meeting_time": "17:01" },
+                { "meeting_date": "2018-02-19", "meeting_time": "17:01" },
+            ]
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
@@ -608,7 +635,10 @@ class TestLearningCircleApi(TestCase):
             "timezone": "UTC",
             "image": "/media/image.png",
             "draft": False,
-            "meetings": "2018-02-12,2018-02-19",
+            "meetings": [
+                { "meeting_date": "2018-02-12", "meeting_time": "17:01" },
+                { "meeting_date": "2018-02-19", "meeting_time": "17:01" },
+            ]
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
@@ -655,7 +685,10 @@ class TestLearningCircleApi(TestCase):
             "timezone": "UTC",
             "image": "/media/image.png",
             "draft": False,
-            "meetings": "2018-02-12,2018-02-19",
+            "meetings": [
+                { "meeting_date": "2018-02-12", "meeting_time": "17:01" },
+                { "meeting_date": "2018-02-19", "meeting_time": "17:01" },
+            ]
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)

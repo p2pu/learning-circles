@@ -304,8 +304,8 @@ class MeetingScheduler extends React.Component {
               <div className="mb-2">
                 <Alert show={Boolean(suggestedDates.length)} type="info" closeAlert={clearSuggestedDates}>
                   <p className="text-dark mb-2">Use suggested dates?</p>
-                  <button className="p2pu-btn transparent" onClick={clearSuggestedDates}>No</button>
-                  <button className="p2pu-btn dark" onClick={useSuggestedDates}>Yes</button>
+                  <button id='clear-suggestions-btn' className="p2pu-btn transparent" onClick={clearSuggestedDates}>No</button>
+                  <button id='accept-suggestions-btn' className="p2pu-btn dark" onClick={useSuggestedDates}>Yes</button>
                   <p className="text-small mb-0"><a href="#" onClick={openModal}>Change date pattern</a></p>
                 </Alert>
                 { !Boolean(suggestedDates.length) && Boolean(selectedDates.length) && <button className="p2pu-btn dark d-flex align-items-center" onClick={clearDates}><span className="material-icons mr-1">clear_all</span>Clear dates</button> }

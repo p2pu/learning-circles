@@ -109,8 +109,14 @@ class TestSignupModels(TestCase):
     def test_generate_meetings_from_dates(self):
         sg = StudyGroup.objects.get(pk=1)
         sg.timezone = 'US/Central'
-        sg.meeting_time = '16:00'
-        meeting_dates = "2020-09-30,2020-10-07,2020-10-14,2020-10-21,2020-10-28,2020-11-04"
+        meeting_dates = [
+            { "meeting_date": "2020-09-30", "meeting_time": "16:00" },
+            { "meeting_date": "2020-10-07", "meeting_time": "16:00" },
+            { "meeting_date": "2020-10-14", "meeting_time": "16:00" },
+            { "meeting_date": "2020-10-21", "meeting_time": "16:00" },
+            { "meeting_date": "2020-10-28", "meeting_time": "16:00" },
+            { "meeting_date": "2020-11-04", "meeting_time": "16:00" },
+        ]
         sg_meetings_count = Meeting.objects.active().filter(study_group=sg).count()
         self.assertEqual(sg_meetings_count, 0)
 
@@ -119,12 +125,19 @@ class TestSignupModels(TestCase):
         self.assertEqual(sg.meeting_set.count(), 6)
         self.assertEqual(sg.next_meeting().meeting_datetime().tzinfo.zone, 'US/Central')
 
-        meeting_dates_arr = meeting_dates.split(',')
-        for date in meeting_dates_arr:
-            self.assertTrue(Meeting.objects.active().filter(study_group=sg, meeting_date=date).exists())
+        for date in meeting_dates:
+            meeting_date = date['meeting_date']
+            self.assertTrue(Meeting.objects.active().filter(study_group=sg, meeting_date=meeting_date).exists())
 
         # update meetings
-        new_meeting_dates = "2020-10-07,2020-10-14,2020-10-21,2020-10-28,2020-11-04,2020-11-05"
+        new_meeting_dates = [
+            { "meeting_date": "2020-10-07", "meeting_time": "16:00" },
+            { "meeting_date": "2020-10-14", "meeting_time": "16:00" },
+            { "meeting_date": "2020-10-21", "meeting_time": "16:00" },
+            { "meeting_date": "2020-10-28", "meeting_time": "16:00" },
+            { "meeting_date": "2020-11-04", "meeting_time": "16:00" },
+            { "meeting_date": "2020-11-05", "meeting_time": "16:00" },
+        ]
 
         generate_meetings_from_dates(sg, new_meeting_dates)
 

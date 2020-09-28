@@ -89,9 +89,6 @@ def generate_meetings_from_dates(study_group, meeting_dates=[]):
     existing_meetings = Meeting.objects.active().filter(study_group=study_group)
     meetings_to_keep = []
 
-    print("generate_meetings_from_dates")
-    print(meeting_dates)
-
     for date in meeting_dates:
         meeting_date = date['meeting_date']
         meeting_time = date['meeting_time']

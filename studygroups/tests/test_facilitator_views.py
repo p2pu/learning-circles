@@ -75,7 +75,14 @@ class TestFacilitatorViews(TestCase):
         'timezone': 'Africa/Johannesburg',
         'facilitator_concerns': 'how do i market',
         'venue_website': 'http://venue.com',
-        'meetings': '2018-07-25,2018-08-01,2018-08-08,2018-08-15,2018-08-22,2018-08-29',
+        'meetings': [
+            { "meeting_date": "2018-07-25", "meeting_time": "19:00" },
+            { "meeting_date": "2018-08-01", "meeting_time": "16:00" },
+            { "meeting_date": "2018-08-08", "meeting_time": "16:00" },
+            { "meeting_date": "2018-08-15", "meeting_time": "16:00" },
+            { "meeting_date": "2018-08-22", "meeting_time": "16:00" },
+            { "meeting_date": "2018-08-29", "meeting_time": "16:00" },
+        ]
     }
 
     def setUp(self):
