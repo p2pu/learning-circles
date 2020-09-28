@@ -44,6 +44,21 @@ docker container exec -i $(docker-compose ps -q postgres) psql -U postgres lc < 
 
 We maintain a set of ansible roles to deploy learning circles in a repo called [marvin](https://github.com/p2pu/marvin). If you wish to deploy your own version, that will serve as a good guide to set up your own deployment.
 
+To do a release:
+
+ - Create a PR from master into release
+ - Call the PR Release YYYY-MM-DD
+ - Put the list of changes in the PR description
+ - Wait for tests to pass (docker image won't be uploaded for PR)
+ - Merge the PR
+ - Wait for TravisCI to build the release docker image
+ - Follow steps described [here](https://github.com/p2pu/marvin) to deploy latest release docker image
+
+To deploy the latest code to staging:
+
+ - Wait for the TravisCI build to finish on the master branch.
+ - Follow the steps described [here](https://github.com/p2pu/marvin) to deploy latest staging docker image
+
 ## Quick guide to the code
 
 - Django, Postgres, Celery+RabbitMQ for async tasks.
