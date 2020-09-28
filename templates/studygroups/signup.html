@@ -9,17 +9,23 @@
   {{study_group.name}}
 {% endblock %}
 
+
+<!-- SEO -->
+
 {% block page_meta %}
-  <meta name="description" content="Sign up for the learning circle {{ study_group.name }}">
   <meta property="og:title" content="{{ study_group.name }}" />
+  <meta name="description" content="Sign up for the learning circle {{ study_group.name }}" />
+  <meta property="og:description" content="Sign up for the learning circle {{ study_group.name }}" />
   {% if study_group.image %}
     <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ study_group.image.url }}" />
   {% else %}
-    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'images/learning-circle-default.jpg' %}" />
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'images/p2pu-ogimg-default.jpg' %}" />
   {% endif %}
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+  <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.get_full_path }}" />
+  <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.get_full_path }}">
 {% endblock %}
+
 
 {% block content %}
 <div class="lc-signup">
