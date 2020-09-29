@@ -4,50 +4,13 @@ Learning circles are study groups that meet weekly at a physical location to wor
 
 This is the source code for the online dashboard that helps facilitators organize and run their learning circles. You can find the dashboard at [learningcircles.p2pu.org](https://learningcircles.p2pu.org/) or see the [online user documentation](https://learning-circles-user-manual.readthedocs.io/en/latest/) for a guide on how to use the dashboard and a description on the functionality provided.
 
-# What are the future plans?
-
-We maintain a [feature roadmap](https://github.com/p2pu/learning-circles/wiki/Roadmap) where you can see what we are currently working on and what we are planning to do.
-
 # Development
 
-## Development environment
+## Run it locally
 
-You will need python 3.6 with virtualenv and node v8 available for development.
+Install [docker](https://docs.docker.com/engine/install/) and [docker-compose](https://docs.docker.com/compose/install/).
 
-This section assumes that you have python 3.6 available and set as the default python version and Node.js v8. If that is not the case, please see https://python.org and https://nodejs.org respectively for instruction on how to set it up. If you are running other versions of node on your computer, it is recommended that you use a tool like nvm to manage the different versions.
-
-
-The shortest path to a running environment is:
-
-```
-virtualenv venv
-source venv/bin/activate
-pip install -r requirements.txt
-python manage.py syncdb
-python manage.py collectstatic
-python manage.py runserver
-```
-
-To compile JavaScript resources, run
-
-```
-npm install
-npm run build
-```
-
-To generate strings for translation
-
-    python manage.py makemessages -l es -l fr -i venv
-    python manage.py makemessages -l es -l fr -i venv -i node_modules -i assets/dist/* -i docs -d djangojs -e jsx,js
-
-Translation is done using [Transifex](https://www.transifex.com/p2pu/learning-circles/)
-
-
-## Using Docker compose
-
-See http://docker.com/ for instructions on installing Docker.
-
-Once you have docker and docker-compose set up, run the following commands in the project directory:
+Run the following commands in the project directory:
 
 ```
 docker-compose up
@@ -76,3 +39,34 @@ To restore the database from an .sql file:
 ```
 docker container exec -i $(docker-compose ps -q postgres) psql -U postgres lc < <filename>.sql
 ```
+
+## Deploying the code
+
+We maintain a set of ansible roles to deploy learning circles in a repo called [marvin](https://github.com/p2pu/marvin). If you wish to deploy your own version, that will serve as a good guide to set up your own deployment.
+
+To do a release:
+
+ - Create a PR from master into release
+ - Call the PR Release YYYY-MM-DD
+ - Put the list of changes in the PR description
+ - Wait for tests to pass (docker image won't be uploaded for PR)
+ - Merge the PR
+ - Wait for TravisCI to build the release docker image
+ - Follow steps described [here](https://github.com/p2pu/marvin) to deploy latest release docker image
+
+To deploy the latest code to staging:
+
+ - Wait for the TravisCI build to finish on the master branch.
+ - Follow the steps described [here](https://github.com/p2pu/marvin) to deploy latest staging docker image
+
+## Quick guide to the code
+
+- Django, Postgres, Celery+RabbitMQ for async tasks.
+- Front-end functionality is a mix of old-school Django views and React + API backend.
+- An API is provided for use by https://www.p2pu.org and team sites.
+- Site provides identity for Discourse SSO hosted at https://community.p2pu.org
+- Most code resides in the studygroups app.
+- Translation is done using [Transifex](https://www.transifex.com/p2pu/learning-circles/). Updated translation files are manually pulled from transifex.
+- Database and uploaded files are backed up and uploaded to AWS S3
+- Messaging is handled by mailgun, although we use SMTP for sending, so any service can be used for that. The announce list uses mailgun webhook functionality.
+- We use Typeform surveys, the surveys are embedded on the site and periodically synced to the db.

@@ -133,6 +133,9 @@ STATICFILES_FINDERS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = path('upload')
 
+# If this isn't set, you'll get inconsisten permissions when uploading big files on linux
+FILE_UPLOAD_PERMISSIONS = 0o644
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
