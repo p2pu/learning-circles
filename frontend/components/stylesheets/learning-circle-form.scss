@@ -381,6 +381,19 @@ div.modal-overlay {
     font-weight: 700;
     font-size: 1.15em
   }
+
+  #meeting-count {
+    background: transparent;
+    border: none;
+    border-bottom: 2px dashed $gray-darker;
+    color: $gray-darker;
+    font-weight: bold;
+
+    &:focus {
+      border-bottom: 2px solid $gray-darker;
+      outline: none;
+    }
+  }
 }
 
 .p2pu-modal {

@@ -59,7 +59,7 @@ export default class FormTabs extends React.Component{
           </TabPanel>
           <TabPanel className='tab-content'>
             <div className='content-container'>
-              <h4>Step 3: Select the Day and Time</h4>
+              <h4>Step 3: Schedule your Meetings</h4>
               <MeetingScheduler
                 updateFormData={this.props.updateFormData}
                 learningCircle={this.props.learningCircle}

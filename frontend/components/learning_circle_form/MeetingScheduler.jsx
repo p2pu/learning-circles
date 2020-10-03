@@ -36,7 +36,6 @@ Notes about dates
 const MAX_MEETING_COUNT = 52
 const MIN_MEETING_COUNT = 1
 const DEFAULT_MEETING_COUNT = 6
-const CUSTOM_SELECTION_TEXT = 'Custom selection'
 
 const weekdays = [
   { label: 'Sunday', value: RRule.SU },
@@ -57,7 +56,6 @@ class MeetingScheduler extends React.Component {
   constructor(props) {
     super(props)
     this.initialState = {
-      meeting_frequency: null,
       showModal: false,
       recurrenceRules: defaultRecurrenceRules,
       timeoutId: null,
@@ -68,6 +66,7 @@ class MeetingScheduler extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps.learningCircle.meeting_time !== this.props.learningCircle.meeting_time) {
+      this.generateMeetings()
       this.updateMeetingTime()
     }
   }
@@ -84,9 +83,11 @@ class MeetingScheduler extends React.Component {
     let localDate = new Date(utcDate)
 
     // seems hacky but fixes the DST issue
-    const [hours, minutes] = this.props.learningCircle.meeting_time.split(":")
-    localDate.setHours(hours)
-    localDate.setMinutes(minutes)
+    if (this.props.learningCircle.meeting_time) {
+      const [hours, minutes] = this.props.learningCircle.meeting_time.split(":")
+      localDate.setHours(hours)
+      localDate.setMinutes(minutes)
+    }
 
     return localDate
   }
@@ -145,7 +146,7 @@ class MeetingScheduler extends React.Component {
         ...this.state.recurrenceRules,
         ...newContent
       }
-    })
+    }, this.generateMeetings)
   }
 
   handleDayClick = (day, { selected, disabled }) => {
@@ -155,17 +156,23 @@ class MeetingScheduler extends React.Component {
     const selectedDays = [...this.props.learningCircle.meetings]
     const isFirstDate = selectedDays.length === 0
 
+    if (this.props.learningCircle.meeting_time) {
+      const [hours, minutes] = this.props.learningCircle.meeting_time.split(":")
+      day.setHours(hours)
+      day.setMinutes(minutes)
+    }
+
     if (isFirstDate) {
       this.props.updateFormData({ start_date: day, meetings: [day] })
 
-      const weekday = weekdays[day.getDay()] ? [weekdays[day.getDay()].value] : null;
+      const weekday = weekdays[day.getDay()] ? weekdays[day.getDay()].value : null;
       this.setState({
         ...this.state,
         recurrenceRules: {
           ...this.state.recurrenceRules,
            weekday: weekday
         }
-      }, () => this.generateMeetings())
+      }, this.generateMeetings)
 
     } else {
       const selectedIndex = selectedDays.findIndex(meeting =>
@@ -180,7 +187,7 @@ class MeetingScheduler extends React.Component {
 
       const meetingDates = selectedDays.sort((a,b) => (a - b))
       const startDate = meetingDates[0]
-      this.props.updateFormData({ start_date: startDate, meetings: selectedDays, meeting_frequency: null })
+      this.props.updateFormData({ start_date: startDate, meetings: selectedDays, meets_weekly: false })
 
       this.setState({
         ...this.state,
@@ -191,7 +198,7 @@ class MeetingScheduler extends React.Component {
 
   updateMeetingTime = () => {
     const meetings = [...this.props.learningCircle.meetings].map(m => {
-      const [hours, minutes] = this.props.learningCircle.meeting_time.split(":")
+      const [hours, minutes] = this.props.learningCircle.meeting_time ? this.props.learningCircle.meeting_time.split(":") : [undefined, undefined]
       const newDate = new Date(m.getFullYear(), m.getMonth(), m.getDate(), hours, minutes)
       return newDate
     })
@@ -200,16 +207,16 @@ class MeetingScheduler extends React.Component {
   }
 
   clearDates = () => {
-    this.setState({ ...this.state, meeting_frequency: null, recurrenceRules: defaultRecurrenceRules })
-    this.props.updateFormData({ "start_date": '', meetings: [], meeting_frequency: null })
+    this.setState({ ...this.state, recurrenceRules: defaultRecurrenceRules })
+    this.props.updateFormData({ "start_date": '', meetings: [], meets_weekly: false })
   }
 
   clearSuggestedDates = () => {
-    this.setState({ ...this.state, meeting_frequency: null, suggestedDates: [] })
+    this.setState({ ...this.state, suggestedDates: [] })
   }
 
   useSuggestedDates = () => {
-    this.props.updateFormData({ meetings: this.state.suggestedDates, meeting_frequency: this.state.rruleText })
+    this.props.updateFormData({ meetings: this.state.suggestedDates, meets_weekly: true })
     this.setState({ ...this.state, suggestedDates: [] })
   }
 
@@ -223,7 +230,7 @@ class MeetingScheduler extends React.Component {
       meetings.splice(selectedIndex, 1);
     }
 
-    this.props.updateFormData({ meetings, meeting_frequency: null })
+    this.props.updateFormData({ meetings, meets_weekly: false })
     this.setState({ ...this.state, rruleText: null })
   }
 
@@ -231,13 +238,15 @@ class MeetingScheduler extends React.Component {
     const { clearDates, openModal, closeModal, handleChange, handleRRuleChange, handleDayClick, generateMeetings, useSuggestedDates, clearSuggestedDates, deleteMeeting } = this;
     const { showModal, recurrenceRules, suggestedDates } = this.state;
     const { learningCircle, errors, updateFormData } = this.props;
-    const { meetings, start_date, meeting_frequency } = learningCircle;
+    const { meetings, start_date } = learningCircle;
 
     const suggestedDatesArr = suggestedDates.filter(sd => !meetings.find(m => DateUtils.isSameDay(m, sd)))
 
     const selectedDates = meetings.sort((a,b) => { return a - b })
     const suggestedDatesObj = suggestedDatesArr.sort((a,b) => { return a - b })
     const displayMeetings = selectedDates.concat(suggestedDatesObj)
+    const weekdayOption = weekdays.find((weekday) => weekday.value === recurrenceRules.weekday)
+    const weekdayName = weekdayOption ? weekdayOption.label : null
 
     let reminderWarning = null;
     let minDate = new Date;
@@ -282,6 +291,12 @@ class MeetingScheduler extends React.Component {
 
     }
 
+    let dateOpts = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }
+    if (learningCircle.meeting_time) {
+      dateOpts.hour = 'numeric'
+      dateOpts.minute = '2-digit'
+    }
+
     return(
       <div className="">
         {reminderWarning}
@@ -291,6 +306,7 @@ class MeetingScheduler extends React.Component {
             <div className="col-12 col-xl-6 d-flex justify-content-center" style={{ flex: '1 1 auto' }}>
               <div>
                 <DayPicker
+                  id="calendar"
                   selectedDays={displayMeetings}
                   onDayClick={handleDayClick}
                   modifiers={modifiers}
@@ -303,10 +319,23 @@ class MeetingScheduler extends React.Component {
 
               <div className="mb-2">
                 <Alert show={Boolean(suggestedDates.length)} type="info" closeAlert={clearSuggestedDates}>
-                  <p className="text-dark mb-2">Use suggested dates?</p>
+                  <p className="mb-2">
+                    {`Suggested dates: Every ${weekdayName} for `}
+                    <input
+                      id="meeting-count"
+                      name="meeting_count"
+                      value={recurrenceRules['meeting_count']}
+                      onChange={e => handleRRuleChange({ meeting_count: e.currentTarget.value })}
+                      type={'number'}
+                      min={MIN_MEETING_COUNT}
+                      max={MAX_MEETING_COUNT}
+                    />
+                    {` weeks`}
+                  </p>
+                  <hr />
+                  <p>Do you want to use the suggested dates? You can continue editing afterwards.</p>
                   <button id='clear-suggestions-btn' className="p2pu-btn transparent" onClick={clearSuggestedDates}>No</button>
                   <button id='accept-suggestions-btn' className="p2pu-btn dark" onClick={useSuggestedDates}>Yes</button>
-                  <p className="text-small mb-0"><a href="#" onClick={openModal}>Change date pattern</a></p>
                 </Alert>
                 { !Boolean(suggestedDates.length) && Boolean(selectedDates.length) && <button className="p2pu-btn dark d-flex align-items-center" onClick={clearDates}><span className="material-icons mr-1">clear_all</span>Clear dates</button> }
               </div>
@@ -318,22 +347,14 @@ class MeetingScheduler extends React.Component {
                   >
                   { `Selected dates (${selectedDates.length})` }
                   </label>
-                  {
-                    selectedDates.length > 1 &&
-                    <p className="d-flex align-center">
-                      <span className="material-icons" style={{ fontSize: '20px', paddingTop: '2px', paddingRight: '6px' }}>
-                        date_range
-                      </span>
-                      <span className="capitalize" style={{ lineHeight: '1.5' }}>{meeting_frequency || CUSTOM_SELECTION_TEXT }</span>
-                    </p>
-                  }
+                  <p>Click on the calendar to add or remove dates.</p>
                   <ul id="selected-dates" className="list-unstyled">
                     <React.Fragment>
                       {
                         selectedDates.map(date => {
                           return (
                             <li key={date.toString()} className="mb-2 selected-date">
-                              {date.toLocaleString('default', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                              {date.toLocaleString('default', dateOpts)}
                               <button className="btn p2pu-btn ml-1" onClick={() => deleteMeeting(date)}>x</button>
                             </li>
                           )
@@ -343,7 +364,7 @@ class MeetingScheduler extends React.Component {
                         suggestedDatesObj.map(date => {
                           return (
                             <li key={date.toString()} className="mb-2 selected-date suggested-date">
-                              {date.toLocaleString('default', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                              {date.toLocaleString('default', dateOpts)}
                             </li>
                           )
                         })
@@ -387,53 +408,6 @@ class MeetingScheduler extends React.Component {
           required={true}
           min={0}
         />
-
-        <Modal open={showModal || false} onClose={closeModal} classNames={{modal: 'p2pu-modal', overlay: 'modal-overlay'}}>
-
-          <div className="">
-            <div className="mb-3 heading" role="heading"><h3>Recurring meetings</h3></div>
-            <SelectWithLabel
-              options={[
-                { label: 'Monday', value: RRule.MO },
-                { label: 'Tuesday', value: RRule.TU },
-                { label: 'Wednesday', value: RRule.WE },
-                { label: 'Thursday', value: RRule.TH },
-                { label: 'Friday', value: RRule.FR },
-                { label: 'Saturday', value: RRule.SA },
-                { label: 'Sunday', value: RRule.SU }
-              ]}
-              name='weekday'
-              value={recurrenceRules['weekday']}
-              handleChange={handleRRuleChange}
-              label="On which days will you meet?"
-              isMulti={true}
-              isClearable={false}
-            />
-            <SelectWithLabel
-              options={[
-                { label: 'Every week', value: 'weekly' },
-                { label: 'Every 2 weeks', value: 'biweekly' },
-              ]}
-              name='frequency'
-              value={recurrenceRules['frequency']}
-              handleChange={handleRRuleChange}
-              label="How often will you meet?"
-              isClearable={false}
-            />
-            <InputWithLabel
-              name="meeting_count"
-              label="How many times will you meet?"
-              value={recurrenceRules['meeting_count']}
-              handleChange={handleRRuleChange}
-              type={'number'}
-              min={MIN_MEETING_COUNT}
-              max={MAX_MEETING_COUNT}
-            />
-            <div className="d-flex justify-content-end buttons">
-              <button id="schedule-meetings-btn" className="p2pu-btn blue" onClick={generateMeetings}>Update suggestions</button>
-            </div>
-          </div>
-        </Modal>
       </div>
     );
   }
