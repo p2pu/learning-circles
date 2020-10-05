@@ -8,6 +8,13 @@ services:
     image: djfarrelly/maildev
     ports:
     - 1080:80
+  frontend:
+    image: node:lts-slim
+    working_dir: /opt/app
+    user: "1000"
+    volumes:
+    - .:/opt/app
+    command: sh -c "npm i && npm run watch"
   learning-circles:
     build: .
     image: p2pu/learning-circles:local
@@ -19,6 +26,7 @@ services:
     - rabbitmq
     - postgres
     - email
+    - frontend
     environment:
     - ADMIN_EMAIL=admin@localhost
     - BROKER_URL=amqp://guest:guest@rabbitmq//
