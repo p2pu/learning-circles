@@ -19,12 +19,20 @@ import 'p2pu-components/dist/build.css';
 
 
 export default class CreateLearningCirclePage extends React.Component {
+  static defaultProps = {
+    learningCircle: LC_DEFAULTS
+  }
 
   constructor(props){
     super(props);
+    console.log(this.props.learningCircle)
+    const meetings = this.props.learningCircle.meetings.map(m => this.parseMeetingDate(m)).sort((a,b) => a - b)
     this.state = {
       currentTab: 0,
-      learningCircle: !!this.props.learningCircle ? this.props.learningCircle : LC_DEFAULTS,
+      learningCircle: {
+        ...this.props.learningCircle,
+        meetings: meetings
+      },
       showModal: false,
       showHelp: window.screen.width > DESKTOP_BREAKPOINT,
       user: this.props.user,
@@ -55,7 +63,17 @@ export default class CreateLearningCirclePage extends React.Component {
 
   componentDidMount() {
     const urlParams = new URL(window.location.href).searchParams;
-    const courseId = !!this.props.learningCircle ? this.props.learningCircle.course : urlParams.get('course_id');
+    let courseId;
+
+    if (urlParams.get('course_id')) {
+      courseId = urlParams.get('course_id')
+    } else if (this.props.learningCircle && this.props.learningCircle.course) {
+      if (typeof(this.props.learningCircle.course) === 'number') {
+        courseId = this.props.learningCircle.course
+      } else if (typeof(this.props.learningCircle.course) === 'object') {
+        courseId = this.props.learningCircle.course.id
+      }
+    }
 
     if (!!courseId) {
       const api = new ApiHelper('courses', window.location.origin);
@@ -144,18 +162,51 @@ export default class CreateLearningCirclePage extends React.Component {
     return placeData
   }
 
+
+  dateObjectToStringForDB = (date) => {
+    if (!date || typeof(date) !== 'object') {
+      throw Error("No Date object provided")
+    }
+    const year = date.getFullYear()
+    const month = `0${date.getMonth() + 1}`.slice(-2)
+    const day = `0${date.getDate()}`.slice(-2)
+    const hours = `0${date.getHours()}`.slice(-2)
+    const minutes = `0${date.getMinutes()}`.slice(-2)
+
+    return { meeting_date: `${year}-${month}-${day}`, meeting_time: `${hours}:${minutes}` }
+  }
+
+  formatMeetingDates = () => {
+    return this.state.learningCircle.meetings.map(m=> this.dateObjectToStringForDB(m))
+  }
+
+  parseMeetingDate = (meetingObj) => {
+    const parsedMeeting = JSON.parse(meetingObj)
+    const [year, month, day] = parsedMeeting['meeting_date'].split('-')
+    const [hour, minute] = parsedMeeting['meeting_time'].split(':')
+    const date = new Date(year, month-1, day, hour, minute)
+    return date
+  }
+
   _onSubmitForm(draft=true) {
     if (!this.state.user) {
       this.showModal();
     } else {
       this.setState({ isSaving: draft, isPublishing: !draft })
       const placeData = this.extractPlaceData(this.state.learningCircle.place)
+      const start_date = typeof(this.state.learningCircle.start_date) === 'string' ? this.state.learningCircle.start_date : this.dateObjectToStringForDB(this.state.learningCircle.start_date)['meeting_date']
+      const meetings = this.formatMeetingDates()
+
       const data = {
         ...this.state.learningCircle,
         ...placeData,
         course: this.state.learningCircle.course.id,
         draft: draft,
+        meetings: meetings,
+        start_date: start_date
       }
+
+      console.log("post data", data)
 
       const onSuccess = (data) => {
         this.setState({ learningCircle: {}, isSaving: false, isPublishing: false }, () => {
@@ -164,6 +215,7 @@ export default class CreateLearningCirclePage extends React.Component {
       }
 
       const onError = (data) => {
+        console.log(`Error saving the learning circle: ${JSON.stringify(data.errors)}`)
         this.setState({
           isSaving: false,
           isPublishing: false,

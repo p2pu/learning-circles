@@ -35,8 +35,6 @@ class LearningCircleCreationPage(BasePage):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Date needs to be 4 days in the future - UI disables earlier dates
-        self.start_date = (datetime.datetime.now() + datetime.timedelta(days=5)).date().strftime("%Y%m%d")
 
     def fill_out_form_correctly(self):
         self.select_first_course()
@@ -50,8 +48,9 @@ class LearningCircleCreationPage(BasePage):
 
         self.click_next_button()
 
-        self.fill_text_field(LearningCircleCreationPageLocators.START_DATE_FIELD, self.start_date)
-        self.fill_text_field(LearningCircleCreationPageLocators.WEEKS_FIELD, "8")
+        self.select_start_date()
+        self.select_suggested_dates()
+        self.wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, '#selected-dates li')))
 
         self.fill_text_field(LearningCircleCreationPageLocators.MEETING_TIME_FIELD, "7:00 PM", Keys.ENTER)
         self.fill_text_field(LearningCircleCreationPageLocators.DURATION_FIELD, "60")
@@ -70,6 +69,14 @@ class LearningCircleCreationPage(BasePage):
         self.fill_text_field(LearningCircleCreationPageLocators.FACILITATOR_CONCERNS_FIELD, "Nothing really")
 
 
+    def select_start_date(self):
+        calendar_date = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.CALENDAR_TODAY))
+        calendar_date.click()
+
+    def select_suggested_dates(self):
+        btn = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.ACCEPT_SUGGESTED_DATES_BUTTON))
+        btn.click()
+
     def select_first_course(self):
         course_cards = self.wait.until(expected_conditions.visibility_of_all_elements_located(LearningCircleCreationPageLocators.COURSE_CARDS))
         self.wait.until(expected_conditions.text_to_be_present_in_element(LearningCircleCreationPageLocators.FIRST_COURSE_TITLE, "Academic Writing"))
@@ -81,7 +88,6 @@ class LearningCircleCreationPage(BasePage):
         self.wait.until_not(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, '.search-container')))
         remove_link = self.wait.until(expected_conditions.visibility_of_element_located(LearningCircleCreationPageLocators. REMOVE_COURSE_SELECTION_LINK))
         assert 'Remove selection' in remove_link.text
-
 
     def fill_city_select_field(self, location):
         city_select = self.wait.until(expected_conditions.visibility_of_element_located(LearningCircleCreationPageLocators.CITY_SELECT_INPUT))
@@ -100,6 +106,14 @@ class LearningCircleCreationPage(BasePage):
     def click_save_button(self):
         publish_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.SAVE_BUTTON))
         publish_button.click()
+
+    def click_modal_button(self):
+        modal_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.MODAL_BUTTON))
+        modal_button.click()
+
+    def click_schedule_meetings_button(self):
+        meetings_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.SCHEDULE_MEETINGS_BUTTON))
+        meetings_button.click()
 
     def click_login_link(self):
         self.driver.find_element_by_css_selector('.registration-modal-content button:first-child').click()

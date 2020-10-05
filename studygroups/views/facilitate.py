@@ -388,6 +388,7 @@ class StudyGroupUpdate(SingleObjectMixin, TemplateView):
     def get_context_data(self, **kwargs):
         self.object = self.get_object()
         context = super().get_context_data(**kwargs)
+        context['meetings'] = [m.to_json() for m in self.object.meeting_set.active()]
         context['hide_footer'] = True
         return context
 

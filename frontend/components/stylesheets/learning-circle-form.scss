@@ -11,7 +11,7 @@ html {
 }
 
 .close {
-  color: #515665; /*gray-darker*/
+  color: $gray-darker;
 }
 
 .page-container {
@@ -71,9 +71,9 @@ html {
     }
 
     .tabs-item {
-      background: #F3F4F8; /*gray-lighter*/
+      background: $gray-lighter;
       flex-grow: 1;
-      border-right: 1px solid #AAB0BF; /*gray*/
+      border-right: 1px solid $gray;
       padding: 6px 10px 3px;
       cursor: pointer;
 
@@ -103,7 +103,7 @@ html {
       .rc-time-picker {
         .rc-time-picker-input {
           font-size: 16px;
-          color: #515665;
+          color: $gray-darker;
           height: auto;
         }
       }
@@ -160,37 +160,37 @@ html {
 
       &.transparent {
         background: transparent;
-        color: #515665; /*gray-darker*/
-        border: 2px solid #515665;
+        color: $gray-darker;
+        border: 2px solid $gray-darker;
         &:before {
           background: rgba(255,255,255,0.4);
         }
       }
 
       &.blue {
-        background: #05C6B4;
+        background: $p2pu-blue;
         color: white;
 
         &:before {
-          background: lighten(#05C6B4, 1%);
+          background: lighten($p2pu-blue, 1%);
         }
       }
 
       &.orange {
-        background: #FC7100;
+        background: $p2pu-orange;
         color: white;
 
         &:before {
-          background: lighten(#FC7100, 3%);
+          background: lighten($p2pu-orange, 3%);
         }
       }
 
       &.yellow {
-        background: #FFBC1A;
+        background: $p2pu-yellow;
         color: white;
 
         &:before {
-          background: lighten(#FFBC1A, 3%);
+          background: lighten($p2pu-yellow, 3%);
         }
       }
 
@@ -204,7 +204,7 @@ html {
 }
 
 .help-container {
-  background-color: #F3F4F8; /*gray-lighter*/
+  background-color: $gray-lighter;
   right: 0;
   padding-top: 104px;
   padding-bottom: 90px;
@@ -221,10 +221,10 @@ div.modal-overlay {
   background: rgba(255,255,255,0.9) ;
   top: $navbar-height;
 
-  .registration-modal {
+  .p2pu-modal {
     padding: 3em;
     border-radius: 20px;
-    border: 4px solid #05C6B4; /*p2pu-blue*/
+    border: 4px solid $p2pu-blue; /*p2pu-blue*/
     font-size: 16px;
 
     .modal-actions {
@@ -233,15 +233,14 @@ div.modal-overlay {
       align-items: baseline;
       flex-wrap: wrap;
       margin-top: 20px;
+    }
 
-      .buttons {
-        flex-wrap: nowrap;
-        display: flex;
+    .buttons {
+      flex-wrap: nowrap;
+      display: flex;
 
-        button {
-          margin-left: 8px;
-          padding: 0.6em 1.2em;
-        }
+      button {
+        padding: 0.6em 1.2em;
       }
     }
   }
@@ -249,7 +248,7 @@ div.modal-overlay {
 
 .error-message {
   font-weight: bold;
-  color: #FC7100; /*p2pu-orange*/
+  color: $p2pu-orange;
   text-align: left !important;
 }
 
@@ -274,6 +273,139 @@ div.modal-overlay {
 .help-text img {
   width: 100%;
 }
+
+.meeting-scheduler {
+
+  .alert-container {
+    display: block;
+    position: relative;
+    padding: 0;
+
+    .alert-dismissible {
+      padding-right: 1.25rem;
+    }
+
+    .p2pu-btn.transparent {
+      background: transparent;
+      border-color: $gray-darker;
+      color: $gray-darker;
+    }
+
+    .text-small a {
+      font-size: 0.8em;
+      color: $gray-darker;
+    }
+  }
+
+  .calendar {
+    display: flex;
+  }
+
+  .selected-dates {
+    flex: 1 1 auto;
+    background-color: $gray-lighter;
+    border-radius: 0.25rem;
+    border: 1px solid $gray-light;
+  }
+
+  .capitalize::first-letter {
+    text-transform: capitalize;
+  }
+
+  .form-control:disabled {
+    background-color: #f2f2f2;
+    border: 1px solid #e6e6e6;
+    color: #999999;
+  }
+
+  .DayPicker-Day {
+    padding: 0.25vw 0.6vw;
+    border-radius: 0;
+    border: 6px solid white;
+  }
+
+  .DayPicker-Month {
+    margin-bottom: 1rem;
+    margin-top: 0;
+  }
+
+  .DayPicker-NavButton {
+    top: 2px;
+    right: 10px;
+  }
+
+  .DayPicker-Day--selected:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside) {
+    background-color: $p2pu-blue;
+  }
+
+  .DayPicker-Day--selected:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside):not(.DayPicker-Day--suggested):hover {
+    background-color: #5f9ea0;
+  }
+
+  .DayPicker:not(.DayPicker--interactionDisabled) .DayPicker-Day:not(.DayPicker-Day--disabled):not(.DayPicker-Day--selected):not(.DayPicker-Day--outside):hover {
+    background-color: #dff6f5;
+  }
+
+  .DayPicker-Day--today {
+    color: $p2pu-orange;
+  }
+
+  .DayPicker-Day--selected.DayPicker-Day--suggested:not(.DayPicker-Day--outside) {
+    background-color: $p2pu-light-blue;
+    color: $gray-darker;
+  }
+
+  .list-unstyled {
+    font-size: 14px;
+  }
+
+  li.selected-date {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: nowrap;
+    line-height: 1.5;
+
+    .p2pu-btn {
+      height: 24px;
+      width: 24px;
+      padding: 0;
+    }
+
+    &.suggested-date {
+      color: $gray;
+      font-style: italic;
+    }
+  }
+
+  .heading {
+    font-weight: 700;
+    font-size: 1.15em
+  }
+
+  #meeting-count {
+    background: transparent;
+    border: none;
+    border-bottom: 2px dashed $gray-darker;
+    color: $gray-darker;
+    font-weight: bold;
+
+    &:focus {
+      border-bottom: 2px solid $gray-darker;
+      outline: none;
+    }
+  }
+}
+
+.p2pu-modal {
+  width: 600px;
+  max-width: 80vw;
+}
+
+.text-bold, .DayPicker-Caption > div {
+  font-weight: 700;
+  font-size: 1.15em;
+}
+
 
 @media (max-width: 768px) {
   .form-container, .help-container {
