@@ -281,6 +281,10 @@ div.modal-overlay {
     position: relative;
     padding: 0;
 
+    .alert {
+      z-index: 1;
+    }
+
     .alert-dismissible {
       padding-right: 1.25rem;
     }
