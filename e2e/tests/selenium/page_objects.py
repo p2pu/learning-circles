@@ -75,15 +75,16 @@ class LearningCircleCreationPage(BasePage):
 
     def select_suggested_dates(self):
         btn = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.ACCEPT_SUGGESTED_DATES_BUTTON))
-        btn.click()
+        # use this instead of btn.click() since the button is out of view
+        self.driver.execute_script("return arguments[0].click();", btn)
 
     def select_first_course(self):
         course_cards = self.wait.until(expected_conditions.visibility_of_all_elements_located(LearningCircleCreationPageLocators.COURSE_CARDS))
         self.wait.until(expected_conditions.text_to_be_present_in_element(LearningCircleCreationPageLocators.FIRST_COURSE_TITLE, "Academic Writing"))
 
         course_select_button = self.wait.until(expected_conditions.element_to_be_clickable(LearningCircleCreationPageLocators.FIRST_COURSE_BUTTON))
+        # button is out of view
         self.driver.execute_script("return arguments[0].click();", course_select_button)
-        # course_select_button.click()
         # wait until search container is gone
         self.wait.until_not(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, '.search-container')))
         remove_link = self.wait.until(expected_conditions.visibility_of_element_located(LearningCircleCreationPageLocators. REMOVE_COURSE_SELECTION_LINK))
