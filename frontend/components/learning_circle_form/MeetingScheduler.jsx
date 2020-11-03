@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { render } from 'react-dom';
-import { RRule, RRuleSet, rrulestr } from 'rrule'
+import { RRule } from 'rrule'
 import DayPicker, { DateUtils } from 'react-day-picker';
 import Modal from 'react-responsive-modal';
 import moment from 'moment'
@@ -9,9 +8,7 @@ import moment from 'moment'
 import {
   InputWithLabel,
   TimePickerWithLabel,
-  DatePickerWithLabel,
   TimeZoneSelect,
-  SelectWithLabel,
 } from 'p2pu-components'
 
 import Alert from './Alert'
@@ -37,7 +34,7 @@ const MAX_MEETING_COUNT = 52
 const MIN_MEETING_COUNT = 1
 const DEFAULT_MEETING_COUNT = 6
 
-const weekdays = [
+const WEEKDAYS = [
   { label: 'Sunday', value: RRule.SU },
   { label: 'Monday', value: RRule.MO },
   { label: 'Tuesday', value: RRule.TU },
@@ -50,6 +47,27 @@ const weekdays = [
 const defaultRecurrenceRules = {
   meeting_count: DEFAULT_MEETING_COUNT,
 }
+
+
+// date conversion utils
+function localDateToUtcDate(localDate){
+  const utcDate = new Date(Date.UTC(localDate.getUTCFullYear(), localDate.getUTCMonth(), localDate.getUTCDate(), localDate.getUTCHours(), localDate.getUTCMinutes()));
+  return utcDate;
+}
+
+function utcDateToLocalDate (utcDate, meeting_time=null){
+  let localDate = new Date(utcDate)
+
+  // seems hacky but fixes the DST issue
+  if (meeting_time) {
+    const [hours, minutes] = meeting_time.split(":");
+    localDate.setHours(hours);
+    localDate.setMinutes(minutes);
+  }
+
+  return localDate
+}
+
 
 class MeetingScheduler extends React.Component {
   constructor(props) {
@@ -70,35 +88,13 @@ class MeetingScheduler extends React.Component {
     }
   }
 
-
-  // date conversion utils
-
-  localDateToUtcDate = (localDate) => {
-    const utcDate = new Date(Date.UTC(localDate.getUTCFullYear(), localDate.getUTCMonth(), localDate.getUTCDate(), localDate.getUTCHours(), localDate.getUTCMinutes()))
-    return utcDate
-  }
-
-  utcDateToLocalDate = (utcDate) => {
-    let localDate = new Date(utcDate)
-
-    // seems hacky but fixes the DST issue
-    if (this.props.learningCircle.meeting_time) {
-      const [hours, minutes] = this.props.learningCircle.meeting_time.split(":")
-      localDate.setHours(hours)
-      localDate.setMinutes(minutes)
-    }
-
-    return localDate
-  }
-
   // recurrence rule functions
-
   generateSuggestedMeetings = () => {
     const { learningCircle } = this.props;
     const { recurrenceRules } = this.state;
 
     if (!learningCircle['start_date']) { return }
-    const utcDate = this.localDateToUtcDate(learningCircle['start_date'])
+    const utcDate = localDateToUtcDate(learningCircle['start_date'])
     const count = parseInt(recurrenceRules.meeting_count) <= MAX_MEETING_COUNT && parseInt(recurrenceRules.meeting_count) >= MIN_MEETING_COUNT ? parseInt(recurrenceRules.meeting_count) : DEFAULT_MEETING_COUNT;
 
     let opts = {
@@ -111,7 +107,7 @@ class MeetingScheduler extends React.Component {
 
     const rule = new RRule(opts)
     const recurringMeetings = rule.all()
-    const meetingDates = recurringMeetings.map(m => this.utcDateToLocalDate(m))
+    const meetingDates = recurringMeetings.map(m => utcDateToLocalDate(m, this.props.learningCircle.meeting_time))
 
     this.setState({
       suggestedDates: meetingDates,
@@ -150,7 +146,7 @@ class MeetingScheduler extends React.Component {
     if (isFirstDate) {
       this.props.updateFormData({ start_date: day, meetings: [day] })
 
-      const weekday = weekdays[day.getDay()] ? weekdays[day.getDay()].value : null;
+      const weekday = WEEKDAYS[day.getDay()] ? WEEKDAYS[day.getDay()].value : null;
       this.setState({
         ...this.state,
         recurrenceRules: {
@@ -178,26 +174,25 @@ class MeetingScheduler extends React.Component {
 
   updateMeetingTime = () => {
     const meetings = [...this.props.learningCircle.meetings].map(m => {
-      const [hours, minutes] = this.props.learningCircle.meeting_time ? this.props.learningCircle.meeting_time.split(":") : [0,0]
-      const newDate = new Date(m.getFullYear(), m.getMonth(), m.getDate(), hours, minutes)
-      return newDate
+      const [hours, minutes] = this.props.learningCircle.meeting_time ? this.props.learningCircle.meeting_time.split(":") : [0,0];
+      const newDate = new Date(m.getFullYear(), m.getMonth(), m.getDate(), hours, minutes);
+      return newDate;
     })
-
-    this.props.updateFormData({ meetings: meetings })
+    this.props.updateFormData({ meetings: meetings });
   }
 
   clearDates = () => {
-    this.setState({ ...this.state, recurrenceRules: defaultRecurrenceRules })
+    this.setState({recurrenceRules: defaultRecurrenceRules })
     this.props.updateFormData({ "start_date": '', meetings: [], meets_weekly: false })
   }
 
   clearSuggestedDates = () => {
-    this.setState({ ...this.state, suggestedDates: [] })
+    this.setState({suggestedDates: [] })
   }
 
   useSuggestedDates = () => {
     this.props.updateFormData({ meetings: this.state.suggestedDates, meets_weekly: true })
-    this.setState({ ...this.state, suggestedDates: [] })
+    this.setState({suggestedDates: [] })
   }
 
   deleteMeeting = (date) => {
@@ -224,7 +219,7 @@ class MeetingScheduler extends React.Component {
     const selectedDates = meetings.sort((a,b) => { return a - b })
     const suggestedDatesObj = suggestedDatesArr.sort((a,b) => { return a - b })
     const displayMeetings = selectedDates.concat(suggestedDatesObj)
-    const weekdayOption = weekdays.find((weekday) => weekday.value === recurrenceRules.weekday)
+    const weekdayOption = WEEKDAYS.find((weekday) => weekday.value === recurrenceRules.weekday)
     const weekdayName = weekdayOption ? weekdayOption.label : null
 
     let reminderWarning = null;
@@ -295,7 +290,6 @@ class MeetingScheduler extends React.Component {
             </div>
 
             <div className="col-12 col-xl-6 d-flex flex-column">
-
               <div className="mb-2">
                 <Alert show={Boolean(suggestedDates.length)} type="info" closeAlert={clearSuggestedDates}>
                   <p className="mb-2">
@@ -400,5 +394,3 @@ MeetingScheduler.propTypes = {
 }
 
 export default MeetingScheduler;
-
-
