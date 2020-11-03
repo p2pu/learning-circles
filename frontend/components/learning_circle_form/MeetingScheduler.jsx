@@ -48,17 +48,14 @@ const weekdays = [
 ]
 
 const defaultRecurrenceRules = {
-  meeting_count: 6,
-  frequency: 'weekly',
+  meeting_count: DEFAULT_MEETING_COUNT,
 }
 
 class MeetingScheduler extends React.Component {
   constructor(props) {
     super(props)
     this.initialState = {
-      showModal: false,
       recurrenceRules: defaultRecurrenceRules,
-      timeoutId: null,
       suggestedDates: []
     }
     this.state = this.initialState
@@ -66,7 +63,9 @@ class MeetingScheduler extends React.Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps.learningCircle.meeting_time !== this.props.learningCircle.meeting_time) {
-      this.generateMeetings()
+      if (Boolean(this.state.suggestedDates.length)) {
+        this.generateSuggestedMeetings()
+      }
       this.updateMeetingTime()
     }
   }
@@ -92,12 +91,9 @@ class MeetingScheduler extends React.Component {
     return localDate
   }
 
-  // recurrence modal functions
+  // recurrence rule functions
 
-  openModal = () => this.setState({ ...this.state, showModal: true })
-  closeModal = () => this.setState({ ...this.state, showModal: false })
-
-  generateMeetings = () => {
+  generateSuggestedMeetings = () => {
     const { learningCircle } = this.props;
     const { recurrenceRules } = this.state;
 
@@ -108,30 +104,19 @@ class MeetingScheduler extends React.Component {
     let opts = {
       dtstart: utcDate,
       count: count,
-    }
-
-    if (recurrenceRules.frequency === 'weekly') {
-      opts.freq = RRule.WEEKLY
-      opts.interval = 1
-      opts.byweekday = recurrenceRules.weekday
-    } else if (recurrenceRules.frequency === 'biweekly') {
-      opts.freq = RRule.WEEKLY
-      opts.interval = 2
-      opts.byweekday = recurrenceRules.weekday
+      freq: RRule.WEEKLY,
+      interval: 1,
+      byweekday: recurrenceRules.weekday
     }
 
     const rule = new RRule(opts)
     const recurringMeetings = rule.all()
-    const rruleText = rule.toText()
     const meetingDates = recurringMeetings.map(m => this.utcDateToLocalDate(m))
 
     this.setState({
       suggestedDates: meetingDates,
-      rruleText: rruleText,
-      showModal: false,
     })
   }
-
 
   // input handlers
 
@@ -146,7 +131,7 @@ class MeetingScheduler extends React.Component {
         ...this.state.recurrenceRules,
         ...newContent
       }
-    }, this.generateMeetings)
+    }, this.generateSuggestedMeetings)
   }
 
   handleDayClick = (day, { selected, disabled }) => {
@@ -172,7 +157,7 @@ class MeetingScheduler extends React.Component {
           ...this.state.recurrenceRules,
            weekday: weekday
         }
-      }, this.generateMeetings)
+      }, this.generateSuggestedMeetings)
 
     } else {
       const selectedIndex = selectedDays.findIndex(meeting =>
@@ -188,17 +173,12 @@ class MeetingScheduler extends React.Component {
       const meetingDates = selectedDays.sort((a,b) => (a - b))
       const startDate = meetingDates[0]
       this.props.updateFormData({ start_date: startDate, meetings: selectedDays, meets_weekly: false })
-
-      this.setState({
-        ...this.state,
-        rruleText: null
-      });
     }
   }
 
   updateMeetingTime = () => {
     const meetings = [...this.props.learningCircle.meetings].map(m => {
-      const [hours, minutes] = this.props.learningCircle.meeting_time ? this.props.learningCircle.meeting_time.split(":") : [undefined, undefined]
+      const [hours, minutes] = this.props.learningCircle.meeting_time ? this.props.learningCircle.meeting_time.split(":") : [0,0]
       const newDate = new Date(m.getFullYear(), m.getMonth(), m.getDate(), hours, minutes)
       return newDate
     })
@@ -231,12 +211,11 @@ class MeetingScheduler extends React.Component {
     }
 
     this.props.updateFormData({ meetings, meets_weekly: false })
-    this.setState({ ...this.state, rruleText: null })
   }
 
   render() {
-    const { clearDates, openModal, closeModal, handleChange, handleRRuleChange, handleDayClick, generateMeetings, useSuggestedDates, clearSuggestedDates, deleteMeeting } = this;
-    const { showModal, recurrenceRules, suggestedDates } = this.state;
+    const { clearDates, handleChange, handleRRuleChange, handleDayClick, generateSuggestedMeetings, useSuggestedDates, clearSuggestedDates, deleteMeeting } = this;
+    const { recurrenceRules, suggestedDates } = this.state;
     const { learningCircle, errors, updateFormData } = this.props;
     const { meetings, start_date } = learningCircle;
 
