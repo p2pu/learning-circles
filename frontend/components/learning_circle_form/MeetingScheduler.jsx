@@ -5,6 +5,8 @@ import DayPicker, { DateUtils } from 'react-day-picker';
 import Modal from 'react-responsive-modal';
 import moment from 'moment'
 
+import { parseTime, printTime } from 'helpers/datetime';
+
 import {
   InputWithLabel,
   TimePickerWithLabel,
@@ -208,6 +210,14 @@ class MeetingScheduler extends React.Component {
     this.props.updateFormData({ meetings, meets_weekly: false })
   }
 
+  onSelectEndTime = ({meeting_end_time}) => {
+    // calculate duration based on end_time
+    const [sHour, sMin] = parseTime(this.props.learningCircle.meeting_time);
+    const [eHour, eMin] = parseTime(meeting_end_time);
+    let duration = Math.max(0, (eHour - sHour)*60 + eMin - sMin); 
+    this.props.updateFormData({duration});
+  }
+
   render() {
     const { clearDates, handleChange, handleRRuleChange, handleDayClick, generateSuggestedMeetings, useSuggestedDates, clearSuggestedDates, deleteMeeting } = this;
     const { recurrenceRules, suggestedDates } = this.state;
@@ -266,10 +276,15 @@ class MeetingScheduler extends React.Component {
     }
 
     let dateOpts = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }
+    let end_time = null;
     if (learningCircle.meeting_time) {
       dateOpts.hour = 'numeric'
       dateOpts.minute = '2-digit'
+      const [hour, minute] = parseTime(learningCircle.meeting_time);
+      end_time = hour*60+minute + parseInt(learningCircle.duration);
+      end_time = printTime(end_time/60, end_time%60);
     }
+
 
     return(
       <div className="">
@@ -351,12 +366,21 @@ class MeetingScheduler extends React.Component {
         </div>
 
         <TimePickerWithLabel
-          label={'What time will your learning circle meet each week?'}
+          label={'What time will your learning circle start each week?'}
           handleChange={updateFormData}
           name={'meeting_time'}
           id={'id_meeting_time'}
           value={learningCircle.meeting_time}
           errorMessage={errors.meeting_time}
+          required={true}
+        />
+        <TimePickerWithLabel
+          label={'What time will your learning circle end each week?'}
+          handleChange={this.onSelectEndTime}
+          name={'meeting_end_time'}
+          id={'id_meeting_end_time'}
+          value={end_time}
+          errorMessage={errors.meeting_end_time}
           required={true}
         />
         <TimeZoneSelect
@@ -369,17 +393,6 @@ class MeetingScheduler extends React.Component {
           id={'id_timezone'}
           errorMessage={errors.timezone}
           required={true}
-        />
-        <InputWithLabel
-          label={'How long will each session last (in minutes)?'}
-          value={learningCircle.duration}
-          handleChange={updateFormData}
-          name={'duration'}
-          id={'id_duration'}
-          type={'number'}
-          errorMessage={errors.duration}
-          required={true}
-          min={0}
         />
       </div>
     );
