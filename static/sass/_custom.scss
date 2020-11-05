@@ -460,6 +460,11 @@ img.lc-about-image{
   }
 }
 
+.alert-info button.close {
+  color: $gray-darker !important;
+  opacity: 1 !important;
+}
+
 /* CSS loader */
 
 .loader,

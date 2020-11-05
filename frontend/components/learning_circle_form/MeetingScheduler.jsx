@@ -210,6 +210,18 @@ class MeetingScheduler extends React.Component {
     this.props.updateFormData({ meetings, meets_weekly: false })
   }
 
+  onSelectStartTime = ({meeting_time}) => {
+    const {learningCircle} = this.props;
+    let [hour, minute] = parseTime(meeting_time);
+    let end_time = hour*60+minute + parseInt(learningCircle.duration);
+    let duration = learningCircle.duration;
+    if (end_time > 1439){
+      // adjust duration so that the latest end time will be 23:59
+      duration = duration - (end_time - 1439);
+    }
+    this.props.updateFormData({meeting_time, duration});
+  }
+
   onSelectEndTime = ({meeting_end_time}) => {
     // calculate duration based on end_time
     const [sHour, sMin] = parseTime(this.props.learningCircle.meeting_time);
@@ -367,7 +379,7 @@ class MeetingScheduler extends React.Component {
 
         <TimePickerWithLabel
           label={'What time will your learning circle start each week?'}
-          handleChange={updateFormData}
+          handleChange={this.onSelectStartTime}
           name={'meeting_time'}
           id={'id_meeting_time'}
           value={learningCircle.meeting_time}
