@@ -49,7 +49,7 @@ mock==1.0.1
 olefile==0.44
 packaging==16.8
 phonenumberslite==7.7.0
-Pillow==6.2.0
+Pillow==7.1.0
 premailer==3.2.0
 psycopg2==2.7.3.1
 pycparser==2.19
