@@ -13,6 +13,8 @@ import {
   TimeZoneSelect,
 } from 'p2pu-components'
 
+//import TimePickerWithLabel from 'p2pu-components/dist/InputFields/TimePickerWithLabel';
+
 import Alert from './Alert'
 
 import 'react-day-picker/lib/style.css';
@@ -292,6 +294,8 @@ class MeetingScheduler extends React.Component {
     if (learningCircle.meeting_time) {
       dateOpts.hour = 'numeric'
       dateOpts.minute = '2-digit'
+      dateOpts.timeZone = learningCircle.timezone;
+      dateOpts.timeZoneName = 'short';
       const [hour, minute] = parseTime(learningCircle.meeting_time);
       end_time = hour*60+minute + parseInt(learningCircle.duration);
       end_time = printTime(end_time/60, end_time%60);
