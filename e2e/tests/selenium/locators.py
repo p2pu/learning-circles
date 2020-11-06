@@ -22,9 +22,9 @@ class LearningCircleCreationPageLocators(object):
     VENUE_DETAILS_FIELD = (By.ID, "venue_details")
     VENUE_ADDRESS_FIELD = (By.ID, "venue_address")
     START_DATE_FIELD = (By.ID, "start_date")
-    WEEKS_FIELD = (By.ID, "weeks")
+    MEETING_COUNT_FIELD = (By.ID, "meeting_count")
     MEETING_TIME_FIELD = (By.CSS_SELECTOR, "#meeting_time input")
-    DURATION_FIELD = (By.ID, "duration")
+    MEETING_END_TIME_FIELD = (By.CSS_SELECTOR, "#meeting_end_time input")
     TITLE_FIELD = (By.ID, "name")
     DESCRIPTION_FIELD = (By.ID, "description_ifr")
     COURSE_DESCRIPTION_FIELD = (By.ID, "course_description_ifr")
@@ -38,8 +38,12 @@ class LearningCircleCreationPageLocators(object):
     COURSE_CARDS = (By.CSS_SELECTOR, "#react-tabs-1 .search-results .result-item")
     PUBLISH_BUTTON = (By.CSS_SELECTOR, ".action-bar button.publish")
     SAVE_BUTTON = (By.CSS_SELECTOR, ".action-bar button.save")
+    MODAL_BUTTON = (By.ID, "recurrence-modal-btn")
+    SCHEDULE_MEETINGS_BUTTON = (By.ID, "schedule-meetings-btn")
     ERROR_MESSAGE = (By.CSS_SELECTOR, ".error-message.minicaps")
     TINYMCE_FIELD = (By.ID, "tinymce")
+    CALENDAR_TODAY = (By.CSS_SELECTOR, ".DayPicker-Day--today")
+    ACCEPT_SUGGESTED_DATES_BUTTON = (By.ID, "accept-suggestions-btn")
 
 
 class RegistrationModalLocators(object):

@@ -13,6 +13,7 @@ from studygroups.models import Rsvp
 from studygroups.models import accept_application
 from studygroups.models import create_rsvp
 from studygroups.models import generate_all_meetings
+from studygroups.models import generate_meetings_from_dates
 from studygroups.models.course import KNOWN_COURSE_PLATFORMS
 from studygroups.utils import gen_rsvp_querystring
 from studygroups.utils import check_rsvp_signature
@@ -22,6 +23,8 @@ from studygroups.tasks import send_meeting_change_notification
 from custom_registration.models import create_user
 
 from unittest.mock import patch
+from freezegun import freeze_time
+
 import datetime
 import pytz
 import urllib.request
@@ -104,6 +107,48 @@ class TestSignupModels(TestCase):
         self.assertEqual(sg.next_meeting().meeting_datetime().tzinfo.zone, 'US/Central')
         for meeting in Meeting.objects.all():
             self.assertEqual(meeting.meeting_datetime().time(), datetime.time(16,0))
+
+
+    @freeze_time('2020-10-20')
+    def test_generate_meetings_from_dates(self):
+        sg = StudyGroup.objects.get(pk=1)
+        sg.timezone = 'US/Central'
+        meeting_dates = [
+            { "meeting_date": "2020-09-30", "meeting_time": "16:00" },
+            { "meeting_date": "2020-10-07", "meeting_time": "16:00" },
+            { "meeting_date": "2020-10-14", "meeting_time": "16:00" },
+            { "meeting_date": "2020-10-21", "meeting_time": "16:00" },
+            { "meeting_date": "2020-10-28", "meeting_time": "16:00" },
+            { "meeting_date": "2020-11-04", "meeting_time": "16:00" },
+        ]
+        sg_meetings_count = Meeting.objects.active().filter(study_group=sg).count()
+        self.assertEqual(sg_meetings_count, 0)
+
+        generate_meetings_from_dates(sg, meeting_dates)
+
+        self.assertEqual(sg.meeting_set.count(), 6)
+        self.assertEqual(sg.next_meeting().meeting_datetime().tzinfo.zone, 'US/Central')
+
+        for date in meeting_dates:
+            meeting_date = date['meeting_date']
+            self.assertTrue(Meeting.objects.active().filter(study_group=sg, meeting_date=meeting_date).exists())
+
+        # update meetings
+        new_meeting_dates = [
+            { "meeting_date": "2020-10-07", "meeting_time": "16:00" },
+            { "meeting_date": "2020-10-14", "meeting_time": "16:00" },
+            { "meeting_date": "2020-10-21", "meeting_time": "16:00" },
+            { "meeting_date": "2020-10-28", "meeting_time": "16:00" },
+            { "meeting_date": "2020-11-04", "meeting_time": "16:00" },
+            { "meeting_date": "2020-11-05", "meeting_time": "16:00" },
+        ]
+
+        generate_meetings_from_dates(sg, new_meeting_dates)
+
+        self.assertEqual(sg.meeting_set.active().count(), 6)
+        self.assertFalse(Meeting.objects.active().filter(study_group=sg, meeting_date="2020-09-30").exists())
+        self.assertTrue(Meeting.objects.active().filter(study_group=sg, meeting_date="2020-11-05").exists())
+
 
     def test_unapply_signing(self):
         data = self.APPLICATION_DATA

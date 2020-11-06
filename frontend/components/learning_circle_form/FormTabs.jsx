@@ -2,7 +2,7 @@ import React from 'react'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import CourseSection from './CourseSection';
 import LocationSection from './LocationSection';
-import DayTimeSection from './DayTimeSection';
+import MeetingScheduler from './MeetingScheduler';
 import CustomizeSection from './CustomizeSection';
 import FinalizeSection from './FinalizeSection';
 
@@ -59,8 +59,8 @@ export default class FormTabs extends React.Component{
           </TabPanel>
           <TabPanel className='tab-content'>
             <div className='content-container'>
-              <h4>Step 3: Select the Day and Time</h4>
-              <DayTimeSection
+              <h4>Step 3: Select Meeting Dates</h4>
+              <MeetingScheduler
                 updateFormData={this.props.updateFormData}
                 learningCircle={this.props.learningCircle}
                 errors={this.props.errors}
