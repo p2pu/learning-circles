@@ -72,7 +72,6 @@ class StudyGroup(LifeTimeTrackingModel):
     facilitator_goal_rating = models.IntegerField(blank=True, null=True)  # Self reported rating of whether the facilitator goal was met.
     attach_ics = models.BooleanField(default=True)
     did_not_happen = models.NullBooleanField(blank=True, null=True)  # Used by the facilitator to report if the learning circle didn't happen
-    meets_weekly = models.BooleanField(default=True)
 
     objects = StudyGroupQuerySet.as_manager()
 
@@ -138,6 +137,16 @@ class StudyGroup(LifeTimeTrackingModel):
 
         return False
 
+
+    @property
+    def meets_weekly(self):
+        meeting_dates = self.meeting_set.active().order_by('meeting_date', 'meeting_time').values_list('meeting_date', flat=True)
+        from functools import reduce
+        # check that meeting dates are spaced 7 days
+        lds = reduce(lambda x,y: y if x and y-x==datetime.timedelta(days=7) else False, meeting_dates)
+        return lds and True
+
+
     @property
     def weeks(self):
         return (self.end_date - self.start_date).days//7 + 1
@@ -180,7 +189,6 @@ class StudyGroup(LifeTimeTrackingModel):
             "draft": sg.draft,
             "url": reverse('studygroups_view_study_group', args=(sg.id,)),
             "signup_url": reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
-            "meets_weekly": sg.meets_weekly,
         }
         next_meeting = self.next_meeting()
         if next_meeting:

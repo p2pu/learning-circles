@@ -139,7 +139,6 @@ def _map_to_json(sg):
         "draft": sg.draft,
         "signup_count": sg.application_set.count(),
         "signup_open": sg.signup_open,
-        "meets_weekly": sg.meets_weekly,
     }
 
     if hasattr(sg, 'last_meeting_date'):
@@ -665,8 +664,7 @@ def _make_learning_circle_schema(request):
             _image_check(),
         ], required=False),
         "draft": schema.boolean(),
-        "meetings": schema.text(required=False),
-        "meets_weekly": schema.boolean()
+        "meetings": schema.text(required=False)
     }
     return post_schema
 
@@ -804,7 +802,6 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         study_group.signup_question = data.get('signup_question', '')
         study_group.facilitator_goal = data.get('facilitator_goal', '')
         study_group.facilitator_concerns = data.get('facilitator_concerns', '')
-        study_group.meets_weekly = data.get('meets_weekly', '')
         study_group.save()
 
         # generate all meetings if the learning circle has been published

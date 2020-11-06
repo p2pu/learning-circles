@@ -172,7 +172,7 @@ class MeetingScheduler extends React.Component {
 
       const meetingDates = selectedDays.sort((a,b) => (a - b))
       const startDate = meetingDates[0]
-      this.props.updateFormData({ start_date: startDate, meetings: selectedDays, meets_weekly: false })
+      this.props.updateFormData({ start_date: startDate, meetings: selectedDays })
     }
   }
 
@@ -187,7 +187,7 @@ class MeetingScheduler extends React.Component {
 
   clearDates = () => {
     this.setState({recurrenceRules: defaultRecurrenceRules })
-    this.props.updateFormData({ "start_date": '', meetings: [], meets_weekly: false })
+    this.props.updateFormData({ "start_date": '', meetings: [] })
   }
 
   clearSuggestedDates = () => {
@@ -195,7 +195,7 @@ class MeetingScheduler extends React.Component {
   }
 
   useSuggestedDates = () => {
-    this.props.updateFormData({ meetings: this.state.suggestedDates, meets_weekly: true })
+    this.props.updateFormData({ meetings: this.state.suggestedDates })
     this.setState({suggestedDates: [] })
   }
 
@@ -209,7 +209,7 @@ class MeetingScheduler extends React.Component {
       meetings.splice(selectedIndex, 1);
     }
 
-    this.props.updateFormData({ meetings, meets_weekly: false })
+    this.props.updateFormData({ meetings })
   }
 
   onSelectStartTime = ({meeting_time}) => {

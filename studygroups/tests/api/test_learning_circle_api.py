@@ -158,7 +158,6 @@ class TestLearningCircleApi(TestCase):
                 { "meeting_date": "2018-02-12", "meeting_time": "17:01" },
                 { "meeting_date": "2018-02-19", "meeting_time": "17:01" },
             ],
-            "meets_weekly": True
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
@@ -214,7 +213,6 @@ class TestLearningCircleApi(TestCase):
                 { "meeting_date": "2018-02-12", "meeting_time": "17:01" },
                 { "meeting_date": "2018-02-19", "meeting_time": "17:01" },
             ],
-            "meets_weekly": True
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
@@ -255,7 +253,6 @@ class TestLearningCircleApi(TestCase):
                 { "meeting_date": "2018-02-12", "meeting_time": "17:01" },
                 { "meeting_date": "2018-02-19", "meeting_time": "17:01" },
             ],
-            "meets_weekly": True
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
@@ -355,7 +352,6 @@ class TestLearningCircleApi(TestCase):
                 { "meeting_date": "2018-02-12", "meeting_time": "17:01" },
                 { "meeting_date": "2018-02-19", "meeting_time": "17:01" },
             ],
-            "meets_weekly": True
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
@@ -419,7 +415,6 @@ class TestLearningCircleApi(TestCase):
                 { "meeting_date": "2018-12-15", "meeting_time": "17:01" },
                 { "meeting_date": "2018-12-22", "meeting_time": "17:01" },
             ],
-            "meets_weekly": True
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
@@ -504,7 +499,6 @@ class TestLearningCircleApi(TestCase):
                 { "meeting_date": "2018-12-15", "meeting_time": "17:01" },
                 { "meeting_date": "2018-12-22", "meeting_time": "17:01" },
             ],
-            "meets_weekly": True
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
@@ -584,7 +578,6 @@ class TestLearningCircleApi(TestCase):
                 { "meeting_date": "2018-02-12", "meeting_time": "17:01" },
                 { "meeting_date": "2018-02-19", "meeting_time": "17:01" },
             ],
-            "meets_weekly": True
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
@@ -646,7 +639,6 @@ class TestLearningCircleApi(TestCase):
                 { "meeting_date": "2018-02-12", "meeting_time": "17:01" },
                 { "meeting_date": "2018-02-19", "meeting_time": "17:01" },
             ],
-            "meets_weekly": True
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
@@ -697,7 +689,6 @@ class TestLearningCircleApi(TestCase):
                 { "meeting_date": "2018-02-12", "meeting_time": "17:01" },
                 { "meeting_date": "2018-02-19", "meeting_time": "17:01" },
             ],
-            "meets_weekly": True
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)

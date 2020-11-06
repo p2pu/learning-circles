@@ -95,7 +95,6 @@ export const LC_DEFAULTS = {
   draft: true,
   language: 'en',
   meetings: [],
-  meets_weekly: true,
 };
 
 // TODO - this needs to be configured, not baked into the code
