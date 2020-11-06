@@ -20,7 +20,7 @@ services:
     depends_on:
     - postgres
     - email
-    command: /opt/django-venv/bin/python manage.py runserver 0.0.0.0:8000
+    command: /opt/django-venv/bin/python manage.py test
     environment:
     - DATABASE_URL=postgres://lc:password@postgres:5432/lc
     - SECRET_KEY=321
@@ -31,7 +31,7 @@ services:
     - ADMIN_EMAIL=admin@localhost
     - DEBUG=true
   frontend:
-    image: p2pu/js-build:carbon-alpine
+    image: node:lts-slim
     volumes:
     - .:/opt/app
     working_dir: /opt/app
