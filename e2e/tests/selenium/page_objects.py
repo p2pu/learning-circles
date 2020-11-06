@@ -53,7 +53,7 @@ class LearningCircleCreationPage(BasePage):
         self.wait.until(expected_conditions.presence_of_element_located((By.CSS_SELECTOR, '#selected-dates li')))
 
         self.fill_text_field(LearningCircleCreationPageLocators.MEETING_TIME_FIELD, "7:00 PM", Keys.ENTER)
-        self.fill_text_field(LearningCircleCreationPageLocators.DURATION_FIELD, "60")
+        self.fill_text_field(LearningCircleCreationPageLocators.MEETING_END_TIME_FIELD, "8:00 PM", Keys.ENTER)
 
         self.click_next_button()
 

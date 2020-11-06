@@ -23,6 +23,8 @@ from studygroups.tasks import send_meeting_change_notification
 from custom_registration.models import create_user
 
 from unittest.mock import patch
+from freezegun import freeze_time
+
 import datetime
 import pytz
 import urllib.request
@@ -106,6 +108,8 @@ class TestSignupModels(TestCase):
         for meeting in Meeting.objects.all():
             self.assertEqual(meeting.meeting_datetime().time(), datetime.time(16,0))
 
+
+    @freeze_time('2020-10-20')
     def test_generate_meetings_from_dates(self):
         sg = StudyGroup.objects.get(pk=1)
         sg.timezone = 'US/Central'
