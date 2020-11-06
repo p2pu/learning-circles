@@ -16,6 +16,7 @@ from .base import SoftDeleteQuerySet
 from .base import LifeTimeTrackingModel
 from .course import Course
 
+from functools import reduce
 import calendar
 import datetime
 import pytz
@@ -141,7 +142,8 @@ class StudyGroup(LifeTimeTrackingModel):
     @property
     def meets_weekly(self):
         meeting_dates = self.meeting_set.active().order_by('meeting_date', 'meeting_time').values_list('meeting_date', flat=True)
-        from functools import reduce
+        if len(meeting_dates) == 0:
+            return False
         # check that meeting dates are spaced 7 days
         lds = reduce(lambda x,y: y if x and y-x==datetime.timedelta(days=7) else False, meeting_dates)
         return lds and True
