@@ -75,6 +75,7 @@ const reactBuild = {
   resolve: {
     modules: [
       path.join(__dirname, "assets/js"),
+      path.join(__dirname, "frontend"),
       'node_modules',
     ],
     extensions: ['.js', '.jsx', '.scss']

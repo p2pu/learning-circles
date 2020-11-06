@@ -457,8 +457,15 @@ img.lc-about-image{
       color: white;
       opacity: 0.7;
     }
+
+    &.alert-info button.close {
+      color: $gray-darker;
+      opacity: 1;
+    }
+
   }
 }
+
 
 /* CSS loader */
 
