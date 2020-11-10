@@ -250,4 +250,9 @@ class TeamUpdate(UpdateView):
     success_url = reverse_lazy('studygroups_facilitator')
     pk_url_kwarg = 'team_id'
 
+    def form_valid(self, form):
+        messages.success(self.request, _('Your team information has been updated!'))
+        return super().form_valid(form)
+
+
 

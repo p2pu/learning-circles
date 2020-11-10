@@ -23,10 +23,10 @@ class TestTeamsApi(TestCase):
         self.assertEqual(res_data["count"], 2)
 
         # complete team - pk 1
-
         item_fields = [
             'id',
             'name',
+            'subtitle',
             'page_slug',
             'member_count',
             'studygroup_count',
@@ -48,10 +48,10 @@ class TestTeamsApi(TestCase):
             self.assertIn(key, resp_keys)
 
         # incomplete_team - pk 2
-
         item_fields = [
             'id',
             'name',
+            'subtitle',
             'page_slug',
             'member_count',
             'studygroup_count',

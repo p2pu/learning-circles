@@ -480,13 +480,14 @@ class OrganizerGuideForm(forms.Form):
 class TeamForm(forms.ModelForm):
     class Meta:
         model = Team
-        fields = ['name', 'page_image', 'logo', 'website', 'email_address', 'intro_text']
+        fields = ['name', 'subtitle', 'page_image', 'logo', 'website', 'email_address', 'intro_text']
         labels = {
             'page_image': _('Header image'),
             'intro_text': _('About us'),
         }
         help_texts = {
             'page_image': _('The image will be cropped into a circle. A square image would be best.'),
+            'subtitle': _('This is the text that appears immediately below your team name. It defaults to "Join your neighbors to learn something together. Learning circles meet weekly for 6-8 weeks, and are free to join.".'),
             'logo': _('For best results, your logo image should be square. Otherwise, it should have a white or transparent background.'),
             'intro_text': _('We\'ve written some default text for you, but please rewrite it as you see fit!'),
             'email_address': _('This will be public, so you probably don\'t want to use your personal email address.'),

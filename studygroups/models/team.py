@@ -14,6 +14,7 @@ import uuid
 
 class Team(models.Model):
     name = models.CharField(max_length=128)
+    subtitle = models.CharField(max_length=256, default=_('Join your neighbors to learn something together. Learning circles meet weekly for 6-8 weeks, and are free to join.'))
     page_slug = models.SlugField(max_length=256, blank=True)
     page_image = models.ImageField(blank=True)
     logo = models.ImageField(blank=True)

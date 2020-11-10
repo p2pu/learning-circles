@@ -4,6 +4,7 @@
       "pk":1,
       "fields":{
          "name":"Richland County",
+         "subtitle": "bob",
          "page_slug":"richlandcounty",
          "page_image":"test_image.jpg",
          "latitude":34.126276,
@@ -17,6 +18,7 @@
       "pk":2,
       "fields":{
          "name":"Boston Public Library",
+         "subtitle": "bob",
          "page_slug":"boston",
          "page_image":"",
          "latitude":null,
