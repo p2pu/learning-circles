@@ -1025,6 +1025,7 @@ def serialize_team_data(team):
     serialized_team = {
         "id": team.pk,
         "name": team.name,
+        "subtitle": team.subtitle,
         "page_slug": team.page_slug,
         "member_count": team.teammembership_set.active().count(),
         "zoom": team.zoom,

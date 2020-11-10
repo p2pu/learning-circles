@@ -27,6 +27,7 @@ class TestTeamsApi(TestCase):
         item_fields = [
             'id',
             'name',
+            'subtitle',
             'page_slug',
             'member_count',
             'studygroup_count',
