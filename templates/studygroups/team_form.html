@@ -23,7 +23,7 @@
           <form action="" method="POST" enctype="multipart/form-data">
           {% csrf_token %}
           {{ form|crispy }}
-            <p><input type="submit" class="btn p2pu-btn blue" /></p>
+          <p><button type="submit" class="btn p2pu-btn blue">{% trans "Save" %}</button></p>
         </form>
 
         </div>
