@@ -52,7 +52,6 @@ logger = logging.getLogger(__name__)
 
 
 def studygroups(request):
-    #TODO only accept GET requests
     # TODO remove this API endpoint, where is it currently being used??
     study_groups = StudyGroup.objects.published()
     if 'course_id' in request.GET:
@@ -102,7 +101,7 @@ class CustomSearchQuery(SearchQuery):
         return template, params
 
 
-def _map_to_json(sg):
+def serialize_learning_circle(sg):
     data = {
         "course": {
             "id": sg.course.pk,
@@ -384,7 +383,7 @@ class LearningCircleListView(View):
             data['limit'] = limit
             study_groups = study_groups[offset:offset+limit]
 
-        data['items'] = [ _map_to_json(sg) for sg in study_groups ]
+        data['items'] = [ serialize_learning_circle(sg) for sg in study_groups ]
         return json_response(request, data)
 
 
@@ -447,7 +446,7 @@ def _course_check(course_id):
         return Course.objects.get(pk=int(course_id)), None
 
 
-def _course_to_json(course):
+def serialize_course(course):
     data = {
         "id": course.id,
         "title": course.title,
@@ -576,7 +575,7 @@ class CourseListView(View):
             data['limit'] = limit
             courses = courses[offset:offset+limit]
 
-        data['items'] = [ _course_to_json(course) for course in courses ]
+        data['items'] = [ serialize_course(course) for course in courses ]
         return json_response(request, data)
 
 
@@ -910,7 +909,7 @@ class LandingPageLearningCirclesView(View):
             ).order_by('-next_meeting_date')
             study_groups = list(study_groups) + list(past_study_groups[:3-study_groups.count()])
         data = {
-            'items': [ _map_to_json(sg) for sg in study_groups ]
+            'items': [ serialize_learning_circle(sg) for sg in study_groups ]
         }
         return json_response(request, data)
 
@@ -993,7 +992,7 @@ class FinalReportListView(View):
             studygroups = studygroups[offset:offset+limit]
 
         def _map(sg):
-            data = _map_to_json(sg)
+            data = serialize_learning_circle(sg)
             if request.user.is_authenticated:
                 data['signup_count'] = sg.application_set.count()
             return data

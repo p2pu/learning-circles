@@ -49,7 +49,7 @@ from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import study_group_is_published
 from studygroups.charts import OverallRatingBarChart
 from studygroups.discourse import create_discourse_topic
-from studygroups.views.api import _course_to_json
+from studygroups.views.api import serialize_course
 from studygroups.models.team import eligible_team_by_email_domain
 
 logger = logging.getLogger(__name__)
@@ -236,7 +236,7 @@ class CoursePage(DetailView):
         context = super().get_context_data(**kwargs)
         usage = StudyGroup.objects.filter(course=self.object.id).count()
         rating_step_counts = json.loads(self.object.rating_step_counts)
-        similar_courses = [ _course_to_json(course) for course in self.object.similar_courses()]
+        similar_courses = [ serialize_course(course) for course in self.object.similar_courses()]
 
         context['usage'] = usage
         context['rating_counts_chart'] = OverallRatingBarChart(rating_step_counts).generate()
