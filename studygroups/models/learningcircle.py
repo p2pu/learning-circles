@@ -56,10 +56,11 @@ class StudyGroup(LifeTimeTrackingModel):
     latitude = models.DecimalField(max_digits=8, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     place_id = models.CharField(max_length=256, blank=True)  # Algolia place_id
+    online = models.BooleanField(default=False) # indicate if the meetings will take place online
     facilitator = models.ForeignKey(User, on_delete=models.CASCADE)
     start_date = models.DateField()
     meeting_time = models.TimeField()
-    end_date = models.DateField()  # TODO consider storing number of weeks/meetings instead of end_date
+    end_date = models.DateField()  # TODO remove end date and rely on associated meetings
     duration = models.PositiveIntegerField(default=90)  # meeting duration in minutes
     timezone = models.CharField(max_length=128)
     signup_open = models.BooleanField(default=True)
@@ -71,7 +72,7 @@ class StudyGroup(LifeTimeTrackingModel):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     facilitator_rating = models.IntegerField(blank=True, null=True)  # Deprecated: 1-5 rating use previously
     facilitator_goal_rating = models.IntegerField(blank=True, null=True)  # Self reported rating of whether the facilitator goal was met.
-    attach_ics = models.BooleanField(default=True)
+    attach_ics = models.BooleanField(default=True) # TODO Remove this
     did_not_happen = models.NullBooleanField(blank=True, null=True)  # Used by the facilitator to report if the learning circle didn't happen
 
     objects = StudyGroupQuerySet.as_manager()
@@ -173,6 +174,7 @@ class StudyGroup(LifeTimeTrackingModel):
             "latitude": sg.latitude,
             "longitude": sg.longitude,
             "place_id": sg.place_id,
+            "online": sg.online,
             "language": sg.language,
             "start_date": sg.start_date,
             "start_datetime": self.local_start_date(),

@@ -125,6 +125,7 @@ def _map_to_json(sg):
         "latitude": sg.latitude,
         "longitude": sg.longitude,
         "place_id": sg.place_id,
+        "online": sg.online,
         "language": sg.language,
         "day": sg.day(),
         "start_date": sg.start_date,
@@ -648,6 +649,7 @@ def _make_learning_circle_schema(request):
         "longitude": schema.floating_point(),
         "place_id": schema.text(length=256),
         "language": schema.text(required=True, length=6),
+        "online": schema.boolean(),
         "start_date": schema.date(required=True),
         "weeks": schema.chain([
             schema.integer(required=True),
@@ -698,6 +700,7 @@ class LearningCircleCreateView(View):
             latitude=data.get('latitude'),
             longitude=data.get('longitude'),
             place_id=data.get('place_id', ''),
+            online=data.get('online', False),
             language=data.get('language'),
             start_date=data.get('start_date'),
             end_date=end_date,
@@ -793,6 +796,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         study_group.longitude = data.get('longitude')
         study_group.place_id = data.get('place_id', '')
         study_group.language = data.get('language')
+        study_group.online = data.get('online')
         study_group.start_date = data.get('start_date')
         study_group.end_date = end_date
         study_group.meeting_time = data.get('meeting_time')

@@ -92,6 +92,7 @@ export const LC_DEFAULTS = {
   duration: 90,
   weeks: 6,
   course: {},
+  online: false,
   draft: true,
   language: 'en',
   meetings: [],
