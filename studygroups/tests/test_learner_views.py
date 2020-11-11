@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.utils.translation import get_language
 from django.conf import settings
 
-from mock import patch
+from unittest.mock import patch
 
 from studygroups.models import StudyGroup
 from studygroups.models import Meeting

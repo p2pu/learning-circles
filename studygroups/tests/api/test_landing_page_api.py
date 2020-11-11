@@ -7,7 +7,7 @@ from django.contrib.auth.models import User, Group
 from django.utils import timezone
 from django.utils.translation import get_language
 
-from mock import patch
+from unittest.mock import patch
 from freezegun import freeze_time
 
 from studygroups.models import StudyGroup

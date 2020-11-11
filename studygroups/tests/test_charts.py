@@ -1,7 +1,7 @@
 # coding: utf-8
 from django.test import TestCase
 
-from mock import patch
+from unittest.mock import patch
 
 from studygroups.models import StudyGroup
 from surveys.models import LearnerSurveyResponse

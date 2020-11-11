@@ -7,7 +7,7 @@ from django.utils.translation import get_language
 from django.conf import settings
 from django.urls import reverse
 
-from mock import patch
+from unittest.mock import patch
 from freezegun import freeze_time
 
 from studygroups.models import Course

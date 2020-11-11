@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.urls import reverse
 
-from mock import patch
+from unittest.mock import patch
 
 from studygroups.models import StudyGroup
 from studygroups.models import Application

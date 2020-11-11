@@ -5,7 +5,7 @@ from django.core import mail
 from django.utils import timezone
 from django.conf import settings
 
-from mock import patch
+from unittest.mock import patch
 from freezegun import freeze_time
 
 from studygroups.models import generate_all_meetings

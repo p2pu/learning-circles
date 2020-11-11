@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.utils.translation import get_language
 from django.urls import reverse
 
-from mock import patch, MagicMock
+from unittest.mock import patch, MagicMock
 
 from custom_registration.models import create_user
 
