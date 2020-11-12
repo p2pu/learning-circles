@@ -70,6 +70,10 @@ html {
       padding: 0;
     }
 
+    .tabs-list .error {
+      color: $p2pu-orange;
+    }
+
     .tabs-item {
       background: $gray-lighter;
       flex-grow: 1;

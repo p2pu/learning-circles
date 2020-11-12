@@ -65,13 +65,13 @@ export default class CreateLearningCirclePage extends React.Component {
     this.updateFormData = (data, cb) => this._updateFormData(data, cb);
     this.registerUser = () => this._registerUser();
     this.onLogin = (user) => this._onLogin(user);
-    this.allTabs = {
-      0: '1. Course',
-      1: '2. Location',
-      2: '3. Day & Time',
-      3: '4. Customize',
-      4: '5. Finalize'
-    };
+    this.allTabs = [
+      '1. Course',
+      '2. Location',
+      '3. Day & Time',
+      '4. Customize',
+      '5. Finalize',
+    ];
   }
 
   componentDidMount() {

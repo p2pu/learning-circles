@@ -23,16 +23,23 @@ export default class FormTabs extends React.Component{
 
   render() {
     const hide = this.props.showHelp ? 'hide' : '';
+    const {errors} = this.props;
+
+    // map props.errors to tabs
+    const tabFields = [
+      ['course'],
+      ['city', 'country', 'venue_name', 'venue_details', 'venue_address', 'language'],
+      ['start_date', 'meeting_time', 'timezone'],
+      ['name', 'description', 'course_description', 'signup_question', 'venue_website'],
+      ['facilitator_goal', 'facilitator_concerns'],
+    ];
+    const tabErrors = tabFields.map( tab => Object.keys(errors).filter(e => tab.indexOf(e) != -1));
 
     return (
       <div className='tabs-container'>
         <Tabs selectedIndex={this.props.currentTab} onSelect={this.switchTab} >
           <TabList className='tabs-list'>
-            <Tab className='tabs-item'>{this.props.allTabs[0]}</Tab>
-            <Tab className='tabs-item'>{this.props.allTabs[1]}</Tab>
-            <Tab className='tabs-item'>{this.props.allTabs[2]}</Tab>
-            <Tab className='tabs-item'>{this.props.allTabs[3]}</Tab>
-            <Tab className='tabs-item'>{this.props.allTabs[4]}</Tab>
+            { this.props.allTabs.map( (tab,i) => <Tab key={i} className={'tabs-item' + (tabErrors[i].length?' error':'')}>{this.props.allTabs[i]}</Tab>) }
           </TabList>
 
           <TabPanel className='tab-content'>
