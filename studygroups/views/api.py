@@ -631,8 +631,8 @@ def _make_learning_circle_schema(request):
             schema.integer(),
             _course_check,
         ], required=True),
-        "description": schema.text(required=True, length=500),
-        "course_description": schema.text(required=False, length=500),
+        "description": schema.text(required=True, length=2000),
+        "course_description": schema.text(required=False, length=2000),
         "venue_name": schema.chain([
             schema.text(required=True, length=256),
             _venue_name_check,
