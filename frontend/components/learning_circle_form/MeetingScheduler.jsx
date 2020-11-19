@@ -382,7 +382,7 @@ class MeetingScheduler extends React.Component {
         </div>
 
         <TimePickerWithLabel
-          label={'What time will your learning circle start each week?'}
+          label={'What time will your learning circle start?'}
           handleChange={this.onSelectStartTime}
           name={'meeting_time'}
           id={'id_meeting_time'}
@@ -391,7 +391,7 @@ class MeetingScheduler extends React.Component {
           required={true}
         />
         <TimePickerWithLabel
-          label={'What time will your learning circle end each week?'}
+          label={'What time will your learning circle end?'}
           handleChange={this.onSelectEndTime}
           name={'meeting_end_time'}
           id={'id_meeting_end_time'}
