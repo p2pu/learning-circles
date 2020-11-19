@@ -5,7 +5,7 @@ from django.core import mail
 from django.utils import timezone
 from django.conf import settings
 
-from mock import patch
+from unittest.mock import patch
 from freezegun import freeze_time
 
 from studygroups.models import generate_all_meetings
@@ -49,6 +49,7 @@ class TestLearningCircleApi(TestCase):
             "latitude": 3.1,
             "longitude": "1.3",
             "place_id": "1",
+            "online": "false",
             "language": "en",
             "start_date": "2018-02-12",
             "weeks": 2,
@@ -99,6 +100,7 @@ class TestLearningCircleApi(TestCase):
             "latitude": 3.1,
             "longitude": "1.3",
             "place_id": "1",
+            "online": "false",
             "language": "en",
             "start_date": "2018-02-12",
             "weeks": 2,
@@ -145,6 +147,7 @@ class TestLearningCircleApi(TestCase):
             "latitude": 3.1,
             "longitude": "1.3",
             "place_id": "1",
+            "online": "false",
             "language": "en",
             "start_date": "2018-02-12",
             "facilitator_concerns": "blah blah",
@@ -242,6 +245,7 @@ class TestLearningCircleApi(TestCase):
             "latitude": 3.1,
             "longitude": "1.3",
             "place_id": "1",
+            "online": "false",
             "language": "en",
             "start_date": "2018-02-12",
             "weeks": 2,
@@ -340,6 +344,7 @@ class TestLearningCircleApi(TestCase):
             "latitude": 3.1,
             "longitude": "1.3",
             "place_id": "4",
+            "online": "false",
             "language": "en",
             "start_date": "2018-12-12",
             "weeks": 2,
@@ -403,6 +408,7 @@ class TestLearningCircleApi(TestCase):
             "latitude": 3.1,
             "longitude": "1.3",
             "place_id": "4",
+            "online": "false",
             "language": "en",
             "start_date": "2018-12-15",
             "weeks": 2,
@@ -487,6 +493,7 @@ class TestLearningCircleApi(TestCase):
             "latitude": 3.1,
             "longitude": "1.3",
             "place_id": "4",
+            "online": "false",
             "language": "en",
             "start_date": "2018-12-15",
             "weeks": 2,
@@ -567,6 +574,7 @@ class TestLearningCircleApi(TestCase):
             "latitude": 3.1,
             "longitude": "1.3",
             "place_id": "4",
+            "online": "false",
             "language": "en",
             "start_date": "2018-02-12",
             "weeks": 2,
@@ -627,6 +635,7 @@ class TestLearningCircleApi(TestCase):
             "latitude": 3.1,
             "longitude": "1.3",
             "place_id": "4",
+            "online": "false",
             "language": "en",
             "start_date": "2018-02-12",
             "weeks": 2,
@@ -677,6 +686,7 @@ class TestLearningCircleApi(TestCase):
             "latitude": 3.1,
             "longitude": "1.3",
             "place_id": "4",
+            "online": "false",
             "language": "en",
             "start_date": "2018-02-12",
             "weeks": 2,

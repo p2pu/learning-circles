@@ -45,7 +45,6 @@ jmespath==0.9.3
 kombu==3.0.37
 lxml==4.2.5
 Markdown==3.1.1
-mock==1.0.1
 olefile==0.44
 packaging==16.8
 phonenumberslite==7.7.0

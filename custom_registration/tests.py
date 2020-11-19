@@ -5,7 +5,7 @@ from django.core import mail
 from django.contrib.auth.models import User
 from django.utils.timezone import utc
 
-from mock import patch
+from unittest.mock import patch
 from freezegun import freeze_time
 
 import re

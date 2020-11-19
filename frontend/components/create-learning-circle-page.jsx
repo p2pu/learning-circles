@@ -17,6 +17,19 @@ import {
 import './stylesheets/learning-circle-form.scss';
 import 'p2pu-components/dist/build.css';
 
+function dateObjectToStringForDB(date){
+  if (!date || typeof(date) !== 'object') {
+    throw Error("No Date object provided")
+  }
+  const year = date.getFullYear()
+  const month = `0${date.getMonth() + 1}`.slice(-2)
+  const day = `0${date.getDate()}`.slice(-2)
+  const hours = `0${date.getHours()}`.slice(-2)
+  const minutes = `0${date.getMinutes()}`.slice(-2)
+
+  return { meeting_date: `${year}-${month}-${day}`, meeting_time: `${hours}:${minutes}` };
+}
+
 
 export default class CreateLearningCirclePage extends React.Component {
   static defaultProps = {
@@ -52,13 +65,13 @@ export default class CreateLearningCirclePage extends React.Component {
     this.updateFormData = (data, cb) => this._updateFormData(data, cb);
     this.registerUser = () => this._registerUser();
     this.onLogin = (user) => this._onLogin(user);
-    this.allTabs = {
-      0: '1. Course',
-      1: '2. Location',
-      2: '3. Day & Time',
-      3: '4. Customize',
-      4: '5. Finalize'
-    };
+    this.allTabs = [
+      '1. Course',
+      '2. Location',
+      '3. Day & Time',
+      '4. Customize',
+      '5. Finalize',
+    ];
   }
 
   componentDidMount() {
@@ -162,22 +175,8 @@ export default class CreateLearningCirclePage extends React.Component {
     return placeData
   }
 
-
-  dateObjectToStringForDB = (date) => {
-    if (!date || typeof(date) !== 'object') {
-      throw Error("No Date object provided")
-    }
-    const year = date.getFullYear()
-    const month = `0${date.getMonth() + 1}`.slice(-2)
-    const day = `0${date.getDate()}`.slice(-2)
-    const hours = `0${date.getHours()}`.slice(-2)
-    const minutes = `0${date.getMinutes()}`.slice(-2)
-
-    return { meeting_date: `${year}-${month}-${day}`, meeting_time: `${hours}:${minutes}` }
-  }
-
   formatMeetingDates = () => {
-    return this.state.learningCircle.meetings.map(m=> this.dateObjectToStringForDB(m))
+    return this.state.learningCircle.meetings.map(m=> dateObjectToStringForDB(m))
   }
 
   parseMeetingDate = (meetingObj) => {
@@ -194,7 +193,10 @@ export default class CreateLearningCirclePage extends React.Component {
     } else {
       this.setState({ isSaving: draft, isPublishing: !draft })
       const placeData = this.extractPlaceData(this.state.learningCircle.place)
-      const start_date = typeof(this.state.learningCircle.start_date) === 'string' ? this.state.learningCircle.start_date : this.dateObjectToStringForDB(this.state.learningCircle.start_date)['meeting_date']
+      let start_date = this.state.learningCircle.start_date;
+      if (start_date && start_date instanceof Date){
+        start_date = dateObjectToStringForDB(start_date)['meeting_date'];
+      }
       const meetings = this.formatMeetingDates()
 
       const data = {
