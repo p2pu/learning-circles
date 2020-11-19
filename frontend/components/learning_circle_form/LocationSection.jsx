@@ -9,11 +9,26 @@ import {
 
 const LocationSection = (props) => {
   const place = !!props.learningCircle.place_id ? { objectID: props.learningCircle.place_id } : props.learningCircle.place
+
+  const onOnlineChanged = ({online}) => {
+    let {venue_name} = props.learningCircle;
+    if (online && !venue_name) {
+      venue_name = 'Online'
+    }
+    props.updateFormData({online, venue_name});
+  }
   return (
     <div>
+      <SwitchWithLabels
+        label='Are you meeting online?'
+        trueLabel='Yes'
+        falseLabel='No'
+        handleChange={onOnlineChanged}
+        value={Boolean(props.learningCircle.online)}
+        name='online'
+      />
       <PlaceSelect
-        label='What city are you meeting in?'
-        helpText='If you’re meeting online, indicate where you’re based.'
+        label={props.learningCircle.online?'Where are you based?':'What city are you meeting in?'}
         name='place'
         id='place_id'
         classes="form-group"
@@ -22,17 +37,9 @@ const LocationSection = (props) => {
         errorMessage={props.errors.city}
         required={true}
       />
-      <SwitchWithLabels
-        label='Are you meeting online?'
-        trueLabel='Yes'
-        falseLabel='No'
-        handleChange={props.updateFormData}
-        value={Boolean(props.learningCircle.online)}
-        name='online'
-      />
       <InputWithLabel
         label='Where will you meet?'
-        placeholder={props.learningCircle.online?'Eg. Online':'Eg. Pretoria Library'}
+        placeholder={props.learningCircle.online?'E.g. Online':'E.g. Pretoria Library'}
         value={props.learningCircle.venue_name || ''}
         handleChange={props.updateFormData}
         name='venue_name'
@@ -42,12 +49,13 @@ const LocationSection = (props) => {
       />
       <InputWithLabel
         label='What is the specific meeting spot?'
-        placeholder={props.learningCircle.online?'Eg. Using Jitsi':'Eg. Room 409, fourth floor'}
+        placeholder={props.learningCircle.online?'E.g. Jit.si, Hangout, Zoom':'E.g. Room 409, fourth floor'}
         value={props.learningCircle.venue_details || ''}
         handleChange={props.updateFormData}
         name='venue_details'
         id='id_venue_details'
         errorMessage={props.errors.venue_details}
+        required={true}
       />
       <InputWithLabel
         label='What is the meeting address?'
