@@ -1,0 +1,74 @@
+.action-bar {
+  padding: 1em 0;
+  background: $p2pu-yellow;
+}
+
+.topbit {
+  min-height: 400px;
+}
+
+.meeting-feedback {
+  padding: 1em;
+  background: $gray-lighter;
+}
+
+.meeting-rsvp {
+  padding: 1em;
+  background: $gray-lighter;
+}
+
+.card-collapse-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: $primary;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  transform: rotate(180deg);
+
+  &.collapsed {
+    transform: rotate(0deg);
+  }
+}
+
+.meeting-item {
+  padding-left: 1.5em;
+  position: relative;
+}
+
+.meeting-item.done::before {
+  position: absolute;
+  content: '✓'
+}
+
+.lc-timeline::before {
+  content: '';
+  width: 0;
+  border: 1px solid black;
+  position: absolute;
+  height: 100%;
+}
+
+.lc-timeline .item {
+  padding-left: 1.5em;
+  position: relative;
+}
+
+.lc-timeline .item::before {
+  content: '✓';
+  position: absolute;
+  left: -0.7em;
+  width: 1.5em;
+  height: 1.5em;
+  padding: 0;
+  line-height: 1.5em;
+  background: white;
+  border: 1px solid black;
+  border-radius: 0.75em;
+  text-align: center;
+}
+
+

@@ -1,0 +1,16 @@
+.lc-image {
+  img {
+    width: 400px;
+    height: 400px;
+    border-radius: 400px;
+    background: $p2pu-yellow;
+    border: 20px solid $p2pu-yellow;
+    object-fit: cover;
+
+    &.default-image {
+      transform: rotate(90deg);
+    }
+  }
+}
+
+

@@ -101,6 +101,7 @@ def view_study_group(request, study_group_id):
 
     context = {
         'study_group': study_group,
+        'feedback_form': FeedbackForm(),
         'today': timezone.now(),
         'dashboard_url': dashboard_url
     }
@@ -177,23 +178,21 @@ class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
     model = Feedback
     form_class = FeedbackForm
 
-    def get_initial(self):
-        meeting = get_object_or_404(Meeting, pk=self.kwargs.get('study_group_meeting_id'))
-        return {
-            'study_group_meeting': meeting,
-        }
-
     def form_valid(self, form):
-        # send notification to organizers about feedback
-        to = [] #TODO should we send this to someone if the facilitators is not part of a team? - for now, don't worry, this notification is likely to be removed.
         meeting = get_object_or_404(Meeting, pk=self.kwargs.get('study_group_meeting_id'))
+        feedback = form.save(commit=False)
+        feedback.study_group_meeting = meeting
+        feedback.save()
+
+        # send notification to organizers about feedback
+        to = []
         organizers = get_study_group_organizers(meeting.study_group)
         if organizers:
             to = [o.email for o in organizers]
 
         context = {
             'feedback': form.save(commit=False),
-            'study_group_meeting': self.get_initial()['study_group_meeting']
+            'study_group_meeting': meeting
         }
         subject = render_to_string_ctx('studygroups/email/feedback-submitted-subject.txt', context).strip('\n')
         html_body = render_to_string_ctx('studygroups/email/feedback-submitted.html', context)
@@ -201,7 +200,10 @@ class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
         notification = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
         notification.attach_alternative(html_body, 'text/html')
         notification.send()
-        return super(FeedbackCreate, self).form_valid(form)
+
+        url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
+        return http.HttpResponseRedirect(url)
+
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")

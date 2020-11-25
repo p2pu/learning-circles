@@ -414,9 +414,15 @@ class StatsDashForm(forms.Form):
 
 
 class FeedbackForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['feedback'].widget.attrs = {'rows': 3}
+        self.fields['reflection'].widget.attrs = {'rows': 3}
+
     class Meta:
         model = Feedback
-        fields = ['study_group_meeting', 'feedback', 'reflection', 'attendance', 'rating']
+        fields = ['rating', 'attendance', 'feedback', 'reflection']
         labels = {
             'feedback': _('For learners: Write a brief summary of this week\'s learning circle.'),
             'attendance': _('How many people attended?'),
@@ -427,7 +433,6 @@ class FeedbackForm(forms.ModelForm):
             'feedback': _('You may want to include your impressions of how it went, plus/delta feedback, and anything the group agreed on having completed before the next meeting. This will be automatically sent to learners two days before next week\'s meeting.'),
             'reflection': _('What went well this week? What surprised you? Any funny stories? We\'ll pull what you write here into our community newsletters and updates.'),
         }
-        widgets = {'study_group_meeting': forms.HiddenInput}
 
 
 class TeamMembershipForm(forms.ModelForm):

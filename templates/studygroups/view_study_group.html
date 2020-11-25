@@ -46,7 +46,7 @@
     <div class="col-md-8 offset-md-4">
       <a class="btn btn-primary" href="{% url 'studygroups_edit_study_group' study_group.id %}">{% trans "Edit" %}</a>
       <a class="btn btn-primary" href="{% url 'studygroups_signup' location=study_group.venue_name|unicode_slugify study_group_id=study_group.pk %}">{% trans "View" %}</a>
-      <a class="btn">Add meeting</a>
+      <a class="btn btn-primary" href="{% url 'studygroups_create_meeting' study_group.id %}">{% trans "Add meeting" %}</a>
       {% if study_group.signup_open %}
       <a class="btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' study_group.id %}">{% trans "Close signup" %}</a>
       {% else %}
@@ -62,62 +62,89 @@
 <div class="container-fluid">
 
   <div class="manage row">
-    <div class="col-7">
-      <div class="card">
-        <div class="card-title">Publish your learning circle</div>
+    <div class="col-7 lc-timeline">
+      <div class="item">
+        <div class="card">
+          <div class="card-title">Publish your learning circle</div>
+        </div>
       </div>
       {% for meeting in study_group.meeting_set.active %}
-      <div class="card">
-        <div class="card-title">Meeting #{{forloop.counter}}: {{meeting.meeting_datetime}}</div>
-        {% if meeting.reminder_set.first.sent_at %}
-          <p>reminder sent at {{meeting.reminder_set.first.sent_at}}</p>
-        {% else %}
-          <p>reminder will be sent 2 days before the meeting
-        {% endif %}
-        <div>
-          {% for rsvp in meeting.rsvp_set.all %}
-            {{rsvp.application.name}}
-          {% empty %}
-          <p>No RSVPs yet</p>
-          {% endfor %}
+        <div class="item">
+          <div class="card">
+            <a class="card-collapse-toggle" data-toggle="collapse" href="#collapse-meeting-{{forloop.counter}}" role="button" aria-expanded="true" aria-controls="collapse-meeting-{{forloop.counter}}"><i class="fa fa-chevron-down"></i></a>
+            <div class="card-title">Meeting #{{forloop.counter}}: {{meeting.meeting_datetime}}</div>
+            <div class="collapse show" id="collapse-meeting-{{forloop.counter}}">
+              {% if meeting.reminder_set.first.sent_at %}
+                <div class="meeting-item done">
+                  <p>Reminder sent at {{meeting.reminder_set.first.sent_at}}</p>
+                </div>
+              {% else %}
+                <div class="meeting-item done">
+                  <p>Reminder will be sent 2 days before the meeting
+                </div>
+              {% endif %}
+              <div class="meeting-item done">
+                <p>See RSVPs</p>
+                <div class="meeting-rsvp">
+                {% for rsvp in meeting.rsvp_set.all %}
+                  {{rsvp.application.name}}
+                {% empty %}
+                <p>No RSVPs yet</p>
+                {% endfor %}
+                </div>
+              </div>
+              <div class="meeting-item done">
+                <p>Reflect at capture feedback</p>
+                <div class="meeting-feedback">
+                  {% if meeting.feedback_set.first %}
+                    Overall rating: {{meeting.feedback_set.first.get_rating_display}}
+                  {% else %}
+                    {% if meeting.meeting_datetime < today %}
+                    <p>Submit feedback</p>
+                      <form action="{% url 'studygroups_feedback' study_group.pk meeting.pk %}" method="POST">
+	                      {% csrf_token %}
+	                      {{ feedback_form|crispy }}
+                        <p><button type="submit" class="btn btn-primary">{% trans "Submit" %}</button></p>
+	                    </form>
+                    {% endif %}
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        {% if meeting.feedback_set.first %}
-          {{meeting.feedback_set.first.rating}}
-        {% else %}
-          <p>Submit feedback</p>
-        {% endif %}
-      </div>
       {% endfor %}
-      <div class="card">
-        <div class="card-title">Wrap up</div>
+      <div class="item">
+        <div class="card">
+          <div class="card-title">Wrap up</div>
+        </div>
       </div>
     </div>
     <div class="col-5">
       <div class="card">
         <div class="card-title">Learners</div>
-          <table class="table table-bordered">
+          <table class="table">
             <thead>
               <tr>
                 <th>{% trans "Name" %}</th>
-                <th>{% trans "Goal" %}</th>
-                <th>{% trans "Support" %}</th>
-                {% if study_group.signup_question %}<th>{{ study_group.signup_question }}</th>{% endif %}
+                <th>{% trans "Email" %}</th>
+                <th>{% trans "Mobile" %}</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
               {% for learner in study_group.application_set.active %}
               <tr>
-                <td>{{ learner.name }}
-                  {% if learner.email %}<br/>&lt;{{learner.email}}&gt;{% endif %}
-                  {% if learner.mobile %}<br/>{{learner.mobile}}{% endif %}
-                </td>
-                <td>{{ learner.get_signup_questions.goals }}</td>
-                <td>{{ learner.get_signup_questions.support }}</td>
-                {% if study_group.signup_question %}<td>{{ learner.get_signup_questions.custom_question }}</td>{% endif %}
+                <td>{{ learner.name }}</td>
                 <td>
-                  <a class="btn btn-primary" href="{% url 'studygroups_application_delete' study_group.id learner.id %}">{% trans "Remove" %}</a>
-                  <a class="btn btn-primary" href="{% url 'studygroups_application_edit' study_group.id learner.id %}">{% trans "Edit" %}</a>
+                  {% if learner.email %}&lt;{{learner.email}}&gt;{% endif %}
+                </td>
+                <td>
+                  {% if learner.mobile %}{{learner.mobile}}{% endif %}
+                </td>
+                <td>
+                  <a class="btn btn-primary" href="{% url 'studygroups_application_edit' study_group.id learner.id %}"><i class="fa fa-edit"></i></a>
+                  <a class="btn btn-primary" href="{% url 'studygroups_application_delete' study_group.id learner.id %}"><i class="fa fa-trash"></i></a>
                 </td>
                 </td>
               </tr>
@@ -129,7 +156,7 @@
 
       <div class="card">
         <div class="card-title">Messages</div>
-          <table class="table table-bordered">
+          <table class="table">
             <thead>
               <tr>
                 <th>{% trans "Email subject" %}</th>
@@ -151,7 +178,7 @@
               {% endfor %}
             </tbody>
           </table>
-          <a href="{% url 'studygroups_message_send' study_group.id %}" class="btn btn-primary">{% trans "New message" %}</a>
+          <p><a href="{% url 'studygroups_message_send' study_group.id %}" class="btn btn-primary">{% trans "New message" %}</a></p>
       </div>
     </div>
   </div>

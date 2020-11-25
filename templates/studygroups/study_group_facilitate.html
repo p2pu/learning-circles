@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load extras %}
 
-<div class="container my-3">
+<div class="container-fluid my-3">
   <div class="card">
     <div class="card-header text-light bg-dark">
       <h2>{{ lc.name }}</h2>
@@ -97,7 +97,7 @@
               {% endfor %}
             </tbody>
           </table>
-          <p><a class="btn btn-primary" href="{% url 'studygroups_create_study_group_meeting' lc.id %}">{% trans "Add meeting" %}</a></p>
+          <p><a class="btn btn-primary" href="{% url 'studygroups_create_meeting' lc.id %}">{% trans "Add meeting" %}</a></p>
         </div>
         <div class="col-md-12">
           <h3>{% trans "Messages" %} ({{ lc.reminder_set.count }})</h3>
