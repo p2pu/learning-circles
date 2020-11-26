@@ -17,6 +17,11 @@
   background: $gray-lighter;
 }
 
+.survey-summary {
+  padding: 1em;
+  background: $gray-lighter;
+}
+
 .card-collapse-toggle {
   position: absolute;
   top: 20px;
@@ -41,8 +46,29 @@
 
 .meeting-item.done::before {
   position: absolute;
-  content: '✓'
+  content: '✓';
+  left: 0;
 }
+
+.meeting-item.todo::before {
+  position: absolute;
+  content: '';
+  left: 0;
+  background: url("../images/icons/clock.svg") left center / 1em 1em no-repeat;
+  width: 1.5em;
+  height: 2em;
+}
+
+.meeting-item.pending::before {
+  position: absolute;
+  content: '';
+  left: 0;
+  background: url("../images/icons/clock.svg") left center / 1em 1em no-repeat;
+  filter: brightness(0) saturate(100%) invert(100%) sepia(3%) saturate(1205%) hue-rotate(241deg) brightness(110%) contrast(73%);
+  width: 1.5em;
+  height: 2em;
+}
+
 
 .lc-timeline::before {
   content: '';
@@ -70,5 +96,4 @@
   border-radius: 0.75em;
   text-align: center;
 }
-
 
