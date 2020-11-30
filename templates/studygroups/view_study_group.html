@@ -84,7 +84,8 @@
                   <p>Reminder will be sent 2 days before the meeting
                 </div>
               {% endif %}
-              <div class="meeting-item done">
+
+              <div class="meeting-item {% if meeting.meeting_datetime > today %}{% if meeting.reminder_set.first.sent_at %}todo{% else %}pending{% endif %}{% else %}done{% endif %}">
                 <p>See RSVPs</p>
                 <div class="meeting-rsvp">
                   <ul>
@@ -93,7 +94,15 @@
                     {% empty %}
                       <li>No RSVPs yet</li>
                     {% endfor %}
-                  <ul>
+                  </ul>
+                  {% with unknown_rsvps=meeting.rsvp_pending %}
+                  <p>{{unknown_rsvps.count}} learners haven&quot;t responded. (<a data-toggle="collapse" href="#meeting-{{meeting.id}}-rsvp-unknown" role="button" aria-expanded="true" aria-controls="meeting-{{meeting.id}}-rsvp-unknown">Show all</a>)</p>
+                  <ul class="collapse" id="meeting-{{meeting.id}}-rsvp-unknown">
+                    {% for learner in unknown_rsvps %}
+                     <li>{{learner.name}}</li>
+                    {% endfor %}
+                  </ul>
+                  {% endwith %}
                 </div>
               </div>
               <div class="meeting-item {% if meeting.meeting_datetime > today %}pending{% else %}{% if meeting.feedback_set.count %}done{% else %}todo{% endif %}{% endif %}">
@@ -137,7 +146,28 @@
             </div>
             <div class="meeting-item pending">
               <p>Collect learner feedback</p>
-              <div class="survey-summary">{{ study_group.learnersurveyresponse_set.count }} learners completed the survey.</div>
+              <div class="survey-summary">
+
+                <p>Direct link to learner survey: <input type="text" id="learner-survey-link" value="{{PROTOCOL}}://{{DOMAIN}}{% url 'studygroups_learner_survey' study_group.uuid %}"/> (<button onclick="Copy()">copy</button>)</p>
+  <script>
+    // TODO consider doing this as progressive enhancement
+    function Copy() {
+      var field = document.getElementById("learner-survey-link");
+      field.select();
+      field.setSelectionRange(0, 99999);
+      document.execCommand("copy");
+    }
+  </script>
+                {{ study_group.learnersurveyresponse_set.count }} learners completed the survey.
+                {% if remaining_surveys %}
+                <p>The following learners have not yet completed the learner survey</p>
+                <ul>
+                  {% for learner in remaining_surveys %}
+                    <li>{{learner.name}}</li>
+                  {% endfor %}
+                </ul>
+                {% endif %}
+              </div>
             </div>
             <div class="meeting-item done">
               <p>See the insights report</p>

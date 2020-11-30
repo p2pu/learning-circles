@@ -93,17 +93,16 @@ def view_study_group(request, study_group_id):
         raise http.Http404(_("Learning circle does not exist."))
 
     user_is_facilitator = study_group.facilitator == request.user
-    facilitator_is_organizer = TeamMembership.objects.active().filter(user=request.user, role=TeamMembership.ORGANIZER).exists()
     dashboard_url = reverse('studygroups_facilitator')
 
-    if facilitator_is_organizer and not user_is_facilitator:
-        dashboard_url = reverse('studygroups_organize')
+    remaining_surveys = study_group.application_set.exclude(id__in=study_group.learnersurveyresponse_set.values('learner_id'))
 
     context = {
         'study_group': study_group,
         'feedback_form': FeedbackForm(),
         'today': timezone.now(),
-        'dashboard_url': dashboard_url
+        'dashboard_url': dashboard_url,
+        'remaining_surveys': remaining_surveys,
     }
     return render(request, 'studygroups/view_study_group.html', context)
 

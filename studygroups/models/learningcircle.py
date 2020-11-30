@@ -286,6 +286,9 @@ class Meeting(LifeTimeTrackingModel):
             'no': self.rsvp_set.all().filter(attending=False)
         }
 
+    def rsvp_pending(self):
+        return self.study_group.application_set.exclude(id__in=self.rsvp_set.all().values('application_id'))
+
     def rsvp_yes_link(self, email):
         base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
         url = reverse('studygroups_rsvp')
