@@ -12,65 +12,77 @@
 </div>
 
 <div class="topbit">
-<div class="container-fluid">
-  <div class="heading row">
-    <div class="position-absolute col-md-4">
-      <div class="lc-image">
-        {% if study_group.image %}
-          <img class="drop-shadow" src="{{study_group.image.url}}">
+  <div class="container-fluid">
+    <div class="heading row">
+      <div class="position-absolute col-md-4">
+        <div class="lc-image">
+          {% if study_group.image %}
+            <img class="drop-shadow" src="{{study_group.image.url}}">
+          {% else %}
+            <img class="drop-shadow default-image" src="{% static 'images/learning-circle-default.jpg' %}">
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-md-8 offset-md-4 details">
+        <h1>{{study_group.name}}</h1>
+        <div class="text">
+          {% blocktrans with first_name=study_group.facilitator.first_name %}Facilitated by {{first_name}}{% endblocktrans %}
+        </div>
+        <div class="text">
+          {% blocktrans with link=study_group.course.link provider=study_group.course.provider %}Course materials provided by <a href="{{ link }}" target="_blank">{{ provider }}</a>{% endblocktrans %}
+        </div>
+        <div class="text">
+          {% trans "Taking place at" %} {% if study_group.venue_website %}<a href="{{study_group.venue_website}}">{{ study_group.venue_name }}</a>{% else %}{{study_group.venue_name}}{% endif %}, {{study_group.venue_details}}, {{study_group.city}}
+        </div>
+        <div class="text">
+          {% include 'studygroups/recurrence_text.html' %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="action-bar">
+    <div class="row">
+      <div class="col-md-8 offset-md-4">
+        <a class="p2pu-btn btn-primary" href="{% url 'studygroups_edit_study_group' study_group.id %}">{% trans "Edit" %}</a>
+        <a class="p2pu-btn btn-primary" href="{% url 'studygroups_signup' location=study_group.venue_name|unicode_slugify study_group_id=study_group.pk as signup_url %}">{% trans "View" %}</a>
+        <a class="p2pu-btn btn-primary" href="{% url 'studygroups_create_meeting' study_group.id %}">{% trans "Add meeting" %}</a>
+        {% if study_group.signup_open %}
+        <a class="p2pu-btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' study_group.id %}">{% trans "Close signup" %}</a>
         {% else %}
-          <img class="drop-shadow default-image" src="{% static 'images/learning-circle-default.jpg' %}">
+        <a class="p2pu-btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' study_group.id %}">{% trans "Open signup" %}</a>
         {% endif %}
-      </div>
-    </div>
-    <div class="col-md-8 offset-md-4 details">
-      <h1>{{study_group.name}}</h1>
-      <div class="text">
-        {% blocktrans with first_name=study_group.facilitator.first_name %}Facilitated by {{first_name}}{% endblocktrans %}
-      </div>
-      <div class="text">
-        {% blocktrans with link=study_group.course.link provider=study_group.course.provider %}Course materials provided by <a href="{{ link }}" target="_blank">{{ provider }}</a>{% endblocktrans %}
-      </div>
-      <div class="text">
-        {% trans "Taking place at" %} {% if study_group.venue_website %}<a href="{{study_group.venue_website}}">{{ study_group.venue_name }}</a>{% else %}{{study_group.venue_name}}{% endif %}, {{study_group.venue_details}}, {{study_group.city}}
-      </div>
-      <div class="text">
-        {% include 'studygroups/recurrence_text.html' %}
+        <a class="p2pu-btn btn-primary" href="{% url 'studygroups_studygroup_delete' study_group.id %}">{% trans "Delete" %}</a>
       </div>
     </div>
   </div>
 </div>
 
-<div class="action-bar">
-  <div class="row">
-    <div class="col-md-8 offset-md-4">
-      <a class="p2pu-btn btn-primary" href="{% url 'studygroups_edit_study_group' study_group.id %}">{% trans "Edit" %}</a>
-      <a class="p2pu-btn btn-primary" href="{% url 'studygroups_signup' location=study_group.venue_name|unicode_slugify study_group_id=study_group.pk %}">{% trans "View" %}</a>
-      <a class="p2pu-btn btn-primary" href="{% url 'studygroups_create_meeting' study_group.id %}">{% trans "Add meeting" %}</a>
-      {% if study_group.signup_open %}
-      <a class="p2pu-btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' study_group.id %}">{% trans "Close signup" %}</a>
-      {% else %}
-      <a class="p2pu-btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' study_group.id %}">{% trans "Open signup" %}</a>
-      {% endif %}
-      <a class="p2pu-btn btn-primary" href="{% url 'studygroups_studygroup_delete' study_group.id %}">{% trans "Delete" %}</a>
-    </div>
-  </div>
-</div>
-
-</div>
-
-<div class="container-fluid">
-
+<div class="container-fluid mt-5">
   <div class="manage row">
     <div class="col-7 lc-timeline">
-      <div class="item">
+      <div class="item {% if not study_group.draft %}done{% else %}todo{% endif %}">
         <div class="card">
+          <a class="card-collapse-toggle {% if not study_group.draft %}collapsed{% endif %}" data-toggle="collapse" href="#collapse-publish" role="button" aria-expanded="true" aria-controls="collapse-publish"><i class="fa fa-chevron-down"></i></a>
           <div class="card-title">Publish your learning circle</div>
+          <div class="collapse {% if study_group.draft %}show{% endif %}" id="collapse-publish">
+            {% if study_group.draft %}
+              <div class="meeting-item todo">
+                <p>This learning circle is currently a draft and learners won't be able to find it or sign up.</p>
+                <form action="{% url 'studygroups_studygroup_publish' study_group_id=study_group.pk %}" method="POST">{% csrf_token %}<button type="submit" class="p2pu-btn btn-primary" href="">{% trans "publish" %}</button></form>
+              </div>
+            {% else %}
+              <div class="meeting-item done">
+                <p>Your learning circle is live! See it here:<br/>
+                <a href="{{PROTOCOL}}://{{DOMAIN}}{{signup_url}}">{{PROTOCOL}}://{{DOMAIN}}{{signup_url}}</a>
+                </p>
+              </div>
+            {% endif %}
+          </div>
         </div>
       </div>
       {% for meeting in study_group.meeting_set.active %}
       {% with done=meeting.feedback_set.count %}
-        <div class="item">
+      <div class="item {% if done %}done{% else %}todo{% endif %}">
           <div class="card">
             <a class="card-collapse-toggle {% if done %}collapsed{% endif %}" data-toggle="collapse" href="#collapse-meeting-{{forloop.counter}}" role="button" aria-expanded="true" aria-controls="collapse-meeting-{{forloop.counter}}"><i class="fa fa-chevron-down"></i></a>
             <div class="card-title">Meeting #{{forloop.counter}}: {{meeting.meeting_datetime}}</div>
@@ -80,13 +92,14 @@
                   <p>Reminder sent at {{meeting.reminder_set.first.sent_at}}</p>
                 </div>
               {% else %}
-                <div class="meeting-item done">
+                <div class="meeting-item {% if meeting == study_group.next_meeting %}todo{% else %}pending{% endif %}">
                   <p>Reminder will be sent 2 days before the meeting
                 </div>
               {% endif %}
 
-              <div class="meeting-item {% if meeting.meeting_datetime > today %}{% if meeting.reminder_set.first.sent_at %}todo{% else %}pending{% endif %}{% else %}done{% endif %}">
+              <div class="meeting-item {% if meeting.meeting_datetime < today %}done{% elif meeting.reminder_set.first.sent_at %}todo{% else %}pending{% endif %}">
                 <p>See RSVPs</p>
+                {% if meeting.reminder_set.first.sent_at %}
                 <div class="meeting-rsvp">
                   <ul>
                     {% for rsvp in meeting.rsvp_set.all %}
@@ -104,6 +117,7 @@
                   </ul>
                   {% endwith %}
                 </div>
+                {% endif %}
               </div>
               <div class="meeting-item {% if meeting.meeting_datetime > today %}pending{% else %}{% if meeting.feedback_set.count %}done{% else %}todo{% endif %}{% endif %}">
                 <p>Reflect and capture feedback</p>
@@ -129,35 +143,41 @@
         </div>
         {% endwith %}
       {% endfor %}
-      <div class="item">
+      <div class="item {% if study_group.facilitatorsurveyresponse_set.count and study_group.learnersurveyresponse_set.count and not remaining_surveys %}whoohoo{% else %}todo{% endif %}">
         <div class="card">
           <a class="card-collapse-toggle" data-toggle="collapse" href="#collapse-wrapup" role="button" aria-expanded="true" aria-controls="collapse-wrapup"><i class="fa fa-chevron-down"></i></a>
           <div class="card-title">Wrap up</div>
           <div class="collapse show" id="collapse-wrapup">
-            <div class="meeting-item done">
-              <p>Survey reminder sent at</p>
-            </div>
-            <div class="meeting-item {% if study_group.facilitatorsurveyresponse_set.count %}done{% else %}todo{% endif %}">
-              Complete the facilitator survey
+            {% if today > study_group.last_meeting.meeting_datetime %}
+              <div class="meeting-item done">
+                <p>Survey reminder sent.</p>
+              </div>
+            {% else %}
+              <div class="meeting-item pending">
+                <p>Survey reminder will be sent during the last meeting.</p>
+              </div>
+            {% endif %}
+            <div class="meeting-item {% if study_group.facilitatorsurveyresponse_set.count %}done{% elif today > study_group.last_meeting %}todo{% else %}pending{% endif %}">
+              <p>Complete the facilitator survey</p>
               {% if study_group.facilitatorsurveyresponse_set.count  %}
               {% else %}
                 <p><a class="p2pu-btn btn-primary" href="{% url 'studygroups_facilitator_survey' study_group.uuid %}">{% trans "Facilitator survey" %}</a></p>
               {% endif %}
             </div>
-            <div class="meeting-item pending">
+            <div class="meeting-item {% if today < study_group.last_meeting.meeting_datetime %}pending{% elif not remaining_surveys.count %}done{% else %}todo{% endif %}">
               <p>Collect learner feedback</p>
               <div class="survey-summary">
 
                 <p>Direct link to learner survey: <input type="text" id="learner-survey-link" value="{{PROTOCOL}}://{{DOMAIN}}{% url 'studygroups_learner_survey' study_group.uuid %}"/> (<button onclick="Copy()">copy</button>)</p>
-  <script>
-    // TODO consider doing this as progressive enhancement
-    function Copy() {
-      var field = document.getElementById("learner-survey-link");
-      field.select();
-      field.setSelectionRange(0, 99999);
-      document.execCommand("copy");
-    }
-  </script>
+                <script>
+                  // TODO consider doing this as progressive enhancement
+                  function Copy() {
+                    var field = document.getElementById("learner-survey-link");
+                    field.select();
+                    field.setSelectionRange(0, 99999);
+                    document.execCommand("copy");
+                  }
+                </script>
                 {{ study_group.learnersurveyresponse_set.count }} learners completed the survey.
                 {% if remaining_surveys %}
                 <p>The following learners have not yet completed the learner survey</p>
@@ -169,9 +189,11 @@
                 {% endif %}
               </div>
             </div>
-            <div class="meeting-item done">
+            <div class="meeting-item {% if study_group.facilitatorsurveyresponse_set.count %}done{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %}">
               <p>See the insights report</p>
-              <p><a class="p2pu-btn btn-primary" href="{% url 'studygroups_final_report' study_group_id=study_group.pk %}">{% trans "View insights" %}</a></p>
+              {% if study_group.facilitatorsurveyresponse_set.count or study_group.learnersurveyresponse_set.count %}
+                <p><a class="p2pu-btn btn-primary" href="{% url 'studygroups_final_report' study_group_id=study_group.pk %}">{% trans "View insights" %}</a></p>
+              {% endif %}
             </div>
           </div>
         </div>

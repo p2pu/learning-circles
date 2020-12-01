@@ -73,7 +73,7 @@
 .lc-timeline::before {
   content: '';
   width: 0;
-  border: 1px solid black;
+  border: 1px solid $primary;
   position: absolute;
   height: 100%;
 }
@@ -83,7 +83,7 @@
   position: relative;
 }
 
-.lc-timeline .item::before {
+.lc-timeline .item.done::before{
   content: '✓';
   position: absolute;
   left: -0.7em;
@@ -91,8 +91,37 @@
   height: 1.5em;
   padding: 0;
   line-height: 1.5em;
-  background: white;
-  border: 1px solid black;
+  color: white;
+  background: $primary;
+  border: 1px solid $primary;
+  border-radius: 0.75em;
+  text-align: center;
+}
+
+.lc-timeline .item.todo::before{
+  content: '';
+  background: url("../images/icons/clock-white.svg") center center / 0.8em 0.8em no-repeat, $primary;
+  position: absolute;
+  left: -0.7em;
+  width: 1.5em;
+  height: 1.5em;
+  padding: 0;
+  line-height: 1.5em;
+  border: 1px solid $primary;
+  border-radius: 0.75em;
+  text-align: center;
+}
+
+.lc-timeline .item.whoohoo::before{
+  content: '';
+  background: url("../images/icons/firework.svg") center center / 1em 1em no-repeat, white;
+  position: absolute;
+  left: -0.7em;
+  width: 1.5em;
+  height: 1.5em;
+  padding: 0;
+  line-height: 1.5em;
+  border: 1px solid $primary;
   border-radius: 0.75em;
   text-align: center;
 }
