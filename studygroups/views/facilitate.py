@@ -95,7 +95,7 @@ def view_study_group(request, study_group_id):
     user_is_facilitator = study_group.facilitator == request.user
     dashboard_url = reverse('studygroups_facilitator')
 
-    remaining_surveys = study_group.application_set.exclude(id__in=study_group.learnersurveyresponse_set.values('learner_id'))
+    remaining_surveys = study_group.application_set.active().exclude(id__in=study_group.learnersurveyresponse_set.values('learner_id'))
 
     context = {
         'study_group': study_group,

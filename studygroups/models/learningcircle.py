@@ -189,7 +189,7 @@ class StudyGroup(LifeTimeTrackingModel):
             "day": sg.day(),
             "end_time": sg.end_time(),
             "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
-            "signup_count": sg.application_set.count(),
+            "signup_count": sg.application_set.active().count(),
             "draft": sg.draft,
             "url": reverse('studygroups_view_study_group', args=(sg.id,)),
             "signup_url": reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
@@ -287,7 +287,7 @@ class Meeting(LifeTimeTrackingModel):
         }
 
     def rsvp_pending(self):
-        return self.study_group.application_set.exclude(id__in=self.rsvp_set.all().values('application_id'))
+        return self.study_group.application_set.active().exclude(id__in=self.rsvp_set.all().values('application_id'))
 
     def rsvp_yes_link(self, email):
         base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'

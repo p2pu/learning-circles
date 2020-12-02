@@ -223,7 +223,7 @@ class GoalsMetChart():
         survey_responses = self.study_group.learnersurveyresponse_set.all()
         survey_summaries = map(learner_survey_summary, survey_responses)
         goal_ratings = [res.get('goal_rating') for res in survey_summaries if res.get('goal_rating')]
-        applications = self.study_group.application_set.filter(goal_met__isnull=False, learnersurveyresponse__isnull=True)
+        applications = self.study_group.application_set.active().filter(goal_met__isnull=False, learnersurveyresponse__isnull=True)
         goal_ratings += [app.goal_met for app in applications]
         if not len(goal_ratings):
             return None
