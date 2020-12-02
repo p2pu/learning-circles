@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container">
 
-    <a href="{% url 'studygroups_facilitator' %}">{% trans "Back" %}</a>
+    <a href="{% url 'studygroups_view_study_group' study_group.pk %}">{% trans "Back" %}</a>
     <h2>{% blocktrans %}Edit email to {{study_group}}{% endblocktrans %}</h2>
     <p>
     <form action="" method="POST">
