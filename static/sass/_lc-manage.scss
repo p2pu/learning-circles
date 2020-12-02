@@ -12,14 +12,58 @@
   background: $gray-lighter;
 }
 
+@mixin rsvp-li {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 0.5em;
+  vertical-align: middle;
+}
+
 .meeting-rsvp {
   padding: 1em;
   background: $gray-lighter;
+
+  ul {
+    margin: 0;
+  }
+
+  li.rsvp-yes::before {
+    @include rsvp-li;
+    content: '';
+    background: url("../images/icons/rsvp-yes.svg") left center / 1em 1em no-repeat;
+  }
+
+  li.rsvp-no::before {
+    @include rsvp-li;
+    content: '';
+    background: url("../images/icons/rsvp-no.svg") left center / 1em 1em no-repeat;
+  }
+
+  li.rsvp-unknown::before {
+    @include rsvp-li;
+    content: '';
+    background: url("../images/icons/rsvp-unknown.svg") left center / 1em 1em no-repeat;
+  }
 }
 
 .survey-summary {
   padding: 1em;
   background: $gray-lighter;
+
+  li.todo::before {
+    @include rsvp-li;
+    content: '';
+    background: url("../images/icons/rsvp-unknown.svg") left center / 1em 1em no-repeat;
+  }
+
+  li.done::before {
+    @include rsvp-li;
+    content: '';
+    background: url("../images/icons/rsvp-yes.svg") left center / 1em 1em no-repeat;
+  }
+
+
 }
 
 .card-collapse-toggle {
@@ -33,7 +77,6 @@
   }
 
   transform: rotate(180deg);
-
   &.collapsed {
     transform: rotate(0deg);
   }
@@ -83,8 +126,7 @@
   position: relative;
 }
 
-.lc-timeline .item.done::before{
-  content: '✓';
+@mixin timeline-item {
   position: absolute;
   left: -0.7em;
   width: 1.5em;
@@ -92,37 +134,36 @@
   padding: 0;
   line-height: 1.5em;
   color: white;
-  background: $primary;
-  border: 1px solid $primary;
   border-radius: 0.75em;
   text-align: center;
+
+}
+
+.lc-timeline .item.done::before{
+  @include timeline-item;
+  content: '✓';
+  background: $primary;
+  border: 1px solid $primary;
 }
 
 .lc-timeline .item.todo::before{
+  @include timeline-item;
+  content: '';
+  background: url("../images/icons/clock-white.svg") center center / 0.8em 0.8em no-repeat, $p2pu-yellow;
+  border: 1px solid $p2pu-yellow;
+}
+
+.lc-timeline .item.pending::before{
+  @include timeline-item;
   content: '';
   background: url("../images/icons/clock-white.svg") center center / 0.8em 0.8em no-repeat, $primary;
-  position: absolute;
-  left: -0.7em;
-  width: 1.5em;
-  height: 1.5em;
-  padding: 0;
-  line-height: 1.5em;
   border: 1px solid $primary;
-  border-radius: 0.75em;
-  text-align: center;
 }
 
 .lc-timeline .item.whoohoo::before{
+  @include timeline-item;
   content: '';
   background: url("../images/icons/firework.svg") center center / 1em 1em no-repeat, white;
-  position: absolute;
-  left: -0.7em;
-  width: 1.5em;
-  height: 1.5em;
-  padding: 0;
-  line-height: 1.5em;
   border: 1px solid $primary;
-  border-radius: 0.75em;
-  text-align: center;
 }
 

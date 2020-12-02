@@ -450,7 +450,9 @@ class StudyGroupPublish(SingleObjectMixin, View):
             messages.success(self.request, _("Your learning circle has been published."));
             study_group.draft = False
             study_group.save()
-            generate_all_meetings(study_group)
+            # TODO this is temporary to still allow drafts created before to be published. This could also be replaced with a data migration that generates the meetings
+            if study_group.meeting_set.active().count() == 0:
+                generate_all_meetings(study_group)
 
         url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
         return http.HttpResponseRedirect(url)

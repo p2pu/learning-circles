@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% load i18n %}
-{% load extras %}
 
 {% block content %}
 <div class="container">
@@ -12,11 +11,7 @@
           <p>{% blocktrans %}Are you sure you want to delete "{{ object }}"?{% endblocktrans %}</p>
           <p><input class="btn btn-primary" type="submit" value="{% trans "Confirm" %}" /></p>
       </form>
-      {% if user|is_organizer %} 
-        <p><a href="{% url 'studygroups_organize' %}">{% trans "Back to dashboard" %}</a></p>
-      {% else %}
-        <p><a href="{% url 'studygroups_facilitator' %}">{% trans "Back to dashboard" %}</a></p>
-      {% endif %}
+      <p><a href="{% url 'studygroups_facilitator' %}">{% trans "Back to dashboard" %}</a></p>
     </div>
   </div>
 </div>

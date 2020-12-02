@@ -40,11 +40,12 @@
       </div>
     </div>
   </div>
+  {% url 'studygroups_signup' location=study_group.venue_name|unicode_slugify study_group_id=study_group.pk as signup_url %}
   <div class="action-bar">
     <div class="row">
       <div class="col-md-8 offset-md-4">
         <a class="p2pu-btn btn-primary" href="{% url 'studygroups_edit_study_group' study_group.id %}">{% trans "Edit" %}</a>
-        <a class="p2pu-btn btn-primary" href="{% url 'studygroups_signup' location=study_group.venue_name|unicode_slugify study_group_id=study_group.pk as signup_url %}">{% trans "View" %}</a>
+        <a class="p2pu-btn btn-primary" href="{{ signup_url }}">{% trans "View" %}</a>
         <a class="p2pu-btn btn-primary" href="{% url 'studygroups_create_meeting' study_group.id %}">{% trans "Add meeting" %}</a>
         {% if study_group.signup_open %}
         <a class="p2pu-btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' study_group.id %}">{% trans "Close signup" %}</a>
@@ -82,11 +83,11 @@
       </div>
       {% for meeting in study_group.meeting_set.active %}
       {% with done=meeting.feedback_set.count %}
-      <div class="item {% if done %}done{% else %}todo{% endif %}">
+      <div class="item {% if done %}done{% elif meeting.reminder_set.count or meeting == study_group.next_meeting %}todo{% else %}pending{% endif %}">
           <div class="card">
-            <a class="card-collapse-toggle {% if done %}collapsed{% endif %}" data-toggle="collapse" href="#collapse-meeting-{{forloop.counter}}" role="button" aria-expanded="true" aria-controls="collapse-meeting-{{forloop.counter}}"><i class="fa fa-chevron-down"></i></a>
-            <div class="card-title">Meeting #{{forloop.counter}}: {{meeting.meeting_datetime}}</div>
-            <div class="collapse {% if not done %}show{% endif %}" id="collapse-meeting-{{forloop.counter}}">
+            <a class="card-collapse-toggle {% if done or not meeting.reminder_set.count and meeting != study_group.next_meeting %}collapsed{% endif %}" data-toggle="collapse" href="#collapse-meeting-{{forloop.counter}}" role="button" aria-expanded="true" aria-controls="collapse-meeting-{{forloop.counter}}"><i class="fa fa-chevron-down"></i></a>
+            <div class="card-title">Meeting #{{forloop.counter}}: {{meeting.meeting_date}} {{meeting.meeting_time}} (<a href="{% url 'studygroups_meeting_edit' study_group.pk meeting.pk %}">edit</a>)</div>
+            <div class="collapse {% if not done and meeting.reminder_set.count or meeting == study_group.next_meeting %}show{% endif %}" id="collapse-meeting-{{forloop.counter}}">
               {% if meeting.reminder_set.first.sent_at %}
                 <div class="meeting-item done">
                   <p>Reminder sent at {{meeting.reminder_set.first.sent_at}}</p>
@@ -96,26 +97,22 @@
                   <p>Reminder will be sent 2 days before the meeting
                 </div>
               {% endif %}
-
               <div class="meeting-item {% if meeting.meeting_datetime < today %}done{% elif meeting.reminder_set.first.sent_at %}todo{% else %}pending{% endif %}">
-                <p>See RSVPs</p>
+                <p>See RSVPs {% if meeting.meeting_datetime < today %}(<a data-toggle="collapse" href="#meeting-{{meeting.id}}-rsvp" role="button" aria-expanded="true" aria-controls="meeting-{{meeting.id}}-rsvp">show</a>){% endif %}</p>
                 {% if meeting.reminder_set.first.sent_at %}
-                <div class="meeting-rsvp">
-                  <ul>
+                <div class="meeting-rsvp {% if meeting.meeting_datetime < today %}collapse{% endif %}" id="meeting-{{meeting.id}}-rsvp">
+                  <ul class="list-unstyled">
                     {% for rsvp in meeting.rsvp_set.all %}
-                      <li>{{rsvp.application.name}}</li>
+                    <li class="{% if rsvp.attending %}rsvp-yes{% else %}rsvp-no{% endif %}">{{rsvp.application.name}}</li>
                     {% empty %}
                       <li>No RSVPs yet</li>
                     {% endfor %}
+                    {% with unknown_rsvps=meeting.rsvp_pending %}
+                      {% for learner in unknown_rsvps %}
+                       <li class="rsvp-unknown">{{learner.name}}</li>
+                      {% endfor %}
+                    {% endwith %}
                   </ul>
-                  {% with unknown_rsvps=meeting.rsvp_pending %}
-                  <p>{{unknown_rsvps.count}} learners haven&quot;t responded. (<a data-toggle="collapse" href="#meeting-{{meeting.id}}-rsvp-unknown" role="button" aria-expanded="true" aria-controls="meeting-{{meeting.id}}-rsvp-unknown">Show all</a>)</p>
-                  <ul class="collapse" id="meeting-{{meeting.id}}-rsvp-unknown">
-                    {% for learner in unknown_rsvps %}
-                     <li>{{learner.name}}</li>
-                    {% endfor %}
-                  </ul>
-                  {% endwith %}
                 </div>
                 {% endif %}
               </div>
@@ -143,11 +140,11 @@
         </div>
         {% endwith %}
       {% endfor %}
-      <div class="item {% if study_group.facilitatorsurveyresponse_set.count and study_group.learnersurveyresponse_set.count and not remaining_surveys %}whoohoo{% else %}todo{% endif %}">
+      <div class="item {% if study_group.facilitatorsurveyresponse_set.count and study_group.learnersurveyresponse_set.count %}{% if remaining_surveys %}done{% else %}whoohoo{% endif %}{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %}">
         <div class="card">
-          <a class="card-collapse-toggle" data-toggle="collapse" href="#collapse-wrapup" role="button" aria-expanded="true" aria-controls="collapse-wrapup"><i class="fa fa-chevron-down"></i></a>
+          <a class="card-collapse-toggle {% if today < study_group.last_meeting.meeting_datetime and study_group.next_meeting != study_group.last_meeting %}collapsed{% endif %}" data-toggle="collapse" href="#collapse-wrapup" role="button" aria-expanded="true" aria-controls="collapse-wrapup"><i class="fa fa-chevron-down"></i></a>
           <div class="card-title">Wrap up</div>
-          <div class="collapse show" id="collapse-wrapup">
+          <div class="collapse {% if today > study_group.last_meeting.meeting_datetime or study_group.next_meeting == study_group.last_meeting %}show{% endif %}" id="collapse-wrapup">
             {% if today > study_group.last_meeting.meeting_datetime %}
               <div class="meeting-item done">
                 <p>Survey reminder sent.</p>
@@ -157,18 +154,39 @@
                 <p>Survey reminder will be sent during the last meeting.</p>
               </div>
             {% endif %}
-            <div class="meeting-item {% if study_group.facilitatorsurveyresponse_set.count %}done{% elif today > study_group.last_meeting %}todo{% else %}pending{% endif %}">
+            <div class="meeting-item {% if study_group.facilitatorsurveyresponse_set.count %}done{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %}">
               <p>Complete the facilitator survey</p>
               {% if study_group.facilitatorsurveyresponse_set.count  %}
               {% else %}
                 <p><a class="p2pu-btn btn-primary" href="{% url 'studygroups_facilitator_survey' study_group.uuid %}">{% trans "Facilitator survey" %}</a></p>
               {% endif %}
             </div>
-            <div class="meeting-item {% if today < study_group.last_meeting.meeting_datetime %}pending{% elif not remaining_surveys.count %}done{% else %}todo{% endif %}">
+            <div class="meeting-item {% if today < study_group.last_meeting.meeting_datetime %}pending{% elif study_group.learnersurveyresponse_set.count %}done{% else %}todo{% endif %}">
               <p>Collect learner feedback</p>
               <div class="survey-summary">
+                {% if study_group.learnersurveyresponse_set.count %}
+                  <ul class="list-unstyled">
+                    <li class="done">{{ study_group.learnersurveyresponse_set.count }} learners completed the survey.</li>
+                  </ul>
+                {% endif %}
 
-                <p>Direct link to learner survey: <input type="text" id="learner-survey-link" value="{{PROTOCOL}}://{{DOMAIN}}{% url 'studygroups_learner_survey' study_group.uuid %}"/> (<button onclick="Copy()">copy</button>)</p>
+                {% if remaining_surveys %}
+                  <p>The following learners have not yet completed the learner survey</p>
+                  <ul class="list-unstyled">
+                    {% for learner in remaining_surveys %}
+                      <li class="todo">{{learner.name}}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+
+                <p>Direct link to learner survey:</p>
+                <div class="input-group">
+                  <input class="form-control" type="text" type="text" id="learner-survey-link" value="{{PROTOCOL}}://{{DOMAIN}}{% url 'studygroups_learner_survey' study_group.uuid %}"/>
+                  <div class="input-group-append">
+                    <button class="btn btn-primary" type="button" onclick="Copy()">copy</button>
+                  </div>
+                </div>
+
                 <script>
                   // TODO consider doing this as progressive enhancement
                   function Copy() {
@@ -178,15 +196,7 @@
                     document.execCommand("copy");
                   }
                 </script>
-                {{ study_group.learnersurveyresponse_set.count }} learners completed the survey.
-                {% if remaining_surveys %}
-                <p>The following learners have not yet completed the learner survey</p>
-                <ul>
-                  {% for learner in remaining_surveys %}
-                    <li>{{learner.name}}</li>
-                  {% endfor %}
-                </ul>
-                {% endif %}
+
               </div>
             </div>
             <div class="meeting-item {% if study_group.facilitatorsurveyresponse_set.count %}done{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %}">
