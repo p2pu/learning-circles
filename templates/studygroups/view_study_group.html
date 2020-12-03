@@ -60,7 +60,7 @@
 
 <div class="container-fluid mt-5">
   <div class="manage row">
-    <div class="col-7 lc-timeline">
+    <div class="col-md-7 lc-timeline">
       <div class="item {% if not study_group.draft %}done{% else %}todo{% endif %}">
         <div class="card">
           <a class="card-collapse-toggle {% if not study_group.draft %}collapsed{% endif %}" data-toggle="collapse" href="#collapse-publish" role="button" aria-expanded="true" aria-controls="collapse-publish"><i class="fa fa-chevron-down"></i></a>
@@ -86,7 +86,7 @@
       <div class="item {% if done %}done{% elif meeting.reminder_set.count or meeting == study_group.next_meeting %}todo{% else %}pending{% endif %}">
           <div class="card">
             <a class="card-collapse-toggle {% if done or not meeting.reminder_set.count and meeting != study_group.next_meeting %}collapsed{% endif %}" data-toggle="collapse" href="#collapse-meeting-{{forloop.counter}}" role="button" aria-expanded="true" aria-controls="collapse-meeting-{{forloop.counter}}"><i class="fa fa-chevron-down"></i></a>
-            <div class="card-title">Meeting #{{forloop.counter}}: {{meeting.meeting_date}} {{meeting.meeting_time}} (<a href="{% url 'studygroups_meeting_edit' study_group.pk meeting.pk %}">edit</a>)</div>
+            <div class="card-title">Meeting #{{forloop.counter}}: {{meeting.meeting_date}} {{meeting.meeting_time}} (<a href="{% url 'studygroups_meeting_edit' study_group.pk meeting.pk %}">edit</a>, <a href="">delete</a>)</div>
             <div class="collapse {% if not done and meeting.reminder_set.count or meeting == study_group.next_meeting %}show{% endif %}" id="collapse-meeting-{{forloop.counter}}">
               {% if meeting.reminder_set.first.sent_at %}
                 <div class="meeting-item done">
@@ -209,38 +209,45 @@
         </div>
       </div>
     </div>
-    <div class="col-5">
+    <div class="col-md-5">
       <div class="card">
         <div class="card-title">Learners</div>
-          <table class="table">
-            <thead>
-              <tr>
-                <th>{% trans "Name" %}</th>
-                <th>{% trans "Email" %}</th>
-                <th>{% trans "Mobile" %}</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for learner in study_group.application_set.active %}
-              <tr>
-                <td>{{ learner.name }}</td>
-                <td>
-                  {% if learner.email %}&lt;{{learner.email}}&gt;{% endif %}
-                </td>
-                <td>
-                  {% if learner.mobile %}{{learner.mobile}}{% endif %}
-                </td>
-                <td>
-                  <a class="p2pu-btn btn-primary" href="{% url 'studygroups_application_edit' study_group.id learner.id %}"><i class="fa fa-edit"></i></a>
-                  <a class="p2pu-btn btn-primary" href="{% url 'studygroups_application_delete' study_group.id learner.id %}"><i class="fa fa-trash"></i></a>
-                </td>
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-          <p><a class="p2pu-btn btn-primary" href="{% url 'studygroups_add_member' study_group.id %}">{% trans "Add learner" %}</a></p>
+        <div class="row no-gutters retable-heading">
+          <div class="col-md-4">
+            {% trans "Name" %}
+          </div>
+          <div class="col-md-5">
+            {% trans "Contact" %}
+          </div>
+          <div class="col-md-3">
+          </div>
+        </div>
+        {% for learner in study_group.application_set.active %}
+        <div class="row no-gutters retable-row">
+          <div class="col-md-4">{{ learner.name }}
+          </div>
+          <div class="col-md-5">
+            {% if learner.email %} &lt;{{learner.email}}&gt;{% endif %}
+            {% if learner.mobile %}</br>{{learner.mobile}}{% endif %}
+          </div>
+          <div class="col-md-3">
+            <a class="p2pu-btn btn-primary" href="{% url 'studygroups_application_edit' study_group.id learner.id %}"><i class="fa fa-edit"></i></a>
+            <a class="p2pu-btn btn-primary" href="{% url 'studygroups_application_delete' study_group.id learner.id %}"><i class="fa fa-trash"></i></a>
+            <a class="p2pu-btn btn-info" data-toggle="collapse" href="#collapse-signup-{{learner.id}}" role="button" aria-expanded="true" aria-controls="collapse-signup-{{learner.id}}"><i class="fa fa-info"></i></a>
+          </div>
+          <div class="col-12 collapse learner-signup-info" id="collapse-signup-{{learner.id}}">
+            <p><strong>Goal</strong><br/>
+            {{ learner.get_signup_questions.goals }}</p>
+            <p><strong>Support</strong><br/>
+            {{ learner.get_signup_questions.support }}</p>
+            {% if study_group.signup_question %}
+              <p><strong>{{study_group.signup_question}}</strong><br/>
+              {{ learner.get_signup_questions.custom_question }}</p>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+        <p><a class="p2pu-btn btn-primary" href="{% url 'studygroups_add_member' study_group.id %}">{% trans "Add learner" %}</a></p>
       </div>
 
       <div class="card">
@@ -262,6 +269,7 @@
                   {% if not message.sent_at %}
                   <a href="{% url 'studygroups_message_edit' study_group.id message.id %}" class="p2pu-btn btn-info">{% trans "Edit" %}</a>
                   {% endif %}
+                  <a href="{% url 'studygroups_message_view' study_group.id message.id %}" class="p2pu-btn btn-info">{% trans "View" %}</a>
                 </td>
               </tr>
               {% endfor %}

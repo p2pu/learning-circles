@@ -167,3 +167,19 @@
   border: 1px solid $primary;
 }
 
+
+.retable-heading {
+  font-weight: 600;
+  border-bottom: 2px solid $gray-300;
+}
+
+
+.retable-row {
+  padding: 0.5em 0;
+  border-bottom: 1px solid $gray-300;
+}
+
+.learner-signup-info{
+  background: $gray-lighter;
+  padding: 1em !important;
+}
