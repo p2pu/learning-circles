@@ -86,7 +86,7 @@
       <div class="item {% if done %}done{% elif meeting.reminder_set.count or meeting == study_group.next_meeting %}todo{% else %}pending{% endif %}">
           <div class="card">
             <a class="card-collapse-toggle {% if done or not meeting.reminder_set.count and meeting != study_group.next_meeting %}collapsed{% endif %}" data-toggle="collapse" href="#collapse-meeting-{{forloop.counter}}" role="button" aria-expanded="true" aria-controls="collapse-meeting-{{forloop.counter}}"><i class="fa fa-chevron-down"></i></a>
-            <div class="card-title">Meeting #{{forloop.counter}}: {{meeting.meeting_date}} {{meeting.meeting_time}} (<a href="{% url 'studygroups_meeting_edit' study_group.pk meeting.pk %}">edit</a>, <a href="">delete</a>)</div>
+            <div class="card-title">Meeting #{{forloop.counter}}: {{meeting.meeting_date}} {{meeting.meeting_time}} (<a href="{% url 'studygroups_meeting_edit' study_group.pk meeting.pk %}">edit</a>, <a href="{% url 'studygroups_meeting_delete' study_group.pk meeting.pk %}">delete</a>)</div>
             <div class="collapse {% if not done and meeting.reminder_set.count or meeting == study_group.next_meeting %}show{% endif %}" id="collapse-meeting-{{forloop.counter}}">
               {% if meeting.reminder_set.first.sent_at %}
                 <div class="meeting-item done">
