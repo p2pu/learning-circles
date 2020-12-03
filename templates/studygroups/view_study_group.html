@@ -120,7 +120,7 @@
                 <p>Reflect and capture feedback</p>
                 {% if meeting.feedback_set.first %}
                 <div class="meeting-feedback">
-                  <p>Overall rating: {{meeting.feedback_set.first.get_rating_display}}</p>
+                  <p>Overall rating: {{meeting.feedback_set.first.get_rating_display}} (<a href="{% url 'studygroups_feedback_detail' study_group.id meeting.id meeting.feedback_set.first.id %}">{% trans "view" %}</a>, <a href="{% url 'studygroups_feedback_edit' study_group.id meeting.id meeting.feedback_set.first.id %}">{% trans "edit" %}</a>)</p>
                 </div>
                 {% else %}
                   {% if meeting.meeting_datetime < today %}
