@@ -225,6 +225,12 @@ class ApplicationDelete(FacilitatorRedirectMixin, DeleteView):
     template_name = 'studygroups/confirm_delete.html'
 
 
+class MessageView(DetailView):
+    model = Reminder
+    template_name = 'studygroups/message_view.html'
+    context_object_name = 'message'
+
+
 class CoursePage(DetailView):
     model = Course
     template_name = 'studygroups/course_page.html'

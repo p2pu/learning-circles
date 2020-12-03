@@ -45,6 +45,7 @@ from studygroups.views import DigestGenerateView
 from studygroups.views import FacilitatorDashboard
 from studygroups.views import OrganizerGuideForm
 from studygroups.views import TeamUpdate
+from studygroups.views import MessageView
 
 from . import views
 
@@ -75,6 +76,8 @@ urlpatterns = [
 
     url(r'^studygroup/(?P<study_group_id>[\d]+)/message/compose/$', views.message_send, name='studygroups_message_send'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/message/edit/(?P<message_id>[\d]+)/$', views.message_edit, name='studygroups_message_edit'),
+
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/message/(?P<pk>[\d]+)/$', MessageView.as_view(), name='studygroups_message_view'),
 
     url(r'^studygroup/(?P<study_group_id>[\d]+)/member/add/$', views.add_member, name='studygroups_add_member'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/member/(?P<pk>[0-9]+)/edit/$', ApplicationUpdate.as_view(), name='studygroups_application_edit'),
