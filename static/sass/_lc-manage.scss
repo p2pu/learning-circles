@@ -1,10 +1,60 @@
 .action-bar {
   padding: 1em 0;
   background: $p2pu-yellow;
+  @include media-breakpoint-down(xs) {
+    margin-top: calc(30px - 50vw);
+    padding-top: calc(50vw - 15px);
+    padding-bottom: 1em;
+  }
 }
 
 .topbit {
-  min-height: 400px;
+  min-height: calc( (100vw - 30px)/4 - 30px);
+
+  @include media-breakpoint-up(xl) {
+    min-height: calc( (100vw - 30px)/6 - 30px);
+  }
+}
+
+@include media-breakpoint-up(md) {
+  .lc-details {
+    margin-bottom: calc(-25vw + 45px + 120px);
+  }
+}
+
+@include media-breakpoint-up(xl) {
+  .lc-details {
+    margin-bottom: calc(-100vw/6 + 45px + 120px);
+  }
+}
+
+.lc-manage-image {
+  overflow: hidden;
+  background: $p2pu-yellow;
+  border: 10px solid $p2pu-yellow;
+  border-radius: 50%;
+
+  @include media-breakpoint-up(sm) {
+    margin-bottom: -120px;
+    //margin-top: calc(-25vw + 45px + 60px);
+  }
+
+  .wrapper {
+    overflow: hidden;
+    position: relative;
+    padding-bottom:100%;
+  }
+
+  img {
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    object-fit: cover;
+    width : 10vw;
+    min-width: 100%;
+    min-height: 100%;
+  }
 }
 
 .meeting-feedback {
