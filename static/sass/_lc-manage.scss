@@ -163,7 +163,20 @@
 }
 
 
-.lc-timeline::before {
+.lc-timeline {
+  margin-bottom: 1em;
+}
+
+.lc-timeline .card {
+  margin-bottom: 0px;
+}
+
+.lc-timeline .item {
+  padding-bottom: 1em;
+  position: relative;
+}
+
+.lc-timeline .item::before {
   content: '';
   width: 0;
   border: 1px solid $primary;
@@ -171,52 +184,58 @@
   height: 100%;
 }
 
-.lc-timeline .item {
-  padding-left: 1.5em;
-  position: relative;
+
+.lc-timeline .item:first-child::before {
+  top: 0.5em;
 }
+
+.lc-timeline .item:last-child::before {
+  height: 0.5em !important;
+}
+
 
 @mixin timeline-item {
   position: absolute;
   left: -0.7em;
+  top: 0.5em;
   width: 1.5em;
   height: 1.5em;
+  font-size: 1em;
   padding: 0;
   line-height: 1.5em;
   color: white;
   border-radius: 0.75em;
   text-align: center;
-
 }
 
-.lc-timeline .item.done::before{
+.lc-timeline .item.done .icon::before{
   @include timeline-item;
   content: '✓';
-  background: $primary;
-  border: 1px solid $primary;
+  background: $p2pu-blue;
 }
 
-.lc-timeline .item.todo::before{
+.lc-timeline .item.todo .icon::before{
   @include timeline-item;
   content: '';
   background: url("../images/icons/clock-white.svg") center center / 0.8em 0.8em no-repeat, $p2pu-yellow;
-  border: 1px solid $p2pu-yellow;
 }
 
-.lc-timeline .item.pending::before{
+.lc-timeline .item.pending .icon::before{
   @include timeline-item;
   content: '';
   background: url("../images/icons/clock-white.svg") center center / 0.8em 0.8em no-repeat, $primary;
-  border: 1px solid $primary;
 }
 
-.lc-timeline .item.whoohoo::before{
+.lc-timeline .item.whoohoo .icon::before{
   @include timeline-item;
   content: '';
   background: url("../images/icons/firework.svg") center center / 1em 1em no-repeat, white;
   border: 1px solid $primary;
 }
 
+.lc-timeline .item .card {
+  margin-left: 2em;
+}
 
 .retable-heading {
   font-weight: 600;
