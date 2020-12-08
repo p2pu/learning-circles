@@ -7,6 +7,8 @@
 <div class="container">
   <div class="row">
     <div class="col-md-8 col-sm-12">
+      <a href="{% url 'studygroups_view_study_group' form.study_group.value %}">{% trans "Back" %}</a>
+      <h2>{% trans "Update meeting date and time" %}</h2>
       <form action="" method="POST">
         {% csrf_token %}
           {{ form|crispy }}

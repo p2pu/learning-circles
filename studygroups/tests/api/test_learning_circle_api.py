@@ -275,7 +275,7 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(lc.description, 'Lets learn something')
         self.assertEqual(lc.start_date, datetime.date(2018,2,12))
         self.assertEqual(lc.meeting_time, datetime.time(17,1))
-        self.assertEqual(lc.meeting_set.all().count(), 0)
+        self.assertEqual(lc.meeting_set.all().count(), 2)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.name, lc.city))
         self.assertIn('faci@example.net', mail.outbox[0].to)
@@ -519,7 +519,7 @@ class TestLearningCircleApi(TestCase):
             "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
-        self.assertEqual(lc.meeting_set.active().count(), 0)
+        self.assertEqual(lc.meeting_set.active().count(), 2)
 
         # update less than 2 days before
         with freeze_time("2018-12-14"):
@@ -530,12 +530,12 @@ class TestLearningCircleApi(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertEqual(resp.json(), {
                 "status": "updated",
-            "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
+                "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
             })
             lc = StudyGroup.objects.all().last()
             self.assertEqual(StudyGroup.objects.all().count(), 5)
             self.assertEqual(lc.start_date, datetime.date(2018, 12, 20))
-            self.assertEqual(lc.meeting_set.active().count(), 0)
+            self.assertEqual(lc.meeting_set.active().count(), 2)
 
         # update more than 2 days before
         with freeze_time("2018-12-12"):
@@ -545,13 +545,12 @@ class TestLearningCircleApi(TestCase):
             resp = c.post(url, data=json.dumps(data), content_type='application/json')
             self.assertEqual(resp.json(), {
                 "status": "updated",
-            "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
+                "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
             })
             lc = StudyGroup.objects.all().last()
             self.assertEqual(StudyGroup.objects.all().count(), 5)
             self.assertEqual(lc.start_date, datetime.date(2018, 12, 19))
-            self.assertEqual(lc.meeting_set.active().count(), 0)
-
+            self.assertEqual(lc.meeting_set.active().count(), 2)
 
 
     @freeze_time('2018-01-20')
@@ -597,7 +596,7 @@ class TestLearningCircleApi(TestCase):
             "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
-        self.assertEqual(lc.meeting_set.all().count(), 0)
+        self.assertEqual(lc.meeting_set.all().count(), 2)
         data['draft'] = False
         # Update learning circle
         url = '/api/learning-circle/{}/'.format(lc.pk)

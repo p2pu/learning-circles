@@ -115,7 +115,6 @@ class FacilitatorRedirectMixin(object):
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
-@method_decorator(study_group_is_published, name='dispatch')
 class MeetingCreate(FacilitatorRedirectMixin, CreateView):
     model = Meeting
     form_class = MeetingForm
@@ -129,7 +128,6 @@ class MeetingCreate(FacilitatorRedirectMixin, CreateView):
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
-@method_decorator(study_group_is_published, name='dispatch')
 class MeetingUpdate(FacilitatorRedirectMixin, UpdateView):
     model = Meeting
     form_class = MeetingForm
@@ -161,7 +159,6 @@ class MeetingUpdate(FacilitatorRedirectMixin, UpdateView):
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
-@method_decorator(study_group_is_published, name='dispatch')
 class MeetingDelete(FacilitatorRedirectMixin, DeleteView):
     model = Meeting
 
@@ -417,10 +414,10 @@ class StudyGroupUpdateLegacy(FacilitatorRedirectMixin, UpdateView):
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
 class StudyGroupDelete(FacilitatorRedirectMixin, DeleteView):
-    # TODO Need to fix back link for confirmation page
     model = StudyGroup
     template_name = 'studygroups/confirm_delete.html'
     pk_url_kwarg = 'study_group_id'
+    context_object_name = 'study_group'
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")

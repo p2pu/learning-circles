@@ -6,6 +6,7 @@
 <div class="container">
   <div class="row">
     <div class="col-md-12">
+      <a href="{% url 'studygroups_view_study_group' object.study_group.pk %}">{% trans "Back" %}</a>
       <h2>{% trans "Confirm deletion of learning circle meeting." %}</h2>
       <form action="" method="post">{% csrf_token %}
           <p>{% blocktrans with meeting_date=object.meeting_date|date:"D d M Y" meeting_time=object.meeting_time|time:"f A"  %}Are you sure you want to delete the meeting on {{meeting_date}} at {{meeting_time}}?{% endblocktrans %}</p>
