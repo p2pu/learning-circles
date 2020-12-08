@@ -85,7 +85,7 @@
           </div>
         </div>
       </div>
-      {% for meeting in study_group.meeting_set.active %}
+      {% for meeting in study_group.meeting_set.active|dictsort:"meeting_datetime" %}
       {% with done=meeting.feedback_set.count %}
       <div class="item {% if done %}done{% elif meeting.reminder_set.count or meeting == study_group.next_meeting and not study_group.draft %}todo{% else %}pending{% endif %}">
         <div class="icon"></div>
