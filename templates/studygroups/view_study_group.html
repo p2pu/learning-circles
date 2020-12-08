@@ -159,11 +159,11 @@
           <div class="collapse {% if today > study_group.last_meeting.meeting_datetime or study_group.next_meeting == study_group.last_meeting %}show{% endif %}" id="collapse-wrapup">
             {% if today > study_group.last_meeting.meeting_datetime %}
               <div class="meeting-item done">
-                <p>Survey reminder sent.</p>
+                <p>Survey reminder sent</p>
               </div>
             {% else %}
               <div class="meeting-item pending">
-                <p>Survey reminder will be sent during the last meeting.</p>
+                <p>Survey reminder will be sent during the last meeting</p>
               </div>
             {% endif %}
             <div class="meeting-item {% if study_group.facilitatorsurveyresponse_set.count %}done{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %}">
