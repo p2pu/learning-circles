@@ -107,11 +107,17 @@
                 {% if meeting.reminder_set.first.sent_at %}
                 <div class="meeting-rsvp {% if meeting.meeting_datetime < today %}collapse{% endif %}" id="meeting-{{meeting.id}}-rsvp">
                   <ul class="list-unstyled">
-                    {% for rsvp in meeting.rsvp_set.all %}
-                    <li class="{% if rsvp.attending %}rsvp-yes{% else %}rsvp-no{% endif %}">{{rsvp.application.name}}</li>
-                    {% empty %}
-                      <li>No RSVPs yet</li>
-                    {% endfor %}
+                    {% with rsvps=meeting.rsvps %}
+                      {% for rsvp in rsvps.yes %}
+                        <li class="rsvp-yes">{{rsvp.application.name}}</li>
+                      {% endfor %}
+                      {% for rsvp in rsvps.no %}
+                        <li class="rsvp-no">{{rsvp.application.name}}</li>
+                      {% endfor %}
+                      {% if rsvps.yes|length == 0 and rsvps.no|length == 0 %}
+                        <li>No RSVPs yet</li>
+                      {% endif %}
+                    {% endwith %}
                     {% with unknown_rsvps=meeting.rsvp_pending %}
                       {% for learner in unknown_rsvps %}
                        <li class="rsvp-unknown">{{learner.name}}</li>

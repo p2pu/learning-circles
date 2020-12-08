@@ -281,13 +281,14 @@ class Meeting(LifeTimeTrackingModel):
         return start + datetime.timedelta(minutes=self.study_group.duration)
 
     def rsvps(self):
+        rsvp_set = self.rsvp_set.all().select_related('application').order_by('application__name')
         return {
-            'yes': self.rsvp_set.all().filter(attending=True),
-            'no': self.rsvp_set.all().filter(attending=False)
+            'yes': rsvp_set.filter(attending=True),
+            'no': rsvp_set.filter(attending=False),
         }
 
     def rsvp_pending(self):
-        return self.study_group.application_set.active().exclude(id__in=self.rsvp_set.all().values('application_id'))
+        return self.study_group.application_set.active().exclude(id__in=self.rsvp_set.all().values('application_id')).order_by('name')
 
     def rsvp_yes_link(self, email):
         base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
