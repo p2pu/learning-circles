@@ -11,7 +11,7 @@
       {% if object %}
         <h2>{% trans "Update meeting date and time" %}</h2>
       {% else %}
-        <h2>{% trans "Add a new meeting" %}</h2>
+        <h2>{% trans "Add new meeting" %}</h2>
       {% endif %}
       <form action="" method="POST">
         {% csrf_token %}
@@ -27,7 +27,7 @@
             {% endwith %}
             </div>
           {% endif %}
-          <p><button type="submit" class="btn btn-primary">{% trans "Save" %}</button></p>
+          <p><button type="submit" class="btn btn-primary">{% if object %}{% trans "Save" %}{% else %}{% trans "Add" %}{% endif %}</button></p>
       </form>
     </div>
   </div>
