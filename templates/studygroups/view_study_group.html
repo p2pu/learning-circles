@@ -15,7 +15,7 @@
   <div class="container-fluid">
     <div class="heading row">
       <div class="offset-sm-3 col-sm-9 col-xl-10 offset-xl-2 lc-details">
-        <h1>{{study_group.name}}</h1>
+        <h1>{% if study_group.draft %}[DRAFT] {% endif %}{{study_group.name}}</h1>
         <div class="text">
           {% blocktrans with first_name=study_group.facilitator.first_name %}Facilitated by {{first_name}}{% endblocktrans %}
         </div>
@@ -87,18 +87,18 @@
       </div>
       {% for meeting in study_group.meeting_set.active %}
       {% with done=meeting.feedback_set.count %}
-      <div class="item {% if done %}done{% elif meeting.reminder_set.count or meeting == study_group.next_meeting %}todo{% else %}pending{% endif %}">
+      <div class="item {% if done %}done{% elif meeting.reminder_set.count or meeting == study_group.next_meeting and not study_group.draft %}todo{% else %}pending{% endif %}">
         <div class="icon"></div>
           <div class="card">
-            <a class="card-collapse-toggle {% if meeting != study_group.next_meeting%}collapsed{% endif %}" data-toggle="collapse" href="#collapse-meeting-{{forloop.counter}}" role="button" aria-expanded="true" aria-controls="collapse-meeting-{{forloop.counter}}"><i class="fa fa-chevron-down"></i></a>
+            <a class="card-collapse-toggle {% if meeting != study_group.next_meeting or study_group.draft %}collapsed{% endif %}" data-toggle="collapse" href="#collapse-meeting-{{forloop.counter}}" role="button" aria-expanded="true" aria-controls="collapse-meeting-{{forloop.counter}}"><i class="fa fa-chevron-down"></i></a>
             <div class="card-title">Meeting #{{forloop.counter}}: {{meeting.meeting_date}} {{meeting.meeting_time}} (<a href="{% url 'studygroups_meeting_edit' study_group.pk meeting.pk %}">edit</a>, <a href="{% url 'studygroups_meeting_delete' study_group.pk meeting.pk %}">delete</a>)</div>
-            <div class="collapse {% if meeting == study_group.next_meeting %}show{% endif %}" id="collapse-meeting-{{forloop.counter}}">
+            <div class="collapse {% if meeting == study_group.next_meeting and not study_group.draft %}show{% endif %}" id="collapse-meeting-{{forloop.counter}}">
               {% if meeting.reminder_set.first.sent_at %}
                 <div class="meeting-item done">
                   <p>Reminder sent at {{meeting.reminder_set.first.sent_at}}</p>
                 </div>
               {% else %}
-                <div class="meeting-item {% if meeting == study_group.next_meeting %}todo{% else %}pending{% endif %}">
+                <div class="meeting-item {% if meeting == study_group.next_meeting and not study_group.draft %}todo{% else %}pending{% endif %}">
                   <p>Reminder will be sent 2 days before the meeting
                 </div>
               {% endif %}
