@@ -137,7 +137,6 @@
                 {% else %}
                   {% if meeting.meeting_datetime < today %}
                     <div class="meeting-feedback">
-                      <p>Submit feedback</p>
                       <form action="{% url 'studygroups_feedback' study_group.pk meeting.pk %}" method="POST">
 	                      {% csrf_token %}
 	                      {{ feedback_form|crispy }}
