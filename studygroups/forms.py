@@ -424,13 +424,13 @@ class FeedbackForm(forms.ModelForm):
         model = Feedback
         fields = ['rating', 'attendance', 'feedback', 'reflection']
         labels = {
-            'feedback': _('For learners: Write a brief summary of this week\'s learning circle.'),
+            'feedback': _('For learners: Write a brief summary of this meeting.'),
             'attendance': _('How many people attended?'),
             'reflection': _('For the rest of us: Anything you want to share?'),
-            'rating': _('Overall, how would you say this week went?')
+            'rating': _('Overall, how did this meeting go?')
         }
         help_texts = {
-            'feedback': _('You may want to include your impressions of how it went, plus/delta feedback, and anything the group agreed on having completed before the next meeting. This will be automatically sent to learners two days before next week\'s meeting.'),
+            'feedback': _('You may want to include your impressions of how it went, plus/delta feedback, and anything the group agreed on having completed before the next meeting. This will be sent automatically to learners two days before the next meeting.'),
             'reflection': _('What went well this week? What surprised you? Any funny stories? We\'ll pull what you write here into our community newsletters and updates.'),
         }
 
