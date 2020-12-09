@@ -88,7 +88,7 @@
       </div>
       {% for meeting in study_group.meeting_set.active|dictsort:"meeting_datetime" %}
       {% with done=meeting.feedback_set.count %}
-      <div class="item {% if done %}done{% elif meeting.reminder_set.count or meeting == study_group.next_meeting and not study_group.draft %}todo{% else %}pending{% endif %}">
+      <div class="item {% if done %}done{% elif meeting.reminder_set.count or meeting.meeting_datetime < today and not study_group.draft or meeting == study_group.next_meeting and not study_group.draft %}todo{% else %}pending{% endif %}">
         <div class="icon"></div>
           <div class="card">
             <a class="card-collapse-toggle {% if meeting != study_group.next_meeting or study_group.draft %}collapsed{% endif %}" data-toggle="collapse" href="#collapse-meeting-{{forloop.counter}}" role="button" aria-expanded="true" aria-controls="collapse-meeting-{{forloop.counter}}"><i class="fa fa-chevron-down"></i></a>
@@ -97,6 +97,10 @@
               {% if meeting.reminder_set.first.sent_at %}
                 <div class="meeting-item done">
                   <p>Reminder sent {{meeting.reminder_set.first.sent_at_tz}}</p>
+                </div>
+              {% elif meeting.meeting_datetime < today %}
+                <div class="meeting-item done">
+                  <p>No reminder was sent</p>
                 </div>
               {% else %}
                 <div class="meeting-item {% if meeting == study_group.next_meeting and not study_group.draft %}todo{% else %}pending{% endif %}">

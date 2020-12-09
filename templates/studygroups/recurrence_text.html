@@ -7,7 +7,7 @@
     This learning circle meets every {{meeting_day}} from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}} for {{meeting_count}} weeks.
     {% endblocktrans %}
 {% else %}
-    {% blocktrans with meeting_time=study_group.meeting_time|time:"fA" end_time=study_group.end_time|time:"fA" timezone=study_group.timezone_display start_date=study_group.start_date|date:"l, F j, Y" count meeting_count=meetings|length %}
+    {% blocktrans with meeting_time=study_group.meeting_time|time:"fA" end_time=study_group.end_time|time:"fA" timezone=study_group.timezone_display start_date=study_group.start_date|date:"l, F j, Y" count meeting_count=study_group.meeting_set.active|length %}
     This learning circle meets once on {{start_date}} from {{meeting_time}} to {{end_time}} {{timezone}}.
     {% plural %}
     This learning circle meets {{ meeting_count }} times from {{meeting_time}} to {{end_time}} {{timezone}} starting {{start_date}}.
