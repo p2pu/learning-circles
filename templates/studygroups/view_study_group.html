@@ -2,9 +2,10 @@
 {% load crispy_forms_tags %}
 {% load static %}
 {% load i18n %}
+{% load tz %}
 {% load extras %}
 {% block content %}
-
+{% localtime off %}
 <div class="container-fluid">
   <div class="row my-3">
     <a href="{{dashboard_url}}"><i class="fas fa-arrow-left mr-2"></i>Back to my dashboard</a>
@@ -91,15 +92,15 @@
         <div class="icon"></div>
           <div class="card">
             <a class="card-collapse-toggle {% if meeting != study_group.next_meeting or study_group.draft %}collapsed{% endif %}" data-toggle="collapse" href="#collapse-meeting-{{forloop.counter}}" role="button" aria-expanded="true" aria-controls="collapse-meeting-{{forloop.counter}}"><i class="fa fa-chevron-down"></i></a>
-            <div class="card-title">Meeting #{{forloop.counter}}: {{meeting.meeting_date}} {{meeting.meeting_time}} (<a href="{% url 'studygroups_meeting_edit' study_group.pk meeting.pk %}">edit</a>, <a href="{% url 'studygroups_meeting_delete' study_group.pk meeting.pk %}">delete</a>)</div>
+            <div class="card-title">Meeting #{{forloop.counter}}: {{meeting.meeting_datetime}} (<a href="{% url 'studygroups_meeting_edit' study_group.pk meeting.pk %}">edit</a>, <a href="{% url 'studygroups_meeting_delete' study_group.pk meeting.pk %}">delete</a>)</div>
             <div class="collapse {% if meeting == study_group.next_meeting and not study_group.draft %}show{% endif %}" id="collapse-meeting-{{forloop.counter}}">
               {% if meeting.reminder_set.first.sent_at %}
                 <div class="meeting-item done">
-                  <p>Reminder sent at {{meeting.reminder_set.first.sent_at}}</p>
+                  <p>Reminder sent {{meeting.reminder_set.first.sent_at_tz}}</p>
                 </div>
               {% else %}
                 <div class="meeting-item {% if meeting == study_group.next_meeting and not study_group.draft %}todo{% else %}pending{% endif %}">
-                  <p>Reminder will be sent 2 days before the meeting
+                  <p>Reminder will be sent 2 {{meeting.send_reminder_at}}</p>
                 </div>
               {% endif %}
               <div class="meeting-item {% if meeting.meeting_datetime < today %}done{% elif meeting.reminder_set.first.sent_at %}todo{% else %}pending{% endif %}">
@@ -149,7 +150,7 @@
             </div>
           </div>
         </div>
-        {% endwith %}
+      {% endwith %}
       {% endfor %}
       <div class="item {% if study_group.facilitatorsurveyresponse_set.count and study_group.learnersurveyresponse_set.count %}{% if remaining_surveys %}done{% else %}whoohoo{% endif %}{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %} wrapup">
         <div class="icon"></div>
@@ -282,7 +283,7 @@
             <div class="col-lg-3 pr-lg-2">
               {% if message.sent_at %}
               <span class="d-lg-none"><strong>{% trans "Sent at:" %} </strong></span>
-              {{ message.sent_at|date:"D d M Y \a\t P" }}
+              {{ message.sent_at_tz}}
               {% endif %}
             </div>
             <div class="col-lg-2">
@@ -294,10 +295,12 @@
           </div>
         {% endfor %}
         <p><a href="{% url 'studygroups_message_send' study_group.id %}" class="p2pu-btn btn-primary">{% trans "New message" %}</a></p>
+      </div>
     </div>
   </div>
 
 </div>
+{% endlocaltime %}
 {% endblock %}
 {% block scripts %}
 <script>

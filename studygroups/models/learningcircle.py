@@ -280,6 +280,11 @@ class Meeting(LifeTimeTrackingModel):
         start = tz.localize(datetime.datetime.combine(self.meeting_date, self.meeting_time))
         return start + datetime.timedelta(minutes=self.study_group.duration)
 
+
+    def send_reminder_at(self):
+        return self.meeting_datetime() - datetime.timedelta(days=2)
+
+
     def rsvps(self):
         rsvp_set = self.rsvp_set.all().select_related('application').order_by('application__name')
         return {
@@ -334,6 +339,10 @@ class Reminder(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     sent_at = models.DateTimeField(blank=True, null=True)
+
+    def sent_at_tz(self):
+        tz = pytz.timezone(self.study_group.timezone)
+        return self.sent_at.astimezone(tz)
 
 
 class Rsvp(models.Model):
