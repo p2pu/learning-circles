@@ -50,7 +50,7 @@
       <div class="col-sm-9 offset-sm-3 col-xl-10 offset-xl-2">
         <a class="p2pu-btn btn-primary" href="{% url 'studygroups_edit_study_group' study_group.id %}">{% trans "Edit" %}</a>
         <a class="p2pu-btn btn-primary" href="{{ signup_url }}">{% trans "View" %}</a>
-        <a class="p2pu-btn btn-primary" href="{% url 'studygroups_create_meeting' study_group.id %}">{% trans "Add meeting" %}</a>
+        <a class="p2pu-btn btn-primary" href="{% url 'studygroups_meeting_create' study_group.id %}">{% trans "Add meeting" %}</a>
         {% if study_group.signup_open %}
         <a class="p2pu-btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' study_group.id %}">{% trans "Close signup" %}</a>
         {% else %}

@@ -97,7 +97,7 @@
               {% endfor %}
             </tbody>
           </table>
-          <p><a class="btn btn-primary" href="{% url 'studygroups_create_meeting' lc.id %}">{% trans "Add meeting" %}</a></p>
+          <p><a class="btn btn-primary" href="{% url 'studygroups_meeting_create' lc.id %}">{% trans "Add meeting" %}</a></p>
         </div>
         <div class="col-md-12">
           <h3>{% trans "Messages" %} ({{ lc.reminder_set.count }})</h3>
