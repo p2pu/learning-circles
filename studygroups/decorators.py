@@ -18,7 +18,7 @@ def study_group_is_published(func):
         study_group = get_object_or_404(StudyGroup, pk=study_group_id)
         if study_group.draft == True:
             messages.warning(args[0], _("Your learning circle is still a draft and should be published first."));
-            url = reverse('studygroups_facilitator')
+            url = reverse('studygroups_view_study_group', args=(study_group_id,))
             return http.HttpResponseRedirect(url)
         return func(*args, **kwargs)
     return decorated

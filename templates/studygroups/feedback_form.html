@@ -6,14 +6,14 @@
 <div class="container">
 <div class="row">
     
-  <div class="col-md-12 col-sm-12">
+  <div class="col-12">
       <h2>
-          {% blocktrans with meeting_date=form.initial.study_group_meeting.meeting_date|date:"D, d M Y" meeting_time=form.initial.study_group_meeting.meeting_time|time:"f A" %}
+          {% blocktrans with meeting_date=meeting.meeting_date|date:"D, d M Y" meeting_time=form.initial.study_group_meeting.meeting_time|time:"f A" %}
             Capture feedback for the meeting that happened on {{meeting_date}}, {{meeting_time}}
           {% endblocktrans %}
       </h2>
   </div>
-  <div class="col-md-12 col-sm-12">
+  <div class="col-12">
 	  <form action="" method="POST">
 	    {% csrf_token %}
 	    {{ form|crispy }}

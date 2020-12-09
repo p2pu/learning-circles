@@ -215,23 +215,24 @@ class TestFacilitatorViews(TestCase):
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEqual(study_groups.count(), 1)
         self.assertEqual(study_groups.first().meeting_set.count(), 6)
-        expected_redirect_url = '/en/'
 
         # can add a meeting
         self.assertEqual(study_groups.first().pk, StudyGroup.objects.last().pk)
         url_base = '/en/studygroup/{0}'.format(study_groups.first().pk)
         resp = c.get(url_base + '/meeting/create/')
-        self.assertRedirects(resp, expected_redirect_url)
+        self.assertEqual(resp.status_code, 200)
         meeting_data = {
             "meeting_date": "2018-03-17",
-            "meeting_time": "04:00+PM",
-            "study_group": "515",
+            "meeting_time": "04:00 PM",
+            "study_group": study_groups.first().pk,
         }
         resp = c.post(url_base + '/meeting/create/', data=meeting_data)
-        self.assertRedirects(resp, url_base)
+        self.assertRedirects(resp, url_base + '/')
         self.assertEqual(StudyGroup.objects.last().meeting_set.count(), 7)
 
-        # try to send a message
+        expected_redirect_url = '/en/studygroup/{0}/'.format(study_groups.first().pk)
+
+        # cannot send a message
         resp = c.get('/en/studygroup/{0}/message/compose/'.format(study_groups.first().pk))
         self.assertRedirects(resp, expected_redirect_url)
         mail_data = {
@@ -241,10 +242,10 @@ class TestFacilitatorViews(TestCase):
         }
         mail.outbox = []
         resp = c.post(url_base + '/message/compose/', mail_data)
-        self.assertRedirects(resp, '/en/')
+        self.assertRedirects(resp, expected_redirect_url)
         self.assertEqual(len(mail.outbox), 0)
 
-        # try to add a learner
+        # cannot add a learner
         resp = c.get('/en/studygroup/{0}/member/add/'.format(study_groups.first().pk))
         self.assertRedirects(resp, expected_redirect_url)
         learner_data = {
