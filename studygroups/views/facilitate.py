@@ -212,6 +212,12 @@ class FeedbackUpdate(FacilitatorRedirectMixin, UpdateView):
     model = Feedback
     form_class = FeedbackForm
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        meeting = get_object_or_404(Meeting, pk=self.kwargs.get('study_group_meeting_id'))
+        context['meeting'] = meeting
+        return context
+
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
 class ApplicationUpdate(FacilitatorRedirectMixin, UpdateView):
