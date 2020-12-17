@@ -71,7 +71,6 @@ class ApplicationForm(forms.ModelForm):
         self.helper.layout = Layout(
             'study_group',
             'name',
-            #'last_name',
             'email',
             'goals',
             'support',
@@ -416,7 +415,16 @@ class StatsDashForm(forms.Form):
 class FeedbackForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.field_template = 'crispy/field_custom.html'
+        self.helper.layout = Layout(*FeedbackForm.Meta.fields)
         super().__init__(*args, **kwargs)
+
+        self.helper.layout.insert(
+            len(self.helper.layout),
+            HTML("<p>* indicates a required field.</p>"),
+        )
         self.fields['feedback'].widget.attrs = {'rows': 3}
         self.fields['reflection'].widget.attrs = {'rows': 3}
 
@@ -424,14 +432,14 @@ class FeedbackForm(forms.ModelForm):
         model = Feedback
         fields = ['rating', 'attendance', 'feedback', 'reflection']
         labels = {
-            'feedback': _('For learners: Write a brief summary of this meeting.'),
+            'rating': _('Overall, how did this meeting go?'),
             'attendance': _('How many people attended?'),
-            'reflection': _('For the rest of us: Anything you want to share?'),
-            'rating': _('Overall, how did this meeting go?')
+            'feedback': _('Share a summary of this meeting.'),
+            'reflection': _('Anything else you want to share?'),
         }
         help_texts = {
-            'feedback': _('You may want to include your impressions of how it went, plus/delta feedback, and anything the group agreed on having completed before the next meeting. This will be sent automatically to learners two days before the next meeting.'),
-            'reflection': _('What went well this week? What surprised you? Any funny stories? We\'ll pull what you write here into our community newsletters and updates.'),
+            'feedback': _('This will be shared with participants in the reminder message for your next meeting if it hasn\'t been sent yet. You may want to summarize the material you covered in this meeting, plus/delta feedback, or any extra work the group agreed to complete before the next meeting.'),
+            'reflection': _('Need some help? Any surprises or stories you want to remember? This won\'t be shared with your participants, it will be sent to the P2PU staff and your colleagues if you\'re on a Team.'),
         }
 
 

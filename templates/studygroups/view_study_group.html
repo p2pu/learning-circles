@@ -146,8 +146,7 @@
                   {% if meeting.meeting_datetime < today %}
                     <div class="meeting-feedback">
                       <form action="{% url 'studygroups_feedback' study_group.pk meeting.pk %}" method="POST">
-	                      {% csrf_token %}
-	                      {{ feedback_form|crispy }}
+	                      {% crispy feedback_form %}
                         <p><button type="submit" class="p2pu-btn btn-primary">{% trans "Submit" %}</button></p>
 	                    </form>
                     </div>

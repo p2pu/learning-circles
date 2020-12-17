@@ -17,8 +17,7 @@
   </div>
   <div class="col-12">
 	  <form action="" method="POST">
-	    {% csrf_token %}
-	    {{ form|crispy }}
+	    {% crispy form %}
         <p><button type="submit" class="btn btn-primary">{% trans "Save" %}</button></p>
 	  </form>
       <p>{% blocktrans %}If you have any questions, reach out to your organizer or the <a href="https://community.p2pu.org/">P2PU community</a>{% endblocktrans %}</p>
