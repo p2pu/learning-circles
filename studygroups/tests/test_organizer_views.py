@@ -78,13 +78,13 @@ class TestOrganizerViews(TestCase):
         assertAllowed('/en/studygroup/1/')
         assertAllowed('/en/studygroup/1/edit/')
         assertAllowed('/en/studygroup/1/message/compose/')
-        assertStatus('/en/studygroup/1/message/edit/1/', 404)
+        assertStatus('/en/studygroup/1/message/edit/111/', 404)
         assertAllowed('/en/studygroup/1/member/add/')
-        assertStatus('/en/studygroup/1/member/2/delete/', 404)
+        assertStatus('/en/studygroup/1/member/211/delete/', 404)
         assertAllowed('/en/studygroup/1/meeting/create/')
-        assertStatus('/en/studygroup/1/meeting/2/edit/', 404)
-        assertStatus('/en/studygroup/1/meeting/2/delete/', 404)
-        assertStatus('/en/studygroup/1/meeting/2/feedback/create/', 404)
+        assertStatus('/en/studygroup/1/meeting/211/edit/', 404)
+        assertStatus('/en/studygroup/1/meeting/211/delete/', 404)
+        assertStatus('/en/studygroup/1/meeting/211/feedback/create/', 404)
 
         # Make sure the organizer can't access other study groups
         assertForbidden('/en/organize/{}/'.format(team.pk + 1))
@@ -128,9 +128,9 @@ class TestOrganizerViews(TestCase):
         assertAllowed('/en/studygroup/1/member/add/')
         assertStatus('/en/studygroup/1/member/2/delete/', 404)
         assertAllowed('/en/studygroup/1/meeting/create/')
-        assertStatus('/en/studygroup/1/meeting/2/edit/', 404)
-        assertStatus('/en/studygroup/1/meeting/2/delete/', 404)
-        assertStatus('/en/studygroup/1/meeting/2/feedback/create/', 404)
+        assertStatus('/en/studygroup/1/meeting/211/edit/', 404)
+        assertStatus('/en/studygroup/1/meeting/211/delete/', 404)
+        assertStatus('/en/studygroup/1/meeting/211/feedback/create/', 404)
 
 
     def test_organizer_dash(self):

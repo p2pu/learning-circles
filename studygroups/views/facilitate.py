@@ -93,16 +93,16 @@ def view_study_group(request, study_group_id):
         raise http.Http404(_("Learning circle does not exist."))
 
     user_is_facilitator = study_group.facilitator == request.user
-    facilitator_is_organizer = TeamMembership.objects.active().filter(user=request.user, role=TeamMembership.ORGANIZER).exists()
     dashboard_url = reverse('studygroups_facilitator')
 
-    if facilitator_is_organizer and not user_is_facilitator:
-        dashboard_url = reverse('studygroups_organize')
+    remaining_surveys = study_group.application_set.active().exclude(id__in=study_group.learnersurveyresponse_set.values('learner_id'))
 
     context = {
         'study_group': study_group,
+        'feedback_form': FeedbackForm(),
         'today': timezone.now(),
-        'dashboard_url': dashboard_url
+        'dashboard_url': dashboard_url,
+        'remaining_surveys': remaining_surveys,
     }
     return render(request, 'studygroups/view_study_group.html', context)
 
@@ -115,7 +115,6 @@ class FacilitatorRedirectMixin(object):
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
-@method_decorator(study_group_is_published, name='dispatch')
 class MeetingCreate(FacilitatorRedirectMixin, CreateView):
     model = Meeting
     form_class = MeetingForm
@@ -129,7 +128,6 @@ class MeetingCreate(FacilitatorRedirectMixin, CreateView):
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
-@method_decorator(study_group_is_published, name='dispatch')
 class MeetingUpdate(FacilitatorRedirectMixin, UpdateView):
     model = Meeting
     form_class = MeetingForm
@@ -161,7 +159,6 @@ class MeetingUpdate(FacilitatorRedirectMixin, UpdateView):
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
-@method_decorator(study_group_is_published, name='dispatch')
 class MeetingDelete(FacilitatorRedirectMixin, DeleteView):
     model = Meeting
 
@@ -177,23 +174,29 @@ class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
     model = Feedback
     form_class = FeedbackForm
 
-    def get_initial(self):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         meeting = get_object_or_404(Meeting, pk=self.kwargs.get('study_group_meeting_id'))
-        return {
-            'study_group_meeting': meeting,
-        }
+        context['meeting'] = meeting
+        return context
 
     def form_valid(self, form):
-        # send notification to organizers about feedback
-        to = [] #TODO should we send this to someone if the facilitators is not part of a team? - for now, don't worry, this notification is likely to be removed.
         meeting = get_object_or_404(Meeting, pk=self.kwargs.get('study_group_meeting_id'))
+        feedback = form.save(commit=False)
+        feedback.study_group_meeting = meeting
+        feedback.save()
+
+        messages.success(self.request, _('Your feedback has been saved.'))
+
+        # send notification to organizers about feedback
+        to = []
         organizers = get_study_group_organizers(meeting.study_group)
         if organizers:
             to = [o.email for o in organizers]
 
         context = {
             'feedback': form.save(commit=False),
-            'study_group_meeting': self.get_initial()['study_group_meeting']
+            'study_group_meeting': meeting
         }
         subject = render_to_string_ctx('studygroups/email/feedback-submitted-subject.txt', context).strip('\n')
         html_body = render_to_string_ctx('studygroups/email/feedback-submitted.html', context)
@@ -201,13 +204,25 @@ class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
         notification = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
         notification.attach_alternative(html_body, 'text/html')
         notification.send()
-        return super(FeedbackCreate, self).form_valid(form)
+
+        url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
+        return http.HttpResponseRedirect(url)
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
 class FeedbackUpdate(FacilitatorRedirectMixin, UpdateView):
     model = Feedback
     form_class = FeedbackForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        meeting = get_object_or_404(Meeting, pk=self.kwargs.get('study_group_meeting_id'))
+        context['meeting'] = meeting
+        return context
+
+    def form_valid(self, *args, **kwargs):
+        messages.success(self.request, _('Your feedback has been updated.'))
+        return super().form_valid(*args, **kwargs)
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
@@ -222,6 +237,12 @@ class ApplicationDelete(FacilitatorRedirectMixin, DeleteView):
     model = Application
     success_url = reverse_lazy('studygroups_facilitator')
     template_name = 'studygroups/confirm_delete.html'
+
+
+class MessageView(DetailView):
+    model = Reminder
+    template_name = 'studygroups/message_view.html'
+    context_object_name = 'message'
 
 
 class CoursePage(DetailView):
@@ -410,10 +431,10 @@ class StudyGroupUpdateLegacy(FacilitatorRedirectMixin, UpdateView):
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
 class StudyGroupDelete(FacilitatorRedirectMixin, DeleteView):
-    # TODO Need to fix back link for confirmation page
     model = StudyGroup
     template_name = 'studygroups/confirm_delete.html'
     pk_url_kwarg = 'study_group_id'
+    context_object_name = 'study_group'
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
@@ -449,7 +470,9 @@ class StudyGroupPublish(SingleObjectMixin, View):
             messages.success(self.request, _("Your learning circle has been published."));
             study_group.draft = False
             study_group.save()
-            generate_all_meetings(study_group)
+            # TODO this is temporary to still allow drafts created before to be published. This could also be replaced with a data migration that generates the meetings
+            if study_group.meeting_set.active().count() == 0:
+                generate_all_meetings(study_group)
 
         url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
         return http.HttpResponseRedirect(url)
@@ -491,7 +514,7 @@ def message_send(request, study_group_id):
             reminder = form.save()
             send_reminder(reminder)
             messages.success(request, 'Email successfully sent')
-            url = reverse('studygroups_facilitator')
+            url = reverse('studygroups_view_study_group', args=(study_group_id,))
             return http.HttpResponseRedirect(url)
     else:
         form = form_class(initial={'study_group': study_group})

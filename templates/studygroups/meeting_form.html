@@ -7,6 +7,12 @@
 <div class="container">
   <div class="row">
     <div class="col-md-8 col-sm-12">
+      <a href="{% url 'studygroups_view_study_group' form.study_group.value %}">{% trans "Back" %}</a>
+      {% if object %}
+        <h2>{% trans "Update meeting date and time" %}</h2>
+      {% else %}
+        <h2>{% trans "Add new meeting" %}</h2>
+      {% endif %}
       <form action="" method="POST">
         {% csrf_token %}
           {{ form|crispy }}
@@ -21,7 +27,7 @@
             {% endwith %}
             </div>
           {% endif %}
-          <p><button type="submit" class="btn btn-primary">{% trans "Save" %}</button></p>
+          <p><button type="submit" class="btn btn-primary">{% if object %}{% trans "Save" %}{% else %}{% trans "Add" %}{% endif %}</button></p>
       </form>
     </div>
   </div>

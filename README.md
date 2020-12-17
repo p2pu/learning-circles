@@ -35,9 +35,9 @@ docker-compose -f docker-compose.test.yml up
 docker-compose exec learning-circles /opt/django-venv/bin/python manage.py test
 ```
 
-To restore the database from an .sql file:
+To restore the database dump from pg_dump:
 ```
-docker container exec -i $(docker-compose ps -q postgres) psql -U postgres lc < <filename>.sql
+docker-compose exec -T postgres pg_restore -U postgres -h localhost -d lc -c < your-data.dump
 ```
 
 ## Deploying the code

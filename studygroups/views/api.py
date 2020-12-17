@@ -36,7 +36,6 @@ from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 from studygroups.models import Announcement
-from studygroups.models import generate_all_meetings
 from studygroups.models import generate_meetings_from_dates
 from studygroups.models import get_json_response
 from studygroups.models.course import course_platform_from_url
@@ -137,7 +136,7 @@ def serialize_learning_circle(sg):
         "report_url": sg.report_url(),
         "studygroup_path": reverse('studygroups_view_study_group', args=(sg.id,)),
         "draft": sg.draft,
-        "signup_count": sg.application_set.count(),
+        "signup_count": sg.application_set.active().count(),
         "signup_open": sg.signup_open,
     }
 
@@ -725,10 +724,7 @@ class LearningCircleCreateView(View):
             study_group.draft = data.get('draft', True)
 
         study_group.save()
-
-        # generate all meetings if the learning circle has been published
-        if study_group.draft is False:
-            generate_meetings_from_dates(study_group, data.get('meetings', []))
+        generate_meetings_from_dates(study_group, data.get('meetings', []))
 
         studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
         return json_response(request, { "status": "created", "studygroup_url": studygroup_url })
@@ -805,11 +801,9 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         study_group.signup_question = data.get('signup_question', '')
         study_group.facilitator_goal = data.get('facilitator_goal', '')
         study_group.facilitator_concerns = data.get('facilitator_concerns', '')
-        study_group.save()
 
-        # generate all meetings if the learning circle has been published
-        if published or study_group.draft is False:
-            generate_meetings_from_dates(study_group, data.get('meetings', []))
+        study_group.save()
+        generate_meetings_from_dates(study_group, data.get('meetings', []))
 
         studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
         return json_response(request, { "status": "updated", "studygroup_url": studygroup_url })
@@ -994,7 +988,7 @@ class FinalReportListView(View):
         def _map(sg):
             data = serialize_learning_circle(sg)
             if request.user.is_authenticated:
-                data['signup_count'] = sg.application_set.count()
+                data['signup_count'] = sg.application_set.active().count()
             return data
 
         data['items'] = [ _map(sg) for sg in studygroups ]
