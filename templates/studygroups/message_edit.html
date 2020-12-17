@@ -7,12 +7,12 @@
 
     <a href="{% url 'studygroups_view_study_group' study_group.pk %}">{% trans "Back" %}</a>
     <h2>{% blocktrans %}Edit email to {{study_group}}{% endblocktrans %}</h2>
-    <p>
+    <p>{% trans "This email will go to all learning circle participants, with your email address set as the 'reply to' address." %}
+    <p>{% trans "If any participants joined with a mobile number, an additional SMS field will appear below. SMS replies will be forwarded to you by email." %}</p>
     <form action="" method="POST">
       {% csrf_token %}
       {{ form|crispy }}
       <button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
     </form>
-    </p>
 </div>
 {% endblock %}
