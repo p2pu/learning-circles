@@ -490,7 +490,7 @@ class TestFacilitatorViews(TestCase):
             'sms_body': 'The first study group for GED® Prep Math will meet next Thursday, May 7th, from 6:00 pm-7:45 pm at Edgewater on the 2nd floor. Feel free to bring a study buddy!'
         }
         resp = c.post(url, mail_data)
-        self.assertRedirects(resp, '/en/')
+        self.assertRedirects(resp, '/en/studygroup/1/')
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, mail_data['email_subject'])
@@ -518,7 +518,7 @@ class TestFacilitatorViews(TestCase):
             'sms_body': 'Sms body'
         }
         resp = c.post(url, mail_data)
-        self.assertRedirects(resp, '/en/')
+        self.assertRedirects(resp, '/en/studygroup/1/')
         self.assertEqual(len(mail.outbox), 1)  # Send both email and text message
         self.assertTrue(send_message.called)
 
@@ -541,7 +541,7 @@ class TestFacilitatorViews(TestCase):
             'email_body': 'Email body'
         }
         resp = c.post(url, mail_data)
-        self.assertRedirects(resp, '/en/')
+        self.assertRedirects(resp, '/en/studygroup/1/')
         self.assertEqual(len(mail.outbox), 1)  # Still send email
         self.assertFalse(send_message.called) # dont send sms
 
@@ -576,7 +576,7 @@ class TestFacilitatorViews(TestCase):
         feedback_url = '/en/studygroup/1/meeting/{0}/feedback/create/'.format(meeting.id)
         self.assertEqual(len(mail.outbox), 0)
         resp = c.post(feedback_url, feedback_data)
-        self.assertEqual(resp.status_code, 302)
+        self.assertRedirects(resp, '/en/studygroup/1/')
         # make sure email was sent to organizers
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(Feedback.objects.filter(study_group_meeting=meeting).count(), 1)
