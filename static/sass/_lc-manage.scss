@@ -12,7 +12,7 @@
   min-height: calc( (100vw - 30px)/4 - 30px);
 
   @include media-breakpoint-up(xl) {
-    min-height: calc( (100vw - 30px)/6 - 30px);
+    min-height: calc( (1140px - 30px)/4 - 30px);
   }
 }
 
@@ -24,7 +24,7 @@
 
 @include media-breakpoint-up(xl) {
   .lc-details {
-    margin-bottom: calc(-100vw/6 + 45px + 120px);
+    margin-bottom: calc(-1140px/4 + 45px + 120px);
   }
 }
 

@@ -6,16 +6,16 @@
 {% load extras %}
 {% block content %}
 {% localtime off %}
-<div class="container-fluid">
+<div class="container-xl">
   <div class="row my-3">
     <a href="{{dashboard_url}}"><i class="fas fa-arrow-left mr-2"></i>Back to my dashboard</a>
   </div>
 </div>
 
 <div class="topbit">
-  <div class="container-fluid">
+  <div class="container-xl">
     <div class="heading row">
-      <div class="offset-sm-3 col-sm-9 col-xl-10 offset-xl-2 lc-details">
+      <div class="offset-sm-3 col-sm-9 lc-details">
         <h1>{% if study_group.draft %}[DRAFT] {% endif %}{{study_group.name}}</h1>
         <div class="text">
           {% blocktrans with first_name=study_group.facilitator.first_name %}Facilitated by {{first_name}}{% endblocktrans %}
@@ -30,7 +30,7 @@
           {% include 'studygroups/recurrence_text.html' %}
         </div>
       </div>
-      <div class="col-sm-3 col-xl-2">
+      <div class="col-sm-3">
         <div class="lc-manage-image">
           
           <div class="wrapper">
@@ -46,23 +46,25 @@
   </div>
   {% url 'studygroups_signup' location=study_group.venue_name|unicode_slugify study_group_id=study_group.pk as signup_url %}
   <div class="action-bar">
-    <div class="row">
-      <div class="col-sm-9 offset-sm-3 col-xl-10 offset-xl-2">
-        <a class="p2pu-btn btn-primary" href="{% url 'studygroups_edit_study_group' study_group.id %}">{% trans "Edit" %}</a>
-        <a class="p2pu-btn btn-primary" href="{{ signup_url }}">{% trans "View" %}</a>
-        <a class="p2pu-btn btn-primary" href="{% url 'studygroups_meeting_create' study_group.id %}">{% trans "Add meeting" %}</a>
-        {% if study_group.signup_open %}
-        <a class="p2pu-btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' study_group.id %}">{% trans "Close signup" %}</a>
-        {% else %}
-        <a class="p2pu-btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' study_group.id %}">{% trans "Open signup" %}</a>
-        {% endif %}
-        <a class="p2pu-btn btn-primary" href="{% url 'studygroups_studygroup_delete' study_group.id %}">{% trans "Delete" %}</a>
+    <div class="container-xl">
+      <div class="row">
+        <div class="col-sm-9 offset-sm-3">
+          <a class="p2pu-btn btn-primary" href="{% url 'studygroups_edit_study_group' study_group.id %}">{% trans "Edit" %}</a>
+          <a class="p2pu-btn btn-primary" href="{{ signup_url }}">{% trans "View" %}</a>
+          <a class="p2pu-btn btn-primary" href="{% url 'studygroups_meeting_create' study_group.id %}">{% trans "Add meeting" %}</a>
+          {% if study_group.signup_open %}
+          <a class="p2pu-btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' study_group.id %}">{% trans "Close signup" %}</a>
+          {% else %}
+          <a class="p2pu-btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' study_group.id %}">{% trans "Open signup" %}</a>
+          {% endif %}
+          <a class="p2pu-btn btn-primary" href="{% url 'studygroups_studygroup_delete' study_group.id %}">{% trans "Delete" %}</a>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<div class="container-fluid mt-5">
+<div class="container-xl mt-5">
   <div class="manage row">
     <div class="col-lg-7 lc-timeline">
       <div class="item {% if not study_group.draft %}done{% else %}todo{% endif %}">
