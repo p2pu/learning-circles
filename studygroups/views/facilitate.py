@@ -508,7 +508,7 @@ def message_send(request, study_group_id):
             reminder = form.save()
             send_reminder(reminder)
             messages.success(request, 'Email successfully sent')
-            url = reverse('studygroups_facilitator')
+            url = reverse('studygroups_view_study_group', args=(study_group_id,))
             return http.HttpResponseRedirect(url)
     else:
         form = form_class(initial={'study_group': study_group})
