@@ -108,28 +108,32 @@
                 </div>
               {% endif %}
               <div class="meeting-item {% if meeting.meeting_datetime < today %}done{% elif meeting.reminder_set.first.sent_at %}todo{% else %}pending{% endif %}">
+                {% if meeting.meeting_datetime < today and meeting.reminder_set.count == 0 %}
+                  <p>No RSVPs</p>
+                {% else %}
                 <p>See RSVPs {% if meeting.meeting_datetime < today %}(<a data-toggle="collapse" href="#meeting-{{meeting.id}}-rsvp" role="button" aria-expanded="true" aria-controls="meeting-{{meeting.id}}-rsvp">show</a>){% endif %}</p>
-                {% if meeting.reminder_set.first.sent_at %}
-                <div class="meeting-rsvp {% if meeting.meeting_datetime < today %}collapse{% endif %}" id="meeting-{{meeting.id}}-rsvp">
-                  <ul class="list-unstyled">
-                    {% with rsvps=meeting.rsvps %}
-                      {% for rsvp in rsvps.yes %}
-                        <li class="rsvp-yes">{{rsvp.application.name}}</li>
-                      {% endfor %}
-                      {% for rsvp in rsvps.no %}
-                        <li class="rsvp-no">{{rsvp.application.name}}</li>
-                      {% endfor %}
-                      {% if rsvps.yes|length == 0 and rsvps.no|length == 0 %}
-                        <li>No RSVPs yet</li>
-                      {% endif %}
-                    {% endwith %}
-                    {% with unknown_rsvps=meeting.rsvp_pending %}
-                      {% for learner in unknown_rsvps %}
-                       <li class="rsvp-unknown">{{learner.name}}</li>
-                      {% endfor %}
-                    {% endwith %}
-                  </ul>
-                </div>
+                  {% if meeting.reminder_set.first.sent_at %}
+                  <div class="meeting-rsvp {% if meeting.meeting_datetime < today %}collapse{% endif %}" id="meeting-{{meeting.id}}-rsvp">
+                    <ul class="list-unstyled">
+                      {% with rsvps=meeting.rsvps %}
+                        {% for rsvp in rsvps.yes %}
+                          <li class="rsvp-yes">{{rsvp.application.name}}</li>
+                        {% endfor %}
+                        {% for rsvp in rsvps.no %}
+                          <li class="rsvp-no">{{rsvp.application.name}}</li>
+                        {% endfor %}
+                        {% if rsvps.yes|length == 0 and rsvps.no|length == 0 %}
+                          <li>No RSVPs yet</li>
+                        {% endif %}
+                      {% endwith %}
+                      {% with unknown_rsvps=meeting.rsvp_pending %}
+                        {% for learner in unknown_rsvps %}
+                         <li class="rsvp-unknown">{{learner.name}}</li>
+                        {% endfor %}
+                      {% endwith %}
+                    </ul>
+                  </div>
+                  {% endif %}
                 {% endif %}
               </div>
               <div class="meeting-item {% if meeting.meeting_datetime > today %}pending{% else %}{% if meeting.feedback_set.count %}done{% else %}todo{% endif %}{% endif %}">
