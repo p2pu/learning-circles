@@ -186,6 +186,8 @@ class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
         feedback.study_group_meeting = meeting
         feedback.save()
 
+        messages.success(self.request, _('Your feedback has been saved.'))
+
         # send notification to organizers about feedback
         to = []
         organizers = get_study_group_organizers(meeting.study_group)
@@ -217,6 +219,10 @@ class FeedbackUpdate(FacilitatorRedirectMixin, UpdateView):
         meeting = get_object_or_404(Meeting, pk=self.kwargs.get('study_group_meeting_id'))
         context['meeting'] = meeting
         return context
+
+    def form_valid(self, *args, **kwargs):
+        messages.success(self.request, _('Your feedback has been updated.'))
+        return super().form_valid(*args, **kwargs)
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
