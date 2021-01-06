@@ -31,6 +31,7 @@ from studygroups.models import application_mobile_opt_out
 from studygroups.models import application_mobile_opt_out_revert
 from studygroups.forms import ApplicationForm
 from studygroups.forms import OptOutForm
+from studygroups.forms import OptOutConfirmationForm
 from studygroups.utils import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
 
@@ -137,24 +138,38 @@ def signup(request, location, study_group_id):
 
 
 def optout_confirm(request):
-    user = request.GET.get('user')
-    sig = request.GET.get('sig')
+    # TODO this should have an option for both single opt out and multiple opt out
+    if request.method == 'GET':
+        user = request.GET.get('user')
+        sig = request.GET.get('sig')
+        form = OptOutConfirmationForm(initial={'user': user, 'sig': sig})
+        return render(request, 'studygroups/optout_confirm.html', {'form': form})
 
-    # Generator for conditions
-    def conditions():
-        yield user
-        yield sig
-        yield check_unsubscribe_signature(user, sig)
+    form = OptOutConfirmationForm(request.POST,
+        initial={'user': request.GET.get('user'), 'sig': request.GET.get('sig')}
+    )
+    if form.is_valid():
+        user = form.cleaned_data['user']
+        sig = form.cleaned_data['sig']
 
-    if all(conditions()):
-        signup = Application.objects.active().filter(pk=user)
-        signup.delete()
-        messages.success(request, _('You successfully opted out of the learning circle.'))
-    else:
-        messages.error(request, _('Please check the email you received and make sure this is the correct URL.'))
-
-    url = reverse('studygroups_facilitator')
-    return http.HttpResponseRedirect(url)
+        # Generator for conditions
+        def conditions():
+            yield user
+            yield sig
+            yield check_unsubscribe_signature(user, sig)
+ 
+        if all(conditions()):
+            signups = Application.objects.active().filter(pk=user)
+            for signup in signups:
+                signup.anonymize()
+            signups.delete()
+            messages.success(request, _('You successfully opted out of the learning circle.'))
+            url = reverse('studygroups_facilitator')
+            return http.HttpResponseRedirect(url)
+        else:
+            messages.error(request, _('Please check the email you received and make sure this is the correct URL.'))
+        url = reverse('studygroups_facilitator')
+        return http.HttpResponseRedirect(url)
 
 
 class OptOutView(FormView):

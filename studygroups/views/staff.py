@@ -234,7 +234,7 @@ class ExportStudyGroupsView(ListView):
             else:
                 data += ['']
 
-            data += [sg.application_set.count()]
+            data += [sg.application_set.active().count()]
             # team
             if sg.facilitator.teammembership_set.active().count():
                 data += [sg.facilitator.teammembership_set.active().first().team.name]

@@ -1,22 +1,21 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% load i18n %}
-{% load extras %}
 
 {% block content %}
 <div class="container">
   <div class="row">
     <div class="col-md-12">
-        <h2>{% trans "Confirm deletion" %}</h2>
+      {% if study_group %}
+        <a href="{% url 'studygroups_view_study_group' study_group.pk %}">{% trans "Back" %}</a>
+      {% elif object.study_group %}
+        <a href="{% url 'studygroups_view_study_group' object.study_group.pk %}">{% trans "Back" %}</a>
+      {% endif %}
+      <h2>{% trans "Confirm deletion" %}</h2>
       <form action="" method="post">{% csrf_token %}
           <p>{% blocktrans %}Are you sure you want to delete "{{ object }}"?{% endblocktrans %}</p>
           <p><input class="btn btn-primary" type="submit" value="{% trans "Confirm" %}" /></p>
       </form>
-      {% if user|is_organizer %} 
-        <p><a href="{% url 'studygroups_organize' %}">{% trans "Back to dashboard" %}</a></p>
-      {% else %}
-        <p><a href="{% url 'studygroups_facilitator' %}">{% trans "Back to dashboard" %}</a></p>
-      {% endif %}
     </div>
   </div>
 </div>

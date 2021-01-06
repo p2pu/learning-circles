@@ -1,26 +1,319 @@
 {% extends 'base.html' %}
-
+{% load crispy_forms_tags %}
+{% load static %}
+{% load i18n %}
+{% load tz %}
+{% load extras %}
 {% block content %}
-
-<div class="container">
-  <!-- Example row of columns -->
-
+{% localtime off %}
+<div class="container-xl">
   <div class="row my-3">
     <a href="{{dashboard_url}}"><i class="fas fa-arrow-left mr-2"></i>Back to my dashboard</a>
   </div>
+</div>
 
+<div class="topbit">
+  <div class="container-xl">
+    <div class="heading row">
+      <div class="offset-sm-3 col-sm-9 lc-details">
+        <h1>{% if study_group.draft %}[DRAFT] {% endif %}{{study_group.name}}</h1>
+        <div class="text">
+          {% blocktrans with first_name=study_group.facilitator.first_name %}Facilitated by {{first_name}}{% endblocktrans %}
+        </div>
+        <div class="text">
+          {% blocktrans with link=study_group.course.link provider=study_group.course.provider %}Course materials provided by <a href="{{ link }}" target="_blank">{{ provider }}</a>{% endblocktrans %}
+        </div>
+        <div class="text">
+          {% trans "Taking place at" %} {% if study_group.venue_website %}<a href="{{study_group.venue_website}}">{{ study_group.venue_name }}</a>{% else %}{{study_group.venue_name}}{% endif %}, {{study_group.venue_details}}, {{study_group.city}}
+        </div>
+        <div class="text">
+          {% include 'studygroups/recurrence_text.html' %}
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="lc-manage-image">
+          
+          <div class="wrapper">
+            {% if study_group.image %}
+              <img class="img img-responsive full-width" src="{{study_group.image.url}}">
+            {% else %}
+              <img class="default-image img img-responsive full-width" src="{% static 'images/learning-circle-default.jpg' %}">
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% url 'studygroups_signup' location=study_group.venue_name|unicode_slugify study_group_id=study_group.pk as signup_url %}
+  <div class="action-bar">
+    <div class="container-xl">
+      <div class="row">
+        <div class="col-sm-9 offset-sm-3">
+          <a class="p2pu-btn btn-primary" href="{% url 'studygroups_edit_study_group' study_group.id %}">{% trans "Edit" %}</a>
+          <a class="p2pu-btn btn-primary" href="{{ signup_url }}">{% trans "View" %}</a>
+          <a class="p2pu-btn btn-primary" href="{% url 'studygroups_meeting_create' study_group.id %}">{% trans "Add meeting" %}</a>
+          {% if study_group.signup_open %}
+          <a class="p2pu-btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' study_group.id %}">{% trans "Close signup" %}</a>
+          {% else %}
+          <a class="p2pu-btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' study_group.id %}">{% trans "Open signup" %}</a>
+          {% endif %}
+          <a class="p2pu-btn btn-primary" href="{% url 'studygroups_studygroup_delete' study_group.id %}">{% trans "Delete" %}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-  {% with lc=study_group %}
-    {% include 'studygroups/study_group_facilitate.html' %}
-  {% endwith %}
+<div class="container-xl mt-5">
+  <div class="manage row">
+    <div class="col-lg-7 lc-timeline">
+      <div class="item {% if not study_group.draft %}done{% else %}todo{% endif %}">
+        <div class="icon"></div>
+        <div class="card">
+          <a class="card-collapse-toggle {% if not study_group.draft %}collapsed{% endif %}" data-toggle="collapse" href="#collapse-publish" role="button" aria-expanded="true" aria-controls="collapse-publish"><i class="fa fa-chevron-down"></i></a>
+          <div class="card-title">Publish your learning circle</div>
+          <div class="collapse {% if study_group.draft %}show{% endif %}" id="collapse-publish">
+            {% if study_group.draft %}
+              <div class="meeting-item todo">
+                <p>This learning circle is currently a draft and learners won't be able to find it or sign up.</p>
+                <form action="{% url 'studygroups_studygroup_publish' study_group_id=study_group.pk %}" method="POST">{% csrf_token %}<button type="submit" class="p2pu-btn btn-primary" href="">{% trans "publish" %}</button></form>
+              </div>
+            {% else %}
+              <div class="meeting-item done">
+                <p>Your learning circle is live! See it here:<br/>
+                <a href="{{PROTOCOL}}://{{DOMAIN}}{{signup_url}}">{{PROTOCOL}}://{{DOMAIN}}{{signup_url}}</a>
+                </p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% for meeting in study_group.meeting_set.active|dictsort:"meeting_datetime" %}
+      {% with done=meeting.feedback_set.count %}
+      <div class="item {% if done %}done{% elif meeting.reminder_set.count or meeting.meeting_datetime < today and not study_group.draft or meeting == study_group.next_meeting and not study_group.draft %}todo{% else %}pending{% endif %}">
+        <div class="icon"></div>
+          <div class="card">
+            <a class="card-collapse-toggle {% if meeting != study_group.next_meeting or study_group.draft %}collapsed{% endif %}" data-toggle="collapse" href="#collapse-meeting-{{forloop.counter}}" role="button" aria-expanded="true" aria-controls="collapse-meeting-{{forloop.counter}}"><i class="fa fa-chevron-down"></i></a>
+            <div class="card-title">Meeting #{{forloop.counter}}: {{meeting.meeting_datetime}} (<a href="{% url 'studygroups_meeting_edit' study_group.pk meeting.pk %}">edit</a>, <a href="{% url 'studygroups_meeting_delete' study_group.pk meeting.pk %}">delete</a>)</div>
+            <div class="collapse {% if meeting == study_group.next_meeting and not study_group.draft %}show{% endif %}" id="collapse-meeting-{{forloop.counter}}">
+              {% if meeting.reminder_set.first.sent_at %}
+                <div class="meeting-item done">
+                  <p>Reminder sent {{meeting.reminder_set.first.sent_at_tz}}</p>
+                </div>
+              {% elif meeting.meeting_datetime < today %}
+                <div class="meeting-item done">
+                  <p>No reminder was sent</p>
+                </div>
+              {% else %}
+                <div class="meeting-item {% if meeting == study_group.next_meeting and not study_group.draft %}todo{% else %}pending{% endif %}">
+                  <p>Reminder will be sent {{meeting.send_reminder_at}}</p>
+                </div>
+              {% endif %}
+              <div class="meeting-item {% if meeting.meeting_datetime < today %}done{% elif meeting.reminder_set.first.sent_at %}todo{% else %}pending{% endif %}">
+                {% if meeting.meeting_datetime < today and meeting.reminder_set.count == 0 %}
+                  <p>No RSVPs</p>
+                {% else %}
+                <p>See RSVPs {% if meeting.meeting_datetime < today %}(<a data-toggle="collapse" href="#meeting-{{meeting.id}}-rsvp" role="button" aria-expanded="true" aria-controls="meeting-{{meeting.id}}-rsvp">show</a>){% endif %}</p>
+                  {% if meeting.reminder_set.first.sent_at %}
+                  <div class="meeting-rsvp {% if meeting.meeting_datetime < today %}collapse{% endif %}" id="meeting-{{meeting.id}}-rsvp">
+                    <ul class="list-unstyled">
+                      {% with rsvps=meeting.rsvps %}
+                        {% for rsvp in rsvps.yes %}
+                          <li class="rsvp-yes">{{rsvp.application.name}}</li>
+                        {% endfor %}
+                        {% for rsvp in rsvps.no %}
+                          <li class="rsvp-no">{{rsvp.application.name}}</li>
+                        {% endfor %}
+                        {% if rsvps.yes|length == 0 and rsvps.no|length == 0 %}
+                          <li>No RSVPs yet</li>
+                        {% endif %}
+                      {% endwith %}
+                      {% with unknown_rsvps=meeting.rsvp_pending %}
+                        {% for learner in unknown_rsvps %}
+                         <li class="rsvp-unknown">{{learner.name}}</li>
+                        {% endfor %}
+                      {% endwith %}
+                    </ul>
+                  </div>
+                  {% endif %}
+                {% endif %}
+              </div>
+              <div class="meeting-item {% if meeting.meeting_datetime > today %}pending{% else %}{% if meeting.feedback_set.count %}done{% else %}todo{% endif %}{% endif %}">
+                <p>Reflect and capture feedback</p>
+                {% if meeting.feedback_set.first %}
+                <div class="meeting-feedback">
+                  <p>Overall rating: {{meeting.feedback_set.first.get_rating_display}} (<a href="{% url 'studygroups_feedback_detail' study_group.id meeting.id meeting.feedback_set.first.id %}">{% trans "view" %}</a>, <a href="{% url 'studygroups_feedback_edit' study_group.id meeting.id meeting.feedback_set.first.id %}">{% trans "edit" %}</a>)</p>
+                </div>
+                {% else %}
+                  {% if meeting.meeting_datetime < today %}
+                    <div class="meeting-feedback">
+                      <form action="{% url 'studygroups_feedback' study_group.pk meeting.pk %}" method="POST">
+	                      {% crispy feedback_form %}
+                        <p><button type="submit" class="p2pu-btn btn-primary">{% trans "Submit" %}</button></p>
+	                    </form>
+                    </div>
+                  {% endif %}
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endwith %}
+      {% endfor %}
+      <div class="item {% if study_group.facilitatorsurveyresponse_set.count and study_group.learnersurveyresponse_set.count %}{% if remaining_surveys %}done{% else %}whoohoo{% endif %}{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %} wrapup">
+        <div class="icon"></div>
+        <div class="card">
+          <a class="card-collapse-toggle {% if today < study_group.last_meeting.meeting_datetime and study_group.next_meeting != study_group.last_meeting %}collapsed{% endif %}" data-toggle="collapse" href="#collapse-wrapup" role="button" aria-expanded="true" aria-controls="collapse-wrapup"><i class="fa fa-chevron-down"></i></a>
+          <div class="card-title">Wrap up</div>
+          <div class="collapse {% if today > study_group.last_meeting.meeting_datetime or study_group.next_meeting == study_group.last_meeting %}show{% endif %}" id="collapse-wrapup">
+            {% if today > study_group.last_meeting.meeting_datetime %}
+              <div class="meeting-item done">
+                <p>Survey reminder sent</p>
+              </div>
+            {% else %}
+              <div class="meeting-item pending">
+                <p>Survey reminder will be sent during the last meeting</p>
+              </div>
+            {% endif %}
+            <div class="meeting-item {% if study_group.facilitatorsurveyresponse_set.count %}done{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %}">
+              <p>Complete the facilitator survey</p>
+              {% if study_group.facilitatorsurveyresponse_set.count  %}
+              {% else %}
+                <p><a class="p2pu-btn btn-primary" href="{% url 'studygroups_facilitator_survey' study_group.uuid %}">{% trans "Facilitator survey" %}</a></p>
+              {% endif %}
+            </div>
+            <div class="meeting-item {% if today < study_group.last_meeting.meeting_datetime %}pending{% elif study_group.learnersurveyresponse_set.count %}done{% else %}todo{% endif %}">
+              <p>Collect learner feedback</p>
+              <div class="survey-summary">
+                {% if study_group.learnersurveyresponse_set.count %}
+                  <ul class="list-unstyled">
+                    <li class="done">{{ study_group.learnersurveyresponse_set.count }} learners completed the survey.</li>
+                  </ul>
+                {% endif %}
 
-</div> <!-- /container -->
+                {% if remaining_surveys %}
+                  <p>The following learners have not yet completed the learner survey</p>
+                  <ul class="list-unstyled">
+                    {% for learner in remaining_surveys %}
+                      <li class="todo">{{learner.name}}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
 
+                <p>Direct link to learner survey:</p>
+                <div class="input-group">
+                  <input class="form-control" type="text" type="text" id="learner-survey-link" value="{{PROTOCOL}}://{{DOMAIN}}{% url 'studygroups_learner_survey' study_group.uuid %}"/>
+                  <div class="input-group-append">
+                    <button class="btn btn-primary" type="button" onclick="Copy()">copy</button>
+                  </div>
+                </div>
+
+                <script>
+                  // TODO consider doing this as progressive enhancement
+                  function Copy() {
+                    var field = document.getElementById("learner-survey-link");
+                    field.select();
+                    field.setSelectionRange(0, 99999);
+                    document.execCommand("copy");
+                  }
+                </script>
+
+              </div>
+            </div>
+            <div class="meeting-item {% if study_group.facilitatorsurveyresponse_set.count %}done{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %}">
+              <p>See the insights report</p>
+              {% if study_group.facilitatorsurveyresponse_set.count or study_group.learnersurveyresponse_set.count %}
+                <p><a class="p2pu-btn btn-primary" href="{% url 'studygroups_final_report' study_group_id=study_group.pk %}">{% trans "View insights" %}</a></p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <div class="card">
+        <div class="card-title">Learners</div>
+        <div class="row no-gutters retable-heading">
+          <div class="col-lg-4">
+            {% trans "Name" %}
+          </div>
+          <div class="col-lg-5">
+            {% trans "Contact" %}
+          </div>
+          <div class="col-lg-3">
+          </div>
+        </div>
+        {% for learner in study_group.application_set.active %}
+        <div class="row no-gutters retable-row">
+          <div class="col-lg-4">{{ learner.name }}
+          </div>
+          <div class="col-lg-5">
+            {% if learner.email %} &lt;{{learner.email}}&gt;{% endif %}
+            {% if learner.mobile %}</br>{{learner.mobile}}{% endif %}
+          </div>
+          <div class="col-lg-3">
+            <a class="p2pu-btn btn-primary" href="{% url 'studygroups_application_edit' study_group.id learner.id %}"><i class="fa fa-edit"></i></a>
+            <a class="p2pu-btn btn-primary" href="{% url 'studygroups_application_delete' study_group.id learner.id %}"><i class="fa fa-trash"></i></a>
+            <a class="p2pu-btn btn-info" data-toggle="collapse" href="#collapse-signup-{{learner.id}}" role="button" aria-expanded="true" aria-controls="collapse-signup-{{learner.id}}"><i class="fa fa-info"></i></a>
+          </div>
+          <div class="col-12 collapse learner-signup-info" id="collapse-signup-{{learner.id}}">
+            <p><strong>Goal</strong><br/>
+            {{ learner.get_signup_questions.goals }}</p>
+            <p><strong>Support</strong><br/>
+            {{ learner.get_signup_questions.support }}</p>
+            {% if study_group.signup_question %}
+              <p><strong>{{study_group.signup_question}}</strong><br/>
+              {{ learner.get_signup_questions.custom_question }}</p>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+        <p><a class="p2pu-btn btn-primary" href="{% url 'studygroups_add_member' study_group.id %}">{% trans "Add learner" %}</a></p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Messages</div>
+        <div class="row no-gutters retable-heading">
+          <div class="col-lg-7  d-none d-lg-block">
+            {% trans "Email subject" %}
+          </div>
+          <div class="col-lg-3 d-none d-lg-block">
+            {% trans "Sent at" %}
+          </div>
+        </div>
+
+        {% for message in study_group.reminder_set.all|dictsortreversed:"created_at" %}
+          <div class="row no-gutters retable-row">
+            <div class="col-lg-7 pr-lg-2">
+              <span class="d-lg-none"><strong>{% trans "Email subject:" %} </strong><br/></span>
+              {{ message.email_subject }}
+            </div>
+            <div class="col-lg-3 pr-lg-2">
+              {% if message.sent_at %}
+              <span class="d-lg-none"><strong>{% trans "Sent at:" %} </strong></span>
+              {{ message.sent_at_tz}}
+              {% endif %}
+            </div>
+            <div class="col-lg-2">
+                  {% if not message.sent_at %}
+                  <a href="{% url 'studygroups_message_edit' study_group.id message.id %}" class="p2pu-btn btn-info">{% trans "Edit" %}</a>
+                  {% endif %}
+                  <a href="{% url 'studygroups_message_view' study_group.id message.id %}" class="p2pu-btn btn-info">{% trans "View" %}</a>
+            </div>
+          </div>
+        {% endfor %}
+        <p><a href="{% url 'studygroups_message_send' study_group.id %}" class="p2pu-btn btn-primary">{% trans "New message" %}</a></p>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endlocaltime %}
 {% endblock %}
 {% block scripts %}
 <script>
-    $(document).ready(function () {
-        $('[data-toggle="popover"]').popover();
-    });
+$(document).ready(function () {
+  $('[data-toggle="popover"]').popover();
+});
 </script>
 {% endblock %}

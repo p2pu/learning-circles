@@ -74,7 +74,6 @@ def use_language(language):
         yield
     finally:
         translation.activate(cur_language)
-        
 
 
 def html_body_to_text(html):

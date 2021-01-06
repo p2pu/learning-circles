@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block page_title %}
+  {% trans "Opt Out" %}
+{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <h1>{% trans "Opt Out" %}</h1>
+    <p>{% trans "Please confirm that you wish to leave this learning circle." %}</p>
+    <form action="" method="POST">
+      {% csrf_token %}
+      {{ form|crispy }}
+      <p><button type="submit" class="btn btn-primary">{% trans "Opt out" %}</button></p>
+    </form>
+  </div>
+{% endblock %}

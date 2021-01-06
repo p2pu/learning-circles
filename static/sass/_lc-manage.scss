@@ -1,0 +1,254 @@
+.action-bar {
+  padding: 1em 0;
+  background: $p2pu-yellow;
+  @include media-breakpoint-down(xs) {
+    margin-top: calc(30px - 50vw);
+    padding-top: calc(50vw - 15px);
+    padding-bottom: 1em;
+  }
+}
+
+.topbit {
+  min-height: calc( (100vw - 30px)/4 - 30px);
+
+  @include media-breakpoint-up(xl) {
+    min-height: calc( (1140px - 30px)/4 - 30px);
+  }
+}
+
+@include media-breakpoint-up(md) {
+  .lc-details {
+    margin-bottom: calc(-25vw + 45px + 120px);
+  }
+}
+
+@include media-breakpoint-up(xl) {
+  .lc-details {
+    margin-bottom: calc(-1140px/4 + 45px + 120px);
+  }
+}
+
+.lc-manage-image {
+  overflow: hidden;
+  background: $p2pu-yellow;
+  border: 10px solid $p2pu-yellow;
+  border-radius: 50%;
+
+  @include media-breakpoint-up(sm) {
+    margin-bottom: -120px;
+    //margin-top: calc(-25vw + 45px + 60px);
+  }
+
+  .wrapper {
+    overflow: hidden;
+    position: relative;
+    padding-bottom:100%;
+  }
+
+  img {
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    object-fit: cover;
+    width : 10vw;
+    min-width: 100%;
+    min-height: 100%;
+  }
+}
+
+.meeting-feedback {
+  padding: 1em;
+  background: $gray-lighter;
+}
+
+@mixin rsvp-li {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 0.5em;
+  vertical-align: middle;
+}
+
+.meeting-rsvp {
+  padding: 1em;
+  background: $gray-lighter;
+
+  ul {
+    margin: 0;
+  }
+
+  li.rsvp-yes::before {
+    @include rsvp-li;
+    content: '';
+    background: url("../images/icons/rsvp-yes.svg") left center / 1em 1em no-repeat;
+  }
+
+  li.rsvp-no::before {
+    @include rsvp-li;
+    content: '';
+    background: url("../images/icons/rsvp-no.svg") left center / 1em 1em no-repeat;
+  }
+
+  li.rsvp-unknown::before {
+    @include rsvp-li;
+    content: '';
+    background: url("../images/icons/rsvp-unknown.svg") left center / 1em 1em no-repeat;
+  }
+}
+
+.survey-summary {
+  padding: 1em;
+  background: $gray-lighter;
+
+  li.todo::before {
+    @include rsvp-li;
+    content: '';
+    background: url("../images/icons/rsvp-unknown.svg") left center / 1em 1em no-repeat;
+  }
+
+  li.done::before {
+    @include rsvp-li;
+    content: '';
+    background: url("../images/icons/rsvp-yes.svg") left center / 1em 1em no-repeat;
+  }
+
+
+}
+
+.card-collapse-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: $primary;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  transform: rotate(180deg);
+  &.collapsed {
+    transform: rotate(0deg);
+  }
+}
+
+.meeting-item {
+  padding-left: 1.5em;
+  position: relative;
+}
+
+.meeting-item.done::before {
+  position: absolute;
+  content: '✓';
+  left: 0;
+}
+
+.meeting-item.todo::before {
+  position: absolute;
+  content: '';
+  left: 0;
+  background: url("../images/icons/clock.svg") left center / 1em 1em no-repeat;
+  width: 1.5em;
+  height: 2em;
+}
+
+.meeting-item.pending::before {
+  position: absolute;
+  content: '';
+  left: 0;
+  background: url("../images/icons/clock.svg") left center / 1em 1em no-repeat;
+  filter: brightness(0) saturate(100%) invert(100%) sepia(3%) saturate(1205%) hue-rotate(241deg) brightness(110%) contrast(73%);
+  width: 1.5em;
+  height: 2em;
+}
+
+
+.lc-timeline {
+  margin-bottom: 1em;
+}
+
+.lc-timeline .card {
+  margin-bottom: 0px;
+}
+
+.lc-timeline .item {
+  padding-bottom: 1em;
+  position: relative;
+}
+
+.lc-timeline .item::before {
+  content: '';
+  width: 0;
+  border: 1px solid $primary;
+  position: absolute;
+  height: 100%;
+}
+
+
+.lc-timeline .item:first-child::before {
+  top: 0.5em;
+}
+
+.lc-timeline .item:last-child::before {
+  height: 0.5em !important;
+}
+
+
+@mixin timeline-item {
+  position: absolute;
+  left: -0.7em;
+  top: 0.5em;
+  width: 1.5em;
+  height: 1.5em;
+  font-size: 1em;
+  padding: 0;
+  line-height: 1.5em;
+  color: white;
+  border-radius: 0.75em;
+  text-align: center;
+}
+
+.lc-timeline .item.done .icon::before{
+  @include timeline-item;
+  content: '✓';
+  background: $p2pu-blue;
+}
+
+.lc-timeline .item.todo .icon::before{
+  @include timeline-item;
+  content: '';
+  background: url("../images/icons/clock-white.svg") center center / 0.8em 0.8em no-repeat, $p2pu-yellow;
+}
+
+.lc-timeline .item.pending .icon::before{
+  @include timeline-item;
+  content: '';
+  background: url("../images/icons/clock-white.svg") center center / 0.8em 0.8em no-repeat, $primary;
+}
+
+.lc-timeline .item.whoohoo .icon::before{
+  @include timeline-item;
+  content: '';
+  background: url("../images/icons/firework.svg") center center / 1em 1em no-repeat, white;
+  border: 1px solid $primary;
+}
+
+.lc-timeline .item .card {
+  margin-left: 2em;
+}
+
+.retable-heading {
+  font-weight: 600;
+  border-bottom: 2px solid $gray-300;
+}
+
+
+.retable-row {
+  padding: 0.5em 0;
+  border-bottom: 1px solid $gray-300;
+}
+
+.learner-signup-info{
+  background: $gray-lighter;
+  padding: 1em !important;
+}

@@ -22,6 +22,8 @@ import datetime
 import pytz
 import json
 import uuid
+import random
+import string
 
 
 # TODO remove organizer model - only use Facilitator model + Team Membership
@@ -189,7 +191,7 @@ class StudyGroup(LifeTimeTrackingModel):
             "day": sg.day(),
             "end_time": sg.end_time(),
             "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
-            "signup_count": sg.application_set.count(),
+            "signup_count": sg.application_set.active().count(),
             "draft": sg.draft,
             "url": reverse('studygroups_view_study_group', args=(sg.id,)),
             "signup_url": reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
@@ -238,6 +240,13 @@ class Application(LifeTimeTrackingModel):
             goal = goal.replace('Other: ', '')
         return goal
 
+    def anonymize(self):
+        self.mobile = ''
+        self.name = 'Anonymous ' + random.choice(['Penguin', 'Albatross', 'Elephant', 'Dassie', 'Lion', 'Sponge', 'Giraffe', 'Hippo', 'Leopard', 'Buffalo', 'Crab', 'Snail'])
+        email_part = "".join([random.choice(string.digits+string.ascii_letters) for i in range(12)])
+        self.email = 'devnull.{}@localhost'.format(email_part)
+        self.save()
+
     DIGITAL_LITERACY_QUESTIONS = {
         'use_internet': _('How comfortable are you using the internet?'),
         'send_email': _('Send an email'),
@@ -280,11 +289,20 @@ class Meeting(LifeTimeTrackingModel):
         start = tz.localize(datetime.datetime.combine(self.meeting_date, self.meeting_time))
         return start + datetime.timedelta(minutes=self.study_group.duration)
 
+
+    def send_reminder_at(self):
+        return self.meeting_datetime() - datetime.timedelta(days=2)
+
+
     def rsvps(self):
+        rsvp_set = self.rsvp_set.all().select_related('application').order_by('application__name')
         return {
-            'yes': self.rsvp_set.all().filter(attending=True),
-            'no': self.rsvp_set.all().filter(attending=False)
+            'yes': rsvp_set.filter(attending=True),
+            'no': rsvp_set.filter(attending=False),
         }
+
+    def rsvp_pending(self):
+        return self.study_group.application_set.active().exclude(id__in=self.rsvp_set.all().values('application_id')).order_by('name')
 
     def rsvp_yes_link(self, email):
         base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
@@ -330,6 +348,10 @@ class Reminder(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     sent_at = models.DateTimeField(blank=True, null=True)
+
+    def sent_at_tz(self):
+        tz = pytz.timezone(self.study_group.timezone)
+        return self.sent_at.astimezone(tz)
 
 
 class Rsvp(models.Model):

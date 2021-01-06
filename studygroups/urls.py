@@ -45,6 +45,7 @@ from studygroups.views import DigestGenerateView
 from studygroups.views import FacilitatorDashboard
 from studygroups.views import OrganizerGuideForm
 from studygroups.views import TeamUpdate
+from studygroups.views import MessageView
 
 from . import views
 
@@ -76,6 +77,8 @@ urlpatterns = [
     url(r'^studygroup/(?P<study_group_id>[\d]+)/message/compose/$', views.message_send, name='studygroups_message_send'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/message/edit/(?P<message_id>[\d]+)/$', views.message_edit, name='studygroups_message_edit'),
 
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/message/(?P<pk>[\d]+)/$', MessageView.as_view(), name='studygroups_message_view'),
+
     url(r'^studygroup/(?P<study_group_id>[\d]+)/member/add/$', views.add_member, name='studygroups_add_member'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/member/(?P<pk>[0-9]+)/edit/$', ApplicationUpdate.as_view(), name='studygroups_application_edit'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/member/(?P<pk>[0-9]+)/delete/$', ApplicationDelete.as_view(), name='studygroups_application_delete'),
@@ -89,8 +92,8 @@ urlpatterns = [
     url(r'^studygroup/(?P<study_group_id>[\w-]+)/report/$', StudyGroupFinalReport.as_view(), name='studygroups_final_report'),
 
     # views regarding study group meetings
-    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[\d]+)/edit/$', MeetingUpdate.as_view(), name='studygroups_edit_study_group_meeting'),
-    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/create/$', MeetingCreate.as_view(), name='studygroups_create_study_group_meeting'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[\d]+)/edit/$', MeetingUpdate.as_view(), name='studygroups_meeting_edit'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/create/$', MeetingCreate.as_view(), name='studygroups_meeting_create'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[0-9]+)/delete/$', MeetingDelete.as_view(), name='studygroups_meeting_delete'),
 
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/(?P<pk>[\d]+)/$', FeedbackDetail.as_view(), name='studygroups_feedback_detail'),
@@ -103,6 +106,7 @@ urlpatterns = [
     url(r'^course/(?P<pk>[\d]+)/delete/$', CourseDelete.as_view(), name='studygroups_course_delete'),
     url(r'^course/(?P<course_id>[\d]+)/discourse_topic/$', views.generate_course_discourse_topic, name='studygroups_generate_course_discourse_topic'),
 
+    # TODO redirect this view to /
     url(r'^facilitator/$', views.facilitator, name='studygroups_facilitator_deprecated'),
     url(r'^facilitator/team-invitation/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm'),
     url(r'^facilitator/team-invitation/(?P<invitation_id>[\d]+)/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm'),
