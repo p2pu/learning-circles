@@ -206,14 +206,24 @@ class TestLearnerViews(TestCase):
 
     def test_unapply(self):
         c = Client()
-        resp = c.post('/en/signup/foo-bob-1/', self.APPLICATION_DATA)
+        data = self.APPLICATION_DATA.copy()
+        data['mobile'] = '+12812347890'
+        resp = c.post('/en/signup/foo-bob-1/', data)
         self.assertRedirects(resp, '/en/signup/1/success/')
         self.assertEqual(Application.objects.active().count(), 1)
         app = Application.objects.active().first()
         url = app.unapply_link().replace('{0}/'.format(settings.DOMAIN), '/')
-        resp = c.post(url)
+        user, sig = url.split('?')[1].split('&')
+        user = user.replace('user=', '')
+        sig = sig.replace('sig=', '')
+        resp = c.post(url, {'user': user, 'sig': sig})
         self.assertRedirects(resp, '/en/')
         self.assertEqual(Application.objects.active().count(), 0)
+        app.refresh_from_db()
+        self.assertNotEqual(app.deleted_at, None)
+        self.assertEqual('Anonymous', app.name.split(' ')[0])
+        self.assertEqual('', app.mobile)
+        self.assertIn('devnull', app.email)
 
 
     def test_receive_sms(self):
