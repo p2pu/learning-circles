@@ -138,16 +138,20 @@ def signup(request, location, study_group_id):
 
 
 def optout_confirm(request):
+    # TODO this should have an option for both single opt out and multiple opt out
     if request.method == 'GET':
         user = request.GET.get('user')
         sig = request.GET.get('sig')
         form = OptOutConfirmationForm(initial={'user': user, 'sig': sig})
         return render(request, 'studygroups/optout_confirm.html', {'form': form})
 
-    form = OptOutConfirmationForm(request.POST)
+    form = OptOutConfirmationForm(request.POST,
+        initial={'user': request.GET.get('user'), 'sig': request.GET.get('sig')}
+    )
     if form.is_valid():
         user = form.cleaned_data['user']
         sig = form.cleaned_data['sig']
+
         # Generator for conditions
         def conditions():
             yield user
@@ -155,8 +159,10 @@ def optout_confirm(request):
             yield check_unsubscribe_signature(user, sig)
  
         if all(conditions()):
-            signup = Application.objects.active().filter(pk=user)
-            signup.delete() # TODO hard delete or anonymize
+            signups = Application.objects.active().filter(pk=user)
+            for signup in signups:
+                signup.anonymize()
+            signups.delete()
             messages.success(request, _('You successfully opted out of the learning circle.'))
             url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)

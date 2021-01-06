@@ -22,6 +22,8 @@ import datetime
 import pytz
 import json
 import uuid
+import random
+import string
 
 
 # TODO remove organizer model - only use Facilitator model + Team Membership
@@ -237,6 +239,13 @@ class Application(LifeTimeTrackingModel):
         if goal:
             goal = goal.replace('Other: ', '')
         return goal
+
+    def anonymize(self):
+        self.mobile = ''
+        self.name = 'Anonymous ' + random.choice(['Penguin', 'Albatross', 'Elephant', 'Dassie', 'Lion', 'Sponge', 'Giraffe', 'Hippo', 'Leopard', 'Buffalo', 'Crab', 'Snail'])
+        email_part = "".join([random.choice(string.digits+string.ascii_letters) for i in range(12)])
+        self.email = 'devnull.{}@localhost'.format(email_part)
+        self.save()
 
     DIGITAL_LITERACY_QUESTIONS = {
         'use_internet': _('How comfortable are you using the internet?'),

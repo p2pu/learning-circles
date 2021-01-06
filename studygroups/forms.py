@@ -170,6 +170,10 @@ class OptOutForm(forms.Form):
                 application.delete()
 
 
+class OptOutConfirmationForm(forms.Form):
+    user = forms.CharField(widget=forms.HiddenInput())
+    sig = forms.CharField(widget=forms.HiddenInput())
+
 
 class CourseForm(forms.ModelForm):
     language = forms.ChoiceField(choices=LANGUAGE_CHOICES, initial='en')
