@@ -211,7 +211,10 @@ class TestLearnerViews(TestCase):
         self.assertEqual(Application.objects.active().count(), 1)
         app = Application.objects.active().first()
         url = app.unapply_link().replace('{0}/'.format(settings.DOMAIN), '/')
-        resp = c.post(url)
+        user, sig = url.split('?')[1].split('&')
+        user = user.replace('user=', '')
+        sig = sig.replace('sig=', '')
+        resp = c.post(url, {'user': user, 'sig': sig})
         self.assertRedirects(resp, '/en/')
         self.assertEqual(Application.objects.active().count(), 0)
 
