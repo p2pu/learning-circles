@@ -252,9 +252,9 @@
             {% if learner.mobile %}</br>{{learner.mobile}}{% endif %}
           </div>
           <div class="col-lg-3">
-            <a class="p2pu-btn btn-primary" href="{% url 'studygroups_application_edit' study_group.id learner.id %}"><i class="fa fa-edit"></i></a>
-            <a class="p2pu-btn btn-primary" href="{% url 'studygroups_application_delete' study_group.id learner.id %}"><i class="fa fa-trash"></i></a>
-            <a class="p2pu-btn btn-info" data-toggle="collapse" href="#collapse-signup-{{learner.id}}" role="button" aria-expanded="true" aria-controls="collapse-signup-{{learner.id}}"><i class="fa fa-info"></i></a>
+            <a class="btn-icon p2pu-btn btn-primary" href="{% url 'studygroups_application_edit' study_group.id learner.id %}"><i class="fa fa-edit"></i></a>
+            <a class="btn-icon p2pu-btn btn-primary" href="{% url 'studygroups_application_delete' study_group.id learner.id %}"><i class="fa fa-trash"></i></a>
+            <a class="btn-icon p2pu-btn btn-info" data-toggle="collapse" href="#collapse-signup-{{learner.id}}" role="button" aria-expanded="true" aria-controls="collapse-signup-{{learner.id}}"><i class="fa fa-info"></i></a>
           </div>
           <div class="col-12 collapse learner-signup-info" id="collapse-signup-{{learner.id}}">
             <p><strong>Goal</strong><br/>
