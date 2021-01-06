@@ -124,6 +124,7 @@ class MeetingCreate(FacilitatorRedirectMixin, CreateView):
         study_group = get_object_or_404(StudyGroup, pk=study_group_id)
         return {
             'study_group': study_group,
+            'meeting_time': study_group.meeting_time,
         }
 
 
