@@ -389,7 +389,7 @@ class StudyGroupForm(forms.ModelForm):
 
 
 class MeetingForm(forms.ModelForm):
-    meeting_time = forms.TimeField(input_formats=['%I:%M %p'], initial=datetime.time(16))
+    meeting_time = forms.TimeField(input_formats=['%I:%M %p'])
     class Meta:
         model = Meeting
         fields = ['meeting_date', 'meeting_time', 'study_group']
