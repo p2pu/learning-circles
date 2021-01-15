@@ -33,45 +33,59 @@ import os
 logger = logging.getLogger(__name__)
 
 
+def generate_meeting_reminder(meeting):
+    if Reminder.objects.filter(study_group_meeting=meeting).exists():
+        return None
+
+    reminder = Reminder()
+    reminder.study_group = meeting.study_group
+    reminder.study_group_meeting = meeting
+    context = {
+        'facilitator': meeting.study_group.facilitator,
+        'study_group': meeting.study_group,
+        'next_meeting': meeting,
+        'reminder': reminder,
+    }
+    # TODO remove this logic
+    previous_meeting = meeting.study_group.meeting_set.filter(meeting_date__lt=meeting.meeting_date).order_by('meeting_date').last()
+    if previous_meeting and previous_meeting.feedback_set.first():
+        context['feedback'] = previous_meeting.feedback_set.first()
+    timezone.activate(pytz.timezone(meeting.study_group.timezone))
+    with use_language(meeting.study_group.language):
+        reminder.email_subject = render_to_string_ctx(
+            'studygroups/email/reminder-subject.txt',
+            context
+        ).strip('\n')
+        reminder.email_body = render_to_string_ctx(
+            'studygroups/email/reminder.txt',
+            context
+        )
+        reminder.sms_body = render_to_string_ctx(
+            'studygroups/email/sms.txt',
+            context
+        )
+    # TODO - handle SMS reminders that are too long
+    if len(reminder.sms_body) > 160:
+        logger.error('SMS body too long: ' + reminder.sms_body)
+    reminder.sms_body = reminder.sms_body[:160]
+    reminder.save()
+    return reminder
+
+
 def generate_reminder(study_group):
     now = timezone.now()
     next_meeting = study_group.next_meeting()
     # TODO reminder generation code should be moved to models, only sending facilitator notification should be here
     if next_meeting and next_meeting.meeting_datetime() - now < datetime.timedelta(days=4):
         # check if a notifcation already exists for this meeting
-        if not Reminder.objects.filter(study_group=study_group, study_group_meeting=next_meeting).exists():
-            reminder = Reminder()
-            reminder.study_group = study_group
-            reminder.study_group_meeting = next_meeting
+        reminder = generate_meeting_reminder(next_meeting)
+        if reminder:
             context = {
                 'facilitator': study_group.facilitator,
                 'study_group': study_group,
                 'next_meeting': next_meeting,
                 'reminder': reminder,
             }
-            previous_meeting = study_group.meeting_set.filter(meeting_date__lt=next_meeting.meeting_date).order_by('meeting_date').last()
-            if previous_meeting and previous_meeting.feedback_set.first():
-                context['feedback'] = previous_meeting.feedback_set.first()
-            timezone.activate(pytz.timezone(study_group.timezone))
-            with use_language(study_group.language):
-                reminder.email_subject = render_to_string_ctx(
-                    'studygroups/email/reminder-subject.txt',
-                    context
-                ).strip('\n')
-                reminder.email_body = render_to_string_ctx(
-                    'studygroups/email/reminder.txt',
-                    context
-                )
-                reminder.sms_body = render_to_string_ctx(
-                    'studygroups/email/sms.txt',
-                    context
-                )
-            # TODO - handle SMS reminders that are too long
-            if len(reminder.sms_body) > 160:
-                logger.error('SMS body too long: ' + reminder.sms_body)
-            reminder.sms_body = reminder.sms_body[:160]
-            reminder.save()
-
             with use_language(reminder.study_group.language):
                 facilitator_notification_subject = _('A reminder for %(studygroup_name)s was generated' % {"studygroup_name": study_group.name})
                 facilitator_notification_html = render_html_with_css(
@@ -82,7 +96,6 @@ def generate_reminder(study_group):
                     'studygroups/email/reminder_notification.txt',
                     context
                 )
-
             timezone.deactivate()
             to = [study_group.facilitator.email]
             notification = EmailMultiAlternatives(
