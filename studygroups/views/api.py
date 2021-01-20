@@ -596,10 +596,26 @@ def _studygroup_check(studygroup_id):
     else:
         return StudyGroup.objects.get(pk=int(studygroup_id)), None
 
+
 def _venue_name_check(venue_name):
     if len(slugify(venue_name, allow_unicode=True)):
         return venue_name, None
     return None, 'Venue name should include at least one alpha-numeric character.'
+
+
+def _meetings_validator(meetings):
+    meeting_schema = schema.schema({   
+        "meeting_date": schema.date(),
+        "meeting_time": schema.time()
+    })
+    results = list(map(meeting_schema, meetings))
+    errors = list(filter(lambda x: x, map(lambda x: x[1], results)))
+    mtngs = list(map(lambda x: x[0], results))
+    if errors:
+        return None, 'Invalid meeting data'
+    else:
+        return mtngs, None
+
 
 def _make_learning_circle_schema(request):
     post_schema = {
@@ -642,7 +658,7 @@ def _make_learning_circle_schema(request):
             _image_check(),
         ], required=False),
         "draft": schema.boolean(),
-        "meetings": schema.text(required=False)
+        "meetings": _meetings_validator,
     }
     return post_schema
 
