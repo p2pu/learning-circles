@@ -33,40 +33,6 @@ import os
 logger = logging.getLogger(__name__)
 
 
-def send_reminder_notification(study_group):
-    # TODO rework this logic to send a wrapup message
-    return
-    now = timezone.now()
-    next_meeting = study_group.next_meeting()
-    if next_meeting and next_meeting.meeting_datetime() - now < datetime.timedelta(days=4):
-        context = {
-            'facilitator': study_group.facilitator,
-            'study_group': study_group,
-            'next_meeting': next_meeting,
-            'reminder': reminder,
-        }
-        with use_language(reminder.study_group.language):
-            facilitator_notification_subject = _('A reminder for %(studygroup_name)s was generated' % {"studygroup_name": study_group.name})
-            facilitator_notification_html = render_html_with_css(
-                'studygroups/email/reminder_notification.html',
-                context
-            )
-            facilitator_notification_txt = render_to_string_ctx(
-                'studygroups/email/reminder_notification.txt',
-                context
-            )
-        timezone.deactivate()
-        to = [study_group.facilitator.email]
-        notification = EmailMultiAlternatives(
-            facilitator_notification_subject,
-            facilitator_notification_txt,
-            settings.DEFAULT_FROM_EMAIL,
-            to
-        )
-        notification.attach_alternative(facilitator_notification_html, 'text/html')
-        notification.send()
-
-
 def _send_facilitator_survey(study_group):
     facilitator_name = study_group.facilitator.first_name
     path = reverse('studygroups_facilitator_survey', kwargs={'study_group_uuid': study_group.uuid})
@@ -586,14 +552,6 @@ def send_reminders():
         meeting_datetime = reminder.study_group_meeting.meeting_datetime()
         if reminder.study_group_meeting and meeting_datetime - now < datetime.timedelta(days=2) and meeting_datetime > now:
             send_reminder(reminder)
-
-
-# TODO this task should be changed to send a meeting wrapup message
-@shared_task
-def gen_reminders():
-    for study_group in StudyGroup.objects.published():
-        translation.activate(settings.LANGUAGE_CODE)
-        send_reminder_notification(study_group)
 
 
 @shared_task
