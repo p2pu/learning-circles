@@ -11,6 +11,8 @@ from django_bleach.models import BleachField
 
 from studygroups.utils import gen_unsubscribe_querystring
 from studygroups.utils import gen_rsvp_querystring
+from studygroups.utils import render_to_string_ctx
+from studygroups.utils import use_language
 
 from .base import SoftDeleteQuerySet
 from .base import LifeTimeTrackingModel
@@ -276,6 +278,23 @@ class Meeting(LifeTimeTrackingModel):
     meeting_date = models.DateField()
     meeting_time = models.TimeField()
 
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            created = True
+        else:
+            created = False
+        super().save(*args, **kwargs)
+        if created:
+            # generate reminder
+            generate_meeting_reminder(self)
+        elif self.deleted_at:
+            self.reminder_set.all().delete()
+        else:
+            # update reminder if meeting is in the future
+            # if the reminder has already been sent, send a meeting change notification
+            pass
+
+
     def meeting_number(self):
         # TODO this will break for two meetings on the same day
         return Meeting.objects.active().filter(meeting_date__lte=self.meeting_date, study_group=self.study_group).count()
@@ -352,6 +371,43 @@ class Reminder(models.Model):
     def sent_at_tz(self):
         tz = pytz.timezone(self.study_group.timezone)
         return self.sent_at.astimezone(tz)
+
+
+def generate_meeting_reminder(meeting):
+    if Reminder.objects.filter(study_group_meeting=meeting).exists():
+        return None
+
+    reminder = Reminder()
+    reminder.study_group = meeting.study_group
+    reminder.study_group_meeting = meeting
+    context = {
+        'facilitator': meeting.study_group.facilitator,
+        'study_group': meeting.study_group,
+        'next_meeting': meeting,
+        'reminder': reminder,
+    }
+    timezone.activate(pytz.timezone(meeting.study_group.timezone))
+    with use_language(meeting.study_group.language):
+        reminder.email_subject = render_to_string_ctx(
+            'studygroups/email/reminder-subject.txt',
+            context
+        ).strip('\n')
+        reminder.email_body = render_to_string_ctx(
+            'studygroups/email/reminder.txt',
+            context
+        )
+        reminder.sms_body = render_to_string_ctx(
+            'studygroups/email/sms.txt',
+            context
+        )
+    # TODO - handle SMS reminders that are too long
+    if len(reminder.sms_body) > 160:
+        logger.error('SMS body too long: ' + reminder.sms_body)
+    reminder.sms_body = reminder.sms_body[:160]
+    reminder.save()
+    return reminder
+
+
 
 
 class Rsvp(models.Model):

@@ -138,6 +138,7 @@ class MeetingUpdate(FacilitatorRedirectMixin, UpdateView):
         # self.object contains updated values, but not yet saved
         # self.object have been updated by the form :(
         if self.object.reminder_set.count() == 1:
+            # TODO this logic needs to be revisited
             reminder = self.object.reminder_set.first()
             if not reminder.sent_at:
                 # The reminder will be generated again if the meeting is still in the future
@@ -529,7 +530,6 @@ def message_send(request, study_group_id):
 
 
 @user_is_group_facilitator
-@study_group_is_published
 def message_edit(request, study_group_id, message_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
     reminder = get_object_or_404(Reminder, pk=message_id)
