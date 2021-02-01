@@ -604,6 +604,8 @@ def _venue_name_check(venue_name):
 
 
 def _meetings_validator(meetings):
+    if len(meetings) == 0:
+        return None, 'Need to specify at least one meeting'
     meeting_schema = schema.schema({   
         "meeting_date": schema.date(),
         "meeting_time": schema.time()
@@ -642,11 +644,6 @@ def _make_learning_circle_schema(request):
         "place_id": schema.text(length=256),
         "language": schema.text(required=True, length=6),
         "online": schema.boolean(),
-        "start_date": schema.date(required=True), # TODO 
-        "weeks": schema.chain([ # TODO
-            schema.integer(required=True),
-            lambda v: (None, 'Need to be at least 1') if v < 1 else (v, None),
-        ]),
         "meeting_time": schema.time(required=True),
         "duration": schema.integer(required=True),
         "timezone": schema.text(required=True, length=128),
@@ -673,8 +670,9 @@ class LearningCircleCreateView(View):
             logger.debug('schema error {0}'.format(json.dumps(errors)))
             return json_response(request, {"status": "error", "errors": errors})
 
-        # TODO start and end dates need to be set for db model to be valid
-        end_date = data.get('start_date') + datetime.timedelta(weeks=data.get('weeks') - 1)
+        # start and end dates need to be set for db model to be valid
+        start_date = data.get('meetings')[0].get('meeting_date')
+        end_date = data.get('meetings')[-1].get('meeting_date')
 
         # create learning circle
         study_group = StudyGroup(
@@ -696,7 +694,7 @@ class LearningCircleCreateView(View):
             place_id=data.get('place_id', ''),
             online=data.get('online', False),
             language=data.get('language'),
-            start_date=data.get('start_date'),
+            start_date=start_date,
             end_date=end_date,
             meeting_time=data.get('meeting_time'),
             duration=data.get('duration'),
