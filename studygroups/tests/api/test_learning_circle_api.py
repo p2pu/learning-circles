@@ -51,8 +51,10 @@ class TestLearningCircleApi(TestCase):
             "place_id": "1",
             "online": "false",
             "language": "en",
-            "start_date": "2018-02-12",
-            "weeks": 2,
+            "meetings": [
+                { "meeting_date": "2018-02-12", "meeting_time": "17:01" },
+                { "meeting_date": "2018-02-19", "meeting_time": "17:01" },
+            ],
             "meeting_time": "17:01",
             "duration": 50,
             "timezone": "UTC",
@@ -77,7 +79,7 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(lc.course_description, 'A real great course')
         self.assertEqual(lc.start_date, datetime.date(2018,2,12))
         self.assertEqual(lc.meeting_time, datetime.time(17,1))
-        self.assertEqual(lc.meeting_set.all().count(), 0)
+        self.assertEqual(lc.meeting_set.all().count(), 2)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.name, lc.city))
         self.assertIn('faci@example.net', mail.outbox[0].to)
@@ -102,8 +104,10 @@ class TestLearningCircleApi(TestCase):
             "place_id": "1",
             "online": "false",
             "language": "en",
-            "start_date": "2018-02-12",
-            "weeks": 2,
+            "meetings": [
+                { "meeting_date": "2018-02-12", "meeting_time": "17:01" },
+                { "meeting_date": "2018-02-19", "meeting_time": "17:01" },
+            ],
             "meeting_time": "17:01",
             "duration": 50,
             "timezone": "UTC",
@@ -149,9 +153,7 @@ class TestLearningCircleApi(TestCase):
             "place_id": "1",
             "online": "false",
             "language": "en",
-            "start_date": "2018-02-12",
             "facilitator_concerns": "blah blah",
-            "weeks": 2,
             "meeting_time": "17:01",
             "duration": 50,
             "timezone": "UTC",
@@ -205,8 +207,6 @@ class TestLearningCircleApi(TestCase):
             "latitude": 3.1,
             "longitude": "1.3",
             "language": "en",
-            "start_date": "2018-02-12",
-            "weeks": 2,
             "meeting_time": "17:01",
             "duration": 50,
             "timezone": "UTC",
@@ -247,8 +247,6 @@ class TestLearningCircleApi(TestCase):
             "place_id": "1",
             "online": "false",
             "language": "en",
-            "start_date": "2018-02-12",
-            "weeks": 2,
             "meeting_time": "17:01",
             "duration": 50,
             "timezone": "UTC",
@@ -346,8 +344,6 @@ class TestLearningCircleApi(TestCase):
             "place_id": "4",
             "online": "false",
             "language": "en",
-            "start_date": "2018-02-12",
-            "weeks": 2,
             "meeting_time": "17:01",
             "duration": 50,
             "timezone": "UTC",
@@ -410,8 +406,6 @@ class TestLearningCircleApi(TestCase):
             "place_id": "4",
             "online": "false",
             "language": "en",
-            "start_date": "2018-12-15",
-            "weeks": 2,
             "meeting_time": "17:01",
             "duration": 50,
             "timezone": "UTC",
@@ -438,7 +432,6 @@ class TestLearningCircleApi(TestCase):
 
         # update more than 2 days before start
         with freeze_time("2018-12-12"):
-            data['start_date'] = '2018-12-20'
             data['meetings'] = [
                 { "meeting_date": "2018-12-20", "meeting_time": "17:01" },
                 { "meeting_date": "2018-12-27", "meeting_time": "17:01" },
@@ -477,8 +470,6 @@ class TestLearningCircleApi(TestCase):
             "place_id": "4",
             "online": "false",
             "language": "en",
-            "start_date": "2018-12-15",
-            "weeks": 2,
             "meeting_time": "17:01",
             "duration": 50,
             "timezone": "UTC",
@@ -505,7 +496,6 @@ class TestLearningCircleApi(TestCase):
 
         # update less than 2 days before
         with freeze_time("2018-12-14"):
-            data['start_date'] = '2018-12-20'
             data["meetings"] = [
                 { "meeting_date": "2018-12-20", "meeting_time": "17:01" },
                 { "meeting_date": "2018-12-27", "meeting_time": "17:01" },
@@ -524,7 +514,6 @@ class TestLearningCircleApi(TestCase):
 
         # update more than 2 days before
         with freeze_time("2018-12-12"):
-            data['start_date'] = '2018-12-19'
             data["meetings"] = [
                 { "meeting_date": "2018-12-19", "meeting_time": "17:01" },
                 { "meeting_date": "2018-12-26", "meeting_time": "17:01" },
@@ -563,8 +552,6 @@ class TestLearningCircleApi(TestCase):
             "place_id": "4",
             "online": "false",
             "language": "en",
-            "start_date": "2018-02-12",
-            "weeks": 2,
             "meeting_time": "17:01",
             "duration": 50,
             "timezone": "UTC",
@@ -624,8 +611,6 @@ class TestLearningCircleApi(TestCase):
             "place_id": "4",
             "online": "false",
             "language": "en",
-            "start_date": "2018-02-12",
-            "weeks": 2,
             "meeting_time": "17:01",
             "duration": 50,
             "timezone": "UTC",
@@ -675,8 +660,6 @@ class TestLearningCircleApi(TestCase):
             "place_id": "4",
             "online": "false",
             "language": "en",
-            "start_date": "2018-02-12",
-            "weeks": 2,
             "meeting_time": "17:01",
             "duration": 50,
             "timezone": "UTC",
