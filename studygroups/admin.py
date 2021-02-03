@@ -17,6 +17,10 @@ class ApplicationInline(admin.TabularInline):
     model = Application
     exclude = ['deleted_at']
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).active()
+
+
 
 class StudyGroupAdmin(admin.ModelAdmin):
     inlines = [ApplicationInline]
@@ -67,6 +71,9 @@ class StudyGroupInline(admin.TabularInline):
     model = StudyGroup
     fields = ['venue_name', 'city', 'start_date', 'day']
     readonly_fields = fields
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).active()
 
     def has_add_permission(self, request, obj=None):
         return False

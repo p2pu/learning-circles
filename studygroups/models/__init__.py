@@ -71,18 +71,25 @@ def create_rsvp(contact, study_group, meeting_datetime, attending):
 
 
 def generate_all_meetings(study_group):
+    # TODO this should be deprecated
+    # Something like create_weekly_meetings(sg, start, count) could replace this
     if Meeting.objects.active().filter(study_group=study_group).exists():
         raise Exception(_('Meetings already exist for this study group'))
 
     meeting_date = study_group.start_date
+    meetings = []
     while meeting_date <= study_group.end_date:
         meeting = Meeting(
             study_group=study_group,
             meeting_date=meeting_date,
             meeting_time=study_group.meeting_time
         )
-        meeting.save()
+        #meeting.save()
+        meetings += [meeting]
         meeting_date += datetime.timedelta(days=7)
+
+    for meeting in meetings:
+        meeting.save()
 
 
 def generate_meetings_from_dates(study_group, meeting_dates=[]):
