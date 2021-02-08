@@ -60,9 +60,9 @@ class StudyGroup(LifeTimeTrackingModel):
     place_id = models.CharField(max_length=256, blank=True)  # Algolia place_id
     online = models.BooleanField(default=False) # indicate if the meetings will take place online
     facilitator = models.ForeignKey(User, on_delete=models.CASCADE)
-    start_date = models.DateField()
-    meeting_time = models.TimeField()
-    end_date = models.DateField()  # TODO remove end date and rely on associated meetings
+    start_date = models.DateField() # This field caches first_meeting.meeting_date
+    meeting_time = models.TimeField() # This field caches last_meeting.meeting_date
+    end_date = models.DateField()
     duration = models.PositiveIntegerField(default=90)  # meeting duration in minutes
     timezone = models.CharField(max_length=128)
     signup_open = models.BooleanField(default=True)
@@ -275,6 +275,12 @@ class Meeting(LifeTimeTrackingModel):
     study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE)
     meeting_date = models.DateField()
     meeting_time = models.TimeField()
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.study_group.start_date = self.study_group.first_meeting().meeting_date
+        self.study_group.end_date = self.study_group.last_meeting().meeting_date
+        self.study_group.save()
 
     def meeting_number(self):
         # TODO this will break for two meetings on the same day

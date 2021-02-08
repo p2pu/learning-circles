@@ -17,6 +17,10 @@ class ApplicationInline(admin.TabularInline):
     model = Application
     exclude = ['deleted_at']
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).active()
+
+
 
 class StudyGroupAdmin(admin.ModelAdmin):
     inlines = [ApplicationInline]
@@ -61,12 +65,16 @@ def reminder_course_title(obj):
 
 class ReminderAdmin(admin.ModelAdmin):
     list_display = [reminder_course_title, 'email_subject', 'sent_at']
+    raw_id_fields = ['study_group', 'study_group_meeting']
 
 
 class StudyGroupInline(admin.TabularInline):
     model = StudyGroup
     fields = ['venue_name', 'city', 'start_date', 'day']
     readonly_fields = fields
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).active()
 
     def has_add_permission(self, request, obj=None):
         return False
@@ -109,9 +117,14 @@ class ProfileAdmin(admin.ModelAdmin):
     search_fields = ['user__email']
 
 
+class MeetingAdmin(admin.ModelAdmin):
+    raw_id_fields = ['study_group']
+    exclude = []
+
+
 admin.site.register(Course, CourseAdmin)
 admin.site.register(StudyGroup, StudyGroupAdmin)
-admin.site.register(Meeting)
+admin.site.register(Meeting, MeetingAdmin)
 admin.site.register(Application, ApplicationAdmin)
 admin.site.register(Reminder, ReminderAdmin)
 admin.site.register(Team, TeamAdmin)

@@ -130,6 +130,7 @@ def serialize_learning_circle(sg):
         "start_datetime": sg.local_start_date(),
         "meeting_time": sg.meeting_time,
         "time_zone": sg.timezone_display(),
+        "last_meeting_date": sg.end_date, # TODO rename to end_date or last_meeting_date - ie make consistent
         "end_time": sg.end_time(),
         "weeks": sg.weeks if sg.draft else sg.meeting_set.active().count(), # TODO
         "url": f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
@@ -137,23 +138,16 @@ def serialize_learning_circle(sg):
         "studygroup_path": reverse('studygroups_view_study_group', args=(sg.id,)),
         "draft": sg.draft,
         "signup_count": sg.application_set.active().count(),
-        "signup_open": sg.signup_open,
+        "signup_open": sg.signup_open and sg.end_date > datetime.date.today(),
     }
 
-    if hasattr(sg, 'last_meeting_date'):
-        # NOTE: consider adding a custom manager to StudyGroup to ensure last_meeting_date
-        # annotation is always present (https://stackoverflow.com/questions/42519663/adding-annotations-to-all-querysets-with-a-custom-queryset-as-manager)
-        data["last_meeting_date"] = sg.last_meeting_date,
-        data['signup_open'] = sg.signup_open and sg.last_meeting_date and sg.last_meeting_date > datetime.date.today()
     if sg.image:
         data["image_url"] = settings.PROTOCOL + '://' + settings.DOMAIN + sg.image.url
     # TODO else set default image URL
-    if hasattr(sg, 'next_meeting_date'):
-        data["next_meeting_date"] = sg.next_meeting_date
-    if hasattr(sg, 'last_meeting_date'):
-        data["last_meeting_date"] = sg.last_meeting_date
     if sg.signup_question:
         data["signup_question"] = sg.signup_question
+    if hasattr(sg, 'next_meeting_date'):
+        data["next_meeting_date"] = sg.next_meeting_date
     if hasattr(sg, 'status'):
         data["status"] = sg.status
     return data
@@ -217,31 +211,18 @@ class LearningCircleListView(View):
 
         today = datetime.date.today()
         active_meetings = Meeting.objects.filter(study_group=OuterRef('pk'), deleted_at__isnull=True).order_by('meeting_date')
+        # TODO status is being used by the learning circle search page?
         study_groups = study_groups.annotate(
-            last_meeting_date_value=Subquery(active_meetings.reverse().values('meeting_date')[:1]),
-            first_meeting_date_value=Subquery(active_meetings.values('meeting_date')[:1])
-        ).annotate(
-            last_meeting_date=Case(
-                When(last_meeting_date_value__isnull=True, then='start_date'),
-                default=F('last_meeting_date_value'),
-                output_field=CharField(),
-            ),
-            first_meeting_date=Case(
-                When(first_meeting_date_value__isnull=True, then='start_date'),
-                default=F('first_meeting_date_value'),
-                output_field=CharField(),
-            )
-        ).annotate(
             status=Case(
-                When(signup_open=True, first_meeting_date__gt=today, then=Value('upcoming')),
-                When(signup_open=True, first_meeting_date__lte=today, last_meeting_date__gte=today, then=Value('in_progress')),
-                When(signup_open=False, last_meeting_date__gte=today, then=Value('closed')),
-                When(last_meeting_date__lt=today, then=Value('completed')),
+                When(signup_open=True, start_date__gt=today, then=Value('upcoming')),
+                When(signup_open=True, start_date__lte=today, end_date__gte=today, then=Value('in_progress')),
+                When(signup_open=False, end_date__gte=today, then=Value('closed')),
                 default=Value('completed'),
                 output_field=CharField(),
             ),
         )
 
+        # TODO scope is used by dashboard?
         if 'scope' in request.GET:
             scope = request.GET.get('scope')
             upcoming_meetings = Meeting.objects.filter(study_group=OuterRef('pk'), deleted_at__isnull=True, meeting_date__gte=today).order_by('meeting_date')
@@ -249,18 +230,18 @@ class LearningCircleListView(View):
             if scope == "active":
                 study_groups = study_groups\
                 .annotate(next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
-                .filter(Q(last_meeting_date__gte=today) | Q(draft=True))
+                .filter(Q(end_date__gte=today) | Q(draft=True))
             elif scope == "upcoming":
                 study_groups = study_groups\
                 .annotate(next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
-                .filter(Q(first_meeting_date__gt=today) | Q(draft=True))
+                .filter(Q(start_date__gt=today) | Q(draft=True))
             elif scope == "current":
                 study_groups = study_groups\
                 .annotate(next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
-                .filter(first_meeting_date__lte=today, last_meeting_date__gte=today)
+                .filter(start_date__lte=today, end_date__gte=today)
             elif scope == "completed":
                 study_groups = study_groups\
-                .filter(last_meeting_date__lt=today)
+                .filter(end_date__lt=today)
 
         q = request.GET.get('q', '').strip()
 
@@ -298,12 +279,13 @@ class LearningCircleListView(View):
             team_users = User.objects.filter(pk__in=members)
             study_groups = study_groups.filter(facilitator__in=team_users)
 
+        # TODO How is this different from scope=active?
         if 'active' in request.GET:
             active = request.GET.get('active') == 'true'
             if active:
-                study_groups = study_groups.filter(last_meeting_date__gte=today)
+                study_groups = study_groups.filter(end_date__gte=today)
             else:
-                study_groups = study_groups.filter(last_meeting_date__lt=today)
+                study_groups = study_groups.filter(end_date__lt=today)
 
         if 'latitude' in request.GET and 'longitude' in request.GET:
             # work with floats for ease
@@ -344,8 +326,8 @@ class LearningCircleListView(View):
             study_groups = study_groups.filter(query)
 
         # TODO this conflates signup open and active
-        study_groups_signup_open = study_groups.filter(signup_open=True, last_meeting_date__gte=today)
-        study_groups_signup_closed = study_groups.filter(Q(signup_open=False) | Q(last_meeting_date__lt=today))
+        study_groups_signup_open = study_groups.filter(signup_open=True, end_date__gte=today)
+        study_groups_signup_closed = study_groups.filter(Q(signup_open=False) | Q(end_date__lt=today))
 
         if 'signup' in request.GET:
             signup_open = request.GET.get('signup') == 'open'
@@ -353,10 +335,6 @@ class LearningCircleListView(View):
                 study_groups = study_groups_signup_open
             else:
                 study_groups = study_groups_signup_closed
-
-        #if 'signup' in request.GET:
-        #    signup_open = request.GET.get('signup') == 'open'
-        #    study_groups = study_groups.filter(signup_open=signup_open)
 
         order = request.GET.get('order', None)
         if order == 'name':
@@ -366,9 +344,9 @@ class LearningCircleListView(View):
         elif order == 'created_at':
             study_groups = study_groups.order_by('-created_at')
         elif order == 'first_meeting_date':
-            study_groups = study_groups.order_by('first_meeting_date')
+            study_groups = study_groups.order_by('start_date')
         elif order == 'last_meeting_date':
-            study_groups = study_groups.order_by('-last_meeting_date')
+            study_groups = study_groups.order_by('-end_date')
 
         data = {
             'count': study_groups.count(),
@@ -618,10 +596,28 @@ def _studygroup_check(studygroup_id):
     else:
         return StudyGroup.objects.get(pk=int(studygroup_id)), None
 
+
 def _venue_name_check(venue_name):
     if len(slugify(venue_name, allow_unicode=True)):
         return venue_name, None
     return None, 'Venue name should include at least one alpha-numeric character.'
+
+
+def _meetings_validator(meetings):
+    if len(meetings) == 0:
+        return None, 'Need to specify at least one meeting'
+    meeting_schema = schema.schema({   
+        "meeting_date": schema.date(),
+        "meeting_time": schema.time()
+    })
+    results = list(map(meeting_schema, meetings))
+    errors = list(filter(lambda x: x, map(lambda x: x[1], results)))
+    mtngs = list(map(lambda x: x[0], results))
+    if errors:
+        return None, 'Invalid meeting data'
+    else:
+        return mtngs, None
+
 
 def _make_learning_circle_schema(request):
     post_schema = {
@@ -648,11 +644,6 @@ def _make_learning_circle_schema(request):
         "place_id": schema.text(length=256),
         "language": schema.text(required=True, length=6),
         "online": schema.boolean(),
-        "start_date": schema.date(required=True),
-        "weeks": schema.chain([
-            schema.integer(required=True),
-            lambda v: (None, 'Need to be at least 1') if v < 1 else (v, None),
-        ]),
         "meeting_time": schema.time(required=True),
         "duration": schema.integer(required=True),
         "timezone": schema.text(required=True, length=128),
@@ -664,7 +655,7 @@ def _make_learning_circle_schema(request):
             _image_check(),
         ], required=False),
         "draft": schema.boolean(),
-        "meetings": schema.text(required=False)
+        "meetings": _meetings_validator,
     }
     return post_schema
 
@@ -679,8 +670,11 @@ class LearningCircleCreateView(View):
             logger.debug('schema error {0}'.format(json.dumps(errors)))
             return json_response(request, {"status": "error", "errors": errors})
 
+        # start and end dates need to be set for db model to be valid
+        start_date = data.get('meetings')[0].get('meeting_date')
+        end_date = data.get('meetings')[-1].get('meeting_date')
+
         # create learning circle
-        end_date = data.get('start_date') + datetime.timedelta(weeks=data.get('weeks') - 1)
         study_group = StudyGroup(
             name=data.get('name', None),
             course=data.get('course'),
@@ -700,7 +694,7 @@ class LearningCircleCreateView(View):
             place_id=data.get('place_id', ''),
             online=data.get('online', False),
             language=data.get('language'),
-            start_date=data.get('start_date'),
+            start_date=start_date,
             end_date=end_date,
             meeting_time=data.get('meeting_time'),
             duration=data.get('duration'),
@@ -744,33 +738,10 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        end_date = data.get('start_date') + datetime.timedelta(weeks=data.get('weeks') - 1)
-
-        # if the date is changed, check if that is okay?
-        date_changed = any([
-            study_group.start_date != data.get('start_date'),
-            study_group.end_date != end_date,
-            study_group.meeting_time != data.get('meeting_time'),
-        ])
-
-        # check based on current value for start date
-        if date_changed and not study_group.can_update_meeting_datetime():
-            return json_response(request, {"status": "error", "errors": {"start_date": "cannot update date"}})
-
-        # check based on new value for start date
-        start_datetime = datetime.datetime.combine(
-            data.get('start_date'),
-            data.get('meeting_time')
-        )
-        tz = pytz.timezone(data.get('timezone'))
-        start_datetime = tz.localize(start_datetime)
-        if date_changed and start_datetime < timezone.now() + datetime.timedelta(days=2):
-            return json_response(request, {"status": "error", "errors": {"start_date": "The start date must be at least 2 days from today"}})
-
         # update learning circle
         published = False
-        # only publish a learning circle for a user with a verified email address
         draft = data.get('draft', True)
+        # only publish a learning circle for a user with a verified email address
         if draft is False and request.user.profile.email_confirmed_at is not None:
             published = study_group.draft is True
             study_group.draft = False
@@ -792,8 +763,6 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         study_group.place_id = data.get('place_id', '')
         study_group.language = data.get('language')
         study_group.online = data.get('online')
-        study_group.start_date = data.get('start_date')
-        study_group.end_date = end_date
         study_group.meeting_time = data.get('meeting_time')
         study_group.duration = data.get('duration')
         study_group.timezone = data.get('timezone')

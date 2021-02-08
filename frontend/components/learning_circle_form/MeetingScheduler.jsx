@@ -97,8 +97,8 @@ class MeetingScheduler extends React.Component {
     const { learningCircle } = this.props;
     const { recurrenceRules } = this.state;
 
-    if (!learningCircle['start_date']) { return }
-    const utcDate = localDateToUtcDate(learningCircle['start_date'])
+    if (learningCircle.meetings.length == 0) { return }
+    const utcDate = localDateToUtcDate(learningCircle.meetings[0])
     const count = parseInt(recurrenceRules.meeting_count) <= MAX_MEETING_COUNT && parseInt(recurrenceRules.meeting_count) >= MIN_MEETING_COUNT ? parseInt(recurrenceRules.meeting_count) : DEFAULT_MEETING_COUNT;
 
     let opts = {
@@ -148,7 +148,7 @@ class MeetingScheduler extends React.Component {
     }
 
     if (isFirstDate) {
-      this.props.updateFormData({ start_date: day, meetings: [day] })
+      this.props.updateFormData({ meetings: [day] })
 
       const weekday = WEEKDAYS[day.getDay()] ? WEEKDAYS[day.getDay()].value : null;
       this.setState({
@@ -172,7 +172,7 @@ class MeetingScheduler extends React.Component {
 
       const meetingDates = selectedDays.sort((a,b) => (a - b))
       const startDate = meetingDates[0]
-      this.props.updateFormData({ start_date: startDate, meetings: selectedDays })
+      this.props.updateFormData({ meetings: selectedDays })
     }
   }
 
@@ -187,7 +187,7 @@ class MeetingScheduler extends React.Component {
 
   clearDates = () => {
     this.setState({recurrenceRules: defaultRecurrenceRules })
-    this.props.updateFormData({ "start_date": '', meetings: [] })
+    this.props.updateFormData({ meetings: [] })
   }
 
   clearSuggestedDates = () => {
@@ -236,7 +236,7 @@ class MeetingScheduler extends React.Component {
     const { clearDates, handleChange, handleRRuleChange, handleDayClick, generateSuggestedMeetings, useSuggestedDates, clearSuggestedDates, deleteMeeting } = this;
     const { recurrenceRules, suggestedDates } = this.state;
     const { learningCircle, errors, updateFormData } = this.props;
-    const { meetings, start_date } = learningCircle;
+    const { meetings } = learningCircle;
 
     const suggestedDatesArr = suggestedDates.filter(sd => !meetings.find(m => DateUtils.isSameDay(m, sd)))
 
@@ -257,7 +257,7 @@ class MeetingScheduler extends React.Component {
     };
 
     if (learningCircle.draft == false ){
-      let {start_date, meeting_time} = this.props;
+      let {meeting_time} = this.props;
       let start_datetime = moment(learningCircle.start_datetime);
       let plus4Days = moment().add(4, 'days');
       let plus2Days = moment().add(2, 'days');
