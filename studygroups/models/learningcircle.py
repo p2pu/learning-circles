@@ -60,9 +60,9 @@ class StudyGroup(LifeTimeTrackingModel):
     place_id = models.CharField(max_length=256, blank=True)  # Algolia place_id
     online = models.BooleanField(default=False) # indicate if the meetings will take place online
     facilitator = models.ForeignKey(User, on_delete=models.CASCADE)
-    start_date = models.DateField() # This field caches first_meeting.meeting_date
-    meeting_time = models.TimeField() # This field caches last_meeting.meeting_date
-    end_date = models.DateField()
+    start_date = models.DateField()  # This field caches first_meeting.meeting_date
+    meeting_time = models.TimeField()
+    end_date = models.DateField()  # This field caches last_meeting.meeting_date
     duration = models.PositiveIntegerField(default=90)  # meeting duration in minutes
     timezone = models.CharField(max_length=128)
     signup_open = models.BooleanField(default=True)
