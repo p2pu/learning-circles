@@ -113,7 +113,7 @@
                 </div>
               {% else %}
                 <div class="meeting-item {% if meeting == study_group.next_meeting and not study_group.draft %}todo{% else %}pending{% endif %}">
-                  <p>Reminder will be sent {{meeting.send_reminder_at}}</p>
+                  <p>Reminder will be sent {{meeting.send_reminder_at}} {% if meeting.reminder_set.first %}(<a href="{% url 'studygroups_message_edit' study_group.id meeting.reminder_set.first.id %}">edit</a>){% endif %}</p>
                 </div>
               {% endif %}
               <div class="meeting-item {% if meeting.meeting_datetime < today %}done{% elif meeting.reminder_set.first.sent_at %}todo{% else %}pending{% endif %}">
