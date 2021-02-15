@@ -288,9 +288,11 @@ class Meeting(LifeTimeTrackingModel):
         self.study_group.end_date = self.study_group.last_meeting().meeting_date
         self.study_group.save()
 
+        # TODO don't generate a reminder for a meeting in the past
         if created:
             # generate reminder
-            generate_meeting_reminder(self)
+            if self.meeting_datetime() > timezone.now():
+                generate_meeting_reminder(self)
         elif self.deleted_at:
             self.reminder_set.all().delete()
         else:
@@ -313,7 +315,16 @@ class Meeting(LifeTimeTrackingModel):
 
 
     def send_reminder_at(self):
-        return self.meeting_datetime() - datetime.timedelta(days=2)
+        """ The datetime that a reminder should be sent at """
+        previous_meeting = self.study_group.meeting_set.active().filter(
+            models.Q(meeting_date__lt=self.meeting_date)
+            | models.Q(meeting_date=self.meeting_date, meeting_time__lt=self.meeting_time)
+        ).order_by('-meeting_date', '-meeting_time').first()
+        two_days_before = self.meeting_datetime() - datetime.timedelta(days=2)
+        # ensure send_at is always after previous meeting finished
+        if previous_meeting:
+            return max(two_days_before, previous_meeting.meeting_datetime() + datetime.timedelta(minutes=self.study_group.duration))
+        return two_days_before
 
 
     def rsvps(self):
@@ -365,7 +376,7 @@ class Reminder(models.Model):
     study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE)
     study_group_meeting = models.ForeignKey('studygroups.Meeting', blank=True, null=True, on_delete=models.CASCADE)  # TODO rename to meeting. Make OneToOne?
     email_subject = models.CharField(max_length=256)
-    email_body = models.TextField()
+    email_body = BleachField(max_length=4000, allowed_tags=settings.TINYMCE_DEFAULT_CONFIG.get('valid_elements', '').split(','), allowed_attributes={'a': ['href', 'title', 'rel', 'target']})
     sms_body = models.CharField(verbose_name=_('SMS (Text)'), max_length=160, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -374,6 +385,16 @@ class Reminder(models.Model):
     def sent_at_tz(self):
         tz = pytz.timezone(self.study_group.timezone)
         return self.sent_at.astimezone(tz)
+
+    def send_reminder_at(self):
+        if self.sent_at:
+            return self.sent_at_tz()
+
+        if not self.study_group_meeting:
+            # Messages shouldn't exist that hasn't been sent without an associated meeting
+            raise Exception('Data inconsistency')
+
+        return self.study_group_meeting.send_reminder_at()
 
 
 def generate_meeting_reminder(meeting):
@@ -411,8 +432,6 @@ def generate_meeting_reminder(meeting):
     return reminder
 
 
-
-
 class Rsvp(models.Model):
     study_group_meeting = models.ForeignKey('studygroups.Meeting', on_delete=models.CASCADE) # TODO rename to meeting
     application = models.ForeignKey('studygroups.Application', on_delete=models.CASCADE)
@@ -439,7 +458,7 @@ class Feedback(LifeTimeTrackingModel):
     ]
 
     study_group_meeting = models.ForeignKey('studygroups.Meeting', on_delete=models.CASCADE) # TODO should this be a OneToOneField?
-    feedback = models.TextField() # Shared with learners
+    feedback = models.TextField(blank=True) # Shared with learners. This is being deprecated, but kept for retaining past data.
     attendance = models.PositiveIntegerField()
-    reflection = models.TextField() # Not shared
+    reflection = models.TextField(blank=True) # Not shared
     rating = models.CharField(choices=RATING, max_length=16)

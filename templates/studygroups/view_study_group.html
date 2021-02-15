@@ -105,7 +105,7 @@
             <div class="collapse {% if meeting == study_group.next_meeting and not study_group.draft %}show{% endif %}" id="collapse-meeting-{{forloop.counter}}">
               {% if meeting.reminder_set.first.sent_at %}
                 <div class="meeting-item done">
-                  <p>Reminder sent {{meeting.reminder_set.first.sent_at_tz}}</p>
+                  <p>Reminder sent {{meeting.reminder_set.first.sent_at_tz}} (<a href="{% url 'studygroups_message_view' study_group.id meeting.reminder_set.first.id %}">view</a>)</p>
                 </div>
               {% elif meeting.meeting_datetime < today %}
                 <div class="meeting-item done">
@@ -160,6 +160,15 @@
 	                    </form>
                     </div>
                   {% endif %}
+                {% endif %}
+              </div>
+              <div class="meeting-item {% if meeting.meeting_datetime > today %}pending{% else %}todo{% endif %}">
+                <p>Send a meeting recap to participants<p>
+                {% if meeting.meeting_datetime < today %}
+                <div class="meeting-feedback">
+                  <p>You may want to summarize the material you covered in this meeting, feedback from participants, or any extra work the group agreed to complete before the next meeting. </p>
+                  <a class="p2pu-btn btn-primary" href="">Send follow up</a>
+                </div>
                 {% endif %}
               </div>
             </div>
@@ -279,29 +288,31 @@
       </div>
 
       <div class="card">
-        <div class="card-title">Messages</div>
+        <div class="card-title">{% trans "Messages" %}</div>
         <div class="row no-gutters retable-heading">
           <div class="col-lg-7  d-none d-lg-block">
             {% trans "Email subject" %}
           </div>
           <div class="col-lg-3 d-none d-lg-block">
-            {% trans "Sent at" %}
+            {% trans "Status" %}
           </div>
         </div>
 
-        {% for message in study_group.reminder_set.all|dictsortreversed:"created_at" %}
+        {% for message in study_group.reminder_set.all|dictsort:"send_reminder_at" %}
           <div class="row no-gutters retable-row">
             <div class="col-lg-7 pr-lg-2">
               <span class="d-lg-none"><strong>{% trans "Email subject:" %} </strong><br/></span>
               {{ message.email_subject }}
             </div>
-            <div class="col-lg-3 pr-lg-2">
+            <div class="col-lg-5 pr-lg-2">
               {% if message.sent_at %}
               <span class="d-lg-none"><strong>{% trans "Sent at:" %} </strong></span>
-              {{ message.sent_at_tz}}
+              Sent at {{ message.sent_at_tz}}
+              {% elif message.study_group_meeting %}
+              Will be sent {{ message.study_group_meeting.send_reminder_at }}
               {% endif %}
             </div>
-            <div class="col-lg-2">
+            <div class="col-lg-12">
                   {% if not message.sent_at %}
                   <a href="{% url 'studygroups_message_edit' study_group.id message.id %}" class="p2pu-btn btn-info">{% trans "Edit" %}</a>
                   {% endif %}

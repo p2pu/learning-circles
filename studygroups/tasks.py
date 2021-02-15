@@ -541,6 +541,7 @@ def send_community_digest(start_date, end_date):
 def send_reminders():
     """ Send meeting reminders """
     now = timezone.now()
+    
     # make sure both the StudyGroup and Meeting is still available
     reminders = Reminder.objects.filter(
         sent_at__isnull=True,
@@ -548,9 +549,9 @@ def send_reminders():
         study_group_meeting__in=Meeting.objects.active()
     )
     for reminder in reminders:
-        # don't send reminders older than the meeting
+        # send the reminder if now is between when it should be sent and when the meeting happens
         meeting_datetime = reminder.study_group_meeting.meeting_datetime()
-        if reminder.study_group_meeting and meeting_datetime - now < datetime.timedelta(days=2) and meeting_datetime > now:
+        if reminder.send_reminder_at() < now and now < meeting_datetime:
             send_reminder(reminder)
 
 
