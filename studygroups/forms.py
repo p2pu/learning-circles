@@ -22,7 +22,6 @@ import pytz, datetime, json
 import twilio
 
 from studygroups.models import Application
-from studygroups.models import Reminder
 from studygroups.models import StudyGroup
 from studygroups.models import Meeting
 from studygroups.models import Feedback
@@ -429,20 +428,17 @@ class FeedbackForm(forms.ModelForm):
             len(self.helper.layout),
             HTML("<p>* indicates a required field.</p>"),
         )
-        self.fields['feedback'].widget.attrs = {'rows': 3}
         self.fields['reflection'].widget.attrs = {'rows': 3}
 
     class Meta:
         model = Feedback
-        fields = ['rating', 'attendance', 'feedback', 'reflection']
+        fields = ['rating', 'attendance', 'reflection']
         labels = {
             'rating': _('Overall, how did this meeting go?'),
             'attendance': _('How many people attended?'),
-            'feedback': _('Share a summary of this meeting.'),
             'reflection': _('Anything else you want to share?'),
         }
         help_texts = {
-            'feedback': _('This will be shared with participants in the reminder message for your next meeting if it hasn\'t been sent yet. You may want to summarize the material you covered in this meeting, plus/delta feedback, or any extra work the group agreed to complete before the next meeting.'),
             'reflection': _('Need some help? Any surprises or stories you want to remember? This won\'t be shared with your participants, it will be sent to the P2PU staff and your colleagues if you\'re on a Team.'),
         }
 
