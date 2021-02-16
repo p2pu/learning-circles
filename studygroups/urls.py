@@ -46,6 +46,8 @@ from studygroups.views import FacilitatorDashboard
 from studygroups.views import OrganizerGuideForm
 from studygroups.views import TeamUpdate
 from studygroups.views import MessageView
+from studygroups.views import MeetingFollowUp
+from studygroups.views import MeetingFollowUpDismiss
 
 from . import views
 
@@ -99,6 +101,9 @@ urlpatterns = [
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/(?P<pk>[\d]+)/$', FeedbackDetail.as_view(), name='studygroups_feedback_detail'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/(?P<pk>[\d]+)/edit/$', FeedbackUpdate.as_view(), name='studygroups_feedback_edit'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/create/$', FeedbackCreate.as_view(), name='studygroups_feedback'),
+
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[\d]+)/follow_up/$', MeetingFollowUp.as_view(), name='studygroups_meeting_follow_up'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[\d]+)/follow_up/dismiss/$', MeetingFollowUpDismiss.as_view(), name='studygroups_meeting_follow_up_dismiss'),
 
     url(r'^course/create/$', CourseCreate.as_view(), name='studygroups_course_create'),
     url(r'^course/(?P<pk>[\d]+)/$', CoursePage.as_view(), name='studygroups_course_page'),

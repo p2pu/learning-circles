@@ -277,6 +277,8 @@ class Meeting(LifeTimeTrackingModel):
     study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE)
     meeting_date = models.DateField()
     meeting_time = models.TimeField()
+    follow_up = models.ForeignKey('studygroups.Reminder', null=True, blank=True, on_delete=models.SET_NULL)
+    follow_up_dismissed = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -386,13 +388,15 @@ class Reminder(models.Model):
         tz = pytz.timezone(self.study_group.timezone)
         return self.sent_at.astimezone(tz)
 
-    def send_reminder_at(self):
+    def send_at(self):
         if self.sent_at:
             return self.sent_at_tz()
 
         if not self.study_group_meeting:
             # Messages shouldn't exist that hasn't been sent without an associated meeting
-            raise Exception('Data inconsistency')
+            #raise Exception('Data inconsistency')
+            # update: unsent follow ups could match this codepath
+            return timezone.now()
 
         return self.study_group_meeting.send_reminder_at()
 

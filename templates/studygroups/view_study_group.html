@@ -162,13 +162,22 @@
                   {% endif %}
                 {% endif %}
               </div>
-              <div class="meeting-item {% if meeting.meeting_datetime > today %}pending{% else %}todo{% endif %}">
-                <p>Send a meeting recap to participants<p>
-                {% if meeting.meeting_datetime < today %}
-                <div class="meeting-feedback">
-                  <p>You may want to summarize the material you covered in this meeting, feedback from participants, or any extra work the group agreed to complete before the next meeting. </p>
-                  <a class="p2pu-btn btn-primary" href="">Send follow up</a>
-                </div>
+              <div class="meeting-item {% if meeting.meeting_datetime > today %}pending{% else %}{% if meeting.follow_up or meeting.follow_up_dismissed %}done{% else %}todo{% endif %}{% endif %}">
+                {% if meeting.follow_up %}
+                  <p>Follow up sent to learners (<a href="{% url 'studygroups_message_view' study_group.id meeting.follow_up.id %}">view</a>)<p>
+                {% elif meeting.follow_up_dismissed %}
+                  <p>No follow up sent<p>
+                {% else %}
+                  <p>Send a meeting recap to learners<p>
+                  {% if meeting.meeting_datetime < today %}
+                    <div class="meeting-feedback">
+                      <p>You may want to summarize the material you covered in this meeting, feedback from participants, or any extra work the group agreed to complete before the next meeting. </p>
+                      <a class="p2pu-btn btn-primary" href="{% url 'studygroups_meeting_follow_up' study_group.pk meeting.pk %}">Send follow up</a>
+                      <form action="{% url 'studygroups_meeting_follow_up_dismiss' study_group.pk meeting.pk %}" method="POST">{% csrf_token %}<button type="submit" class="p2pu-btn btn-primary" href="">{% trans "dismiss" %}</button></form>
+                   
+                      </form>
+                    </div>
+                  {% endif %}
                 {% endif %}
               </div>
             </div>
@@ -298,7 +307,7 @@
           </div>
         </div>
 
-        {% for message in study_group.reminder_set.all|dictsort:"send_reminder_at" %}
+        {% for message in study_group.reminder_set.all|dictsort:"send_at" %}
           <div class="row no-gutters retable-row">
             <div class="col-lg-7 pr-lg-2">
               <span class="d-lg-none"><strong>{% trans "Email subject:" %} </strong><br/></span>

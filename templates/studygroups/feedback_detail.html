@@ -20,11 +20,15 @@
 
       <div class="well">
       {% with feedback=object %}
-      <p><strong>{% trans "Learning circle summary:" %}</strong></p>
+        {% if feedback.feedback %}
+        <p><strong>{% trans "Learning circle summary:" %}</strong></p>
         <p>{{ feedback.feedback }}</p>
+        {% endif %}
         <p><strong>{% trans "How many people attended?" %}</strong> {{ feedback.attendance }}</p>
+        {% if feedback.reflection %}
         <p><strong>{% trans "Internall reflection:" %}</strong></p>
         <p>{{ feedback.reflection }}</p>
+        {% endif %}
         <p><strong>{% trans "Overall rating:" %}</strong> {{ feedback.get_rating_display }}</p>
       {% endwith %}
       </div>

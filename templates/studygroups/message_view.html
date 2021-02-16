@@ -5,8 +5,23 @@
 {% block content %}
 <div class="container">
     <a href="{% url 'studygroups_view_study_group' message.study_group.pk %}">{% trans "Back" %}</a>
-    <h2>{{message.email_subject}}</h2>
-    <p>{{message.email_body}}</p>
+    {% if message.sent_at %}
+      <p>This message has been sent at {{message.sent_at}}</p>
+    {% else %}
+      <p> This message will be sent at {{message.send_at}}</p>
+    {% endif %}
+    <div class="row">
+    <div class="email-preview col-md-8 bg-light">
+      <p><strong>Email subject</strong>: {{message.email_subject}}</p>
+      <p><strong>Email body</strong>:</p>
+      <div>{{message.email_body}}</div>
+    </div>
+    {% if message.sms_body %}
+    <div class="sms-preview col-md-8">
+    <p><strong>Text message</strong>:</p>
     <p>{{message.sms_body}}</p>
+    </div>
+    {% endif %}
+    </div>
 </div>
 {% endblock %}
