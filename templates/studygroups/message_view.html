@@ -14,7 +14,7 @@
     <div class="email-preview col-md-8 bg-light">
       <p><strong>Email subject</strong>: {{message.email_subject}}</p>
       <p><strong>Email body</strong>:</p>
-      <div>{{message.email_body}}</div>
+      <div>{{message.email_body|safe}}</div>
     </div>
     {% if message.sms_body %}
     <div class="sms-preview col-md-8">

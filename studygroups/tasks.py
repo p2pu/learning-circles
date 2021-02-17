@@ -28,6 +28,7 @@ import datetime
 import logging
 import pytz
 import os
+import re
 
 
 logger = logging.getLogger(__name__)
@@ -286,10 +287,18 @@ def send_meeting_reminder(reminder):
             no_link = reminder.study_group_meeting.rsvp_no_link(email)
             application = reminder.study_group_meeting.study_group.application_set.active().filter(email__iexact=email).first()
             unsubscribe_link = application.unapply_link()
+            email_body = reminder.email_body
+            # ensure reminder.email_body has correct links for RSVP and contains unsubscribe link at the end
+            if not re.match(r'UNSUBSCRIBE_LINK', email_body):
+                email_body += '<p>' + _('To leave this learning circle and stop receiving messages, <a href="%s">click here</a>') % 'UNSUBSCRIBE_LINK' + '</p>'
+            email_body = re.sub(r'RSVP_YES_LINK', yes_link, email_body)
+            email_body = re.sub(r'RSVP_NO_LINK', no_link, email_body)
+            email_body = re.sub(r'UNSUBSCRIBE_LINK', unsubscribe_link, email_body)
+
             context = {
                 "reminder": reminder,
                 "learning_circle": reminder.study_group,
-                "facilitator_message": reminder.email_body,
+                "message": email_body,
                 "rsvp_yes_link": yes_link,
                 "rsvp_no_link": no_link,
                 "unsubscribe_link": unsubscribe_link,
@@ -321,10 +330,15 @@ def send_meeting_reminder(reminder):
             logger.exception('Could not send email to ', email, exc_info=e)
     # Send to organizer without RSVP & unsubscribe links
     try:
+        email_body = reminder.email_body
+        # Maybe this logic should be part of editing a reminder?
+        if not re.match(r'UNSUBSCRIBE_LINK', email_body):
+            email_body += '<p>' + _('To leave this learning circle and stop receiving messages, <a href="%s">click here</a>') % 'UNSUBSCRIBE_LINK' + '</p>'
+
         context = {
             "facilitator": reminder.study_group.facilitator,
             "reminder": reminder,
-            "facilitator_message": reminder.email_body,
+            "facilitator_message": email_body,
         }
         subject, text_body, html_body = render_email_templates(
             'studygroups/email/facilitator_meeting_reminder',
@@ -551,7 +565,7 @@ def send_reminders():
     for reminder in reminders:
         # send the reminder if now is between when it should be sent and when the meeting happens
         meeting_datetime = reminder.study_group_meeting.meeting_datetime()
-        if reminder.send_reminder_at() < now and now < meeting_datetime:
+        if reminder.send_at() < now and now < meeting_datetime:
             send_reminder(reminder)
 
 

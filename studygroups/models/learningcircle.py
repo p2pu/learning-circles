@@ -378,7 +378,7 @@ class Reminder(models.Model):
     study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE)
     study_group_meeting = models.ForeignKey('studygroups.Meeting', blank=True, null=True, on_delete=models.CASCADE)  # TODO rename to meeting. Make OneToOne?
     email_subject = models.CharField(max_length=256)
-    email_body = BleachField(max_length=4000, allowed_tags=settings.TINYMCE_DEFAULT_CONFIG.get('valid_elements', '').split(','), allowed_attributes={'a': ['href', 'title', 'rel', 'target']})
+    email_body = BleachField(max_length=4000, allowed_tags=settings.TINYMCE_DEFAULT_CONFIG.get('valid_elements', '').split(',') + ['br'], allowed_attributes={'a': ['href', 'title', 'rel', 'target']})
     sms_body = models.CharField(verbose_name=_('SMS (Text)'), max_length=160, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -421,7 +421,7 @@ def generate_meeting_reminder(meeting):
             context
         ).strip('\n')
         reminder.email_body = render_to_string_ctx(
-            'studygroups/email/reminder.txt',
+            'studygroups/email/reminder.html',
             context
         )
         reminder.sms_body = render_to_string_ctx(
