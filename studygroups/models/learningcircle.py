@@ -280,27 +280,40 @@ class Meeting(LifeTimeTrackingModel):
     follow_up = models.ForeignKey('studygroups.Reminder', null=True, blank=True, on_delete=models.SET_NULL)
     follow_up_dismissed = models.BooleanField(default=False)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_meeting_date = self.meeting_date
+        self._original_meeting_time = self.meeting_time
+
     def save(self, *args, **kwargs):
-        if not self.pk:
-            created = True
-        else:
-            created = False
         super().save(*args, **kwargs)
         self.study_group.start_date = self.study_group.first_meeting().meeting_date
         self.study_group.end_date = self.study_group.last_meeting().meeting_date
         self.study_group.save()
 
-        # TODO don't generate a reminder for a meeting in the past
-        if created:
-            # generate reminder
-            if self.meeting_datetime() > timezone.now():
-                generate_meeting_reminder(self)
-        elif self.deleted_at:
-            self.reminder_set.all().delete()
+        if self.reminder_set.filter(sent_at__isnull=False).count() == 1:
+            # a reminder has been sent, disassociate it
+            self.reminder_set.update(study_group_meeting=None)
+
+            tz = pytz.timezone(self.study_group.timezone)
+            original_meeting_datetime = tz.localize(
+                datetime.datetime.combine(self._original_meeting_date, self._original_meeting_time)
+            )
+
+            # the previous date was in the future
+            if original_meeting_datetime > timezone.now():
+                # send meeting change notification
+                from studygroups.tasks import send_meeting_change_notification
+                send_meeting_change_notification.delay(self, original_meeting_datetime)
         else:
-            # update reminder if meeting is in the future
-            # if the reminder has already been sent, send a meeting change notification
-            pass
+            # no reminder has been sent
+            # deleted reminder if any
+            self.reminder_set.all().delete()
+
+        # generate a reminder if the meeting is in the future
+        if self.meeting_datetime() > timezone.now() and not self.deleted_at:
+            generate_meeting_reminder(self)
+
 
     def meeting_number(self):
         # TODO this will break for two meetings on the same day
@@ -389,6 +402,7 @@ class Reminder(models.Model):
         return self.sent_at.astimezone(tz)
 
     def send_at(self):
+        # TODO does a past date make any sense here?
         if self.sent_at:
             return self.sent_at_tz()
 

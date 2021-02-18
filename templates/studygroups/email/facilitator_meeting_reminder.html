@@ -7,7 +7,7 @@
 <p>{% trans "The following message has been sent to your learning circle." %}</p>
 
 <div style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9;">
-  {{ facilitator_message | safe}}
+  {{ message | safe}}
 </div>
 
 {% url 'studygroups_facilitator' as dash_url %}

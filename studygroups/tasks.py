@@ -290,7 +290,7 @@ def send_meeting_reminder(reminder):
             email_body = reminder.email_body
             # ensure reminder.email_body has correct links for RSVP and contains unsubscribe link at the end
             if not re.match(r'UNSUBSCRIBE_LINK', email_body):
-                email_body += '<p>' + _('To leave this learning circle and stop receiving messages, <a href="%s">click here</a>') % 'UNSUBSCRIBE_LINK' + '</p>'
+                email_body = email_body + '<p>' + _('To leave this learning circle and stop receiving messages, <a href="%s">click here</a>') % 'UNSUBSCRIBE_LINK' + '</p>'
             email_body = re.sub(r'RSVP_YES_LINK', yes_link, email_body)
             email_body = re.sub(r'RSVP_NO_LINK', no_link, email_body)
             email_body = re.sub(r'UNSUBSCRIBE_LINK', unsubscribe_link, email_body)
@@ -304,11 +304,9 @@ def send_meeting_reminder(reminder):
                 "unsubscribe_link": unsubscribe_link,
                 "event_meta": True,
             }
-            subject, text_body, html_body = render_email_templates(
-                'studygroups/email/learner_meeting_reminder',
-                context
-            )
-            # TODO not using subject
+            html_body = render_to_string_ctx('studygroups/email/learner_meeting_reminder.html', context)
+            # TODO should we rather strip email_body?
+            text_body = html_body_to_text(html_body)
         try:
             reminder_email = EmailMultiAlternatives(
                 reminder.email_subject.strip('\n'),
@@ -333,13 +331,14 @@ def send_meeting_reminder(reminder):
         email_body = reminder.email_body
         # Maybe this logic should be part of editing a reminder?
         if not re.match(r'UNSUBSCRIBE_LINK', email_body):
-            email_body += '<p>' + _('To leave this learning circle and stop receiving messages, <a href="%s">click here</a>') % 'UNSUBSCRIBE_LINK' + '</p>'
+            email_body = email_body + '<p>' + _('To leave this learning circle and stop receiving messages, <a href="%s">click here</a>') % 'UNSUBSCRIBE_LINK' + '</p>'
 
         context = {
             "facilitator": reminder.study_group.facilitator,
             "reminder": reminder,
-            "facilitator_message": email_body,
+            "message": email_body,
         }
+        # TODO, maybe also generate text from html?
         subject, text_body, html_body = render_email_templates(
             'studygroups/email/facilitator_meeting_reminder',
             context
@@ -408,12 +407,12 @@ def send_reminder(reminder):
 
 
 @shared_task
-def send_meeting_change_notification(old_meeting, new_meeting):
-    study_group = new_meeting.study_group
+def send_meeting_change_notification(meeting, old_meeting_datetime):
+    study_group = meeting.study_group
     to = [su.email for su in study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')]
     context = {
-        'old_meeting': old_meeting,
-        'new_meeting': new_meeting,
+        'old_meeting_datetime': old_meeting_datetime,
+        'meeting': meeting,
         'learning_circle': study_group,
     }
 
