@@ -2,11 +2,16 @@
 {% load i18n %}
 {% block body %}
 
-<p>{% blocktrans with studygroup_name=learning_circle.name|safe old_date=old_meeting.meeting_datetime|date:"l, j N, fA" new_date=new_meeting.meeting_datetime|date:"l, j N, fA"%}Your {{studygroup_name}} learning circle meeting scheduled for {{ old_date }} has been moved to {{ new_date }}.{% endblocktrans %}</p>
+{% if meeting.deleted_at %}
+<p>{% blocktrans with studygroup_name=learning_circle.name|safe old_date=old_meeting_datetime|date:"l, j N, fA" %}Your {{studygroup_name}} learning circle meeting scheduled for {{ old_date }} has been cancelled.{% endblocktrans %}</p>
+{% else %}
+<p>{% blocktrans with studygroup_name=learning_circle.name|safe old_date=old_meeting_datetime|date:"l, j N, fA" new_date=new_meeting.meeting_datetime|date:"l, j N, fA"%}Your {{studygroup_name}} learning circle meeting scheduled for {{ old_date }} has been moved to {{ new_date }}.{% endblocktrans %}</p>
 
 <p>{% trans "You will receive a reminder 2 days before the new scheduled meeting time" %}</p>
+{% endif %}
 
-<p>{% trans "See you soon." %}</p>
+<p>{% trans "Cheers" %}</p>
+<p>P2PU</p>
 
 {% url 'studygroups_optout' as unsubscribe_link %}
 <p>{% blocktrans with link=unsubscribe_link|safe %}To leave this learning circle and stop receiving messages, <a href="{{link}}">click here</a>{% endblocktrans %}</p>
