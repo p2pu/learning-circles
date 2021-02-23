@@ -374,6 +374,15 @@ class Meeting(LifeTimeTrackingModel):
         )
         return '{0}{1}?{2}'.format(base_url, url, no_qs)
 
+    def status(self):
+        if self.meeting_datetime() > timezone.now() and self != self.study_group.next_meeting() or self.study_group.draft:
+            return 'pending'
+
+        if self.feedback_set.count and (self.follow_up_dismissed or self.follow_up):
+            return 'done'
+
+        return 'todo'
+
     def __str__(self):
         # TODO i18n
         return '{0}, {1} at {2}'.format(self.study_group.name, self.meeting_datetime(), self.study_group.venue_name)

@@ -96,8 +96,8 @@
         </div>
       </div>
       {% for meeting in study_group.meeting_set.active|dictsort:"meeting_datetime" %}
-      {% with done=meeting.feedback_set.count %}
-      <div class="item {% if done %}done{% elif meeting.reminder_set.count or meeting.meeting_datetime < today and not study_group.draft or meeting == study_group.next_meeting and not study_group.draft %}todo{% else %}pending{% endif %}">
+      {% with done=meeting.feedback_set.count meeting_status=meeting.status %}
+      <div class="item {{ meeting_status }}">
         <div class="icon"></div>
           <div class="card">
             <a class="card-collapse-toggle {% if meeting != study_group.next_meeting or study_group.draft %}collapsed{% endif %}" data-toggle="collapse" href="#collapse-meeting-{{forloop.counter}}" role="button" aria-expanded="true" aria-controls="collapse-meeting-{{forloop.counter}}"><i class="fa fa-chevron-down"></i></a>
