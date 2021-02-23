@@ -96,7 +96,7 @@
         </div>
       </div>
       {% for meeting in study_group.meeting_set.active|dictsort:"meeting_datetime" %}
-      {% with done=meeting.feedback_set.count meeting_status=meeting.status %}
+      {% with meeting_status=meeting.status %}
       <div class="item {{ meeting_status }}">
         <div class="icon"></div>
           <div class="card">
@@ -113,7 +113,7 @@
                 </div>
               {% else %}
                 <div class="meeting-item {% if meeting == study_group.next_meeting and not study_group.draft %}todo{% else %}pending{% endif %}">
-                  <p>Reminder will be sent {{meeting.send_reminder_at}} {% if meeting.reminder_set.first %}(<a href="{% url 'studygroups_message_edit' study_group.id meeting.reminder_set.first.id %}">edit</a>){% endif %}</p>
+                  <p>Reminder will be sent {{meeting.send_reminder_at}} {% if meeting.reminder_set.first %}(<a href="{% url 'studygroups_message_edit' study_group.id meeting.reminder_set.first.id %}">edit</a>, <a href="{% url 'studygroups_message_view' study_group.id meeting.reminder_set.first.id %}">view</a>){% endif %}</p>
                 </div>
               {% endif %}
               <div class="meeting-item {% if meeting.meeting_datetime < today %}done{% elif meeting.reminder_set.first.sent_at %}todo{% else %}pending{% endif %}">
