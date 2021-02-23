@@ -479,13 +479,17 @@ class StudyGroupDidNotHappen(SingleObjectMixin, View):
 @user_is_group_facilitator
 @study_group_is_published
 def message_send(request, study_group_id):
-    # TODO - this piggy backs of Reminder, won't work if Reminder is coupled to Meeting
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
-    form_class =  modelform_factory(Reminder, exclude=['study_group_meeting', 'created_at', 'sent_at', 'sms_body'], widgets={'study_group': HiddenInput})
 
+    widgets = {
+        'email_body': TinyMCE(),
+        'study_group': forms.HiddenInput
+    }
+    fields = ['study_group', 'email_subject', 'email_body']
     needs_mobile = study_group.application_set.active().exclude(mobile='').count() > 0
     if needs_mobile:
-        form_class = modelform_factory(Reminder, exclude=['study_group_meeting', 'created_at', 'sent_at'], widgets={'study_group': HiddenInput})
+        fields += ['sms_body']
+    form_class =  modelform_factory(Reminder, fields=fields, widgets=widgets)
 
     if request.method == 'POST':
         form = form_class(request.POST)
