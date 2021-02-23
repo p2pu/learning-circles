@@ -408,11 +408,12 @@ class StudyGroupUpdateLegacy(FacilitatorRedirectMixin, UpdateView):
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
-class StudyGroupDelete(FacilitatorRedirectMixin, DeleteView):
+class StudyGroupDelete(DeleteView):
     model = StudyGroup
     template_name = 'studygroups/confirm_delete.html'
     pk_url_kwarg = 'study_group_id'
     context_object_name = 'study_group'
+    success_url = reverse_lazy('studygroups_facilitator')
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
