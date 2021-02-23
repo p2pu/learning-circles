@@ -289,7 +289,7 @@ def send_meeting_reminder(reminder):
             unsubscribe_link = application.unapply_link()
             email_body = reminder.email_body
             # ensure reminder.email_body has correct links for RSVP and contains unsubscribe link at the end
-            if not re.match(r'UNSUBSCRIBE_LINK', email_body):
+            if not re.search(r'UNSUBSCRIBE_LINK', email_body):
                 email_body = email_body + '<p>' + _('To leave this learning circle and stop receiving messages, <a href="%s">click here</a>') % 'UNSUBSCRIBE_LINK' + '</p>'
             email_body = re.sub(r'RSVP_YES_LINK', yes_link, email_body)
             email_body = re.sub(r'RSVP_NO_LINK', no_link, email_body)
@@ -326,12 +326,12 @@ def send_meeting_reminder(reminder):
             reminder_email.send()
         except Exception as e:
             logger.exception('Could not send email to ', email, exc_info=e)
-    # Send to organizer without RSVP & unsubscribe links
+    # Send to facilitator without RSVP & unsubscribe links
     try:
         email_body = reminder.email_body
         # Maybe this logic should be part of editing a reminder?
-        if not re.match(r'UNSUBSCRIBE_LINK', email_body):
-            email_body = email_body + '<p>' + _('To leave this learning circle and stop receiving messages, <a href="%s">click here</a>') % 'UNSUBSCRIBE_LINK' + '</p>'
+        if not re.search(r'UNSUBSCRIBE_LINK', email_body):
+            email_body = email_body + '<p>' + _('To leave this learning circle and stop receiving messages, <a href="%s">click here</a>') % 'BOBCAT_LINK' + '</p>'
 
         context = {
             "facilitator": reminder.study_group.facilitator,
