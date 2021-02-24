@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
 {% load crispy_forms_tags %}
 {% load i18n %}
 
@@ -15,4 +16,9 @@
       <button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
     </form>
 </div>
+{% endblock %}
+
+{% block scripts %}
+{% render_bundle 'common' %}
+{% render_bundle 'message-form' %}
 {% endblock %}
