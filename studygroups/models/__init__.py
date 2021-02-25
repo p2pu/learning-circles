@@ -120,7 +120,7 @@ def generate_all_meeting_dates(start_date, meeting_time, weeks):
     meeting_dates = []
     for i in range(weeks):
         meeting_dates += [{
-            'meeting_date': start_date + timedelta(days=i*7),
+            'meeting_date': start_date + datetime.timedelta(days=i*7),
             'meeting_time': meeting_time,
         }]
     return meeting_dates

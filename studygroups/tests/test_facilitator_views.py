@@ -23,8 +23,8 @@ from studygroups.models import TeamInvitation
 from studygroups.models import Feedback
 from studygroups.models import generate_all_meetings
 from studygroups.utils import gen_rsvp_querystring
-from studygroups.tasks import generate_reminder
 from studygroups.tasks import send_reminders
+from studygroups.tasks import send_reminder
 from custom_registration.models import create_user
 from custom_registration.models import confirm_user_email
 
@@ -155,7 +155,7 @@ class TestFacilitatorViews(TestCase):
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
         lc = study_groups.first()
-        self.assertEquals(study_groups.first().meeting_set.count(), 0)
+        self.assertEquals(study_groups.first().meeting_set.count(), 6)
         self.assertEquals(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.name, lc.city))
         self.assertIn('bob@example.net', mail.outbox[0].to)
@@ -273,7 +273,7 @@ class TestFacilitatorViews(TestCase):
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
         lc = study_groups.first()
-        self.assertEquals(study_groups.first().meeting_set.active().count(), 0)
+        self.assertEquals(study_groups.first().meeting_set.active().count(), 6)
 
         # updates allowed for drafts
         with freeze_time("2018-12-28"):
@@ -285,7 +285,7 @@ class TestFacilitatorViews(TestCase):
             study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
             self.assertEqual(study_group.start_date, datetime.date(2018, 12, 25))
             self.assertEqual(study_group.meeting_time, datetime.time(19, 10))
-            self.assertEqual(study_group.meeting_set.active().count(), 0)
+            self.assertEqual(study_group.meeting_set.active().count(), 6)
 
         resp = c.post('/en/studygroup/{0}/publish/'.format(lc.pk))
         self.assertRedirects(resp, '/en/studygroup/{}/'.format(lc.pk))
@@ -372,8 +372,9 @@ class TestFacilitatorViews(TestCase):
         self.assertEquals(study_groups.count(), 0)
 
 
-    @patch('studygroups.views.facilitate.send_meeting_change_notification')
+    @patch('studygroups.models.learningcircle.send_meeting_change_notification')
     def test_edit_meeting(self, send_meeting_change_notification):
+        # TODO update this test logic to account for new reminder updates
         # Create studygroup
         # generate reminder
         # edit meeting
@@ -402,11 +403,6 @@ class TestFacilitatorViews(TestCase):
         self.assertEqual(study_group.draft, False)
         self.assertEqual(study_group.meeting_set.count(), 6)
 
-        # generate reminder for first meeting (< 4 days before 25 Dec)
-        with freeze_time('2018-12-22'):
-            generate_reminder(study_group)
-            self.assertEqual(Reminder.objects.filter(study_group=study_group).count(), 1)
-
         # update meeting with unsent reminder
         reminder = Reminder.objects.filter(study_group=study_group).first()
         meeting = reminder.study_group_meeting
@@ -422,12 +418,8 @@ class TestFacilitatorViews(TestCase):
         self.assertEqual(meeting.meeting_date, datetime.date(2018, 12, 27))
 
         # make sure the reminder was deleted
+        # TODO, make sure a new reminder has been generated
         self.assertEqual(Reminder.objects.filter(study_group=study_group).count(), 0)
-
-        # generate a reminder for the updated meeting
-        with freeze_time('2018-12-24'):
-            generate_reminder(study_group)
-            self.assertEqual(Reminder.objects.filter(study_group=study_group).count(), 1)
 
         # send it
         with freeze_time('2018-12-26'):
@@ -446,6 +438,7 @@ class TestFacilitatorViews(TestCase):
             meeting.refresh_from_db()
             self.assertFalse(send_meeting_change_notification.delay.called)
             # old reminder should be orphaned - not linked to this meeting
+            # TODO 
             self.assertEquals(meeting.reminder_set.count(), 0)
             generate_reminder(study_group)
             # now generate a reminder again
@@ -468,6 +461,56 @@ class TestFacilitatorViews(TestCase):
             self.assertTrue(send_meeting_change_notification.delay.called)
             # old reminder should be orphaned - not linked to this meeting
             self.assertEquals(meeting.reminder_set.count(), 0)
+
+
+    @freeze_time('2021-02-25')
+    def test_edit_reminder(self):
+        c = Client()
+        c.login(username='admin@test.com', password='password')
+        signup_data = self.APPLICATION_DATA.copy()
+        resp = c.post('/en/signup/foo-bob-1/', signup_data)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEqual(Application.objects.active().count(), 1)
+        mail.outbox = []
+        study_group = StudyGroup.objects.get(pk=1)
+        study_group.start_date = datetime.date(2021, 3, 1)
+        study_group.end_date = study_group.start_date + datetime.timedelta(weeks=5)
+        study_group.save()
+
+        signup_data = self.APPLICATION_DATA.copy()
+        resp = c.post('/en/signup/foo-bob-1/', signup_data)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEqual(Application.objects.active().count(), 1)
+
+        generate_all_meetings(study_group)
+        self.assertEqual(study_group.meeting_set.active().count(), 6)
+        self.assertEqual(study_group.reminder_set.count(), 6)
+        meeting = study_group.meeting_set.active().first()
+        reminder = meeting.reminder_set.first()
+
+        url = '/en/studygroup/{0}/message/edit/{1}/'.format(signup_data['study_group'], reminder.id)
+
+        email_body = '<p>hi, here is a link <a href="https://www.p2pu.org">p2pu</a></p><script>alert("MUHAHAHA")</script>'
+        mail_data = {
+            'study_group': study_group.id,
+            'email_subject': 'GED® Prep Math study group meeting Thursday 7 May 6:00 PM at Edgewater',
+            'email_body': email_body,
+            'sms_body': 'The first study group for GED® Prep Math will meet next Thursday, May 7th, from 6:00 pm-7:45 pm at Edgewater on the 2nd floor. Feel free to bring a study buddy!'
+        }
+        resp = c.post(url, mail_data)
+        self.assertRedirects(resp, '/en/studygroup/1/')
+        reminder.refresh_from_db()
+        self.assertIn('&lt;script&gt;alert("MUHAHAHA")&lt;/script&gt;', reminder.email_body)
+        self.assertIn('<a href="https://www.p2pu.org">p2pu</a>', reminder.email_body)
+
+        mail.outbox = []
+        send_reminder(reminder)
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(mail.outbox[0].to[0], signup_data['email'])
+        self.assertEqual(mail.outbox[1].to[0], 'facilitator@example.net')
+        self.assertIn('/optout/confirm/?user=', mail.outbox[0].alternatives[0][0])
+        self.assertIn('&lt;script&gt;alert("MUHAHAHA")&lt;/script&gt;', mail.outbox[0].alternatives[0][0])
+        self.assertIn('<a href="https://www.p2pu.org">p2pu</a>', mail.outbox[0].alternatives[0][0])
 
 
     @patch('studygroups.tasks.send_message')

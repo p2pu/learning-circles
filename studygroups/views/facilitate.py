@@ -43,7 +43,8 @@ from studygroups.forms import StudyGroupForm
 from studygroups.forms import MeetingForm
 from studygroups.forms import FeedbackForm
 from studygroups.tasks import send_reminder
-from studygroups.models import generate_all_meetings
+from studygroups.models import generate_meetings_from_dates
+from studygroups.models import generate_all_meeting_dates
 from studygroups.models import get_study_group_organizers
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import study_group_is_published
@@ -371,8 +372,11 @@ class StudyGroupCreateLegacy(CreateView):
         study_group.facilitator = self.request.user
 
         study_group.save()
+        meeting_dates = generate_all_meeting_dates(
+            study_group.start_date, study_group.meeting_time, form.cleaned_data['weeks']
+        )
+        generate_meetings_from_dates(study_group, meeting_dates)
 
-        #generate_all_meetings(study_group)
         messages.success(self.request, _('You created a new learning circle! Check your email for next steps.'))
         success_url = reverse_lazy('studygroups_view_study_group', args=(study_group.id,))
         return http.HttpResponseRedirect(success_url)
@@ -402,8 +406,8 @@ class StudyGroupUpdateLegacy(FacilitatorRedirectMixin, UpdateView):
     def form_valid(self, form):
         return_value = super().form_valid(form)
         if form.date_changed and self.object.draft == False:
-            self.object.meeting_set.delete()
-            generate_all_meetings(self.object)
+            meeting_dates = generate_all_meeting_dates(self.object.start_date, self.object.meeting_time, form.cleaned_data.get('weeks'))
+            generate_meetings_from_dates(self.object, meeting_dates)
         return return_value
 
 
@@ -451,7 +455,8 @@ class StudyGroupPublish(SingleObjectMixin, View):
             study_group.save()
             # TODO this is temporary to still allow drafts created before to be published. This could also be replaced with a data migration that generates the meetings
             if study_group.meeting_set.active().count() == 0:
-                generate_all_meetings(study_group)
+                meeting_dates = generate_all_meeting_dates(study_group.start_date, study_group.meeting_time)
+                generate_meetings_from_dates(study_group, meeting_dates)
 
         url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
         return http.HttpResponseRedirect(url)
@@ -507,7 +512,7 @@ def message_send(request, study_group_id):
         'course': study_group.course,
         'form': form
     }
-    return render(request, 'studygroups/email.html', context)
+    return render(request, 'studygroups/adhoc_message_form.html', context)
 
 
 @user_is_group_facilitator
