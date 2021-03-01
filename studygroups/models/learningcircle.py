@@ -14,6 +14,8 @@ from studygroups.utils import gen_rsvp_querystring
 from studygroups.utils import render_to_string_ctx
 from studygroups.utils import use_language
 
+from celery import current_app
+
 from .base import SoftDeleteQuerySet
 from .base import LifeTimeTrackingModel
 from .course import Course
@@ -303,8 +305,7 @@ class Meeting(LifeTimeTrackingModel):
             # the previous date was in the future
             if original_meeting_datetime > timezone.now():
                 # send meeting change notification
-                from studygroups.tasks import send_meeting_change_notification
-                send_meeting_change_notification.delay(self, original_meeting_datetime)
+                current_app.send_task('studygroups.tasks.send_meeting_change_notification', (self, original_meeting_datetime))
         else:
             # no reminder has been sent
             # deleted reminder if any
