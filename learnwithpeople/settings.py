@@ -238,7 +238,7 @@ from celery.schedules import crontab
 CELERYBEAT_SCHEDULE = {
     'send_reminders': {
         'task': 'studygroups.tasks.send_reminders',
-        'schedule': crontab(minute='5'),
+        'schedule': crontab(minute='*/5'),
     },
     'send_new_user_email': {
         'task': 'custom_registration.tasks.send_new_user_emails',
