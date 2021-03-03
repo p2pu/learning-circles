@@ -8,9 +8,9 @@
 <div class="container">
     <a href="{% url 'studygroups_view_study_group' message.study_group.pk %}">{% trans "Back" %}</a>
     {% if message.sent_at %}
-      <p>This message has been sent at {{message.sent_at_tz}}</p>
+      <p>This message was sent {{message.sent_at_tz}}</p>
     {% else %}
-      <p> This message will be sent at {{message.send_at}}</p>
+      <p> This message will be sent {{message.send_at}}</p>
     {% endif %}
     <div class="row">
     <div class="email-preview col-md-8 bg-light">
