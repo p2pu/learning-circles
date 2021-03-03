@@ -420,6 +420,7 @@ class Reminder(models.Model):
             # Messages shouldn't exist that hasn't been sent without an associated meeting
             #raise Exception('Data inconsistency')
             # update: unsent follow ups could match this codepath
+            # TODO will this be in the wrong timezone?
             return timezone.now()
 
         return self.study_group_meeting.send_reminder_at()
