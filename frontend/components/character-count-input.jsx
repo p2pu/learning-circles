@@ -18,7 +18,7 @@ export default class CharacterCountInput extends Component {
         <input 
           type="text"
           name="character_count_input"
-          className="textinput textInput form-control"
+          className={"textinput textInput form-control" + (this.props.error?' is-invalid':'')}
           value={this.state.value}
           onChange={this.handleUpdate}
         />

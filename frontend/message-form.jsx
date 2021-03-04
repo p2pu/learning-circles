@@ -21,6 +21,7 @@ ReactDOM.render(
     name="sms_body"
     value={value}
     maxLength={input.maxLength}
+    error={error}
   />,
   div
 );
