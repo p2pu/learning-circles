@@ -338,9 +338,12 @@ class Meeting(LifeTimeTrackingModel):
         ).order_by('-meeting_date', '-meeting_time').first()
         two_days_before = self.meeting_datetime() - datetime.timedelta(days=2)
         # ensure send_at is always after previous meeting finished
+        tz = pytz.timezone(self.study_group.timezone)
+        # subtract 5 seconds from now so that a past date technically stays in the past and can be sent
+        now = timezone.now().astimezone(tz) - datetime.timedelta(seconds=5)
         if previous_meeting:
-            return max(two_days_before, previous_meeting.meeting_datetime() + datetime.timedelta(minutes=self.study_group.duration))
-        return two_days_before
+            return max(now, max(two_days_before, previous_meeting.meeting_datetime() + datetime.timedelta(minutes=self.study_group.duration)))
+        return max(now, two_days_before)
 
 
     def rsvps(self):

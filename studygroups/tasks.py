@@ -553,7 +553,6 @@ def send_community_digest(start_date, end_date):
 @shared_task
 def send_reminders():
     """ Send meeting reminders """
-    now = timezone.now()
     
     # make sure both the StudyGroup and Meeting is still available
     reminders = Reminder.objects.filter(
@@ -563,6 +562,8 @@ def send_reminders():
     )
     for reminder in reminders:
         # send the reminder if now is between when it should be sent and when the meeting happens
+        # NOTE: don't move now up, send_at uses now - 5 seconds
+        now = timezone.now()
         meeting_datetime = reminder.study_group_meeting.meeting_datetime()
         if reminder.send_at() < now and now < meeting_datetime:
             send_reminder(reminder)
