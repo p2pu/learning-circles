@@ -415,7 +415,6 @@ class Reminder(models.Model):
         return self.sent_at.astimezone(tz)
 
     def send_at(self):
-        # TODO does a past date make any sense here?
         if self.sent_at:
             return self.sent_at_tz()
 
