@@ -562,10 +562,10 @@ def send_reminders():
     )
     for reminder in reminders:
         # send the reminder if now is between when it should be sent and when the meeting happens
-        # NOTE: don't move now up, send_at uses now - 5 seconds
-        now = timezone.now()
         meeting_datetime = reminder.study_group_meeting.meeting_datetime()
-        if reminder.send_at() < now and now < meeting_datetime:
+        send_at = reminder.send_at()
+        now = timezone.now() # NOTE: don't move now up, send_at() also call timezone.now()
+        if send_at < now and now < meeting_datetime:
             send_reminder(reminder)
 
 
