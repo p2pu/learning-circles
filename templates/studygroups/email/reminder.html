@@ -4,30 +4,21 @@
 <p>{% trans "Hi there!" %}</p>
 
 <p>
-{% blocktrans with studygroup_name=study_group.name|safe meeting_date=next_meeting.meeting_datetime|date meeting_time=next_meeting.meeting_datetime|time meeting_timezone=next_meeting.meeting_datetime|date:"e" %}Your learning circle, {{studygroup_name}}, will meet this {{meeting_date}}, {{meeting_time}} {{meeting_timezone}}.{% endblocktrans%}
+{% blocktrans with studygroup_name=study_group.name meeting_date=next_meeting.meeting_datetime|date meeting_time=next_meeting.meeting_datetime|time meeting_timezone=next_meeting.meeting_datetime|date:"e" venue_name=study_group.venue_name venue_details=study_group.venue_details|add:', '|add:study_group.venue_address %}Your learning circle, {{studygroup_name}}, will meet this {{meeting_date}}, {{meeting_time}} {{meeting_timezone}} at {{venue_name}}, {{venue_details}}.{% endblocktrans %}
 </p>
-
-<p>{% blocktrans with venue_name=study_group.venue_name venue_details=study_group.venue_details venue_address=study_group.venue_address %}
-The address for the meeting is:<br/>
-{{venue_details}}<br/>
-{{venue_name}}<br/>
-{{venue_address}}<br/>
-{% endblocktrans %}</p>
 
 {% if feedback %}
   <p>{% blocktrans with feedback_text=feedback.feedback|safe %}From last week's meeting: {{feedback_text}}{% endblocktrans %}</p>
 {% endif %}
 
-<p>{% trans "People are the most important part of learning circles. But we know that sometimes things come up.  Please let your facilitator know if you have to miss this meeting." %}<p>
+<p>{% trans "Please let us know if you can make it by visiting the appropriate link below." %}</p>
 
-<p>{% trans "Your facilitator is expecting you! Please RSVP below." %}</p>
-
-<div><a class="rsvp-yes" href="RSVP_YES_LINK">{% trans "I'll be there" %}</a></div>
-<div><a class="rsvp-no" href="RSVP_NO_LINK">{% trans "I can't make it" %}</a></div>
+<div><a class="rsvp-yes" href="RSVP_YES_LINK">{% trans "Yes, I can make it" %}</a></div>
+<div><a class="rsvp-no" href="RSVP_NO_LINK">{% trans "No, I can't make it" %}</a></div>
 
 <p>{% trans "Cheers" %}</p>
 <p>P2PU</p>
 
-<p>{% blocktrans with unsubscribe_link='UNSUBSCRIBE_LINK' %}To leave this learning circle and stop receiving messages, <a href="{{unsubscribe_link}}">click here</a>{% endblocktrans %}</p>
+<p>{% blocktrans with link='UNSUBSCRIBE_LINK' %}To leave this learning circle and stop receiving messages, <a href="{{link}}">click here</a>{% endblocktrans %}</p>
 {% endlocalize %}
 {% endlocaltime %}
