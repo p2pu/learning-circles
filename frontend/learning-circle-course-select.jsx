@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import CourseInput from './components/course-input'
 
 const element = document.getElementById('div_id_course');
-let label = element.querySelector('.control-label');
+let label = element.querySelector('label');
 let hint = element.querySelector('#hint_id_course');
 let error = element.querySelector('#error_1_id_course');
 let input = element.querySelector('#id_course');

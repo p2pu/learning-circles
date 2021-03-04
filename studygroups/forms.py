@@ -261,7 +261,7 @@ class StudyGroupForm(forms.ModelForm):
         self.helper.layout.insert(1, HTML("""
             <p>You can learn more about each course and explore what other people are facilitating on the <a href="https://www.p2pu.org/en/courses/">courses page</a>.</p>
             <p>Or add an online course that isn&#39;t already listed.</p>
-            <p><a class="btn btn-default" href="{% url 'studygroups_course_create' %}">Add a new course</a></p>
+            <p><a class="btn btn-primary" href="{% url 'studygroups_course_create' %}">Add a new course</a></p>
         """))
 
         if self.instance.pk:
