@@ -285,7 +285,7 @@ def send_meeting_reminder(reminder):
         with use_language(reminder.study_group.language):
             yes_link = reminder.study_group_meeting.rsvp_yes_link(email)
             no_link = reminder.study_group_meeting.rsvp_no_link(email)
-            application = reminder.study_group_meeting.study_group.application_set.active().filter(email__iexact=email).first()
+            application = reminder.study_group.application_set.active().filter(email__iexact=email).first()
             unsubscribe_link = application.unapply_link()
             email_body = reminder.email_body
             # ensure reminder.email_body has correct links for RSVP and contains unsubscribe link at the end
@@ -331,7 +331,13 @@ def send_meeting_reminder(reminder):
         email_body = reminder.email_body
         # Maybe this logic should be part of editing a reminder?
         if not re.search(r'UNSUBSCRIBE_LINK', email_body):
-            email_body = email_body + '<p>' + _('To leave this learning circle and stop receiving messages, <a href="%s">click here</a>') % 'BOBCAT_LINK' + '</p>'
+            email_body = email_body + '<p>' + _('To leave this learning circle and stop receiving messages, <a href="%s">click here</a>') % 'UNSUBSCRIBE_LINK' + '</p>'
+        base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
+        path = reverse('studygroups_view_study_group', kwargs={'study_group_id': reminder.study_group.id})
+        dashboard_link = base_url + path
+        email_body = re.sub(r'RSVP_YES_LINK', dashboard_link, email_body)
+        email_body = re.sub(r'RSVP_NO_LINK', dashboard_link, email_body)
+        email_body = re.sub(r'UNSUBSCRIBE_LINK', dashboard_link, email_body)
 
         context = {
             "facilitator": reminder.study_group.facilitator,

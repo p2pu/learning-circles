@@ -22,6 +22,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 
+import re
 import json
 import datetime
 import requests
@@ -222,6 +223,14 @@ class MessageView(DetailView):
     model = Reminder
     template_name = 'studygroups/message_view.html'
     context_object_name = 'message'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        message = context['message']
+        message.email_body = re.sub(r'RSVP_YES_LINK', '#', message.email_body)
+        message.email_body = re.sub(r'RSVP_NO_LINK', '#', message.email_body)
+        message.email_body = re.sub(r'UNSUBSCRIBE_LINK', '#', message.email_body)
+        return context
 
 
 class CoursePage(DetailView):
