@@ -10,7 +10,7 @@ To make things easier, we are using docker to distribute the application.
 Requirements
 ------------
 
-* A server running Ubuntu 14.04 with at least 1GB of RAM capable of running Docker - we recommend using a Digital Ocean 1GB droplet at 10 USD p/m (If you use `this link <https://www.digitalocean.com/?refcode=d0d9b388d642>`_ you get 10 USD credit and we get 25 USD if you spend 25 USD or more). **The rest of this guide will assume that you are running Ubuntu 14.04 on DigitalOcean**.
+* A server running Ubuntu 20.04 with at least 1GB of RAM capable of running Docker - we recommend using a Digital Ocean 1GB droplet at 10 USD p/m (If you use `this link <https://www.digitalocean.com/?refcode=d0d9b388d642>`_ you get 10 USD credit and we get 25 USD if you spend 25 USD or more). **The rest of this guide will assume that you are running Ubuntu 14.04 on DigitalOcean**.
 * Domain name to use (You can use `namecheap <https://www.namecheap.com/>`_)
 * `Mandril <http://mandrill.com/>`_, `Sendgrid <http://sendgrid.com/>`_ or `Mailgun <http://www.mailgun.com/>`_ account for sending email.
 * `Twilio <https://www.twilio.com/>`_ account for sending text messages.

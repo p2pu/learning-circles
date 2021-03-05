@@ -109,17 +109,17 @@ class TestSignupModels(TestCase):
             self.assertEqual(meeting.meeting_datetime().time(), datetime.time(16,0))
 
 
-    @freeze_time('2020-10-20')
+    @freeze_time('2020-09-20')
     def test_generate_meetings_from_dates(self):
         sg = StudyGroup.objects.get(pk=1)
         sg.timezone = 'US/Central'
         meeting_dates = [
-            { "meeting_date": "2020-09-30", "meeting_time": "16:00" },
-            { "meeting_date": "2020-10-07", "meeting_time": "16:00" },
-            { "meeting_date": "2020-10-14", "meeting_time": "16:00" },
-            { "meeting_date": "2020-10-21", "meeting_time": "16:00" },
-            { "meeting_date": "2020-10-28", "meeting_time": "16:00" },
-            { "meeting_date": "2020-11-04", "meeting_time": "16:00" },
+            { "meeting_date": datetime.date(2020, 9, 30), "meeting_time": datetime.time(16, 0)},
+            { "meeting_date": datetime.date(2020, 10, 7), "meeting_time": datetime.time(16, 0)},
+            { "meeting_date": datetime.date(2020, 10, 14), "meeting_time": datetime.time(16, 0)},
+            { "meeting_date": datetime.date(2020, 10, 21), "meeting_time": datetime.time(16, 0)},
+            { "meeting_date": datetime.date(2020, 10, 28), "meeting_time": datetime.time(16, 0)},
+            { "meeting_date": datetime.date(2020, 11, 4), "meeting_time": datetime.time(16, 0)},
         ]
         sg_meetings_count = Meeting.objects.active().filter(study_group=sg).count()
         self.assertEqual(sg_meetings_count, 0)
@@ -135,17 +135,18 @@ class TestSignupModels(TestCase):
 
         # update meetings
         new_meeting_dates = [
-            { "meeting_date": "2020-10-07", "meeting_time": "16:00" },
-            { "meeting_date": "2020-10-14", "meeting_time": "16:00" },
-            { "meeting_date": "2020-10-21", "meeting_time": "16:00" },
-            { "meeting_date": "2020-10-28", "meeting_time": "16:00" },
-            { "meeting_date": "2020-11-04", "meeting_time": "16:00" },
-            { "meeting_date": "2020-11-05", "meeting_time": "16:00" },
+            { "meeting_date": datetime.date(2020, 10, 7), "meeting_time": datetime.time(16, 0)},
+            { "meeting_date": datetime.date(2020, 10, 14), "meeting_time": datetime.time(16, 0)},
+            { "meeting_date": datetime.date(2020, 10, 21), "meeting_time": datetime.time(16, 0)},
+            { "meeting_date": datetime.date(2020, 10, 28), "meeting_time": datetime.time(16, 0)},
+            { "meeting_date": datetime.date(2020, 11, 4), "meeting_time": datetime.time(16, 0)},
+            { "meeting_date": datetime.date(2020, 11, 5), "meeting_time": datetime.time(16, 0)},
         ]
-
         generate_meetings_from_dates(sg, new_meeting_dates)
 
+        sg = StudyGroup.objects.get(pk=1)
         self.assertEqual(sg.meeting_set.active().count(), 6)
+        self.assertEqual(sg.reminder_set.count(), 6)
         self.assertFalse(Meeting.objects.active().filter(study_group=sg, meeting_date="2020-09-30").exists())
         self.assertTrue(Meeting.objects.active().filter(study_group=sg, meeting_date="2020-11-05").exists())
 
@@ -241,10 +242,11 @@ class TestSignupModels(TestCase):
         self.assertEqual(Application.objects.all().count(), 3)
         generate_all_meetings(sg)
         meeting = sg.meeting_set.first()
+        old_meeting_datetime = meeting.meeting_datetime()
         meeting.meeting_date = datetime.date(2019, 4, 1)
         old_meeting = sg.meeting_set.first()
         mail.outbox = []
-        send_meeting_change_notification(old_meeting, meeting)
+        send_meeting_change_notification(meeting, old_meeting_datetime)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(len(mail.outbox[0].bcc), 2)
         self.assertIn('signup1@mail.com', mail.outbox[0].bcc)
@@ -252,6 +254,7 @@ class TestSignupModels(TestCase):
         self.assertEqual(meeting.meeting_time, datetime.time(18, 30))
         self.assertEqual(mail.outbox[0].subject, 'Test learning circle at Harold Washington now meets Monday, 1 April, 6:30PM.')
         send_message.assert_called_with('+27713213213', 'Your learning circle on Monday, 23 March, 6:30PM has been rescheduled. Reply STOP to unsubscribe.')
+        #send_message.assert_called_with('+27713213213', 'Your learning circle on Monday, 23 March, 6:30PM is now on Monday, 1 April, 6:30PM. Reply STOP to unsubscribe.')
 
 
 class TestCourseModel(TestCase):

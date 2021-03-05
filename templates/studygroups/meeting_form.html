@@ -20,9 +20,9 @@
             <div class="form-group">
             {% with reminder=meeting.reminder_set.all|first %}
               {% if reminder.sent_at %}
-              <p class="alert alert-warning">{% trans "A reminder has already been sent for this meeting. If you update the meeting, a new reminder will be generated and sent two days before the new meeting time. Consider sending learners a message telling them about the change." %}</p>
+              <p class="alert alert-warning">{% trans "A reminder has already been sent for this meeting. If you update this meeting, a message will be sent to inform participants of the change and a new reminder will be sent two days before the updated meeting date if it is still in the future." %}</p>
               {% else %}
-              <p class="alert alert-warning">{% trans "A reminder has already been generated for this meeting. Updating this meeting will regenerate the reminder and you will loose any edits you may have made to the message." %}</p>
+              <p class="alert alert-warning">{% trans "Updating this meeting will regenerate the associated reminder. You will loose any edits you may have made to the message." %}</p>
               {% endif %}
             {% endwith %}
             </div>

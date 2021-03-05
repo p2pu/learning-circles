@@ -115,6 +115,17 @@ def generate_meetings_from_dates(study_group, meeting_dates=[]):
             meeting.delete()
 
 
+def generate_all_meeting_dates(start_date, meeting_time, weeks):
+    """ generate a weekly meeting schedule """
+    meeting_dates = []
+    for i in range(weeks):
+        meeting_dates += [{
+            'meeting_date': start_date + datetime.timedelta(days=i*7),
+            'meeting_time': meeting_time,
+        }]
+    return meeting_dates
+
+
 def get_all_meeting_times(study_group):
     # sorted ascending according to date
     # times are in the study group timezone

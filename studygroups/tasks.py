@@ -28,71 +28,10 @@ import datetime
 import logging
 import pytz
 import os
+import re
 
 
 logger = logging.getLogger(__name__)
-
-
-def generate_reminder(study_group):
-    now = timezone.now()
-    next_meeting = study_group.next_meeting()
-    # TODO reminder generation code should be moved to models, only sending facilitator notification should be here
-    if next_meeting and next_meeting.meeting_datetime() - now < datetime.timedelta(days=4):
-        # check if a notifcation already exists for this meeting
-        if not Reminder.objects.filter(study_group=study_group, study_group_meeting=next_meeting).exists():
-            reminder = Reminder()
-            reminder.study_group = study_group
-            reminder.study_group_meeting = next_meeting
-            context = {
-                'facilitator': study_group.facilitator,
-                'study_group': study_group,
-                'next_meeting': next_meeting,
-                'reminder': reminder,
-            }
-            previous_meeting = study_group.meeting_set.filter(meeting_date__lt=next_meeting.meeting_date).order_by('meeting_date').last()
-            if previous_meeting and previous_meeting.feedback_set.first():
-                context['feedback'] = previous_meeting.feedback_set.first()
-            timezone.activate(pytz.timezone(study_group.timezone))
-            with use_language(study_group.language):
-                reminder.email_subject = render_to_string_ctx(
-                    'studygroups/email/reminder-subject.txt',
-                    context
-                ).strip('\n')
-                reminder.email_body = render_to_string_ctx(
-                    'studygroups/email/reminder.txt',
-                    context
-                )
-                reminder.sms_body = render_to_string_ctx(
-                    'studygroups/email/sms.txt',
-                    context
-                )
-            # TODO - handle SMS reminders that are too long
-            if len(reminder.sms_body) > 160:
-                logger.error('SMS body too long: ' + reminder.sms_body)
-            reminder.sms_body = reminder.sms_body[:160]
-            reminder.save()
-
-            with use_language(reminder.study_group.language):
-                facilitator_notification_subject = _('A reminder for %(studygroup_name)s was generated' % {"studygroup_name": study_group.name})
-                facilitator_notification_html = render_html_with_css(
-                    'studygroups/email/reminder_notification.html',
-                    context
-                )
-                facilitator_notification_txt = render_to_string_ctx(
-                    'studygroups/email/reminder_notification.txt',
-                    context
-                )
-
-            timezone.deactivate()
-            to = [study_group.facilitator.email]
-            notification = EmailMultiAlternatives(
-                facilitator_notification_subject,
-                facilitator_notification_txt,
-                settings.DEFAULT_FROM_EMAIL,
-                to
-            )
-            notification.attach_alternative(facilitator_notification_html, 'text/html')
-            notification.send()
 
 
 def _send_facilitator_survey(study_group):
@@ -346,22 +285,28 @@ def send_meeting_reminder(reminder):
         with use_language(reminder.study_group.language):
             yes_link = reminder.study_group_meeting.rsvp_yes_link(email)
             no_link = reminder.study_group_meeting.rsvp_no_link(email)
-            application = reminder.study_group_meeting.study_group.application_set.active().filter(email__iexact=email).first()
+            application = reminder.study_group.application_set.active().filter(email__iexact=email).first()
             unsubscribe_link = application.unapply_link()
+            email_body = reminder.email_body
+            # ensure reminder.email_body has correct links for RSVP and contains unsubscribe link at the end
+            if not re.search(r'UNSUBSCRIBE_LINK', email_body):
+                email_body = email_body + '<p>' + _('To leave this learning circle and stop receiving messages, <a href="%s">click here</a>') % 'UNSUBSCRIBE_LINK' + '</p>'
+            email_body = re.sub(r'RSVP_YES_LINK', yes_link, email_body)
+            email_body = re.sub(r'RSVP_NO_LINK', no_link, email_body)
+            email_body = re.sub(r'UNSUBSCRIBE_LINK', unsubscribe_link, email_body)
+
             context = {
                 "reminder": reminder,
                 "learning_circle": reminder.study_group,
-                "facilitator_message": reminder.email_body,
+                "message": email_body,
                 "rsvp_yes_link": yes_link,
                 "rsvp_no_link": no_link,
                 "unsubscribe_link": unsubscribe_link,
                 "event_meta": True,
             }
-            subject, text_body, html_body = render_email_templates(
-                'studygroups/email/learner_meeting_reminder',
-                context
-            )
-            # TODO not using subject
+            html_body = render_to_string_ctx('studygroups/email/learner_meeting_reminder.html', context)
+            # TODO should we rather strip email_body?
+            text_body = html_body_to_text(html_body)
         try:
             reminder_email = EmailMultiAlternatives(
                 reminder.email_subject.strip('\n'),
@@ -381,13 +326,25 @@ def send_meeting_reminder(reminder):
             reminder_email.send()
         except Exception as e:
             logger.exception('Could not send email to ', email, exc_info=e)
-    # Send to organizer without RSVP & unsubscribe links
+    # Send to facilitator without RSVP & unsubscribe links
     try:
+        email_body = reminder.email_body
+        # Maybe this logic should be part of editing a reminder?
+        if not re.search(r'UNSUBSCRIBE_LINK', email_body):
+            email_body = email_body + '<p>' + _('To leave this learning circle and stop receiving messages, <a href="%s">click here</a>') % 'UNSUBSCRIBE_LINK' + '</p>'
+        base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
+        path = reverse('studygroups_view_study_group', kwargs={'study_group_id': reminder.study_group.id})
+        dashboard_link = base_url + path
+        email_body = re.sub(r'RSVP_YES_LINK', dashboard_link, email_body)
+        email_body = re.sub(r'RSVP_NO_LINK', dashboard_link, email_body)
+        email_body = re.sub(r'UNSUBSCRIBE_LINK', dashboard_link, email_body)
+
         context = {
             "facilitator": reminder.study_group.facilitator,
             "reminder": reminder,
-            "facilitator_message": reminder.email_body,
+            "message": email_body,
         }
+        # TODO, maybe also generate text from html?
         subject, text_body, html_body = render_email_templates(
             'studygroups/email/facilitator_meeting_reminder',
             context
@@ -456,12 +413,12 @@ def send_reminder(reminder):
 
 
 @shared_task
-def send_meeting_change_notification(old_meeting, new_meeting):
-    study_group = new_meeting.study_group
+def send_meeting_change_notification(meeting, old_meeting_datetime):
+    study_group = meeting.study_group
     to = [su.email for su in study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')]
     context = {
-        'old_meeting': old_meeting,
-        'new_meeting': new_meeting,
+        'old_meeting_datetime': old_meeting_datetime,
+        'meeting': meeting,
         'learning_circle': study_group,
     }
 
@@ -602,7 +559,7 @@ def send_community_digest(start_date, end_date):
 @shared_task
 def send_reminders():
     """ Send meeting reminders """
-    now = timezone.now()
+    
     # make sure both the StudyGroup and Meeting is still available
     reminders = Reminder.objects.filter(
         sent_at__isnull=True,
@@ -610,17 +567,12 @@ def send_reminders():
         study_group_meeting__in=Meeting.objects.active()
     )
     for reminder in reminders:
-        # don't send reminders older than the meeting
+        # send the reminder if now is between when it should be sent and when the meeting happens
         meeting_datetime = reminder.study_group_meeting.meeting_datetime()
-        if reminder.study_group_meeting and meeting_datetime - now < datetime.timedelta(days=2) and meeting_datetime > now:
+        send_at = reminder.send_at()
+        now = timezone.now() # NOTE: don't move now up, send_at() also call timezone.now()
+        if send_at < now and now < meeting_datetime:
             send_reminder(reminder)
-
-
-@shared_task
-def gen_reminders():
-    for study_group in StudyGroup.objects.published():
-        translation.activate(settings.LANGUAGE_CODE)
-        generate_reminder(study_group)
 
 
 @shared_task

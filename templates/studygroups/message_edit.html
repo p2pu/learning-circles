@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
 {% load crispy_forms_tags %}
 {% load i18n %}
 
@@ -8,11 +9,18 @@
     <a href="{% url 'studygroups_view_study_group' study_group.pk %}">{% trans "Back" %}</a>
     <h2>{% blocktrans %}Edit email to {{study_group}}{% endblocktrans %}</h2>
     <p>{% trans "This email will go to all learning circle participants, with your email address set as the 'reply to' address." %}
-    <p>{% trans "If any participants joined with a mobile number, an additional SMS field will appear below. SMS replies will be forwarded to you by email." %}</p>
+    <p>{% trans "If any participants joined with a mobile number, they will receive the message in the SMS field below. SMS replies will be forwarded to you by email." %}</p>
+    <p>{% blocktrans %}The RSVP and opt-out links are unique per participant and will be replaced with the appropriate URL when the message is sent.{% endblocktrans %}</p>
     <form action="" method="POST">
       {% csrf_token %}
       {{ form|crispy }}
       <button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
     </form>
+
 </div>
+{% endblock %}
+
+{% block scripts %}
+{% render_bundle 'common' %}
+{% render_bundle 'message-form' %}
 {% endblock %}

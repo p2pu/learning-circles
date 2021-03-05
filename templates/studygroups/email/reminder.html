@@ -1,0 +1,24 @@
+{% load i18n %}{% load l10n %}{% load tz %}
+{% localtime off %}{% localize on %}
+
+<p>{% trans "Hi there!" %}</p>
+
+<p>
+{% blocktrans with studygroup_name=study_group.name meeting_date=next_meeting.meeting_datetime|date meeting_time=next_meeting.meeting_datetime|time meeting_timezone=next_meeting.meeting_datetime|date:"e" venue_name=study_group.venue_name venue_details=study_group.venue_details|add:', '|add:study_group.venue_address %}Your learning circle, {{studygroup_name}}, will meet this {{meeting_date}}, {{meeting_time}} {{meeting_timezone}} at {{venue_name}}, {{venue_details}}.{% endblocktrans %}
+</p>
+
+{% if feedback %}
+  <p>{% blocktrans with feedback_text=feedback.feedback|safe %}From last week's meeting: {{feedback_text}}{% endblocktrans %}</p>
+{% endif %}
+
+<p>{% trans "Please let us know if you can make it by visiting the appropriate link below." %}</p>
+
+<div><a class="rsvp-yes" href="RSVP_YES_LINK">{% trans "Yes, I can make it" %}</a></div>
+<div><a class="rsvp-no" href="RSVP_NO_LINK">{% trans "No, I can't make it" %}</a></div>
+
+<p>{% trans "Cheers" %}</p>
+<p>P2PU</p>
+
+<p>{% blocktrans with link='UNSUBSCRIBE_LINK' %}To leave this learning circle and stop receiving messages, <a href="{{link}}">click here</a>{% endblocktrans %}</p>
+{% endlocalize %}
+{% endlocaltime %}

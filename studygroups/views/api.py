@@ -718,6 +718,7 @@ class LearningCircleCreateView(View):
             study_group.draft = data.get('draft', True)
 
         study_group.save()
+        # notification about new study group is sent at this point, but no associated meetings exists, which implies that the reminder can't use the date of the first meeting
         generate_meetings_from_dates(study_group, data.get('meetings', []))
 
         studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
