@@ -3,7 +3,6 @@ from django.urls import reverse, reverse_lazy
 from django import http
 from django import forms
 from django.forms import modelform_factory, HiddenInput
-from studygroups.utils import render_to_string_ctx
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.generic.base import View
 from django.views.generic.base import RedirectView
@@ -23,10 +22,13 @@ from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 
+import re
 import json
 import datetime
 import requests
 import logging
+
+from tinymce.widgets import TinyMCE
 
 from studygroups.models import Team
 from studygroups.models import TeamMembership
@@ -42,15 +44,17 @@ from studygroups.forms import StudyGroupForm
 from studygroups.forms import MeetingForm
 from studygroups.forms import FeedbackForm
 from studygroups.tasks import send_reminder
-from studygroups.tasks import send_meeting_change_notification
-from studygroups.models import generate_all_meetings
+from studygroups.models import generate_meetings_from_dates
+from studygroups.models import generate_all_meeting_dates
 from studygroups.models import get_study_group_organizers
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import study_group_is_published
 from studygroups.charts import OverallRatingBarChart
 from studygroups.discourse import create_discourse_topic
+from studygroups.utils import render_to_string_ctx
 from studygroups.views.api import serialize_course
 from studygroups.models.team import eligible_team_by_email_domain
+
 
 logger = logging.getLogger(__name__)
 
@@ -132,31 +136,6 @@ class MeetingCreate(FacilitatorRedirectMixin, CreateView):
 class MeetingUpdate(FacilitatorRedirectMixin, UpdateView):
     model = Meeting
     form_class = MeetingForm
-
-    def form_valid(self, form):
-        # check if update meeting has an unsent reminder associated?
-        # self.object contains updated values, but not yet saved
-        # self.object have been updated by the form :(
-        if self.object.reminder_set.count() == 1:
-            reminder = self.object.reminder_set.first()
-            if not reminder.sent_at:
-                # The reminder will be generated again if the meeting is still in the future
-                # This should only happen between 2 days and 4 days before the original start date.
-                reminder.delete()
-            else:
-                # a reminder was sent already
-                # orphan reminder if the meeting is now in the future.
-                if self.object.meeting_datetime() > timezone.now():
-                    reminder.study_group_meeting = None
-                    reminder.save()
-
-                # if meeting was scheduled for a date in the future
-                # let learners know the details have changed
-                original_meeting = Meeting.objects.get(pk=self.object.pk)
-                if original_meeting.meeting_datetime() > timezone.now():
-                    send_meeting_change_notification.delay(original_meeting, self.object)
-
-        return super().form_valid(form)
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
@@ -244,6 +223,14 @@ class MessageView(DetailView):
     model = Reminder
     template_name = 'studygroups/message_view.html'
     context_object_name = 'message'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        message = context['message']
+        message.email_body = re.sub(r'RSVP_YES_LINK', '#', message.email_body)
+        message.email_body = re.sub(r'RSVP_NO_LINK', '#', message.email_body)
+        message.email_body = re.sub(r'UNSUBSCRIBE_LINK', '#', message.email_body)
+        return context
 
 
 class CoursePage(DetailView):
@@ -394,8 +381,11 @@ class StudyGroupCreateLegacy(CreateView):
         study_group.facilitator = self.request.user
 
         study_group.save()
+        meeting_dates = generate_all_meeting_dates(
+            study_group.start_date, study_group.meeting_time, form.cleaned_data['weeks']
+        )
+        generate_meetings_from_dates(study_group, meeting_dates)
 
-        #generate_all_meetings(study_group)
         messages.success(self.request, _('You created a new learning circle! Check your email for next steps.'))
         success_url = reverse_lazy('studygroups_view_study_group', args=(study_group.id,))
         return http.HttpResponseRedirect(success_url)
@@ -425,17 +415,18 @@ class StudyGroupUpdateLegacy(FacilitatorRedirectMixin, UpdateView):
     def form_valid(self, form):
         return_value = super().form_valid(form)
         if form.date_changed and self.object.draft == False:
-            self.object.meeting_set.delete()
-            generate_all_meetings(self.object)
+            meeting_dates = generate_all_meeting_dates(self.object.start_date, self.object.meeting_time, form.cleaned_data.get('weeks'))
+            generate_meetings_from_dates(self.object, meeting_dates)
         return return_value
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
-class StudyGroupDelete(FacilitatorRedirectMixin, DeleteView):
+class StudyGroupDelete(DeleteView):
     model = StudyGroup
     template_name = 'studygroups/confirm_delete.html'
     pk_url_kwarg = 'study_group_id'
     context_object_name = 'study_group'
+    success_url = reverse_lazy('studygroups_facilitator')
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
@@ -473,7 +464,8 @@ class StudyGroupPublish(SingleObjectMixin, View):
             study_group.save()
             # TODO this is temporary to still allow drafts created before to be published. This could also be replaced with a data migration that generates the meetings
             if study_group.meeting_set.active().count() == 0:
-                generate_all_meetings(study_group)
+                meeting_dates = generate_all_meeting_dates(study_group.start_date, study_group.meeting_time)
+                generate_meetings_from_dates(study_group, meeting_dates)
 
         url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
         return http.HttpResponseRedirect(url)
@@ -501,13 +493,17 @@ class StudyGroupDidNotHappen(SingleObjectMixin, View):
 @user_is_group_facilitator
 @study_group_is_published
 def message_send(request, study_group_id):
-    # TODO - this piggy backs of Reminder, won't work of Reminder is coupled to Meeting
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
-    form_class =  modelform_factory(Reminder, exclude=['study_group_meeting', 'created_at', 'sent_at', 'sms_body'], widgets={'study_group': HiddenInput})
 
+    widgets = {
+        'email_body': TinyMCE(),
+        'study_group': forms.HiddenInput
+    }
+    fields = ['study_group', 'email_subject', 'email_body']
     needs_mobile = study_group.application_set.active().exclude(mobile='').count() > 0
     if needs_mobile:
-        form_class = modelform_factory(Reminder, exclude=['study_group_meeting', 'created_at', 'sent_at'], widgets={'study_group': HiddenInput})
+        fields += ['sms_body']
+    form_class =  modelform_factory(Reminder, fields=fields, widgets=widgets)
 
     if request.method == 'POST':
         form = form_class(request.POST)
@@ -525,23 +521,27 @@ def message_send(request, study_group_id):
         'course': study_group.course,
         'form': form
     }
-    return render(request, 'studygroups/email.html', context)
+    return render(request, 'studygroups/adhoc_message_form.html', context)
 
 
 @user_is_group_facilitator
-@study_group_is_published
 def message_edit(request, study_group_id, message_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
     reminder = get_object_or_404(Reminder, pk=message_id)
+    # dont try to edit someone elses reminder?
+    if reminder.study_group != study_group:
+        raise PermissionDenied
     url = reverse('studygroups_view_study_group', args=(study_group_id,))
     if not reminder.sent_at == None:
         messages.info(request, 'Message has already been sent and cannot be edited.')
         return http.HttpResponseRedirect(url)
 
-    form_class =  modelform_factory(Reminder, exclude=['study_group_meeting', 'created_at', 'sent_at', 'sms_body'], widgets={'study_group': HiddenInput})
-    needs_mobile = study_group.application_set.active().exclude(mobile='').count() > 0
-    if needs_mobile:
-        form_class = modelform_factory(Reminder, exclude=['study_group_meeting', 'created_at', 'sent_at'], widgets={'study_group': HiddenInput})
+    widgets = {
+        'email_body': TinyMCE(),
+        'study_group': forms.HiddenInput
+    }
+    fields = ['study_group', 'email_subject', 'email_body', 'sms_body']
+    form_class =  modelform_factory(Reminder, fields=fields, widgets=widgets)
 
     if request.method == 'POST':
         form = form_class(request.POST, instance=reminder)
@@ -558,6 +558,67 @@ def message_edit(request, study_group_id, message_id):
         'form': form
     }
     return render(request, 'studygroups/message_edit.html', context)
+
+
+@method_decorator(user_is_group_facilitator, name='dispatch')
+class MeetingFollowUp(CreateView):
+    model = Reminder
+    template_name = 'studygroups/meeting_follow_up_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['meeting'] = get_object_or_404(Meeting, pk=self.kwargs.get('pk'))
+        return context
+
+    def get_form_class(self):
+        study_group = get_object_or_404(StudyGroup, pk=self.kwargs.get('study_group_id'))
+        fields = ['study_group', 'email_subject', 'email_body']
+        needs_mobile = study_group.application_set.active().exclude(mobile='').count() > 0
+        if needs_mobile:
+            fields += ['sms_body']
+        widgets = {
+            'email_body': TinyMCE(),
+            'study_group': forms.HiddenInput
+        }
+        return modelform_factory(Reminder, fields=fields, widgets=widgets)
+
+    def get_initial(self):
+        study_group_id = self.kwargs.get('study_group_id')
+        study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+        return {
+            'study_group': study_group,
+        }
+
+    def form_valid(self, form):
+        study_group = get_object_or_404(StudyGroup, pk=self.kwargs.get('study_group_id'))
+        meeting = get_object_or_404(Meeting, pk=self.kwargs.get('pk'))
+        if meeting.study_group.pk != study_group.pk:
+            raise PermissionDenied
+        follow_up = form.save()
+        meeting.follow_up = follow_up
+        meeting.save()
+        send_reminder(follow_up)
+        messages.success(self.request, 'Follow up message has been sent')
+
+        url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
+        return http.HttpResponseRedirect(url)
+
+
+@method_decorator(user_is_group_facilitator, name='dispatch')
+class MeetingFollowUpDismiss(SingleObjectMixin, View):
+    model = Meeting
+ 
+    def post(self, request, *args, **kwargs):
+        meeting = self.get_object()
+        # annoying that kwarg is a string
+        if str(meeting.study_group.id) != kwargs.get('study_group_id'):
+            raise PermissionDenied
+
+        meeting.follow_up_dismissed = True
+        meeting.save()
+
+        url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
+        return http.HttpResponseRedirect(url)
 
 
 @user_is_group_facilitator
@@ -625,7 +686,7 @@ class InvitationConfirm(FormView):
         return super(InvitationConfirm, self).get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(InvitationConfirm, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         team_membership = TeamMembership.objects.active().filter(user=self.request.user).first()
         context['team_membership'] = team_membership
 

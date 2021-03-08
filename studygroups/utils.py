@@ -80,8 +80,8 @@ def html_body_to_text(html):
     """ Convern HTML email body to text """
     # Consider using https://github.com/aaronsw/html2text
     # remove style tags
-    link_re = re.compile(r'<style>.*?</style>', re.MULTILINE|re.DOTALL)
-    html = link_re.sub('', html)
+    style_re = re.compile(r'<style>.*?</style>', re.MULTILINE|re.DOTALL)
+    html = style_re.sub('', html)
 
     # rewrite links
     link_re = re.compile(r'<a.*?href="(?P<url>.*?)".*?>(?P<text>.*?)</a>')

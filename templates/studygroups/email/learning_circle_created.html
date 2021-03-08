@@ -3,45 +3,44 @@
 {% load extras %}
 {% block body %}
 
+{% url 'studygroups_facilitator' as dashboard_url %}
+{% url 'studygroups_generate_course_discourse_topic' study_group.course.pk as course_discourse_url %}
+
 <p>{% blocktrans with name=study_group.facilitator.first_name %}Hi {{name}}{% endblocktrans %},</p>
 
 {% url 'studygroups_signup' location=study_group.venue_name|unicode_slugify study_group_id=study_group.pk as study_group_url%}
-<h2>{% trans "Your learning circle has been created!" %}</h2>
+
+{% blocktrans with studygroup_name=study_group.name city=study_group.city %}
+    Congratulations! Your “{{studygroup_name}}” learning circle in {{city}} has been created.
+  {% endblocktrans %}
 
 <p>
-  {% blocktrans with studygroup_name=study_group.name city=study_group.city %}
-    Congratulations! You created a learning circle called “{{studygroup_name}}” in {{city}}.
-  {% endblocktrans %}
   {% if study_group.draft %}
-    {% blocktrans %}You can view a draft signup page at  <a href="{{PROTOCOL}}://{{DOMAIN}}{{study_group_url}}">{{PROTOCOL}}://{{DOMAIN}}{{study_group_url}}</a>
-    {% endblocktrans %}
+    {% blocktrans %}You can view a draft signup page at <a href="{{PROTOCOL}}://{{DOMAIN}}{{study_group_url}}">{{PROTOCOL}}://{{DOMAIN}}{{study_group_url}}</a>{% endblocktrans %}
   {% else %}
-    {% blocktrans %}
-      Your signup page is live at: <a href="{{PROTOCOL}}://{{DOMAIN}}{{study_group_url}}">{{PROTOCOL}}://{{DOMAIN}}{{study_group_url}}</a></p>
-    {% endblocktrans %}
+    {% blocktrans %}Your signup page is live at: <a href="{{PROTOCOL}}://{{DOMAIN}}{{study_group_url}}">{{PROTOCOL}}://{{DOMAIN}}{{study_group_url}}</a></p>{% endblocktrans %}
   {% endif %}
 </p>
 
-<p>{% trans "A handful of P2PU community members are copied on this email. So that they can better assist you, we are including your repsonses to the following questions:" %}</p>
+<p>{% blocktrans %}You can monitor sign ups, send emails and SMS to your learners, and edit automated reminder messages directly from <a href="{{dashboard_url}}">your dashboard</a>.{% endblocktrans %}</p>
+
+<p>{% trans "A handful of P2PU community members are copied on this email. So that they can better assist you, we are including your responses to the following questions:" %}</p>
 
 <div style="padding: 0.2em 1em; border-left: solid 10px rgb(255,155,0); background: rgba(255,155,0,15%);">
-  <h3>What do you hope to achieve by facilitating this learning circle?</h3>
-  <p>{% if study_group.facilitator_goal %}{{ study_group.facilitator_goal }}{% else %}{% trans "Not specified" %}{% endif %}</p>
-  <h3>Is there anything that we can help you with as you get started?</h3>
-  <p>{% if study_group.facilitator_concerns %}{{ study_group.facilitator_concerns }}{% else %}{% trans "Not specified" %}{% endif %}</p>
+  <p><strong>What do you hope to achieve by facilitating this learning circle?</strong><br/>
+  {% if study_group.facilitator_goal %}{{ study_group.facilitator_goal }}{% else %}{% trans "Not specified" %}{% endif %}</p>
+  <p><strong>Is there anything that we can help you with as you get started?</strong><br/>
+  {% if study_group.facilitator_concerns %}{{ study_group.facilitator_concerns }}{% else %}{% trans "Not specified" %}{% endif %}</p>
 </div>
 
-{% url 'studygroups_facilitator' as dashboard_url %}
-<h2>{% trans "What next?" %}</h2>
-<ul>
-    <li>{% blocktrans %}<a href="https://community.p2pu.org/c/learning-circles/promotion-and-outreach"><b>Review promotion and outreach.</b></a>You'll find templates and discussions on the community that will help you promote your learning circle.{% endblocktrans %}</li>
-    {% url 'studygroups_generate_course_discourse_topic' study_group.course.pk as course_discourse_url %}
-    <li>{% blocktrans with course_title=study_group.course.title %}<a href="{{course_discourse_url}}"><b>Learn more about “{{course_title}}”</b></a>. Post questions specific to this course our community forum.{% endblocktrans %}</li>
-    <li>{% blocktrans %}<a href="https://community.p2pu.org/c/learning-circles/creating-a-learning-circle"><b>Gather your supplies</b></a>. Make sure you have everything you need before your learning circle gets started.{% endblocktrans %}</li>
-    <li>{% blocktrans %}<a href="{{dashboard_url}}"><b>Review learner applications</b></a>. You’ll receive an email whenever somebody applies to your learning circle. You can view their applications and send them messages directly through your dashboard.{% endblocktrans %}</li>
-</ul>
+<p>{% trans "Looking for facilitation tips and strategies to run a great learning circle?" %}</p>
+  <ul>
+    <li>{% blocktrans %}Read through <a href="http://handbook.p2pu.org/">our handbook</a> for tips on facilitation and promotion{% endblocktrans %}</li>
+    <li>{% blocktrans %}Join an <a href="https://community.p2pu.org/c/community-events/upcoming-events/79">upcoming facilitator call</a>{% endblocktrans %}</li>
+    <li>{% blocktrans with course_title=study_group.course.title %}Post questions specific to “{{course_title}}” <a href="{{course_discourse_url}}">on our community forum</a>{% endblocktrans %}</li>
+  </ul>
+</p>
 
-
-<p>{% trans "Cheers" %},<br/>
-P2PU</p>
+<p>{% trans "Cheers" %},</p>
+<p>P2PU</p>
 {% endblock %}

@@ -68,9 +68,9 @@ export default class CourseInput extends React.Component{
           />
           <span 
             id="searchclear" style={{
-              position: 'absolute', top: '1em', right: '10px', cursor: 'pointer'
+              position: 'absolute', top: '0.5em', right: '10px', cursor: 'pointer'
             }}
-            className="glyphicon glyphicon-remove-circle"
+            className="fa fa-times"
             onClick={() => {
               this.setState({q: '', courseId: ''});
               this.fetchCourses('');

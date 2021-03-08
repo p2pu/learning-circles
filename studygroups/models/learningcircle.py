@@ -11,6 +11,10 @@ from django_bleach.models import BleachField
 
 from studygroups.utils import gen_unsubscribe_querystring
 from studygroups.utils import gen_rsvp_querystring
+from studygroups.utils import render_to_string_ctx
+from studygroups.utils import use_language
+
+from celery import current_app
 
 from .base import SoftDeleteQuerySet
 from .base import LifeTimeTrackingModel
@@ -60,9 +64,9 @@ class StudyGroup(LifeTimeTrackingModel):
     place_id = models.CharField(max_length=256, blank=True)  # Algolia place_id
     online = models.BooleanField(default=False) # indicate if the meetings will take place online
     facilitator = models.ForeignKey(User, on_delete=models.CASCADE)
-    start_date = models.DateField() # This field caches first_meeting.meeting_date
-    meeting_time = models.TimeField() # This field caches last_meeting.meeting_date
-    end_date = models.DateField()
+    start_date = models.DateField()  # This field caches first_meeting.meeting_date
+    meeting_time = models.TimeField()
+    end_date = models.DateField()  # This field caches last_meeting.meeting_date
     duration = models.PositiveIntegerField(default=90)  # meeting duration in minutes
     timezone = models.CharField(max_length=128)
     signup_open = models.BooleanField(default=True)
@@ -275,12 +279,42 @@ class Meeting(LifeTimeTrackingModel):
     study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE)
     meeting_date = models.DateField()
     meeting_time = models.TimeField()
+    follow_up = models.ForeignKey('studygroups.Reminder', null=True, blank=True, on_delete=models.SET_NULL)
+    follow_up_dismissed = models.BooleanField(default=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_meeting_date = self.meeting_date
+        self._original_meeting_time = self.meeting_time
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.study_group.start_date = self.study_group.first_meeting().meeting_date
         self.study_group.end_date = self.study_group.last_meeting().meeting_date
         self.study_group.save()
+
+        if self.reminder_set.filter(sent_at__isnull=False).count() == 1:
+            # a reminder has been sent, disassociate it
+            self.reminder_set.update(study_group_meeting=None)
+
+            tz = pytz.timezone(self.study_group.timezone)
+            original_meeting_datetime = tz.localize(
+                datetime.datetime.combine(self._original_meeting_date, self._original_meeting_time)
+            )
+
+            # the previous date was in the future
+            if original_meeting_datetime > timezone.now():
+                # send meeting change notification
+                current_app.send_task('studygroups.tasks.send_meeting_change_notification', (self, original_meeting_datetime))
+        else:
+            # no reminder has been sent
+            # deleted reminder if any
+            self.reminder_set.all().delete()
+
+        # generate a reminder if the meeting is in the future
+        if self.meeting_datetime() > timezone.now() and not self.deleted_at:
+            generate_meeting_reminder(self)
+
 
     def meeting_number(self):
         # TODO this will break for two meetings on the same day
@@ -297,7 +331,19 @@ class Meeting(LifeTimeTrackingModel):
 
 
     def send_reminder_at(self):
-        return self.meeting_datetime() - datetime.timedelta(days=2)
+        """ The datetime that a reminder should be sent at """
+        previous_meeting = self.study_group.meeting_set.active().filter(
+            models.Q(meeting_date__lt=self.meeting_date)
+            | models.Q(meeting_date=self.meeting_date, meeting_time__lt=self.meeting_time)
+        ).order_by('-meeting_date', '-meeting_time').first()
+        two_days_before = self.meeting_datetime() - datetime.timedelta(days=2)
+        # ensure send_at is always after previous meeting finished
+        tz = pytz.timezone(self.study_group.timezone)
+        # subtract 5 seconds from now so that a past date technically stays in the past and can be sent
+        now = timezone.now().astimezone(tz) - datetime.timedelta(seconds=5)
+        if previous_meeting:
+            return max(now, max(two_days_before, previous_meeting.meeting_datetime() + datetime.timedelta(minutes=self.study_group.duration)))
+        return max(now, two_days_before)
 
 
     def rsvps(self):
@@ -332,6 +378,15 @@ class Meeting(LifeTimeTrackingModel):
         )
         return '{0}{1}?{2}'.format(base_url, url, no_qs)
 
+    def status(self):
+        if self.meeting_datetime() > timezone.now() and self != self.study_group.next_meeting() or self.study_group.draft:
+            return 'pending'
+
+        if self.feedback_set.count and (self.follow_up_dismissed or self.follow_up):
+            return 'done'
+
+        return 'todo'
+
     def __str__(self):
         # TODO i18n
         return '{0}, {1} at {2}'.format(self.study_group.name, self.meeting_datetime(), self.study_group.venue_name)
@@ -349,7 +404,7 @@ class Reminder(models.Model):
     study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE)
     study_group_meeting = models.ForeignKey('studygroups.Meeting', blank=True, null=True, on_delete=models.CASCADE)  # TODO rename to meeting. Make OneToOne?
     email_subject = models.CharField(max_length=256)
-    email_body = models.TextField()
+    email_body = BleachField(max_length=4000, allowed_tags=settings.TINYMCE_DEFAULT_CONFIG.get('valid_elements', '').split(',') + ['br'], allowed_attributes={'a': ['href', 'title', 'rel', 'target']})
     sms_body = models.CharField(verbose_name=_('SMS (Text)'), max_length=160, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -358,6 +413,54 @@ class Reminder(models.Model):
     def sent_at_tz(self):
         tz = pytz.timezone(self.study_group.timezone)
         return self.sent_at.astimezone(tz)
+
+    def send_at(self):
+        if self.sent_at:
+            return self.sent_at_tz()
+
+        if not self.study_group_meeting:
+            # Messages shouldn't exist that hasn't been sent without an associated meeting
+            #raise Exception('Data inconsistency')
+            # update: unsent follow ups could match this codepath
+            # TODO will this be in the wrong timezone?
+            return timezone.now()
+
+        return self.study_group_meeting.send_reminder_at()
+
+
+def generate_meeting_reminder(meeting):
+    if Reminder.objects.filter(study_group_meeting=meeting).exists():
+        return None
+
+    reminder = Reminder()
+    reminder.study_group = meeting.study_group
+    reminder.study_group_meeting = meeting
+    context = {
+        'facilitator': meeting.study_group.facilitator,
+        'study_group': meeting.study_group,
+        'next_meeting': meeting,
+        'reminder': reminder,
+    }
+    timezone.activate(pytz.timezone(meeting.study_group.timezone))
+    with use_language(meeting.study_group.language):
+        reminder.email_subject = render_to_string_ctx(
+            'studygroups/email/reminder-subject.txt',
+            context
+        ).strip('\n')
+        reminder.email_body = render_to_string_ctx(
+            'studygroups/email/reminder.html',
+            context
+        )
+        reminder.sms_body = render_to_string_ctx(
+            'studygroups/email/sms.txt',
+            context
+        )
+    # TODO - handle SMS reminders that are too long
+    if len(reminder.sms_body) > 160:
+        logger.error('SMS body too long: ' + reminder.sms_body)
+    reminder.sms_body = reminder.sms_body[:160]
+    reminder.save()
+    return reminder
 
 
 class Rsvp(models.Model):
@@ -386,7 +489,7 @@ class Feedback(LifeTimeTrackingModel):
     ]
 
     study_group_meeting = models.ForeignKey('studygroups.Meeting', on_delete=models.CASCADE) # TODO should this be a OneToOneField?
-    feedback = models.TextField() # Shared with learners
+    feedback = models.TextField(blank=True) # Shared with learners. This is being deprecated, but kept for retaining past data.
     attendance = models.PositiveIntegerField()
-    reflection = models.TextField() # Not shared
+    reflection = models.TextField(blank=True) # Not shared
     rating = models.CharField(choices=RATING, max_length=16)

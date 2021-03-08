@@ -23,8 +23,8 @@ from studygroups.models import TeamInvitation
 from studygroups.models import Feedback
 from studygroups.models import generate_all_meetings
 from studygroups.utils import gen_rsvp_querystring
-from studygroups.tasks import generate_reminder
 from studygroups.tasks import send_reminders
+from studygroups.tasks import send_reminder
 from custom_registration.models import create_user
 from custom_registration.models import confirm_user_email
 
@@ -155,7 +155,7 @@ class TestFacilitatorViews(TestCase):
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
         lc = study_groups.first()
-        self.assertEquals(study_groups.first().meeting_set.count(), 0)
+        self.assertEquals(study_groups.first().meeting_set.count(), 6)
         self.assertEquals(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.name, lc.city))
         self.assertIn('bob@example.net', mail.outbox[0].to)
@@ -273,7 +273,7 @@ class TestFacilitatorViews(TestCase):
         study_groups = StudyGroup.objects.filter(facilitator=user)
         self.assertEquals(study_groups.count(), 1)
         lc = study_groups.first()
-        self.assertEquals(study_groups.first().meeting_set.active().count(), 0)
+        self.assertEquals(study_groups.first().meeting_set.active().count(), 6)
 
         # updates allowed for drafts
         with freeze_time("2018-12-28"):
@@ -285,7 +285,7 @@ class TestFacilitatorViews(TestCase):
             study_group = StudyGroup.objects.get(pk=study_groups.first().pk)
             self.assertEqual(study_group.start_date, datetime.date(2018, 12, 25))
             self.assertEqual(study_group.meeting_time, datetime.time(19, 10))
-            self.assertEqual(study_group.meeting_set.active().count(), 0)
+            self.assertEqual(study_group.meeting_set.active().count(), 6)
 
         resp = c.post('/en/studygroup/{0}/publish/'.format(lc.pk))
         self.assertRedirects(resp, '/en/studygroup/{}/'.format(lc.pk))
@@ -372,102 +372,126 @@ class TestFacilitatorViews(TestCase):
         self.assertEquals(study_groups.count(), 0)
 
 
-    @patch('studygroups.views.facilitate.send_meeting_change_notification')
-    def test_edit_meeting(self, send_meeting_change_notification):
+    @patch('studygroups.models.learningcircle.current_app')
+    def test_edit_meeting(self, current_app):
         # Create studygroup
-        # generate reminder
-        # edit meeting
-        # make sure reminder was deleted
-        # send reminders
-        # edit meeting in the past to be in the future now
-        # test reminder in now orphaned
-
         user = create_user('bob@example.net', 'bob', 'test', 'password', False)
         confirm_user_email(user)
         c = Client()
         c.login(username='bob@example.net', password='password')
-        data = self.STUDY_GROUP_DATA.copy()
-        data['start_date'] = '12/25/2018'
-        data['meeting_time'] = '07:00 PM'
-        resp = c.post('/en/studygroup/create/legacy/', data)
-        sg = StudyGroup.objects.last()
-        self.assertRedirects(resp, '/en/studygroup/{}/'.format(sg.pk))
+        with freeze_time('2018-07-20'):
+            resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
+            self.assertEqual(resp.json()['status'], 'created')
         study_groups = StudyGroup.objects.filter(facilitator=user)
-        self.assertEquals(study_groups.count(), 1)
+        self.assertEqual(study_groups.count(), 1)
         lc = study_groups.first()
-        self.assertEquals(lc.meeting_set.count(), 0)
+        self.assertEqual(lc.meeting_set.count(), 6)
         resp = c.post('/en/studygroup/{0}/publish/'.format(lc.pk))
-        self.assertRedirects(resp, '/en/studygroup/{}/'.format(lc.pk))
+        self.assertRedirects(resp, '/en/studygroup/{0}/'.format(lc.pk))
         study_group = StudyGroup.objects.get(pk=lc.pk)
         self.assertEqual(study_group.draft, False)
         self.assertEqual(study_group.meeting_set.count(), 6)
+        self.assertEqual(study_group.reminder_set.count(), 6)
 
-        # generate reminder for first meeting (< 4 days before 25 Dec)
-        with freeze_time('2018-12-22'):
-            generate_reminder(study_group)
-            self.assertEqual(Reminder.objects.filter(study_group=study_group).count(), 1)
-
-        # update meeting with unsent reminder
-        reminder = Reminder.objects.filter(study_group=study_group).first()
-        meeting = reminder.study_group_meeting
+        # update 1st meeting with unsent reminder
+        meeting = study_group.meeting_set.order_by('meeting_date').first()
         meeting_id = meeting.pk
+        old_reminder_body = meeting.reminder_set.first().email_body
         update = {
-            "meeting_date": "2018-12-27",
+            "meeting_date": "2018-07-26",
             "meeting_time": "07:00 PM",
             "study_group": study_group.pk,
         }
-        resp = c.post('/en/studygroup/{0}/meeting/{1}/edit/'.format(study_group.pk, meeting.pk), update)
+        with freeze_time('2018-07-20'):
+            resp = c.post('/en/studygroup/{0}/meeting/{1}/edit/'.format(study_group.pk, meeting.pk), update)
         self.assertRedirects(resp, '/en/studygroup/{}/'.format(study_group.pk))
         meeting.refresh_from_db()
-        self.assertEqual(meeting.meeting_date, datetime.date(2018, 12, 27))
-
-        # make sure the reminder was deleted
-        self.assertEqual(Reminder.objects.filter(study_group=study_group).count(), 0)
-
-        # generate a reminder for the updated meeting
-        with freeze_time('2018-12-24'):
-            generate_reminder(study_group)
-            self.assertEqual(Reminder.objects.filter(study_group=study_group).count(), 1)
+        self.assertEqual(meeting.meeting_date, datetime.date(2018, 7, 26))
+        current_app.send_task.assert_not_called()  # no meeting change notification sent
+        self.assertNotEqual(meeting.reminder_set.first().email_body, old_reminder_body)  # reminder regenerated
+        self.assertEqual(study_group.reminder_set.count(), 6)
 
         # send it
-        with freeze_time('2018-12-26'):
+        with freeze_time('2018-07-25'):
             self.assertEqual(Reminder.objects.filter(study_group=study_group, sent_at__isnull=False).count(), 0)
             send_reminders()
             self.assertEqual(Reminder.objects.filter(study_group=study_group, sent_at__isnull=False).count(), 1)
 
         # and then update it afterwards to be in the future again
-        with freeze_time('2018-12-28'):
+        with freeze_time('2018-07-27'):
             meeting.refresh_from_db()
             self.assertTrue(meeting.meeting_datetime() < timezone.now())
-            self.assertEquals(Reminder.objects.count(), 1)
-            update['meeting_date'] = '2018-12-30'
+            self.assertEquals(Reminder.objects.count(), 6)
+            update['meeting_date'] = '2018-07-30'
             resp = c.post('/en/studygroup/{0}/meeting/{1}/edit/'.format(study_group.pk, meeting.pk), update)
             self.assertRedirects(resp, '/en/studygroup/{}/'.format(study_group.pk))
             meeting.refresh_from_db()
-            self.assertFalse(send_meeting_change_notification.delay.called)
-            # old reminder should be orphaned - not linked to this meeting
-            self.assertEquals(meeting.reminder_set.count(), 0)
-            generate_reminder(study_group)
-            # now generate a reminder again
-            meeting.refresh_from_db()
-            self.assertEquals(meeting.reminder_set.count(), 1)
-            self.assertEquals(Reminder.objects.count(), 2)
+            self.assertFalse(current_app.send_task.called)  # meeting change notification should not be sent
+            self.assertEquals(Reminder.objects.count(), 7)  # old reminder is kept
 
 
         # update it before the meeting to be further in the future
-        with freeze_time('2018-12-29'):
+        with freeze_time('2018-07-29'):
             meeting.refresh_from_db()
             self.assertTrue(meeting.meeting_datetime() > timezone.now())
-            self.assertEqual(Reminder.objects.filter(study_group_meeting=meeting, sent_at__isnull=False).count(), 0)
             send_reminders()
-            self.assertEqual(Reminder.objects.filter(study_group_meeting=meeting, sent_at__isnull=False).count(), 1)
-            update['meeting_date'] = '2019-01-02'
+            update['meeting_date'] = '2019-08-02'
             resp = c.post('/en/studygroup/{0}/meeting/{1}/edit/'.format(study_group.pk, meeting.pk), update)
             self.assertRedirects(resp, '/en/studygroup/{}/'.format(study_group.pk))
             meeting.refresh_from_db()
-            self.assertTrue(send_meeting_change_notification.delay.called)
-            # old reminder should be orphaned - not linked to this meeting
-            self.assertEquals(meeting.reminder_set.count(), 0)
+            current_app.send_task.assert_called_once()  # meeting change notification should be sent
+            self.assertEquals(meeting.reminder_set.count(), 1)
+            self.assertEquals(Reminder.objects.count(), 8)  # old reminder should be kept
+
+
+    @freeze_time('2021-02-25')
+    def test_edit_reminder(self):
+        c = Client()
+        c.login(username='admin@test.com', password='password')
+        signup_data = self.APPLICATION_DATA.copy()
+        resp = c.post('/en/signup/foo-bob-1/', signup_data)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEqual(Application.objects.active().count(), 1)
+        mail.outbox = []
+        study_group = StudyGroup.objects.get(pk=1)
+        study_group.start_date = datetime.date(2021, 3, 1)
+        study_group.end_date = study_group.start_date + datetime.timedelta(weeks=5)
+        study_group.save()
+
+        signup_data = self.APPLICATION_DATA.copy()
+        resp = c.post('/en/signup/foo-bob-1/', signup_data)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEqual(Application.objects.active().count(), 1)
+
+        generate_all_meetings(study_group)
+        self.assertEqual(study_group.meeting_set.active().count(), 6)
+        self.assertEqual(study_group.reminder_set.count(), 6)
+        meeting = study_group.meeting_set.active().first()
+        reminder = meeting.reminder_set.first()
+
+        url = '/en/studygroup/{0}/message/edit/{1}/'.format(signup_data['study_group'], reminder.id)
+
+        email_body = '<p>hi, here is a link <a href="https://www.p2pu.org">p2pu</a></p><script>alert("MUHAHAHA")</script>'
+        mail_data = {
+            'study_group': study_group.id,
+            'email_subject': 'GED® Prep Math study group meeting Thursday 7 May 6:00 PM at Edgewater',
+            'email_body': email_body,
+            'sms_body': 'The first study group for GED® Prep Math will meet next Thursday, May 7th, from 6:00 pm-7:45 pm at Edgewater on the 2nd floor. Feel free to bring a study buddy!'
+        }
+        resp = c.post(url, mail_data)
+        self.assertRedirects(resp, '/en/studygroup/1/')
+        reminder.refresh_from_db()
+        self.assertIn('&lt;script&gt;alert("MUHAHAHA")&lt;/script&gt;', reminder.email_body)
+        self.assertIn('<a href="https://www.p2pu.org">p2pu</a>', reminder.email_body)
+
+        mail.outbox = []
+        send_reminder(reminder)
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(mail.outbox[0].to[0], signup_data['email'])
+        self.assertEqual(mail.outbox[1].to[0], 'facilitator@example.net')
+        self.assertIn('/optout/confirm/?user=', mail.outbox[0].alternatives[0][0])
+        self.assertIn('&lt;script&gt;alert("MUHAHAHA")&lt;/script&gt;', mail.outbox[0].alternatives[0][0])
+        self.assertIn('<a href="https://www.p2pu.org">p2pu</a>', mail.outbox[0].alternatives[0][0])
 
 
     @patch('studygroups.tasks.send_message')
