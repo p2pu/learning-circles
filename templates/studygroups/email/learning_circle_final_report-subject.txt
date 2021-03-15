@@ -1,5 +1,3 @@
 {% load i18n %}
-{% blocktrans with studygroup_name=study_group.name|safe %}
-{{studygroup_name}} learning circle report is ready
-{% endblocktrans %}
+{% blocktrans with studygroup_name=study_group.name|safe %}{{studygroup_name}} learning circle report is ready{% endblocktrans %}
 
