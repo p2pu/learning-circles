@@ -380,10 +380,15 @@ def send_reminder(reminder):
         }
         # activate learning circle language
         with use_language(reminder.study_group.language):
-            subject, text_body, html_body = render_email_templates(
-                'studygroups/email/facilitator_message',
+            subject = render_to_string_ctx(
+                'studygroups/email/facilitator_message-subject.txt',
+                context
+            ).strip('\n')
+            html_body = render_html_with_css(
+                'studygroups/email/facilitator_message.html',
                 context
             )
+            text_body = html_body_to_text(html_body)
         to += [reminder.study_group.facilitator.email]
         sender = 'P2PU <{0}>'.format(settings.DEFAULT_FROM_EMAIL)
         try:
