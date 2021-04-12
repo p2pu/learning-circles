@@ -1,0 +1,35 @@
+/* HIDE RADIO */
+[type=radio] { 
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* IMAGE STYLES */
+[type=radio] + img {
+  cursor: pointer;
+  filter: grayscale(100%) opacity(0.6);
+}
+
+/* CHECKED STYLES */
+[type=radio]:checked + img {
+  //outline: 2px solid #f00;
+  filter: none;
+}
+
+#div_id_rating {
+  img {
+    max-width: 100%;
+  }
+  line-height: 1.4;
+}
+
+.p2pu-bot-selector {
+  display: flex;
+  & > * {
+    padding: 0 1em;
+  }
+}
+
+
