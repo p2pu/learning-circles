@@ -1,9 +1,17 @@
 import React, { useState } from 'react'
-
 import 'components/stylesheets/meeting-feedback.scss'
 
+
+function getCookie(name) {
+  var value = "; " + document.cookie;
+  var parts = value.split("; " + name + "=");
+  if (parts.length == 2) return parts.pop().split(";").shift();
+}
+
+// axios.defaults.xsrfCookieName = 'csrftoken'
+
 const MeetingFeedback = props => {
-  const {meetingId} = props;
+  const {meetingId, postUrl} = props;
 
   const [rating, setRating] = useState(props.rating)
   const ratingOptions = [
@@ -16,7 +24,10 @@ const MeetingFeedback = props => {
 
   const [attendance, setAttendance] = useState(props.attendance);
 
+  // first prompt is a legacy prompt and should only be used if the reflection value doesn't 
+  // indicate a prompt index + prompt
   const reflectionPrompts = [
+    'Anything else you want to share?',
     'What surprised you during this meeting?',
     'What did you find new and refreshing?',
     'What feels most challenging right now?',
@@ -24,21 +35,45 @@ const MeetingFeedback = props => {
     'What made you laugh?',
     'What advice would you give another facilitator who wanted to use this material?',
   ];
-  // TODO need to store both prompt and answer. And when answer
-  const [promptIndex, setPromptIndex] = useState(Math.floor(Math.random()*reflectionPrompts.length));
-  const [reflection, setReflection] = useState(props.reflection);
-
-  const submitForm = (e) => {
-    e.preventDefault();
+  const randi = Math.floor(1 + Math.random()*(reflectionPrompts.length-1));
+  let {
+    reflection : initialReflection = JSON.stringify({"promptIndex": randi, "prompt": reflectionPrompts[randi],}) 
+  } = props;
+  try {
+    initialReflection = JSON.parse(initialReflection);
+  } catch (error){
+    initialReflection = {
+      answer: props.reflection,
+      promptIndex: 0,
+      prompt: reflectionPrompts[0],
+    }
   }
+  const [reflection, setReflection] = useState(initialReflection);
+
+  const csrfToken = getCookie('csrftoken');
+  const submitForm = e => {
+    //e.preventDefault();
+  }
+
+  const cyclePrompt = e => {
+    e.preventDefault();
+    let newIndex = 1 + reflection.promptIndex%(reflectionPrompts.length-1);
+    console.log(newIndex);
+    setReflection({
+      ...reflection,
+      "promptIndex": newIndex, 
+      "prompt": reflectionPrompts[newIndex]}
+    );
+  } 
 
   return (
     <>
-    <form action="/en/studygroup/1547/meeting/9636/feedback/create/" method="POST" onSubmit={submitForm}>
+    <form action={postUrl} method="POST" onSubmit={submitForm}>
+      <input type="hidden" name="csrfmiddlewaretoken" value={csrfToken} />
 
-      <div id="div_id_rating" class="form-group">
+      <div id="div_id_rating" className="form-group">
         <p>
-          <label htmlFor="id_rating" class="col-form-label  requiredField">Overall, how did this meeting go?</label></p>
+          <label htmlFor="id_rating" className="col-form-label  requiredField">Overall, how did this meeting go?</label></p>
           <div className="p2pu-bot-selector">
             { ratingOptions.map(option => 
               <label className="" key={option[0]}>
@@ -56,20 +91,22 @@ const MeetingFeedback = props => {
           </div>
       </div>
 
-      <div id="div_id_attendance" class="form-group">
-        <label htmlFor="id_attendance" class="col-form-label">How many people attended?</label> 
+      <div id="div_id_attendance" className="form-group">
+        <label htmlFor="id_attendance" className="col-form-label">How many people attended?</label> 
         <div>
-          <input type="number" name="attendance" min="0" class="numberinput form-control form-control form-control" value={attendance} onChange={e => setAttendance(e.target.value)} id="id_attendance" /> 
+          <input type="number" name="attendance" min="0" className="numberinput form-control form-control form-control" value={attendance} onChange={e => setAttendance(e.target.value)} id="id_attendance" /> 
         </div> 
       </div>
 
-      <div id="div_id_reflection" class="form-group">
-        <label htmlFor="id_reflection" class="col-form-label">{reflectionPrompts[promptIndex]} (<a href="#" onClick={e => { e.preventDefault(); setPromptIndex((promptIndex+1)%reflectionPrompts.length) } }>Give me another question</a>)</label>
+      <input type="hidden" name="reflection" value={reflection.answer?JSON.stringify(reflection):""}/>
+      <div id="div_id_reflection" className="form-group">
+        <label htmlFor="id_reflection" className="col-form-label">{reflectionPrompts[reflection.promptIndex]} (<a href="#" onClick={cyclePrompt} >Give me another question</a>)</label>
         <div>
-          <textarea name="reflection" rows="3" class="textarea form-control form-control form-control" id="id_reflection" value={reflection} onChange={ e => setReflection(e.target.value) }/>
+          <textarea name="reflection_answer" rows="3" className="textarea form-control form-control form-control" id="id_reflection" value={reflection.answer} onChange={ e => setReflection({...reflection, 'answer': e.target.value}) }/>
         </div> 
       </div>
-      <p><button type="submit" class="p2pu-btn btn-primary">Submit</button></p>
+      
+      <p><button type="submit" className="p2pu-btn btn-primary">{props.feedbackId?'Update':'Submit'}</button></p>
     </form>
     </>
   )

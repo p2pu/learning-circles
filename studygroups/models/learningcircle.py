@@ -382,7 +382,7 @@ class Meeting(LifeTimeTrackingModel):
         if self.meeting_datetime() > timezone.now() and self != self.study_group.next_meeting() or self.study_group.draft:
             return 'pending'
 
-        if self.feedback_set.count and (self.follow_up_dismissed or self.follow_up):
+        if self.feedback_set.count() and (self.follow_up_dismissed or self.follow_up):
             return 'done'
 
         return 'todo'
@@ -490,6 +490,6 @@ class Feedback(LifeTimeTrackingModel):
 
     study_group_meeting = models.ForeignKey('studygroups.Meeting', on_delete=models.CASCADE) # TODO should this be a OneToOneField?
     feedback = models.TextField(blank=True) # Shared with learners. This is being deprecated, but kept for retaining past data.
-    attendance = models.PositiveIntegerField()
+    attendance = models.PositiveIntegerField(blank=True, null=True)
     reflection = models.TextField(blank=True) # Not shared
-    rating = models.CharField(choices=RATING, max_length=16)
+    rating = models.CharField(choices=RATING, max_length=16, blank=True)
