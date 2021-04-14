@@ -96,9 +96,7 @@ def view_study_group(request, study_group_id):
     if study_group.deleted_at:
         raise http.Http404(_("Learning circle does not exist."))
 
-    user_is_facilitator = study_group.facilitator == request.user
     dashboard_url = reverse('studygroups_facilitator')
-
     remaining_surveys = study_group.application_set.active().exclude(id__in=study_group.learnersurveyresponse_set.values('learner_id'))
 
     context = {
@@ -108,6 +106,12 @@ def view_study_group(request, study_group_id):
         'dashboard_url': dashboard_url,
         'remaining_surveys': remaining_surveys,
     }
+    meeting_number = request.GET.get('meeting')
+    rating = request.GET.get('rating')
+    if meeting_number and rating:
+        context['expand_meeting'] = meeting_number
+        context['meeting_rating'] = rating
+
     return render(request, 'studygroups/view_study_group.html', context)
 
 
