@@ -417,6 +417,49 @@ def send_reminder(reminder):
                 logger.exception("Could not send text message to %s", to, exc_info=e)
 
 
+def _send_meeting_wrapup(meeting):
+    study_group = meeting.study_group
+    context = {
+        'study_group': study_group,
+        'meeting': meeting,
+        'is_last_meeting': meeting == study_group.last_meeting(),
+    }
+    subject = render_to_string_ctx('studygroups/email/facilitator_meeting_wrapup-subject.txt', context).strip('\n')
+    html_body = render_to_string_ctx('studygroups/email/facilitator_meeting_wrapup.html', context)
+    text_body = html_body_to_text(html_body)
+    message = EmailMultiAlternatives(
+        subject,
+        text_body,
+        settings.DEFAULT_FROM_EMAIL,
+        to=[study_group.facilitator.email],
+    )
+    message.attach_alternative(html_body, 'text/html')
+    try:
+        message.send()
+    except Exception as e:
+        logger.exception('Could not send meeting change notification', exc_info=e)
+    meeting.wrapup_sent_at = timezone.now()
+    meeting.save()
+
+
+def send_meeting_wrapup(study_group):
+    now = timezone.now()  # TODO convert to correct timezone first
+    
+    previous_meeting = study_group.meeting_set.active().filter(
+        models.Q(meeting_date__lt=now)
+        | models.Q(meeting_date=now.date(), meeting_time__lt=now.time())
+    ).order_by('-meeting_date', '-meeting_time').first()
+
+    if not previous_meeting or previous_meeting.wrapup_sent_at:
+        return
+
+    # send if time to send is in the past, but not yet more than 1 day
+    # ie. don't send for old meetings
+    send_at = previous_meeting.meeting_datetime() + datetime.timedelta(minutes=study_group.duration)
+    if send_at < now and send_at > now - datetime.timedelta(days=1):
+        _send_meeting_wrapup(previous_meeting)
+
+
 @shared_task
 def send_meeting_change_notification(meeting, old_meeting_datetime):
     study_group = meeting.study_group
@@ -540,7 +583,6 @@ def send_weekly_update():
 
 @shared_task
 def send_community_digest(start_date, end_date):
-
     context = community_digest_data(start_date, end_date)
 
     chart_data = {
@@ -624,6 +666,7 @@ def send_out_community_digest():
 
     if iso_week % 3 == 0:
         send_community_digest(start_date, end_date)
+
 
 @shared_task
 def refresh_instagram_token():

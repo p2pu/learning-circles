@@ -281,6 +281,7 @@ class Meeting(LifeTimeTrackingModel):
     meeting_time = models.TimeField()
     follow_up = models.ForeignKey('studygroups.Reminder', null=True, blank=True, on_delete=models.SET_NULL)
     follow_up_dismissed = models.BooleanField(default=False)
+    wrapup_sent_at = models.DateTimeField(blank=True, null=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

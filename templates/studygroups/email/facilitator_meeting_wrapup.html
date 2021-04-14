@@ -1,0 +1,34 @@
+{% extends 'email_base.html' %}
+{% load i18n %}
+{% block body %}
+
+{% url 'studygroups_view_study_group' study_group.pk as manage_url %}
+
+<p>{% blocktrans with first_name=study_group.facilitator.first_name %}Hi {{first_name}}{% endblocktrans %},</p>
+
+<p>{% trans "How did your learning circle go today?" %}</p>
+
+{% with meeting_number=meeting.meeting_number %}
+<p>
+<a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=5#meeting-{{meeting_number}}">🥳</a>
+<a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=4#meeting-{{meeting_number}}">🙂</a>
+<a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=3#meeting-{{meeting_number}}">😐</a>
+<a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=2#meeting-{{meeting_number}}">🙁</a>
+<a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=1#meeting-{{meeting_number}}">🤢</a>
+</p>
+{% endwith %}
+
+
+<p>{% trans "Please take a minute to reflect on your dashboard. Your feedback will help us identify themes and topics for our upcoming community calls." %}</p>
+
+<p>{% blocktrans %}From your dashboard, you can also send a recap message to participants and edit the reminder for the next meeting, which is scheduled to send at DATE/TIME.{% endblocktrans %}<p>
+
+
+<p><a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}">{% trans "Go to your dashboard" %}</a>.</p>
+
+<p>{% trans "Cheers" %},</p>
+<p>P2PU</p>
+{% endblock %}
+
+
+

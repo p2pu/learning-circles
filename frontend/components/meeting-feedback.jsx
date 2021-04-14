@@ -8,8 +8,6 @@ function getCookie(name) {
   if (parts.length == 2) return parts.pop().split(";").shift();
 }
 
-// axios.defaults.xsrfCookieName = 'csrftoken'
-
 const MeetingFeedback = props => {
   const {meetingId, postUrl} = props;
 
