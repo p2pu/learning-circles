@@ -288,12 +288,8 @@ def send_meeting_reminder(reminder):
             application = reminder.study_group.application_set.active().filter(email__iexact=email).first()
             unsubscribe_link = application.unapply_link()
             email_body = reminder.email_body
-            # ensure reminder.email_body has correct links for RSVP and contains unsubscribe link at the end
-            if not re.search(r'UNSUBSCRIBE_LINK', email_body):
-                email_body = email_body + '<p>' + _('To leave this learning circle and stop receiving messages, <a href="%s">click here</a>') % 'UNSUBSCRIBE_LINK' + '</p>'
             email_body = re.sub(r'RSVP_YES_LINK', yes_link, email_body)
             email_body = re.sub(r'RSVP_NO_LINK', no_link, email_body)
-            email_body = re.sub(r'UNSUBSCRIBE_LINK', unsubscribe_link, email_body)
 
             context = {
                 "reminder": reminder,
@@ -305,7 +301,6 @@ def send_meeting_reminder(reminder):
                 "event_meta": True,
             }
             html_body = render_to_string_ctx('studygroups/email/learner_meeting_reminder.html', context)
-            # TODO should we rather strip email_body?
             text_body = html_body_to_text(html_body)
         try:
             reminder_email = EmailMultiAlternatives(
@@ -328,16 +323,11 @@ def send_meeting_reminder(reminder):
             logger.exception('Could not send email to ', email, exc_info=e)
     # Send to facilitator without RSVP & unsubscribe links
     try:
-        email_body = reminder.email_body
-        # Maybe this logic should be part of editing a reminder?
-        if not re.search(r'UNSUBSCRIBE_LINK', email_body):
-            email_body = email_body + '<p>' + _('To leave this learning circle and stop receiving messages, <a href="%s">click here</a>') % 'UNSUBSCRIBE_LINK' + '</p>'
         base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
         path = reverse('studygroups_view_study_group', kwargs={'study_group_id': reminder.study_group.id})
         dashboard_link = base_url + path
-        email_body = re.sub(r'RSVP_YES_LINK', dashboard_link, email_body)
+        email_body = re.sub(r'RSVP_YES_LINK', dashboard_link, reminder.email_body)
         email_body = re.sub(r'RSVP_NO_LINK', dashboard_link, email_body)
-        email_body = re.sub(r'UNSUBSCRIBE_LINK', dashboard_link, email_body)
 
         context = {
             "facilitator": reminder.study_group.facilitator,
