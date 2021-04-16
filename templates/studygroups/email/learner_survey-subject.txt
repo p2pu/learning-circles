@@ -1,1 +1,1 @@
-{% load i18n %}{% trans "How is your learning circle going?" %}
+{% load i18n %}{% trans "Learning circle survey: How did it go?" %}
