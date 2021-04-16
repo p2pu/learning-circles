@@ -8,7 +8,7 @@
 
 <p>
 {% localize on %}
-{% blocktrans with studygroup_name=study_group.name meeting_date=first_meeting.meeting_date|date:"l, j N" meeting_time=first_meeting.meeting_time|time %}You signed up for {{studygroup_name}}! The first meeting will be on {{meeting_date}} at {{meeting_time}}.
+{% blocktrans with studygroup_name=study_group.name meeting_date=first_meeting.meeting_date|date meeting_time=first_meeting.meeting_time|time meeting_timezone=first_meeting.meeting_datetime|date:"e" %}You signed up for {{studygroup_name}}! The first meeting will be on {{meeting_date}} at {{meeting_time}} {{meeting_timezone}}.
 {% endblocktrans %}
 {% endlocalize %}
 </p>
