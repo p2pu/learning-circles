@@ -21,10 +21,14 @@
 
 <p>{% trans "Please take a minute to reflect on your dashboard. Your feedback will help us identify themes and topics for our upcoming community calls." %}</p>
 
+{% if meeting==study_group.last_meeting %}
+<p>{% blocktrans %}From your dashboard, you can fill out an end of learning circle survey and view feedback from learning circle participants.{% blocktrans %}</p>
+{% else %}
 <p>{% blocktrans %}From your dashboard, you can also send a recap message to participants and edit the reminder for the next meeting, which is scheduled to send at DATE/TIME.{% endblocktrans %}<p>
+{% endif %}
 
 
-<p><a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}">{% trans "Go to your dashboard" %}</a>.</p>
+<p><a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}">{% trans "Go to my dashboard" %}</a>.</p>
 
 <p>{% trans "Cheers" %},</p>
 <p>P2PU</p>
