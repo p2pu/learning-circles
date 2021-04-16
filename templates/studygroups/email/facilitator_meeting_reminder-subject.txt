@@ -1,1 +1,1 @@
-{% load i18n %}{% blocktrans with studygroup_name=study_group.name|safe meeting_date=next_meeting.meeting_datetime|date:"l, j N, fA" venue=study_group.venue_name|safe %}{{studygroup_name}} learning circle meeting this {{meeting_date}} at {{venue}}{% endblocktrans %}
+{% load i18n %}{% blocktrans %}Message sent to learners{% endblocktrans %}
