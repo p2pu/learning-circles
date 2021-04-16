@@ -445,15 +445,15 @@ def generate_meeting_reminder(meeting):
     timezone.activate(pytz.timezone(meeting.study_group.timezone))
     with use_language(meeting.study_group.language):
         reminder.email_subject = render_to_string_ctx(
-            'studygroups/email/reminder-subject.txt',
+            'studygroups/email/meeting_reminder-subject.txt',
             context
         ).strip('\n')
         reminder.email_body = render_to_string_ctx(
-            'studygroups/email/reminder.html',
+            'studygroups/email/meeting_reminder.html',
             context
         )
         reminder.sms_body = render_to_string_ctx(
-            'studygroups/email/sms.txt',
+            'studygroups/email/meeting_reminder-sms.txt',
             context
         )
     # TODO - handle SMS reminders that are too long
