@@ -9,6 +9,6 @@ P2PU
 
 Subject: {{ reminder.email_subject }}
 
-{{ message|striptags }}
+{{ message|striptags|safe }}
 
 {% endblock %}
