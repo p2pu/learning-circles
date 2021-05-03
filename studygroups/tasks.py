@@ -334,14 +334,13 @@ def send_meeting_reminder(reminder):
             "reminder": reminder,
             "message": email_body,
         }
-        # TODO, maybe also generate text from html?
+
         subject, text_body, html_body = render_email_templates(
             'studygroups/email/facilitator_meeting_reminder',
             context
         )
-
         reminder_email = EmailMultiAlternatives(
-            reminder.email_subject.strip('\n'),
+            subject,
             text_body,
             sender,
             [reminder.study_group.facilitator.email]
