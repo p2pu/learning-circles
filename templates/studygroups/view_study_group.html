@@ -202,25 +202,16 @@
           <a class="card-collapse-toggle {% if today < study_group.last_meeting.meeting_datetime and study_group.next_meeting != study_group.last_meeting %}collapsed{% endif %}" data-toggle="collapse" href="#collapse-wrapup" role="button" aria-expanded="true" aria-controls="collapse-wrapup"><i class="fa fa-chevron-down"></i></a>
           <div class="card-title">Wrap up</div>
           <div class="collapse {% if today > study_group.last_meeting.meeting_datetime or study_group.next_meeting == study_group.last_meeting %}show{% endif %}" id="collapse-wrapup">
-            {% if today > study_group.last_meeting.meeting_datetime %}
-              <div class="meeting-item done">
-                <p>Survey reminder sent</p>
-              </div>
-            {% else %}
-              <div class="meeting-item pending">
-                <p>Survey reminder will be sent during the last meeting</p>
-              </div>
-            {% endif %}
-            <div class="meeting-item {% if study_group.facilitatorsurveyresponse_set.count %}done{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %}">
-              <p>Complete the facilitator survey</p>
-              {% if study_group.facilitatorsurveyresponse_set.count  %}
-              {% else %}
-                <p><a class="p2pu-btn btn-primary" href="{% url 'studygroups_facilitator_survey' study_group.uuid %}">{% trans "Facilitator survey" %}</a></p>
-              {% endif %}
-            </div>
+
             <div class="meeting-item {% if today < study_group.last_meeting.meeting_datetime %}pending{% elif study_group.learnersurveyresponse_set.count %}done{% else %}todo{% endif %}">
               <p>Collect learner feedback</p>
               <div class="survey-summary">
+                {% if today > study_group.last_meeting.meeting_datetime %}
+                  <p>Survey reminder sent</p>
+                {% else %}
+                  <p>Survey reminder will be sent during the last meeting</p>
+                {% endif %}
+
                 {% if study_group.learnersurveyresponse_set.count %}
                   <ul class="list-unstyled">
                     <li class="done">{{ study_group.learnersurveyresponse_set.count }} learners completed the survey.</li>
@@ -256,12 +247,39 @@
 
               </div>
             </div>
+
             <div class="meeting-item {% if study_group.facilitatorsurveyresponse_set.count %}done{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %}">
-              <p>See the insights report</p>
-              {% if study_group.facilitatorsurveyresponse_set.count or study_group.learnersurveyresponse_set.count %}
-                <p><a class="p2pu-btn btn-primary" href="{% url 'studygroups_final_report' study_group_id=study_group.pk %}">{% trans "View insights" %}</a></p>
-              {% endif %}
+              <p>Reflect on your experience</p>
+              <div class="meeting-item-details">
+                {% if study_group.facilitator_goal %}
+                <p>{% blocktrans with facilitator_goal=study_group.facilitator_goal %}When you signed up, we asked what you hoped to achieve by facilitating a learning circle, and you wrote <strong>"{{facilitator_goal}}"</strong>.</p><p>To what extent did you achieve this?{% endblocktrans %}</p>
+                <div id="learning-circle-feedback-form"
+                  data-star-url={% static 'images/icons/rating-star.svg' %}
+                  data-action-url="{% url 'studygroups_facilitator_rating' study_group.pk %}"
+                  {% if study_group.facilitator_goal_rating %}
+                    data-facilitator-goal-rating="{{study_group.facilitator_goal_rating}}"
+                  {% endif %}
+                ></div>
+                {% endif %}
+
+                {% if study_group.facilitatorsurveyresponse_set.count  %}
+                {% else %}
+                  <p>Can we ask you a few more questions? It will only take 5 minutes.</p>
+                  <p><a class="p2pu-btn btn-primary" href="{% url 'studygroups_facilitator_survey' study_group.uuid %}">{% trans "Complete the facilitator survey" %}</a></p>
+                {% endif %}
+              </div>
             </div>
+
+            <div class="meeting-item {% if study_group.facilitatorsurveyresponse_set.count %}done{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %}">
+              <p>Share your thoughts about the course</p>
+              <div class="meeting-item-details">
+                <p>What recommendations do you have for other facilitators who are using “{{study_group.course.title}}"? Consider sharing additional resources you found helpful, activities that worked particularly well, or any agendas or facilitator guides you created.</p>
+                {% url 'studygroups_generate_course_discourse_topic' study_group.course.pk as course_discourse_url %}
+                <p><a class="p2pu-btn btn-primary" href="{{course_discourse_url}}">{% trans "Share course feedback" %}</a></p>
+              </div>
+            </div>
+
+            <p><a class="p2pu-btn btn-primary" href="{% url 'studygroups_final_report' study_group_id=study_group.pk %}">{% trans "View insights" %}</a> <a class="p2pu-btn btn-primary" href="{% url 'studygroups_final_report' study_group_id=study_group.pk %}">{% trans "Download data" %}</a></p>
           </div>
         </div>
       </div>
@@ -350,7 +368,7 @@
 {% endblock %}
 {% block scripts %}
 {% render_bundle 'common' %}
-{% render_bundle 'meeting-feedback-form' %}
+{% render_bundle 'learning-circle-feedback' %}
 <script>
 $(document).ready(function () {
   $('[data-toggle="popover"]').popover();

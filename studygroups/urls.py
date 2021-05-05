@@ -24,6 +24,7 @@ from studygroups.views import StudyGroupToggleSignup
 from studygroups.views import StudyGroupPublish
 from studygroups.views import StudyGroupList
 from studygroups.views import StudyGroupLearnerSurvey
+from studygroups.views import StudyGroupFacilitatorRating
 from studygroups.views import StudyGroupFacilitatorSurvey
 from studygroups.views import StudyGroupDidNotHappen
 from studygroups.views import LeaveTeam
@@ -87,6 +88,7 @@ urlpatterns = [
 
     url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/survey/$', StudyGroupLearnerSurvey.as_view(), name='studygroups_learner_survey'),
     url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/survey/done/$', TemplateView.as_view(template_name='studygroups/learner_survey_done.html'), name='studygroups_learnear_survey_done'),
+    url(r'^studygroup/(?P<study_group_id>[\w-]+)/facilitator_rating/$', StudyGroupFacilitatorRating.as_view(), name='studygroups_facilitator_rating'),
     url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/facilitator_survey/$', StudyGroupFacilitatorSurvey.as_view(), name='studygroups_facilitator_survey'),
     url(r'^facilitator_survey/$', TemplateView.as_view(template_name='studygroups/anonymous_facilitator_survey.html'), name='anonymous_facilitator_survey'),
     url(r'^facilitator_survey/done/$', TemplateView.as_view(template_name='studygroups/facilitator_survey_done.html'), name='studygroups_facilitator_survey_done'),

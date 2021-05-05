@@ -783,11 +783,20 @@ class InvitationConfirm(FormView):
         return super(InvitationConfirm, self).form_valid(form)
 
 
+# TODO I'd like to change this to an API view that accepts json and returns json rather than a traditional view
+@method_decorator(user_is_group_facilitator, name="dispatch")
+class StudyGroupFacilitatorRating(FacilitatorRedirectMixin, UpdateView):
+    model = StudyGroup
+    pk_url_kwarg = 'study_group_id'
+    fields = ['facilitator_goal_rating']
+
+
 class StudyGroupFacilitatorSurvey(TemplateView):
     template_name = 'studygroups/facilitator_survey.html'
 
     def get_context_data(self, **kwargs):
         study_group = get_object_or_404(StudyGroup, uuid=kwargs.get('study_group_uuid'))
+        # TODO this shouldn't happen on GET
         study_group.facilitator_goal_rating = self.request.GET.get('goal_rating', None)
         study_group.save()
 
