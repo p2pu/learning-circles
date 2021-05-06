@@ -4,6 +4,8 @@ import ReactDOM from 'react-dom'
 import MeetingFeedback from './components/meeting-feedback'
 import LearningCircleFeedbackForm from './components/learning-circle-feedback-form'
 
+import 'components/stylesheets/learning-circle-feedback.scss'
+
 // Replace feedback form for earch meeting
 const elements = document.getElementsByClassName('meeting-feedback-form');
 for (let el of elements){

@@ -30,31 +30,33 @@ const LearningCircleFeedbackForm = props => {
 
   return (
     <form acion="">
-      <label>
-        <input type="radio" name="facilitator_goal_rating" value="1" onClick={e => postValue(1)} />
-        <img className={!goalRating||1>goalRating?'dull':''} src={starUrl} />
-        <div className="text-center">1<br/>not at all</div>
-      </label>
-      <label>
-        <input type="radio" name="facilitator_goal_rating" value="2" onClick={e => postValue(2)} />
-        <img className={!goalRating||2>goalRating?'dull':''} src={starUrl} />
-        <div className="text-center">2</div>
-      </label>
-      <label>
-        <input type="radio" name="facilitator_goal_rating" value="3" onClick={e => postValue(3)} />
-        <img className={!goalRating||3>goalRating?'dull':''} src={starUrl} />
-        <div className="text-center">3<br/>somewhat</div>
-      </label>
-      <label>
-        <input type="radio" name="facilitator_goal_rating" value="4" onClick={e => postValue(4)} />
-        <img className={!goalRating||4>goalRating?'dull':''} src={starUrl} />
-        <div className="text-center">4</div>
-      </label>
-      <label>
-        <input type="radio" name="facilitator_goal_rating" value="5" onClick={e => postValue(5)} />
-        <img className={!goalRating||5>goalRating?'dull':''} src={starUrl} />
-        <div className="text-center">5<br/>completely</div>
-      </label>
+      <div className="goal-rating-input">
+        <label>
+          <input type="radio" name="facilitator_goal_rating" value="1" onClick={e => postValue(1)} />
+          <img className={!goalRating||1>goalRating?'dull':''} src={starUrl} />
+          <div className="text-center">1<br/>not at all</div>
+        </label>
+        <label>
+          <input type="radio" name="facilitator_goal_rating" value="2" onClick={e => postValue(2)} />
+          <img className={!goalRating||2>goalRating?'dull':''} src={starUrl} />
+          <div className="text-center">2</div>
+        </label>
+        <label>
+          <input type="radio" name="facilitator_goal_rating" value="3" onClick={e => postValue(3)} />
+          <img className={!goalRating||3>goalRating?'dull':''} src={starUrl} />
+          <div className="text-center">3<br/>somewhat</div>
+        </label>
+        <label>
+          <input type="radio" name="facilitator_goal_rating" value="4" onClick={e => postValue(4)} />
+          <img className={!goalRating||4>goalRating?'dull':''} src={starUrl} />
+          <div className="text-center">4</div>
+        </label>
+        <label>
+          <input type="radio" name="facilitator_goal_rating" value="5" onClick={e => postValue(5)} />
+          <img className={!goalRating||5>goalRating?'dull':''} src={starUrl} />
+          <div className="text-center">5<br/>completely</div>
+        </label>
+      </div>
     </form>
   );
 };

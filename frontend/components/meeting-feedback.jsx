@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import 'components/stylesheets/meeting-feedback.scss'
 
 function getCookie(name) {
   var value = "; " + document.cookie;
