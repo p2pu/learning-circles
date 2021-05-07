@@ -35,6 +35,7 @@ from studygroups.tasks import send_facilitator_survey
 from studygroups.tasks import send_facilitator_learner_survey_prompt
 from studygroups.tasks import send_final_learning_circle_report
 from studygroups.tasks import send_out_community_digest
+from studygroups.tasks import send_meeting_wrapups
 
 from custom_registration.models import create_user
 
@@ -282,6 +283,35 @@ class TestStudyGroupTasks(TestCase):
         self.assertEqual(len(mail.outbox), 2)
         #self.assertEqual(mail.outbox[0].subject, mail_data['email_subject'])
         self.assertTrue(send_message.called)
+
+
+    @patch('studygroups.tasks._send_meeting_wrapup')
+    def test_send_meeting_wrap(self, _send_meeting_wrapup):
+        sg = StudyGroup.objects.get(pk=1)
+        sg.meeting_set.all().delete()
+        sg.timezone = timezone.now().strftime("%Z")
+        sg.duration = 90
+        sg.save()
+        Meeting.objects.create(
+            study_group=sg,
+            meeting_date=datetime.date(2021, 5, 7),
+            meeting_time=datetime.time(12, 0)
+        )
+        mail.outbox = []
+        # dont send before meeting ends
+        with freeze_time("2021-05-07 12:30:00"):
+            send_meeting_wrapups()
+            self.assertEqual(_send_meeting_wrapup.called, False)
+
+        # dont send if meeting is older than a day
+        with freeze_time("2021-05-08 13:31:00"):
+            send_meeting_wrapups()
+            self.assertEqual(_send_meeting_wrapup.called, False)
+
+        # dont send if meeting is older than a day
+        with freeze_time("2021-05-07 13:31:00"):
+            send_meeting_wrapups()
+            self.assertEqual(_send_meeting_wrapup.called, True)
 
 
     def test_send_weekly_report(self):

@@ -432,21 +432,33 @@ def _send_meeting_wrapup(meeting):
 
 
 def send_meeting_wrapup(study_group):
-    now = timezone.now()  # TODO convert to correct timezone first
+    now = timezone.now()  
+    # convert to correct timezone first so that .date and .time is correct
+    tz = pytz.timezone(study_group.timezone)
+    now = now.astimezone(tz)
     
     previous_meeting = study_group.meeting_set.active().filter(
-        models.Q(meeting_date__lt=now)
-        | models.Q(meeting_date=now.date(), meeting_time__lt=now.time())
+        meeting_date__lte=now.date(), meeting_time__lt=now.time()
     ).order_by('-meeting_date', '-meeting_time').first()
 
     if not previous_meeting or previous_meeting.wrapup_sent_at:
         return
 
     # send if time to send is in the past, but not yet more than 1 day
+    # send_at falls between yesterday this time and now
     # ie. don't send for old meetings
     send_at = previous_meeting.meeting_datetime() + datetime.timedelta(minutes=study_group.duration)
-    if send_at < now and send_at > now - datetime.timedelta(days=1):
+    if now - datetime.timedelta(days=1) < send_at and send_at < now :
         _send_meeting_wrapup(previous_meeting)
+
+
+@shared_task
+def send_meeting_wrapups():
+    now = timezone.now()
+    cutoff = now - datetime.timedelta(days=2)
+    study_groups = StudyGroup.objects.filter(end_date__gte=cutoff.date())
+    for sg in study_groups:
+        send_meeting_wrapup(sg)
 
 
 @shared_task

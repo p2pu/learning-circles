@@ -240,6 +240,10 @@ CELERYBEAT_SCHEDULE = {
         'task': 'studygroups.tasks.send_reminders',
         'schedule': crontab(minute='*/5'),
     },
+    'send_meeting_wrapup': {
+        'task': 'studygroups.tasks.send_meeting_wrapups',
+        'schedule': crontab(minute='*/5'),
+    },
     'send_new_user_email': {
         'task': 'custom_registration.tasks.send_new_user_emails',
         'schedule': crontab(minute='*/10'),
