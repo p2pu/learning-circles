@@ -1,7 +1,8 @@
 {% extends 'email_base.html' %}
 {% load i18n %}
+{% load tz %}
 {% block body %}
-
+{% localtime off %}
 {% url 'studygroups_view_study_group' study_group.pk as manage_url %}
 
 <p>{% blocktrans with first_name=study_group.facilitator.first_name %}Hi {{first_name}}{% endblocktrans %},</p>
@@ -18,13 +19,14 @@
 </p>
 {% endwith %}
 
-
 <p>{% trans "Please take a minute to reflect on your dashboard. Your feedback will help us identify themes and topics for our upcoming community calls." %}</p>
 
-{% if meeting==study_group.last_meeting %}
-<p>{% blocktrans %}From your dashboard, you can fill out an end of learning circle survey and view feedback from learning circle participants.{% blocktrans %}</p>
+{% if is_last_meeting %}
+<p>{% blocktrans %}From your dashboard, you can fill out the end of learning circle survey and view feedback from learning circle participants.{% endblocktrans %}</p>
 {% else %}
-<p>{% blocktrans %}From your dashboard, you can also send a recap message to participants and edit the reminder for the next meeting, which is scheduled to send at DATE/TIME.{% endblocktrans %}<p>
+{% with send_reminder_at=study_group.next_meeting.send_reminder_at %}
+<p>{% blocktrans %}From your dashboard, you can also send a recap message to participants and edit the reminder for the next meeting, which is scheduled to send {{ send_reminder_at }}.{% endblocktrans %}<p>
+{% endwith %}
 {% endif %}
 
 
@@ -32,7 +34,5 @@
 
 <p>{% trans "Cheers" %},</p>
 <p>P2PU</p>
+{% endlocaltime %}
 {% endblock %}
-
-
-
