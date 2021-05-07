@@ -17,6 +17,7 @@ templates/studygroups/email/optout_confirm-subject.txt
 templates/studygroups/email/optout_confirm_text.txt                      
 templates/studygroups/email/optout_confirm.txt
 templates/studygroups/optout.html
+templates/studygroups/optout_confirm.html
 manage.py
 locale
 templates/studygroups/rsvp_success.html
