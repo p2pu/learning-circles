@@ -279,9 +279,10 @@ class Meeting(LifeTimeTrackingModel):
     study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE)
     meeting_date = models.DateField()
     meeting_time = models.TimeField()
-    follow_up = models.ForeignKey('studygroups.Reminder', null=True, blank=True, on_delete=models.SET_NULL)
-    follow_up_dismissed = models.BooleanField(default=False)
     wrapup_sent_at = models.DateTimeField(blank=True, null=True)
+    recap = models.ForeignKey('studygroups.Reminder', null=True, blank=True, on_delete=models.SET_NULL)
+    recap_dismissed = models.BooleanField(default=False)
+    #reminder_deleted_at = models.DateTimeField(blank=True, null=True) # used to indicate manual deletion of a reminder
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -383,7 +384,7 @@ class Meeting(LifeTimeTrackingModel):
         if self.meeting_datetime() > timezone.now() and self != self.study_group.next_meeting() or self.study_group.draft:
             return 'pending'
 
-        if self.feedback_set.count() and (self.follow_up_dismissed or self.follow_up):
+        if self.feedback_set.count() and (self.recap_dismissed or self.recap):
             return 'done'
 
         return 'todo'

@@ -6,7 +6,7 @@
 <div class="container">
   <a href="{% url 'studygroups_view_study_group' form.study_group.value %}">{% trans "Back" %}</a>
 
-  <h2>{% blocktrans with meeting_date=meeting.meeting_date %}Send a follow up message for the meeting that happened {{meeting_date}}{% endblocktrans %}</h2>
+  <h2>{% blocktrans with meeting_date=meeting.meeting_date %}Send a recap message for the meeting that happened {{meeting_date}}{% endblocktrans %}</h2>
   <p>{% trans "This email will go to all learning circle participants, with your email address set as the 'reply to' address." %}
   <p>{% trans "If any participants joined with a mobile number, an additional SMS field will appear below. SMS replies will be forwarded to you by email." %}</p>
   <form action="" method="POST">

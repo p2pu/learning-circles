@@ -565,9 +565,9 @@ def message_edit(request, study_group_id, message_id):
 
 
 @method_decorator(user_is_group_facilitator, name='dispatch')
-class MeetingFollowUp(CreateView):
+class MeetingRecap(CreateView):
     model = Reminder
-    template_name = 'studygroups/meeting_follow_up_form.html'
+    template_name = 'studygroups/meeting_recap_form.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -598,10 +598,10 @@ class MeetingFollowUp(CreateView):
         meeting = get_object_or_404(Meeting, pk=self.kwargs.get('pk'))
         if meeting.study_group.pk != study_group.pk:
             raise PermissionDenied
-        follow_up = form.save()
-        meeting.follow_up = follow_up
+        recap = form.save()
+        meeting.recap = recap
         meeting.save()
-        send_reminder(follow_up)
+        send_reminder(recap)
         messages.success(self.request, 'Follow up message has been sent')
 
         url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
@@ -609,7 +609,7 @@ class MeetingFollowUp(CreateView):
 
 
 @method_decorator(user_is_group_facilitator, name='dispatch')
-class MeetingFollowUpDismiss(SingleObjectMixin, View):
+class MeetingRecapDismiss(SingleObjectMixin, View):
     model = Meeting
  
     def post(self, request, *args, **kwargs):
@@ -618,7 +618,7 @@ class MeetingFollowUpDismiss(SingleObjectMixin, View):
         if str(meeting.study_group.id) != kwargs.get('study_group_id'):
             raise PermissionDenied
 
-        meeting.follow_up_dismissed = True
+        meeting.recap_dismissed = True
         meeting.save()
 
         url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
