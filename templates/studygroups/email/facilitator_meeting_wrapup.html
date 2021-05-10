@@ -1,9 +1,34 @@
 {% extends 'email_base.html' %}
+{% load static %}
 {% load i18n %}
 {% load tz %}
 {% block body %}
 {% localtime off %}
 {% url 'studygroups_view_study_group' study_group.pk as manage_url %}
+
+<style>
+.rating-scale {
+  margin: 1em 0;
+}
+.rating-scale td {
+  padding: 0.5em 0.5em;
+  text-align: center;
+}
+.rating-scale td:first-of-type {
+  padding-left: 0;
+}
+.rating-scale td:last-of-type {
+  padding-right: 0;
+}
+.rating-scale img {
+  width: 64px;
+}
+.rating-scale td a {
+  text-align: center;
+  text-decoration: none;
+}
+</style>
+
 
 <p>{% blocktrans with first_name=study_group.facilitator.first_name %}Hi {{first_name}}{% endblocktrans %},</p>
 
@@ -11,11 +36,41 @@
 
 {% with meeting_number=meeting.meeting_number %}
 <p>
-<a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=5#meeting-{{meeting_number}}">🥳</a>
-<a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=4#meeting-{{meeting_number}}">🙂</a>
-<a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=3#meeting-{{meeting_number}}">😐</a>
-<a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=2#meeting-{{meeting_number}}">🙁</a>
-<a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=1#meeting-{{meeting_number}}">🤢</a>
+<table class="rating-scale" align="center" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td>
+      <a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=5#meeting-{{meeting_number}}"><img src="{{PROTOCOL}}://{{DOMAIN}}{% static 'images/icons/p2pu-joy-bot.png' %}" /></a>
+    </td>
+    <td>
+      <a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=4#meeting-{{meeting_number}}">
+        <img src="{{PROTOCOL}}://{{DOMAIN}}{% static 'images/icons/p2pu-happy-bot.png' %}" />
+      </a>
+    </td>
+    <td>
+      <a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=3#meeting-{{meeting_number}}">
+        <img src="{{PROTOCOL}}://{{DOMAIN}}{% static 'images/icons/p2pu-meh-bot.png' %}" />
+      </a>
+    </td>
+    <td>
+      <a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=2#meeting-{{meeting_number}}">
+        <img src="{{PROTOCOL}}://{{DOMAIN}}{% static 'images/icons/p2pu-sad-bot.png' %}" />
+      </a>
+    </td>
+    <td>
+      <a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=1#meeting-{{meeting_number}}">
+        <img src="{{PROTOCOL}}://{{DOMAIN}}{% static 'images/icons/p2pu-neon-tear-bot.png' %}" />
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td>{% trans "Great" %}</td>
+    <td>{% trans "Pretty well" %}</td>
+    <td>{% trans "Okay" %}</td>
+    <td>{% trans "Not so good" %}</td>
+    <td>{% trans "Awful" %}</td>
+  </tr>
+</table>
+
 </p>
 {% endwith %}
 
