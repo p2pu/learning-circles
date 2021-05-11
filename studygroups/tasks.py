@@ -57,167 +57,38 @@ def _send_facilitator_survey(study_group):
     to = [study_group.facilitator.email]
     cc = [settings.DEFAULT_FROM_EMAIL]
 
-    notification = EmailMultiAlternatives(
+    message = EmailMultiAlternatives(
         subject,
         txt,
         settings.DEFAULT_FROM_EMAIL,
         to,
         cc=cc
     )
-    notification.attach_alternative(html, 'text/html')
-    notification.send()
+    message.attach_alternative(html, 'text/html')
+    message.send()
+
+    study_group.facilitator_survey_sent_at = timezone.now()
+    study_group.save()
 
 
 # If called directly, be sure to activate the current language
-# Should be called every hour at :30
 def send_facilitator_survey(study_group):
-    """ send survey to all facilitators 1 hour before their last meeting """
+    """ send survey to facilitators 2 days after their last meeting """
     last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
     if not last_meeting:
         return
+    # don't send twice or to facilitator that has already responded to a survey
+    if study_group.facilitator_survey_sent_at or study_group.facilitatorsurveyresponse_set.count():
+        return
     now = timezone.now()
-    start_of_window = now.replace(minute=0, second=0, microsecond=0)
-    end_of_window = start_of_window + datetime.timedelta(hours=1)
-    time_to_send = last_meeting.meeting_datetime() - datetime.timedelta(hours=1)
+    six_weeks_ago = now - datetime.timedelta(days=6*7)
+    time_to_send = last_meeting.meeting_datetime() + datetime.timedelta(days=2)
 
-    if start_of_window <= time_to_send and time_to_send < end_of_window:
+    if six_weeks_ago < time_to_send and time_to_send < now:
         _send_facilitator_survey(study_group)
 
 
-# send prompt to facilitators to ask learners to complete surveys
-# should be called every hour at :30
-def send_facilitator_learner_survey_prompt(study_group):
-
-    # TODO not supported for non-English learning circles
-    if study_group.language != 'en':
-        return
-
-    now = timezone.now()
-
-    # a learning circle could have no meetings and be published
-    last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
-    if not last_meeting:
-        logger.warning('Published learning circle does not have any associated meetings. StudyGroup.id={0}'.format(study_group.id))
-        return
-
-    start_of_window = now.replace(minute=0, second=0, microsecond=0)
-    end_of_window = start_of_window + datetime.timedelta(hours=1)
-    time_to_send = last_meeting.meeting_datetime() + datetime.timedelta(days=2)
-
-    if start_of_window <= time_to_send and time_to_send < end_of_window:
-        timezone.deactivate()
-
-        facilitator_name = study_group.facilitator.first_name
-        facilitator_survey_path = reverse(
-            'studygroups_facilitator_survey',
-            kwargs={'study_group_uuid': study_group.uuid}
-        )
-        learner_survey_path = reverse(
-            'studygroups_learner_survey',
-            kwargs={'study_group_uuid': study_group.uuid}
-        )
-        report_path = reverse('studygroups_final_report', kwargs={'study_group_id': study_group.id})
-        base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
-        facilitator_survey_url = base_url + facilitator_survey_path
-        learner_survey_url = base_url + learner_survey_path
-        report_url = base_url + report_path
-        learners_without_survey_responses = study_group.application_set.active().filter(learnersurveyresponse__isnull=True)
-
-        context = {
-            "facilitator": study_group.facilitator,
-            'facilitator_name': facilitator_name,
-            'learner_survey_url': learner_survey_url,
-            'facilitator_survey_url': facilitator_survey_url,
-            'course_title': study_group.course.title,
-            'study_group_name': study_group.name,
-            'learners_without_survey_responses': learners_without_survey_responses,
-            'learner_responses_count': study_group.learnersurveyresponse_set.count(),
-            'report_url': report_url,
-        }
-
-        if study_group.facilitatorsurveyresponse_set.exists():
-            context['facilitator_survey_url'] = None
-
-        if learners_without_survey_responses.count() == 0:
-            context['learners_without_survey_responses'] = None
-
-        subject, txt, html = render_email_templates(
-            'studygroups/email/facilitator_learner_survey_prompt',
-            context
-        )
-        to = [study_group.facilitator.email]
-        cc = [settings.DEFAULT_FROM_EMAIL]
-
-        notification = EmailMultiAlternatives(
-            subject,
-            txt,
-            settings.DEFAULT_FROM_EMAIL,
-            to,
-            cc=cc
-        )
-        notification.attach_alternative(html, 'text/html')
-        notification.send()
-
-
-def _send_learning_circle_insights(study_group):
-    timezone.deactivate()
-
-    goals_met_chart = charts.GoalsMetChart(study_group)
-    report_path = reverse('studygroups_final_report', kwargs={'study_group_id': study_group.id})
-    recipients = study_group.application_set.active().values_list('email', flat=True)
-    organizers = get_study_group_organizers(study_group)
-    organizers_emails = [organizer.email for organizer in organizers]
-    to = list(recipients) + organizers_emails
-    to.append(study_group.facilitator.email)
-
-    context = {
-        'study_group': study_group,
-        'report_path': report_path,
-        'facilitator_name': study_group.facilitator.first_name,
-        'registrations': study_group.application_set.active().count(),
-        'survey_responses': study_group.learnersurveyresponse_set.count(),
-        'goals_met_chart': goals_met_chart.generate(output="png"),
-        'learner_goals_chart': charts.goals_chart(study_group),
-    }
-
-    subject = render_to_string_ctx('studygroups/email/learning_circle_final_report-subject.txt', context).strip('\n')
-    html = render_html_with_css('studygroups/email/learning_circle_final_report.html', context)
-    txt = html_body_to_text(html)
-
-    notification = EmailMultiAlternatives(
-        subject,
-        txt,
-        settings.DEFAULT_FROM_EMAIL,
-        bcc=to,
-        reply_to=[study_group.facilitator.email]
-    )
-    notification.attach_alternative(html, 'text/html')
-    notification.send()
-
-
-# send learning circle report two days after last meeting
-# should be called every hour at :30
-def send_final_learning_circle_report(study_group):
-    # TODO not supported for non-English learning circles
-    if study_group.language != 'en':
-        return
-
-    now = timezone.now()
-    start_of_window = now.replace(minute=0, second=0, microsecond=0)
-    end_of_window = start_of_window + datetime.timedelta(hours=1)
-
-    last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
-    if not last_meeting:
-        logger.warning('Published learning circle does not have any associated meetings. StudyGroup.id={0}'.format(study_group.id))
-        return
-
-    time_to_send = last_meeting.meeting_datetime() + datetime.timedelta(days=7)
-
-    if start_of_window <= time_to_send and time_to_send < end_of_window:
-        _send_learning_circle_insights(study_group)
-
-
-def send_learner_survey(application):
+def _send_learner_survey(application):
     """ send email to learner with link to survey, if goal is specified, also ask if they
     achieved their goal """
     learner_goal = application.get_signup_questions().get('goals', None)
@@ -273,7 +144,7 @@ def send_learner_surveys(study_group):
         timezone.deactivate()
 
         for application in applications:
-            send_learner_survey(application)
+            _send_learner_survey(application)
 
 
 def send_meeting_reminder(reminder):
@@ -607,6 +478,7 @@ def send_community_digest(start_date, end_date):
 @shared_task
 def send_reminders():
     """ Send meeting reminders """
+    # TODO rename to check_reminders_to_send
     
     # make sure both the StudyGroup and Meeting is still available
     reminders = Reminder.objects.filter(
@@ -630,7 +502,7 @@ def weekly_update():
 
 
 @shared_task
-def send_all_studygroup_survey_reminders():
+def send_all_learner_surveys():
     for study_group in StudyGroup.objects.published():
         translation.activate(settings.LANGUAGE_CODE)
         send_learner_surveys(study_group)
@@ -641,20 +513,6 @@ def send_all_facilitator_surveys():
     for study_group in StudyGroup.objects.published():
         translation.activate(settings.LANGUAGE_CODE)
         send_facilitator_survey(study_group)
-
-
-@shared_task
-def send_all_facilitator_survey_reminders():
-    for study_group in StudyGroup.objects.published():
-        translation.activate(settings.LANGUAGE_CODE)
-        send_facilitator_learner_survey_prompt(study_group)
-
-
-@shared_task
-def send_all_learning_circle_reports():
-    for study_group in StudyGroup.objects.published():
-        translation.activate(settings.LANGUAGE_CODE)
-        send_final_learning_circle_report(study_group)
 
 
 @shared_task

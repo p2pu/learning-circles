@@ -1,135 +1,100 @@
 {% extends 'email_base.html' %}
 {% block body %}
 {% load i18n %}
+{% load static %}
 
 <style>
 .rating-scale {
-  margin-top: 2em;
-  margin-bottom: 2em;
+  margin: 1em 0;
 }
-.rating-scale .cell {
-  padding: 0.6em 2em;
-  background-color: #DDF6F4;
+.rating-scale td {
+  padding: 0 0.6em;
   color: #05C6B4;
-  border: 1px solid #05C6B4;
-}
-.rating-scale .cell.first-cell {
-  border-right: none;
-  border-radius: 4px 0 0 4px;
-}
-.rating-scale .cell.last-cell {
-  border-radius: 0 4px 4px 0;
-}
-.rating-scale .cell.middle-cell {
-  border-right: none;
+  text-align: center;
 }
 .rating-scale td a {
-  text-align: center;
   text-decoration: none;
-}
-.rating-scale .label.align-right {
-  text-align: right;
-}
-.rating-scale .label small {
-  font-size: 0.8em;
-  color: #05C6B4;
-}
-.text-center {
-  text-align: center;
-}
-.color-green {
-  color: #05C6B4;
 }
 </style>
 
-<table>
-  <tbody>
-    <tr>
-      <td>
-        <p>
-        {% blocktrans %}Hi {{facilitator_name}},{% endblocktrans %}</p>
+<p>{% blocktrans %}Hi {{facilitator_name}},{% endblocktrans %}</p>
 
-        <p>{% blocktrans %}You made it! Now that your learning circle is finished, could we have five more minutes of your time? Your reflections (both good and bad) are vital for the future of P2PU.{% endblocktrans %}</p>
+<p>{% trans "Can you take a moment to share some final reflections about your learning circle? Your experience and feedback on this course is a big help for future facilitators!" %}</p>
 
+{% if study_group.facilitator_goal %}
+  <p>{% blocktrans with facilitator_goal=study_group.facilitator_goal %}At the start, we asked what you hoped to achieve by facilitating this learning circle. You wrote <strong>"{{facilitator_goal}}"</strong>.{% endblocktrans %}</p>
+  <p>{% trans "To what extent did you achieve this?" %}</p>
+  <table class="rating-scale" border="0" cellspacing="0" cellpadding="0" >
+    <tbody>
+      <tr>
+        <td>
+          <a href="{{survey_url}}?goal_rating=1">
+            <img src="{% static 'images/icons/rating-star.png' %}" />
+          </a>
+        </td>
+        <td>
+          <a href="{{survey_url}}?goal_rating=2">
+            <img src="{% static 'images/icons/rating-star.png' %}" />
+          </a>
+        </td>
+        <td>
+          <a href="{{survey_url}}?goal_rating=3">
+            <img src="{% static 'images/icons/rating-star.png' %}" />
+          </a>
+        </td>
+        <td>
+          <a href="{{survey_url}}?goal_rating=4">
+            <img src="{% static 'images/icons/rating-star.png' %}" />
+          </a>
+        </td>
+        <td>
+          <a href="{{survey_url}}?goal_rating=5">
+            <img src="{% static 'images/icons/rating-star.png' %}" />
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <a href="{{survey_url}}?goal_rating=1">1</a>
+        </td>
+        <td>
+          <a href="{{survey_url}}?goal_rating=2">2</a>
+        </td>
+        <td>
+          <a href="{{survey_url}}?goal_rating=3">3</a>
+        </td>
+        <td>
+          <a href="{{survey_url}}?goal_rating=4">4</a>
+        </td>
+        <td>
+          <a href="{{survey_url}}?goal_rating=5">5</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="label">
+          {% trans "Not at all" %}
+        </td>
+        <td class="label"></td>
+        <td class="label">
+          {% trans "Somewhat" %}
+        </td>
+        <td class="label"></td>
+        <td class="label">
+          {% trans "Completely!" %}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+{% else %}
+  <p>{% blocktrans %}Please take <a href="{{survey_url}}">this five minute survey</a> about your learning circle experience.{% endblocktrans %}</p>
+{% endif %}
 
-        {% if study_group.facilitator_goal %}
-        <p>{% blocktrans with facilitator_goal=study_group.facilitator_goal %}When you signed up, we asked what you hoped to achieve by facilitating a learning circle, and you wrote <strong>"{{facilitator_goal}}"</strong>. To what extent did you achieve this?{% endblocktrans %}</p>
-        {% else %}
-        <p>{% blocktrans %}Please take <a href="{{survey_url}}">this five minute survey</a> about your learning circle experience. This will help us at P2PU better support facilitators in the future.{% endblocktrans %}</p>
-        {% endif %}
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <table align="center" class="rating-scale">
-          <tbody>
-            {% if study_group.facilitator_goal %}
-            <tr>
-              <td>
-                <table border="0" cellspacing="0" cellpadding="0" >
-                  <tbody>
-                    <tr>
-                      <td>
-                        <a href="{{survey_url}}?goal_rating=1">
-                          <div class="cell first-cell">1</div>
-                        </a>
-                      </td>
-                      <td>
-                        <a href="{{survey_url}}?goal_rating=2">
-                          <div class="cell middle-cell">2</div>
-                        </a>
-                      </td>
-                      <td>
-                        <a href="{{survey_url}}?goal_rating=3">
-                          <div class="cell middle-cell">3</div>
-                        </a>
-                      </td>
-                      <td>
-                        <a href="{{survey_url}}?goal_rating=4">
-                          <div class="cell middle-cell">4</div>
-                        </a>
-                      </td>
-                      <td>
-                        <a href="{{survey_url}}?goal_rating=5">
-                          <div class="cell last-cell">5</div>
-                        </a>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td class="label">
-                        <small>{% trans "Not at all" %}</small>
-                      </td>
-                      <td class="label"></td>
-                      <td class="label">
-                        <small>{% trans "Somewhat" %}</small>
-                      </td>
-                      <td class="label"></td>
-                      <td class="label">
-                        <small>{% trans "Completely!" %}</small>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </td>
-            </tr>
-            {% endif %}
-            <tr>
-              <td>
-                <p class="text-center">- {% trans "or" %} -</p>
-                <p class="text-center"><a href="{% url 'studygroups_studygroup_did_not_happen' study_group.pk %}" class="color-green">{% trans "This learning circle didn’t end up happening." %}</a></p>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </td>
-    </tr>
+{% url 'studygroups_studygroup_did_not_happen' study_group.pk as did_not_happen_url %}
+{% blocktrans %}
+<p>Or <a href="{{did_not_happen_url}}">click here</a> if this learning circle didn’t happen.</p>
+{% endblocktrans %}
 
-    <tr>
-      <td>
-        <p>{% trans "Cheers" %},</p>
-        <p>{% trans "The P2PU Team" %}</p>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<p>{% trans "Cheers" %},</p>
+<p>{% trans "P2PU" %}</p>
+
 {% endblock %}
