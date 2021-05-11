@@ -279,7 +279,10 @@
               </div>
             </div>
 
-            <p><a class="p2pu-btn btn-primary" href="{% url 'studygroups_final_report' study_group_id=study_group.pk %}">{% trans "View insights" %}</a> <a class="p2pu-btn btn-primary" href="{% url 'studygroups_final_report' study_group_id=study_group.pk %}">{% trans "Download data" %}</a></p>
+            <p>
+              <a class="p2pu-btn btn-primary" href="{% url 'studygroups_final_report' study_group_id=study_group.pk %}">{% trans "View insights" %}</a>
+              <a class="p2pu-btn btn-primary" href="{% url 'survey_learning_circle_learner_responses_csv' study_group_id=study_group.pk %}">{% trans "Download data" %}</a>
+            </p>
           </div>
         </div>
       </div>
