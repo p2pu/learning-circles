@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 
 import MeetingFeedback from './components/meeting-feedback'
 import LearningCircleFeedbackForm from './components/learning-circle-feedback-form'
+import CourseFeedbackForm from './components/course-feedback-form'
 
 import 'components/stylesheets/learning-circle-feedback.scss'
 
@@ -16,4 +17,8 @@ for (let el of elements){
 const element = document.getElementById('learning-circle-feedback-form');
 ReactDOM.render(<LearningCircleFeedbackForm {...element.dataset} />, element);
 
-
+let courseFeedbackDiv = document.getElementById('course-feedback-form');
+ReactDOM.render(
+  <CourseFeedbackForm {...courseFeedbackDiv.dataset} />,
+  courseFeedbackDiv
+);

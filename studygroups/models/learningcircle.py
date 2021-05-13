@@ -78,6 +78,9 @@ class StudyGroup(LifeTimeTrackingModel):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     facilitator_rating = models.IntegerField(blank=True, null=True)  # Deprecated: 1-5 rating use previously
     facilitator_goal_rating = models.IntegerField(blank=True, null=True)  # Self reported rating of whether the facilitator goal was met.
+    course_rating = models.IntegerField(blank=True, null=True)
+    course_rating_reason = models.TextField(blank=True)
+
     attach_ics = models.BooleanField(default=True) # TODO Remove this
     did_not_happen = models.NullBooleanField(blank=True, null=True)  # Used by the facilitator to report if the learning circle didn't happen
     facilitator_survey_sent_at = models.DateTimeField(blank=True, null=True)

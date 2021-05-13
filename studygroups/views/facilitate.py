@@ -21,7 +21,6 @@ from django.utils.decorators import method_decorator
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
-
 import re
 import json
 import datetime
@@ -54,7 +53,6 @@ from studygroups.discourse import create_discourse_topic
 from studygroups.utils import render_to_string_ctx
 from studygroups.views.api import serialize_course
 from studygroups.models.team import eligible_team_by_email_domain
-
 
 logger = logging.getLogger(__name__)
 
@@ -564,6 +562,25 @@ def message_edit(request, study_group_id, message_id):
     return render(request, 'studygroups/message_edit.html', context)
 
 
+class ReminderDelete(DeleteView):
+    model = Reminder
+
+    def __todo__(self):
+        # Remove the reminder
+        # Indicate that this reminder has been deleted
+        # use that indication in template for messaging on manage page
+        # check value in other places when updating reminders
+        pass
+
+
+class RemiderRegenerate(UpdateView):
+    model = Meeting
+    def __todo__(self):
+        # Regenerate the reminder
+        # If it was manually deleted before, unset that
+        pass
+
+
 @method_decorator(user_is_group_facilitator, name='dispatch')
 class MeetingRecap(CreateView):
     model = Reminder
@@ -789,6 +806,13 @@ class StudyGroupFacilitatorRating(FacilitatorRedirectMixin, UpdateView):
     model = StudyGroup
     pk_url_kwarg = 'study_group_id'
     fields = ['facilitator_goal_rating']
+
+
+@method_decorator(user_is_group_facilitator, name="dispatch")
+class StudyGroupCourseRating(FacilitatorRedirectMixin, UpdateView):
+    model = StudyGroup
+    pk_url_kwarg = 'study_group_id'
+    fields = ['course_rating', 'course_rating_reason']
 
 
 class StudyGroupFacilitatorSurvey(TemplateView):

@@ -30,7 +30,7 @@ const LearningCircleFeedbackForm = props => {
 
   return (
     <form acion="">
-      <div className="goal-rating-input">
+      <div className="star-rating-input">
         <label>
           <input type="radio" name="facilitator_goal_rating" value="1" onClick={e => postValue(1)} />
           <img className={!goalRating||1>goalRating?'dull':''} src={starUrl} />

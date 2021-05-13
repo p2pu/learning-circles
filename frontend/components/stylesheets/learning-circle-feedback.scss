@@ -35,12 +35,10 @@
 }
 
 
-#learning-circle-feedback-form {
 
-  .goal-rating-input {
-    display: flex;
-    justify-content: space-between;
-  }
+.star-rating-input {
+  display: flex;
+  justify-content: space-between;
 
   [type=radio] { 
     position: absolute;
