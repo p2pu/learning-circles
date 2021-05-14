@@ -8,39 +8,42 @@ const CourseFeedbackForm = props => {
   const {starUrl, actionUrl} = props;
 
   const [rating, setRating] = useState(props.courseRating);
-  const [ratingReason, setRatingReason] = useState(props.courseRatingReason);
+  const [ratingReason, setRatingReason] = useState(props.courseRatingReason?props.courseRatingReason:'');
   const [pendingChanges, setPendingChanges] = useState(false);
+  const [isPosting, setIsPosting] = useState(false);
 
   let timer = useRef();
 
-  const postData = () => {
+  const postData = (delay=3000) => {
     setPendingChanges(true);
     if (timer.current) {
       clearTimeout(timer.current);
     }
     timer.current = setTimeout(() => {
-      setPendingChanges(false);
+      setIsPosting(true);
       const data = new FormData();
       data.append('course_rating', rating);
       data.append('course_rating_reason', ratingReason)
       axios.post(actionUrl, data).then(res => {
+        setIsPosting(false)
         if (res.status === 200) {
-          //TODO 
+          setPendingChanges(false);
           console.log('updated course rating');
         } else {
           // TODO
           console.log("error saving course rating");
         }
       }).catch(err => {
+        setIsPosting(false)
         //TODO this.props.showAlert("There was an error sending the validation email. Please contact us at thepeople@p2pu.org.", "warning")
         console.log(err);
       })
-    }, 3000);
+    }, delay);
   }
 
   const updateRating = value => {
     setRating(value);
-    postData();
+    postData(1000);
   }
 
   const ratingChoices = [1,2,3,4,5];
@@ -59,10 +62,11 @@ const CourseFeedbackForm = props => {
       </div>
       <div className="form-group">
         <label>Why did you give the course {rating} stars</label>
-        <input className="form-control" type="text" />
+        <input className="form-control" type="text" name="goal_rating_reason" value={ratingReason} onChange={e => { setRatingReason(e.target.value); postData();}} />
       </div>
-      { rating && pendingChanges && <><div className="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div><span> saving changes</span></> }
-        { rating && !pendingChanges && "changes saved" }
+      { rating && pendingChanges && !isPosting && <><span> pending updates</span></> }
+      { isPosting && <><div className="spinner-border spinner-border-sm" role="status"><span className="sr-only">saving...</span></div><span> saving changes</span></> }
+      { rating && !pendingChanges && "changes saved" }
     </form>
   );
 };
