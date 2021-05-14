@@ -1,15 +1,11 @@
 import React, { useState } from 'react'
+import axios from 'axios'
 
-function getCookie(name) {
-  var value = "; " + document.cookie;
-  var parts = value.split("; " + name + "=");
-  if (parts.length == 2) return parts.pop().split(";").shift();
-}
+axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 
-const MeetingFeedback = props => {
-  const {meetingId, postUrl} = props;
-
-  const [rating, setRating] = useState(props.rating)
+const RatingInput = props => {
+  const {rating, setRating} = props;
   const ratingOptions = [
     [5, 'Great', "/static/images/icons/p2pu-joy-bot.svg"],
     [4, 'Pretty well', "/static/images/icons/p2pu-happy-bot.svg"],
@@ -18,6 +14,41 @@ const MeetingFeedback = props => {
     [1, 'Awful', "/static/images/icons/p2pu-neon-tear-bot.svg"],
   ];
 
+  return (
+    <div id="div_id_rating" className="form-group">
+      <p><label htmlFor="id_rating" className="col-form-label  requiredField">Overall, how did this meeting go?</label></p>
+      <div className="p2pu-bot-selector">
+        { ratingOptions.map(option => 
+          <label key={option[0]}>
+            <input 
+              type="radio"
+              name="rating"
+              value={option[0]}
+              onChange={e => setRating(e.target.value)}
+              checked={rating==option[0]?true:null}
+            />
+            <img src={option[2]} />
+            <div className="text-center">{option[1]}</div>
+          </label>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const AttendanceInput = ({attendance, setAttendance}) => 
+  <div id="div_id_attendance" className="form-group">
+    <label htmlFor="id_attendance" className="col-form-label">How many people attended?</label> 
+    <div>
+      <input type="number" name="attendance" min="0" className="numberinput form-control form-control form-control" value={attendance} onChange={e => setAttendance(e.target.value)} id="id_attendance" /> 
+    </div> 
+  </div>;
+
+
+const MeetingFeedback = props => {
+  const {meetingId, postUrl} = props;
+
+  const [rating, setRating] = useState(props.rating);
   const [attendance, setAttendance] = useState(props.attendance);
 
   // first prompt is a legacy prompt and should only be used if the reflection value doesn't 
@@ -44,12 +75,8 @@ const MeetingFeedback = props => {
       prompt: reflectionPrompts[0],
     }
   }
-  const [reflection, setReflection] = useState(initialReflection);
 
-  const csrfToken = getCookie('csrftoken');
-  const submitForm = e => {
-    //e.preventDefault();
-  }
+  const [reflection, setReflection] = useState(initialReflection);
 
   const cyclePrompt = e => {
     e.preventDefault();
@@ -64,35 +91,9 @@ const MeetingFeedback = props => {
 
   return (
     <>
-    <form action={postUrl} method="POST" onSubmit={submitForm}>
-      <input type="hidden" name="csrfmiddlewaretoken" value={csrfToken} />
-
-      <div id="div_id_rating" className="form-group">
-        <p>
-          <label htmlFor="id_rating" className="col-form-label  requiredField">Overall, how did this meeting go?</label></p>
-          <div className="p2pu-bot-selector">
-            { ratingOptions.map(option => 
-              <label className="" key={option[0]}>
-                <input 
-                  type="radio"
-                  name="rating"
-                  value={option[0]}
-                  onChange={e => setRating(e.target.value)}
-                  checked={rating==option[0]?true:null}
-                />
-                <img src={option[2]} />
-                <div className="text-center">{option[1]}</div>
-              </label>
-            )}
-          </div>
-      </div>
-
-      <div id="div_id_attendance" className="form-group">
-        <label htmlFor="id_attendance" className="col-form-label">How many people attended?</label> 
-        <div>
-          <input type="number" name="attendance" min="0" className="numberinput form-control form-control form-control" value={attendance} onChange={e => setAttendance(e.target.value)} id="id_attendance" /> 
-        </div> 
-      </div>
+    <form>
+      <RatingInput rating={rating} setRating={setRating}/>
+      <AttendanceInput attendance={attendance} setAttendance={setAttendance}/>
 
       <input type="hidden" name="reflection" value={reflection.answer?JSON.stringify(reflection):""}/>
       <div id="div_id_reflection" className="form-group">
@@ -101,11 +102,67 @@ const MeetingFeedback = props => {
           <textarea name="reflection_answer" rows="3" className="textarea form-control form-control form-control" id="id_reflection" value={reflection.answer} onChange={ e => setReflection({...reflection, 'answer': e.target.value}) }/>
         </div> 
       </div>
-      
-      <p><button type="submit" className="p2pu-btn btn-primary">{props.feedbackId?'Update':'Submit'}</button></p>
+       
     </form>
     </>
   )
+}
+
+const DelayedPostForm = props => {
+  const {actionUrl} = props;
+
+  const [formData, setFormData] = useState({});
+  const [pendingChanges, setPendingChanges] = useState(false);
+  const [isPosting, setIsPosting] = useState(false);
+
+  let timer = useRef();
+  const postData = (delay=3000) => {
+    setPendingChanges(true);
+    if (timer.current) {
+      clearTimeout(timer.current);
+    }
+    timer.current = setTimeout(() => {
+      setIsPosting(true);
+      const data = new FormData();
+      for (const key in formData) {
+        data.append(key, formData[key]);
+      }
+      axios.post(actionUrl, data).then(res => {
+        setIsPosting(false)
+        if (res.status === 200) {
+          setPendingChanges(false);
+          console.log('updated course rating');
+        } else {
+          // TODO
+          console.log("error saving course rating");
+        }
+      }).catch(err => {
+        setIsPosting(false)
+        //TODO 
+        console.log(err);
+      })
+    }, delay);
+  }
+
+  const updateForm = (data, delay=3000) => {
+    setFormData({...formData, ...data});
+    postData(delay);
+  }
+
+  return (
+    <div>
+      <MeetingFeedback
+        {...props}
+        pendingChanges={pendingChanges}
+        isPosting={isPosting}
+        updateForm={updateForm}
+        formData={formData}
+      />
+      { pendingChanges && !isPosting && <span> pending updates</span> }
+      { isPosting && <><div className="spinner-border spinner-border-sm" role="status"><span className="sr-only">saving...</span></div><span> saving changes</span></> }
+      { !pendingChanges && "changes saved" }
+    </div>
+  );
 }
 
 export default MeetingFeedback;
