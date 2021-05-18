@@ -159,9 +159,9 @@
                         {% if feedback.rating %}data-rating="{{feedback.rating}}"{% endif %}
                         {% if feedback.attendance %}data-attendance="{{feedback.attendance}}"{% endif %}
                         {% if feedback.reflection%}data-reflection="{{feedback.reflection}}"{% endif %}
-                        data-post-url="{% url 'studygroups_feedback_edit' study_group.id meeting.id feedback.id %}"
+                        data-action-url="{% url 'studygroups_feedback_edit' study_group.id meeting.id feedback.id %}"
                       {% else %}
-                      data-post-url="{% url 'studygroups_feedback' study_group.pk meeting.pk %}"
+                      data-action-url="{% url 'studygroups_feedback' study_group.pk meeting.pk %}"
                       {% if meeting_rating and forloop.counter|stringformat:"i" == expand_meeting %}data-rating="{{meeting_rating}}"{% endif %}
                       {% endif %}
                     >

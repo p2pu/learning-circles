@@ -1,56 +1,22 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import axios from 'axios'
+
+import RatingInput from './manage/meeting-rating-input';
 
 axios.defaults.xsrfCookieName = 'csrftoken'
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 
-const RatingInput = props => {
-  const {rating, setRating} = props;
-  const ratingOptions = [
-    [5, 'Great', "/static/images/icons/p2pu-joy-bot.svg"],
-    [4, 'Pretty well', "/static/images/icons/p2pu-happy-bot.svg"],
-    [3, 'Okay', "/static/images/icons/p2pu-meh-bot.svg"],
-    [2, 'Not so good', "/static/images/icons/p2pu-sad-bot.svg"],
-    [1, 'Awful', "/static/images/icons/p2pu-neon-tear-bot.svg"],
-  ];
 
-  return (
-    <div id="div_id_rating" className="form-group">
-      <p><label htmlFor="id_rating" className="col-form-label  requiredField">Overall, how did this meeting go?</label></p>
-      <div className="p2pu-bot-selector">
-        { ratingOptions.map(option => 
-          <label key={option[0]}>
-            <input 
-              type="radio"
-              name="rating"
-              value={option[0]}
-              onChange={e => setRating(e.target.value)}
-              checked={rating==option[0]?true:null}
-            />
-            <img src={option[2]} />
-            <div className="text-center">{option[1]}</div>
-          </label>
-        )}
-      </div>
-    </div>
-  );
-}
-
-const AttendanceInput = ({attendance, setAttendance}) => 
+const AttendanceInput = ({value, onChange}) => 
   <div id="div_id_attendance" className="form-group">
     <label htmlFor="id_attendance" className="col-form-label">How many people attended?</label> 
     <div>
-      <input type="number" name="attendance" min="0" className="numberinput form-control form-control form-control" value={attendance} onChange={e => setAttendance(e.target.value)} id="id_attendance" /> 
+      <input type="number" name="attendance" min="0" className="numberinput form-control form-control form-control" value={value} onChange={e => onChange({'attendance': e.target.value})} id="id_attendance" /> 
     </div> 
   </div>;
 
 
-const MeetingFeedback = props => {
-  const {meetingId, postUrl} = props;
-
-  const [rating, setRating] = useState(props.rating);
-  const [attendance, setAttendance] = useState(props.attendance);
-
+const ReflectionInput = ({value, onChange}) => {
   // first prompt is a legacy prompt and should only be used if the reflection value doesn't 
   // indicate a prompt index + prompt
   const reflectionPrompts = [
@@ -62,18 +28,20 @@ const MeetingFeedback = props => {
     'What made you laugh?',
     'What advice would you give another facilitator who wanted to use this material?',
   ];
-  const randi = Math.floor(1 + Math.random()*(reflectionPrompts.length-1));
-  let {
-    reflection : initialReflection = JSON.stringify({"promptIndex": randi, "prompt": reflectionPrompts[randi],}) 
-  } = props;
-  try {
-    initialReflection = JSON.parse(initialReflection);
-  } catch (error){
-    initialReflection = {
-      answer: props.reflection,
-      promptIndex: 0,
-      prompt: reflectionPrompts[0],
+  let initialReflection = value;
+  if (initialReflection) {
+    try {
+      initialReflection = JSON.parse(value);
+    } catch (error){
+      initialReflection = {
+        answer: value,
+        promptIndex: 0,
+        prompt: reflectionPrompts[0],
+      }
     }
+  } else {
+    const randi = Math.floor(1 + Math.random()*(reflectionPrompts.length-1));
+    initialReflection = {"promptIndex": randi, "prompt": reflectionPrompts[randi]};
   }
 
   const [reflection, setReflection] = useState(initialReflection);
@@ -81,72 +49,92 @@ const MeetingFeedback = props => {
   const cyclePrompt = e => {
     e.preventDefault();
     let newIndex = 1 + reflection.promptIndex%(reflectionPrompts.length-1);
-    console.log(newIndex);
-    setReflection({
+    let updatedReflection = {
       ...reflection,
       "promptIndex": newIndex, 
-      "prompt": reflectionPrompts[newIndex]}
-    );
-  } 
+      "prompt": reflectionPrompts[newIndex]
+    };
+    setReflection(updatedReflection);
+    if (reflection.answer){
+      onChange({reflection: JSON.stringify(updatedReflection)});
+    }
+  }
+
+  const handleChange = e => {
+    let updatedReflection = {...reflection, 'answer': e.target.value};
+    setReflection(updatedReflection);
+    onChange({reflection: JSON.stringify(updatedReflection)});
+  }
 
   return (
-    <>
-    <form>
-      <RatingInput rating={rating} setRating={setRating}/>
-      <AttendanceInput attendance={attendance} setAttendance={setAttendance}/>
+    <div id="div_id_reflection" className="form-group">
+      <label htmlFor="id_reflection" className="col-form-label">{reflectionPrompts[reflection.promptIndex]} (<a href="#" onClick={cyclePrompt} >Give me another question</a>)</label>
+      <div>
+        <textarea name="reflection_answer" rows="3" className="textarea form-control form-control form-control" id="id_reflection" value={reflection.answer} onChange={handleChange}/>
+      </div> 
+    </div>
+  );
 
-      <input type="hidden" name="reflection" value={reflection.answer?JSON.stringify(reflection):""}/>
-      <div id="div_id_reflection" className="form-group">
-        <label htmlFor="id_reflection" className="col-form-label">{reflectionPrompts[reflection.promptIndex]} (<a href="#" onClick={cyclePrompt} >Give me another question</a>)</label>
-        <div>
-          <textarea name="reflection_answer" rows="3" className="textarea form-control form-control form-control" id="id_reflection" value={reflection.answer} onChange={ e => setReflection({...reflection, 'answer': e.target.value}) }/>
-        </div> 
-      </div>
-       
+}
+
+const MeetingFeedback = props => {
+  const {formData, updateForm} = props;
+
+  return (
+    <form>
+      <RatingInput value={formData['rating']} onChange={updateForm}/>
+      <AttendanceInput value={formData.attendance} onChange={updateForm}/>
+      <ReflectionInput value={formData.reflection} onChange={updateForm} />
     </form>
-    </>
   )
 }
 
 const DelayedPostForm = props => {
   const {actionUrl} = props;
 
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    rating: props.rating,
+    attendance: props.attendance,
+    reflection: props.reflection,
+  });
   const [pendingChanges, setPendingChanges] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
 
+  const postData = (_formData) => {
+    setIsPosting(true);
+    // NOTE seems like using state here referst to old state :(
+    // Stale closure :(
+    const data = new FormData();
+    for (const [key, val] of Object.entries(_formData)) {
+      if (val){
+        data.append(key, val);
+      }
+    }
+    axios.post(actionUrl, data).then(res => {
+      setIsPosting(false)
+      if (res.status === 200) {
+        setPendingChanges(false);
+        console.log('updated course rating');
+      } else {
+        // TODO
+        console.log("error saving course rating");
+      }
+    }).catch(err => {
+      setIsPosting(false)
+      //TODO 
+      console.log(err);
+    })
+  };
+
   let timer = useRef();
-  const postData = (delay=3000) => {
+
+  const updateForm = (data, delay=3000) => {
+    setFormData({...formData, ...data});
     setPendingChanges(true);
     if (timer.current) {
       clearTimeout(timer.current);
     }
-    timer.current = setTimeout(() => {
-      setIsPosting(true);
-      const data = new FormData();
-      for (const key in formData) {
-        data.append(key, formData[key]);
-      }
-      axios.post(actionUrl, data).then(res => {
-        setIsPosting(false)
-        if (res.status === 200) {
-          setPendingChanges(false);
-          console.log('updated course rating');
-        } else {
-          // TODO
-          console.log("error saving course rating");
-        }
-      }).catch(err => {
-        setIsPosting(false)
-        //TODO 
-        console.log(err);
-      })
-    }, delay);
-  }
-
-  const updateForm = (data, delay=3000) => {
-    setFormData({...formData, ...data});
-    postData(delay);
+    timer.current = setTimeout(() => postData({...formData, ...data}), delay);
   }
 
   return (
@@ -165,5 +153,5 @@ const DelayedPostForm = props => {
   );
 }
 
-export default MeetingFeedback;
+export default DelayedPostForm;
 
