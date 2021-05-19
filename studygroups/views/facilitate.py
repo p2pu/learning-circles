@@ -167,26 +167,7 @@ class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
         feedback = form.save(commit=False)
         feedback.study_group_meeting = meeting
         feedback.save()
-
         messages.success(self.request, _('Your feedback has been saved.'))
-
-        # send notification to organizers about feedback
-        to = []
-        organizers = get_study_group_organizers(meeting.study_group)
-        if organizers:
-            to = [o.email for o in organizers]
-
-        context = {
-            'feedback': form.save(commit=False),
-            'study_group_meeting': meeting
-        }
-        subject = render_to_string_ctx('studygroups/email/feedback-submitted-subject.txt', context).strip('\n')
-        html_body = render_to_string_ctx('studygroups/email/feedback-submitted.html', context)
-        text_body = render_to_string_ctx('studygroups/email/feedback-submitted.txt', context)
-        notification = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
-        notification.attach_alternative(html_body, 'text/html')
-        notification.send()
-
         url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
         return http.HttpResponseRedirect(url)
 
