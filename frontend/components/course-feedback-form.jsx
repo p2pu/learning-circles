@@ -14,7 +14,7 @@ const CourseFeedbackForm = props => {
 
   let timer = useRef();
 
-  const postData = (delay=3000) => {
+  const postData = (formState, delay=3000) => {
     setPendingChanges(true);
     if (timer.current) {
       clearTimeout(timer.current);
@@ -22,8 +22,12 @@ const CourseFeedbackForm = props => {
     timer.current = setTimeout(() => {
       setIsPosting(true);
       const data = new FormData();
-      data.append('course_rating', rating);
-      data.append('course_rating_reason', ratingReason)
+      if (formState.rating){
+        data.append('course_rating', formState.rating);
+      }
+      if (formState.ratingReason){
+        data.append('course_rating_reason', formState.ratingReason)
+      }
       axios.post(actionUrl, data).then(res => {
         setIsPosting(false)
         if (res.status === 200) {
@@ -35,7 +39,7 @@ const CourseFeedbackForm = props => {
         }
       }).catch(err => {
         setIsPosting(false)
-        //TODO this.props.showAlert("There was an error sending the validation email. Please contact us at thepeople@p2pu.org.", "warning")
+        //TODO 
         console.log(err);
       })
     }, delay);
@@ -43,16 +47,27 @@ const CourseFeedbackForm = props => {
 
   const updateRating = value => {
     setRating(value);
-    postData(1000);
+    let formState = { rating: value }
+    if (ratingReason) {
+      formState.ratingReason = ratingReason;
+    }
+    postData(formState, 1000);
   }
 
-  const ratingChoices = [1,2,3,4,5];
+  const updateRatingReason = value => {
+    setRatingReason(value);
+    let formState = { ratingReason: value };
+    if (rating) {
+      formState.rating = rating;
+    }
+    postData(formState);
+  }
 
   return (
     <form acion="">
       <p>How well did the online course work as a learning circle?</p>
       <div className="star-rating-input">
-        {ratingChoices.map( ratingValue => 
+        {[1,2,3,4,5].map( ratingValue => 
           <label key={ratingValue}>
             <input type="radio" name="goal_rating" value={ratingValue} onClick={ve => updateRating(ratingValue)} />
             <img className={!rating||ratingValue>rating?'dull':''} src={starUrl} />
@@ -62,7 +77,7 @@ const CourseFeedbackForm = props => {
       </div>
       <div className="form-group">
         <label>Why did you give the course {rating} stars</label>
-        <input className="form-control" type="text" name="goal_rating_reason" value={ratingReason} onChange={e => { setRatingReason(e.target.value); postData();}} />
+        <textarea name="rating_reason" rows="3" className="textarea form-control" value={ratingReason} onChange={e => updateRatingReason(e.target.value)} />
       </div>
       { rating && pendingChanges && !isPosting && <><span> pending updates</span></> }
       { isPosting && <><div className="spinner-border spinner-border-sm" role="status"><span className="sr-only">saving...</span></div><span> saving changes</span></> }
