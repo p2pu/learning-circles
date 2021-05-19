@@ -79,9 +79,11 @@ const CourseFeedbackForm = props => {
         <label>Why did you give the course {rating} stars</label>
         <textarea name="rating_reason" rows="3" className="textarea form-control" value={ratingReason} onChange={e => updateRatingReason(e.target.value)} />
       </div>
-      { rating && pendingChanges && !isPosting && <><span> pending updates</span></> }
-      { isPosting && <><div className="spinner-border spinner-border-sm" role="status"><span className="sr-only">saving...</span></div><span> saving changes</span></> }
-      { rating && !pendingChanges && "changes saved" }
+      <div className="text-muted">
+        { rating && pendingChanges && !isPosting && <><span> pending updates</span></> }
+        { isPosting && <><div className="spinner-border spinner-border-sm" role="status"><span className="sr-only">saving...</span></div><span> saving changes</span></> }
+        { rating && !pendingChanges && "changes saved" }
+      </div>
     </form>
   );
 };

@@ -146,9 +146,11 @@ const DelayedPostForm = props => {
         updateForm={updateForm}
         formData={formData}
       />
-      { pendingChanges && !isPosting && <span> pending updates</span> }
-      { isPosting && <><div className="spinner-border spinner-border-sm" role="status"><span className="sr-only">saving...</span></div><span> saving changes</span></> }
-      { !pendingChanges && "changes saved" }
+      <div className="text-muted">
+        { pendingChanges && !isPosting && <span> pending updates</span> }
+        { isPosting && <><div className="spinner-border spinner-border-sm" role="status"><span className="sr-only">saving...</span></div><span> saving changes</span></> }
+        { !pendingChanges && "changes saved" }
+      </div>
     </div>
   );
 }
