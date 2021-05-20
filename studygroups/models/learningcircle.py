@@ -480,22 +480,28 @@ class Rsvp(models.Model):
 
 class Feedback(LifeTimeTrackingModel):
 
-    BAD = '1'
+    AWFUL = '1'
     NOT_SO_GOOD = '2'
-    GOOD = '3'
+    OKAY = '3'
     WELL = '4'
     GREAT = '5'
 
     RATING = [
         (GREAT, _('Great')),
         (WELL, _('Pretty well')),
-        (GOOD, _('Good')),
-        (NOT_SO_GOOD, _('Not so great')),
-        (BAD, _('I need some help')),
+        (OKAY, _('okay')),
+        (NOT_SO_GOOD, _('Not so good')),
+        (AWFUL, _('Awful')),
     ]
 
     study_group_meeting = models.ForeignKey('studygroups.Meeting', on_delete=models.CASCADE) # TODO should this be a OneToOneField?
     feedback = models.TextField(blank=True) # Shared with learners. This is being deprecated, but kept for retaining past data.
     attendance = models.PositiveIntegerField(blank=True, null=True)
-    reflection = models.TextField(blank=True) # Not shared
+    reflection = models.TextField(blank=True) # Shared with team and P2PU
     rating = models.CharField(choices=RATING, max_length=16, blank=True)
+
+    def reflection_json(self):
+        if self.reflection:
+            return json.loads(self.reflection)
+        else:
+            return {}

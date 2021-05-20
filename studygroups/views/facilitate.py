@@ -202,6 +202,7 @@ class ApplicationDelete(FacilitatorRedirectMixin, DeleteView):
     template_name = 'studygroups/confirm_delete.html'
 
 
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class MessageView(DetailView):
     model = Reminder
     template_name = 'studygroups/message_view.html'
@@ -543,6 +544,7 @@ def message_edit(request, study_group_id, message_id):
     return render(request, 'studygroups/message_edit.html', context)
 
 
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class ReminderDelete(DeleteView):
     model = Reminder
 
@@ -554,6 +556,7 @@ class ReminderDelete(DeleteView):
         pass
 
 
+@method_decorator(user_is_group_facilitator, name="dispatch")
 class RemiderRegenerate(UpdateView):
     model = Meeting
     def __todo__(self):
@@ -801,17 +804,12 @@ class StudyGroupFacilitatorSurvey(TemplateView):
 
     def get_context_data(self, **kwargs):
         study_group = get_object_or_404(StudyGroup, uuid=kwargs.get('study_group_uuid'))
-        # TODO this shouldn't happen on GET
-        study_group.facilitator_goal_rating = self.request.GET.get('goal_rating', None)
-        study_group.save()
-
         context = super(StudyGroupFacilitatorSurvey, self).get_context_data(**kwargs)
+        context['study_group'] = study_group
         context['survey_id'] = settings.TYPEFORM_FACILITATOR_SURVEY_FORM
-        context['study_group_uuid'] = study_group.uuid
-        context['study_group_name'] = study_group.name
         context['course'] = study_group.course.title
         context['goal'] = study_group.facilitator_goal
-        context['goal_rating'] = self.request.GET.get('goal_rating', '')
+        context['goal_rating'] = study_group.facilitator_goal_rating
         meetings = study_group.meeting_set.active().order_by('meeting_date', 'meeting_time')
         attendance = [m.feedback_set.first().attendance if m.feedback_set.first() else None for m in meetings]
         if len(attendance) and attendance[0]:
@@ -820,8 +818,6 @@ class StudyGroupFacilitatorSurvey(TemplateView):
             context['attendance_2'] = attendance[1]
         if len(attendance) > 2 and attendance[-1]:
             context['attendance_n'] = attendance[-1]
-
-        # TODO context['no_studygroup'] = self.request.GET.get('nostudygroup', False)
         return context
 
 
