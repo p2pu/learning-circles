@@ -15,7 +15,9 @@ for (let el of elements){
 
 // Replace feedback form for learning circle
 const element = document.getElementById('learning-circle-feedback-form');
-ReactDOM.render(<LearningCircleFeedbackForm {...element.dataset} />, element);
+if (element) {
+  ReactDOM.render(<LearningCircleFeedbackForm {...element.dataset} />, element);
+}
 
 let courseFeedbackDiv = document.getElementById('course-feedback-form');
 ReactDOM.render(
