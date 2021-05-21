@@ -211,6 +211,8 @@ class MessageView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         message = context['message']
+        if message.study_group_id != int(self.kwargs.get('study_group_id')):
+            raise PermissionDenied
         message.email_body = re.sub(r'RSVP_YES_LINK', '#', message.email_body)
         message.email_body = re.sub(r'RSVP_NO_LINK', '#', message.email_body)
         message.email_body = re.sub(r'UNSUBSCRIBE_LINK', '#', message.email_body)
