@@ -114,6 +114,7 @@ const DelayedPostForm = props => {
       setIsPosting(false)
       if (res.status === 200) {
         setPendingChanges(false);
+        props.onFormSubmitted();
         console.log('updated course rating');
       } else {
         // TODO
@@ -155,5 +156,28 @@ const DelayedPostForm = props => {
   );
 }
 
-export default DelayedPostForm;
+const MeetingFeedbackItem = props => {
+  const {meetingId} = props;
+  const [panelCollapsed, setPanelCollapsed] = useState(!!props.feedbackId);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+
+  let itemState = formSubmitted?'done':props.itemState;
+
+  return (
+    <div className={"meeting-item" + (itemState?` ${itemState}`:'')}>
+      <p>Reflect and share feedback {props.feedbackId && <>(<a data-toggle="collapse" href={`#meeting-${meetingId}-feedback`} role="button" aria-expanded="true" aria-controls={`meeting-${meetingId}-feedback`}>show</a>)</>}</p>
+        { props.showForm &&
+        <div className={"meeting-feedback" + (panelCollapsed?' collapse':'')} id={`meeting-${meetingId}-feedback`}>
+          <p>Your reflections help P2PU identify common themes for upcoming facilitator calls (<a href="https://community.p2pu.org/c/community-events/57">RSVP here</a>). Your responses will be shared with P2PU (and your team if you are part of one).</p>
+        <DelayedPostForm 
+          {...props}
+          onFormSubmitted={()=>setFormSubmitted(true)}
+        />
+        </div>
+        }
+    </div>
+  );
+};
+
+export default MeetingFeedbackItem;
 
