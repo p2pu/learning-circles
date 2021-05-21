@@ -105,6 +105,7 @@ class TestFacilitatorViews(TestCase):
         assertForbidden('/en/studygroup/1/edit/')
         assertForbidden('/en/studygroup/1/message/compose/')
         assertForbidden('/en/studygroup/1/message/edit/1/')
+        assertForbidden('/en/studygroup/1/message/1/')
         assertForbidden('/en/studygroup/1/member/add/')
         assertForbidden('/en/studygroup/1/member/1/delete/')
         assertForbidden('/en/studygroup/1/meeting/create/')
