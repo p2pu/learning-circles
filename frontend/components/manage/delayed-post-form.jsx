@@ -13,18 +13,16 @@ const DelayedPostForm = props => {
 
   const postData = (_formData) => {
     setIsPosting(true);
-    const data = new FormData();
-    for (const [key, val] of Object.entries(_formData)) {
-      if (val){
-        data.append(key, val);
-      }
-    }
-    axios.post(actionUrl, data).then(res => {
+    axios(actionUrl, {method: props.createObject?'POST':'PUT', data: _formData}).then(res => {
       setIsPosting(false)
-      if (res.status === 200) {
+      if (res.status === 201) {
         setPendingChanges(false);
         props.onFormSubmitted();
-        console.log('updated course rating');
+        props.onObjectCreated(res.data);
+        console.log('created object');
+      } else if (res.status === 200){
+        setPendingChanges(false);
+        props.onFormSubmitted(res.data);
       } else {
         // TODO
         console.log("error saving course rating");

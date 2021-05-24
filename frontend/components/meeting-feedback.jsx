@@ -35,12 +35,15 @@ const MeetingFeedbackItem = props => {
   const {meetingId} = props;
   const [panelCollapsed, setPanelCollapsed] = useState(!!props.feedbackId);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [actionUrl, setActionUrl] = useState(props.actionUrl);
+  const [createObject, setCreateObject] = useState(!props.feedbackId);
 
   let itemState = formSubmitted?'done':props.itemState;
   let initialFormValues = {
     rating: props.rating,
     attendance: props.attendance,
     reflection: props.reflection,
+    study_group_meeting: props.meetingId,
   };
 
   // TODO on creation of feedback, we need to get the right actionUrl to update the feedback rather than creating new feedback
@@ -52,10 +55,12 @@ const MeetingFeedbackItem = props => {
         <div className={"meeting-feedback" + (panelCollapsed?" collapse":"")} id={`meeting-${meetingId}-feedback`}>
           <p>Your reflections help P2PU identify common themes for upcoming facilitator calls (<a href="https://community.p2pu.org/c/community-events/57">RSVP here</a>). Your responses will be shared with P2PU (and your team if you are part of one).</p>
 
-          <DelayedPostForm 
-            actionUrl={props.actionUrl}
+          <DelayedPostForm
+            createObject={createObject}
+            actionUrl={actionUrl}
             initialValues={initialFormValues}
             onFormSubmitted={()=>setFormSubmitted(true)}
+            onObjectCreated={object => { setActionUrl(object.url); setCreateObject(false); } }
           >
             <MeetingFeedbackForm/>
           </DelayedPostForm>
