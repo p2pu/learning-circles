@@ -4,6 +4,9 @@ import DelayedPostForm from './manage/delayed-post-form';
 
 
 const SurveyPrompt = props => {
+  if (props.surveyCompleted){
+    return <p>Thank you for completing the survey</p>
+  }
   return <>
     <p>Can we ask you a few more questions? It will only take 5 minutes.</p>
     <p><a className="p2pu-btn btn-primary" href={props.surveyUrl}>Complete the facilitator survey</a></p>
