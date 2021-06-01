@@ -1,64 +1,79 @@
 import React, {useState, useRef} from 'react'
-import axios from 'axios'
 
-axios.defaults.xsrfCookieName = 'csrftoken'
-axios.defaults.xsrfHeaderName = 'X-CSRFToken'
+import DelayedPostForm from './manage/delayed-post-form';
 
-const LearningCircleFeedbackForm = props => {
-  const {starUrl, actionUrl} = props;
 
-  const [goalRating, setGoalRating] = useState(props.facilitatorGoalRating);
+const SurveyPrompt = props => {
+  return <>
+    <p>Can we ask you a few more questions? It will only take 5 minutes.</p>
+    <p><a className="p2pu-btn btn-primary" href={props.surveyUrl}>Complete the facilitator survey</a></p>
+  </>;
+}
 
-  const [pendingChanges, setPendingChanges] = useState(false);
-  const [isPosting, setIsPosting] = useState(false);
-
-  let timer = useRef();
-
-  const postValue = (value, delay=3000) => {
-    setGoalRating(value);
-    setPendingChanges(true);
-    if (timer.current) {
-      clearTimeout(timer.current);
-    }
-    timer.current = setTimeout(() => {
-      setIsPosting(true);
-      const data = new FormData();
-      data.append('facilitator_goal_rating', value);
-      axios.post(actionUrl, data).then(res => {
-        setIsPosting(false)
-        if (res.status === 200) {
-          setPendingChanges(false);
-          //TODO
-          console.log('updated facilitator goal rating');
-        } else {
-          // TODO
-          console.log("error saving rating");
-        }
-      }).catch(err => {
-        setIsPosting(false)
-        //TODO
-        console.log(err);
-      });
-    }, delay);
-  }
+const GoalRatingForm = props => {
+  const {formData, updateForm} = props;
+  const options = [
+    [1,'not at all'],
+    [2],
+    [3,'somewhat'],
+    [4],
+    [5, 'completely']
+  ];
 
   return (
-    <form acion="">
+    <form>
+      <p>When you signed up, we asked what you hoped to achieve by facilitating a learning circle, and you wrote <strong>"{props.facilitatorGoal}"</strong>.</p>
+      <p>To what extent did you achieve this?</p>
+
       <div className="star-rating-input">
-        {[[1,'not at all'],[2],[3,'somewhat'],[4],[5, 'completely']].map(value =>
+        { options.map(value => 
           <label key={value[0]}>
-            <input type="radio" name="facilitator_goal_rating" value={value[0]} onClick={e => postValue(value[0])} />
-            <img className={!goalRating||value[0]>goalRating?'dull':''} src={starUrl} />
-            <div className="text-center">{value[0]}{value.length == 2 && <><br />{value[1]}</> } </div>
+            <input 
+              type="radio"
+              name="facilitator_goal_rating"
+              value={value[0]}
+              onClick={ e => updateForm({facilitator_goal_rating: value[0]}) } 
+            />
+            <img className={!formData.facilitator_goal_rating||value[0]>formData.facilitator_goal_rating?'dull':''} src={props.starUrl} />
+            <div className="text-center">
+              {value[0]}
+              {value.length == 2 && <br /> } 
+              {value.length == 2 && value[1]} 
+            </div>
           </label>
         )}
       </div>
-      <div className="text-muted">
-        { goalRating && pendingChanges && !isPosting && <span> pending updates</span> }
-        { isPosting && <><div className="spinner-border spinner-border-sm" role="status"><span className="sr-only">saving...</span></div><span> saving changes</span></> }
-        { goalRating && !pendingChanges && "changes saved" }
-      </div>
     </form>
+  );
+}
+
+const LearningCircleFeedbackForm = props => {
+  const {actionUrl} = props;
+  let [completionState, setCompletionState] = useState(props.completionState);
+
+  let initialFormValues = {
+    facilitator_goal_rating: props.facilitatorGoalRating,
+  }
+
+  return (
+    <div className={"meeting-item " + completionState}>
+      <p>Reflect on your experience</p>
+      <div className="meeting-item-details">
+        { props.facilitatorGoal && 
+            <div>
+              <DelayedPostForm
+                createObject={false}
+                actionUrl={actionUrl}
+                initialValues={initialFormValues}
+                onFormSubmitted={ () => setCompletionState('done')}
+              >
+                <GoalRatingForm {...props} />
+              </DelayedPostForm>
+            </div>
+        }
+        <SurveyPrompt {...props} />
+      </div>
+    </div>
   );
 };
 

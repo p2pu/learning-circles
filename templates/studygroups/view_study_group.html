@@ -238,26 +238,22 @@
               </div>
             </div>
 
-            <div class="meeting-item {% if study_group.facilitatorsurveyresponse_set.count %}done{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %}">
-              <p>Reflect on your experience</p>
-              <div class="meeting-item-details">
+            <div id="learning-circle-feedback-form"
+                data-star-url="{% static 'images/icons/rating-star.svg' %}"
+                data-action-url="{% url 'learningcircle_feedback-detail' study_group.pk %}"
+                data-completion-state="{% if study_group.facilitatorsurveyresponse_set.count or study_group.facilitator_goal_rating %}done{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %}"
                 {% if study_group.facilitator_goal %}
-                <p>{% blocktrans with facilitator_goal=study_group.facilitator_goal %}When you signed up, we asked what you hoped to achieve by facilitating a learning circle, and you wrote <strong>"{{facilitator_goal}}"</strong>.</p><p>To what extent did you achieve this?{% endblocktrans %}</p>
-                <div id="learning-circle-feedback-form"
-                  data-star-url={% static 'images/icons/rating-star.svg' %}
-                  data-action-url="{% url 'studygroups_facilitator_rating' study_group.pk %}"
+                  data-facilitator-goal="{{study_group.facilitator_goal}}"
                   {% if study_group.facilitator_goal_rating %}
                     data-facilitator-goal-rating="{{study_group.facilitator_goal_rating}}"
                   {% endif %}
-                ></div>
                 {% endif %}
-
                 {% if study_group.facilitatorsurveyresponse_set.count  %}
+                  data-survey-completed="true"
                 {% else %}
-                  <p>Can we ask you a few more questions? It will only take 5 minutes.</p>
-                  <p><a class="p2pu-btn btn-primary" href="{% url 'studygroups_facilitator_survey' study_group.uuid %}">{% trans "Complete the facilitator survey" %}</a></p>
+                  data-survey-url="{% url 'studygroups_facilitator_survey' study_group.uuid %}"
                 {% endif %}
-              </div>
+            >
             </div>
 
             <div class="meeting-item {% if study_group.facilitatorsurveyresponse_set.count %}done{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %}">

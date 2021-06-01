@@ -6,9 +6,9 @@ from rest_framework import mixins
 from rest_framework import permissions
 
 from studygroups.models import Feedback
+from studygroups.models import StudyGroup
 from studygroups.models import TeamMembership
 from studygroups.models import get_study_group_organizers
-
 
 
 class FeedbackSerializer(serializers.ModelSerializer):
@@ -33,11 +33,39 @@ class IsGroupFacilitator(permissions.BasePermission):
         return False
 
 
-class FeedbackViewSet(mixins.CreateModelMixin,
-                      mixins.DestroyModelMixin,
-                      mixins.UpdateModelMixin,
-                      mixins.RetrieveModelMixin,
-                      viewsets.GenericViewSet):
+class FeedbackViewSet(
+        mixins.CreateModelMixin,
+        mixins.DestroyModelMixin,
+        mixins.UpdateModelMixin,
+        mixins.RetrieveModelMixin,
+        viewsets.GenericViewSet):
     queryset = Feedback.objects.all()
     serializer_class = FeedbackSerializer
     permission_classes = [permissions.IsAuthenticated, IsGroupFacilitator]
+
+
+""" TODO this is a duplicate since the way of getting the study_group differs :( """
+class IsGroupFacilitatorII(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        """ give access to staff, user and team organizer """
+        study_group = obj
+        if request.user.is_staff \
+                or request.user == study_group.facilitator \
+                or TeamMembership.objects.active().filter(user=request.user, role=TeamMembership.ORGANIZER).exists() and request.user in get_study_group_organizers(study_group):
+            return True
+        return False
+
+
+class StudyGroupFeedbackSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudyGroup
+        fields = ['facilitator_goal_rating', 'course_rating', 'course_rating_reason']
+
+
+class StudyGroupRatingViewSet(
+        mixins.UpdateModelMixin,
+        mixins.RetrieveModelMixin,
+        viewsets.GenericViewSet):
+    queryset = StudyGroup.objects.all()
+    serializer_class = StudyGroupFeedbackSerializer
+    permission_classes = [permissions.IsAuthenticated, IsGroupFacilitatorII]

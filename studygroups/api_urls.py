@@ -9,7 +9,8 @@ from . import views
 from .views import drf
 
 router = DefaultRouter()
-router.register(r'feedback', drf.FeedbackViewSet)
+router.register(r'meeting_feedback', drf.FeedbackViewSet)
+router.register(r'learningcircle_feedback', drf.StudyGroupRatingViewSet, base_name='learningcircle_feedback')
 
 # TODO split / indicate what is used on www.p2pu.org vs what is used for management UX
 

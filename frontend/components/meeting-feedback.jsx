@@ -1,12 +1,8 @@
 import React, { useState, useRef } from 'react'
-import axios from 'axios'
 
 import RatingInput from './manage/meeting-rating-input';
 import MeetingReflectionInput from './manage/meeting-reflection-input';
 import DelayedPostForm from './manage/delayed-post-form';
-
-axios.defaults.xsrfCookieName = 'csrftoken'
-axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 
 
 const AttendanceInput = ({value, onChange}) => 
@@ -46,25 +42,29 @@ const MeetingFeedbackItem = props => {
     study_group_meeting: props.meetingId,
   };
 
-  // TODO on creation of feedback, we need to get the right actionUrl to update the feedback rather than creating new feedback
+  let panelCollapseClass = panelCollapsed?" collapse":"";
 
   return (
     <div className={"meeting-item" + (itemState?` ${itemState}`:'')}>
-      <p>Reflect and share feedback {props.feedbackId && <>(<a data-toggle="collapse" href={`#meeting-${meetingId}-feedback`} role="button" aria-expanded="true" aria-controls={`meeting-${meetingId}-feedback`}>show</a>)</>}</p>
+      <p>Reflect and share feedback {props.feedbackId && <span>(<a data-toggle="collapse" href={`#meeting-${meetingId}-feedback`} role="button" aria-expanded="true" aria-controls={`meeting-${meetingId}-feedback`}>show</a>)</span>}
+      </p>
       { props.showForm &&
-        <div className={"meeting-feedback" + (panelCollapsed?" collapse":"")} id={`meeting-${meetingId}-feedback`}>
-          <p>Your reflections help P2PU identify common themes for upcoming facilitator calls (<a href="https://community.p2pu.org/c/community-events/57">RSVP here</a>). Your responses will be shared with P2PU (and your team if you are part of one).</p>
-
-          <DelayedPostForm
-            createObject={createObject}
-            actionUrl={actionUrl}
-            initialValues={initialFormValues}
-            onFormSubmitted={()=>setFormSubmitted(true)}
-            onObjectCreated={object => { setActionUrl(object.url); setCreateObject(false); } }
+          <div 
+            className={ "meeting-feedback" + panelCollapseClass } 
+            id={`meeting-${meetingId}-feedback`}
           >
-            <MeetingFeedbackForm/>
-          </DelayedPostForm>
-        </div>
+            <p>Your reflections help P2PU identify common themes for upcoming facilitator calls (<a href="https://community.p2pu.org/c/community-events/57">RSVP here</a>). Your responses will be shared with P2PU (and your team if you are part of one).</p>
+
+            <DelayedPostForm
+              createObject={createObject}
+              actionUrl={actionUrl}
+              initialValues={initialFormValues}
+              onFormSubmitted={()=>setFormSubmitted(true)}
+              onObjectCreated={object => { setActionUrl(object.url); setCreateObject(false); } }
+            >
+              <MeetingFeedbackForm/>
+            </DelayedPostForm>
+          </div>
       }
     </div>
   );

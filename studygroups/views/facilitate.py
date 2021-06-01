@@ -149,7 +149,7 @@ class MeetingDelete(FacilitatorRedirectMixin, DeleteView):
 class FeedbackDetail(FacilitatorRedirectMixin, DetailView):
     model = Feedback
 
-
+# TODO delete this view
 @method_decorator(user_is_group_facilitator, name="dispatch")
 @method_decorator(study_group_is_published, name='dispatch')
 class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
@@ -172,6 +172,7 @@ class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
         return http.HttpResponseRedirect(url)
 
 
+# TODO delete this view
 @method_decorator(user_is_group_facilitator, name="dispatch")
 class FeedbackUpdate(FacilitatorRedirectMixin, UpdateView):
     model = Feedback
@@ -787,13 +788,6 @@ class InvitationConfirm(FormView):
 
 
 # TODO I'd like to change this to an API view that accepts json and returns json rather than a traditional view
-@method_decorator(user_is_group_facilitator, name="dispatch")
-class StudyGroupFacilitatorRating(FacilitatorRedirectMixin, UpdateView):
-    model = StudyGroup
-    pk_url_kwarg = 'study_group_id'
-    fields = ['facilitator_goal_rating']
-
-
 @method_decorator(user_is_group_facilitator, name="dispatch")
 class StudyGroupCourseRating(FacilitatorRedirectMixin, UpdateView):
     model = StudyGroup
