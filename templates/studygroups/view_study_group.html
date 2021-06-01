@@ -255,26 +255,20 @@
                 {% endif %}
             >
             </div>
-
-            <div class="meeting-item {% if study_group.facilitatorsurveyresponse_set.count %}done{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %}">
-              <p>Share your thoughts about the course</p>
-              <div class="meeting-item-details">
-                <div 
-                  id="course-feedback-form"
-                  data-star-url={% static 'images/icons/rating-star.svg' %}
-                  data-action-url="{% url 'studygroups_course_rating' study_group.pk %}"
-                  {% if study_group.course_rating %}
-                    data-course-rating="{{study_group.course_rating}}"
-                  {% endif %}
-                  {% if study_group.course_rating_reason %}
-                    data-course-rating-reason="{{study_group.course_rating_reason}}"
-                  {% endif %}
-                ></div>
-                <p>What recommendations do you have for other facilitators who are using “{{study_group.course.title}}"? Consider sharing additional resources you found helpful, activities that worked particularly well, or any agendas or facilitator guides you created.</p>
-                {% url 'studygroups_generate_course_discourse_topic' study_group.course.pk as course_discourse_url %}
-                <p><a class="p2pu-btn btn-primary" href="{{course_discourse_url}}">{% trans "Share course feedback" %}</a></p>
-              </div>
-            </div>
+            {% url 'studygroups_generate_course_discourse_topic' study_group.course.pk as course_discourse_url %}
+            <div 
+              id="course-feedback-form"
+              data-completion-state="{% if study_group.facilitatorsurveyresponse_set.count %}done{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %}"
+              data-star-url={% static 'images/icons/rating-star.svg' %}
+              data-action-url="{% url 'learningcircle_feedback-detail' study_group.pk %}"
+              {% if study_group.course_rating %}
+                data-course-rating="{{study_group.course_rating}}"
+              {% endif %}
+              {% if study_group.course_rating_reason %}
+                data-course-rating-reason="{{study_group.course_rating_reason}}"
+              {% endif %}
+              data-course-discourse-url="{{course_discourse_url}}"
+            ></div>
 
             <p>
               <a class="p2pu-btn btn-primary" href="{% url 'studygroups_final_report' study_group_id=study_group.pk %}">{% trans "View insights" %}</a>

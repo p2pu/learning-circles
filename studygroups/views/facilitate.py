@@ -787,14 +787,6 @@ class InvitationConfirm(FormView):
         return super(InvitationConfirm, self).form_valid(form)
 
 
-# TODO I'd like to change this to an API view that accepts json and returns json rather than a traditional view
-@method_decorator(user_is_group_facilitator, name="dispatch")
-class StudyGroupCourseRating(FacilitatorRedirectMixin, UpdateView):
-    model = StudyGroup
-    pk_url_kwarg = 'study_group_id'
-    fields = ['course_rating', 'course_rating_reason']
-
-
 class StudyGroupFacilitatorSurvey(TemplateView):
     template_name = 'studygroups/facilitator_survey.html'
 
