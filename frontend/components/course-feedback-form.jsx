@@ -40,6 +40,14 @@ const CourseFeedbackForm = props => {
     course_rating_reason: props.courseRatingReason?props.courseRatingReason:'',
   };
 
+  if (completionState == 'pending'){
+    return (
+      <div className="meeting-item pending" >
+        <p>Share your thoughts about the course</p>
+      </div>
+    );
+  }
+
   return (
     <div className={"meeting-item " + completionState} >
       <p>Share your thoughts about the course</p>

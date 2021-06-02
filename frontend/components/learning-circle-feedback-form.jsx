@@ -58,6 +58,14 @@ const LearningCircleFeedbackForm = props => {
     facilitator_goal_rating: props.facilitatorGoalRating,
   }
 
+  if (completionState == 'pending'){
+    return (
+      <div className="meeting-item pending" >
+        <p>Reflect on your experience</p>
+      </div>
+    );
+  }
+
   return (
     <div className={"meeting-item " + completionState}>
       <p>Reflect on your experience</p>
