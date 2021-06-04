@@ -36,12 +36,10 @@ from studygroups.models import StudyGroup
 from studygroups.models import Meeting
 from studygroups.models import Course
 from studygroups.models import Application
-from studygroups.models import Feedback
 from studygroups.models import Reminder
 from studygroups.forms import CourseForm
 from studygroups.forms import StudyGroupForm
 from studygroups.forms import MeetingForm
-from studygroups.forms import FeedbackForm
 from studygroups.tasks import send_reminder
 from studygroups.models import generate_meetings_from_dates
 from studygroups.models import generate_all_meeting_dates
@@ -99,7 +97,6 @@ def view_study_group(request, study_group_id):
 
     context = {
         'study_group': study_group,
-        'feedback_form': FeedbackForm(),
         'today': timezone.now(),
         'dashboard_url': dashboard_url,
         'remaining_surveys': remaining_surveys,
@@ -143,50 +140,6 @@ class MeetingUpdate(FacilitatorRedirectMixin, UpdateView):
 @method_decorator(user_is_group_facilitator, name="dispatch")
 class MeetingDelete(FacilitatorRedirectMixin, DeleteView):
     model = Meeting
-
-
-@method_decorator(user_is_group_facilitator, name="dispatch")
-class FeedbackDetail(FacilitatorRedirectMixin, DetailView):
-    model = Feedback
-
-# TODO delete this view
-@method_decorator(user_is_group_facilitator, name="dispatch")
-@method_decorator(study_group_is_published, name='dispatch')
-class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
-    model = Feedback
-    form_class = FeedbackForm
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        meeting = get_object_or_404(Meeting, pk=self.kwargs.get('study_group_meeting_id'))
-        context['meeting'] = meeting
-        return context
-
-    def form_valid(self, form):
-        meeting = get_object_or_404(Meeting, pk=self.kwargs.get('study_group_meeting_id'))
-        feedback = form.save(commit=False)
-        feedback.study_group_meeting = meeting
-        feedback.save()
-        messages.success(self.request, _('Your feedback has been saved.'))
-        url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
-        return http.HttpResponseRedirect(url)
-
-
-# TODO delete this view
-@method_decorator(user_is_group_facilitator, name="dispatch")
-class FeedbackUpdate(FacilitatorRedirectMixin, UpdateView):
-    model = Feedback
-    form_class = FeedbackForm
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        meeting = get_object_or_404(Meeting, pk=self.kwargs.get('study_group_meeting_id'))
-        context['meeting'] = meeting
-        return context
-
-    def form_valid(self, *args, **kwargs):
-        messages.success(self.request, _('Your feedback has been updated.'))
-        return super().form_valid(*args, **kwargs)
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")

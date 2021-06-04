@@ -24,7 +24,6 @@ import twilio
 from studygroups.models import Application
 from studygroups.models import StudyGroup
 from studygroups.models import Meeting
-from studygroups.models import Feedback
 from studygroups.models import Course
 from studygroups.models import TeamMembership
 from studygroups.models import Team
@@ -413,34 +412,6 @@ class StatsDashForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.add_input(Submit('submit', 'Generate'))
-
-
-class FeedbackForm(forms.ModelForm):
-
-    def __init__(self, *args, **kwargs):
-        self.helper = FormHelper()
-        self.helper.form_tag = False
-        self.helper.field_template = 'crispy/field_custom.html'
-        self.helper.layout = Layout(*FeedbackForm.Meta.fields)
-        super().__init__(*args, **kwargs)
-
-        self.helper.layout.insert(
-            len(self.helper.layout),
-            HTML("<p>* indicates a required field.</p>"),
-        )
-        self.fields['reflection'].widget.attrs = {'rows': 3}
-
-    class Meta:
-        model = Feedback
-        fields = ['rating', 'attendance', 'reflection']
-        labels = {
-            'rating': _('Overall, how did this meeting go?'),
-            'attendance': _('How many people attended?'),
-            'reflection': _('Anything else you want to share?'),
-        }
-        help_texts = {
-            'reflection': _('Need some help? Any surprises or stories you want to remember? This won\'t be shared with your participants, it will be sent to the P2PU staff and your colleagues if you\'re on a Team.'),
-        }
 
 
 class TeamMembershipForm(forms.ModelForm):

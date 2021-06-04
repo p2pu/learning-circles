@@ -36,7 +36,6 @@
                 feedback: {
                   {% with feedback=meeting.feedback_set.all.first %}
                   feedback: "{{feedback.feedback|escapejs }}",
-                  url: "{% url 'studygroups_feedback_detail' meeting.study_group.id meeting.id feedback.id %}"
                   {% endwith %}
                 },
             {% endif %}

@@ -110,7 +110,6 @@ class TestFacilitatorViews(TestCase):
         assertForbidden('/en/studygroup/1/meeting/create/')
         assertForbidden('/en/studygroup/1/meeting/2/edit/')
         assertForbidden('/en/studygroup/1/meeting/2/delete/')
-        assertForbidden('/en/studygroup/1/meeting/2/feedback/create/')
 
 
     def test_facilitator_access(self):
@@ -137,7 +136,6 @@ class TestFacilitatorViews(TestCase):
         assertAllowed('/en/studygroup/1/meeting/create/')
         assertStatus('/en/studygroup/1/meeting/2111/edit/', 404)
         assertStatus('/en/studygroup/1/meeting/2111/delete/', 404)
-        assertStatus('/en/studygroup/1/meeting/2111/feedback/create/', 404)
 
 
     def test_create_study_group(self):
@@ -570,42 +568,6 @@ class TestFacilitatorViews(TestCase):
         self.assertFalse(send_message.called) # dont send sms
 
 
-    def test_feedback_submit(self):
-        organizer = create_user('organ@team.com', 'organ', 'test', '1234', False)
-        faci1 = create_user('faci1@team.com', 'faci1', 'test', '1234', False)
-        StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
-        mail.outbox = []
-
-        # create team
-        team = Team.objects.create(name='test team')
-        TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
-        TeamMembership.objects.create(team=team, user=faci1, role=TeamMembership.MEMBER)
-
-        c = Client()
-        c.login(username='faci1@team.com', password='1234')
-        study_group = StudyGroup.objects.get(pk=1)
-        meeting = Meeting()
-        meeting.study_group = study_group
-        meeting.meeting_time = timezone.now().time()
-        meeting.meeting_date = timezone.now().date() - datetime.timedelta(days=1)
-        meeting.save()
-
-        feedback_data = {
-            'study_group_meeting': '{0}'.format(meeting.id),
-            'feedback': 'Test some feedback',
-            'reflection': 'Please help me',
-            'attendance': '9',
-            'rating': '5',
-        }
-        feedback_url = '/en/studygroup/1/meeting/{0}/feedback/create/'.format(meeting.id)
-        self.assertEqual(len(mail.outbox), 0)
-        resp = c.post(feedback_url, feedback_data)
-        self.assertRedirects(resp, '/en/studygroup/1/')
-        # make sure no email was is sent to organizers anymore
-        self.assertEqual(len(mail.outbox), 0)
-        self.assertEqual(Feedback.objects.filter(study_group_meeting=meeting).count(), 1)
-
-
     def test_user_accept_invitation(self):
         organizer = create_user('organ@team.com', 'organ', 'test', '1234', False)
         faci1 = create_user('faci1@team.com', 'faci1', 'test', '1234', False)
@@ -763,38 +725,6 @@ class TestFacilitatorViews(TestCase):
         # TODO query string shouldn't update rating since that happens in code executed on the client
         # TODO consider add a frontend test for that
         #self.assertEqual(sg.facilitator_goal_rating, None)
-
-
-    def test_facilitator_active_learning_circles(self):
-        facilitator = create_user('hi@example.net', 'bowie', 'wowie', 'password')
-        sg = StudyGroup.objects.get(pk=1)
-        sg.facilitator = facilitator
-        sg.start_date = datetime.date(2018, 5, 24)
-        sg.end_date = datetime.date(2018, 5, 24) + datetime.timedelta(weeks=5)
-        sg.draft = True
-        sg.save()
-        sg.meeting_set.delete()
-        c = Client()
-        c.login(username='hi@example.net', password='password')
-
-        with freeze_time("2018-05-02"):
-            resp = c.get('/en/facilitator/')
-            self.assertEqual(resp.status_code, 200)
-            self.assertIn(sg, resp.context['current_study_groups'])
-
-        sg.draft = False
-        sg.save()
-        generate_all_meetings(sg)
-
-        with freeze_time("2018-05-02"):
-            resp = c.get('/en/facilitator/')
-            self.assertEqual(resp.status_code, 200)
-            self.assertIn(sg, resp.context['current_study_groups'])
-
-        with freeze_time("2018-07-16"):
-            resp = c.get('/en/facilitator/')
-            self.assertEqual(resp.status_code, 200)
-            self.assertNotIn(sg, resp.context['current_study_groups'])
 
 
     def test_course_page(self):

@@ -5,9 +5,6 @@ from django.views.generic.base import RedirectView
 from studygroups.views import MeetingCreate
 from studygroups.views import MeetingUpdate
 from studygroups.views import MeetingDelete
-from studygroups.views import FeedbackDetail
-from studygroups.views import FeedbackCreate
-from studygroups.views import FeedbackUpdate
 from studygroups.views import ApplicationDelete
 from studygroups.views import ApplicationUpdate
 from studygroups.views import SignupSuccess
@@ -98,9 +95,6 @@ urlpatterns = [
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/create/$', MeetingCreate.as_view(), name='studygroups_meeting_create'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[0-9]+)/delete/$', MeetingDelete.as_view(), name='studygroups_meeting_delete'),
 
-    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/(?P<pk>[\d]+)/$', FeedbackDetail.as_view(), name='studygroups_feedback_detail'),
-    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/(?P<pk>[\d]+)/edit/$', FeedbackUpdate.as_view(), name='studygroups_feedback_edit'),
-    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/create/$', FeedbackCreate.as_view(), name='studygroups_feedback'),
 
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[\d]+)/recao/$', MeetingRecap.as_view(), name='studygroups_meeting_recap'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[\d]+)/recap/dismiss/$', MeetingRecapDismiss.as_view(), name='studygroups_meeting_recap_dismiss'),
