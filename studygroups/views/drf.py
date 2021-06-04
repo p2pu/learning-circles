@@ -8,6 +8,7 @@ from rest_framework import permissions
 from studygroups.models import Feedback
 from studygroups.models import StudyGroup
 from studygroups.models import TeamMembership
+from studygroups.models import Meeting
 from studygroups.models import get_study_group_organizers
 
 
@@ -23,6 +24,20 @@ class FeedbackSerializer(serializers.ModelSerializer):
 
 
 class IsGroupFacilitator(permissions.BasePermission):
+
+    def check_permission(self, user, study_group):
+        if user.is_staff or user == study_group.facilitator \
+                or TeamMembership.objects.active().filter(user=user, role=TeamMembership.ORGANIZER).exists() and user in get_study_group_organizers(study_group):
+            return True
+        return False
+
+    
+    def has_permission(self, request, view):
+        meeting_id = request.data.get('study_group_meeting')
+        meeting = Meeting.objects.get(pk=meeting_id)
+        return self.check_permission(request.user, meeting.study_group)
+
+
     def has_object_permission(self, request, view, obj):
         """ give access to staff, user and team organizer """
         study_group = obj.study_group_meeting.study_group

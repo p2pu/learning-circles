@@ -60,32 +60,6 @@ def login_redirect(request):
     return http.HttpResponseRedirect(url)
 
 
-@login_required
-def facilitator(request):
-    today = datetime.datetime.now().date()
-    two_weeks_ago = today - datetime.timedelta(weeks=2, days=today.weekday())
-
-    study_groups = StudyGroup.objects.active().filter(facilitator=request.user)
-    current_study_groups = study_groups.filter(
-        Q(id__in=Meeting.objects.active().filter(meeting_date__gte=two_weeks_ago).values('study_group')) |
-        Q(draft=True, end_date__gte=two_weeks_ago)
-    )
-    past_study_groups = study_groups.exclude(id__in=current_study_groups)
-    team = None
-    if TeamMembership.objects.active().filter(user=request.user).exists():
-        team = TeamMembership.objects.active().filter(user=request.user).first().team
-    invitation = TeamInvitation.objects.filter(email__iexact=request.user.email, responded_at__isnull=True).first()
-    context = {
-        'current_study_groups': current_study_groups,
-        'past_study_groups': past_study_groups,
-        'courses': Course.objects.filter(created_by=request.user),
-        'invitation': invitation,
-        'today': timezone.now(),
-        'team': team
-    }
-    return render(request, 'studygroups/facilitator.html', context)
-
-
 @user_is_group_facilitator
 def view_study_group(request, study_group_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
