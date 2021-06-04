@@ -157,7 +157,7 @@ class TestFacilitatorViews(TestCase):
         lc = study_groups.first()
         self.assertEquals(study_groups.first().meeting_set.count(), 6)
         self.assertEquals(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created! What next?'.format(lc.name, lc.city))
+        self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created!'.format(lc.name, lc.city))
         self.assertIn('bob@example.net', mail.outbox[0].to)
         self.assertIn('thepeople@p2pu.org', mail.outbox[0].cc)
         self.assertIn('community@localhost', mail.outbox[0].cc)
@@ -601,8 +601,8 @@ class TestFacilitatorViews(TestCase):
         self.assertEqual(len(mail.outbox), 0)
         resp = c.post(feedback_url, feedback_data)
         self.assertRedirects(resp, '/en/studygroup/1/')
-        # make sure email was sent to organizers
-        self.assertEqual(len(mail.outbox), 1)
+        # make sure no email was is sent to organizers anymore
+        self.assertEqual(len(mail.outbox), 0)
         self.assertEqual(Feedback.objects.filter(study_group_meeting=meeting).count(), 1)
 
 
@@ -752,13 +752,15 @@ class TestFacilitatorViews(TestCase):
         response = c.get(feedback_url)
 
         sg.refresh_from_db()
-        self.assertEqual(sg.facilitator_goal_rating, 5)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(str(response.context_data['study_group_uuid']), str(sg.uuid))
         self.assertEqual(response.context_data['study_group_name'], sg.name)
         self.assertEqual(response.context_data['course'], course.title)
         self.assertEqual(response.context_data['goal'], sg.facilitator_goal)
         self.assertEqual(response.context_data['goal_rating'], str(sg.facilitator_goal_rating))
+        # TODO query string shouldn't update rating since that happens in code executed on the client
+        # TODO consider add a frontend test for that
+        self.assertEqual(sg.facilitator_goal_rating, None)
 
 
     def test_facilitator_active_learning_circles(self):
