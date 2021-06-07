@@ -96,7 +96,7 @@ urlpatterns = [
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[0-9]+)/delete/$', MeetingDelete.as_view(), name='studygroups_meeting_delete'),
 
 
-    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[\d]+)/recao/$', MeetingRecap.as_view(), name='studygroups_meeting_recap'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[\d]+)/recap/$', MeetingRecap.as_view(), name='studygroups_meeting_recap'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[\d]+)/recap/dismiss/$', MeetingRecapDismiss.as_view(), name='studygroups_meeting_recap_dismiss'),
 
     url(r'^course/create/$', CourseCreate.as_view(), name='studygroups_course_create'),
@@ -105,8 +105,7 @@ urlpatterns = [
     url(r'^course/(?P<pk>[\d]+)/delete/$', CourseDelete.as_view(), name='studygroups_course_delete'),
     url(r'^course/(?P<course_id>[\d]+)/discourse_topic/$', views.generate_course_discourse_topic, name='studygroups_generate_course_discourse_topic'),
 
-    # TODO redirect this view to /
-    url(r'^facilitator/$', views.facilitator, name='studygroups_facilitator_deprecated'),
+    url(r'^facilitator/$', RedirectView.as_view(url='/'), name='studygroups_facilitator_deprecated'),
     url(r'^facilitator/team-invitation/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm'),
     url(r'^facilitator/team-invitation/(?P<invitation_id>[\d]+)/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm'),
     url(r'^facilitator/team-invitation/(?P<token>[\w-]+)/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm_token'),
