@@ -63,11 +63,31 @@
     </td>
   </tr>
   <tr>
-    <td>{% trans "Great" %}</td>
-    <td>{% trans "Pretty well" %}</td>
-    <td>{% trans "Okay" %}</td>
-    <td>{% trans "Not so good" %}</td>
-    <td>{% trans "Awful" %}</td>
+    <td>
+      <a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=5#meeting-{{meeting_number}}">
+        {% trans "Great" %}
+      </a>
+    </td>
+    <td>
+      <a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=4#meeting-{{meeting_number}}">
+        {% trans "Pretty well" %}
+      </a>
+    </td>
+    <td>
+      <a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=3#meeting-{{meeting_number}}">
+        {% trans "Okay" %}
+      </a>
+    </td>
+    <td>
+      <a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=2#meeting-{{meeting_number}}">
+        {% trans "Not so good" %}
+      </a>
+    </td>
+    <td>
+      <a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=1#meeting-{{meeting_number}}">
+        {% trans "Awful" %}
+      </a>
+    </td>
   </tr>
 </table>
 
