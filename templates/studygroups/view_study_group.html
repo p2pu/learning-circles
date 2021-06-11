@@ -241,7 +241,7 @@
             <div id="learning-circle-feedback"
                 data-star-url="{% static 'images/icons/rating-star.svg' %}"
                 data-action-url="{% url 'learningcircle_feedback-detail' study_group.pk %}"
-                data-completion-state="{% if study_group.facilitatorsurveyresponse_set.count or study_group.facilitator_goal_rating %}done{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %}"
+                data-completion-state="{{ study_group.feedback_status }}"
                 {% if study_group.facilitator_goal %}
                   data-facilitator-goal="{{study_group.facilitator_goal}}"
                   {% if study_group.facilitator_goal_rating %}

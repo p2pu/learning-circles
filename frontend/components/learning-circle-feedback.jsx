@@ -79,7 +79,7 @@ const SurveyPrompt = props => {
   }
   return <>
     <p>Can we ask you a few more questions? It will only take 5 minutes.</p>
-    <p><a className="p2pu-btn btn-primary" href={props.surveyUrl}>Complete the facilitator survey</a></p>
+    <p><a className="p2pu-btn btn-primary" href={props.surveyUrl} target="_blank">Complete the facilitator survey</a></p>
     </>;
 }
 
@@ -126,6 +126,14 @@ const LearningCircleFeedback = props => {
     );
   }
 
+  let checkCompletion = (updatedData) => {
+    if ( props.surveyCompleted || updatedData.facilitator_goal_rating && updatedData.course_rating && updatedData.course_rating_reason) {
+      setCompletionState("done");
+    } else {
+      setCompletionState("todo");
+    }
+  }
+
   return (
     <div className={"meeting-item " + completionState}>
       <p>Reflect on your experience</p>
@@ -134,7 +142,7 @@ const LearningCircleFeedback = props => {
           createObject={false}
           actionUrl={actionUrl}
           initialValues={initialFormValues}
-          onFormSubmitted={ () => setCompletionState('done')}
+          onFormSubmitted={ updatedData => checkCompletion(updatedData) }
         >
           <LearningCircleFeedbackForm {...props} />
         </DelayedPostForm>

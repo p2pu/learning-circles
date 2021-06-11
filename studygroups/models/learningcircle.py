@@ -83,6 +83,7 @@ class StudyGroup(LifeTimeTrackingModel):
 
     attach_ics = models.BooleanField(default=True) # TODO Remove this
     did_not_happen = models.NullBooleanField(blank=True, null=True)  # Used by the facilitator to report if the learning circle didn't happen
+    #learner_survey_sent_at = models.DateTimeField(blank=True, null=True)
     facilitator_survey_sent_at = models.DateTimeField(blank=True, null=True)
 
     objects = StudyGroupQuerySet.as_manager()
@@ -158,6 +159,15 @@ class StudyGroup(LifeTimeTrackingModel):
         # check that meeting dates are spaced 7 days
         lds = reduce(lambda x,y: y if x and y-x==datetime.timedelta(days=7) else False, meeting_dates)
         return lds and True
+
+
+    def feedback_status(self):
+        if self.facilitator_goal_rating and self.course_rating and self.course_rating_reason or self.facilitatorsurveyresponse_set.count():
+            return 'done'
+        if timezone.now() < self.last_meeting().meeting_datetime():
+            return 'pending'
+        return 'todo'
+
 
 
     @property
