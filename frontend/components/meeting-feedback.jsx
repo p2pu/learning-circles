@@ -14,7 +14,6 @@ const AttendanceInput = ({value, onChange}) =>
   </div>;
 
 
-
 const MeetingFeedbackForm = props => {
   const {formData, updateForm} = props;
   return (
@@ -27,7 +26,7 @@ const MeetingFeedbackForm = props => {
 }
 
 
-const MeetingFeedbackItem = props => {
+const MeetingFeedback = props => {
   const {meetingId} = props;
   const [panelCollapsed, setPanelCollapsed] = useState(!!props.feedbackId);
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -50,7 +49,7 @@ const MeetingFeedbackItem = props => {
       </p>
       { props.showForm &&
           <div 
-            className={ "meeting-feedback" + panelCollapseClass } 
+            className={ "meeting-item-details" + panelCollapseClass } 
             id={`meeting-${meetingId}-feedback`}
           >
             <p>Your reflections help P2PU identify common themes for upcoming facilitator calls (<a href="https://community.p2pu.org/c/community-events/upcoming-events/79" target="_blank">RSVP here</a>). Your responses will be shared with P2PU (and your team if you are part of one).</p>
@@ -70,5 +69,5 @@ const MeetingFeedbackItem = props => {
   );
 };
 
-export default MeetingFeedbackItem;
+export default MeetingFeedback;
 

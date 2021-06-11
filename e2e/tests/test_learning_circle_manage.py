@@ -90,16 +90,9 @@ class LearningCircleManage(StaticLiveServerTestCase):
         ))
 
         # Make sure learning circle feedback is present
-        # learning-circle-feedback-form.meeting-item
+        # learning-circle-feedback .meeting-item
         self.wait.until(expected_conditions.presence_of_element_located(
-            (By.CSS_SELECTOR, '#learning-circle-feedback-form .meeting-item'),
-        ))
-
-
-        # Make sure course feedback is present
-        # course-feedback-form.meeting-item
-        self.wait.until(expected_conditions.presence_of_element_located(
-            (By.CSS_SELECTOR, '#course-feedback-form .meeting-item'),
+            (By.CSS_SELECTOR, '#learning-circle-feedback .meeting-item'),
         ))
 
 
@@ -158,7 +151,7 @@ class LearningCircleManage(StaticLiveServerTestCase):
 
         # Make sure learning circle feedback is present
         self.wait.until(expected_conditions.presence_of_element_located(
-            (By.CSS_SELECTOR, '#learning-circle-feedback-form .meeting-item'),
+            (By.CSS_SELECTOR, '#learning-circle-feedback .meeting-item'),
         ))
 
         self.assertEquals(StudyGroup.objects.get(pk=1).facilitator_goal_rating, None)
@@ -174,7 +167,7 @@ class LearningCircleManage(StaticLiveServerTestCase):
             expected_conditions.text_to_be_present_in_element(
                 (
                     By.CSS_SELECTOR,
-                    '#learning-circle-feedback-form > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2)'
+                    "div.text-muted:nth-child(2)"
                 ),
                 'changes saved'
             )
@@ -187,16 +180,14 @@ class LearningCircleManage(StaticLiveServerTestCase):
         self.driver.get(f'{self.live_server_url}/en/studygroup/{self.study_group.pk}/')
         self.assertTrue(expected_conditions.title_is('P2PU Learning Circles'))
 
-        # Make sure course feedback is present
-        # course-feedback-form.meeting-item
+        # Make sure learning circle feedback is present
         self.wait.until(expected_conditions.presence_of_element_located(
-            (By.CSS_SELECTOR, '#course-feedback-form .meeting-item'),
+            (By.CSS_SELECTOR, '#learning-circle-feedback .meeting-item'),
         ))
-
         
         self.assertEquals(StudyGroup.objects.get(pk=1).course_rating, None)
         course_rating = self.driver.find_element_by_css_selector(
-            "#course-feedback-form div.star-rating-input:nth-child(2) > label:nth-child(4) > img:nth-child(2)"
+            "div.star-rating-input:nth-child(2) > label:nth-child(4) > img:nth-child(2)"
         )
         actions = ActionChains(self.driver)
         actions.move_to_element(course_rating).perform()
@@ -207,7 +198,7 @@ class LearningCircleManage(StaticLiveServerTestCase):
             expected_conditions.text_to_be_present_in_element(
                 (
                     By.CSS_SELECTOR,
-                    "#course-feedback-form > div:nth-child(1) > div:nth-child(2) > div:nth-child(2)"
+                    "div.text-muted:nth-child(2)"
                 ),
                 'changes saved'
             )
