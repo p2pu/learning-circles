@@ -81,7 +81,7 @@ def send_facilitator_survey(study_group):
     if study_group.facilitator_survey_sent_at or study_group.facilitatorsurveyresponse_set.count():
         return
     now = timezone.now()
-    six_weeks_ago = now - datetime.timedelta(days=6*7)
+    six_weeks_ago = now - datetime.timedelta(days=42)
     time_to_send = last_meeting.meeting_datetime() + datetime.timedelta(days=2)
 
     if six_weeks_ago < time_to_send and time_to_send < now:
@@ -125,24 +125,28 @@ def _send_learner_survey(application):
 
 
 # send an hour before the last meeting
-# should be called every hour at :30
 def send_learner_surveys(study_group):
     if study_group.language != 'en':
-        # TODO surveys only supported in English
+        # NOTE surveys only supported in English
         return
 
-    last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
+    if study_group.learner_survey_sent_at:
+        return
+
+    last_meeting = study_group.last_meeting()
     if not last_meeting:
         return
 
     time_to_send = last_meeting.meeting_datetime() - datetime.timedelta(hours=1)
-    start_of_window = timezone.now().replace(minute=0, second=0, microsecond=0)
-    end_of_window = start_of_window + datetime.timedelta(hours=1)
 
-    if start_of_window <= time_to_send and time_to_send < end_of_window:
+    now = timezone.now()
+    three_weeks_ago = now - datetime.timedelta(days=21)
+
+    if three_weeks_ago < time_to_send and time_to_send < now:
         applications = study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')
+        study_group.learner_survey_sent_at = now
+        study_group.save()
         timezone.deactivate()
-
         for application in applications:
             _send_learner_survey(application)
 
@@ -503,7 +507,7 @@ def weekly_update():
 
 @shared_task
 def send_all_learner_surveys():
-    for study_group in StudyGroup.objects.published():
+    for study_group in StudyGroup.objects.published().filter(learner_survey_sent_at__isnull=True):
         translation.activate(settings.LANGUAGE_CODE)
         send_learner_surveys(study_group)
 

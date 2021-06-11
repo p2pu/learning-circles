@@ -83,7 +83,7 @@ class StudyGroup(LifeTimeTrackingModel):
 
     attach_ics = models.BooleanField(default=True) # TODO Remove this
     did_not_happen = models.NullBooleanField(blank=True, null=True)  # Used by the facilitator to report if the learning circle didn't happen
-    #learner_survey_sent_at = models.DateTimeField(blank=True, null=True)
+    learner_survey_sent_at = models.DateTimeField(blank=True, null=True)
     facilitator_survey_sent_at = models.DateTimeField(blank=True, null=True)
 
     objects = StudyGroupQuerySet.as_manager()
@@ -164,7 +164,8 @@ class StudyGroup(LifeTimeTrackingModel):
     def feedback_status(self):
         if self.facilitator_goal_rating and self.course_rating and self.course_rating_reason or self.facilitatorsurveyresponse_set.count():
             return 'done'
-        if timezone.now() < self.last_meeting().meeting_datetime():
+        last_meeting = self.last_meeting()
+        if last_meeting and timezone.now() < last_meeting.meeting_datetime():
             return 'pending'
         return 'todo'
 
@@ -305,9 +306,11 @@ class Meeting(LifeTimeTrackingModel):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        self.study_group.start_date = self.study_group.first_meeting().meeting_date
-        self.study_group.end_date = self.study_group.last_meeting().meeting_date
-        self.study_group.save()
+
+        if self.study_group.meeting_set.active().count():
+            self.study_group.start_date = self.study_group.first_meeting().meeting_date
+            self.study_group.end_date = self.study_group.last_meeting().meeting_date
+            self.study_group.save()
 
         if self.reminder_set.filter(sent_at__isnull=False).count() == 1:
             # a reminder has been sent, disassociate it
@@ -499,7 +502,7 @@ class Feedback(LifeTimeTrackingModel):
     RATING = [
         (GREAT, _('Great')),
         (WELL, _('Pretty well')),
-        (OKAY, _('okay')),
+        (OKAY, _('Okay')),
         (NOT_SO_GOOD, _('Not so good')),
         (AWFUL, _('Awful')),
     ]
