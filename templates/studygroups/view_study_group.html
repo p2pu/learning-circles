@@ -147,7 +147,7 @@
                 {% endif %}
               </div>
               <div 
-                class="meeting-feedback-form"
+                class="meeting-feedback"
                 data-item-state="{% if meeting.meeting_datetime > today %}pending{% else %}{% if feedback %}done{% else %}todo{% endif %}{% endif %}"
                 {% if meeting.meeting_datetime < today %}data-show-form="yes"{% endif %}
                 data-meeting-id="{{meeting.pk}}"
@@ -171,7 +171,7 @@
                 {% else %}
                   <p>Send a meeting recap to participants<p>
                   {% if meeting.meeting_datetime < today %}
-                    <div class="meeting-feedback">
+                    <div class="meeting-recap">
                       <p>You may want to follow up on questions, share links to relevant resources, or summarize any decisions that were made for the next meeting.</p>
                       <a class="p2pu-btn btn-primary" href="{% url 'studygroups_meeting_recap' study_group.pk meeting.pk %}">Send recap</a>
                       <form action="{% url 'studygroups_meeting_recap_dismiss' study_group.pk meeting.pk %}" method="POST">{% csrf_token %}<button type="submit" class="p2pu-btn btn-primary" href="">{% trans "dismiss" %}</button></form>
@@ -238,7 +238,7 @@
               </div>
             </div>
 
-            <div id="learning-circle-feedback-form"
+            <div id="learning-circle-feedback"
                 data-star-url="{% static 'images/icons/rating-star.svg' %}"
                 data-action-url="{% url 'learningcircle_feedback-detail' study_group.pk %}"
                 data-completion-state="{% if study_group.facilitatorsurveyresponse_set.count or study_group.facilitator_goal_rating %}done{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %}"
@@ -248,6 +248,12 @@
                     data-facilitator-goal-rating="{{study_group.facilitator_goal_rating}}"
                   {% endif %}
                 {% endif %}
+                {% if study_group.course_rating %}
+                  data-course-rating="{{study_group.course_rating}}"
+                {% endif %}
+                {% if study_group.course_rating_reason %}
+                  data-course-rating-reason="{{study_group.course_rating_reason}}"
+                {% endif %}
                 {% if study_group.facilitatorsurveyresponse_set.count  %}
                   data-survey-completed="true"
                 {% else %}
@@ -255,20 +261,6 @@
                 {% endif %}
             >
             </div>
-            {% url 'studygroups_generate_course_discourse_topic' study_group.course.pk as course_discourse_url %}
-            <div 
-              id="course-feedback-form"
-              data-completion-state="{% if study_group.facilitatorsurveyresponse_set.count %}done{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %}"
-              data-star-url={% static 'images/icons/rating-star.svg' %}
-              data-action-url="{% url 'learningcircle_feedback-detail' study_group.pk %}"
-              {% if study_group.course_rating %}
-                data-course-rating="{{study_group.course_rating}}"
-              {% endif %}
-              {% if study_group.course_rating_reason %}
-                data-course-rating-reason="{{study_group.course_rating_reason}}"
-              {% endif %}
-              data-course-discourse-url="{{course_discourse_url}}"
-            ></div>
 
             <p>
               <a class="p2pu-btn btn-primary" href="{% url 'studygroups_final_report' study_group_id=study_group.pk %}">{% trans "View insights" %}</a>
@@ -362,7 +354,7 @@
 {% endblock %}
 {% block scripts %}
 {% render_bundle 'common' %}
-{% render_bundle 'learning-circle-feedback' %}
+{% render_bundle 'learning-circle-manage' %}
 <script>
 $(document).ready(function () {
   $('[data-toggle="popover"]').popover();

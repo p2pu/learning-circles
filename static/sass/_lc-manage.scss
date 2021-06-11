@@ -256,7 +256,7 @@
   @include meeting-item-details;
 }
 
-.meeting-feedback {
+.meeting-recap {
   @include meeting-item-details;
 }
 
@@ -276,7 +276,7 @@
   }
 }
 
-.meeting-feedback-form {
+.meeting-feedback {
   /* HIDE RADIO */
   [type=radio] { 
     position: absolute;

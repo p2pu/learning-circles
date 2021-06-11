@@ -53,7 +53,7 @@ const MeetingFeedbackItem = props => {
             className={ "meeting-feedback" + panelCollapseClass } 
             id={`meeting-${meetingId}-feedback`}
           >
-            <p>Your reflections help P2PU identify common themes for upcoming facilitator calls (<a href="https://community.p2pu.org/c/community-events/upcoming-events/79">RSVP here</a>). Your responses will be shared with P2PU (and your team if you are part of one).</p>
+            <p>Your reflections help P2PU identify common themes for upcoming facilitator calls (<a href="https://community.p2pu.org/c/community-events/upcoming-events/79" target="_blank">RSVP here</a>). Your responses will be shared with P2PU (and your team if you are part of one).</p>
 
             <DelayedPostForm
               createObject={createObject}
