@@ -380,12 +380,17 @@ class TestStudyGroupTasks(TestCase):
         now = timezone.now()
         sg = StudyGroup.objects.get(pk=1)
         sg.timezone = now.strftime("%Z")
-        sg.start_date = datetime.date(2010, 1, 1)
-        sg.meeting_time = datetime.time(18,0)
-        sg.end_date = sg.start_date + datetime.timedelta(weeks=6)
+        sg.start_date = datetime.date(2021, 5, 14)
+        sg.meeting_time = datetime.time(10,0)
         sg.save()
+
+        meeting = Meeting.objects.create(
+            study_group=sg,
+            meeting_date=datetime.date(2021, 5, 14),
+            meeting_time=datetime.time(18, 0)
+        )
+
         sg = StudyGroup.objects.get(pk=1)
-        generate_all_meetings(sg)
 
         data = dict(self.APPLICATION_DATA)
         data['study_group'] = sg
@@ -404,34 +409,52 @@ class TestStudyGroupTasks(TestCase):
         mail.outbox = []
 
         last_meeting = sg.meeting_set.active().order_by('meeting_date', 'meeting_time').last()
-        self.assertEqual(last_meeting.meeting_date, datetime.date(2010, 2, 12))
+        self.assertEqual(last_meeting.meeting_date, datetime.date(2021, 5, 14))
         self.assertEqual(last_meeting.meeting_time, datetime.time(18))
-        self.assertEqual(sg.meeting_set.active().count(), 7)
+        self.assertEqual(sg.meeting_set.active().count(), 1)
         self.assertEqual(sg.application_set.active().count(), 2)
 
         # too soon
-        with freeze_time("2010-02-12 16:30:00"):
+        with freeze_time("2021-05-14 16:30:00"):
             send_learner_surveys(sg)
             self.assertEqual(len(mail.outbox), 0)
 
-        # too late
-        with freeze_time("2010-02-12 18:30:00"):
+        # way too late
+        with freeze_time("2021-07-12 18:30:00"):
             send_learner_surveys(sg)
             self.assertEqual(len(mail.outbox), 0)
 
-        with freeze_time("2010-02-12 17:30:00"):
+        # send when intended
+        with freeze_time("2021-05-14 17:30:00"):
+            self.assertEquals(sg.learner_survey_sent_at, None)
             send_learner_surveys(sg)
             self.assertEqual(len(mail.outbox), 2)
             self.assertIn('mail1@example.net', mail.outbox[0].to + mail.outbox[1].to)
             self.assertIn('mail2@example.net', mail.outbox[0].to + mail.outbox[1].to)
             a1 = Application.objects.get(email=mail.outbox[0].to[0])
             self.assertIn('{0}/en/studygroup/{1}/survey/?learner={2}'.format(settings.DOMAIN, sg.uuid, a1.uuid), mail.outbox[0].body)
+            self.assertNotEquals(sg.learner_survey_sent_at, None)
 
         mail.outbox = []
-        # way too late
-        with freeze_time("2010-02-13 19:00:00"):
+        # no resend
+        with freeze_time("2021-05-14 19:00:00"):
             send_learner_surveys(sg)
             self.assertEqual(len(mail.outbox), 0)
+
+        # three weeks later
+        mail.outbox = []
+        sg.learner_survey_sent_at = None
+        sg.save()
+        with freeze_time("2021-06-04 16:30:00"):
+            self.assertEquals(sg.learner_survey_sent_at, None)
+            send_learner_surveys(sg)
+            self.assertEqual(len(mail.outbox), 2)
+            self.assertIn('mail1@example.net', mail.outbox[0].to + mail.outbox[1].to)
+            self.assertIn('mail2@example.net', mail.outbox[0].to + mail.outbox[1].to)
+            a1 = Application.objects.get(email=mail.outbox[0].to[0])
+            self.assertIn('{0}/en/studygroup/{1}/survey/?learner={2}'.format(settings.DOMAIN, sg.uuid, a1.uuid), mail.outbox[0].body)
+            self.assertNotEquals(sg.learner_survey_sent_at, None)
+
 
 
     def test_facilitator_survey_email(self):
