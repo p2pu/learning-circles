@@ -15,12 +15,14 @@
   <td>{% blocktrans with meeting_date=meeting.meeting_date|date:"D, j M Y" meeting_time=meeting.meeting_time|time:"f A" timezone=meeting.study_group.timezone_display %}{{meeting_date}}, {{meeting_time}} {{timezone}}{% endblocktrans %}</td>
   <td>{% if meeting.rsvp_set.all.count %}{% trans "Yes" %} ({{ meeting.rsvps.yes|length }}), {% trans "No" %} ({{ meeting.rsvps.no|length }}){% endif %}</td>
     <td>
+      {% comment %}
       {% if meeting.feedback_set.all.first %}
         {% with feedback=meeting.feedback_set.all.first %}
         {{feedback.feedback | truncatewords:10 }}
         <a href="{% url 'studygroups_feedback_detail' meeting.study_group.id meeting.id feedback.id %}">{% trans "View feedback" %}</a>
         {% endwith %}
       {% endif %}
+      {% endcomment %}
     </td>
 </tr>
 
