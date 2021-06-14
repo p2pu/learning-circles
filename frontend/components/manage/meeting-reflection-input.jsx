@@ -52,7 +52,8 @@ const MeetingReflectionInput = ({value, onChange}) => {
 
   return (
     <div id="div_id_reflection" className="form-group">
-      <label htmlFor="id_reflection" className="col-form-label">{reflectionPrompts[reflection.promptIndex]} (<a href="#" onClick={cyclePrompt} >Give me another question</a>)</label>
+      <label htmlFor="id_reflection" className="col-form-label">{reflectionPrompts[reflection.promptIndex]}</label>
+      <p>(<a href="#" onClick={cyclePrompt} >Ask me another question</a>)</p>
       <div>
         <textarea name="reflection_answer" rows="3" className="textarea form-control" id="id_reflection" value={reflection.answer} onChange={handleChange}/>
       </div> 
