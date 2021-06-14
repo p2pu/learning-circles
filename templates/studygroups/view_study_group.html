@@ -196,10 +196,10 @@
             <div class="meeting-item {% if today < study_group.last_meeting.meeting_datetime %}pending{% elif study_group.learnersurveyresponse_set.count %}done{% else %}todo{% endif %}">
               <p>Collect learner feedback</p>
               <div class="survey-summary">
-                {% if today > study_group.last_meeting.meeting_datetime %}
-                  <p>Survey reminder sent</p>
+                {% if study_group.learner_survey_sent_at %}
+                  <p>Survey reminder sent {{study_group.learner_survey_sent_at}}</p>
                 {% else %}
-                  <p>Survey reminder will be sent during the last meeting</p>
+                  <p>Survey reminder will be sent {{study_group.last_meeting.meeting_datetime}}</p>
                 {% endif %}
 
                 {% if study_group.learnersurveyresponse_set.count %}
