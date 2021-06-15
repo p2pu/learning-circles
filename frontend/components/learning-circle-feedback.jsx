@@ -1,6 +1,7 @@
 import React, {useState, useRef} from 'react'
 
 import DelayedPostForm from './manage/delayed-post-form';
+import Star from './manage/star';
 
 const FacilitatorGoalRatingInput = ({value, starUrl, onChange, facilitatorGoal}) => {
   const options = [
@@ -55,7 +56,8 @@ const CourseRatingInput = ({value, starUrl, onChange}) => {
               value={ratingValue} 
               onClick={() => onChange({course_rating: ratingValue})}
             />
-            <img className={!value||ratingValue>value?'dull':''} src={starUrl} />
+            <Star selected={ !(!value||ratingValue>value) } />
+            {false && <img className={!value||ratingValue>value?'dull':''} src={starUrl} />}
             <div className="text-center">{ratingValue}</div>
           </label>
         )}
