@@ -366,7 +366,7 @@ class Meeting(LifeTimeTrackingModel):
 
 
     def rsvps(self):
-        rsvp_set = self.rsvp_set.all().select_related('application').order_by('application__name')
+        rsvp_set = self.rsvp_set.all().select_related('application').order_by('application__name').filter(application__deleted_at__isnull=True)
         return {
             'yes': rsvp_set.filter(attending=True),
             'no': rsvp_set.filter(attending=False),
