@@ -121,7 +121,7 @@
                 {% if meeting.meeting_datetime < today and meeting.reminder_set.count == 0 %}
                   <p>No RSVPs</p>
                 {% else %}
-                <p>See RSVPs {% if meeting.meeting_datetime < today %}(<a data-toggle="collapse" href="#meeting-{{meeting.id}}-rsvp" role="button" aria-expanded="true" aria-controls="meeting-{{meeting.id}}-rsvp">show</a>){% endif %}</p>
+                <p>See RSVPs {% if meeting.meeting_datetime < today %}(<a data-toggle="collapse" href="#meeting-{{meeting.id}}-rsvp" role="button" aria-expanded="true" aria-controls="meeting-{{meeting.id}}-rsvp">view</a>){% endif %}</p>
                   {% if meeting.reminder_set.first.sent_at %}
                   <div class="meeting-rsvp {% if meeting.meeting_datetime < today %}collapse{% endif %}" id="meeting-{{meeting.id}}-rsvp">
                     <ul class="list-unstyled">
