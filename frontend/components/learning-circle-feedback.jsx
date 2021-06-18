@@ -43,10 +43,10 @@ const FacilitatorGoalRatingInput = ({value, onChange, facilitatorGoal}) => {
   );
 }
 
-const CourseRatingInput = ({value, onChange}) => {
+const CourseRatingInput = ({value, onChange, courseTitle}) => {
   return (
     <div className="form-group">
-      <p>How well did the online course work as a learning circle?</p>
+      <p>How well did the course "{courseTitle}" work in a learning circle?</p>
       <div className="star-rating-input">
         {[1,2,3,4,5].map( ratingValue => 
           <label key={ratingValue}>
@@ -97,6 +97,7 @@ const LearningCircleFeedbackForm = props => {
       <CourseRatingInput 
         value={formData.course_rating} 
         onChange={updateForm}
+        courseTitle={props.courseTitle}
       />
       <CourseRatingReasonInput 
         value={formData.course_rating_reason} 
