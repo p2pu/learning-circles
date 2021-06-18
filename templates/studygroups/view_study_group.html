@@ -239,7 +239,6 @@
             </div>
 
             <div id="learning-circle-feedback"
-                data-star-url="{% static 'images/icons/rating-star.svg' %}"
                 data-action-url="{% url 'learningcircle_feedback-detail' study_group.pk %}"
                 data-completion-state="{{ study_group.feedback_status }}"
                 {% if study_group.facilitator_goal %}

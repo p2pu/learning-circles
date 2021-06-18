@@ -3,7 +3,7 @@ import React, {useState, useRef} from 'react'
 import DelayedPostForm from './manage/delayed-post-form';
 import Star from './manage/star';
 
-const FacilitatorGoalRatingInput = ({value, starUrl, onChange, facilitatorGoal}) => {
+const FacilitatorGoalRatingInput = ({value, onChange, facilitatorGoal}) => {
   const options = [
     [1,'not at all'],
     [2],
@@ -30,7 +30,7 @@ const FacilitatorGoalRatingInput = ({value, starUrl, onChange, facilitatorGoal})
               value={optionValue[0]}
               onClick={ e => onChange({facilitator_goal_rating: optionValue[0]}) } 
             />
-            <img className={!value||optionValue[0]>value?'dull':''} src={starUrl} />
+            <Star selected={ value && optionValue[0] <= value } />
             <div className="text-center">
               {optionValue[0]}
               {optionValue.length == 2 && <br /> } 
@@ -43,7 +43,7 @@ const FacilitatorGoalRatingInput = ({value, starUrl, onChange, facilitatorGoal})
   );
 }
 
-const CourseRatingInput = ({value, starUrl, onChange}) => {
+const CourseRatingInput = ({value, onChange}) => {
   return (
     <div className="form-group">
       <p>How well did the online course work as a learning circle?</p>
@@ -56,8 +56,7 @@ const CourseRatingInput = ({value, starUrl, onChange}) => {
               value={ratingValue} 
               onClick={() => onChange({course_rating: ratingValue})}
             />
-            <Star selected={ !(!value||ratingValue>value) } />
-            {false && <img className={!value||ratingValue>value?'dull':''} src={starUrl} />}
+            <Star selected={ value && ratingValue <= value } />
             <div className="text-center">{ratingValue}</div>
           </label>
         )}
@@ -93,13 +92,11 @@ const LearningCircleFeedbackForm = props => {
       <FacilitatorGoalRatingInput
         value={formData.facilitator_goal_rating} 
         onChange={updateForm}
-        starUrl={props.starUrl}
         facilitatorGoal={props.facilitatorGoal}
       />
       <CourseRatingInput 
         value={formData.course_rating} 
         onChange={updateForm}
-        starUrl={props.starUrl}
       />
       <CourseRatingReasonInput 
         value={formData.course_rating_reason} 

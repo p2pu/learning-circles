@@ -156,7 +156,7 @@ class LearningCircleManage(StaticLiveServerTestCase):
 
         self.assertEquals(StudyGroup.objects.get(pk=1).facilitator_goal_rating, None)
         rating_feedback = self.driver.find_element_by_css_selector(
-            "div.star-rating-input:nth-child(3) > label:nth-child(3) > img:nth-child(2)"
+            "div.star-rating-input:nth-child(3) > label:nth-child(3) > svg:nth-child(2)"
         )
         actions = ActionChains(self.driver)
         actions.move_to_element(rating_feedback).perform()
@@ -187,7 +187,7 @@ class LearningCircleManage(StaticLiveServerTestCase):
         
         self.assertEquals(StudyGroup.objects.get(pk=1).course_rating, None)
         course_rating = self.driver.find_element_by_css_selector(
-            "div.star-rating-input:nth-child(2) > label:nth-child(4) > img:nth-child(2)"
+            "div.star-rating-input:nth-child(2) > label:nth-child(4) > svg:nth-child(2)"
         )
         actions = ActionChains(self.driver)
         actions.move_to_element(course_rating).perform()
@@ -204,3 +204,4 @@ class LearningCircleManage(StaticLiveServerTestCase):
             )
         )
         self.assertEquals(StudyGroup.objects.get(pk=1).course_rating, 4)
+
