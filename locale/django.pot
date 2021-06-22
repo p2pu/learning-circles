@@ -10,13 +10,13 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-18 11:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Dirk Uys <dirkcuys@gmail.com>, 2017\n"
-"Language-Team: Spanish (https://www.transifex.com/p2pu/teams/68023/es/)\n"
-"Language: es\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 #: announce/tasks.py:40
 #, python-brace-format
@@ -265,44 +265,32 @@ msgid ""
 msgstr ""
 
 #: studygroups/forms.py:221
-#, fuzzy
-#| msgid "Courses"
 msgid "Course title"
-msgstr "Cursos"
+msgstr ""
 
 #: studygroups/forms.py:222
-#, fuzzy
-#| msgid "Courses"
 msgid "Course creator"
-msgstr "Cursos"
+msgstr ""
 
 #: studygroups/forms.py:223
-#, fuzzy
-#| msgid "Courses"
 msgid "Course platform"
-msgstr "Cursos"
+msgstr ""
 
 #: studygroups/forms.py:224 templates/studygroups/course_page.html:135
-#, fuzzy
-#| msgid "Courses"
 msgid "Course website"
-msgstr "Cursos"
+msgstr ""
 
 #: studygroups/forms.py:225
 msgid "Course description (500 character limit)"
 msgstr ""
 
 #: studygroups/forms.py:226
-#, fuzzy
-#| msgid "Courses"
 msgid "Course topics"
-msgstr "Cursos"
+msgstr ""
 
 #: studygroups/forms.py:227
-#, fuzzy
-#| msgid "Courses"
 msgid "Course license"
-msgstr "Cursos"
+msgstr ""
 
 #: studygroups/forms.py:230
 msgid "e.g. MIT, University of Michigan, Khan Academy."
@@ -496,10 +484,8 @@ msgid "Last name"
 msgstr ""
 
 #: studygroups/forms.py:429
-#, fuzzy
-#| msgid "Email address used to sign up."
 msgid "Email address"
-msgstr "Correo electronico usada por inscripción"
+msgstr ""
 
 #: studygroups/forms.py:429
 msgid ""
@@ -650,10 +636,8 @@ msgid ""
 msgstr ""
 
 #: studygroups/models/team.py:57
-#, fuzzy
-#| msgid "Organize"
 msgid "Organizer"
-msgstr "Organizar"
+msgstr ""
 
 #: studygroups/models/team.py:58
 msgid "Member"
@@ -1144,7 +1128,7 @@ msgstr ""
 #: templates/studygroups/staff_dash.html:25
 #: templates/studygroups/stats_dash.html:95
 msgid "Courses"
-msgstr "Cursos"
+msgstr ""
 
 #: templates/header.html:25
 msgid "About"
@@ -1152,11 +1136,11 @@ msgstr ""
 
 #: templates/header.html:28
 msgid "Facilitator Guide"
-msgstr "Guia"
+msgstr ""
 
 #: templates/header.html:33
 msgid "Organize"
-msgstr "Organizar"
+msgstr ""
 
 #: templates/header.html:37 templates/nav.html:39
 msgid "Dashboard"
@@ -1369,10 +1353,8 @@ msgstr ""
 
 #: templates/studygroups/anonymous_facilitator_survey.html:6
 #: templates/studygroups/facilitator_survey.html:6
-#, fuzzy
-#| msgid "Facilitator Guide"
 msgid "Facilitator Survey"
-msgstr "Guia"
+msgstr ""
 
 #: templates/studygroups/city_list.html:10
 msgid "P2PU presents:"
@@ -1764,17 +1746,13 @@ msgstr[1] ""
 #: templates/studygroups/stats_dash.html:182
 #: templates/studygroups/stats_dash.html:211
 #: templates/studygroups/studygroup_list.html:15
-#, fuzzy
-#| msgid "Facilitator Guide"
 msgid "Facilitator"
-msgstr "Guia"
+msgstr ""
 
 #: templates/studygroups/email/community_digest.html:276
 #: templates/studygroups/stats_dash.html:110
-#, fuzzy
-#| msgid "Courses"
 msgid "Course"
-msgstr "Cursos"
+msgstr ""
 
 #: templates/studygroups/email/community_digest.html:277
 #: templates/studygroups/signup.html:251
@@ -1830,10 +1808,8 @@ msgstr ""
 
 #: templates/studygroups/email/community_digest.html:329
 #: templates/studygroups/email/weekly-update.html:388
-#, fuzzy
-#| msgid "Courses"
 msgid "courses page"
-msgstr "Cursos"
+msgstr ""
 
 #: templates/studygroups/email/community_digest.html:336
 msgid "What we're talking about"
@@ -2766,10 +2742,8 @@ msgid "view"
 msgstr ""
 
 #: templates/studygroups/facilitator.html:53
-#, fuzzy
-#| msgid "Courses"
 msgid "Course you've added"
-msgstr "Cursos"
+msgstr ""
 
 #: templates/studygroups/facilitator.html:64
 msgid "edit"
@@ -2777,10 +2751,8 @@ msgstr ""
 
 #: templates/studygroups/facilitator_dashboard.html:7
 #: templates/studygroups/facilitator_dashboard.html:14
-#, fuzzy
-#| msgid "Facilitator Guide"
 msgid "Facilitator Dashboard"
-msgstr "Guia"
+msgstr ""
 
 #: templates/studygroups/facilitator_dashboard.html:15
 #: templates/studygroups/facilitator_dashboard.html:16
@@ -2962,10 +2934,8 @@ msgstr ""
 
 #: templates/studygroups/meeting_list.html:12
 #: templates/studygroups/studygroup_list.html:8
-#, fuzzy
-#| msgid "Organize"
 msgid "back to organizer dashboard"
-msgstr "Organizar"
+msgstr ""
 
 #: templates/studygroups/meeting_list.html:19
 #: templates/studygroups/organize_meetings.html:31
@@ -3057,10 +3027,8 @@ msgid "Please confirm that you wish to leave this learning circle."
 msgstr ""
 
 #: templates/studygroups/organize.html:7
-#, fuzzy
-#| msgid "Organize"
 msgid "Organizer Dashboard"
-msgstr "Organizar"
+msgstr ""
 
 #: templates/studygroups/organize_meetings.html:5
 #: templates/studygroups/organize_meetings.html:8
@@ -3218,10 +3186,8 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: templates/studygroups/signup.html:158
-#, fuzzy
-#| msgid "Facilitator Guide"
 msgid "Facilitated by"
-msgstr "Guia"
+msgstr ""
 
 #: templates/studygroups/signup.html:187
 msgid "Welcome!"
@@ -3301,10 +3267,8 @@ msgid "Learning circle surveys"
 msgstr ""
 
 #: templates/studygroups/staff_dash.html:21
-#, fuzzy
-#| msgid "Facilitator Guide"
 msgid "Facilitator surveys"
-msgstr "Guia"
+msgstr ""
 
 #: templates/studygroups/staff_dash.html:23
 msgid "Links"
@@ -3382,10 +3346,8 @@ msgid "Low Rated Courses"
 msgstr ""
 
 #: templates/studygroups/stats_dash.html:111
-#, fuzzy
-#| msgid "Facilitator Guide"
 msgid "Facilitator rating"
-msgstr "Guia"
+msgstr ""
 
 #: templates/studygroups/stats_dash.html:134
 msgid "Learners"
@@ -3404,10 +3366,8 @@ msgid "Team name"
 msgstr ""
 
 #: templates/studygroups/stats_dash.html:157
-#, fuzzy
-#| msgid "Organize"
 msgid "Organizer dash"
-msgstr "Organizar"
+msgstr ""
 
 #: templates/studygroups/stats_dash.html:176
 msgid "Unrated Learning Circles"
@@ -3585,8 +3545,3 @@ msgstr ""
 #: templates/studygroups/view_study_group.html:347
 msgid "New message"
 msgstr ""
-
-#, fuzzy
-#~| msgid "Courses"
-#~ msgid "%(course)s"
-#~ msgstr "Cursos"
