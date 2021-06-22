@@ -21,7 +21,6 @@ from django.utils.decorators import method_decorator
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
-
 import re
 import json
 import datetime
@@ -37,12 +36,10 @@ from studygroups.models import StudyGroup
 from studygroups.models import Meeting
 from studygroups.models import Course
 from studygroups.models import Application
-from studygroups.models import Feedback
 from studygroups.models import Reminder
 from studygroups.forms import CourseForm
 from studygroups.forms import StudyGroupForm
 from studygroups.forms import MeetingForm
-from studygroups.forms import FeedbackForm
 from studygroups.tasks import send_reminder
 from studygroups.models import generate_meetings_from_dates
 from studygroups.models import generate_all_meeting_dates
@@ -55,7 +52,6 @@ from studygroups.utils import render_to_string_ctx
 from studygroups.views.api import serialize_course
 from studygroups.models.team import eligible_team_by_email_domain
 
-
 logger = logging.getLogger(__name__)
 
 @login_required
@@ -64,50 +60,27 @@ def login_redirect(request):
     return http.HttpResponseRedirect(url)
 
 
-@login_required
-def facilitator(request):
-    today = datetime.datetime.now().date()
-    two_weeks_ago = today - datetime.timedelta(weeks=2, days=today.weekday())
-
-    study_groups = StudyGroup.objects.active().filter(facilitator=request.user)
-    current_study_groups = study_groups.filter(
-        Q(id__in=Meeting.objects.active().filter(meeting_date__gte=two_weeks_ago).values('study_group')) |
-        Q(draft=True, end_date__gte=two_weeks_ago)
-    )
-    past_study_groups = study_groups.exclude(id__in=current_study_groups)
-    team = None
-    if TeamMembership.objects.active().filter(user=request.user).exists():
-        team = TeamMembership.objects.active().filter(user=request.user).first().team
-    invitation = TeamInvitation.objects.filter(email__iexact=request.user.email, responded_at__isnull=True).first()
-    context = {
-        'current_study_groups': current_study_groups,
-        'past_study_groups': past_study_groups,
-        'courses': Course.objects.filter(created_by=request.user),
-        'invitation': invitation,
-        'today': timezone.now(),
-        'team': team
-    }
-    return render(request, 'studygroups/facilitator.html', context)
-
-
 @user_is_group_facilitator
 def view_study_group(request, study_group_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
     if study_group.deleted_at:
         raise http.Http404(_("Learning circle does not exist."))
 
-    user_is_facilitator = study_group.facilitator == request.user
     dashboard_url = reverse('studygroups_facilitator')
-
     remaining_surveys = study_group.application_set.active().exclude(id__in=study_group.learnersurveyresponse_set.values('learner_id'))
 
     context = {
         'study_group': study_group,
-        'feedback_form': FeedbackForm(),
         'today': timezone.now(),
         'dashboard_url': dashboard_url,
         'remaining_surveys': remaining_surveys,
     }
+    meeting_number = request.GET.get('meeting')
+    rating = request.GET.get('rating')
+    if meeting_number and rating:
+        context['expand_meeting'] = meeting_number
+        context['meeting_rating'] = rating
+
     return render(request, 'studygroups/view_study_group.html', context)
 
 
@@ -144,68 +117,6 @@ class MeetingDelete(FacilitatorRedirectMixin, DeleteView):
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
-class FeedbackDetail(FacilitatorRedirectMixin, DetailView):
-    model = Feedback
-
-
-@method_decorator(user_is_group_facilitator, name="dispatch")
-@method_decorator(study_group_is_published, name='dispatch')
-class FeedbackCreate(FacilitatorRedirectMixin, CreateView):
-    model = Feedback
-    form_class = FeedbackForm
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        meeting = get_object_or_404(Meeting, pk=self.kwargs.get('study_group_meeting_id'))
-        context['meeting'] = meeting
-        return context
-
-    def form_valid(self, form):
-        meeting = get_object_or_404(Meeting, pk=self.kwargs.get('study_group_meeting_id'))
-        feedback = form.save(commit=False)
-        feedback.study_group_meeting = meeting
-        feedback.save()
-
-        messages.success(self.request, _('Your feedback has been saved.'))
-
-        # send notification to organizers about feedback
-        to = []
-        organizers = get_study_group_organizers(meeting.study_group)
-        if organizers:
-            to = [o.email for o in organizers]
-
-        context = {
-            'feedback': form.save(commit=False),
-            'study_group_meeting': meeting
-        }
-        subject = render_to_string_ctx('studygroups/email/feedback-submitted-subject.txt', context).strip('\n')
-        html_body = render_to_string_ctx('studygroups/email/feedback-submitted.html', context)
-        text_body = render_to_string_ctx('studygroups/email/feedback-submitted.txt', context)
-        notification = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
-        notification.attach_alternative(html_body, 'text/html')
-        notification.send()
-
-        url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
-        return http.HttpResponseRedirect(url)
-
-
-@method_decorator(user_is_group_facilitator, name="dispatch")
-class FeedbackUpdate(FacilitatorRedirectMixin, UpdateView):
-    model = Feedback
-    form_class = FeedbackForm
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        meeting = get_object_or_404(Meeting, pk=self.kwargs.get('study_group_meeting_id'))
-        context['meeting'] = meeting
-        return context
-
-    def form_valid(self, *args, **kwargs):
-        messages.success(self.request, _('Your feedback has been updated.'))
-        return super().form_valid(*args, **kwargs)
-
-
-@method_decorator(user_is_group_facilitator, name="dispatch")
 class ApplicationUpdate(FacilitatorRedirectMixin, UpdateView):
     model = Application
     form_class =  modelform_factory(Application, fields=['study_group', 'name', 'email', 'mobile'], widgets={'study_group': HiddenInput})
@@ -228,6 +139,8 @@ class MessageView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         message = context['message']
+        if message.study_group_id != int(self.kwargs.get('study_group_id')):
+            raise PermissionDenied
         message.email_body = re.sub(r'RSVP_YES_LINK', '#', message.email_body)
         message.email_body = re.sub(r'RSVP_NO_LINK', '#', message.email_body)
         message.email_body = re.sub(r'UNSUBSCRIBE_LINK', '#', message.email_body)
@@ -561,10 +474,31 @@ def message_edit(request, study_group_id, message_id):
     return render(request, 'studygroups/message_edit.html', context)
 
 
-@method_decorator(user_is_group_facilitator, name='dispatch')
-class MeetingFollowUp(CreateView):
+@method_decorator(user_is_group_facilitator, name="dispatch")
+class ReminderDelete(DeleteView):
     model = Reminder
-    template_name = 'studygroups/meeting_follow_up_form.html'
+
+    def __todo__(self):
+        # Remove the reminder
+        # Indicate that this reminder has been deleted
+        # use that indication in template for messaging on manage page
+        # check value in other places when updating reminders
+        pass
+
+
+@method_decorator(user_is_group_facilitator, name="dispatch")
+class RemiderRegenerate(UpdateView):
+    model = Meeting
+    def __todo__(self):
+        # Regenerate the reminder
+        # If it was manually deleted before, unset that
+        pass
+
+
+@method_decorator(user_is_group_facilitator, name='dispatch')
+class MeetingRecap(CreateView):
+    model = Reminder
+    template_name = 'studygroups/meeting_recap_form.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -595,10 +529,10 @@ class MeetingFollowUp(CreateView):
         meeting = get_object_or_404(Meeting, pk=self.kwargs.get('pk'))
         if meeting.study_group.pk != study_group.pk:
             raise PermissionDenied
-        follow_up = form.save()
-        meeting.follow_up = follow_up
+        recap = form.save()
+        meeting.recap = recap
         meeting.save()
-        send_reminder(follow_up)
+        send_reminder(recap)
         messages.success(self.request, 'Follow up message has been sent')
 
         url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
@@ -606,7 +540,7 @@ class MeetingFollowUp(CreateView):
 
 
 @method_decorator(user_is_group_facilitator, name='dispatch')
-class MeetingFollowUpDismiss(SingleObjectMixin, View):
+class MeetingRecapDismiss(SingleObjectMixin, View):
     model = Meeting
  
     def post(self, request, *args, **kwargs):
@@ -615,7 +549,7 @@ class MeetingFollowUpDismiss(SingleObjectMixin, View):
         if str(meeting.study_group.id) != kwargs.get('study_group_id'):
             raise PermissionDenied
 
-        meeting.follow_up_dismissed = True
+        meeting.recap_dismissed = True
         meeting.save()
 
         url = reverse_lazy('studygroups_view_study_group', args=(self.kwargs.get('study_group_id'),))
@@ -785,16 +719,12 @@ class StudyGroupFacilitatorSurvey(TemplateView):
 
     def get_context_data(self, **kwargs):
         study_group = get_object_or_404(StudyGroup, uuid=kwargs.get('study_group_uuid'))
-        study_group.facilitator_goal_rating = self.request.GET.get('goal_rating', None)
-        study_group.save()
-
         context = super(StudyGroupFacilitatorSurvey, self).get_context_data(**kwargs)
+        context['study_group'] = study_group
         context['survey_id'] = settings.TYPEFORM_FACILITATOR_SURVEY_FORM
-        context['study_group_uuid'] = study_group.uuid
-        context['study_group_name'] = study_group.name
         context['course'] = study_group.course.title
         context['goal'] = study_group.facilitator_goal
-        context['goal_rating'] = self.request.GET.get('goal_rating', '')
+        context['goal_rating'] = study_group.facilitator_goal_rating
         meetings = study_group.meeting_set.active().order_by('meeting_date', 'meeting_time')
         attendance = [m.feedback_set.first().attendance if m.feedback_set.first() else None for m in meetings]
         if len(attendance) and attendance[0]:
@@ -803,8 +733,6 @@ class StudyGroupFacilitatorSurvey(TemplateView):
             context['attendance_2'] = attendance[1]
         if len(attendance) > 2 and attendance[-1]:
             context['attendance_n'] = attendance[-1]
-
-        # TODO context['no_studygroup'] = self.request.GET.get('nostudygroup', False)
         return context
 
 

@@ -27,6 +27,7 @@ services:
     - postgres
     - email
     - frontend
+    env_file: docker.env
     environment:
     - ADMIN_EMAIL=admin@localhost
     - BROKER_URL=amqp://guest:guest@rabbitmq//
@@ -49,6 +50,7 @@ services:
     - .:/opt/app
     working_dir: /opt/app
     command: /opt/django-venv/bin/celery worker -A learnwithpeople --loglevel=INFO
+    env_file: docker.env
     environment:
     - ADMIN_EMAIL=admin@localhost
     - BROKER_URL=amqp://guest:guest@rabbitmq//
@@ -65,8 +67,11 @@ services:
     - rabbitmq
     - postgres
     user: celery
+    volumes:
+    - .:/opt/app
     working_dir: /opt/app
     command: /opt/django-venv/bin/celery beat -A learnwithpeople --loglevel=DEBUG --pidfile=/var/lib/celery/celerybeat.pid --schedule=/var/lib/celery/celerybeat-schedule
+    env_file: docker.env
     environment:
     - DATABASE_URL=postgres://lc:password@postgres:5432/lc
     - SECRET_KEY=321

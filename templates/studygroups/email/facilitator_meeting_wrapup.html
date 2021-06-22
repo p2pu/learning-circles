@@ -1,0 +1,113 @@
+{% extends 'email_base.html' %}
+{% load static %}
+{% load i18n %}
+{% load tz %}
+{% block body %}
+{% localtime off %}
+{% url 'studygroups_view_study_group' study_group.pk as manage_url %}
+
+<style>
+.rating-scale {
+  margin: 1em 0;
+}
+.rating-scale td {
+  padding: 0.5em 0.5em;
+  text-align: center;
+}
+.rating-scale td:first-of-type {
+  padding-left: 0;
+}
+.rating-scale td:last-of-type {
+  padding-right: 0;
+}
+.rating-scale img {
+  width: 64px;
+}
+.rating-scale td a {
+  text-align: center;
+  text-decoration: none;
+}
+</style>
+
+
+<p>{% blocktrans with first_name=study_group.facilitator.first_name %}Hi {{first_name}}{% endblocktrans %},</p>
+
+<p>{% trans "How did your learning circle go today?" %}</p>
+
+{% with meeting_number=meeting.meeting_number %}
+<p>
+<table class="rating-scale" align="center" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td>
+      <a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=5#meeting-{{meeting_number}}"><img src="{{PROTOCOL}}://{{DOMAIN}}{% static 'images/icons/p2pu-joy-bot.png' %}" /></a>
+    </td>
+    <td>
+      <a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=4#meeting-{{meeting_number}}">
+        <img src="{{PROTOCOL}}://{{DOMAIN}}{% static 'images/icons/p2pu-happy-bot.png' %}" />
+      </a>
+    </td>
+    <td>
+      <a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=3#meeting-{{meeting_number}}">
+        <img src="{{PROTOCOL}}://{{DOMAIN}}{% static 'images/icons/p2pu-meh-bot.png' %}" />
+      </a>
+    </td>
+    <td>
+      <a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=2#meeting-{{meeting_number}}">
+        <img src="{{PROTOCOL}}://{{DOMAIN}}{% static 'images/icons/p2pu-sad-bot.png' %}" />
+      </a>
+    </td>
+    <td>
+      <a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=1#meeting-{{meeting_number}}">
+        <img src="{{PROTOCOL}}://{{DOMAIN}}{% static 'images/icons/p2pu-neon-tear-bot.png' %}" />
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=5#meeting-{{meeting_number}}">
+        {% trans "Great" %}
+      </a>
+    </td>
+    <td>
+      <a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=4#meeting-{{meeting_number}}">
+        {% trans "Pretty well" %}
+      </a>
+    </td>
+    <td>
+      <a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=3#meeting-{{meeting_number}}">
+        {% trans "Okay" %}
+      </a>
+    </td>
+    <td>
+      <a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=2#meeting-{{meeting_number}}">
+        {% trans "Not so good" %}
+      </a>
+    </td>
+    <td>
+      <a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}?meeting={{meeting_number}}&rating=1#meeting-{{meeting_number}}">
+        {% trans "Awful" %}
+      </a>
+    </td>
+  </tr>
+</table>
+
+</p>
+{% endwith %}
+
+<p>{% trans "Please take a minute to reflect on your dashboard. Your feedback will help us identify themes and topics for our upcoming community calls." %}</p>
+
+{% if is_last_meeting %}
+<p>{% blocktrans %}From your dashboard, you can fill out the end of learning circle survey and view feedback from learning circle participants.{% endblocktrans %}</p>
+{% else %}
+{% with send_reminder_at=study_group.next_meeting.send_reminder_at %}
+<p>{% blocktrans %}From your dashboard, you can also send a recap message to participants and edit the reminder for the next meeting, which is scheduled to send {{ send_reminder_at }}.{% endblocktrans %}<p>
+{% endwith %}
+{% endif %}
+
+
+<p><a href="{{PROTOCOL}}://{{DOMAIN}}{{manage_url}}">{% trans "Go to my dashboard" %}</a>.</p>
+
+<p>{% trans "Cheers" %},</p>
+<p>P2PU</p>
+{% endlocaltime %}
+{% endblock %}

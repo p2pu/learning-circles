@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
 {% load crispy_forms_tags %}
 {% load static %}
 {% load i18n %}
@@ -96,13 +97,13 @@
         </div>
       </div>
       {% for meeting in study_group.meeting_set.active|dictsort:"meeting_datetime" %}
-      {% with meeting_status=meeting.status %}
-      <div class="item {{ meeting_status }}">
+      {% with meeting_status=meeting.status feedback=meeting.feedback_set.first %}
+      <div class="item {{ meeting_status }}" id="meeting-{{forloop.counter}}">
         <div class="icon"></div>
           <div class="card">
             <a class="card-collapse-toggle {% if meeting != study_group.next_meeting or study_group.draft %}collapsed{% endif %}" data-toggle="collapse" href="#collapse-meeting-{{forloop.counter}}" role="button" aria-expanded="true" aria-controls="collapse-meeting-{{forloop.counter}}"><i class="fa fa-chevron-down"></i></a>
             <div class="card-title">Meeting #{{forloop.counter}}: {{meeting.meeting_datetime}} (<a href="{% url 'studygroups_meeting_edit' study_group.pk meeting.pk %}">edit</a>, <a href="{% url 'studygroups_meeting_delete' study_group.pk meeting.pk %}">delete</a>)</div>
-            <div class="collapse {% if meeting == study_group.next_meeting and not study_group.draft %}show{% endif %}" id="collapse-meeting-{{forloop.counter}}">
+            <div class="collapse {% if meeting == study_group.next_meeting and not study_group.draft %}show{% elif forloop.counter|stringformat:"i" == expand_meeting %}show{% endif %}" id="collapse-meeting-{{forloop.counter}}">
               {% if meeting.reminder_set.first.sent_at %}
                 <div class="meeting-item done">
                   <p>Reminder sent {{meeting.reminder_set.first.sent_at_tz}} (<a href="{% url 'studygroups_message_view' study_group.id meeting.reminder_set.first.id %}">view</a>)</p>
@@ -120,7 +121,7 @@
                 {% if meeting.meeting_datetime < today and meeting.reminder_set.count == 0 %}
                   <p>No RSVPs</p>
                 {% else %}
-                <p>See RSVPs {% if meeting.meeting_datetime < today %}(<a data-toggle="collapse" href="#meeting-{{meeting.id}}-rsvp" role="button" aria-expanded="true" aria-controls="meeting-{{meeting.id}}-rsvp">show</a>){% endif %}</p>
+                <p>Review RSVPs {% if meeting.meeting_datetime < today %}(<a data-toggle="collapse" href="#meeting-{{meeting.id}}-rsvp" role="button" aria-expanded="true" aria-controls="meeting-{{meeting.id}}-rsvp">view</a>){% endif %}</p>
                   {% if meeting.reminder_set.first.sent_at %}
                   <div class="meeting-rsvp {% if meeting.meeting_datetime < today %}collapse{% endif %}" id="meeting-{{meeting.id}}-rsvp">
                     <ul class="list-unstyled">
@@ -145,36 +146,35 @@
                   {% endif %}
                 {% endif %}
               </div>
-              <div class="meeting-item {% if meeting.meeting_datetime > today %}pending{% else %}{% if meeting.feedback_set.count %}done{% else %}todo{% endif %}{% endif %}">
-                <p>Reflect and share feedback</p>
-                {% if meeting.feedback_set.first %}
-                <div class="meeting-feedback">
-                  <p>Overall rating: {{meeting.feedback_set.first.get_rating_display}} (<a href="{% url 'studygroups_feedback_detail' study_group.id meeting.id meeting.feedback_set.first.id %}">{% trans "view" %}</a>, <a href="{% url 'studygroups_feedback_edit' study_group.id meeting.id meeting.feedback_set.first.id %}">{% trans "edit" %}</a>)</p>
-                </div>
+              <div 
+                class="meeting-feedback"
+                data-item-state="{% if meeting.meeting_datetime > today %}pending{% else %}{% if feedback %}done{% else %}todo{% endif %}{% endif %}"
+                {% if meeting.meeting_datetime < today %}data-show-form="yes"{% endif %}
+                data-meeting-id="{{meeting.pk}}"
+                {% if feedback %}
+                  data-feedback-id="{{feedback.pk}}"
+                  {% if feedback.rating %}data-rating="{{feedback.rating}}"{% endif %}
+                  {% if feedback.attendance %}data-attendance="{{feedback.attendance}}"{% endif %}
+                  {% if feedback.reflection%}data-reflection="{{feedback.reflection}}"{% endif %}
+                  data-action-url="{% url 'feedback-detail' feedback.id %}"
                 {% else %}
-                  {% if meeting.meeting_datetime < today %}
-                    <div class="meeting-feedback">
-                      <p>Your reflections help P2PU identify common themes for upcoming facilitator calls (<a href="https://community.p2pu.org/c/community-events/57">RSVP here</a>). Your responses will be shared with P2PU (and your team if you are part of one).</p>
-                      <form action="{% url 'studygroups_feedback' study_group.pk meeting.pk %}" method="POST">
-	                      {% crispy feedback_form %}
-                        <p><button type="submit" class="p2pu-btn btn-primary">{% trans "Submit" %}</button></p>
-	                    </form>
-                    </div>
-                  {% endif %}
+                  data-action-url="{% url 'feedback-list'%}"
+                {% if meeting_rating and forloop.counter|stringformat:"i" == expand_meeting %}data-rating="{{meeting_rating}}"{% endif %}
                 {% endif %}
+              >
               </div>
-              <div class="meeting-item {% if meeting.meeting_datetime > today %}pending{% else %}{% if meeting.follow_up or meeting.follow_up_dismissed %}done{% else %}todo{% endif %}{% endif %}">
-                {% if meeting.follow_up %}
-                  <p>Recap sent to learners (<a href="{% url 'studygroups_message_view' study_group.id meeting.follow_up.id %}">view</a>)<p>
-                {% elif meeting.follow_up_dismissed %}
+              <div class="meeting-item {% if meeting.meeting_datetime > today %}pending{% else %}{% if meeting.recap or meeting.recap_dismissed %}done{% else %}todo{% endif %}{% endif %}">
+                {% if meeting.recap %}
+                  <p>Recap sent to learners (<a href="{% url 'studygroups_message_view' study_group.id meeting.recap.id %}">view</a>)<p>
+                {% elif meeting.recap_dismissed %}
                   <p>No meeting recap sent<p>
                 {% else %}
                   <p>Send a meeting recap to participants<p>
                   {% if meeting.meeting_datetime < today %}
-                    <div class="meeting-feedback">
+                    <div class="meeting-recap">
                       <p>You may want to follow up on questions, share links to relevant resources, or summarize any decisions that were made for the next meeting.</p>
-                      <a class="p2pu-btn btn-primary" href="{% url 'studygroups_meeting_follow_up' study_group.pk meeting.pk %}">Send follow up</a>
-                      <form action="{% url 'studygroups_meeting_follow_up_dismiss' study_group.pk meeting.pk %}" method="POST">{% csrf_token %}<button type="submit" class="p2pu-btn btn-primary" href="">{% trans "dismiss" %}</button></form>
+                      <a class="p2pu-btn btn-primary" href="{% url 'studygroups_meeting_recap' study_group.pk meeting.pk %}">Send recap</a>
+                      <form action="{% url 'studygroups_meeting_recap_dismiss' study_group.pk meeting.pk %}" method="POST">{% csrf_token %}<button type="submit" class="p2pu-btn btn-primary" href="">{% trans "dismiss" %}</button></form>
                    
                       </form>
                     </div>
@@ -192,25 +192,16 @@
           <a class="card-collapse-toggle {% if today < study_group.last_meeting.meeting_datetime and study_group.next_meeting != study_group.last_meeting %}collapsed{% endif %}" data-toggle="collapse" href="#collapse-wrapup" role="button" aria-expanded="true" aria-controls="collapse-wrapup"><i class="fa fa-chevron-down"></i></a>
           <div class="card-title">Wrap up</div>
           <div class="collapse {% if today > study_group.last_meeting.meeting_datetime or study_group.next_meeting == study_group.last_meeting %}show{% endif %}" id="collapse-wrapup">
-            {% if today > study_group.last_meeting.meeting_datetime %}
-              <div class="meeting-item done">
-                <p>Survey reminder sent</p>
-              </div>
-            {% else %}
-              <div class="meeting-item pending">
-                <p>Survey reminder will be sent during the last meeting</p>
-              </div>
-            {% endif %}
-            <div class="meeting-item {% if study_group.facilitatorsurveyresponse_set.count %}done{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %}">
-              <p>Complete the facilitator survey</p>
-              {% if study_group.facilitatorsurveyresponse_set.count  %}
-              {% else %}
-                <p><a class="p2pu-btn btn-primary" href="{% url 'studygroups_facilitator_survey' study_group.uuid %}">{% trans "Facilitator survey" %}</a></p>
-              {% endif %}
-            </div>
+
             <div class="meeting-item {% if today < study_group.last_meeting.meeting_datetime %}pending{% elif study_group.learnersurveyresponse_set.count %}done{% else %}todo{% endif %}">
               <p>Collect learner feedback</p>
               <div class="survey-summary">
+                {% if study_group.learner_survey_sent_at %}
+                  <p>Survey reminder sent {{study_group.learner_survey_sent_at}}</p>
+                {% else %}
+                  <p>Survey reminder will be sent {{study_group.last_meeting.meeting_datetime}}</p>
+                {% endif %}
+
                 {% if study_group.learnersurveyresponse_set.count %}
                   <ul class="list-unstyled">
                     <li class="done">{{ study_group.learnersurveyresponse_set.count }} learners completed the survey.</li>
@@ -246,12 +237,35 @@
 
               </div>
             </div>
-            <div class="meeting-item {% if study_group.facilitatorsurveyresponse_set.count %}done{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %}">
-              <p>See the insights report</p>
-              {% if study_group.facilitatorsurveyresponse_set.count or study_group.learnersurveyresponse_set.count %}
-                <p><a class="p2pu-btn btn-primary" href="{% url 'studygroups_final_report' study_group_id=study_group.pk %}">{% trans "View insights" %}</a></p>
-              {% endif %}
+
+            <div id="learning-circle-feedback"
+                data-action-url="{% url 'learningcircle_feedback-detail' study_group.pk %}"
+                data-completion-state="{{ study_group.feedback_status }}"
+                {% if study_group.facilitator_goal %}
+                  data-facilitator-goal="{{study_group.facilitator_goal}}"
+                  {% if study_group.facilitator_goal_rating %}
+                    data-facilitator-goal-rating="{{study_group.facilitator_goal_rating}}"
+                  {% endif %}
+                {% endif %}
+                data-course-title="{{study_group.course.title}}"
+                {% if study_group.course_rating %}
+                  data-course-rating="{{study_group.course_rating}}"
+                {% endif %}
+                {% if study_group.course_rating_reason %}
+                  data-course-rating-reason="{{study_group.course_rating_reason}}"
+                {% endif %}
+                {% if study_group.facilitatorsurveyresponse_set.count  %}
+                  data-survey-completed="true"
+                {% else %}
+                  data-survey-url="{% url 'studygroups_facilitator_survey' study_group.uuid %}"
+                {% endif %}
+            >
             </div>
+
+            <p>
+              <a class="p2pu-btn btn-primary" href="{% url 'studygroups_final_report' study_group_id=study_group.pk %}">{% trans "View insights" %}</a>
+              <a class="p2pu-btn btn-primary" href="{% url 'survey_learning_circle_learner_responses_csv' study_group_id=study_group.pk %}">{% trans "Download data" %}</a>
+            </p>
           </div>
         </div>
       </div>
@@ -339,9 +353,12 @@
 {% endlocaltime %}
 {% endblock %}
 {% block scripts %}
+{% render_bundle 'common' %}
+{% render_bundle 'learning-circle-manage' %}
 <script>
 $(document).ready(function () {
   $('[data-toggle="popover"]').popover();
 });
 </script>
+
 {% endblock %}

@@ -1,5 +1,5 @@
 .ux-feedback {
- background-color: $p2pu-light-blue;
+  background-color: $p2pu-light-blue;
 }
 
 .btn-icon {
@@ -74,112 +74,6 @@
     min-height: 100%;
   }
 }
-
-.meeting-feedback {
-  padding: 1em;
-  background: $gray-lighter;
-}
-
-@mixin rsvp-li {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  margin-right: 0.5em;
-  vertical-align: middle;
-}
-
-.meeting-rsvp {
-  padding: 1em;
-  background: $gray-lighter;
-
-  ul {
-    margin: 0;
-  }
-
-  li.rsvp-yes::before {
-    @include rsvp-li;
-    content: '';
-    background: url("../images/icons/rsvp-yes.svg") left center / 1em 1em no-repeat;
-  }
-
-  li.rsvp-no::before {
-    @include rsvp-li;
-    content: '';
-    background: url("../images/icons/rsvp-no.svg") left center / 1em 1em no-repeat;
-  }
-
-  li.rsvp-unknown::before {
-    @include rsvp-li;
-    content: '';
-    background: url("../images/icons/rsvp-unknown.svg") left center / 1em 1em no-repeat;
-  }
-}
-
-.survey-summary {
-  padding: 1em;
-  background: $gray-lighter;
-
-  li.todo::before {
-    @include rsvp-li;
-    content: '';
-    background: url("../images/icons/rsvp-unknown.svg") left center / 1em 1em no-repeat;
-  }
-
-  li.done::before {
-    @include rsvp-li;
-    content: '';
-    background: url("../images/icons/rsvp-yes.svg") left center / 1em 1em no-repeat;
-  }
-
-
-}
-
-.card-collapse-toggle {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  color: $primary;
-
-  &:hover {
-    text-decoration: none;
-  }
-
-  transform: rotate(180deg);
-  &.collapsed {
-    transform: rotate(0deg);
-  }
-}
-
-.meeting-item {
-  padding-left: 1.5em;
-  position: relative;
-}
-
-.meeting-item.done::before {
-  position: absolute;
-  content: '✓';
-  left: 0;
-}
-
-.meeting-item.todo::before {
-  position: absolute;
-  content: '';
-  left: 0;
-  background: url("../images/icons/clock.svg") left center / 1em 1em no-repeat;
-  width: 1.5em;
-  height: 2em;
-}
-
-.meeting-item.pending::before {
-  position: absolute;
-  content: '';
-  left: 0;
-  background: url("../images/icons/clock.svg") left center / 1em 1em no-repeat;
-  filter: brightness(0) saturate(100%) invert(100%) sepia(3%) saturate(1205%) hue-rotate(241deg) brightness(110%) contrast(73%);
-  width: 1.5em;
-  height: 2em;
-}
-
 
 .lc-timeline {
   margin-bottom: 1em;
@@ -269,4 +163,197 @@
 .learner-signup-info{
   background: $gray-lighter;
   padding: 1em !important;
+}
+
+@mixin rsvp-li {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 0.5em;
+  vertical-align: middle;
+}
+
+.meeting-rsvp {
+  padding: 1em;
+  background: $gray-lighter;
+
+  ul {
+    margin: 0;
+  }
+
+  li.rsvp-yes::before {
+    @include rsvp-li;
+    content: '';
+    background: url("../images/icons/rsvp-yes.svg") left center / 1em 1em no-repeat;
+  }
+
+  li.rsvp-no::before {
+    @include rsvp-li;
+    content: '';
+    background: url("../images/icons/rsvp-no.svg") left center / 1em 1em no-repeat;
+  }
+
+  li.rsvp-unknown::before {
+    @include rsvp-li;
+    content: '';
+    background: url("../images/icons/rsvp-unknown.svg") left center / 1em 1em no-repeat;
+  }
+}
+
+.card-collapse-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: $primary;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  transform: rotate(180deg);
+  &.collapsed {
+    transform: rotate(0deg);
+  }
+}
+
+.meeting-item {
+  padding-left: 1.5em;
+  position: relative;
+}
+
+.meeting-item.done::before {
+  position: absolute;
+  content: '✓';
+  left: 0;
+}
+
+.meeting-item.todo::before {
+  position: absolute;
+  content: '';
+  left: 0;
+  background: url("../images/icons/clock.svg") left center / 1em 1em no-repeat;
+  width: 1.5em;
+  height: 2em;
+}
+
+.meeting-item.pending::before {
+  position: absolute;
+  content: '';
+  left: 0;
+  background: url("../images/icons/clock.svg") left center / 1em 1em no-repeat;
+  filter: brightness(0) saturate(100%) invert(100%) sepia(3%) saturate(1205%) hue-rotate(241deg) brightness(110%) contrast(73%);
+  width: 1.5em;
+  height: 2em;
+}
+
+@mixin meeting-item-details {
+  padding: 1em;
+  background: $gray-lighter;
+  margin-bottom: 1.5em;
+}
+
+.meeting-item-details {
+  @include meeting-item-details;
+}
+
+.meeting-recap {
+  @include meeting-item-details;
+}
+
+.survey-summary {
+  @include meeting-item-details;
+
+  li.todo::before {
+    @include rsvp-li;
+    content: '';
+    background: url("../images/icons/rsvp-unknown.svg") left center / 1em 1em no-repeat;
+  }
+
+  li.done::before {
+    @include rsvp-li;
+    content: '';
+    background: url("../images/icons/rsvp-yes.svg") left center / 1em 1em no-repeat;
+  }
+}
+
+.meeting-feedback {
+  /* HIDE RADIO */
+  [type=radio] { 
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  /* IMAGE STYLES */
+  [type=radio] + img {
+    cursor: pointer;
+    filter: grayscale(100%) opacity(0.6);
+  }
+
+  /* CHECKED STYLES */
+  [type=radio]:checked + img {
+    //outline: 2px solid #f00;
+    filter: none;
+  }
+
+  #div_id_rating {
+    img {
+      max-width: 100%;
+    }
+    line-height: 1.4;
+  }
+
+  .p2pu-bot-selector {
+    display: flex;
+    & > * {
+    @include media-breakpoint-up(sm) {
+      padding: 0 1em;
+    }
+
+    }
+
+  }
+}
+
+
+
+.star-rating-input {
+  display: flex;
+  justify-content: space-between;
+
+  [type=radio] { 
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  /* IMAGE STYLES */
+  [type=radio] + img {
+    cursor: pointer;
+    @include media-breakpoint-down(xs) {
+      max-width: 32px;
+    }
+
+  }
+
+  /* CHECKED STYLES */
+  [type=radio]:checked + div {
+    font-weight: 800;
+  }
+    @include media-breakpoint-down(xs) {
+      text-align: center;
+    }
+
+
+  .dull {
+    filter: grayscale(100%) opacity(0.6);
+  }
+}
+
+
+.email-preview, .sms-preview {
+  background-color: $gray-300;
+  margin-bottom: 1em;
 }

@@ -1,13 +1,21 @@
 {% load i18n %}
 {% blocktrans %}Hi {{facilitator_name}},{% endblocktrans %}
 
-{% trans "You made it! Now that your learning circle is finished, could we have five more minutes of your time? Your reflections (both good and bad) are vital for the future of P2PU." %}
 
-{% trans "Please take a few minutes to share with us? Your feedback will be immediately put to use, helping our community identify high-quality online courses and deliver equitable learning experiences around the world." %}
+{% trans "Can you take a moment to share some final reflections about your learning circle? Your experience and feedback on this course is a big help for future facilitators!" %}
 
-{% blocktrans %}Please take this five minute survey about the learning circle experience. This will help us at P2PU better support facilitators in the future.{% endblocktrans %}
+{% if study_group.facilitator_goal %}{% blocktrans with facilitator_goal=study_group.facilitator_goal %}At the start, we asked what you hoped to achieve by facilitating this learning circle. You wrote "{{facilitator_goal}}".{% endblocktrans %}
 
-{% blocktrans %}Review your learning circle now: {{survey_url}}{% endblocktrans %}
+{% trans "To what extent did you achieve this?" %}
+
+ - 1 ({% trans "Not at all" %}): {{survey_url}}?goal_rating=1
+ - 2: {{survey_url}}?goal_rating=2
+ - 3 ({% trans "Somewhat" %}): {{survey_url}}?goal_rating=3
+ - 4: {{survey_url}}?goal_rating=4
+ - 5 ({% trans "Completely!" %}): {{survey_url}}?goal_rating=5
+{% else %}{% blocktrans %}Please take this five minute survey about your learning circle experience: {{survey_url}}.{% endblocktrans %}{% endif %}
+
+{% url 'studygroups_studygroup_did_not_happen' study_group.pk as did_not_happen_url %}{% blocktrans %}Or click here if this learning circle didn’t happen: {{did_not_happen_url}}{% endblocktrans %}
 
 {% trans "Cheers" %},
-{% trans "The P2PU Team" %}
+P2PU

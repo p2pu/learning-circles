@@ -57,167 +57,38 @@ def _send_facilitator_survey(study_group):
     to = [study_group.facilitator.email]
     cc = [settings.DEFAULT_FROM_EMAIL]
 
-    notification = EmailMultiAlternatives(
+    message = EmailMultiAlternatives(
         subject,
         txt,
         settings.DEFAULT_FROM_EMAIL,
         to,
         cc=cc
     )
-    notification.attach_alternative(html, 'text/html')
-    notification.send()
+    message.attach_alternative(html, 'text/html')
+    message.send()
+
+    study_group.facilitator_survey_sent_at = timezone.now()
+    study_group.save()
 
 
 # If called directly, be sure to activate the current language
-# Should be called every hour at :30
 def send_facilitator_survey(study_group):
-    """ send survey to all facilitators 1 hour before their last meeting """
+    """ send survey to facilitators 2 days after their last meeting """
     last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
     if not last_meeting:
         return
+    # don't send twice or to facilitator that has already responded to a survey
+    if study_group.facilitator_survey_sent_at or study_group.facilitatorsurveyresponse_set.count():
+        return
     now = timezone.now()
-    start_of_window = now.replace(minute=0, second=0, microsecond=0)
-    end_of_window = start_of_window + datetime.timedelta(hours=1)
-    time_to_send = last_meeting.meeting_datetime() - datetime.timedelta(hours=1)
+    six_weeks_ago = now - datetime.timedelta(days=42)
+    time_to_send = last_meeting.meeting_datetime() + datetime.timedelta(days=2)
 
-    if start_of_window <= time_to_send and time_to_send < end_of_window:
+    if six_weeks_ago < time_to_send and time_to_send < now:
         _send_facilitator_survey(study_group)
 
 
-# send prompt to facilitators to ask learners to complete surveys
-# should be called every hour at :30
-def send_facilitator_learner_survey_prompt(study_group):
-
-    # TODO not supported for non-English learning circles
-    if study_group.language != 'en':
-        return
-
-    now = timezone.now()
-
-    # a learning circle could have no meetings and be published
-    last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
-    if not last_meeting:
-        logger.warning('Published learning circle does not have any associated meetings. StudyGroup.id={0}'.format(study_group.id))
-        return
-
-    start_of_window = now.replace(minute=0, second=0, microsecond=0)
-    end_of_window = start_of_window + datetime.timedelta(hours=1)
-    time_to_send = last_meeting.meeting_datetime() + datetime.timedelta(days=2)
-
-    if start_of_window <= time_to_send and time_to_send < end_of_window:
-        timezone.deactivate()
-
-        facilitator_name = study_group.facilitator.first_name
-        facilitator_survey_path = reverse(
-            'studygroups_facilitator_survey',
-            kwargs={'study_group_uuid': study_group.uuid}
-        )
-        learner_survey_path = reverse(
-            'studygroups_learner_survey',
-            kwargs={'study_group_uuid': study_group.uuid}
-        )
-        report_path = reverse('studygroups_final_report', kwargs={'study_group_id': study_group.id})
-        base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
-        facilitator_survey_url = base_url + facilitator_survey_path
-        learner_survey_url = base_url + learner_survey_path
-        report_url = base_url + report_path
-        learners_without_survey_responses = study_group.application_set.active().filter(learnersurveyresponse__isnull=True)
-
-        context = {
-            "facilitator": study_group.facilitator,
-            'facilitator_name': facilitator_name,
-            'learner_survey_url': learner_survey_url,
-            'facilitator_survey_url': facilitator_survey_url,
-            'course_title': study_group.course.title,
-            'study_group_name': study_group.name,
-            'learners_without_survey_responses': learners_without_survey_responses,
-            'learner_responses_count': study_group.learnersurveyresponse_set.count(),
-            'report_url': report_url,
-        }
-
-        if study_group.facilitatorsurveyresponse_set.exists():
-            context['facilitator_survey_url'] = None
-
-        if learners_without_survey_responses.count() == 0:
-            context['learners_without_survey_responses'] = None
-
-        subject, txt, html = render_email_templates(
-            'studygroups/email/facilitator_learner_survey_prompt',
-            context
-        )
-        to = [study_group.facilitator.email]
-        cc = [settings.DEFAULT_FROM_EMAIL]
-
-        notification = EmailMultiAlternatives(
-            subject,
-            txt,
-            settings.DEFAULT_FROM_EMAIL,
-            to,
-            cc=cc
-        )
-        notification.attach_alternative(html, 'text/html')
-        notification.send()
-
-
-def _send_learning_circle_insights(study_group):
-    timezone.deactivate()
-
-    goals_met_chart = charts.GoalsMetChart(study_group)
-    report_path = reverse('studygroups_final_report', kwargs={'study_group_id': study_group.id})
-    recipients = study_group.application_set.active().values_list('email', flat=True)
-    organizers = get_study_group_organizers(study_group)
-    organizers_emails = [organizer.email for organizer in organizers]
-    to = list(recipients) + organizers_emails
-    to.append(study_group.facilitator.email)
-
-    context = {
-        'study_group': study_group,
-        'report_path': report_path,
-        'facilitator_name': study_group.facilitator.first_name,
-        'registrations': study_group.application_set.active().count(),
-        'survey_responses': study_group.learnersurveyresponse_set.count(),
-        'goals_met_chart': goals_met_chart.generate(output="png"),
-        'learner_goals_chart': charts.goals_chart(study_group),
-    }
-
-    subject = render_to_string_ctx('studygroups/email/learning_circle_final_report-subject.txt', context).strip('\n')
-    html = render_html_with_css('studygroups/email/learning_circle_final_report.html', context)
-    txt = html_body_to_text(html)
-
-    notification = EmailMultiAlternatives(
-        subject,
-        txt,
-        settings.DEFAULT_FROM_EMAIL,
-        bcc=to,
-        reply_to=[study_group.facilitator.email]
-    )
-    notification.attach_alternative(html, 'text/html')
-    notification.send()
-
-
-# send learning circle report two days after last meeting
-# should be called every hour at :30
-def send_final_learning_circle_report(study_group):
-    # TODO not supported for non-English learning circles
-    if study_group.language != 'en':
-        return
-
-    now = timezone.now()
-    start_of_window = now.replace(minute=0, second=0, microsecond=0)
-    end_of_window = start_of_window + datetime.timedelta(hours=1)
-
-    last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
-    if not last_meeting:
-        logger.warning('Published learning circle does not have any associated meetings. StudyGroup.id={0}'.format(study_group.id))
-        return
-
-    time_to_send = last_meeting.meeting_datetime() + datetime.timedelta(days=7)
-
-    if start_of_window <= time_to_send and time_to_send < end_of_window:
-        _send_learning_circle_insights(study_group)
-
-
-def send_learner_survey(application):
+def _send_learner_survey(application):
     """ send email to learner with link to survey, if goal is specified, also ask if they
     achieved their goal """
     learner_goal = application.get_signup_questions().get('goals', None)
@@ -254,26 +125,30 @@ def send_learner_survey(application):
 
 
 # send an hour before the last meeting
-# should be called every hour at :30
 def send_learner_surveys(study_group):
     if study_group.language != 'en':
-        # TODO surveys only supported in English
+        # NOTE surveys only supported in English
         return
 
-    last_meeting = study_group.meeting_set.active().order_by('-meeting_date', '-meeting_time').first()
+    if study_group.learner_survey_sent_at:
+        return
+
+    last_meeting = study_group.last_meeting()
     if not last_meeting:
         return
 
     time_to_send = last_meeting.meeting_datetime() - datetime.timedelta(hours=1)
-    start_of_window = timezone.now().replace(minute=0, second=0, microsecond=0)
-    end_of_window = start_of_window + datetime.timedelta(hours=1)
 
-    if start_of_window <= time_to_send and time_to_send < end_of_window:
+    now = timezone.now()
+    three_weeks_ago = now - datetime.timedelta(days=21)
+
+    if three_weeks_ago < time_to_send and time_to_send < now:
         applications = study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')
+        study_group.learner_survey_sent_at = now
+        study_group.save()
         timezone.deactivate()
-
         for application in applications:
-            send_learner_survey(application)
+            _send_learner_survey(application)
 
 
 def send_meeting_reminder(reminder):
@@ -288,12 +163,8 @@ def send_meeting_reminder(reminder):
             application = reminder.study_group.application_set.active().filter(email__iexact=email).first()
             unsubscribe_link = application.unapply_link()
             email_body = reminder.email_body
-            # ensure reminder.email_body has correct links for RSVP and contains unsubscribe link at the end
-            if not re.search(r'UNSUBSCRIBE_LINK', email_body):
-                email_body = email_body + '<p>' + _('To leave this learning circle and stop receiving messages, <a href="%s">click here</a>') % 'UNSUBSCRIBE_LINK' + '</p>'
             email_body = re.sub(r'RSVP_YES_LINK', yes_link, email_body)
             email_body = re.sub(r'RSVP_NO_LINK', no_link, email_body)
-            email_body = re.sub(r'UNSUBSCRIBE_LINK', unsubscribe_link, email_body)
 
             context = {
                 "reminder": reminder,
@@ -305,7 +176,6 @@ def send_meeting_reminder(reminder):
                 "event_meta": True,
             }
             html_body = render_to_string_ctx('studygroups/email/learner_meeting_reminder.html', context)
-            # TODO should we rather strip email_body?
             text_body = html_body_to_text(html_body)
         try:
             reminder_email = EmailMultiAlternatives(
@@ -328,30 +198,24 @@ def send_meeting_reminder(reminder):
             logger.exception('Could not send email to ', email, exc_info=e)
     # Send to facilitator without RSVP & unsubscribe links
     try:
-        email_body = reminder.email_body
-        # Maybe this logic should be part of editing a reminder?
-        if not re.search(r'UNSUBSCRIBE_LINK', email_body):
-            email_body = email_body + '<p>' + _('To leave this learning circle and stop receiving messages, <a href="%s">click here</a>') % 'UNSUBSCRIBE_LINK' + '</p>'
         base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
         path = reverse('studygroups_view_study_group', kwargs={'study_group_id': reminder.study_group.id})
         dashboard_link = base_url + path
-        email_body = re.sub(r'RSVP_YES_LINK', dashboard_link, email_body)
+        email_body = re.sub(r'RSVP_YES_LINK', dashboard_link, reminder.email_body)
         email_body = re.sub(r'RSVP_NO_LINK', dashboard_link, email_body)
-        email_body = re.sub(r'UNSUBSCRIBE_LINK', dashboard_link, email_body)
 
         context = {
             "facilitator": reminder.study_group.facilitator,
             "reminder": reminder,
             "message": email_body,
         }
-        # TODO, maybe also generate text from html?
+
         subject, text_body, html_body = render_email_templates(
             'studygroups/email/facilitator_meeting_reminder',
             context
         )
-
         reminder_email = EmailMultiAlternatives(
-            reminder.email_subject.strip('\n'),
+            subject,
             text_body,
             sender,
             [reminder.study_group.facilitator.email]
@@ -415,6 +279,61 @@ def send_reminder(reminder):
                 send_message(to, reminder.sms_body)
             except TwilioRestException as e:
                 logger.exception("Could not send text message to %s", to, exc_info=e)
+
+
+def _send_meeting_wrapup(meeting):
+    study_group = meeting.study_group
+    context = {
+        'study_group': study_group,
+        'meeting': meeting,
+        'is_last_meeting': meeting == study_group.last_meeting(),
+    }
+    subject = render_to_string_ctx('studygroups/email/facilitator_meeting_wrapup-subject.txt', context).strip('\n')
+    html_body = render_to_string_ctx('studygroups/email/facilitator_meeting_wrapup.html', context)
+    text_body = html_body_to_text(html_body)
+    message = EmailMultiAlternatives(
+        subject,
+        text_body,
+        settings.DEFAULT_FROM_EMAIL,
+        to=[study_group.facilitator.email],
+    )
+    message.attach_alternative(html_body, 'text/html')
+    try:
+        message.send()
+    except Exception as e:
+        logger.exception('Could not send meeting change notification', exc_info=e)
+    meeting.wrapup_sent_at = timezone.now()
+    meeting.save()
+
+
+def send_meeting_wrapup(study_group):
+    now = timezone.now()  
+    # convert to correct timezone first so that .date and .time is correct
+    tz = pytz.timezone(study_group.timezone)
+    now = now.astimezone(tz)
+    
+    previous_meeting = study_group.meeting_set.active().filter(
+        meeting_date__lte=now.date(), meeting_time__lt=now.time()
+    ).order_by('-meeting_date', '-meeting_time').first()
+
+    if not previous_meeting or previous_meeting.wrapup_sent_at:
+        return
+
+    # send if time to send is in the past, but not yet more than 1 day
+    # send_at falls between yesterday this time and now
+    # ie. don't send for old meetings
+    send_at = previous_meeting.meeting_datetime() + datetime.timedelta(minutes=study_group.duration)
+    if now - datetime.timedelta(days=1) < send_at and send_at < now :
+        _send_meeting_wrapup(previous_meeting)
+
+
+@shared_task
+def send_meeting_wrapups():
+    now = timezone.now()
+    cutoff = now - datetime.timedelta(days=2)
+    study_groups = StudyGroup.objects.filter(end_date__gte=cutoff.date())
+    for sg in study_groups:
+        send_meeting_wrapup(sg)
 
 
 @shared_task
@@ -540,7 +459,6 @@ def send_weekly_update():
 
 @shared_task
 def send_community_digest(start_date, end_date):
-
     context = community_digest_data(start_date, end_date)
 
     chart_data = {
@@ -564,6 +482,7 @@ def send_community_digest(start_date, end_date):
 @shared_task
 def send_reminders():
     """ Send meeting reminders """
+    # TODO rename to check_reminders_to_send
     
     # make sure both the StudyGroup and Meeting is still available
     reminders = Reminder.objects.filter(
@@ -587,8 +506,8 @@ def weekly_update():
 
 
 @shared_task
-def send_all_studygroup_survey_reminders():
-    for study_group in StudyGroup.objects.published():
+def send_all_learner_surveys():
+    for study_group in StudyGroup.objects.published().filter(learner_survey_sent_at__isnull=True):
         translation.activate(settings.LANGUAGE_CODE)
         send_learner_surveys(study_group)
 
@@ -601,20 +520,6 @@ def send_all_facilitator_surveys():
 
 
 @shared_task
-def send_all_facilitator_survey_reminders():
-    for study_group in StudyGroup.objects.published():
-        translation.activate(settings.LANGUAGE_CODE)
-        send_facilitator_learner_survey_prompt(study_group)
-
-
-@shared_task
-def send_all_learning_circle_reports():
-    for study_group in StudyGroup.objects.published():
-        translation.activate(settings.LANGUAGE_CODE)
-        send_final_learning_circle_report(study_group)
-
-
-@shared_task
 def send_out_community_digest():
     translation.activate(settings.LANGUAGE_CODE)
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
@@ -624,6 +529,7 @@ def send_out_community_digest():
 
     if iso_week % 3 == 0:
         send_community_digest(start_date, end_date)
+
 
 @shared_task
 def refresh_instagram_token():

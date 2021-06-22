@@ -1,11 +1,10 @@
-{% load i18n %}
-{% blocktrans %}Hi {{learner_name}},
+{% load i18n %}{% blocktrans %}Hi {{learner_name}},{% endblocktrans %}
 
-Your learning circle is about to meet for the last time! Please take a few minutes to let us know how it went? Your feedback - the good and the bad - will improve the learning circle program for learners and facilitators around the world.
+{% trans "Your learning circle is about to meet for the last time!" %}
 
-Please share your feedback by completing this survey: {{survey_url}}
+{% blocktrans %}Please share your feedback by completing this survey: {{survey_url}}{% endblocktrans %}
 
-Thank you for being part of the P2PU community, and we look forward to hearing from you!{% endblocktrans %}
+{% trans "Your feedback will help improve the learning circle program for learners and facilitators around the world." %}
 
 {% trans "Cheers" %},
-{% trans "The P2PU Team" %}
+{% trans "P2PU" %}

@@ -1,1 +1,0 @@
-{% load i18n %}{% trans 'Get a preview of your learning circle report' %}
