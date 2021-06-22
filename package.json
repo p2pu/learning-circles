@@ -28,7 +28,7 @@
     "@babel/preset-react": "^7.0.0",
     "@typeform/embed": "^0.5.12",
     "aos": "^3.0.0-beta.6",
-    "axios": "^0.19.1",
+    "axios": "^0.21.1",
     "babel-loader": "^8.0.6",
     "babel-polyfill": "^6.26.0",
     "clean-webpack-plugin": "^4.0.0-alpha.0",
