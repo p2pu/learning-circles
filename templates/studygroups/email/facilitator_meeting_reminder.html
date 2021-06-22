@@ -2,17 +2,16 @@
 {% load i18n %}
 {% block body %}
 
-<p>{% trans "Hi there," %}</p>
+<p>{% blocktrans with facilitator_name=facilitator.first_name %}Hi {{facilitator_name}},{% endblocktrans %}</p>
 
 <p>{% trans "The following message has been sent to your learning circle." %}</p>
 
+<p>{% trans "Cheers" %},</p>
+<p>P2PU</p>
+
 <div style="padding: 0.2em 1em 0.2em; background-color: #E9E9E9;">
+  <p><strong>{% trans "Subject" %}:</strong> {{reminder.email_subject}}</p>
   {{ message | safe}}
 </div>
 
-{% url 'studygroups_facilitator' as dash_url %}
-<p>{% blocktrans %}To see how many learners RSVPed or to record feedback after the meeting, you can visit <a href="{{PROTOCOL}}://{{DOMAIN}}{{dash_url}}">your dashboard</a>.{% endblocktrans %}</p>
-
-<p>{% trans "Cheers" %}</p>
-<p>P2PU</p>
 {% endblock %}

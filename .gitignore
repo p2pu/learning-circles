@@ -14,3 +14,5 @@ assets/
 .DS_Store
 tmp/*.png
 *.mo
+scripts/*
+docker.env

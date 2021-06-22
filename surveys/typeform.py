@@ -88,6 +88,13 @@ def sync_facilitator_responses():
             for attr, value in data.items():
                 setattr(survey_response, attr, value)
             survey_response.save()
+        
+        # update course_rating and course_rating_reason
+        if study_group and not study_group.course_rating:
+            study_group.course_rating = survey_response.get_value_by_ref('course_rating')
+        if study_group and not study_group.course_rating_reason:
+            study_group.course_rating_reason = survey_response.get_value_by_ref('course_rating_reason')
+        study_group.save()
 
         survey_responses.append(survey_response)
 

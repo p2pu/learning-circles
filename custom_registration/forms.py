@@ -63,7 +63,7 @@ class ProfileForm(forms.ModelForm):
         }
         help_texts = {
              'contact_url': _('Where can potential team members find your contact information? i.e. Staff page, Twitter, personal website, etc.'),
-             'communication_opt_in': _('Check this box if you want to receive updates from the P2PU community about upcoming events and gathering.')
+             'communication_opt_in': _('Check this box if you want to receive updates from the P2PU community about upcoming events and gatherings.')
         }
         widgets = {
             'bio': forms.Textarea(attrs={'rows':5, 'cols':10}),

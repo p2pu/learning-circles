@@ -9,6 +9,7 @@ before_install:
 - docker version
 
 before_script:
+- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 - sed -i "s/__version__ =.*/__version__ = \"$(git describe --always --tags)\"/" learnwithpeople/__init__.py
 - sed -i "s/GIT_REVISION.*/GIT_REVISION = \"$(git rev-parse HEAD)\"/" learnwithpeople/__init__.py
 - docker build -t p2pu/learning-circles .
@@ -21,7 +22,6 @@ script:
 
 after_success:
 - echo "Push image to hub.docker.com"
-- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 - if [[ "$TRAVIS_PULL_REQUEST" != "false" ]]; then echo "Images not pushed for pull request"; exit 0; fi
 - docker tag p2pu/learning-circles p2pu/learning-circles:"$TRAVIS_BRANCH"
 - docker tag p2pu/learning-circles p2pu/learning-circles:$(git describe --always --tags)-"$TRAVIS_BRANCH"

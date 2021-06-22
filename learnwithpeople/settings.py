@@ -240,17 +240,21 @@ CELERYBEAT_SCHEDULE = {
         'task': 'studygroups.tasks.send_reminders',
         'schedule': crontab(minute='*/5'),
     },
+    'send_meeting_wrapup': {
+        'task': 'studygroups.tasks.send_meeting_wrapups',
+        'schedule': crontab(minute='*/5'),
+    },
     'send_new_user_email': {
         'task': 'custom_registration.tasks.send_new_user_emails',
         'schedule': crontab(minute='*/10'),
     },
-    'send_survey_reminders': {
-        'task': 'studygroups.tasks.send_all_studygroup_survey_reminders',
+    'send_learner_surveys': {
+        'task': 'studygroups.tasks.send_all_learner_surveys',
         'schedule': crontab(minute='30'),
     },
     'send_facilitator_survey': {
         'task': 'studygroups.tasks.send_all_facilitator_surveys',
-        'schedule':  crontab(minute='30'),
+        'schedule': crontab(minute='30'),
     },
     'weekly_update': {
         'task': 'studygroups.tasks.weekly_update',
@@ -263,14 +267,6 @@ CELERYBEAT_SCHEDULE = {
     'sync_typeform_surveys': {
         'task': 'surveys.tasks.sync_surveys',
         'schedule': crontab(minute='10'),
-    },
-    'send_facilitator_survey_reminder': {
-        'task': 'studygroups.tasks.send_all_facilitator_survey_reminders',
-        'schedule': crontab(minute='30'),
-    },
-    'send_final_learning_circle_report': {
-        'task': 'studygroups.tasks.send_all_learning_circle_reports',
-        'schedule': crontab(minute='30'),
     },
     'send_community_digest': {
         'task': 'studygroups.tasks.send_out_community_digest',

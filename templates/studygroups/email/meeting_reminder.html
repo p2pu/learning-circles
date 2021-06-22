@@ -1,0 +1,25 @@
+{% load i18n %}{% load l10n %}{% load tz %}
+{% localtime off %}{% localize on %}
+
+<p>{% trans "Hi there!" %}</p>
+
+<p>
+{% blocktrans with learning_circle_title=study_group.name|safe meeting_date=next_meeting.meeting_datetime|date meeting_time=next_meeting.meeting_datetime|time meeting_timezone=next_meeting.meeting_datetime|date:"e" %}Your learning circle, {{learning_circle_title}}, will meet this {{meeting_date}}, {{meeting_time}} {{meeting_timezone}}.{% endblocktrans%}
+</p>
+
+<p>{% blocktrans with venue_name=study_group.venue_name venue_details=study_group.venue_details venue_address=study_group.venue_address %}
+The address for the meeting is:<br/>
+{{venue_details}}<br/>
+{{venue_name}}<br/>
+{{venue_address}}<br/>
+{% endblocktrans %}</p>
+
+<p>{% blocktrans with facilitator_name=study_group.facilitator.first_name %}Your facilitator, {{facilitator_name}}, is expecting you! Please RSVP below.{% endblocktrans %}</p>
+
+<div><a class="rsvp-yes" href="RSVP_YES_LINK">{% trans "I'll be there" %}</a></div>
+<div><a class="rsvp-no" href="RSVP_NO_LINK">{% trans "I can't make it" %}</a></div>
+
+<p>{% trans "Cheers" %},<br/>
+P2PU</p>
+{% endlocalize %}
+{% endlocaltime %}

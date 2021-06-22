@@ -1,1 +1,1 @@
-{% load i18n %}{% trans "Welcome to P2PU" %}
+{% load i18n %}{% trans "Welcome to your learning circle!" %}

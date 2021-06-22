@@ -250,10 +250,18 @@
               Facilitated by {{first_name}} {{last_name}} at {{venue}}
             {% endblocktrans %}
           </p>
-          <p><strong>{% trans "Summary" %}:</strong> &quot;{{ feedback_response.feedback }}&quot;</p>
-          <p><strong>{% trans "Things worth sharing" %}:</strong> &quot;{{ feedback_response.reflection }}&quot;</p>
-          <p><strong>{% trans "Attendance" %}:</strong> {{ feedback_response.attendance }}</p>
+          {% if feedback_response.rating %}
           <p><strong>{% trans "Overall rating" %}:</strong> {{ feedback_response.get_rating_display }}</p>
+          {% endif %}
+          {% if feedback_response.attendance %}
+            <p><strong>{% trans "Attendance" %}:</strong> {{ feedback_response.attendance }}</p>
+          {% endif %}
+          {% if feedback_response.reflection %}
+            <p><strong>{{feedback_response.reflection_json.prompt}}:</strong> &quot;{{ feedback_response.reflection_json.answer }}&quot;</p>
+          {% endif %}
+          {% if feedback_response.feedback %}
+            <p><strong>{% trans "Summary" %}:</strong> &quot;{{ feedback_response.feedback }}&quot;</p>
+          {% endif %}
         <li/>
       {% endwith %}
     {% endfor %}
