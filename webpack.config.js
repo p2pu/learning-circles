@@ -2,6 +2,7 @@ var path = require("path");
 var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 
 var fs = require("fs");
@@ -69,6 +70,7 @@ const reactBuild = {
     }
   },
   plugins: [
+    new CleanWebpackPlugin(),
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new BundleTracker({filename: './assets/frontend-webpack-manifest.json'}),
   ],

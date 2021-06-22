@@ -5,9 +5,6 @@ from django.views.generic.base import RedirectView
 from studygroups.views import MeetingCreate
 from studygroups.views import MeetingUpdate
 from studygroups.views import MeetingDelete
-from studygroups.views import FeedbackDetail
-from studygroups.views import FeedbackCreate
-from studygroups.views import FeedbackUpdate
 from studygroups.views import ApplicationDelete
 from studygroups.views import ApplicationUpdate
 from studygroups.views import SignupSuccess
@@ -46,8 +43,8 @@ from studygroups.views import FacilitatorDashboard
 from studygroups.views import OrganizerGuideForm
 from studygroups.views import TeamUpdate
 from studygroups.views import MessageView
-from studygroups.views import MeetingFollowUp
-from studygroups.views import MeetingFollowUpDismiss
+from studygroups.views import MeetingRecap
+from studygroups.views import MeetingRecapDismiss
 
 from . import views
 
@@ -98,12 +95,9 @@ urlpatterns = [
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/create/$', MeetingCreate.as_view(), name='studygroups_meeting_create'),
     url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[0-9]+)/delete/$', MeetingDelete.as_view(), name='studygroups_meeting_delete'),
 
-    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/(?P<pk>[\d]+)/$', FeedbackDetail.as_view(), name='studygroups_feedback_detail'),
-    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/(?P<pk>[\d]+)/edit/$', FeedbackUpdate.as_view(), name='studygroups_feedback_edit'),
-    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<study_group_meeting_id>[\d]+)/feedback/create/$', FeedbackCreate.as_view(), name='studygroups_feedback'),
 
-    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[\d]+)/follow_up/$', MeetingFollowUp.as_view(), name='studygroups_meeting_follow_up'),
-    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[\d]+)/follow_up/dismiss/$', MeetingFollowUpDismiss.as_view(), name='studygroups_meeting_follow_up_dismiss'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[\d]+)/recap/$', MeetingRecap.as_view(), name='studygroups_meeting_recap'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[\d]+)/recap/dismiss/$', MeetingRecapDismiss.as_view(), name='studygroups_meeting_recap_dismiss'),
 
     url(r'^course/create/$', CourseCreate.as_view(), name='studygroups_course_create'),
     url(r'^course/(?P<pk>[\d]+)/$', CoursePage.as_view(), name='studygroups_course_page'),
@@ -111,8 +105,7 @@ urlpatterns = [
     url(r'^course/(?P<pk>[\d]+)/delete/$', CourseDelete.as_view(), name='studygroups_course_delete'),
     url(r'^course/(?P<course_id>[\d]+)/discourse_topic/$', views.generate_course_discourse_topic, name='studygroups_generate_course_discourse_topic'),
 
-    # TODO redirect this view to /
-    url(r'^facilitator/$', views.facilitator, name='studygroups_facilitator_deprecated'),
+    url(r'^facilitator/$', RedirectView.as_view(url='/'), name='studygroups_facilitator_deprecated'),
     url(r'^facilitator/team-invitation/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm'),
     url(r'^facilitator/team-invitation/(?P<invitation_id>[\d]+)/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm'),
     url(r'^facilitator/team-invitation/(?P<token>[\w-]+)/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm_token'),

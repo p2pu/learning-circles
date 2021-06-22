@@ -1,1 +1,1 @@
-{% load i18n %}{% trans 'How did your learning circle go?' %}
+{% load i18n %}{% trans 'A reminder from P2PU to review your learning circle' %}

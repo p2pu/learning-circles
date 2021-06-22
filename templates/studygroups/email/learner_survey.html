@@ -49,11 +49,10 @@
       <td>
         <p>Hi {{learner_name}},</p>
 
-        <p>{% trans "Your learning circle is about to meet for the last time! Please take a few minutes to let us know how it went? Your feedback - the good and the bad - will improve the learning circle program for learners and facilitators around the world." %}</p>
+        <p>{% trans "Your learning circle is about to meet for the last time!" %}</p>
 
         {% if learner_goal %}
-        <p>{% blocktrans %}When you signed up, we asked what you hoped to achieve by joining learning circle, and you wrote: <strong>{{learner_goal}}</strong>.{% endblocktrans %}</p>
-
+        <p>{% blocktrans %}When you signed up, we asked what you hoped to achieve by joining this learning circle. You wrote: <strong>{{learner_goal}}</strong>.{% endblocktrans %}</p>
         <p>{% trans "To what extent did you achieve this?" %}</p>
         {% else %}
         <p>{% blocktrans %}Please share your feedback by completing <a href="{{survey_url}}">this survey</a>.{% endblocktrans %}<p>
@@ -121,8 +120,9 @@
     {% endif %}
     <tr>
       <td>
+        <p>{% trans "Your feedback will help improve the learning circle program for learners and facilitators around the world." %}</p>
         <p>{% trans "Cheers" %},</p>
-        <p>{% trans "The P2PU Team" %}</p>
+        <p>{% trans "P2PU" %}</p>
       </td>
 
     </tr>

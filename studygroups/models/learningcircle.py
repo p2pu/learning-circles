@@ -78,8 +78,13 @@ class StudyGroup(LifeTimeTrackingModel):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     facilitator_rating = models.IntegerField(blank=True, null=True)  # Deprecated: 1-5 rating use previously
     facilitator_goal_rating = models.IntegerField(blank=True, null=True)  # Self reported rating of whether the facilitator goal was met.
+    course_rating = models.IntegerField(blank=True, null=True)
+    course_rating_reason = models.TextField(blank=True)
+
     attach_ics = models.BooleanField(default=True) # TODO Remove this
     did_not_happen = models.NullBooleanField(blank=True, null=True)  # Used by the facilitator to report if the learning circle didn't happen
+    learner_survey_sent_at = models.DateTimeField(blank=True, null=True)
+    facilitator_survey_sent_at = models.DateTimeField(blank=True, null=True)
 
     objects = StudyGroupQuerySet.as_manager()
 
@@ -154,6 +159,16 @@ class StudyGroup(LifeTimeTrackingModel):
         # check that meeting dates are spaced 7 days
         lds = reduce(lambda x,y: y if x and y-x==datetime.timedelta(days=7) else False, meeting_dates)
         return lds and True
+
+
+    def feedback_status(self):
+        if self.facilitator_goal_rating and self.course_rating and self.course_rating_reason or self.facilitatorsurveyresponse_set.count():
+            return 'done'
+        last_meeting = self.last_meeting()
+        if last_meeting and timezone.now() < last_meeting.meeting_datetime():
+            return 'pending'
+        return 'todo'
+
 
 
     @property
@@ -279,8 +294,10 @@ class Meeting(LifeTimeTrackingModel):
     study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE)
     meeting_date = models.DateField()
     meeting_time = models.TimeField()
-    follow_up = models.ForeignKey('studygroups.Reminder', null=True, blank=True, on_delete=models.SET_NULL)
-    follow_up_dismissed = models.BooleanField(default=False)
+    wrapup_sent_at = models.DateTimeField(blank=True, null=True)
+    recap = models.ForeignKey('studygroups.Reminder', null=True, blank=True, on_delete=models.SET_NULL)
+    recap_dismissed = models.BooleanField(default=False)
+    #reminder_deleted_at = models.DateTimeField(blank=True, null=True) # used to indicate manual deletion of a reminder
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -289,9 +306,11 @@ class Meeting(LifeTimeTrackingModel):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        self.study_group.start_date = self.study_group.first_meeting().meeting_date
-        self.study_group.end_date = self.study_group.last_meeting().meeting_date
-        self.study_group.save()
+
+        if self.study_group.meeting_set.active().count():
+            self.study_group.start_date = self.study_group.first_meeting().meeting_date
+            self.study_group.end_date = self.study_group.last_meeting().meeting_date
+            self.study_group.save()
 
         if self.reminder_set.filter(sent_at__isnull=False).count() == 1:
             # a reminder has been sent, disassociate it
@@ -347,7 +366,7 @@ class Meeting(LifeTimeTrackingModel):
 
 
     def rsvps(self):
-        rsvp_set = self.rsvp_set.all().select_related('application').order_by('application__name')
+        rsvp_set = self.rsvp_set.all().select_related('application').order_by('application__name').filter(application__deleted_at__isnull=True)
         return {
             'yes': rsvp_set.filter(attending=True),
             'no': rsvp_set.filter(attending=False),
@@ -382,7 +401,7 @@ class Meeting(LifeTimeTrackingModel):
         if self.meeting_datetime() > timezone.now() and self != self.study_group.next_meeting() or self.study_group.draft:
             return 'pending'
 
-        if self.feedback_set.count and (self.follow_up_dismissed or self.follow_up):
+        if self.feedback_set.count() and (self.recap_dismissed or self.recap):
             return 'done'
 
         return 'todo'
@@ -444,15 +463,15 @@ def generate_meeting_reminder(meeting):
     timezone.activate(pytz.timezone(meeting.study_group.timezone))
     with use_language(meeting.study_group.language):
         reminder.email_subject = render_to_string_ctx(
-            'studygroups/email/reminder-subject.txt',
+            'studygroups/email/meeting_reminder-subject.txt',
             context
         ).strip('\n')
         reminder.email_body = render_to_string_ctx(
-            'studygroups/email/reminder.html',
+            'studygroups/email/meeting_reminder.html',
             context
         )
         reminder.sms_body = render_to_string_ctx(
-            'studygroups/email/sms.txt',
+            'studygroups/email/meeting_reminder-sms.txt',
             context
         )
     # TODO - handle SMS reminders that are too long
@@ -474,22 +493,28 @@ class Rsvp(models.Model):
 
 class Feedback(LifeTimeTrackingModel):
 
-    BAD = '1'
+    AWFUL = '1'
     NOT_SO_GOOD = '2'
-    GOOD = '3'
+    OKAY = '3'
     WELL = '4'
     GREAT = '5'
 
     RATING = [
         (GREAT, _('Great')),
         (WELL, _('Pretty well')),
-        (GOOD, _('Good')),
-        (NOT_SO_GOOD, _('Not so great')),
-        (BAD, _('I need some help')),
+        (OKAY, _('Okay')),
+        (NOT_SO_GOOD, _('Not so good')),
+        (AWFUL, _('Awful')),
     ]
 
     study_group_meeting = models.ForeignKey('studygroups.Meeting', on_delete=models.CASCADE) # TODO should this be a OneToOneField?
     feedback = models.TextField(blank=True) # Shared with learners. This is being deprecated, but kept for retaining past data.
-    attendance = models.PositiveIntegerField()
-    reflection = models.TextField(blank=True) # Not shared
-    rating = models.CharField(choices=RATING, max_length=16)
+    attendance = models.PositiveIntegerField(blank=True, null=True)
+    reflection = models.TextField(blank=True) # Shared with team and P2PU
+    rating = models.CharField(choices=RATING, max_length=16, blank=True)
+
+    def reflection_json(self):
+        if self.reflection:
+            return json.loads(self.reflection)
+        else:
+            return {}

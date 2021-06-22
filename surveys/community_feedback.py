@@ -2,7 +2,6 @@ from django.core.serializers.json import DjangoJSONEncoder
 
 from .models import FacilitatorSurveyResponse
 from .models import LearnerSurveyResponse
-from .models import MAX_STAR_RATING
 
 from studygroups.models import StudyGroup
 from .models import learner_survey_summary
@@ -18,6 +17,7 @@ def calculate_course_ratings(course):
     all_surveys = list(map(learner_survey_summary, learner_surveys))
     all_surveys += list(map(facilitator_survey_summary, facilitator_surveys))
     ratings = [s.get('course_rating') for s in all_surveys if s.get('course_rating')]
+
     step_counts = { i: sum(1 for x in ratings if x == i) for i in range(1,6) }
     ratings_sum = sum(ratings)
     total_ratings = len(ratings)

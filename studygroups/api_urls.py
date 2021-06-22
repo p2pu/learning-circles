@@ -1,8 +1,18 @@
 from django.conf.urls import url
+from django.conf.urls import include
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
+from rest_framework.routers import DefaultRouter
 
 from . import views
+
+from .views import drf
+
+router = DefaultRouter()
+router.register(r'meeting_feedback', drf.FeedbackViewSet)
+router.register(r'learningcircle_feedback', drf.StudyGroupRatingViewSet, base_name='learningcircle_feedback')
+
+# TODO split / indicate what is used on www.p2pu.org vs what is used for management UX
 
 urlpatterns = [
     url(r'^learningcircles/$', views.LearningCircleListView.as_view(), name='api_learningcircles'),
@@ -28,5 +38,6 @@ urlpatterns = [
     url(r'^teams/members/$', views.TeamMembershipListView.as_view(), name='api_team_memberships'),
     url(r'^teams/invitations/$', views.TeamInvitationListView.as_view(), name='api_team_invitations'),
     url(r'^facilitator/invitations/$', views.facilitator_invitation_notifications, name='api_facilitator_invitations'),
-    url(r'^announcements/$', views.AnnouncementListView.as_view(), name='api_announcements')
+    url(r'^announcements/$', views.AnnouncementListView.as_view(), name='api_announcements'),
+    url(r'^drf/', include(router.urls)),
 ]

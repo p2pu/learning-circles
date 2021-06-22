@@ -16,6 +16,7 @@ from django.views.generic import ListView
 from django.views.generic import TemplateView
 
 from studygroups.decorators import user_is_staff
+from studygroups.decorators import user_is_group_facilitator
 from studygroups.models import StudyGroup
 
 from .models import FacilitatorSurveyResponse
@@ -23,13 +24,12 @@ from .models import LearnerSurveyResponse
 from .models import get_all_results
 
 
-@method_decorator(user_is_staff, name='dispatch')
 class ExportLearnerSurveysView(ListView):
 
     def get_queryset(self, *args, **kwargs):
         query_set = LearnerSurveyResponse.objects.all()
         study_group_id = kwargs.get('study_group_id')
-        if kwargs.get('study_group_id'):
+        if study_group_id:
             study_group = get_object_or_404(StudyGroup, pk=study_group_id)
             query_set = query_set.filter(study_group=study_group)
         return query_set

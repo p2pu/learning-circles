@@ -223,21 +223,23 @@ def learner_survey_summary(survey_response):
 
 def _new_facilitator_survey_summary(response):
     summary = {}
+    study_group = response.study_group
 
-    # goal - presedence: study_group.goal > response.goal_alt
-    if response.study_group and response.study_group.facilitator_goal:
-        summary['goal'] = response.study_group.facilitator_goal
+    # goal - precedence: study_group.goal > response.goal_alt
+    if study_group and study_group.facilitator_goal:
+        summary['goal'] = study_group.facilitator_goal
     elif response.get_value_by_ref('goal_alt'):
         summary['goal'] = response.get_value_by_ref('goal_alt')
 
-    # goal_rating - presedence: study_group.facilitator_goal_rating > response.goal_rating_alt > repsonse.goal_rating_alt_2
-    if response.study_group and response.study_group.facilitator_goal_rating:
-        summary['goal_rating']: response.study_group.facilitator_goal_rating
+    # goal_rating - precedence: study_group.facilitator_goal_rating > response.goal_rating_alt > repsonse.goal_rating_alt_2
+    if study_group and study_group.facilitator_goal_rating:
+        summary['goal_rating']: study_group.facilitator_goal_rating
     elif response.get_value_by_ref('goal_rating_alt'):
         summary['goal_rating'] = response.get_value_by_ref('goal_rating_alt')
     else:
         summary['goal_rating'] = response.get_value_by_ref('goal_rating_alt_2')
 
+    # grab remaining fields directly from the survey
     survey_fields = [
         "surprise",
         "stories",
@@ -248,35 +250,51 @@ def _new_facilitator_survey_summary(response):
     ]
     for field in survey_fields:
         summary[field] = response.get_value_by_ref(field)
+
+    # study_group.course_rating  > response.course_rating
+    if study_group and study_group.course_rating:
+        summary['course_rating'] = study_group.course_rating
+
+    # course_rating_reason
+    if study_group and study_group.course_rating_reason:
+        summary['course_rating_reason'] = study_group.course_rating_reason
+
     return summary
 
 
 def _old_facilitator_survey_summary(response):
     summary = {}
 
-    # course_rating
-    # TODO rework this logic
-    # 1. Get rating + max rating
-    # 1. if max rating is different, scale answer
-    # 1. if rating is > max rating and quesion is missing, discard
+    # TODO does it make sense to use facilitator goal and rating here?
 
-    # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
-    rating_question = response.get_survey_field("Zm9XlzKGKC66")
-    rating_answer = response.get_response_field("Zm9XlzKGKC66")
-    if rating_answer and 'number' in rating_answer:
-        facilitator_rating = rating_answer['number']
-        if rating_question and 'properties' in rating_question:
-            facilitator_steps = rating_question['properties']['steps']
-            # Normalize the rating if it doesn't match MAX_STAR_RATING
-            if facilitator_steps != MAX_STAR_RATING:
-                facilitator_rating = round(facilitator_rating/facilitator_steps * MAX_STAR_RATING)
-            summary['course_rating'] = facilitator_rating
-        elif facilitator_rating > MAX_STAR_RATING:
-            # if we don't know how many steps the rating has and it exceeds MAX_STAR_RATING
-            # ignore this rating
-            pass
-        else:
-            summary['course_rating'] = facilitator_rating
+    if response.study_group and response.study_group.course_rating:
+        summary['course_rating'] = response.study_group.course_rating
+        summary['course_rating_reason'] = response.study_group.course_rating_reason
+    else:
+        # course_rating
+        # TODO rework this logic
+        # 1. Get rating + max rating
+        # 1. if max rating is different, scale answer
+        # 1. if rating is > max rating and quesion is missing, discard
+
+        # Zm9XlzKGKC66 = "How well did the online course {{hidden:course}} work as a learning circle?"
+        rating_question = response.get_survey_field("Zm9XlzKGKC66")
+        rating_answer = response.get_response_field("Zm9XlzKGKC66")
+        if rating_answer and 'number' in rating_answer:
+            facilitator_rating = rating_answer['number']
+            if rating_question and 'properties' in rating_question:
+                facilitator_steps = rating_question['properties']['steps']
+                # Normalize the rating if it doesn't match MAX_STAR_RATING
+                if facilitator_steps != MAX_STAR_RATING:
+                    facilitator_rating = round(facilitator_rating/facilitator_steps * MAX_STAR_RATING)
+                summary['course_rating'] = facilitator_rating
+            elif facilitator_rating > MAX_STAR_RATING:
+                # if we don't know how many steps the rating has and it exceeds MAX_STAR_RATING
+                # ignore this rating
+                pass
+            else:
+                summary['course_rating'] = facilitator_rating
+    
     return summary
 
 
