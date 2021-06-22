@@ -130,7 +130,7 @@ class ApplicationDelete(FacilitatorRedirectMixin, DeleteView):
     template_name = 'studygroups/confirm_delete.html'
 
 
-@method_decorator(user_is_group_facilitator, name="dispatch")
+@method_decorator(user_is_group_facilitator, name='dispatch')
 class MessageView(DetailView):
     model = Reminder
     template_name = 'studygroups/message_view.html'
