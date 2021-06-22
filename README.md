@@ -31,8 +31,7 @@ You should now be able to open the dashboard on http://localhost:8000/. Any chan
 To run the tests:
 
 ```
-docker-compose -f docker-compose.test.yml up
-docker-compose exec learning-circles /opt/django-venv/bin/python manage.py test
+docker-compose -f docker-compose.test.yml run --rm learning-circles /opt/django-venv/bin/python manage.py test
 ```
 
 To restore the database dump from pg_dump:
