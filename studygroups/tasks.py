@@ -331,7 +331,7 @@ def send_meeting_wrapup(study_group):
 def send_meeting_wrapups():
     now = timezone.now()
     cutoff = now - datetime.timedelta(days=2)
-    study_groups = StudyGroup.objects.filter(end_date__gte=cutoff.date())
+    study_groups = StudyGroup.objects.published().filter(end_date__gte=cutoff.date())
     for sg in study_groups:
         send_meeting_wrapup(sg)
 
