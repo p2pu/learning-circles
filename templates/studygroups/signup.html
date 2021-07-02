@@ -220,10 +220,10 @@
                   <p>{% trans "Signup for this learning circle is not open yet." %}</p>
                 {% else %}
                   <div class="form">
-                    <form action="" method="POST" enctype="multipart/form-data">
+                    <form id="signup-form" action="" method="POST" enctype="multipart/form-data">
                       {% csrf_token %}
                       {{ form|crispy }}
-                      <button type="submit" class="btn p2pu-btn yellow">{% trans "Submit" %}</button>
+                      <button type="submit" class="btn p2pu-btn yellow g-recaptcha" data-sitekey="{{RECAPTCHA_SITE_KEY}}" data-callback='onSubmit' data-action='submit'>{% trans "Submit" %}</button>
                     </form>
                   </div>
                 {% endif %}
@@ -283,4 +283,10 @@
 </script>
 {% render_bundle 'common' %}
 {% render_bundle 'signup' %}
+<script src="https://www.google.com/recaptcha/api.js"></script>
+<script>
+  function onSubmit(token) {
+    document.getElementById("signup-form").submit();
+  }
+</script>
 {% endblock %}
