@@ -52,6 +52,7 @@ class SignupView(FormView):
 
 
     def form_valid(self, form):
+        raise Exception('disable signup for now')
         user = form.save(commit=False)
         user = create_user(user.email, user.first_name, user.last_name, form.cleaned_data['password1'], form.cleaned_data['communication_opt_in'], form.cleaned_data['interested_in_learning'], )
         login(self.request, user)
