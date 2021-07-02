@@ -25,11 +25,11 @@
         </div>
         <div class="col-12 col-md-5" data-aos="fade-left">
           <div class="form">
-            <form action="" method="POST" enctype="multipart/form-data">
+            <form id="registration-form" action="" method="POST" enctype="multipart/form-data">
               {% csrf_token %}
               {{ form|crispy }}
               <p>P2PU values your privacy and will never sell your data. By signing up, you accept our <a href="https://www.p2pu.org/en/terms/">terms of service</a>.</p>
-              <button type="submit" class="btn p2pu-btn light">{% trans "Submit" %}</button>
+              <button type="submit" class="btn p2pu-btn light g-recaptcha" data-sitekey="{{RECAPTCHA_SITE_KEY}}" data-callback='onSubmit' data-action='submit'>{% trans "Submit" %}</button>
             </form>
           </div>
         </div>
@@ -37,4 +37,14 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://www.google.com/recaptcha/api.js"></script>
+<script>
+  function onSubmit(token) {
+    document.getElementById("registration-form").submit();
+  }
+</script>
+
 {% endblock %}

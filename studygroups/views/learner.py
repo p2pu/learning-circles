@@ -1,5 +1,6 @@
 import datetime
 import dateutil.parser
+import requests
 
 from django.shortcuts import render, get_object_or_404
 from studygroups.utils import render_to_string_ctx
@@ -93,8 +94,15 @@ def signup(request, location, study_group_id):
         raise http.Http404(_("Learning circle does not exist"))
 
     if request.method == 'POST':
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        data = {
+            'secret': settings.RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        captcha_result = r.json()
         form = ApplicationForm(request.POST, initial={'study_group': study_group})
-        if form.is_valid() and study_group.signup_open == True and study_group.draft == False:
+        if form.is_valid() and study_group.signup_open == True and study_group.draft == False and captcha_result.get('success'):
             application = form.save(commit=False)
             if application.email and Application.objects.active().filter(email__iexact=application.email, study_group=study_group).exists():
                 old_application = Application.objects.active().filter(email__iexact=application.email, study_group=study_group).first()
@@ -124,6 +132,7 @@ def signup(request, location, study_group_id):
         'meetings': meetings,
         'mapbox_token': settings.MAPBOX_TOKEN,
         'completed': last_meeting is not None and last_meeting.meeting_date < datetime.date.today(),
+        'RECAPTCHA_SITE_KEY': settings.RECAPTCHA_SITE_KEY,
     }
 
     #if study_group.venue_address:

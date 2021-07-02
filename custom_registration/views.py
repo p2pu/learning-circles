@@ -11,6 +11,7 @@ from django.views.generic.edit import FormView
 from django.views.generic.edit import UpdateView
 from django.views.generic.edit import DeleteView
 from django.views.generic.base import TemplateView
+from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth.forms import AuthenticationForm
@@ -22,6 +23,7 @@ from django.http import HttpResponseRedirect
 import json
 import string
 import random
+import requests
 
 from studygroups.models import TeamMembership
 from studygroups.models import Profile
@@ -44,15 +46,28 @@ class SignupView(FormView):
     form_class = SignupForm
     template_name = 'custom_registration/signup.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['RECAPTCHA_SITE_KEY'] = settings.RECAPTCHA_SITE_KEY
+        return context
+
     def get_success_url(self):
         # if there is a next URL defined, use that
         if 'next' in self.request.GET:
             return self.request.GET['next']
         return reverse('studygroups_facilitator')
 
-
     def form_valid(self, form):
-        raise Exception('disable signup for now')
+        recaptcha_response = self.request.POST.get('g-recaptcha-response')
+        data = {
+            'secret': settings.RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        captcha_result = r.json()
+        if not captcha_result.get('success'):
+            return json_response(request, {"status": "error", "errors": '1011010010010010111'})
+
         user = form.save(commit=False)
         user = create_user(user.email, user.first_name, user.last_name, form.cleaned_data['password1'], form.cleaned_data['communication_opt_in'], form.cleaned_data['interested_in_learning'], )
         login(self.request, user)
@@ -62,6 +77,7 @@ class SignupView(FormView):
 @method_decorator(user_is_not_logged_in, name='dispatch')
 class AjaxSignupView(View):
     def post(self, request):
+        raise Exception('disable signup for now')
         def _user_check():
             def _validate(value):
                 error = _('A user with that email address already exists.')
