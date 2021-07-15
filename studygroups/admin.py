@@ -70,8 +70,9 @@ class ReminderAdmin(admin.ModelAdmin):
 
 class StudyGroupInline(admin.TabularInline):
     model = StudyGroup
-    fields = ['venue_name', 'city', 'start_date', 'day']
+    fields = ['id', 'venue_name', 'city', 'start_date', 'day']
     readonly_fields = fields
+
 
     def get_queryset(self, request):
         return super().get_queryset(request).active()
