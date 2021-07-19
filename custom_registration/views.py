@@ -66,7 +66,8 @@ class SignupView(FormView):
         r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
         captcha_result = r.json()
         if not captcha_result.get('success'):
-            return json_response(request, {"status": "error", "errors": '1011010010010010111'})
+            # TODO track metric somewhere?
+            return json_response(self.request, {"status": "error", "errors": '1011010010010010111'})
 
         user = form.save(commit=False)
         user = create_user(user.email, user.first_name, user.last_name, form.cleaned_data['password1'], form.cleaned_data['communication_opt_in'], form.cleaned_data['interested_in_learning'], )
@@ -77,7 +78,6 @@ class SignupView(FormView):
 @method_decorator(user_is_not_logged_in, name='dispatch')
 class AjaxSignupView(View):
     def post(self, request):
-        raise Exception('disable signup for now')
         def _user_check():
             def _validate(value):
                 error = _('A user with that email address already exists.')
@@ -94,9 +94,22 @@ class AjaxSignupView(View):
             "last_name": schema.text(required=True),
             "password": schema.text(required=True),
             "communication_opt_in": schema.boolean(required=True),
+            "g-recaptcha-response": schema.text(required=True),
         }
         data = json.loads(request.body)
         data, errors = schema.validate(post_schema, data)
+
+        recaptcha_response = data.get('g-recaptcha-response')
+        recaptcha_data = {
+            'secret': settings.RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=recaptcha_data)
+        captcha_result = r.json()
+        if not captcha_result.get('success'):
+            # TODO track metric somewhere?
+            return json_response(request, {"status": "error", "errors": '1011010010010010111'})
+
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
