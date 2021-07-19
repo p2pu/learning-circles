@@ -223,6 +223,7 @@
                     <form id="signup-form" action="" method="POST" enctype="multipart/form-data">
                       {% csrf_token %}
                       {{ form|crispy }}
+                      <p class="text-muted">This site is protected by reCAPTCHA and the Google <a href="https://policies.google.com/privacy">Privacy Policy</a> and <a href="https://policies.google.com/terms">Terms of Service</a> apply.</p>
                       <button type="submit" class="btn p2pu-btn yellow g-recaptcha" data-sitekey="{{RECAPTCHA_SITE_KEY}}" data-callback='onSubmit' data-action='submit'>{% trans "Submit" %}</button>
                     </form>
                   </div>
