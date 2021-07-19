@@ -288,8 +288,11 @@
           <div class="col-lg-4">{{ learner.name }}
           </div>
           <div class="col-lg-5">
-            {% if learner.email %} &lt;{{learner.email}}&gt;{% endif %}
-            {% if learner.mobile %}</br>{{learner.mobile}}{% endif %}
+            {% if learner.anonymized %}contact removed
+            {% else %}
+              {% if learner.email %} &lt;{{learner.email}}&gt;{% endif %}
+              {% if learner.mobile %}</br>{{learner.mobile}}{% endif %}
+            {% endif %}
           </div>
           <div class="col-lg-3">
             <a class="btn-icon p2pu-btn btn-primary" href="{% url 'studygroups_application_edit' study_group.id learner.id %}"><i class="fa fa-edit"></i></a>
