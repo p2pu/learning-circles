@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
 from django.urls import reverse
 
-from studygroups.models import StudyGroup, Meeting, Reminder, Team, TeamMembership
+from studygroups.models import StudyGroup, Meeting, Reminder, Team, TeamMembership, Application
 from studygroups.models import report_data
 from studygroups.models import community_digest_data
 from studygroups.models import get_study_group_organizers
@@ -548,3 +548,20 @@ def refresh_instagram_token():
     else:
         logger.error('Could not refresh Instagram token: {}'.format(response))
 
+
+@shared_task
+def anonymize_signups():
+    # find all signups where the learning circle ended more than 3 months ago
+    three_months_ago = timezone.now() - datetime.timedelta(days=90)
+    # TODO for now only EU teams
+    eu_teams_ids = [33, 34, 35, 36, 37]
+    facilitators = TeamMembership.objects.active().filter(team_id__in=eu_teams_ids).values_list('user', flat=True)
+    applications = Application.objects.filter(
+        study_group__end_date__lt=three_months_ago,
+        anonymized=False,
+        communications_opt_in=False,
+        study_group__facilitator__in=facilitators
+    )
+
+    for application in applications:
+        application.anonymize()
