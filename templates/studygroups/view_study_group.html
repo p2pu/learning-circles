@@ -127,10 +127,10 @@
                     <ul class="list-unstyled">
                       {% with rsvps=meeting.rsvps %}
                         {% for rsvp in rsvps.yes %}
-                          <li class="rsvp-yes">{{rsvp.application.name}}</li>
+                          <li class="rsvp-yes">{% if rsvp.application.anonymized %}{% trans "Personal information removed" %}{% else %}{{rsvp.application.name}}{% endif %}</li>
                         {% endfor %}
                         {% for rsvp in rsvps.no %}
-                          <li class="rsvp-no">{{rsvp.application.name}}</li>
+                          <li class="rsvp-no">{% if rsvp.application.anonymized %}{% trans "Personal information removed" %}{% else %}{{rsvp.application.name}}{% endif %}</li>
                         {% endfor %}
                         {% if rsvps.yes|length == 0 and rsvps.no|length == 0 %}
                           <li>No RSVPs yet</li>
@@ -138,7 +138,7 @@
                       {% endwith %}
                       {% with unknown_rsvps=meeting.rsvp_pending %}
                         {% for learner in unknown_rsvps %}
-                         <li class="rsvp-unknown">{{learner.name}}</li>
+                          <li class="rsvp-unknown">{% if learner.anonymized %}{% trans "Personal information removed" %}{% else %}{{learner.name}}{% endif %}</li>
                         {% endfor %}
                       {% endwith %}
                     </ul>
@@ -272,7 +272,7 @@
     </div>
     <div class="col-lg-5">
       <div class="card">
-        <div class="card-title">Learners</div>
+        <div class="card-title">Learners ({{study_group.application_set.active.count}})</div>
         <div class="row no-gutters retable-heading">
           <div class="col-lg-4">
             {% trans "Name" %}
@@ -285,11 +285,11 @@
         </div>
         {% for learner in study_group.application_set.active %}
         <div class="row no-gutters retable-row">
-          <div class="col-lg-4">{{ learner.name }}
+          <div class="col-lg-4">  
+            {% if learner.anonymized %}Personal information removed{% else %}{{ learner.name }}{% endif %}
           </div>
           <div class="col-lg-5">
-            {% if learner.anonymized %}contact removed
-            {% else %}
+            {% if learner.anonymized %}n/a{% else %}
               {% if learner.email %} &lt;{{learner.email}}&gt;{% endif %}
               {% if learner.mobile %}</br>{{learner.mobile}}{% endif %}
             {% endif %}
