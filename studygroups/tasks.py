@@ -555,12 +555,12 @@ def anonymize_signups():
     three_months_ago = timezone.now() - datetime.timedelta(days=90)
     # TODO for now only EU teams
     eu_teams_ids = [33, 34, 35, 36, 37]
-    facilitators = TeamMembership.objects().active().filter(team_id__in=eu_teams).values_list('user', flat=True)
+    facilitators = TeamMembership.objects.active().filter(team_id__in=eu_teams_ids).values_list('user', flat=True)
     applications = Application.objects.filter(
         study_group__end_date__lt=three_months_ago,
         anonymized=False,
         communications_opt_in=False,
-        facilitator__in=facilitators
+        study_group__facilitator__in=facilitators
     )
 
     for application in applications:
