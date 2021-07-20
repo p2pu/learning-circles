@@ -21,10 +21,10 @@ from django.utils.decorators import method_decorator
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
+
 import re
 import json
 import datetime
-import requests
 import logging
 
 from tinymce.widgets import TinyMCE
@@ -275,6 +275,7 @@ class StudyGroupCreate(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(StudyGroupCreate, self).get_context_data(**kwargs)
+        context['RECAPTCHA_SITE_KEY'] = settings.RECAPTCHA_SITE_KEY # required for inline signup
         context['hide_footer'] = True
         return context
 
