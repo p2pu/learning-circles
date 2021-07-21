@@ -240,6 +240,7 @@ class Application(LifeTimeTrackingModel):
     goal_met = models.SmallIntegerField(blank=True, null=True)
     accepted_at = models.DateTimeField(blank=True, null=True)
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    anonymized = models.BooleanField(default=False)
 
     def __str__(self):
         return "{0} <{1}>".format(self.name, self.email if self.email else self.mobile)
@@ -264,6 +265,7 @@ class Application(LifeTimeTrackingModel):
         self.name = 'Anonymous ' + random.choice(['Penguin', 'Albatross', 'Elephant', 'Dassie', 'Lion', 'Sponge', 'Giraffe', 'Hippo', 'Leopard', 'Buffalo', 'Crab', 'Snail'])
         email_part = "".join([random.choice(string.digits+string.ascii_letters) for i in range(12)])
         self.email = 'devnull.{}@localhost'.format(email_part)
+        self.anonymized = True
         self.save()
 
     DIGITAL_LITERACY_QUESTIONS = {

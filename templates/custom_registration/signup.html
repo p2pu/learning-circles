@@ -29,6 +29,7 @@
               {% csrf_token %}
               {{ form|crispy }}
               <p>P2PU values your privacy and will never sell your data. By signing up, you accept our <a href="https://www.p2pu.org/en/terms/">terms of service</a>.</p>
+              <p class="text-muted"><small>This site is protected by reCAPTCHA and the Google <a href="https://policies.google.com/privacy">Privacy Policy</a> and <a href="https://policies.google.com/terms">Terms of Service</a> apply.</small</p>
               <button type="submit" class="btn p2pu-btn light g-recaptcha" data-sitekey="{{RECAPTCHA_SITE_KEY}}" data-callback='onSubmit' data-action='submit'>{% trans "Submit" %}</button>
             </form>
           </div>

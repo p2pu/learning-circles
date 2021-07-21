@@ -275,6 +275,10 @@ CELERYBEAT_SCHEDULE = {
     'refresh_instagram_token': {
         'task': 'studygroups.tasks.refresh_instagram_token',
         'schedule': crontab(day_of_month=[1], hour=1, minute=0)
+    },
+    'anonymize_signups': {
+        'task': 'studygroups.tasks.anonymize_signups',
+        'schedule': crontab(hour=23, minute=0),
     }
 }
 
