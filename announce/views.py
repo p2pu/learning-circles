@@ -48,3 +48,13 @@ def announce_webhook(request):
     send_announcement.delay(from_, subject, body_text, body_html)
 
     return http.HttpResponse(status=200)
+
+
+def mailchimp_unsubscribe(request):
+    # make sure user is is unsubscribed
+    pass
+
+
+def mailchimp_subscribe(request):
+    # if communications_optin was false, change it? Is that a good idea?
+    pass

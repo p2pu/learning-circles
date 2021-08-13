@@ -109,4 +109,5 @@ def clean_members(users):
         logger.error("Cannot decode json, got %s" % response.text)
 
 
-
+def batch_add_members(users):
+    pass

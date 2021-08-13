@@ -69,6 +69,9 @@ class SignupView(FormView):
             # TODO track metric somewhere?
             return json_response(self.request, {"status": "error", "errors": '1011010010010010111'})
 
+        # TODO
+        # Add to mailchimp (maybe a delayed task)
+
         user = form.save(commit=False)
         user = create_user(user.email, user.first_name, user.last_name, form.cleaned_data['password1'], form.cleaned_data['communication_opt_in'], form.cleaned_data['interested_in_learning'], )
         login(self.request, user)
@@ -115,6 +118,9 @@ class AjaxSignupView(View):
 
         user = create_user(data['email'], data['first_name'], data['last_name'], data['password'], data.get('communication_opt_in', False))
         login(request, user)
+
+        # TODO
+        # Add to mailchimp (maybe a delayed task)
         return json_response(request, { "status": "created", "user": user.username });
 
 
@@ -317,6 +323,8 @@ class AccountDeleteView(DeleteView):
 
         # delete discourse user if any
         anonymize_discourse_user(user)
+
+        # TODO delete user from mailchimp of subscribed
 
         messages.success(self.request, _('Your account has been deleted.'))
         # log user out

@@ -10,6 +10,11 @@ class Command(BaseCommand):
     help = 'Ensure all learning circles have English country name'
 
     def handle(self, *args, **options):
+
+        # get all mailchimp users
+        # make sure no users with communication_opt_in == False is in mailchimp
+        # add all members with communicagtion_opt_in == True to mailchimp
+
         # Download mailchimp users
         mailchimp_members = list_members()
         filter_subscribed = lambda x: x.get('status') not in ['unsubscribed', 'cleaned']
