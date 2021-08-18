@@ -109,5 +109,28 @@ def clean_members(users):
         logger.error("Cannot decode json, got %s" % response.text)
 
 
-def batch_add_members(users):
-    pass
+def batch_subscribe(users):
+    member_json = lambda user: { 
+        "email_address": user.email,
+        "email_type": "html",
+        "status": "subscribed",
+    }
+
+    # POST /lists/{list_id}
+    api_url = '{0}/lists/{1}'.format(
+        settings.MAILCHIMP_API_ROOT,
+        settings.MAILCHIMP_LIST_ID
+    )
+
+    # NOTE: can only add 500 members at a time
+    for index in range(0, len(users), 500):
+        body = {
+            "members": list(map(member_json, users[index:index+500)),
+            "update_existing": True,
+        }
+        response = requests.post(
+            api_url, 
+            auth=('apikey', settings.MAILCHIMP_API_KEY),
+            json=body
+        )
+    # TODO report error/success

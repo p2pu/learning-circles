@@ -49,7 +49,7 @@ def send_announcement(sender, subject, body_text, body_html):
     auth = HTTPBasicAuth('api', settings.MAILGUN_API_KEY)
 
     for index in range(0, len(users), batch_size):
-        to = users[index:index+500]
+        to = users[index:index+batch_size]
 
         post_data = [
             ('from', sender),
