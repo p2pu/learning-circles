@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 
 from .mailgun import check_webhook_signature
 from .tasks import send_announcement
+from studygroups.models import Profile
 
 from email.utils import parseaddr, formataddr
 import logging
@@ -50,11 +51,26 @@ def announce_webhook(request):
     return http.HttpResponse(status=200)
 
 
-def mailchimp_unsubscribe(request):
-    # make sure user is is unsubscribed
-    pass
+@csrf_exempt
+@require_http_methods(['POST'])
+def mailchimp_webhook(request, webhook_secret):
+    """ change profile.communications_opt_in if subscriber has an account """
 
+    if webhook_secret != settings.MAILCHIMP_WEBHOOK_SECRET:
+        return http.HttpResponse(status=200)
 
-def mailchimp_subscribe(request):
-    # if communications_optin was false, change it? Is that a good idea?
-    pass
+    list_id = request.POST.get('data[id]')
+    if list_id != settings.MAILCHIMP_LIST_ID:
+        return http.HttpResponse(status=200)
+
+    email = request.POST.get('data[email]')
+    if Users.objects.filter(email__iexact=email).count() == 0:
+        return http.HttpResponse(status=200)
+
+    profile = Profile.objects.get(user__email=email)
+    if request.POST.get('type') == 'unsubscribe':
+        profile.communication_opt_in = False
+    elif request.POST.get('type') == 'subscribe':
+        profile.communication_opt_in = True
+    profile.save()
+    return http.HttpResponse(status=200)
