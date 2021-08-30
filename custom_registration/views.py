@@ -256,6 +256,7 @@ class AccountSettingsView(TemplateView):
 
 
     def post(self, request, *args, **kwargs):
+        # TODO update membership to mailchimp mailing list
         if 'team_membership' in request.POST:
             team_membership = TeamMembership.objects.active().filter(user=request.user).first()
             team_membership_form = self.team_membership_form(request.POST, prefix='team_membership', instance=team_membership)
@@ -324,7 +325,7 @@ class AccountDeleteView(DeleteView):
         # delete discourse user if any
         anonymize_discourse_user(user)
 
-        # TODO delete user from mailchimp of subscribed
+        # TODO delete user from mailchimp if subscribed
 
         messages.success(self.request, _('Your account has been deleted.'))
         # log user out
