@@ -39,6 +39,7 @@ from .forms import ProfileForm
 from .forms import UserForm
 from .decorators import user_is_not_logged_in
 from discourse_sso.utils import anonymize_discourse_user
+from announce.tasks import hard_delete_mailchimp_user
 
 
 @method_decorator(user_is_not_logged_in, name='dispatch')
@@ -68,9 +69,6 @@ class SignupView(FormView):
         if not captcha_result.get('success'):
             # TODO track metric somewhere?
             return json_response(self.request, {"status": "error", "errors": '1011010010010010111'})
-
-        # TODO
-        # Add to mailchimp (maybe a delayed task)
 
         user = form.save(commit=False)
         user = create_user(user.email, user.first_name, user.last_name, form.cleaned_data['password1'], form.cleaned_data['communication_opt_in'], form.cleaned_data['interested_in_learning'], )
@@ -119,8 +117,6 @@ class AjaxSignupView(View):
         user = create_user(data['email'], data['first_name'], data['last_name'], data['password'], data.get('communication_opt_in', False))
         login(request, user)
 
-        # TODO
-        # Add to mailchimp (maybe a delayed task)
         return json_response(request, { "status": "created", "user": user.username });
 
 
@@ -256,7 +252,6 @@ class AccountSettingsView(TemplateView):
 
 
     def post(self, request, *args, **kwargs):
-        # TODO update membership to mailchimp mailing list
         if 'team_membership' in request.POST:
             team_membership = TeamMembership.objects.active().filter(user=request.user).first()
             team_membership_form = self.team_membership_form(request.POST, prefix='team_membership', instance=team_membership)
@@ -302,6 +297,9 @@ class AccountDeleteView(DeleteView):
         random_username = "".join([random.choice(string.digits+string.ascii_letters) for i in range(12)])
         while User.objects.filter(username=random_username).exists():
             random_username = "".join([random.choice(string.digits+string.ascii_letters) for i in range(12)])
+
+        email_for_mailchimp = user.email
+       
         user.email = 'devnull.{}@localhost'.format(random_username)
         user.username = random_username
         user.save()
@@ -325,7 +323,9 @@ class AccountDeleteView(DeleteView):
         # delete discourse user if any
         anonymize_discourse_user(user)
 
-        # TODO delete user from mailchimp if subscribed
+        # delete user from mailchimp if subscribed
+        if profile.communication_opt_in:
+            hard_delete_mailchimp_user(user.email)
 
         messages.success(self.request, _('Your account has been deleted.'))
         # log user out

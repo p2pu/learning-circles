@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import User
 
-from announce.mailchimp import clean_members, list_members, batch_subscribe
+from announce.mailchimp import archive_members, list_members, batch_subscribe
 from studygroups.models import Profile
 
 import requests
@@ -22,7 +22,7 @@ class Command(BaseCommand):
         unsubscribed_users = User.objects.filter(profile__communication_opt_in=False, is_active=True)
         to_unsub = list(filter(lambda u: u.email.lower() in emails, unsubscribed_users))
         print('{} users will be removed from the mailchimp list'.format(len(to_unsub)))
-        clean_members(to_unsub)
+        archive_members(to_unsub)
 
         # add all members with communicagtion_opt_in == True to mailchimp
         subscribed = User.objects.filter(profile__communication_opt_in=True, is_active=True)

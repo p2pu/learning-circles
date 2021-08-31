@@ -6,13 +6,13 @@ from django.urls import reverse
 from studygroups.utils import render_to_string_ctx
 from django.utils.translation import ugettext_lazy as _
 
-from studygroups.models import Profile
-
 import requests
 from requests.auth import HTTPBasicAuth
 import re
 import json
 import logging
+
+from . import mailchimp
 
 logger = logging.getLogger(__name__)
 
@@ -70,3 +70,16 @@ def send_announcement(sender, subject, body_text, body_html):
         if resp.status_code != 200:
             logger.error('Could not send mailgun batch email')
 
+
+@shared_task
+def update_mailchimp_subscription(user_id):
+    user = User.objects.get(pk=user_id)
+    if user.profile.communication_opt_in:
+        mailchimp.add_member(user)
+    else:
+        mailchimp.archive_member(user)
+
+
+@shared_task
+def hard_delete_mailchimp_user(email):
+    mailchimp.delete_member(email)

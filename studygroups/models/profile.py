@@ -1,7 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save, post_init
 
-# TODO move to custom_registration/models.py
+from announce.tasks import update_mailchimp_subscription
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     mailing_list_signup = models.BooleanField(default=False) # TODO remove this
@@ -19,8 +22,25 @@ class Profile(models.Model):
     place_id = models.CharField(max_length=256, blank=True) # Algolia place_id
 
 
+    @staticmethod
+    def post_save(sender, **kwargs):
+        instance = kwargs.get('instance')
+        created = kwargs.get('created')
+        if created or instance._communication_opt_in_old != instance.communication_opt_in:
+            # NOTE user will be 'removed' from mailchimp if they create an account and didn't 
+            # opt in. This is to cater for situations where a user previously subscribed to the
+            # newsletter another way, but is only creating an account now
+            update_mailchimp_subscription(instance.user_id)
+            instance._communication_opt_in_old = instance.communication_opt_in
+
+    @staticmethod
+    def remember_state(sender, **kwargs):
+        instance = kwargs.get('instance')
+        instance._communication_opt_in_old = instance.communication_opt_in
+
     def __str__(self):
         return self.user.__str__()
 
 
-
+post_save.connect(Profile.post_save, sender=Profile)
+post_init.connect(Profile.remember_state, sender=Profile)

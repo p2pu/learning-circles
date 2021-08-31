@@ -41,13 +41,16 @@ def list_members():
 
 
 def add_member(user):
-    api_url = '{0}lists/{1}/members'.format(
-        settings.MAILCHIMP_API_ROOT, settings.MAILCHIMP_LIST_ID
+    # PUT /lists/{list_id}/members/{subscriber_hash}
+    api_url = '{0}lists/{1}/members/{2}'.format(
+        settings.MAILCHIMP_API_ROOT,
+        settings.MAILCHIMP_LIST_ID,
+        hashlib.md5(user.email.lower().encode()).hexdigest()
     )
 
-    # POST /lists/{list_id}/members
     data = {
         'email_address': user.email,
+        'status_if_new': 'subscribed',
         'status': 'subscribed',
         'timestamp_signup': timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
         "merge_fields": {
@@ -56,7 +59,7 @@ def add_member(user):
         },
     }
 
-    response = requests.post(
+    response = requests.put(
         api_url, 
         auth=('apikey', settings.MAILCHIMP_API_KEY),
         json=data
@@ -72,18 +75,63 @@ def add_member(user):
         logger.error("Cannot decode json, got %s" % response.text)
 
 
-def clean_members(users):
-    # Update status to 'cleaned'
-    # PATCH /3.0/lists/<list-id>/members/<email-md5> {"status": "cleaned"}
+def delete_member(email):
+    # NOTE: Only do this for deleted accounts!!
+    # POST /lists/{list_id}/members/{subscriber_hash}/actions/delete-permanent
+    api_url = '{0}/lists/{1}/members/{2}/actions/delete-permanent'.format(
+        settings.MAILCHIMP_API_ROOT,
+        settings.MAILCHIMP_LIST_ID,
+        hashlib.md5(email.lower().encode()).hexdigest()
+    )
+    response = requests.post(
+        api_url, 
+        auth=('apikey', settings.MAILCHIMP_API_KEY),
+    )
+    try:
+        response.raise_for_status()
+        body = response.json()
+        print(body)
+    except requests.exceptions.HTTPError as err:
+        logger.error("Error: {} {}".format(str(response.status_code), err))
+        logger.error(json.dumps(response.json(), indent=4))
+    except ValueError:
+        logger.error("Cannot decode json, got %s" % response.text)
+
+
+def archive_member(user):
+    # DELETE /lists/{list_id}/members/{subscriber_hash}
+    api_url = '{0}/lists/{1}/members/{2}'.format(
+        settings.MAILCHIMP_API_ROOT,
+        settings.MAILCHIMP_LIST_ID,
+        hashlib.md5(user.email.lower().encode()).hexdigest()
+    )
+    response = requests.delete(
+        api_url, 
+        auth=('apikey', settings.MAILCHIMP_API_KEY),
+    )
+    try:
+        response.raise_for_status()
+        body = response.json()
+        print(body)
+    except requests.exceptions.HTTPError as err:
+        logger.error("Error: {} {}".format(str(response.status_code), err))
+        logger.error(json.dumps(response.json(), indent=4))
+    except ValueError:
+        logger.error("Cannot decode json, got %s" % response.text)
+
+
+def archive_members(users):
+    # TODO this will fail above a certain count of users
+    # DELETE /lists/<list-id>/members/<email-md5>
     
     print(len(users))
     make_operation = lambda user: {
-        "method": "PATCH",
+        "method": "DELETE",
         "path": "/lists/{0}/members/{1}".format(
             settings.MAILCHIMP_LIST_ID,
             hashlib.md5(user.email.lower().encode()).hexdigest()
         ),
-        "body": '{"status": "cleaned"}'
+        #"body": '{"status": "cleaned"}'
     } 
     batch = {
         "operations": [make_operation(user) for user in users]
@@ -125,12 +173,15 @@ def batch_subscribe(users):
     # NOTE: can only add 500 members at a time
     for index in range(0, len(users), 500):
         body = {
-            "members": list(map(member_json, users[index:index+500)),
+            "members": list(map(member_json, users[index:index+500])),
             "update_existing": True,
         }
-        response = requests.post(
-            api_url, 
-            auth=('apikey', settings.MAILCHIMP_API_KEY),
-            json=body
-        )
-    # TODO report error/success
+        try:
+            response = requests.post(
+                api_url, 
+                auth=('apikey', settings.MAILCHIMP_API_KEY),
+                json=body
+            )
+        except requests.exceptions.HTTPError as err:
+            logger.error("Error: {} {}".format(str(response.status_code), err))
+            logger.error(json.dumps(response.json(), indent=4))
