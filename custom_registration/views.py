@@ -39,6 +39,7 @@ from .forms import ProfileForm
 from .forms import UserForm
 from .decorators import user_is_not_logged_in
 from discourse_sso.utils import anonymize_discourse_user
+from announce.tasks import hard_delete_mailchimp_user
 
 
 @method_decorator(user_is_not_logged_in, name='dispatch')
@@ -115,6 +116,7 @@ class AjaxSignupView(View):
 
         user = create_user(data['email'], data['first_name'], data['last_name'], data['password'], data.get('communication_opt_in', False))
         login(request, user)
+
         return json_response(request, { "status": "created", "user": user.username });
 
 
@@ -295,6 +297,9 @@ class AccountDeleteView(DeleteView):
         random_username = "".join([random.choice(string.digits+string.ascii_letters) for i in range(12)])
         while User.objects.filter(username=random_username).exists():
             random_username = "".join([random.choice(string.digits+string.ascii_letters) for i in range(12)])
+
+        email_for_mailchimp = user.email
+       
         user.email = 'devnull.{}@localhost'.format(random_username)
         user.username = random_username
         user.save()
@@ -317,6 +322,10 @@ class AccountDeleteView(DeleteView):
 
         # delete discourse user if any
         anonymize_discourse_user(user)
+
+        # delete user from mailchimp if subscribed
+        if profile.communication_opt_in:
+            hard_delete_mailchimp_user(email_for_mailchimp)
 
         messages.success(self.request, _('Your account has been deleted.'))
         # log user out
