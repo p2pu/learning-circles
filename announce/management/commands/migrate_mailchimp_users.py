@@ -25,13 +25,3 @@ class Command(BaseCommand):
         to_sub = list(filter(lambda u: u.email.lower() not in emails, subscribed))
         print('{} users will be added to the mailchimp list'.format(len(to_sub)))
         batch_subscribe(to_sub)
-
-        # update profile.communication_opt_in = True for users subscribed to the mailchimp newsletter
-        unsubscribed_users = User.objects.filter(profile__communication_opt_in=False, is_active=True, profile__email_confirmed_at__isnull=False)
-        to_update = list(filter(lambda u: u.email.lower() in emails, unsubscribed_users))
-        for user in to_update:
-            user.profile.communication_opt_in = True
-            user.profile.save()
-
-
-
