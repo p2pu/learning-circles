@@ -58,6 +58,9 @@ def mailchimp_webhook(request, webhook_secret):
     if request.method == 'GET':
         return http.HttpResponse(status=200)
 
+    import json
+    logger.error(json.dumps(request.POST))
+
     if webhook_secret != settings.MAILCHIMP_WEBHOOK_SECRET:
         return http.HttpResponse(status=404)
 
