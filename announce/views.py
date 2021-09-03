@@ -52,9 +52,11 @@ def announce_webhook(request):
 
 
 @csrf_exempt
-@require_http_methods(['POST'])
 def mailchimp_webhook(request, webhook_secret):
     """ change profile.communications_opt_in if subscriber has an account """
+
+    if request.method == 'GET':
+        return http.HttpResponse(status=200)
 
     if webhook_secret != settings.MAILCHIMP_WEBHOOK_SECRET:
         return http.HttpResponse(status=404)
