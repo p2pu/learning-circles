@@ -325,7 +325,7 @@ class AccountDeleteView(DeleteView):
 
         # delete user from mailchimp if subscribed
         if profile.communication_opt_in:
-            hard_delete_mailchimp_user(user.email)
+            hard_delete_mailchimp_user(email_for_mailchimp)
 
         messages.success(self.request, _('Your account has been deleted.'))
         # log user out
