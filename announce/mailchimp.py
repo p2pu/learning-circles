@@ -29,7 +29,7 @@ def list_members():
     total = response.json().get('total_items')
 
     for offset in range(count, total, count):
-        print('Fetching members {} to {}'.format(offset, offset+count))
+        #print('Fetching members {} to {}'.format(offset, offset+count))
         params['offset'] = offset
         response = requests.get(
             api_url, 
@@ -89,8 +89,6 @@ def delete_member(email):
     )
     try:
         response.raise_for_status()
-        body = response.json()
-        print(body)
     except requests.exceptions.HTTPError as err:
         logger.error("Error: {} {}".format(str(response.status_code), err))
         logger.error(json.dumps(response.json(), indent=4))
@@ -112,7 +110,6 @@ def archive_member(user):
     try:
         response.raise_for_status()
         body = response.json()
-        print(body)
     except requests.exceptions.HTTPError as err:
         logger.error("Error: {} {}".format(str(response.status_code), err))
         logger.error(json.dumps(response.json(), indent=4))
@@ -124,7 +121,6 @@ def archive_members(users):
     # TODO this will fail above a certain count of users
     # DELETE /lists/<list-id>/members/<email-md5>
     
-    print(len(users))
     make_operation = lambda user: {
         "method": "DELETE",
         "path": "/lists/{0}/members/{1}".format(
@@ -136,8 +132,6 @@ def archive_members(users):
     batch = {
         "operations": [make_operation(user) for user in users]
     }
-    from pprint import pprint
-    pprint(batch)
 
     api_url = '{0}batches'.format(settings.MAILCHIMP_API_ROOT)
     response = requests.post(
@@ -149,7 +143,6 @@ def archive_members(users):
     try:
         response.raise_for_status()
         body = response.json()
-        print(body)
     except requests.exceptions.HTTPError as err:
         logger.error("Error: {} {}".format(str(response.status_code), err))
         logger.error(json.dumps(response.json(), indent=4))
