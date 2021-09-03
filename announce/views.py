@@ -64,7 +64,7 @@ def mailchimp_webhook(request, webhook_secret):
     if webhook_secret != settings.MAILCHIMP_WEBHOOK_SECRET:
         return http.HttpResponse(status=404)
 
-    list_id = request.POST.get('data[id]')
+    list_id = request.POST.get('data[list_id]')
     if list_id != settings.MAILCHIMP_LIST_ID:
         logger.warning('mailchimp webhook called with invalid list id')
         return http.HttpResponse(status=404)
