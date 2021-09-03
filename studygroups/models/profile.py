@@ -25,11 +25,15 @@ class Profile(models.Model):
     @staticmethod
     def post_save(sender, **kwargs):
         instance = kwargs.get('instance')
-        created = kwargs.get('created')
-        if created or instance._communication_opt_in_old != instance.communication_opt_in:
-            # NOTE user will be 'removed' from mailchimp if they create an account and didn't 
-            # opt in. This is to cater for situations where a user previously subscribed to the
-            # newsletter another way, but is only creating an account now
+
+        # Don'd add accounts to mailchimp if they haven't confirmed their email
+        if not instance.email_confirmed_at:
+            return
+
+        # NOTE user will be 'removed' from mailchimp if they create an account and didn't 
+        # opt in. This is to cater for situations where a user previously subscribed to the
+        # newsletter another way, but is only creating an account now
+        if instance.email_confirmed_at != instance._email_confirmed_at_old or instance._communication_opt_in_old != instance.communication_opt_in:
             update_mailchimp_subscription(instance.user_id)
             instance._communication_opt_in_old = instance.communication_opt_in
 
@@ -37,6 +41,7 @@ class Profile(models.Model):
     def remember_state(sender, **kwargs):
         instance = kwargs.get('instance')
         instance._communication_opt_in_old = instance.communication_opt_in
+        instance._email_confirmed_at_old = instance.email_confirmed_at
 
     def __str__(self):
         return self.user.__str__()

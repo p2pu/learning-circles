@@ -182,6 +182,11 @@ def batch_subscribe(users):
                 auth=('apikey', settings.MAILCHIMP_API_KEY),
                 json=body
             )
+            if response.json().get('errors'):
+                logger.warn(
+                    'error batch subscribing{}'.format(json.dumps(response.json()['errors'], indent=4))
+                )
+
         except requests.exceptions.HTTPError as err:
             logger.error("Error: {} {}".format(str(response.status_code), err))
             logger.error(json.dumps(response.json(), indent=4))
