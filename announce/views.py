@@ -57,14 +57,15 @@ def mailchimp_webhook(request, webhook_secret):
     """ change profile.communications_opt_in if subscriber has an account """
 
     if webhook_secret != settings.MAILCHIMP_WEBHOOK_SECRET:
-        return http.HttpResponse(status=200)
+        return http.HttpResponse(status=404)
 
     list_id = request.POST.get('data[id]')
     if list_id != settings.MAILCHIMP_LIST_ID:
-        return http.HttpResponse(status=200)
+        logger.warning('mailchimp webhook called with invalid list id')
+        return http.HttpResponse(status=404)
 
     email = request.POST.get('data[email]')
-    if Users.objects.filter(email__iexact=email).count() == 0:
+    if User.objects.filter(email__iexact=email).count() == 0:
         return http.HttpResponse(status=200)
 
     profile = Profile.objects.get(user__email=email)
