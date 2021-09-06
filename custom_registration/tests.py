@@ -22,6 +22,17 @@ Tests for when facilitators interact with the system
 """
 class TestCustomRegistrationViews(TestCase):
 
+    def setUp(self):
+        patcher = patch('custom_registration.views.requests.post')
+        self.mock_captcha = patcher.start()
+        self.mock_captcha.json.return_value = {"success": True}
+        self.addCleanup(patcher.stop)
+
+        mailchimp_patcher = patch('studygroups.models.profile.update_mailchimp_subscription')
+        self.mock_maichimp = mailchimp_patcher.start()
+        self.addCleanup(mailchimp_patcher.stop)
+
+
     def test_account_create(self):
         c = Client()
         data = {
@@ -128,7 +139,8 @@ class TestCustomRegistrationViews(TestCase):
             "first_name": "Bob",
             "last_name": "Test",
             "password": "12345",
-            "communication_opt_in": False
+            "communication_opt_in": False,
+            "g-recaptcha-response": "blah",
         }
         resp = c.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 200)
@@ -184,6 +196,7 @@ class TestCustomRegistrationViews(TestCase):
             "first_name": "Bob",
             "last_name": "Test",
             "password": "12345",
+            "g-recaptcha-response": "blah",
             "communication_opt_in": False
         }
         resp = c.post(url, data=json.dumps(data), content_type='application/json')

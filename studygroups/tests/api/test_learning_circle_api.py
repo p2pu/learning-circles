@@ -30,6 +30,11 @@ class TestLearningCircleApi(TestCase):
             user.save()
             self.facilitator = user
 
+        mailchimp_patcher = patch('studygroups.models.profile.update_mailchimp_subscription')
+        self.mock_maichimp = mailchimp_patcher.start()
+        self.addCleanup(mailchimp_patcher.stop)
+
+
 
     def test_create_learning_circle(self):
         c = Client()
