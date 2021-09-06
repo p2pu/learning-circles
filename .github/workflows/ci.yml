@@ -1,0 +1,21 @@
+name: Django CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build docker image
+      run: docker build -t p2pu/learning-circles .
+    - name: start postgres container
+      run: docker run -d --name=postgres -e POSTGRES_PASSWORD=password postgres:11
+    - name: start selenium container
+      run: docker run -d --name=selenium selenium/standalone-chrome
+    - name: run tests
+      run: docker run --rm -i --link postgres --link selenium -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost p2pu/learning-circles dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
