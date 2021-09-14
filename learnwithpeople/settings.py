@@ -230,12 +230,13 @@ PROTOCOL = env('PROTOCOL', 'https')
 GA_TRACKING_ID = env('GA_TRACKING_ID', 'UA-0000000-00')
 
 ####### Celery config #######
+# TODO this might need to change to CELERY_BROKER_URL
 BROKER_URL = env('BROKER_URL', 'amqp://guest:guest@localhost//')
 
 
 from celery.schedules import crontab
 
-CELERYBEAT_SCHEDULE = {
+CELERY_BEAT_SCHEDULE = {
     'send_reminders': {
         'task': 'studygroups.tasks.send_reminders',
         'schedule': crontab(minute='*/5'),
