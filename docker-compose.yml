@@ -70,7 +70,7 @@ services:
     volumes:
     - .:/opt/app
     working_dir: /opt/app
-    command: /opt/django-venv/bin/celery -A learnwithpeople beat --loglevel=DEBUG --pidfile=/var/lib/celery/celerybeat.pid --schedule=/var/lib/celery/celerybeat-schedule
+    command: /opt/django-venv/bin/celery -A learnwithpeople beat --loglevel=DEBUG --schedule=/var/lib/celery/celerybeat-schedule
     env_file: docker.env
     environment:
     - DATABASE_URL=postgres://lc:password@postgres:5432/lc
