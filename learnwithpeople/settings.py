@@ -236,7 +236,7 @@ BROKER_URL = env('BROKER_URL', 'amqp://guest:guest@localhost//')
 
 from celery.schedules import crontab
 
-CELERYBEAT_SCHEDULE = {
+CELERY_BEAT_SCHEDULE = {
     'send_reminders': {
         'task': 'studygroups.tasks.send_reminders',
         'schedule': crontab(minute='*/5'),
