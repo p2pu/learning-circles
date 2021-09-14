@@ -55,7 +55,7 @@ mock==4.0.3
 olefile==0.44
 packaging==16.8
 phonenumberslite==7.7.0
-Pillow==6.2.0
+Pillow==8.3.2
 premailer==3.2.0
 prompt-toolkit==3.0.20
 psycopg2==2.7.3.1
