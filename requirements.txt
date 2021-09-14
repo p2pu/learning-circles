@@ -78,7 +78,7 @@ transifex-client==0.12.4
 twilio==6.8.0
 typing-extensions==3.10.0.2
 unicodecsv==0.14.1
-urllib3==1.25.2
+urllib3==1.26.5
 vine==5.0.0
 wcwidth==0.2.5
 webencodings==0.5.1
