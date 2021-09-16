@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'announce',
     'community_calendar',
     'client_logging',
+    'contact',
 ]
 
 MIDDLEWARE = [
@@ -230,9 +231,7 @@ PROTOCOL = env('PROTOCOL', 'https')
 GA_TRACKING_ID = env('GA_TRACKING_ID', 'UA-0000000-00')
 
 ####### Celery config #######
-# TODO this might need to change to CELERY_BROKER_URL
-BROKER_URL = env('BROKER_URL', 'amqp://guest:guest@localhost//')
-
+CELERY_BROKER_URL = env('BROKER_URL', 'amqp://guest:guest@localhost//')
 
 from celery.schedules import crontab
 

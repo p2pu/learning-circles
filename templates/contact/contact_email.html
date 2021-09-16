@@ -1,0 +1,13 @@
+{% extends 'email_base.html' %}
+{% load i18n %}
+{% block body %}
+
+<p>Hi there</p>
+
+<p><strong>{{name}} &lt;{{email}}&gt;{% if organization %} from {{organization}}{% endif%}</strong> sent us a message via {{source}}. Message below:</p>
+
+<p style="padding: 1em; background-color: lightgray;">{{content}}<p>
+
+<p>{% trans "Cheers" %}</p>
+<p>P2PU (rem, this is slighly awkward, are we talking to ourselves?)</p>
+{% endblock %}

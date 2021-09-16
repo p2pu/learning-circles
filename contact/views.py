@@ -1,0 +1,28 @@
+from rest_framework import serializers
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+from .tasks import send_contact_form_inquiry
+
+# Serializers define the API representation.
+class ContactSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    name =  serializers.CharField(max_length=255)
+    content = serializers.CharField()
+    source = serializers.CharField(max_length=255)
+    organization = serializers.CharField(max_length=255, required=False)
+
+    def create(self, validated_data):
+        return validated_data
+
+
+class ContactAPIView(APIView):
+    permission_classes = ()
+
+    def post(self, request, *args, **kwargs):
+        serializer = ContactSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        # call async task to send email
+        send_contact_form_inquiry.delay(**serializer.data)
+        data = {"status": "sent"}
+        return Response(data)
