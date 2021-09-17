@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import ugettext as _
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.cache import never_cache
 from django.views.generic.edit import FormView
@@ -120,6 +121,7 @@ class AjaxSignupView(View):
         return json_response(request, { "status": "created", "user": user.username });
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class AjaxLoginView(View):
     def post(self, request):
         post_schema = {

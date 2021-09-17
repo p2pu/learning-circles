@@ -204,6 +204,7 @@ ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_WHITELIST = [
     "https://www.p2pu.org",
     "https://p2pu.github.io",
+    "http://p2pu-website-modern-quetzal.s3-website-us-east-1.amazonaws.com",
 ]
 if DEBUG:
     CORS_ORIGIN_WHITELIST.append('http://localhost:8000')
@@ -213,6 +214,9 @@ if DEBUG:
 CORS_ORIGIN_REGEX_WHITELIST = [
     r"^https://\w+\.p2pu\.org$",
 ]
+
+CORS_ALLOW_CREDENTIALS = True
+
 
 AUTHENTICATION_BACKENDS = ['custom_registration.backend.CaseInsensitiveBackend']
 
