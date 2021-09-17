@@ -215,8 +215,9 @@ CORS_ORIGIN_REGEX_WHITELIST = [
     r"^https://\w+\.p2pu\.org$",
 ]
 
+# TODO don't merge to release
 CORS_ALLOW_CREDENTIALS = True
-
+SESSION_COOKIE_SAMESITE = None
 
 AUTHENTICATION_BACKENDS = ['custom_registration.backend.CaseInsensitiveBackend']
 
