@@ -161,7 +161,7 @@
 }
 
 .learner-signup-info{
-  background: $gray-lighter;
+  background: $gray-light;
   padding: 1em !important;
 }
 
@@ -175,7 +175,7 @@
 
 .meeting-rsvp {
   padding: 1em;
-  background: $gray-lighter;
+  background: $gray-light;
 
   ul {
     margin: 0;
@@ -248,7 +248,7 @@
 
 @mixin meeting-item-details {
   padding: 1em;
-  background: $gray-lighter;
+  background: $gray-light;
   margin-bottom: 1.5em;
 }
 
