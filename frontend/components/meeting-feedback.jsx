@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 
 import RatingInput from './manage/meeting-rating-input';
 import MeetingReflectionInput from './manage/meeting-reflection-input';
