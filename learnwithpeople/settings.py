@@ -211,8 +211,8 @@ if DEBUG:
     CORS_ORIGIN_WHITELIST.append('http://localhost:3001')
     CORS_ORIGIN_WHITELIST.append('http://localhost:4000')
 
-CORS_ORIGIN_REGEX_WHITELIST = [
-    r"^https://\w+\.p2pu\.org$",
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*+\.p2pu\.org$",
 ]
 
 # TODO don't merge to release
