@@ -19,7 +19,8 @@ class ContactSerializer(serializers.Serializer):
 
 
 class ContactAPIView(APIView):
-    permission_classes = ()
+    authentication_classes = []
+    permission_classes = []
 
     def post(self, request, *args, **kwargs):
         serializer = ContactSerializer(data=request.data, context={'request': request})
