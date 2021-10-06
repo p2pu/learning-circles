@@ -1,8 +1,10 @@
 from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django import http
 
 from .tasks import send_contact_form_inquiry
+
 
 # Serializers define the API representation.
 class ContactSerializer(serializers.Serializer):
@@ -17,12 +19,18 @@ class ContactSerializer(serializers.Serializer):
 
 
 class ContactAPIView(APIView):
-    permission_classes = ()
+    authentication_classes = []
+    permission_classes = []
 
     def post(self, request, *args, **kwargs):
         serializer = ContactSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         # call async task to send email
         send_contact_form_inquiry.delay(**serializer.data)
+
+        if request.GET.get('next') and not request.is_ajax():
+            # TODO should this be validated?
+            return http.HttpResponseRedirect(request.GET.get('next'))
+
         data = {"status": "sent"}
         return Response(data)
