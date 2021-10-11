@@ -2,267 +2,103 @@
 {% load extras %}
 {% load i18n %}
 
-<nav class="nav-collapsed">
-  <div class="logo dark">
-    <a href="https://www.p2pu.org/en/">
-      <img src="{% static 'images/p2pu-logo.png' %}" alt="P2PU Logo" />
-    </a>
-  </div>
+<header class="fixed-top bg-white shadow-sm border-bottom">
+  <div class="header-top container">
+    <div class="d-flex flex-wrap align-items-center">
+      <a class="order-1 d-flex align-items-center py-3 me-md-auto text-white text-decoration-none" href="/en/">
+        <img class="logo my-md-1 me-2" src="{% static 'images/p2pu-logo.png' %}" alt="P2PU logo">
+      </a>
+      <nav id="nav-account" class="text-end col-12 col-md pe-0 order-4 order-md-2 ms-auto navbar navbar-expand-md" data-api-origin="https://staging-learningcircles.p2pu.org" >
+        <!-- this content is replaced by NavAccount react component -->
+        <div class="my-2 my-md-0 collapse navbar-collapse navbarNavDropdown justify-content-end">
 
+          {% if user.is_authenticated %}
+          <a href="/en/teams/" class="d-flex my-1 my-md-0 me-md-2 me-lg-3 btn btn-sm secondary p2pu-btn blue">Start a Team</a>
+          <button type="button" class="btn btn-sm d-flex align-items-center secondary p2pu-btn gray mx-0 dropdown-toggle" id="loggedInDropdown" data-bs-toggle="dropdown" aria-expanded="false"><span class="material-icons material-icons-outlined me-1">account_circle</span>{{user.first_name}}</button>
+          <ul class="dropdown-menu py-0 dropdown-menu-end loggedin-dropdown shadow" aria-labelledby="loggedInDropdown">
 
+            {% if user.is_staff %}
+            <li>
+              <a class="dropdown-item" href="{% url 'studygroups_staff_dash' %}">Staff dash</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'admin:index' %}">{% trans "Django admin" %}</a>
+            </li>
+            {% endif %}
 
+            {% if user|is_organizer %}
+            <li>
+              <a class="dropdown-item" href="{% url 'studygroups_organize' %}">My team</a>
+            </li>
+            {% endif %}
 
-  <div class="nav-items">
-
-    <div class="account nav-item">
-      {% if user.is_authenticated %}
-      <div class="dropdown">
-        <div class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-          <button class="nav-item">
-            <i class="fa fa-user" aria-hidden="true"></i><span class="uppercase hidden-xs">{{user.first_name}}</span>
-          </button>
-        </div>
-        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
-          {% if user.is_staff %}
-          <li>
-            <a href="{% url 'studygroups_staff_dash' %}">{% trans "Staff dash" %}</a>
-          </li>
-          <li>
-            <a href="{% url 'admin:index' %}">{% trans "Django admin" %}</a>
-          </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'studygroups_facilitator' %}">Dashboard</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'studygroups_facilitator_studygroup_create' %}">Start a learning circle</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'account_settings' %}">Account settings</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'logout' %}">Log out</a>
+            </li>
+          </ul>
+          {% else %}
+          <a href="/en/teams" class="d-flex my-1 my-md-0 me-md-2 me-lg-3 btn btn-sm secondary p2pu-btn blue">{% trans "Start a Team" %}</a>
+          <a href="/en/create-an-account" class="d-flex my-1 my-md-0 me-md-2 me-lg-3 btn btn-sm secondary p2pu-btn orange">{% trans "Create an Account" %}</a>
+          <a href="https://learningcircles.p2pu.org/en/accounts/login/" class="btn btn-sm d-flex align-items-center secondary p2pu-btn gray mx-0">
+            <span class="material-icons material-icons-outlined me-1 d-md-none">account_circle</span>{% trans "Log in" %}</a>
           {% endif %}
-
-          {% if user|is_organizer %}
-          <li>
-            <a href="{% url 'studygroups_organize' %}">{% trans "My team" %}</a>
-          </li>
-          {% endif %}
-
-          <li>
-            <a href="{% url 'studygroups_facilitator' %}">{% trans "Dashboard" %}</a>
-          </li>
-
-          <li>
-            <a href="{% url 'studygroups_facilitator_studygroup_create' %}">{% trans "Start a learning circle" %}</a>
-          </li>
-
-          <li>
-            <a href="{% url 'account_settings' %}">{% trans "Account settings" %}</a>
-          </li>
-
-          <li>
-            <a href="{% url 'logout' %}">{% trans "Log out" %}</a>
-          </li>
-        </ul>
-      </div>
-      {% else %}
-        <i class="fa fa-user" aria-hidden="true"></i>
-        <a class="uppercase" href="{% url 'studygroups_login_redirect' %}">{% trans "Log in" %}</a>
-      {% endif %}
-    </div>
-
-    <button class="menu nav-item" role="button">
-      <i class="fa fa-bars" aria-hidden="true"></i>
-      <span class="uppercase hidden-xs">Menu</span>
-    </button>
-  </div>
-
-
-  <div id="full-page-menu" class="collapsed" aria-hidden="true" role="navigation">
-    <button id="close-menu" role="button" aria-label="Close"><i class="fa fa-times"></i></button>
-    <div class="content-container row">
-      <div class="col-12 col-sm-10 col-md-8 col-lg-6">
-        <div class="content">
-
-          <div class="menu-section top-level">
-            <div class="nav-container">
-              <a href="https://www.p2pu.org/en/">
-                <div class="menu-item">
-                  <span class="bullet"></span>
-                  <span class="text">Home</span>
-                </div>
-              </a>
-
-            </div>
-          </div>
-
-          <div class="menu-section top-level">
-            <div class="nav-container">
-              <a href="https://www.p2pu.org/en/learning-circles/">
-                <div class="menu-item">
-                  <span class="bullet"></span>
-                  <span class="text">Join a learning circle</span>
-                </div>
-              </a>
-
-            </div>
-          </div>
-
-          <div class="menu-section top-level">
-            <div class="nav-container">
-              <a href="https://www.p2pu.org/en/facilitate/">
-                <div class="menu-item">
-                  <span class="bullet"></span>
-                  <span class="text">Facilitate</span>
-                </div>
-              </a>
-            </div>
-          </div>
-
-
-          <div class="menu-section top-level">
-            <div class="nav-container">
-              <a href="https://www.p2pu.org/en/organize/">
-                <div class="menu-item">
-                  <span class="bullet"></span>
-                  <span class="text">Organize</span>
-                </div>
-              </a>
-            </div>
-          </div>
-
-          <div class="menu-section top-level">
-            <div class="nav-container">
-              <a href="https://www.p2pu.org/en/courses/">
-                <div class="menu-item">
-                  <span class="bullet"></span>
-                  <span class="text">Courses</span>
-                </div>
-              </a>
-            </div>
-          </div>
-
-
-          <div class="menu-section top-level">
-            <div class="nav-container">
-              <a href="https://community.p2pu.org/c/community-events/" target="_blank" rel="noopener noreferrer">
-                <div class="menu-item">
-                  <span class="bullet"></span>
-                  <span class="text">Events
-                      <i class="material-icons ml-1" style="font-size: inherit; line-height: inherit; vertical-align: top;">open_in_new</i>
-                  </span>
-                </div>
-              </a>
-
-            </div>
-          </div>
-
-          <div class="menu-section top-level">
-            <div class="nav-container">
-              <a href="https://community.p2pu.org/" target="_blank" rel="noopener noreferrer">
-                <div class="menu-item">
-                  <span class="bullet"></span>
-                  <span class="text">Community
-
-                      <i class="material-icons ml-1" style="font-size: inherit; line-height: inherit; vertical-align: top;">open_in_new</i>
-
-                  </span>
-                </div>
-              </a>
-
-            </div>
-          </div>
-
-          <div class="menu-section top-level">
-            <div class="nav-container">
-              <a href="https://www.p2pu.org/en/work-with-us/">
-                <div class="menu-item">
-                  <span class="bullet"></span>
-                  <span class="text">Hire us
-
-                  </span>
-                </div>
-              </a>
-
-            </div>
-          </div>
-
-          <div class="menu-section top-level">
-            <div class="nav-container">
-              <a href="https://www.p2pu.org/en/about/">
-                <div class="menu-item">
-                  <span class="bullet"></span>
-                  <span class="text">About P2PU
-                  </span>
-                </div>
-              </a>
-
-            </div>
-          </div>
-
-          <div class="menu-section top-level">
-            <div class="nav-container">
-              <a href="https://www.p2pu.org/en/jobs/">
-                <div class="menu-item">
-                  <span class="bullet"></span>
-                  <span class="text">Job opportunities
-                  </span>
-                </div>
-              </a>
-
-            </div>
-          </div>
-
-          <div class="menu-section top-level">
-            <div class="nav-container">
-              <a href="http://info.p2pu.org/" target="_blank" rel="noopener noreferrer">
-                <div class="menu-item">
-                  <span class="bullet"></span>
-                  <span class="text">Blog
-
-                      <i class="material-icons ml-1" style="font-size: inherit; line-height: inherit; vertical-align: top;">open_in_new</i>
-
-                  </span>
-                </div>
-              </a>
-
-            </div>
-          </div>
-
-          <div class="menu-section top-level">
-            <div class="nav-container">
-              <a href="https://shop.spreadshirt.com/p2pu/" target="_blank" rel="noopener noreferrer">
-                <div class="menu-item">
-                  <span class="bullet"></span>
-                  <span class="text">Shop
-
-                      <i class="material-icons ml-1" style="font-size: inherit; line-height: inherit; vertical-align: top;">open_in_new</i>
-
-                  </span>
-                </div>
-              </a>
-
-            </div>
-          </div>
-
-          <div class="menu-section top-level">
-            <div class="nav-container">
-              <a href="https://www.p2pu.org/en/donate/">
-                <div class="menu-item">
-                  <span class="bullet"></span>
-                  <span class="text">Donate
-
-                  </span>
-                </div>
-              </a>
-
-            </div>
-          </div>
-
-          <div class="menu-section top-level">
-            <div class="nav-container">
-              <a href="https://www.p2pu.org/en/contact/">
-                <div class="menu-item">
-                  <span class="bullet"></span>
-                  <span class="text">Contact</span>
-                </div>
-              </a>
-
-            </div>
-          </div>
-
         </div>
-      </div>
+      </nav>
+
+      <nav class="order-3 navbar-expand-md ms-auto">
+        <button class="navbar-toggler hamburger mx-0 align-items-center" type="button" data-bs-toggle="collapse" data-bs-target=".navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+          <div class="hamburger-box">
+            <div class="hamburger-inner"></div>
+          </div>
+        </button>
+      </nav>
     </div>
   </div>
-</nav>
+  </div>
+  <div class="header-bottom px-3 py-md-1 bg-cream-dark">
+    <div class="container d-flex flex-wrap justify-content-center">
+      <nav class="main-nav col-12 col-md-auto py-0 ms-lg-auto justify-content-center text-sm navbar navbar-expand-md px-0">
+        <div class="collapse navbar-nav navbar-collapse navbarNavDropdown align-items-stretch align-items-md-center pt-3 pb-5 py-md-0">
+          <div class="dropdown nav-item">
+            <a href="/en/learning-circles/" class="nav-link d-flex align-items-center link-dark text-decoration-none dropdown-toggle "  aria-expanded="false"  > Explore Learning Circles</a>
+          </div>
+          <div class="dropdown nav-item">
+            <a href="https://handbook.p2pu.org/" class="nav-link d-flex align-items-center link-dark text-decoration-none dropdown-toggle "  aria-expanded="false"  > Knowledge Base</a>
+          </div>
+          <div class="dropdown nav-item">
+            <a href="" class="nav-link d-flex align-items-center link-dark text-decoration-none dropdown-toggle "  data-bs-toggle="dropdown"  aria-expanded="false"  > Community</a>
+
+            <ul class="dropdown-menu shadow py-md-0" aria-labelledby="dropdownNavLink" style="">
+              <li><a class="dropdown-item " href="/en/learning-resources/" >Learning Resources</a></li>
+              <li><a class="dropdown-item " href="https://community.p2pu.org/" >Forums</a></li>
+              <li><a class="dropdown-item " href="https://community.p2pu.org/c/community-events/57" >Events</a></li>
+            </ul>    
+          </div>
+          <div class="dropdown nav-item">
+            <a href="" class="nav-link d-flex align-items-center link-dark text-decoration-none dropdown-toggle "  data-bs-toggle="dropdown"  aria-expanded="false"  > About</a>
+
+            <ul class="dropdown-menu shadow py-md-0" aria-labelledby="dropdownNavLink" style="">
+              <li><a class="dropdown-item " href="/en/about/" >About</a></li>
+              <li><a class="dropdown-item " href="/en/services/" >Services</a></li>
+              <li><a class="dropdown-item " href="/en/jobs/" >Jobs</a></li>
+              <li><a class="dropdown-item " href="https://info.p2pu.org/" >Blog</a></li>
+              <li><a class="dropdown-item " href="/en/donate/" >Donate</a></li>
+            </ul>    
+          </div>
+          <div class="dropdown nav-item">
+            <a href="/en/help/" class="nav-link d-flex align-items-center link-dark text-decoration-none dropdown-toggle "  aria-expanded="false"  > Help</a>
+          </div>
+        </div>       
+      </nav>
+    </div>
+</header>
+
