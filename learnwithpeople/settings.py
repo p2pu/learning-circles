@@ -149,6 +149,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'studygroups.context_processors.domain',
+                'studygroups.context_processors.globals',
             ]
         }
     },
@@ -386,3 +387,6 @@ BLEACH_DEFAULT_WIDGET = 'tinymce.widgets.TinyMCE'
 
 RECAPTCHA_SITE_KEY = env('RECAPTCHA_SITE_KEY', '')
 RECAPTCHA_SECRET_KEY = env('RECAPTCHA_SECRET_KEY', '')
+
+# URL for P2PU static site (only really useful for dev and staging environments
+STATIC_SITE_URL = env('STATIC_SITE_URL', 'http://localhost:4000')

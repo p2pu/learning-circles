@@ -5,7 +5,7 @@
 <header class="fixed-top bg-white shadow-sm border-bottom">
   <div class="header-top container">
     <div class="d-flex flex-wrap align-items-center">
-      <a class="order-1 d-flex align-items-center py-3 me-md-auto text-white text-decoration-none" href="/en/">
+      <a class="order-1 d-flex align-items-center py-3 me-md-auto text-white text-decoration-none" href="{{STATIC_SITE_URL}}/en/">
         <img class="logo my-md-1 me-2" src="{% static 'images/p2pu-logo.png' %}" alt="P2PU logo">
       </a>
       <nav id="nav-account" class="text-end col-12 col-md pe-0 order-4 order-md-2 ms-auto navbar navbar-expand-md" data-api-origin="https://staging-learningcircles.p2pu.org" >
@@ -13,7 +13,7 @@
         <div class="my-2 my-md-0 collapse navbar-collapse navbarNavDropdown justify-content-end">
 
           {% if user.is_authenticated %}
-          <a href="/en/teams/" class="d-flex my-1 my-md-0 me-md-2 me-lg-3 btn btn-sm secondary p2pu-btn blue">Start a Team</a>
+          <a href="{{STATIC_SITE_URL}}/en/teams/" class="d-flex my-1 my-md-0 me-md-2 me-lg-3 btn btn-sm secondary p2pu-btn blue">Start a Team</a>
           <button type="button" class="btn btn-sm d-flex align-items-center secondary p2pu-btn gray mx-0 dropdown-toggle" id="loggedInDropdown" data-bs-toggle="dropdown" aria-expanded="false"><span class="material-icons material-icons-outlined me-1">account_circle</span>{{user.first_name}}</button>
           <ul class="dropdown-menu py-0 dropdown-menu-end loggedin-dropdown shadow" aria-labelledby="loggedInDropdown">
 
@@ -46,9 +46,9 @@
             </li>
           </ul>
           {% else %}
-          <a href="/en/teams" class="d-flex my-1 my-md-0 me-md-2 me-lg-3 btn btn-sm secondary p2pu-btn blue">{% trans "Start a Team" %}</a>
-          <a href="/en/create-an-account" class="d-flex my-1 my-md-0 me-md-2 me-lg-3 btn btn-sm secondary p2pu-btn orange">{% trans "Create an Account" %}</a>
-          <a href="https://learningcircles.p2pu.org/en/accounts/login/" class="btn btn-sm d-flex align-items-center secondary p2pu-btn gray mx-0">
+          <a href="{{STATIC_SITE_URL}}/en/teams" class="d-flex my-1 my-md-0 me-md-2 me-lg-3 btn btn-sm secondary p2pu-btn blue">{% trans "Start a Team" %}</a>
+          <a href="{% url 'register' %}" class="d-flex my-1 my-md-0 me-md-2 me-lg-3 btn btn-sm secondary p2pu-btn orange">{% trans "Create an Account" %}</a>
+          <a href="{% url 'login' %}" class="btn btn-sm d-flex align-items-center secondary p2pu-btn gray mx-0">
             <span class="material-icons material-icons-outlined me-1 d-md-none">account_circle</span>{% trans "Log in" %}</a>
           {% endif %}
         </div>
@@ -69,7 +69,7 @@
       <nav class="main-nav col-12 col-md-auto py-0 ms-lg-auto justify-content-center text-sm navbar navbar-expand-md px-0">
         <div class="collapse navbar-nav navbar-collapse navbarNavDropdown align-items-stretch align-items-md-center pt-3 pb-5 py-md-0">
           <div class="dropdown nav-item">
-            <a href="/en/learning-circles/" class="nav-link d-flex align-items-center link-dark text-decoration-none dropdown-toggle "  aria-expanded="false"  > Explore Learning Circles</a>
+            <a href="{{STATIC_SITE_URL}}/en/learning-circles/" class="nav-link d-flex align-items-center link-dark text-decoration-none dropdown-toggle "  aria-expanded="false"  > Explore Learning Circles</a>
           </div>
           <div class="dropdown nav-item">
             <a href="https://handbook.p2pu.org/" class="nav-link d-flex align-items-center link-dark text-decoration-none dropdown-toggle "  aria-expanded="false"  > Knowledge Base</a>
@@ -78,24 +78,24 @@
             <a href="" class="nav-link d-flex align-items-center link-dark text-decoration-none dropdown-toggle "  data-bs-toggle="dropdown"  aria-expanded="false"  > Community</a>
 
             <ul class="dropdown-menu shadow py-md-0" aria-labelledby="dropdownNavLink" style="">
-              <li><a class="dropdown-item " href="/en/learning-resources/" >Learning Resources</a></li>
-              <li><a class="dropdown-item " href="https://community.p2pu.org/" >Forums</a></li>
-              <li><a class="dropdown-item " href="https://community.p2pu.org/c/community-events/57" >Events</a></li>
+              <li><a class="dropdown-item" href="{{STATIC_SITE_URL}}/en/learning-resources/" >Learning Resources</a></li>
+              <li><a class="dropdown-item" href="https://community.p2pu.org/" >Forums</a></li>
+              <li><a class="dropdown-item" href="https://community.p2pu.org/c/community-events/57" >Events</a></li>
             </ul>    
           </div>
           <div class="dropdown nav-item">
             <a href="" class="nav-link d-flex align-items-center link-dark text-decoration-none dropdown-toggle "  data-bs-toggle="dropdown"  aria-expanded="false"  > About</a>
 
             <ul class="dropdown-menu shadow py-md-0" aria-labelledby="dropdownNavLink" style="">
-              <li><a class="dropdown-item " href="/en/about/" >About</a></li>
-              <li><a class="dropdown-item " href="/en/services/" >Services</a></li>
-              <li><a class="dropdown-item " href="/en/jobs/" >Jobs</a></li>
-              <li><a class="dropdown-item " href="https://info.p2pu.org/" >Blog</a></li>
-              <li><a class="dropdown-item " href="/en/donate/" >Donate</a></li>
+              <li><a class="dropdown-item" href="{{STATIC_SITE_URL}}/en/about/" >About</a></li>
+              <li><a class="dropdown-item" href="{{STATIC_SITE_URL}}/en/services/" >Services</a></li>
+              <li><a class="dropdown-item" href="{{STATIC_SITE_URL}}/en/jobs/" >Jobs</a></li>
+              <li><a class="dropdown-item" href="https://info.p2pu.org/" >Blog</a></li>
+              <li><a class="dropdown-item" href="{{STATIC_SITE_URL}}/en/donate/" >Donate</a></li>
             </ul>    
           </div>
           <div class="dropdown nav-item">
-            <a href="/en/help/" class="nav-link d-flex align-items-center link-dark text-decoration-none dropdown-toggle "  aria-expanded="false"  > Help</a>
+            <a href="{{STATIC_SITE_URL}}/en/help/" class="nav-link d-flex align-items-center link-dark text-decoration-none dropdown-toggle "  aria-expanded="false"  > Help</a>
           </div>
         </div>       
       </nav>
