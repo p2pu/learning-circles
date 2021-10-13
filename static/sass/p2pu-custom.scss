@@ -1,5 +1,25 @@
-@import "p2pu-theme/src/scss/base";
+// all imported files are overrides of files in Bootstrap v5.1.0 unless otherwise noted
+
+// Configuration
+@import "p2pu-theme/src/scss/fonts"; //custom
 @import "p2pu-theme/src/scss/variables";
+@import "bootstrap/scss/bootstrap";//custom
+@import "p2pu-theme/src/scss/mixins";
+@import "p2pu-theme/src/scss/utilities";
+
+// Layout & components
+@import "p2pu-theme/src/scss/layout";//custom 
+@import "p2pu-theme/src/scss/typography";//custom
+@import "p2pu-theme/src/scss/images";
+@import "p2pu-theme/src/scss/forms";
+@import "buttons";
+@import "p2pu-theme/src/scss/dropdown";
+@import "p2pu-theme/src/scss/nav";
+@import "p2pu-theme/src/scss/menu";//custom
+@import "p2pu-theme/src/scss/card";
+@import "p2pu-theme/src/scss/footer";//custom
+
+
 @import "custom";
 @import "landing";
 @import "learningcircle";

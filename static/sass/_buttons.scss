@@ -1,0 +1,276 @@
+.p2pu-btn {
+  letter-spacing: .03em;
+  padding: 7px 31px;
+  border-radius: 2em;
+  text-transform: uppercase;
+  //font-size: $font-size-base * 1.2;
+  font-size: 0.8em;
+  font-family: $font-family-sans-serif;
+  font-weight: $font-weight-semibold;
+  transform: perspective(1px) translateZ(0);
+  box-shadow: 0 0 1px transparent;
+  position: relative;
+  transition: color 0.3s linear;
+  display: inline-block;
+  &:before {
+    content: "";
+    position: absolute;
+    border-radius: 2em;
+    z-index: -1;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: scaleX(0);
+    transform-origin: 50%;
+    transition-property: transform;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-out;
+  }
+
+  &:hover:before, &:focus:before, &:active:before {
+    transform: scaleX(1);
+  }
+
+  &.btn{
+    &-sm{
+      font-size: $font-size-sm;
+      padding: 3px 19px;
+    }
+    &-sm-sm{
+      @include media-breakpoint-up(sm) {
+        font-size: $font-size-sm;
+        padding: 3px 19px;
+      }
+    }
+    &-md-sm{
+      @include media-breakpoint-up(md) {
+        font-size: $font-size-sm;
+        padding: 3px 19px;
+      }
+    }
+    &-lg-sm{
+      @include media-breakpoint-up(lg) {
+        font-size: $font-size-sm;
+        padding: 3px 19px;
+      }
+    }
+    &-xl-sm{
+      @include media-breakpoint-up(xl) {
+        font-size: $font-size-sm;
+        padding: 3px 19px;
+      }
+    }
+  }
+  
+  &.btn{
+    &-base{
+      padding: 7px 31px;
+      font-size: $font-size-base * 1.2;
+    }
+    &-sm-base{
+      @include media-breakpoint-up(sm) {
+        padding: 7px 31px;
+        font-size: $font-size-base * 1.2;
+      }
+    }
+    &-md-base{
+      @include media-breakpoint-up(md) {
+        padding: 7px 31px;
+        font-size: $font-size-base * 1.2;
+      }
+    }
+    &-lg-base{
+      @include media-breakpoint-up(lg) {
+        padding: 7px 31px;
+        font-size: $font-size-base * 1.2;
+      }
+    }
+    &-xl-base{
+      @include media-breakpoint-up(xl) {
+        padding: 7px 31px;
+        font-size: $font-size-base * 1.2;
+      }
+    }
+  }
+  
+  &.gray {
+    background: $gray;
+    border: 2px solid $gray;
+    color: $white;
+
+    &:before {
+      background: lighten($gray, 5%);
+    }
+
+    &.secondary {
+      background: $white;
+      color: $gray;
+      border: 2px solid $gray;
+      &:before {
+        background: transparentize($gray, 0.95);
+      }
+
+      &:hover {
+        color: $gray;
+      }
+    }
+  }
+
+  &.arrow {
+    padding: 0.7em 1em;
+    font-size: 1em;
+    align-self: center;
+  }
+
+  &.transparent {
+    background: transparent;
+    color: $white;
+    border: 2px solid $white;
+    &:before {
+      background: transparentize($white, 0.9);
+    }
+  }
+
+  &.blue {
+    background: $p2pu-blue;
+    border: 2px solid $p2pu-blue;
+    color: $white;
+
+    &:before {
+      background: lighten($p2pu-blue, 1%);
+    }
+
+    &.secondary {
+      background: $white;
+      color: $p2pu-blue;
+      border: 2px solid $p2pu-blue;
+      &:before {
+        background: transparentize($p2pu-blue, 0.95);
+      }
+
+      &:hover {
+        color: $p2pu-blue;
+      }
+    }
+  }
+
+  &.orange {
+    background: $p2pu-orange;
+    border: 2px solid $p2pu-orange;
+    color: $white;
+
+    &:before {
+      background: lighten($p2pu-orange, 1%);
+    }
+
+    &.secondary {
+      background: $white;
+      color: $p2pu-orange;
+      border: 2px solid $p2pu-orange;
+      &:before {
+        background: transparentize($p2pu-orange, 0.95);
+      }
+
+      &:hover {
+        color: $p2pu-orange;
+      }
+    }
+  }
+
+  &.yellow {
+    background: $p2pu-yellow;
+    border: 2px solid $p2pu-yellow;
+    color: $white;
+
+    &:before {
+      background: lighten($p2pu-yellow, 3%);
+    }
+
+    &.secondary {
+      background: $white;
+      color: $p2pu-yellow;
+      border: 2px solid $p2pu-yellow;
+      &:before {
+        background: transparentize($p2pu-yellow, 0.95);
+      }
+
+      &:hover {
+        color: $p2pu-yellow;
+      }
+    }
+  }
+
+  &.green {
+    background: $p2pu-green;
+    border: 2px solid $p2pu-green;
+    color: $white;
+
+    &:before {
+      background: lighten($p2pu-green, 1%);
+    }
+
+    &.secondary {
+      background: $white;
+      color: $p2pu-green;
+      border: 2px solid $p2pu-green;
+      &:before {
+        background: transparentize($p2pu-green, 0.95);
+      }
+
+      &:hover {
+        color: $p2pu-green;
+      }
+    }
+  }
+  
+  &.cream {
+    background: $cream;
+    border: 2px solid $cream;
+    color: $white;
+
+    &:before {
+      background: lighten($cream, 1%);
+    }
+
+    &.secondary {
+      background: transparent;
+      color: $cream;
+      border: 2px solid $cream;
+      &:before {
+        background: transparentize($cream, 0.95);
+      }
+
+      &:hover {
+        color: $cream;
+      }
+    }
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:active {
+    outline: none;
+  }
+
+  &.with-outline {
+    border: 2px solid $gray-light;;
+  }
+
+  @media (max-width: map-get($grid-breakpoints, "sm")) {
+    font-size: 1.2rem;
+  }
+  &-md{
+    @media (max-width: map-get($grid-breakpoints, "md")) {
+      border: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background-color: transparent !important;
+      &:before{
+        display: none;
+      }
+    }
+  }
+}
