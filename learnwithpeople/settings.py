@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # 3rd party apps
     'corsheaders',
     'crispy_forms',
+    'crispy_bootstrap5',
     'phonenumber_field',
     'rest_framework',
     'django_filters',
@@ -168,7 +169,8 @@ WEBPACK_LOADER = {
     },
 }
 
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = os.environ.get('EMAIL_PORT', 25)

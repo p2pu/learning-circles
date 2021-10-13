@@ -72,7 +72,7 @@ class SignupView(FormView):
             return json_response(self.request, {"status": "error", "errors": '1011010010010010111'})
 
         user = form.save(commit=False)
-        user = create_user(user.email, user.first_name, user.last_name, form.cleaned_data['password1'], form.cleaned_data['communication_opt_in'], form.cleaned_data['interested_in_learning'], )
+        user = create_user(user.email, user.first_name, user.last_name, form.cleaned_data['password1'], form.cleaned_data['communication_opt_in'])
         login(self.request, user)
         return http.HttpResponseRedirect(self.get_success_url())
 

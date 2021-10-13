@@ -6,12 +6,15 @@ from django.utils.translation import ugettext as _
 from django.forms import ValidationError
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import UserCreationForm
+from django.utils.safestring import mark_safe
+
 from studygroups.models import Profile
 
 
 class SignupForm(UserCreationForm):
-    communication_opt_in = forms.BooleanField(required=False, initial=False, label=_('P2PU can contact me.'), help_text=_('Joining the community comes with an expectation that you would like to learn about upcoming events, new features, and updates from around the world. If you do not want to receive any of these messages, uncheck this box.'))
-    interested_in_learning = forms.CharField(required=False, label=_('What are you interested in learning?'))
+    communication_opt_in = forms.BooleanField(required=False, initial=False, label=_('P2PU can contact me'), help_text=_('Join our mailing list to learn about upcoming events, new courses, and news from the community. (Approximately six emails/year)'))
+
+    consent_opt_in = forms.BooleanField(required=True, initial=False, label=mark_safe(_('I consent to P2PU storing my data and accept the <a href="https://www.p2pu.org/en/terms/">terms of service</a>')), help_text=_('P2PU values your privacy and will never sell your data.'))
 
     def __init__(self, *args, **kwargs):
         super(SignupForm, self).__init__(*args, **kwargs)
@@ -28,7 +31,7 @@ class SignupForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'last_name', 'password1', 'password2', 'interested_in_learning', 'communication_opt_in']
+        fields = ['first_name', 'last_name', 'email', 'password1', 'password2', 'communication_opt_in', 'consent_opt_in']
 
 
 class CustomPasswordResetForm(PasswordResetForm):
