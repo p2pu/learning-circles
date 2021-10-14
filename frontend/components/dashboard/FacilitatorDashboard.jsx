@@ -79,7 +79,7 @@ export default class FacilitatorDashboard extends React.Component {
 
   render() {
     return (
-      <div className="bg-light">
+      <div>
         <Alert
           show={this.state.alert.show}
           type={this.state.alert.type}
@@ -115,7 +115,7 @@ export default class FacilitatorDashboard extends React.Component {
                 <div className="card-title">My Learning Circles</div>
                 {
                   !this.state.user &&
-                  <p>You must be logged in to see your learning circles. <a className="p2pu-btn btn-dark btn-sm" href={"/en/login_redirect/"}>Log in or register</a></p>
+                  <p>You must be logged in to see your learning circles. <a className="p2pu-btn btn dark btn-sm" href={"/en/login_redirect/"}>Log in or register</a></p>
                 }
                 {
                   this.state.user &&
@@ -149,7 +149,7 @@ export default class FacilitatorDashboard extends React.Component {
                   <div className="card-title">My Team's Learning Circles</div>
                   {
                     !this.state.user &&
-                    <p>You must be logged in to see your team's learning circles. <a className="p2pu-btn btn-dark btn-sm" href={"/en/login_redirect/"}>Log in or register</a></p>
+                    <p>You must be logged in to see your team's learning circles. <a className="p2pu-btn btn dark btn-sm" href={"/en/login_redirect/"}>Log in or register</a></p>
                   }
                   {
                     this.state.user &&
@@ -233,7 +233,7 @@ export default class FacilitatorDashboard extends React.Component {
                     {
                       this.state.user ?
                       <UpcomingMeetings scope="team" /> :
-                      <p>You must be logged in to see your team's activity. <a className="p2pu-btn btn-dark btn-sm" href={"/en/login_redirect/"}>Log in or register</a></p>
+                      <p>You must be logged in to see your team's activity. <a className="p2pu-btn btn dark btn-sm" href={"/en/login_redirect/"}>Log in or register</a></p>
                     }
                   </TabPanel>
                 </Tabs>
@@ -248,7 +248,7 @@ export default class FacilitatorDashboard extends React.Component {
                 <div className="card-title">Courses I've Added</div>
                 {
                   !this.state.user &&
-                  <p>You must be logged in to see your courses. <a className="p2pu-btn btn-dark btn-sm" href={"/en/login_redirect/"}>Log in or register</a></p>
+                  <p>You must be logged in to see your courses. <a className="p2pu-btn btn dark btn-sm" href={"/en/login_redirect/"}>Log in or register</a></p>
                 }
                 {
                   this.state.user &&
