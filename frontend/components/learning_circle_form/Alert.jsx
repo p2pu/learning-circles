@@ -9,7 +9,7 @@ const Alert = (props) => {
           <div className='alert-content'>
             { props.children }
           </div>
-          <button type="button" className="close" onClick={props.closeAlert} aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <button type="button" className="btn-close" onClick={props.closeAlert} aria-label="Close"><span aria-hidden="true"></span></button>
         </div>
       </div>
     );
