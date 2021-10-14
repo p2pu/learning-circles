@@ -45,7 +45,7 @@ const MeetingFeedback = props => {
 
   return (
     <div className={"meeting-item" + (itemState?` ${itemState}`:'')}>
-      <p>Reflect and share feedback {props.feedbackId && <span>(<a data-toggle="collapse" href={`#meeting-${meetingId}-feedback`} role="button" aria-expanded="true" aria-controls={`meeting-${meetingId}-feedback`}>view</a>)</span>}
+      <p>Reflect and share feedback {props.feedbackId && <span>(<a data-bs-toggle="collapse" href={`#meeting-${meetingId}-feedback`} role="button" aria-expanded="true" aria-controls={`meeting-${meetingId}-feedback`}>view</a>)</span>}
       </p>
       { props.showForm &&
           <div 
