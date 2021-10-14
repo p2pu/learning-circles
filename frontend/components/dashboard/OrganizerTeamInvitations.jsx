@@ -93,7 +93,7 @@ export default class OrganizerTeamInvitations extends Component {
               id={'id_email'}
               errorMessage={this.state.inviteError}
             />
-            <input type="button" className="p2pu-btn dark btn-sm" type="submit" value="Send Invitation" />
+            <input type="button" className="p2pu-btn dark btn btn-sm" type="submit" value="Send Invitation" />
           </form>
         </div>
 
@@ -102,9 +102,9 @@ export default class OrganizerTeamInvitations extends Component {
           <p>Anyone with this URL will be able to join your team without an invitation. Share at your discretion!</p>
           { this.state.teamInvitationUrl && <p><code className="copy-url">{this.state.teamInvitationUrl}</code></p> }
           <div>
-            <button onClick={this.handleCreateUrl} className="p2pu-btn dark btn-sm">Generate new URL</button>
+            <button onClick={this.handleCreateUrl} className="p2pu-btn btn dark btn-sm">Generate new URL</button>
             { this.state.teamInvitationUrl &&
-              <button onClick={this.handleDeleteUrl} className="p2pu-btn dark secondary btn-sm">Delete URL</button>
+              <button onClick={this.handleDeleteUrl} className="p2pu-btn dark btn secondary btn-sm">Delete URL</button>
             }
           </div>
         </div>

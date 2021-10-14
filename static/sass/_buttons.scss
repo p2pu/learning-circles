@@ -3,8 +3,7 @@
   padding: 7px 31px;
   border-radius: 2em;
   text-transform: uppercase;
-  //font-size: $font-size-base * 1.2;
-  font-size: 0.8em;
+  font-size: $font-size-base;
   font-family: $font-family-sans-serif;
   font-weight: $font-weight-semibold;
   transform: perspective(1px) translateZ(0);
@@ -12,6 +11,8 @@
   position: relative;
   transition: color 0.3s linear;
   display: inline-block;
+  margin: 2px;
+  line-height: 1.5;
   &:before {
     content: "";
     position: absolute;
@@ -94,7 +95,7 @@
     }
   }
   
-  &.gray {
+  &.gray, &.dark {
     background: $gray;
     border: 2px solid $gray;
     color: $white;
