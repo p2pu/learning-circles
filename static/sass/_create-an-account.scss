@@ -5,9 +5,11 @@
 #account-creation, #account-login {
   position: relative;
 
-  span.material-icons-outlined{
-    font-size: 3em;
-    padding-right: 1.5rem;
+  .icon {
+    flex-shrink: 0;
+    display: flex;
+    width: 50px;
+    margin-right: 1.5em;
   }
 
   >.container {

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% load i18n %}
+{% load static %}
 {% block content %}
 {% url 'studygroups_login_redirect' as login_url %}
 
@@ -17,17 +18,24 @@
         <p class="text-lg">Peer 2 Peer University is a grassroots network of people who believe that knowledge should be freely shared and learning is best done with others. Want to get involved? All you need is a free account to:</p>
 
         <p class="d-flex mt-2 mb-4">
-        <span class="material-icons-outlined">done</span>
+        <span class="icon">
+          <img src="{% static 'images/icons/create-account-tools.svg' %}" />
+        </span>
         <span>Run learning circles with free tools for planning meetings, messaging participants, and sharing your experience.</span>
         </p>
 
         <p class="d-flex mt-2 mb-4">
-        <span class="material-icons-outlined">done</span>
+        <span class="icon">
+          <img src="{% static 'images/icons/create-account-community.svg' %}" />
+        </span>
         <span>Join the P2PU forums and community events to connect with and get ideas from learning circle facilitators around the world.</span>
         </p>
 
         <p class="d-flex mt-2 mb-4">
-        <span class="material-icons-outlined">done</span>
+        <span class="icon">
+          <img src="{% static 'images/icons/create-account-learning-resources.svg' %}" />
+        </span>
+
         <span>Explore and add to a curated library of free courses vetted for learning circles, complete with community reviews and guides for facilitators.</span>
         </p>
 
