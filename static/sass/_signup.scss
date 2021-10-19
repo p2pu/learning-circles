@@ -17,15 +17,6 @@
       background: rgb(255,255,255);
       background: linear-gradient(130deg, $white 0%, $white 50%, $p2pu-blue 50%, $p2pu-blue 100%);
 
-      .p2pu-btn {
-        display: inline-flex;
-        align-items: center;
-
-        .material-icons {
-          margin-right: 0.5em;
-        }
-      }
-
       h1 {
         font-size: 2.5em;
         word-break: break-word;

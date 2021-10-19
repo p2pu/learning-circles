@@ -15,7 +15,7 @@
 
       <div class="panel-heading" role="tab" id="heading{{forloop.counter}}">
           <h4 class="panel-title">
-              <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}" aria-expanded="true" aria-controls="collapse{{forloop.counter}}">
+              <a role="button" data-bs-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}" aria-expanded="true" aria-controls="collapse{{forloop.counter}}">
                   {% blocktrans with week_date=week.grouper %}Week of {{week_date}}{% endblocktrans %}
               </a>
           </h4>

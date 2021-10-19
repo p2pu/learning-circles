@@ -828,11 +828,6 @@ table.inner-table tbody td {
 }
 
 
-.p2pu-btn {
-  margin: 4px;
-  padding: 0.2em 1em;
-}
-
 
 // from frontend/components/stylesheets/dashboard.scss
 @mixin drop-shadow {
@@ -862,10 +857,6 @@ table.inner-table tbody td {
   //  font-size: $font-size-xs;
   //}
   //
-
-  .p2pu-btn.btn-sm {
-    padding: 0.5em 1em;
-  }
 
   .meeting-card {
     border-bottom: 1px solid $gray-light;
