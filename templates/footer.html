@@ -4,57 +4,50 @@
 <footer id="footer" class="bg-gray text-cream">
   <div class="container py-5">
     <div class="row">
-      <div class="col-12 col-lg-8 col-xl-7 col-xxl-6 d-md-flex text-sm">
-        <div class="col-12 col-md-0 flex-grow-1">
-          <h5 class="nav-heading text-sm">{% trans "Learning Circles" %}</h5>
-          <ul class="nav flex-column">
-            <li class="nav-item"><a href="#">Find a Learning Circle</a></li>
-            <li class="nav-item"><a href="#">Host a Learning Circle</a></li>
-            <li class="nav-item"><a href="#">Course Library Handbook</a></li>
-            <li class="nav-item"><a href="#">Organize a Team</a></li>
-          </ul>
-          <h5 class="nav-heading text-sm">Facilitator Resources</h5>
-          <ul class="nav flex-column">
-            <li class="nav-item"><a href="#">Facilitator Handbook</a></li>
-            <li class="nav-item"><a href="#">Create a Learning Circle</a></li>
-          </ul>
-        </div>
-  
-        <div class="col-12 col-md-0 flex-grow-1">
-          <h5 class="nav-heading text-sm">About P2PU</h5>
-          <ul class="nav flex-column">
-            <li class="nav-item"><a href="#">About</a></li>
-            <li class="nav-item"><a href="#">Blog</a></li>
-            <li class="nav-item"><a href="#">Hire Us</a></li>
-            <li class="nav-item"><a href="#">Jobs</a></li>
-            <li class="nav-item"><a href="#">Donate</a></li>
-            <li class="nav-item"><a href="#">Contact</a></li>
-          </ul>
-          <h5 class="nav-heading text-sm">Community</h5>
-          <ul class="nav flex-column">
-            <li class="nav-item"><a href="#">Forum</a></li>
-            <li class="nav-item"><a href="#">Events</a></li>
-          </ul>
-        </div>
-  
-        <div class="col-12 col-md-0 flex-grow-1">
-          <h5 class="nav-heading text-sm">Membership</h5>
-          <ul class="nav flex-column">
-            <li class="nav-item"><a href="#">Sign Up</a></li>
-            <li class="nav-item"><a href="#">Log In</a></li>
-            <li class="nav-item"><a href="#">Institutional Partners</a></li>
-          </ul>
-          <h5 class="nav-heading text-sm">Need Help?</h5>
-          <ul class="nav flex-column">
-            <li class="nav-item"><a href="#">Contact Support</a></li>
-            <li class="nav-item"><a href="#">support@p2pu.org</a></li>
-          </ul>
-          <ul class="nav flex-column mt-4">
-            <li class="nav-item"><a href="#">{% trans "Terms of Service" %}</a></li>
-            <li class="nav-item"><a href="#">{% trans "Privacy Policy" %}</a></li>
-          </ul>
+
+      <div class="col-12 col-lg-8 col-xl-7 col-xxl-6 text-sm">
+        <div class="row">
+          <div class="col-12 col-md-6 order-1">
+            <ul class="nav flex-column">
+              <li class="nav-item"><a href="{{STATIC_SITE_URL}}/en/learning-circles/">Join a Learning Circle</a></li>
+              <li class="nav-item"><a href="/en/studygroup/create/">Facilitate a Learning Circle</a></li>
+              <li class="nav-item"><a href="{{STATIC_SITE_URL}}/en/teams/">Start a Team</a></li>
+            </ul>
+            <hr class="d-md-none" />
+          </div>
+       
+          <div class="col-12 col-md-6 mt-md-4 order-2 order-md-3">
+            <ul class="nav flex-column">
+              <li class="nav-item"><a href="https://handbook.p2pu.org">Knowledge Base</a></li>
+              <li class="nav-item"><a href="{{STATIC_SITE_URL}}/en/learning-resources/">Learning Resources</a></li>
+              <li class="nav-item"><a href="https://community.p2pu.org">Community Forum</a></li>
+              <li class="nav-item"><a href="https://community.p2pu.org/c/community-events/upcoming-events/79">Events</a></li>
+            </ul>
+            <hr class="d-md-none" />
+          </div>
+
+          <div class="col-12 col-md-6 order-3 order-md-2">
+            <ul class="nav flex-column">
+              <li class="nav-item"><a href="{{STATIC_SITE_URL}}/en/about/">About P2PU</a></li>
+              <li class="nav-item"><a href="https://info.p2pu.org">Blog</a></li>
+              <li class="nav-item"><a href="{{STATIC_SITE_URL}}/en/services/">Services</a></li>
+              <li class="nav-item"><a href="{{STATIC_SITE_URL}}/en/jobs/">Jobs</a></li>
+              <li class="nav-item"><a href="{{STATIC_SITE_URL}}/en/contact/">Help</a></li>
+            </ul>
+            <hr class="d-md-none" />
+          </div>
+             
+          <div class="col-12 col-md-6 mt-md-4 order-4">
+            <ul class="nav flex-column">
+              <li class="nav-item"><a href="https://handbook.p2pu.org/tools-and-resources/marketing-materials/p2pu.org-image-credits">Site Image Credits</a></li>
+              <li class="nav-item"><a href="{{STATIC_SITE_URL}}/en/terms/">Terms of Service</a></li>
+              <li class="nav-item"><a href="{{STATIC_SITE_URL}}/en/privacy/">Privacy Policy</a></li>
+            </ul>
+          </div>
         </div>
       </div>
+
+
       <div class="col-12 col-lg-4 col-xl-5 offset-xxl-1 d-md-flex order-first order-md-0">
         <div class="col-12 order-first order-md-0 row g-0">
           <div class="donate col-12 d-flex mb-5 mt-5 mt-lg-2">
