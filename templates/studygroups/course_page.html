@@ -64,7 +64,7 @@
               <tr class="topics">
                 <th scope="row">{% trans "Topics" %}</th>
                 <td class="topics-list">
-                  {% for topic in course.topic_list %}<a class="topic" href="">{{topic}}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                  {% for topic in course.topic_list %}{{topic}}{% if not forloop.last %}, {% endif %}{% endfor %}
                 </td>
               </tr>
               <tr>
