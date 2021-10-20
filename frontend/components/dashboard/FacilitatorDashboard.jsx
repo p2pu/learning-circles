@@ -79,7 +79,7 @@ export default class FacilitatorDashboard extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="container-fluid">
         <Alert
           show={this.state.alert.show}
           type={this.state.alert.type}

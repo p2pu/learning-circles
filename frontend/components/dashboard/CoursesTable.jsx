@@ -79,7 +79,7 @@ export default class CoursesTable extends Component {
               {
                 this.state.courses.map(course => {
                   const date = moment(course.created_at).format('MMM D, YYYY')
-                  const classes = course.unlisted ? 'bg-secondary' : '';
+                  const classes = course.unlisted ? 'bg-cream-dark' : '';
 
                   return(
                     <tr key={course.id} className={`${classes}`}>
@@ -99,7 +99,7 @@ export default class CoursesTable extends Component {
           {
             this.state.courses.map((course, index) => {
               const date = moment(course.created_at).format('MMM D, YYYY')
-              const classes = course.unlisted ? 'bg-secondary' : '';
+              const classes = course.unlisted ? 'bg-cream-dark' : '';
               const delay = index * 100;
 
               return(

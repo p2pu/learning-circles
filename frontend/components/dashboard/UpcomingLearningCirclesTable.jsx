@@ -73,7 +73,7 @@ export default class LearningCirclesTable extends Component {
               {
                 this.state.learningCircles.map(lc => {
                   const date = lc.next_meeting_date ? moment(lc.next_meeting_date).format('MMM D, YYYY') : "n/a";
-                  const classes = lc.draft ? 'bg-secondary' : '';
+                  const classes = lc.draft ? 'bg-cream-dark' : '';
 
                   return(
                     <tr key={ lc.id } className={`${classes}`}>
@@ -95,7 +95,7 @@ export default class LearningCirclesTable extends Component {
           {
             this.state.learningCircles.map(lc => {
               const date = lc.next_meeting_date ? moment(lc.next_meeting_date).format('MMM D, YYYY') : "n/a";
-              const classes = lc.draft ? 'bg-secondary' : '';
+              const classes = lc.draft ? 'bg-cream-dark' : '';
 
               return(
                 <div className={`meeting-card p-2 ${classes}`} key={lc.id}>
