@@ -228,6 +228,8 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://.*\.p2pu\.org$",
 ]
 
+CORS_ALLOW_CREDENTIALS = True
+
 AUTHENTICATION_BACKENDS = ['custom_registration.backend.CaseInsensitiveBackend']
 
 # URL for P2PU static site (only really useful for dev and staging environments
