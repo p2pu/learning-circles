@@ -40,7 +40,7 @@ class TestCustomRegistrationViews(TestCase):
             "first_name": "firstname",
             "last_name": "lastname",
             "communication_opt_in": "on",
-            "interested_in_learning": "python",
+            "consent_opt_in": "on",
             "password1": "password",
             "password2": "password",
         }
@@ -49,7 +49,6 @@ class TestCustomRegistrationViews(TestCase):
         users = User.objects.filter(email__iexact=data['email'])
         self.assertEqual(users.count(), 1)
         profile = Profile.objects.get(user=users.first())
-        self.assertEqual(profile.interested_in_learning, "python")
         self.assertEqual(profile.communication_opt_in, True)
         self.assertEqual(len(mail.outbox), 1) ##
         self.assertIn('Please confirm your email address', mail.outbox[0].subject)
@@ -64,6 +63,7 @@ class TestCustomRegistrationViews(TestCase):
             "password1": "password",
             "password2": "password",
             "communication_opt_in": "on",
+            "consent_opt_in": "on",
         }
         resp = c.post('/en/accounts/register/', data)
         self.assertRedirects(resp, '/en/')
@@ -140,6 +140,7 @@ class TestCustomRegistrationViews(TestCase):
             "last_name": "Test",
             "password": "12345",
             "communication_opt_in": False,
+            "consent_opt_in": True,
             "g-recaptcha-response": "blah",
         }
         resp = c.post(url, data=json.dumps(data), content_type='application/json')
@@ -197,7 +198,8 @@ class TestCustomRegistrationViews(TestCase):
             "last_name": "Test",
             "password": "12345",
             "g-recaptcha-response": "blah",
-            "communication_opt_in": False
+            "communication_opt_in": False,
+            "consent_opt_in": True,
         }
         resp = c.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 200)
@@ -225,6 +227,7 @@ class TestCustomRegistrationViews(TestCase):
             "first_name": "firstname",
             "last_name": "lastname",
             "communication_opt_in": "on",
+            "consent_opt_in": "on",
             "password1": "password",
             "password2": "password",
         }
