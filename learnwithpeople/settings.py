@@ -203,11 +203,21 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Allow all host headers
 ALLOWED_HOSTS = ['*']
 
+# Exempt trusted domains
+CSRF_TRUSTED_ORIGINS = [
+    '.p2pu.org',
+]
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS += [
+      'localhost:8000',
+      'localhost:3001',
+      'localhost:4000',
+    ]
+
 # CORS config
 CORS_ORIGIN_WHITELIST = [
     "https://www.p2pu.org",
     "https://p2pu.github.io",
-    "http://p2pu-website-modern-quetzal.s3-website-us-east-1.amazonaws.com",
 ]
 if DEBUG:
     CORS_ORIGIN_WHITELIST.append('http://localhost:8000')
@@ -218,11 +228,10 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://.*\.p2pu\.org$",
 ]
 
-# TODO don't merge to release
-CORS_ALLOW_CREDENTIALS = True
-SESSION_COOKIE_SAMESITE = None
-
 AUTHENTICATION_BACKENDS = ['custom_registration.backend.CaseInsensitiveBackend']
+
+# URL for P2PU static site (only really useful for dev and staging environments
+STATIC_SITE_URL = env('STATIC_SITE_URL', 'http://localhost:4000')
 
 ##### Twilio config
 
@@ -231,7 +240,7 @@ TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
 TWILIO_NUMBER = os.environ.get('TWILIO_NUMBER')
 
 LOGIN_REDIRECT_URL = '/login_redirect/'
-LOGOUT_REDIRECT_URL = 'https://www.p2pu.org/en/facilitate/'
+LOGOUT_REDIRECT_URL = STATIC_SITE_URL
 DOMAIN = env('DOMAIN', 'localhost:8000')
 PROTOCOL = env('PROTOCOL', 'https')
 
@@ -389,6 +398,3 @@ BLEACH_DEFAULT_WIDGET = 'tinymce.widgets.TinyMCE'
 
 RECAPTCHA_SITE_KEY = env('RECAPTCHA_SITE_KEY', '')
 RECAPTCHA_SECRET_KEY = env('RECAPTCHA_SECRET_KEY', '')
-
-# URL for P2PU static site (only really useful for dev and staging environments
-STATIC_SITE_URL = env('STATIC_SITE_URL', 'http://localhost:4000')
