@@ -13,7 +13,10 @@
         <div class="my-2 my-md-0 collapse navbar-collapse navbarNavDropdown justify-content-end">
 
           {% if user.is_authenticated %}
+
+            {% if not user|is_organizer %}
             <a href="{{STATIC_SITE_URL}}/en/teams/" class="d-flex my-1 my-md-0 me-md-2 me-lg-3 btn btn-sm secondary p2pu-btn blue">Start a Team</a>
+            {% endif %}
             <button type="button" class="btn btn-sm d-flex align-items-center secondary p2pu-btn gray mx-0 dropdown-toggle" id="loggedInDropdown" data-bs-toggle="dropdown" aria-expanded="false"><span class="material-icons material-icons-outlined me-1">account_circle</span>{{user.first_name}}<span class="material-icons">expand_more</span></button>
             <ul class="dropdown-menu py-0 dropdown-menu-end loggedin-dropdown shadow" aria-labelledby="loggedInDropdown">          
               <li>
@@ -48,10 +51,11 @@
 
             </ul>
           {% else %}
-          <a href="{{STATIC_SITE_URL}}/en/teams" class="d-flex my-1 my-md-0 me-md-2 me-lg-3 btn btn-sm secondary p2pu-btn blue">{% trans "Start a Team" %}</a>
-          <a href="{% url 'register' %}" class="d-flex my-1 my-md-0 me-md-2 me-lg-3 btn btn-sm secondary p2pu-btn orange">{% trans "Create an Account" %}</a>
-          <a href="{% url 'login' %}" class="btn btn-sm d-flex align-items-center secondary p2pu-btn gray mx-0">
-            <span class="material-icons material-icons-outlined me-1 d-md-none">account_circle</span>{% trans "Log in" %}</a>
+            <a href="{{STATIC_SITE_URL}}/en/teams" class="d-flex my-1 my-md-0 me-md-2 me-lg-3 btn btn-sm secondary p2pu-btn blue">{% trans "Start a Team" %}</a>
+            <a href="{% url 'register' %}" class="d-flex my-1 my-md-0 me-md-2 me-lg-3 btn btn-sm secondary p2pu-btn orange">{% trans "Create an Account" %}</a>
+            <a href="{% url 'login' %}" class="btn btn-sm d-flex align-items-center secondary p2pu-btn gray mx-0">
+              <span class="material-icons material-icons-outlined me-1 d-md-none">account_circle</span>{% trans "Log in" %}
+            </a>
           {% endif %}
         </div>
       </nav>
