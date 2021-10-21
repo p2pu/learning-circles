@@ -16,7 +16,7 @@ var P2PU = window.P2PU || {};
                     target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
                     if (target.length) {
                         $('html,body').animate({
-                            scrollTop: target.offset().top - 98
+                            scrollTop: target.offset().top - 260
                         }, 1000);
                         return false;
                     }
