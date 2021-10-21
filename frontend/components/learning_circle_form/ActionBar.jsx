@@ -27,7 +27,7 @@ const SaveButton = (props) => (
 )
 
 const CancelButton = (props) => (
-  <button onClick={props.onClick} className="p2pu-btn transparent">Cancel</button>
+  <button onClick={props.onClick} className="p2pu-btn secondary gray">Cancel</button>
 )
 
 const ActionBar = (props) => {

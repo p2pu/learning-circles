@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # 3rd party apps
     'corsheaders',
     'crispy_forms',
+    'crispy_bootstrap5',
     'phonenumber_field',
     'rest_framework',
     'django_filters',
@@ -63,6 +64,7 @@ INSTALLED_APPS = [
     'announce',
     'community_calendar',
     'client_logging',
+    'contact',
 ]
 
 MIDDLEWARE = [
@@ -148,6 +150,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'studygroups.context_processors.domain',
+                'studygroups.context_processors.globals',
             ]
         }
     },
@@ -166,7 +169,8 @@ WEBPACK_LOADER = {
     },
 }
 
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = os.environ.get('EMAIL_PORT', 25)
@@ -199,6 +203,17 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Allow all host headers
 ALLOWED_HOSTS = ['*']
 
+# Exempt trusted domains
+CSRF_TRUSTED_ORIGINS = [
+    '.p2pu.org',
+]
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS += [
+      'localhost:8000',
+      'localhost:3001',
+      'localhost:4000',
+    ]
+
 # CORS config
 CORS_ORIGIN_WHITELIST = [
     "https://www.p2pu.org",
@@ -209,11 +224,14 @@ if DEBUG:
     CORS_ORIGIN_WHITELIST.append('http://localhost:3001')
     CORS_ORIGIN_WHITELIST.append('http://localhost:4000')
 
-CORS_ORIGIN_REGEX_WHITELIST = [
-    r"^https://\w+\.p2pu\.org$",
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.p2pu\.org$",
 ]
 
 AUTHENTICATION_BACKENDS = ['custom_registration.backend.CaseInsensitiveBackend']
+
+# URL for P2PU static site (only really useful for dev and staging environments
+STATIC_SITE_URL = env('STATIC_SITE_URL', 'http://localhost:4000')
 
 ##### Twilio config
 
@@ -222,7 +240,7 @@ TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
 TWILIO_NUMBER = os.environ.get('TWILIO_NUMBER')
 
 LOGIN_REDIRECT_URL = '/login_redirect/'
-LOGOUT_REDIRECT_URL = 'https://www.p2pu.org/en/facilitate/'
+LOGOUT_REDIRECT_URL = STATIC_SITE_URL
 DOMAIN = env('DOMAIN', 'localhost:8000')
 PROTOCOL = env('PROTOCOL', 'https')
 
@@ -230,12 +248,11 @@ PROTOCOL = env('PROTOCOL', 'https')
 GA_TRACKING_ID = env('GA_TRACKING_ID', 'UA-0000000-00')
 
 ####### Celery config #######
-BROKER_URL = env('BROKER_URL', 'amqp://guest:guest@localhost//')
-
+CELERY_BROKER_URL = env('BROKER_URL', 'amqp://guest:guest@localhost//')
 
 from celery.schedules import crontab
 
-CELERYBEAT_SCHEDULE = {
+CELERY_BEAT_SCHEDULE = {
     'send_reminders': {
         'task': 'studygroups.tasks.send_reminders',
         'schedule': crontab(minute='*/5'),

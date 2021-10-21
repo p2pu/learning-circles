@@ -23,6 +23,7 @@
     font-size: $font-size-xs;
   }
 
+  // TODO scope to dashboard
   .p2pu-btn.btn-sm {
     padding: 0.5em 1em;
   }
@@ -65,10 +66,6 @@
     border-bottom: 5px solid $p2pu-blue;
     color: inherit;
   }
-}
-
-.bg-dark {
-  background: #049487 !important;
 }
 
 .page-link {

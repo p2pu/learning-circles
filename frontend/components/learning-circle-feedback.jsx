@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react'
+import React, {useState} from 'react'
 
 import DelayedPostForm from './manage/delayed-post-form';
 import Star from './manage/star';

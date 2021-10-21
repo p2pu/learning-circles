@@ -8,7 +8,7 @@ from django.utils.translation import get_language
 from django.urls import reverse
 from django.conf import settings
 
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 from freezegun import freeze_time
 
 from studygroups.models import Course
@@ -86,6 +86,16 @@ class TestFacilitatorViews(TestCase):
     }
 
     def setUp(self):
+        patcher = patch('studygroups.views.learner.requests.post')
+        self.mock_captcha = patcher.start()
+        self.mock_captcha.json.return_value = {"success": True}
+        self.addCleanup(patcher.stop)
+
+        mailchimp_patcher = patch('studygroups.models.profile.update_mailchimp_subscription')
+        self.mock_maichimp = mailchimp_patcher.start()
+        self.addCleanup(mailchimp_patcher.stop)
+
+
         user = create_user('admin@test.com', 'admin', 'admin', 'password')
         user.is_superuser = True
         user.is_staff = True

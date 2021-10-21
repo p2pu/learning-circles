@@ -32,6 +32,7 @@ Tests for when a learner interacts with the system. IOW:
     - signups
     - rsvps
 """
+
 class TestLearnerViews(TestCase):
 
     fixtures = ['test_courses.json', 'test_studygroups.json']
@@ -49,7 +50,11 @@ class TestLearnerViews(TestCase):
     }
 
     def setUp(self):
-        pass
+        patcher = patch('studygroups.views.learner.requests.post')
+        self.mock_captcha = patcher.start()
+        self.mock_captcha.json.return_value = {"success": True}
+        self.addCleanup(patcher.stop)
+
 
     def test_submit_application(self):
         c = Client()

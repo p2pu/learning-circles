@@ -13,10 +13,7 @@ from selenium.webdriver.common.by import By
 from studygroups.models import Course
 from studygroups.models import StudyGroup
 from studygroups.models import Meeting
-from custom_registration.models import create_user, confirm_user_email
-#from e2e.tests.selenium.page_objects import LearningCircleCreationPage
-#from e2e.tests.selenium.locators import LearningCircleCreationPageLocators
-#from e2e.tests.selenium.locators import RegistrationModalLocators
+from custom_registration.models import create_user
 
 from datetime import timedelta, time
 

@@ -51,7 +51,7 @@ export default class Announcements extends Component {
               <Card className={`bg-${announcement.color} feedback-survey d-block w-100`} key={`announcement-${index}`}>
                 <div className="bold text-center text-white">{announcement.text}</div>
                 <div className="text-center mt-3">
-                  <a href={announcement.link} className="p2pu-btn light btn-sm" target="_blank">{announcement.link_text}</a>
+                  <a href={announcement.link} className="p2pu-btn btn btn-sm secondary transparent" target="_blank">{announcement.link_text}</a>
                 </div>
               </Card>
             )

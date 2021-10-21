@@ -34,7 +34,8 @@ class LearningCircleCreationPageLocators(object):
     FACILITATOR_CONCERNS_FIELD = (By.ID, "facilitator_concerns")
     SUCCESS_ALERT = (By.CSS_SELECTOR, ".alert.alert-success")
     DANGER_ALERT = (By.CSS_SELECTOR, ".alert.alert-danger")
-    ALERT_CLOSE_BUTTON = (By.CSS_SELECTOR, ".alert.alert-dismissible button.close")
+    ALERT_CLOSE_BUTTON = (By.CSS_SELECTOR, ".alert.alert-dismissible .btn-close")
+
     COURSE_CARDS = (By.CSS_SELECTOR, "#react-tabs-1 .search-results .result-item")
     PUBLISH_BUTTON = (By.CSS_SELECTOR, ".action-bar button.publish")
     SAVE_BUTTON = (By.CSS_SELECTOR, ".action-bar button.save")

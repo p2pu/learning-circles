@@ -14,6 +14,7 @@ from e2e.tests.selenium.page_objects import LearningCircleCreationPage
 from e2e.tests.selenium.locators import LearningCircleCreationPageLocators
 from e2e.tests.selenium.locators import RegistrationModalLocators
 
+from unittest.mock import patch
 import socket
 
 @override_settings(ALLOWED_HOSTS=['*'])
@@ -47,6 +48,12 @@ class LearningCircleCreation(StaticLiveServerTestCase):
     def tearDownClass(cls):
         cls.driver.quit()
         super().tearDownClass()
+
+
+    def setUp(self):
+        mailchimp_patcher = patch('studygroups.models.profile.update_mailchimp_subscription')
+        self.mock_maichimp = mailchimp_patcher.start()
+        self.addCleanup(mailchimp_patcher.stop)
 
 
     def test_page_title(self):

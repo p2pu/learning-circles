@@ -49,7 +49,7 @@ services:
     volumes:
     - .:/opt/app
     working_dir: /opt/app
-    command: /opt/django-venv/bin/celery worker -A learnwithpeople --loglevel=INFO
+    command: /opt/django-venv/bin/celery -A learnwithpeople worker --loglevel=INFO
     env_file: docker.env
     environment:
     - ADMIN_EMAIL=admin@localhost
@@ -70,7 +70,7 @@ services:
     volumes:
     - .:/opt/app
     working_dir: /opt/app
-    command: /opt/django-venv/bin/celery beat -A learnwithpeople --loglevel=DEBUG --pidfile=/var/lib/celery/celerybeat.pid --schedule=/var/lib/celery/celerybeat-schedule
+    command: /opt/django-venv/bin/celery -A learnwithpeople beat --loglevel=DEBUG --schedule=/var/lib/celery/celerybeat-schedule
     env_file: docker.env
     environment:
     - DATABASE_URL=postgres://lc:password@postgres:5432/lc

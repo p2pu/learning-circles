@@ -58,7 +58,7 @@ export default class CoursesTable extends Component {
       return(
         <div className="py-2">
           <div>You haven't added any courses.</div>
-          <a href={"/en/course/create"} className="p2pu-btn dark btn-sm ml-0">Add a course</a>
+          <a href={"/en/course/create"} className="p2pu-btn dark btn btn-sm ml-0">Add a course</a>
         </div>
       )
     };
@@ -79,14 +79,14 @@ export default class CoursesTable extends Component {
               {
                 this.state.courses.map(course => {
                   const date = moment(course.created_at).format('MMM D, YYYY')
-                  const classes = course.unlisted ? 'bg-secondary' : '';
+                  const classes = course.unlisted ? 'bg-cream-dark' : '';
 
                   return(
                     <tr key={course.id} className={`${classes}`}>
                       <td><a href={course.course_page_path}>{`${course.unlisted ? "[UNLISTED] " : ""}${course.title}`}</a></td>
                       <td>{course.provider}</td>
                       <td>{date}</td>
-                      <td><a href={course.course_edit_path} className="p2pu-btn btn-sm dark">edit</a></td>
+                      <td><a href={course.course_edit_path} className="p2pu-btn btn btn-sm dark">edit</a></td>
                     </tr>
                   )
                 })
@@ -99,7 +99,7 @@ export default class CoursesTable extends Component {
           {
             this.state.courses.map((course, index) => {
               const date = moment(course.created_at).format('MMM D, YYYY')
-              const classes = course.unlisted ? 'bg-secondary' : '';
+              const classes = course.unlisted ? 'bg-cream-dark' : '';
               const delay = index * 100;
 
               return(
@@ -118,7 +118,7 @@ export default class CoursesTable extends Component {
                     </div>
                   </div>
 
-                  <a href={ course.course_edit_path } className="p2pu-btn btn-sm dark m-0 my-2">edit</a>
+                  <a href={ course.course_edit_path } className="p2pu-btn btn btn-sm dark m-0 my-2">edit</a>
                 </div>
               )
             })

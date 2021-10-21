@@ -5,11 +5,6 @@ html {
   font-size: 100%;
 }
 
-.p2pu-btn {
-  margin: 4px;
-  padding: 0.2em 1em;
-}
-
 .close {
   color: $gray-darker;
 }
@@ -157,60 +152,13 @@ html {
         margin-right: 6px;
       }
     }
-
-    button.p2pu-btn {
-      margin: 4px;
-      padding: 0.2em 1em;
-
-      &.transparent {
-        background: transparent;
-        color: $gray-darker;
-        border: 2px solid $gray-darker;
-        &:before {
-          background: rgba(255,255,255,0.4);
-        }
-      }
-
-      &.blue {
-        background: $p2pu-blue;
-        color: white;
-
-        &:before {
-          background: lighten($p2pu-blue, 1%);
-        }
-      }
-
-      &.orange {
-        background: $p2pu-orange;
-        color: white;
-
-        &:before {
-          background: lighten($p2pu-orange, 3%);
-        }
-      }
-
-      &.yellow {
-        background: $p2pu-yellow;
-        color: white;
-
-        &:before {
-          background: lighten($p2pu-yellow, 3%);
-        }
-      }
-
-      &.arrow {
-        padding: 0.7em 1em;
-        font-size: 1em;
-        align-self: center;
-      }
-    }
   }
 }
 
 .help-container {
   background-color: $gray-lighter;
   right: 0;
-  padding-top: 104px;
+  padding-top: $navbar-height;
   padding-bottom: 90px;
   padding-left: 40px;
   padding-right: 40px;
@@ -293,12 +241,6 @@ div.modal-overlay {
       padding-right: 1.25rem;
     }
 
-    .p2pu-btn.transparent {
-      background: transparent;
-      border-color: $gray-darker;
-      color: $gray-darker;
-    }
-
     .text-small a {
       font-size: 0.8em;
       color: $gray-darker;
@@ -373,11 +315,6 @@ div.modal-overlay {
     flex-wrap: nowrap;
     line-height: 1.5;
 
-    .p2pu-btn {
-      height: 24px;
-      width: 24px;
-      padding: 0;
-    }
 
     &.suggested-date {
       color: $gray;

@@ -1,11 +1,44 @@
-@import "p2pu-theme/src/scss/base";
+// all imported files are overrides of files in Bootstrap v5.1.0 unless otherwise noted
+
+// Configuration
+@import "p2pu-theme/src/scss/fonts";
 @import "p2pu-theme/src/scss/variables";
+
+// override form variables to have non-greyed out form controls
+$input-bg:             $white;
+$input-disabled-bg:    $gray-snow;
+$input-color:          $gray-dark;
+$input-border-color:   $gray-light;
+$input-border-width:   1px;
+//$input-box-shadow:     none;
+
+@import "bootstrap/scss/bootstrap";
+@import "p2pu-theme/src/scss/mixins";
+@import "p2pu-theme/src/scss/utilities";
+
+// Layout & components
+@import "p2pu-theme/src/scss/layout";
+@import "p2pu-theme/src/scss/typography";
+@import "p2pu-theme/src/scss/images";
+@import "p2pu-theme/src/scss/forms";
+@import "buttons";
+@import "p2pu-theme/src/scss/dropdown";
+@import "p2pu-theme/src/scss/nav";
+@import "p2pu-theme/src/scss/menu";
+@import "p2pu-theme/src/scss/card";
+@import "p2pu-theme/src/scss/footer";
+
+
 @import "custom";
 @import "landing";
 @import "learningcircle";
 @import "signup";
 @import "lc-manage";
+@import "create-an-account";
+@import "course_page";
 
 .boston-banner {
   background-color: $p2pu-orange; // #fc7100;
 }
+
+

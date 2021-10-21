@@ -10,7 +10,7 @@ services:
     - 1080:80
   learning-circles:
     build: .
-    image: learning-circles
+    image: p2pu/learning-circles:local
     links:
     - selenium
     ports:
@@ -30,6 +30,7 @@ services:
     - DEFAULT_FROM_EMAIL=notify@mail.com
     - ADMIN_EMAIL=admin@localhost
     - DEBUG=true
+    - RECAPTCHA_SITE_KEY=6Le0DW8bAAAAAJUHXcKkkASxZWMIwDypy1DiBBEX
   frontend:
     image: node:lts-slim
     volumes:

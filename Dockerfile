@@ -1,6 +1,7 @@
 FROM node:lts-slim AS frontend
 WORKDIR /opt/app/
 COPY package.json /opt/app/
+COPY p2pu-theme/ /opt/app/p2pu-theme/
 RUN npm install --quiet --production
 COPY . /opt/app/
 RUN npm run build
