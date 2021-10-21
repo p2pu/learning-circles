@@ -169,6 +169,8 @@ class WhoAmIView(View):
                 user_data["links"][:0] = [
                     {"text": "My team", "url": reverse('studygroups_organize')},
                 ]
+
+            if request.user.is_staff or TeamMembership.objects.active().filter(user=request.user):
                 user_data['team'] = True
 
             if request.user.is_staff:

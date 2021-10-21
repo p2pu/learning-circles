@@ -14,7 +14,7 @@
 
           {% if user.is_authenticated %}
 
-            {% if not user|is_organizer %}
+            {% if not user|is_team_member %}
             <a href="{{STATIC_SITE_URL}}/en/teams/" class="d-flex my-1 my-md-0 me-md-2 me-lg-3 btn btn-sm secondary p2pu-btn blue">Start a Team</a>
             {% endif %}
             <button type="button" class="btn btn-sm d-flex align-items-center secondary p2pu-btn gray mx-0 dropdown-toggle" id="loggedInDropdown" data-bs-toggle="dropdown" aria-expanded="false"><span class="material-icons material-icons-outlined me-1">account_circle</span>{{user.first_name}}<span class="material-icons">expand_more</span></button>
