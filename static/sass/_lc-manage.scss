@@ -1,3 +1,8 @@
+.manage .card {
+  margin-top: unset !important;
+  width: unset !important;
+}
+
 .ux-feedback {
   background-color: $p2pu-light-blue;
 }
@@ -11,18 +16,18 @@
   min-width: 24px;
   height: 24px;
   line-height: 24px;
-  //text-align: center;
   margin-left: 0px;
   margin-right: 0px;
 }
 
 .action-bar {
-  padding: 1em 0;
-  background: $p2pu-yellow;
-  @include media-breakpoint-down(xs) {
-    margin-top: calc(30px - 50vw);
-    padding-top: calc(50vw - 15px);
-    padding-bottom: 1em;
+  margin-top: calc(30px - 50vw);
+  padding-top: calc(50vw - 15px);
+  padding-bottom: 1em;
+  @include media-breakpoint-up(sm) {
+    margin-top: inherit;
+    padding: 1em 0;
+    background: $p2pu-yellow;
   }
 }
 
@@ -161,7 +166,7 @@
 }
 
 .learner-signup-info{
-  background: $gray-lighter;
+  background: $gray-light;
   padding: 1em !important;
 }
 
@@ -175,7 +180,7 @@
 
 .meeting-rsvp {
   padding: 1em;
-  background: $gray-lighter;
+  background: $gray-light;
 
   ul {
     margin: 0;
@@ -248,7 +253,7 @@
 
 @mixin meeting-item-details {
   padding: 1em;
-  background: $gray-lighter;
+  background: $gray-light;
   margin-bottom: 1.5em;
 }
 

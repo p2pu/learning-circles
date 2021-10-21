@@ -163,7 +163,7 @@
 
   &:hover {
     text-decoration: none;
-    background-color: $gray-lighter;
+    background-color: $gray-light;
   }
 
   img {
@@ -296,7 +296,7 @@ img.lc-about-image{
   }
 }
 
-.learning-circle-signup, .learning-circle-login {
+.learning-circle-signup {
   background: url("../images/learning-circle.png") bottom center no-repeat;
   background-size: 80% auto;
 
@@ -322,12 +322,12 @@ img.lc-about-image{
     }
 
     .form {
-      background: $gray-darker;
+      background: $gray-dark;
       padding: 2em;
       color: $white;
 
       .algolia-places {
-        color: $gray-darker;
+        color: $gray-dark;
       }
 
       #div_id_team_membership-weekly_update_opt_in, #div_id_profile-communication_opt_in, #div_id_communication_opt_in {
@@ -343,7 +343,7 @@ img.lc-about-image{
 
 
       .help-block {
-        color: $gray-lighter;
+        color: $gray-light;
         font-size: 0.8em;
       }
 
@@ -368,9 +368,10 @@ img.lc-about-image{
   }
 }
 
+
 .copy-url {
-  background-color: $gray-lighter;
-  color: $gray-darker;
+  background-color: $gray-light;
+  color: $gray-dark;
   padding: 8px;
   border-radius: 8px;
 }
@@ -459,7 +460,7 @@ img.lc-about-image{
     }
 
     &.alert-info button.close {
-      color: $gray-darker;
+      color: $gray-dark;
       opacity: 1;
     }
 
@@ -615,7 +616,7 @@ img.lc-about-image{
   .progress {
     background-color: $white;
     border-radius: 1rem;
-    border: 1px solid $gray-darker;
+    border: 1px solid $gray-dark;
 
     .progress-bar {
       border-radius: 1rem;
@@ -657,11 +658,6 @@ img.lc-about-image{
       order: 2
     }
   }
-}
-
-.row {
-  margin-right: 0 !important;
-  margin-left: 0 !important;
 }
 
 
@@ -774,7 +770,7 @@ table.inner-table tbody td {
 
           button {
             margin-left: 6px;
-            background: $gray-darker;
+            background: $gray-dark;
             color: $white;
             border: none;
             height: 24px;
@@ -783,7 +779,7 @@ table.inner-table tbody td {
           }
 
           .topic-type {
-            background: $gray-darker;
+            background: $gray-dark;
             color: $white;
             height: 24px;
             padding-left: 4px;
@@ -801,7 +797,7 @@ table.inner-table tbody td {
         font-family: $font-family-sans-serif;
 
         a {
-          color: $gray-darker;
+          color: $gray-dark;
         }
       }
     }
@@ -826,11 +822,6 @@ table.inner-table tbody td {
   }
 }
 
-
-.p2pu-btn {
-  margin: 4px;
-  padding: 0.2em 1em;
-}
 
 
 // from frontend/components/stylesheets/dashboard.scss
@@ -862,10 +853,6 @@ table.inner-table tbody td {
   //}
   //
 
-  .p2pu-btn.btn-sm {
-    padding: 0.5em 1em;
-  }
-
   .meeting-card {
     border-bottom: 1px solid $gray-light;
 
@@ -893,7 +880,7 @@ table.table {
   thead {
     tr {
       td {
-        border-bottom: 2px solid $gray-darker;
+        border-bottom: 2px solid $gray-dark;
         border-top: none;
         font-weight: 700;
       }

@@ -1,19 +1,19 @@
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.utils import six
 from django.utils import timezone
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+
+from studygroups.models import Profile
+from studygroups.utils import html_body_to_text
 from studygroups.utils import render_to_string_ctx
 from studygroups.email_helper import render_html_with_css
-from django.core.mail import EmailMultiAlternatives
 
 import random
 import string
 
-from studygroups.models import Profile
-from studygroups.utils import html_body_to_text
 
 def create_user(email, first_name, last_name, password, communication_opt_in=False, interested_in_learning=''):
     """ Create a new user using the email as the username  """

@@ -1,0 +1,3 @@
+[submodule "p2pu-theme"]
+	path = p2pu-theme
+	url = https://github.com/p2pu/p2pu-theme.git

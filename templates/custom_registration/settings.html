@@ -4,52 +4,49 @@
 {% block content %}
 {% url 'studygroups_login_redirect' as login_url %}
 
-<div class="learning-circle-signup">
-  <div class="background">
-    <div class="container">
-      <div class="row justify-content-between page-content">
-        <div class="col-12 col-md-5" data-aos="fade-right">
-          <header>
-            <h1>{% trans "Account Settings" %}</h1>
-          </header>
-          <p>{% blocktrans %}Add an optional profile to distinguish yourself across P2PU. If you are an organizer, your bio will appear on our <a href="https://www.p2pu.org/en/teams/">team page</a>.{% endblocktrans %}</p>
-          <p>{% trans "You should opt into communication if you would like to receive tri-weekly community digests from P2PU and occasional announcements. We will never spam you." %}</p>
-          <p>{% trans "There are some messages you cannot opt out of. When you create a learning circle, you will receive occasional messages from P2PU and learners related to that learning circle. Additionally, you cannot opt out of account-related messages (such as password resets)." %}</p>
-        </div>
-        <div class="col-12 col-md-7" data-aos="fade-left">
+<div id="account-settings">
+  <div class="container">
+    <div class="row justify-content-between page-content pt-5">
+      <div class="col-12 col-md-5" data-aos="fade-right">
+        <header>
+          <h1>{% trans "Account Settings" %}</h1>
+        </header>
+        <p>{% blocktrans %}Add an optional profile to distinguish yourself across P2PU. If you are an organizer, your bio will appear on our <a href="https://www.p2pu.org/en/about/">about page</a>.{% endblocktrans %}</p>
+        <p>{% trans "You should opt into communication if you would like to receive tri-weekly community digests from P2PU and occasional announcements. We will never spam you." %}</p>
+        <p>{% trans "There are some messages you cannot opt out of. When you create a learning circle, you will receive occasional messages from P2PU and learners related to that learning circle. Additionally, you cannot opt out of account-related messages (such as password resets)." %}</p>
+      </div>
+      <div class="col-12 col-md-7" data-aos="fade-left">
 
-          <div class="form profile-form">
-            <h4>{% trans "Profile" %}</h4>
+        <div class="form bg-light-blue p-4">
+          <h4>{% trans "Profile" %}</h4>
+          <form action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ user_form|crispy }}
+            {{ profile_form|crispy }}
+            <input type="submit" class="btn p2pu-btn gray" value="Save profile settings" />
+          </form>
+          <div class="form py-0">
+            <p class="mb-0">If you’d like to change the address affiliated with your account, please contact <a href="mailto:thepeople@p2pu.org">thepeople@p2pu.org</a>.</p>
+          </div>
+        </div>
+
+        {% if team_membership %}
+          <div class="form  bg-light-blue p-4 profile-form mt-4">
+            <h4>{% trans "Team" %}</h4>
+            <p>{% trans "Your team:" %} {{ team_membership.team.name }}</p>
             <form action="" method="POST" enctype="multipart/form-data">
               {% csrf_token %}
-              {{ user_form|crispy }}
-              {{ profile_form|crispy }}
-              <input type="submit" class="btn p2pu-btn light" value="Save profile settings" />
+              {{ team_membership_form|crispy }}
+              <input type="submit" class="btn p2pu-btn gray" name="team_membership" value="Save team settings" />
             </form>
+            <p class="mt-2"><a href="{% url "studygroups_facilitator_leave_team" team_membership.id %}" class="btn p2pu-btn orange">{% trans "Leave team" %}</a></p>
           </div>
+        {% endif %}
 
-          {% if team_membership %}
-            <div class="form profile-form">
-              <h4>{% trans "Team" %}</h4>
-              <p>{% trans "Your team:" %} {{ team_membership.team.name }}</p>
-              <form action="" method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ team_membership_form|crispy }}
-                <input type="submit" class="btn p2pu-btn light" name="team_membership" value="Save team settings" />
-              </form>
-              <p class="mt-2"><a href="{% url "studygroups_facilitator_leave_team" team_membership.id %}" class="btn p2pu-btn light transparent">{% trans "Leave team" %}</a></p>
-            </div>
-          {% endif %}
-
-          <div class="form py-0">
-            <p class="mb-0">If you’d like to change the address affiliated with your account, please contact <a href="mailto:help@p2pu.org">help@p2pu.org</a>.</p>
-          </div>
-
-          <div class="form">
-            <h4>{% trans "Delete Account" %}</h4>
-            <p>{% trans "This will permanently delete your P2PU account and also delete any future or active learning circles." %}</p>
-            <p><a href="{% url "account_delete" %}" class="btn p2pu-btn light transparent">{% trans "Delete account" %}</a></p>
-          </div>
+        <div class="form bg-light-blue p-4 mt-4 mb-4">
+          <h4>{% trans "Delete Account" %}</h4>
+          <p>{% trans "This will permanently delete your P2PU account and also delete any future or active learning circles." %}</p>
+          <p><a href="{% url "account_delete" %}" class="btn secondary p2pu-btn btn-danger">{% trans "Delete account" %}</a></p>
         </div>
       </div>
     </div>

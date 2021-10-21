@@ -82,7 +82,7 @@ export default class LearningCirclesTable extends Component {
                     date = moment(lc.start_date).format('MMM D, YYYY')
                   }
 
-                  const classes = lc.draft ? 'bg-secondary' : '';
+                  const classes = lc.draft ? 'bg-cream-dark' : '';
 
                   return(
                     <tr key={ lc.id } className={`${classes}`}>
@@ -91,7 +91,7 @@ export default class LearningCirclesTable extends Component {
                       { this.props.teamId && <td>{ lc.facilitator }</td>}
                       <td>{ lc.signup_count }</td>
                       <td>{ date }</td>
-                      { (this.props.user || this.props.userIsOrganizer) && <td><a href={ lc.studygroup_path } className="p2pu-btn btn-sm dark">manage</a></td> }
+                      { (this.props.user || this.props.userIsOrganizer) && <td><a href={ lc.studygroup_path } className="p2pu-btn btn btn-sm dark">manage</a></td> }
                     </tr>
                   )
                 })
@@ -104,7 +104,7 @@ export default class LearningCirclesTable extends Component {
           {
             this.state.learningCircles.map(lc => {
               const date = lc.next_meeting_date ? moment(lc.next_meeting_date).format('MMM D, YYYY') : "n/a";
-              const classes = lc.draft ? 'bg-secondary' : '';
+              const classes = lc.draft ? 'bg-cream-dark' : '';
 
               return(
                 <div className={`meeting-card p-2 ${classes}`} key={lc.id}>
@@ -124,7 +124,7 @@ export default class LearningCirclesTable extends Component {
                     </div>
                   </div>
 
-                  { (this.props.user || this.props.userIsOrganizer) && <a href={ lc.studygroup_path } className="p2pu-btn btn-sm dark m-0 my-2">manage</a> }
+                  { (this.props.user || this.props.userIsOrganizer) && <a href={ lc.studygroup_path } className="p2pu-btn btn btn-sm dark m-0 my-2">manage</a> }
                 </div>
               )
             })

@@ -3,29 +3,34 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="learning-circle-login">
-  <div class="background">
-    <div class="container">
-        <div class="row justify-content-between page-content">
-          <div class="col-12 col-md-5" data-aos="fade-right">
-            <header>
-              <h1>{% trans "Log in" %}</h1>
-              {% url 'register' as signup_url %}
-              <small><a href="{{ signup_url }}{% if request.GET.next %}?next={{ request.GET.next|urlencode }}{% endif %}">{% trans 'Create an account ' %}</a>{% trans "if you don't have one already" %}</small>
-            </header>
-            <p>{% trans "Forgot your username? It's the email address you signed up with." %}</p>
-            <p>{% trans 'Forgot your password? ' %}<a href="{% url 'password_reset' %}">{% trans "Reset it here." %}</a></p>
-          </div>
-          <div class="col-12 col-md-5" data-aos="fade-left">
-            <div class="form">
-              <form action="" method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <button type="submit" class="btn p2pu-btn light">{% trans "Login" %}</button>
-              </form>
+{% url 'register' as signup_url %}
+<div id="account-login">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 col-lg-7 flex-column d-flex">
+        <header class="page-header">
+
+          <h1 class="my-0">{% trans "Log in" %}</h1>
+          <p class="text-lg"><a href="{{ signup_url }}{% if request.GET.next %}?next={{ request.GET.next|urlencode }}{% endif %}">{% trans 'Create an account ' %}</a>{% trans "if you don't have one already" %}</p>
+        </header>
+
+        <p class="text-lg">{% trans "Forgot your username? It's the email address you signed up with." %}</p>
+
+        <p class="text-lg">{% trans 'Forgot your password? ' %}<a href="{% url 'password_reset' %}">{% trans "Reset it here." %}</a></p>
+      </div>
+
+      <div class="col-12 col-lg-5 mt-lg-4 create">
+        <div class="container bg-light-blue">
+          <form action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <div class="text-center">
+              <button type="submit" class="btn p2pu-btn blue">{% trans "Login" %}</button>
             </div>
-          </div>
+          </form>
         </div>
+      </div>
+
     </div>
   </div>
 </div>

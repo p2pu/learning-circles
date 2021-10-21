@@ -9,14 +9,14 @@ var P2PU = window.P2PU || {};
 
     var init = function () {
         $(function () {
-            // Smoth scrolling
+            // Smooth scrolling
             $('a[href*="#"]:not([href="#"],[href="#interest-extra"],[data-toggle="collapse"])').click(function () {
                 if (location.pathname.replace(/^\//, '') === this.pathname.replace(/^\//, '') && location.hostname === this.hostname) {
                     var target = $(this.hash);
                     target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
                     if (target.length) {
                         $('html,body').animate({
-                            scrollTop: target.offset().top - 98
+                            scrollTop: target.offset().top - 260
                         }, 1000);
                         return false;
                     }

@@ -8,11 +8,11 @@
 {% block content %}
 {% localtime off %}
 
-<div class="ux-feedback">
+<!--div class="ux-feedback">
   <div class="container-xl">
     <p>We&#39;re actively improving this page! Thoughts or suggestions? <a href="https://community.p2pu.org/t/learning-circle-messaging-and-feedback/5095">Tell us in the forums</a>!</p>
   </div>
-</div>
+</div-->
 
 <div class="container-xl">
   <div class="row my-3">
@@ -78,9 +78,9 @@
       <div class="item {% if not study_group.draft %}done{% else %}todo{% endif %}">
         <div class="icon"></div>
         <div class="card">
-          <a class="card-collapse-toggle {% if not study_group.draft %}collapsed{% endif %}" data-toggle="collapse" href="#collapse-publish" role="button" aria-expanded="true" aria-controls="collapse-publish"><i class="fa fa-chevron-down"></i></a>
+          <a class="card-collapse-toggle {% if not study_group.draft %}collapsed{% endif %}" data-bs-toggle="collapse" href="#collapse-publish" role="button" aria-expanded="true" aria-controls="collapse-publish"><i class="fa fa-chevron-down"></i></a>
           <div class="card-title">Publish your learning circle</div>
-          <div class="collapse {% if study_group.draft %}show{% endif %}" id="collapse-publish">
+          <div class="collapse{% if study_group.draft %}.show{% endif %}" id="collapse-publish">
             {% if study_group.draft %}
               <div class="meeting-item todo">
                 <p>This learning circle is currently a draft and learners won't be able to find it or sign up.</p>
@@ -101,9 +101,9 @@
       <div class="item {{ meeting_status }}" id="meeting-{{forloop.counter}}">
         <div class="icon"></div>
           <div class="card">
-            <a class="card-collapse-toggle {% if meeting != study_group.next_meeting or study_group.draft %}collapsed{% endif %}" data-toggle="collapse" href="#collapse-meeting-{{forloop.counter}}" role="button" aria-expanded="true" aria-controls="collapse-meeting-{{forloop.counter}}"><i class="fa fa-chevron-down"></i></a>
+            <a class="card-collapse-toggle {% if meeting != study_group.next_meeting or study_group.draft %}collapsed{% endif %}" data-bs-toggle="collapse" href="#collapse-meeting-{{forloop.counter}}" role="button" aria-expanded="true" aria-controls="collapse-meeting-{{forloop.counter}}"><i class="fa fa-chevron-down"></i></a>
             <div class="card-title">Meeting #{{forloop.counter}}: {{meeting.meeting_datetime}} (<a href="{% url 'studygroups_meeting_edit' study_group.pk meeting.pk %}">edit</a>, <a href="{% url 'studygroups_meeting_delete' study_group.pk meeting.pk %}">delete</a>)</div>
-            <div class="collapse {% if meeting == study_group.next_meeting and not study_group.draft %}show{% elif forloop.counter|stringformat:"i" == expand_meeting %}show{% endif %}" id="collapse-meeting-{{forloop.counter}}">
+            <div class="collapse{% if meeting == study_group.next_meeting and not study_group.draft %}.show{% elif forloop.counter|stringformat:"i" == expand_meeting %}.show{% endif %}" id="collapse-meeting-{{forloop.counter}}">
               {% if meeting.reminder_set.first.sent_at %}
                 <div class="meeting-item done">
                   <p>Reminder sent {{meeting.reminder_set.first.sent_at_tz}} (<a href="{% url 'studygroups_message_view' study_group.id meeting.reminder_set.first.id %}">view</a>)</p>
@@ -121,7 +121,7 @@
                 {% if meeting.meeting_datetime < today and meeting.reminder_set.count == 0 %}
                   <p>No RSVPs</p>
                 {% else %}
-                <p>Review RSVPs {% if meeting.meeting_datetime < today %}(<a data-toggle="collapse" href="#meeting-{{meeting.id}}-rsvp" role="button" aria-expanded="true" aria-controls="meeting-{{meeting.id}}-rsvp">view</a>){% endif %}</p>
+                <p>Review RSVPs {% if meeting.meeting_datetime < today %}(<a data-bs-toggle="collapse" href="#meeting-{{meeting.id}}-rsvp" role="button" aria-expanded="true" aria-controls="meeting-{{meeting.id}}-rsvp">view</a>){% endif %}</p>
                   {% if meeting.reminder_set.first.sent_at %}
                   <div class="meeting-rsvp {% if meeting.meeting_datetime < today %}collapse{% endif %}" id="meeting-{{meeting.id}}-rsvp">
                     <ul class="list-unstyled">
@@ -189,9 +189,9 @@
       <div class="item {% if study_group.facilitatorsurveyresponse_set.count and study_group.learnersurveyresponse_set.count %}{% if remaining_surveys %}done{% else %}whoohoo{% endif %}{% elif today > study_group.last_meeting.meeting_datetime %}todo{% else %}pending{% endif %} wrapup">
         <div class="icon"></div>
         <div class="card">
-          <a class="card-collapse-toggle {% if today < study_group.last_meeting.meeting_datetime and study_group.next_meeting != study_group.last_meeting %}collapsed{% endif %}" data-toggle="collapse" href="#collapse-wrapup" role="button" aria-expanded="true" aria-controls="collapse-wrapup"><i class="fa fa-chevron-down"></i></a>
+          <a class="card-collapse-toggle {% if today < study_group.last_meeting.meeting_datetime and study_group.next_meeting != study_group.last_meeting %}collapsed{% endif %}" data-bs-toggle="collapse" href="#collapse-wrapup" role="button" aria-expanded="true" aria-controls="collapse-wrapup"><i class="fa fa-chevron-down"></i></a>
           <div class="card-title">Wrap up</div>
-          <div class="collapse {% if today > study_group.last_meeting.meeting_datetime or study_group.next_meeting == study_group.last_meeting %}show{% endif %}" id="collapse-wrapup">
+          <div class="collapse{% if today > study_group.last_meeting.meeting_datetime or study_group.next_meeting == study_group.last_meeting %}.show{% endif %}" id="collapse-wrapup">
 
             <div class="meeting-item {% if today < study_group.last_meeting.meeting_datetime %}pending{% elif study_group.learnersurveyresponse_set.count %}done{% else %}todo{% endif %}">
               <p>Collect learner feedback</p>
@@ -297,7 +297,7 @@
           <div class="col-lg-3">
             <a class="btn-icon p2pu-btn btn-primary" href="{% url 'studygroups_application_edit' study_group.id learner.id %}"><i class="fa fa-edit"></i></a>
             <a class="btn-icon p2pu-btn btn-primary" href="{% url 'studygroups_application_delete' study_group.id learner.id %}"><i class="fa fa-trash"></i></a>
-            <a class="btn-icon p2pu-btn btn-info" data-toggle="collapse" href="#collapse-signup-{{learner.id}}" role="button" aria-expanded="true" aria-controls="collapse-signup-{{learner.id}}"><i class="fa fa-info"></i></a>
+            <a class="btn-icon p2pu-btn btn-info" data-bs-toggle="collapse" href="#collapse-signup-{{learner.id}}" role="button" aria-expanded="true" aria-controls="collapse-signup-{{learner.id}}"><i class="fa fa-info"></i></a>
           </div>
           <div class="col-12 collapse learner-signup-info" id="collapse-signup-{{learner.id}}">
             <p><strong>Goal</strong><br/>

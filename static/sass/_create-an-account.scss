@@ -1,0 +1,93 @@
+@import 'bootstrap/scss/mixins/_breakpoints';
+
+//@import "layout-elements/contact-form.scss";
+
+#account-creation, #account-login {
+  position: relative;
+
+  .icon {
+    flex-shrink: 0;
+    display: flex;
+    width: 50px;
+    margin-right: 1.5em;
+  }
+
+  >.container {
+    >.row{
+      
+      @include media-breakpoint-down(lg) {
+        padding-bottom: 60%;
+        .flex-column{
+          >div:last-child{
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 86.5%;
+            padding-right: var(--bs-gutter-x, 30px);
+            padding-left: var(--bs-gutter-x, 30px);
+            margin-right: auto;
+            margin-left: auto;
+            img{
+              width: 100%;
+            }
+          }
+        }
+      }
+      @include media-breakpoint-down(sm) {
+        .flex-column{
+          >div:last-child{
+            max-width: 100%;
+          }
+        }
+      }
+    }
+  }
+  
+  .create{
+    .container{
+      max-width: 100%;
+      margin-top: 0;
+      margin-bottom: $spacer * 3;
+      padding-top: 0;
+      padding-bottom: $grid-gutter-width;
+      @include media-breakpoint-up(lg) {
+        margin-top: $spacer * 4;
+        padding-top: $grid-gutter-width;
+      }
+    }
+  }
+
+
+  #registration-form {
+
+    .col-form-label {
+      text-transform: uppercase;
+    }
+
+    .asteriskField {
+      padding-left: 5px;
+    }
+
+    input, textarea{
+      border: 1px solid transparentize($p2pu-blue, 0.5);; 
+    }
+
+    .form-check-input {
+      vertical-align: text-top;
+      margin-right: 0.2em;
+    }
+
+    .form-check-label {
+      display: inline;
+      font-weight: bold;
+    }
+
+    #div_id_communication_opt_in > small, #div_id_consent_opt_in > small {
+      display: block;
+    }
+
+
+  }
+}

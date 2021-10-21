@@ -17,15 +17,6 @@
       background: rgb(255,255,255);
       background: linear-gradient(130deg, $white 0%, $white 50%, $p2pu-blue 50%, $p2pu-blue 100%);
 
-      .p2pu-btn {
-        display: inline-flex;
-        align-items: center;
-
-        .material-icons {
-          margin-right: 0.5em;
-        }
-      }
-
       h1 {
         font-size: 2.5em;
         word-break: break-word;
@@ -92,7 +83,7 @@
           align-items: center;
           height: 60px;
           width: 60px;
-          color: $gray-darker;
+          color: $gray-dark;
           margin-right: $padding-sm;
           flex: 0 0 auto;
 
@@ -251,7 +242,7 @@
           margin-left: 0 !important;
           height: auto;
           font-size: 16px;
-          color: $gray-darker;
+          color: $gray-dark;
 
           a {
             text-decoration: none;
@@ -260,7 +251,7 @@
           .icon-container {
             height: 40px;
             width: 40px;
-            color: $gray-darker;
+            color: $gray-dark;
             margin-right: $padding-sm;
             flex: 0 0 auto;
 

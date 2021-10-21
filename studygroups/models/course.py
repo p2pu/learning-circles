@@ -8,6 +8,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from .base import LifeTimeTrackingModel
 
+import json
+
 KNOWN_COURSE_PLATFORMS = {
     "www.edx.org/": "edX",
     "www.futurelearn.com/": "FutureLearn",
@@ -59,6 +61,17 @@ class Course(LifeTimeTrackingModel):
     def __str__(self):
         return self.title
 
+    def topic_list(self):
+        return self.topics.split(',')
+
+    def rating_step_counts_json(self):
+        return json.loads(self.rating_step_counts)
+
+    def star_max(self):
+        """ return the number of ratings attributed to the most popular rating """
+        steps = self.rating_step_counts_json()
+        return max(steps.values())
+
     def similar_courses(self):
         topics = self.topics.split(',')
         query = Q(topics__icontains=topics[0])
@@ -87,3 +100,19 @@ class Course(LifeTimeTrackingModel):
 
     def discourse_topic_default_body(self):
         return _("<p>What recommendations do you have for other facilitators who are using \"{}\"? Consider sharing additional resources you found helpful, activities that worked particularly well, and some reflections on who this course is best suited for. For more information, see this course on <a href='https://learningcircles.p2pu.org{}'>P2PU’s course page</a>.</p>".format(self.title, reverse('studygroups_course_page', args=(self.id,))))
+
+    def get_course_reviews(self):
+        from studygroups.models import StudyGroup
+        from surveys.models import LearnerSurveyResponse
+        from surveys.models import FacilitatorSurveyResponse
+        from surveys.models import learner_survey_summary
+        from surveys.models import facilitator_survey_summary
+
+        studygroup_ids = StudyGroup.objects.filter(course=self.id).distinct().values_list("id", flat=True)
+        learner_surveys = LearnerSurveyResponse.objects.filter(study_group__in=studygroup_ids)
+        facilitator_surveys = FacilitatorSurveyResponse.objects.filter(study_group__in=studygroup_ids)
+
+        all_surveys = list(map(learner_survey_summary, learner_surveys))
+        all_surveys += list(map(facilitator_survey_summary, facilitator_surveys))
+        return all_surveys
+

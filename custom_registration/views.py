@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import ugettext as _
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.cache import never_cache
 from django.views.generic.edit import FormView
@@ -71,7 +72,7 @@ class SignupView(FormView):
             return json_response(self.request, {"status": "error", "errors": '1011010010010010111'})
 
         user = form.save(commit=False)
-        user = create_user(user.email, user.first_name, user.last_name, form.cleaned_data['password1'], form.cleaned_data['communication_opt_in'], form.cleaned_data['interested_in_learning'], )
+        user = create_user(user.email, user.first_name, user.last_name, form.cleaned_data['password1'], form.cleaned_data['communication_opt_in'])
         login(self.request, user)
         return http.HttpResponseRedirect(self.get_success_url())
 
@@ -120,6 +121,7 @@ class AjaxSignupView(View):
         return json_response(request, { "status": "created", "user": user.username });
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class AjaxLoginView(View):
     def post(self, request):
         post_schema = {
@@ -167,6 +169,9 @@ class WhoAmIView(View):
                 user_data["links"][:0] = [
                     {"text": "My team", "url": reverse('studygroups_organize')},
                 ]
+
+            if request.user.is_staff or TeamMembership.objects.active().filter(user=request.user):
+                user_data['team'] = True
 
             if request.user.is_staff:
                 user_data["links"][:0] = [

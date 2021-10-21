@@ -1,105 +1,137 @@
 {% load static %}
 {% load i18n %}
 
-<footer class="home-footer">
-  <div class="contact-info">
-    <div class="container">
-      <div class="row justify-content-between">
-        <div class="col-md-5 col-sm-6 col-12 newsletter">
-          <div class="title">
-            <h3>{% trans "Newsletter" %}</h3>
+<footer id="footer" class="bg-gray text-cream">
+  <div class="container py-5">
+    <div class="row">
+
+      <div class="col-12 col-lg-8 col-xl-7 col-xxl-6 text-sm">
+        <div class="row">
+          <div class="col-12 col-md-6 order-1">
+            <ul class="nav flex-column">
+              <li class="nav-item"><a href="{{STATIC_SITE_URL}}/en/learning-circles/">Join a Learning Circle</a></li>
+              <li class="nav-item"><a href="/en/studygroup/create/">Facilitate a Learning Circle</a></li>
+              <li class="nav-item"><a href="{{STATIC_SITE_URL}}/en/teams/">Start a Team</a></li>
+            </ul>
+            <hr class="d-md-none" />
           </div>
-          <div class="content" id="mc_embed_signup">
-            <form action="//p2pu.us2.list-manage.com/subscribe/post?u=f080ec78070523d59ef613eda&amp;id=06e9c4ece8" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
-              <div id="mc_embed_signup_scroll">
-                <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
-                <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_f080ec78070523d59ef613eda_06e9c4ece8" tabindex="-1" value=""></div>
-                <input type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="Your email address" required>
-                <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="btn light rounded-0">
-              </div>
-            </form>
+       
+          <div class="col-12 col-md-6 mt-md-4 order-2 order-md-3">
+            <ul class="nav flex-column">
+              <li class="nav-item"><a href="https://docs.p2pu.org">Knowledge Base</a></li>
+              <li class="nav-item"><a href="{{STATIC_SITE_URL}}/en/learning-resources/">Learning Resources</a></li>
+              <li class="nav-item"><a href="https://community.p2pu.org">Community Forum</a></li>
+              <li class="nav-item"><a href="https://community.p2pu.org/c/community-events/upcoming-events/79">Events</a></li>
+            </ul>
+            <hr class="d-md-none" />
+          </div>
+
+          <div class="col-12 col-md-6 order-3 order-md-2">
+            <ul class="nav flex-column">
+              <li class="nav-item"><a href="{{STATIC_SITE_URL}}/en/about/">About P2PU</a></li>
+              <li class="nav-item"><a href="https://info.p2pu.org">Blog</a></li>
+              <li class="nav-item"><a href="{{STATIC_SITE_URL}}/en/services/">Services</a></li>
+              <li class="nav-item"><a href="{{STATIC_SITE_URL}}/en/jobs/">Jobs</a></li>
+              <li class="nav-item"><a href="{{STATIC_SITE_URL}}/en/contact/">Help</a></li>
+            </ul>
+            <hr class="d-md-none" />
+          </div>
+             
+          <div class="col-12 col-md-6 mt-md-4 order-4">
+            <ul class="nav flex-column">
+              <li class="nav-item"><a href="https://docs.p2pu.org/tools-and-resources/marketing-materials/p2pu.org-image-credits">Site Image Credits</a></li>
+              <li class="nav-item"><a href="{{STATIC_SITE_URL}}/en/terms/">Terms of Service</a></li>
+              <li class="nav-item"><a href="{{STATIC_SITE_URL}}/en/privacy/">Privacy Policy</a></li>
+            </ul>
           </div>
         </div>
+      </div>
 
-        <div class="col-md-5 col-sm-6 col-12 social">
-          <div class="title">
-            <h3>{% trans "Socials" %}</h3>
+
+      <div class="col-12 col-lg-4 col-xl-5 offset-xxl-1 d-md-flex order-first order-md-0">
+        <div class="col-12 order-first order-md-0 row g-0">
+          <div class="donate col-12 d-flex mb-5 mt-5 mt-lg-2">
+            <div class="flex-fill align-items-center d-flex">
+              <span class="col-12 bg-white"></span>
+            </div>
+            <a href="/en/donate" class="col btn btn-lg p2pu-btn orange mx-2">Donate</a>
+            <div class="flex-fill align-items-center d-flex">
+              <span class="col-12 bg-white"></span>
+            </div>
           </div>
-          <div class="content">
-            <div class="social-link">
-              <a href="https://medium.com/p2pu" title="Medium">
-                <i class="fab fa-medium-m" aria-hidden="true"></i>
-              </a>
+          <form class="col-12 mb-5">
+            <h3 class="serif">Newsletter</h3>
+            <div class="d-flex">
+              <form action="https://p2pu.us2.list-manage.com/subscribe/post?u=f080ec78070523d59ef613eda&amp;id=dfc5a38968" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+                <div id="mc_embed_signup_scroll" class="w-100 d-flex flex-column flex-sm-row flex-lg-column flex-xl-row align-items-end align-items-sm-stretch align-items-lg-end align-items-xl-stretch">
+                  <!-- real people should not fill this in and expect good things - do not remove this or risk form bot signups-->
+                  <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text" name="b_f080ec78070523d59ef613eda_dfc5a38968" tabindex="-1" value=""></div>
+                  <input type="email" value="" name="EMAIL" class="email form-control mb-2 mb-sm-0 mb-lg-2 mb-xl-0 me-sm-2 me-lg-0 me-xl-2" id="mce-EMAIL" placeholder="Your email address" required>
+                  <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="cream btn btn-sm secondary p2pu-btn">
+                </div>
+              </form>
             </div>
-
-            <div class="social-link">
-              <a href="https://www.youtube.com/channel/UCJH3nTAgEAGljjTB5B8PjFw" title="YouTube">
-                <i class="fab fa-youtube" aria-hidden="true"></i>
-              </a>
-            </div>
-
-            <div class="social-link">
-              <a href="https://www.flickr.com/groups/p2pu/" title="Flickr">
-                <i class="fab fa-flickr" aria-hidden="true"></i>
-              </a>
-            </div>
-
-            <div class="social-link">
-              <a href="https://www.instagram.com/p2puniversity/" title="Instagram">
-                <i class="fab fa-instagram" aria-hidden="true"></i>
-              </a>
-            </div>
-
-            <div class="social-link">
-              <a href="https://twitter.com/P2PU" title="Twitter">
-                <i class="fab fa-twitter" aria-hidden="true"></i>
-              </a>
-            </div>
-
-            <div class="social-link">
-              <a href="https://www.facebook.com/P2PUniversity" title="Facebook">
-                <i class="fab fa-facebook" aria-hidden="true"></i>
-              </a>
-            </div>
-
-            <div class="social-link">
-              <a href="mailto:thepeople@p2pu.org" title="Email">
-                <i class="fas fa-envelope" aria-hidden="true"></i>
-              </a>
-            </div>
-
+          </form>
+          <div class="d-flex w-100 order-first order-md-0 col-12 justify-content-between justify-content-sm-evenly justify-content-lg-between align-items-end">
+              
+                <div class="social-link">
+                  <a href="https://medium.com/p2pu" title="Medium">
+                    <i class="fab fa-medium-m" aria-hidden="true"></i>
+                  </a>
+                </div>
+              
+                <div class="social-link">
+                  <a href="https://www.youtube.com/channel/UCJH3nTAgEAGljjTB5B8PjFw" title="YouTube">
+                    <i class="fab fa-youtube" aria-hidden="true"></i>
+                  </a>
+                </div>
+              
+                <div class="social-link">
+                  <a href="https://www.flickr.com/groups/p2pu/" title="Flickr">
+                    <i class="fab fa-flickr" aria-hidden="true"></i>
+                  </a>
+                </div>
+              
+                <div class="social-link">
+                  <a href="https://www.instagram.com/p2puniversity/" title="Instagram">
+                    <i class="fab fa-instagram" aria-hidden="true"></i>
+                  </a>
+                </div>
+              
+                <div class="social-link">
+                  <a href="https://twitter.com/P2PU" title="Twitter">
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                  </a>
+                </div>
+              
+                <div class="social-link">
+                  <a href="https://www.facebook.com/P2PUniversity" title="Facebook">
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                  </a>
+                </div>
+              
+                <div class="social-link">
+                  <a href="mailto:thepeople@p2pu.org" title="Email">
+                    <i class="fas fa-envelope" aria-hidden="true"></i>
+                  </a>
+                </div>
+              
           </div>
+              
         </div>
       </div>
     </div>
   </div>
-
-  <div class="toc">
+  
+  <div class="toc bg-dark">
     <div class="container">
       <div class="col-12">
-        <div class="notes">
-          <span>
+          <span class="text-xxsm text-light">
+
             {% trans "Unless otherwise noted, all the materials on this site are licensed under CC BY-SA 4.0." %}
-          </span>
-          <span>
             {% trans "P2PU is a U.S. 501(c)3 registered in California." %}
           </span>
         </div>
-
-        <div class="links">
-          <span>
-            <a href="https://www.p2pu.org/en/terms/" class="underline">
-              {% trans "Terms of Service" %}
-            </a>
-          </span>
-          <span>
-            <a href="https://www.p2pu.org/en/privacy/" class="underline">
-              {% trans "Privacy Policy" %}
-            </a>
-          </span>
-        </div>
-      </div>
     </div>
   </div>
 </footer>
-

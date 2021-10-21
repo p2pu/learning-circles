@@ -31,6 +31,11 @@ def is_organizer(user):
     return user.is_staff or TeamMembership.objects.active().filter(user=user, role=TeamMembership.ORGANIZER)
 
 @register.filter
+def is_team_member(user):
+    """ Return true if user is a member of any team """
+    return user.is_staff or TeamMembership.objects.active().filter(user=user)
+
+@register.filter
 def category_title(id, categories):
     category = next((category for category in categories if category["id"] == id), None)
     return category["name"]

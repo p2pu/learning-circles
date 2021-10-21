@@ -10,7 +10,7 @@ services:
     - 1080:80
   learning-circles:
     build: .
-    image: learning-circles
+    image: p2pu/learning-circles:local
     links:
     - selenium
     ports:
