@@ -208,6 +208,15 @@
       form {
         line-height: normal;
       }
+
+      .form-check-input {
+        border: 1px solid $gray-light;
+      }
+      .form-check-label {
+        display: inline;
+        font-weight: bold;
+      }
+
     }
   }
 
