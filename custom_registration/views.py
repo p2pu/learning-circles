@@ -169,6 +169,7 @@ class WhoAmIView(View):
                 user_data["links"][:0] = [
                     {"text": "My team", "url": reverse('studygroups_organize')},
                 ]
+                user_data['team'] = True
 
             if request.user.is_staff:
                 user_data["links"][:0] = [
