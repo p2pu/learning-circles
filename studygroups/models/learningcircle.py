@@ -314,27 +314,34 @@ class Meeting(LifeTimeTrackingModel):
             self.study_group.end_date = self.study_group.last_meeting().meeting_date
             self.study_group.save()
 
-        if self.reminder_set.filter(sent_at__isnull=False).count() == 1:
-            # a reminder has been sent, disassociate it
-            self.reminder_set.update(study_group_meeting=None)
+        rescheduled = any([
+            self._original_meeting_time != self.meeting_time,
+            self._original_meeting_date != self.meeting_date
+        ])
 
-            tz = pytz.timezone(self.study_group.timezone)
-            original_meeting_datetime = tz.localize(
-                datetime.datetime.combine(self._original_meeting_date, self._original_meeting_time)
-            )
-
-            # the previous date was in the future
-            if original_meeting_datetime > timezone.now():
-                # send meeting change notification
-                current_app.send_task('studygroups.tasks.send_meeting_change_notification', (self, original_meeting_datetime))
-        else:
-            # no reminder has been sent
-            # deleted reminder if any
-            self.reminder_set.all().delete()
-
-        # generate a reminder if the meeting is in the future
-        if self.meeting_datetime() > timezone.now() and not self.deleted_at:
-            generate_meeting_reminder(self)
+        if rescheduled:
+            # this only needs to happen if the meeting date / time changed
+            if self.reminder_set.filter(sent_at__isnull=False).count() == 1:
+                # a reminder has been sent, disassociate it
+                self.reminder_set.update(study_group_meeting=None)
+         
+                tz = pytz.timezone(self.study_group.timezone)
+                original_meeting_datetime = tz.localize(
+                    datetime.datetime.combine(self._original_meeting_date, self._original_meeting_time)
+                )
+         
+                # the previous date was in the future
+                if original_meeting_datetime > timezone.now():
+                    # send meeting change notification
+                    current_app.send_task('studygroups.tasks.send_meeting_change_notification', (self, original_meeting_datetime))
+            else:
+                # no reminder has been sent
+                # deleted reminder if any
+                self.reminder_set.all().delete()
+         
+            # generate a reminder if the meeting is in the future
+            if self.meeting_datetime() > timezone.now() and not self.deleted_at:
+                generate_meeting_reminder(self)
 
 
     def meeting_number(self):
