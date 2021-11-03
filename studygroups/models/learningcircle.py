@@ -335,7 +335,7 @@ class Meeting(LifeTimeTrackingModel):
                 # the previous date was in the future
                 if original_meeting_datetime > timezone.now():
                     # send meeting change notification
-                    current_app.send_task('studygroups.tasks.send_meeting_change_notification', (self, original_meeting_datetime))
+                    current_app.send_task('studygroups.tasks.send_meeting_change_notification', (self.pk, original_meeting_datetime))
             else:
                 # no reminder has been sent
                 # deleted reminder if any
