@@ -307,6 +307,7 @@ class Meeting(LifeTimeTrackingModel):
         self._original_meeting_time = self.meeting_time
 
     def save(self, *args, **kwargs):
+        created = not self.pk
         super().save(*args, **kwargs)
 
         if self.study_group.meeting_set.active().count():
@@ -316,10 +317,10 @@ class Meeting(LifeTimeTrackingModel):
 
         rescheduled = any([
             self._original_meeting_time != self.meeting_time,
-            self._original_meeting_date != self.meeting_date
+            self._original_meeting_date != self.meeting_date,
         ])
 
-        if rescheduled:
+        if rescheduled or created:
             # this only needs to happen if the meeting date / time changed
             if self.reminder_set.filter(sent_at__isnull=False).count() == 1:
                 # a reminder has been sent, disassociate it
