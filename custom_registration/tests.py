@@ -259,7 +259,7 @@ class TestCustomRegistrationViews(TestCase):
         c = Client()
         user = create_user('bob@example.net', 'bob', 'cat', 'password')
         c.login(username='bob@example.net', password='password')
-        resp = c.post('/en/accounts/delete/', follow=True)
+        resp = c.post('/en/accounts/delete/')
         anon = User.objects.get(pk=user.id)
         self.assertFalse(anon.is_active)
         self.assertNotEqual(anon.email, 'bob@example.net')
