@@ -319,9 +319,10 @@ class Meeting(LifeTimeTrackingModel):
             self._original_meeting_time != self.meeting_time,
             self._original_meeting_date != self.meeting_date,
         ])
+        deleted = self.deleted_at
 
-        if rescheduled or created:
-            # this only needs to happen if the meeting date / time changed
+        if rescheduled or created or deleted:
+
             if self.reminder_set.filter(sent_at__isnull=False).count() == 1:
                 # a reminder has been sent, disassociate it
                 self.reminder_set.update(study_group_meeting=None)
