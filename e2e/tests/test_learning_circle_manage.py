@@ -174,7 +174,7 @@ class LearningCircleManage(StaticLiveServerTestCase):
 
     def test_course_rating(self):
         StudyGroup.objects.filter(pk=1).update(facilitator_goal='to test things')
-        self.driver.get(f'{self.live_server_url}/en/studygroup/{self.study_group.pk}/')
+        self.driver.get(f'{self.live_server_url}/en/studygroup/{self.study_group.pk}/#collapse-wrapup')
         self.assertTrue(expected_conditions.title_is('P2PU Learning Circles'))
 
         # Make sure learning circle feedback is present
