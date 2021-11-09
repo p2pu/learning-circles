@@ -101,7 +101,7 @@
       <div class="item {{ meeting_status }}" id="meeting-{{forloop.counter}}">
         <div class="icon"></div>
           <div class="card">
-            <a class="card-collapse-toggle {% if meeting != study_group.next_meeting or study_group.draft %}collapsed{% endif %}" data-bs-toggle="collapse" href="#collapse-meeting-{{forloop.counter}}" role="button" aria-expanded="true" aria-controls="collapse-meeting-{{forloop.counter}}"><i class="fa fa-chevron-down"></i></a>
+            <button class="card-collapse-toggle {% if meeting != study_group.next_meeting or study_group.draft %}collapsed{% endif %}" data-bs-toggle="collapse" data-bs-target="#collapse-meeting-{{forloop.counter}}" type="button" aria-expanded="{% if meeting != study_group.next_meeting or study_group.draft %}false{% else %}true{% endif %}" aria-controls="collapse-meeting-{{forloop.counter}}"><i class="fa fa-chevron-down"></i></button>
             <div class="card-title">Meeting #{{forloop.counter}}: {{meeting.meeting_datetime}} (<a href="{% url 'studygroups_meeting_edit' study_group.pk meeting.pk %}">edit</a>, <a href="{% url 'studygroups_meeting_delete' study_group.pk meeting.pk %}">delete</a>)</div>
             <div class="collapse{% if meeting == study_group.next_meeting and not study_group.draft %}.show{% elif forloop.counter|stringformat:"i" == expand_meeting %}.show{% endif %}" id="collapse-meeting-{{forloop.counter}}">
               {% if meeting.reminder_set.first.sent_at %}
