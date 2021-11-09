@@ -39,7 +39,9 @@ services:
     command: sh -c "npm i && npm run watch"
   selenium:
     #image: selenium/standalone-chrome-debug:3.7.1
+    #image: selenium/standalone-chrome:3.141.59-20210929
     image: selenium/standalone-chrome:4.0.0-20211102
+    shm_size: 2gb
     ports:
       - 5900:5900
 
