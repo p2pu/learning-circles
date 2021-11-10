@@ -7,6 +7,14 @@
   background-color: $p2pu-light-blue;
 }
 
+button.card-collapse-toggle {
+  border: none;
+  appearance: none;
+  color: inherit;
+  background-color: inherit;
+  padding: 0;
+}
+
 .btn-icon {
   display: inline-flex;
   justify-content: center;
