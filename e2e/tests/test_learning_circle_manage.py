@@ -30,11 +30,11 @@ class LearningCircleManage(StaticLiveServerTestCase):
         cls.host = socket.gethostbyname(socket.gethostname())
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument('--disable-web-security')
-        #chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--headless')
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-gpu')
         #chrome_options.add_argument('--auto-open-devtools-for-tabs')
-        #chrome_options.add_argument('--start-maximized')
+        chrome_options.add_argument('--start-maximized')
         capabilities = DesiredCapabilities.CHROME
         capabilities['loggingPrefs'] = { 'browser':'ALL' }
         cls.driver = webdriver.Remote(
