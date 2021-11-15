@@ -45,9 +45,11 @@ class CustomPasswordResetForm(PasswordResetForm):
         return email
 
 class UserForm(forms.ModelForm):
+    email = forms.EmailField(disabled=True, help_text=mark_safe(_('If you’d like to change the address affiliated with your account, please contact <a href="mailto:thepeople@p2pu.org">thepeople@p2pu.org</a>')))
+
     class Meta:
         model = User
-        fields = ['first_name', 'last_name']
+        fields = ['email', 'first_name', 'last_name']
 
 
 class ProfileForm(forms.ModelForm):
