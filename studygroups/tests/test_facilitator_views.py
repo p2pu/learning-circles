@@ -453,6 +453,29 @@ class TestFacilitatorViews(TestCase):
             self.assertEquals(Reminder.objects.count(), 8)  # old reminder should be kept
 
 
+    def test_meeting_recap_dismiss(self):
+        # get a meeting in the past, needs a reminder sent
+        # leave feedback
+        # make sure the reminder is still associated
+        study_group = StudyGroup.objects.get(pk=1)
+        with freeze_time(study_group.start_date - datetime.timedelta(days=1)):
+            generate_all_meetings(study_group)
+        self.assertEqual(study_group.meeting_set.count(), 5) 
+        self.assertEqual(study_group.reminder_set.count(), 5) 
+        meeting = study_group.meeting_set.first()
+        with freeze_time(meeting.meeting_date - datetime.timedelta(days=1)):
+            self.assertEqual(Reminder.objects.filter(study_group=study_group, sent_at__isnull=False).count(), 0)
+            send_reminders()
+            self.assertEqual(Reminder.objects.filter(study_group=study_group, sent_at__isnull=False).count(), 1)
+            self.assertEqual(meeting.reminder_set.count(), 1)
+
+        c = Client()
+        c.login(username='admin@test.com', password='password')
+        resp = c.post(f'/en/studygroup/{study_group.pk}/meeting/{meeting.pk}/recap/dismiss/', {})
+        self.assertRedirects(resp, f'/en/studygroup/{study_group.pk}/')
+        self.assertEqual(meeting.reminder_set.count(), 1)
+
+
     @freeze_time('2021-02-25')
     def test_edit_reminder(self):
         c = Client()

@@ -38,7 +38,8 @@ services:
     working_dir: /opt/app
     command: sh -c "npm i && npm run watch"
   selenium:
-    image: selenium/standalone-chrome-debug:3.7.1
+    #image: selenium/standalone-chrome-debug:3.7.1
+    image: selenium/standalone-chrome:4.0.0-20211102
     ports:
       - 5900:5900
 

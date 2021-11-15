@@ -18,6 +18,6 @@ jobs:
     - name: start postgres container
       run: docker run -d --name=postgres -e POSTGRES_PASSWORD=password postgres:11
     - name: start selenium container
-      run: docker run -d --name=selenium selenium/standalone-chrome
+      run: docker run -d --name=selenium --shm-size="2g" selenium/standalone-chrome:3.141.59-20210929
     - name: run tests
       run: docker run --rm -i --link postgres --link selenium -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost -e RECAPTCHA_SITE_KEY=6Le0DW8bAAAAAJUHXcKkkASxZWMIwDypy1DiBBEX p2pu/learning-circles dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test

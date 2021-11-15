@@ -456,7 +456,6 @@ class TestStudyGroupTasks(TestCase):
             self.assertNotEquals(sg.learner_survey_sent_at, None)
 
 
-
     def test_facilitator_survey_email(self):
         now = timezone.now()
         sg = StudyGroup.objects.get(pk=1)

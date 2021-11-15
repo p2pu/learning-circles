@@ -29,7 +29,7 @@ import logging
 import pytz
 import os
 import re
-
+import dateutil.parser
 
 logger = logging.getLogger(__name__)
 
@@ -337,11 +337,12 @@ def send_meeting_wrapups():
 
 
 @shared_task
-def send_meeting_change_notification(meeting, old_meeting_datetime):
+def send_meeting_change_notification(meeting_id, old_meeting_datetime):
+    meeting = Meeting.objects.get(pk=meeting_id)
     study_group = meeting.study_group
     to = [su.email for su in study_group.application_set.active().filter(accepted_at__isnull=False).exclude(email='')]
     context = {
-        'old_meeting_datetime': old_meeting_datetime,
+        'old_meeting_datetime': dateutil.parser.parse(old_meeting_datetime),
         'meeting': meeting,
         'learning_circle': study_group,
     }

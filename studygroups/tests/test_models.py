@@ -244,9 +244,10 @@ class TestSignupModels(TestCase):
         meeting = sg.meeting_set.first()
         old_meeting_datetime = meeting.meeting_datetime()
         meeting.meeting_date = datetime.date(2019, 4, 1)
+        meeting.save()
         old_meeting = sg.meeting_set.first()
         mail.outbox = []
-        send_meeting_change_notification(meeting, old_meeting_datetime)
+        send_meeting_change_notification(meeting.pk, str(old_meeting_datetime))
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(len(mail.outbox[0].bcc), 2)
         self.assertIn('signup1@mail.com', mail.outbox[0].bcc)

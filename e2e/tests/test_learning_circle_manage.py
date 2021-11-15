@@ -110,23 +110,22 @@ class LearningCircleManage(StaticLiveServerTestCase):
         ))
 
         collapse = self.wait.until(
-            expected_conditions.element_to_be_clickable((By.CSS_SELECTOR, '#meeting-1 > div:nth-child(2) > a:nth-child(1)'))
+            expected_conditions.element_to_be_clickable((By.CSS_SELECTOR, '#meeting-1 > div:nth-child(2) > button:nth-child(1)'))
         )
         collapse.click()
 
-        self.assertEqual(meeting.feedback_set.count(), 0)
+        self.driver.execute_script('window.scrollBy(0, 700);')
 
-        attendance = self.driver.find_element_by_id("id_attendance")
+        self.assertEqual(meeting.feedback_set.count(), 0)
+        self.wait.until(expected_conditions.visibility_of_element_located(
+            (By.CSS_SELECTOR, "#meeting-1-feedback #id_attendance")
+        ))
+
+        attendance = self.driver.find_element_by_css_selector("#meeting-1-feedback #id_attendance")
         actions = ActionChains(self.driver)
+        actions.pause(1)
         actions.move_to_element(attendance).perform()
         attendance.send_keys('3')
-
-        #pw_bot = self.wait.until(
-        #    expected_conditions.element_to_be_clickable(
-        #        (By.CSS_SELECTOR, ".p2pu-bot-selector > label:nth-child(1) > input:nth-child(1)")
-        #    )
-        #)
-        #pw_bot.click()
 
         self.wait.until(
             expected_conditions.text_to_be_present_in_element(
@@ -152,11 +151,23 @@ class LearningCircleManage(StaticLiveServerTestCase):
         ))
 
         self.assertEquals(StudyGroup.objects.get(pk=1).facilitator_goal_rating, None)
-        rating_feedback = self.driver.find_element_by_css_selector(
-            "div.star-rating-input:nth-child(3) > label:nth-child(3) > svg:nth-child(2)"
-        )
+        rating_qs = "div.star-rating-input:nth-child(3) > label:nth-child(3) > svg:nth-child(2)"
+
+        #self.driver.execute_script(f'document.querySelector("{rating_qs}").scrollIntoView();')
+        #scrollto = f'window.scrollTo(0, {rating_feedback.location["y"]});'
+        #self.driver.execute_script(scrollto)
+        self.driver.execute_script('window.scrollBy(0, 500);')
+        #self.driver.execute_script("window.scrollTo(0,document.body.scrollHeight);")
+
+        # wait until item is clickable
+        self.wait.until(expected_conditions.visibility_of_element_located(
+            (By.CSS_SELECTOR, rating_qs)
+        ))
+
+        rating_feedback = self.driver.find_element_by_css_selector(rating_qs)
         actions = ActionChains(self.driver)
-        actions.move_to_element(rating_feedback).perform()
+        actions.pause(1)
+        actions.move_to_element(rating_feedback)
         actions.click(rating_feedback)
         actions.perform()
 
@@ -174,7 +185,7 @@ class LearningCircleManage(StaticLiveServerTestCase):
 
     def test_course_rating(self):
         StudyGroup.objects.filter(pk=1).update(facilitator_goal='to test things')
-        self.driver.get(f'{self.live_server_url}/en/studygroup/{self.study_group.pk}/')
+        self.driver.get(f'{self.live_server_url}/en/studygroup/{self.study_group.pk}/#collapse-wrapup')
         self.assertTrue(expected_conditions.title_is('P2PU Learning Circles'))
 
         # Make sure learning circle feedback is present
@@ -182,11 +193,13 @@ class LearningCircleManage(StaticLiveServerTestCase):
             (By.CSS_SELECTOR, '#learning-circle-feedback .meeting-item'),
         ))
         
+        self.driver.execute_script('window.scrollBy(0, 800);')
         self.assertEquals(StudyGroup.objects.get(pk=1).course_rating, None)
         course_rating = self.driver.find_element_by_css_selector(
             "div.star-rating-input:nth-child(2) > label:nth-child(4) > svg:nth-child(2)"
         )
         actions = ActionChains(self.driver)
+        actions.pause(1)
         actions.move_to_element(course_rating).perform()
         actions.click(course_rating)
         actions.perform()
