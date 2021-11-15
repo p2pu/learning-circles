@@ -50,7 +50,11 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-4">
-          <a id="back-button" href="javascript:window.history.back();" class="p2pu-btn btn small dark secondary mb-5 py-1 px-3"><span class="material-icons">keyboard_backspace</span>{% trans "Back to search" %}</a>
+          {% if request.META.HTTP_REFERER %}
+            <a id="back-button" href="{{request.META.HTTP_REFERER}}" rel="nofollow" class="p2pu-btn btn small dark secondary mb-5 py-1 px-3">{% trans "Back to search" %}</a>
+          {% else %}
+            <a id="back-button" href="{{STATIC_SITE_URL}}/en/learning-circles/" class="p2pu-btn btn small dark secondary mb-5 py-1 px-3">{% trans "Back to search" %}</a>
+          {% endif %}
           <h1 data-aos='fade'>{{study_group.name}}</h1>
           <p data-aos='fade'class="tagline mt-4">{% trans "A" %} <img src="{% static 'images/p2pu-logo.png' %}" alt="P2PU" /> {% trans "learning circle" %}</p>
         </div>
