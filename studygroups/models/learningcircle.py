@@ -86,6 +86,8 @@ class StudyGroup(LifeTimeTrackingModel):
     learner_survey_sent_at = models.DateTimeField(blank=True, null=True)
     facilitator_survey_sent_at = models.DateTimeField(blank=True, null=True)
 
+    team = models.ForeignKey('studygroups.Team', on_delete=models.SET_NULL, blank=True, null=True)
+
     objects = StudyGroupQuerySet.as_manager()
 
     def save(self, *args, **kwargs):
