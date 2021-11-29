@@ -46,6 +46,7 @@ lxml==4.6.4
 Markdown==3.3.6
 outcome==1.1.0
 packaging==21.3
+phonenumberslite==8.12.38
 Pillow==8.4.0
 premailer==3.10.0
 prompt-toolkit==3.0.23
