@@ -19,6 +19,7 @@ geonamescache
 gunicorn
 icalendar
 Markdown
+phonenumberslite
 Pillow
 premailer
 psycopg2-binary==2.8.6
