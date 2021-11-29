@@ -28,6 +28,7 @@ class Team(models.Model):
     website = models.URLField(max_length=128, blank=True)
     location = models.CharField(max_length=128, blank=True)
     intro_text = BleachField(max_length=1000, blank=True, allowed_tags=settings.TINYMCE_DEFAULT_CONFIG.get('valid_elements', '').split(','), allowed_attributes={'a': ['href', 'title', 'rel', 'target']})
+    membership = models.BooleanField(default=False)
 
 
     def __str__(self):
