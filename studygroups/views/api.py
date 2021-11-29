@@ -1002,6 +1002,7 @@ def serialize_team_data(team):
         "email_address": team.email_address,
         "location": team.location,
         "facilitators": [],
+        "membership": team.membership,
     }
 
     members = team.teammembership_set.active().values('user')
