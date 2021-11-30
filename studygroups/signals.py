@@ -28,7 +28,7 @@ def handle_new_application(sender, instance, created, **kwargs):
     application = instance
 
     # get a random piece of advice
-    # TODO only supported in English atm
+    # TODO remove unused advice logic
     advice = None
     if application.study_group.language == 'en':
         advice = Advice.objects.order_by('?').first()
