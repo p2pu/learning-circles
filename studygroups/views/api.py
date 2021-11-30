@@ -274,10 +274,7 @@ class LearningCircleListView(View):
 
         team_id = request.GET.get('team_id')
         if team_id is not None:
-            team = Team.objects.get(pk=team_id)
-            members = team.teammembership_set.active().values('user')
-            team_users = User.objects.filter(pk__in=members)
-            study_groups = study_groups.filter(facilitator__in=team_users)
+            study_groups = study_groups.filter(team_id=team_id)
 
         # TODO How is this different from scope=active?
         if 'active' in request.GET:
