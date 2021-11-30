@@ -156,18 +156,17 @@ def report_data(start_time, end_time, team=None):
     new_users = get_new_users(start_time, end_time)
     new_courses = get_new_courses(start_time, end_time)
 
-
     if team:
         members = team.teammembership_set.active().values_list('user', flat=True)
         new_courses = new_courses.filter(created_by__in=members)
-        new_applications = new_applications.filter(study_group__facilitator__in=members)
-        meetings = meetings.filter(study_group__facilitator__in=members)
-        study_groups = study_groups.filter(facilitator__in=members)
+        new_applications = new_applications.filter(study_group__team=team)
+        meetings = meetings.filter(study_group__team=team)
+        study_groups = study_groups.filter(team=team)
 
-        studygroups_that_ended = [sg for sg in studygroups_that_ended if sg.facilitator.id in members]
-        studygroups_that_met = studygroups_that_met.filter(facilitator__in=members)
+        studygroups_that_ended = [sg for sg in studygroups_that_ended if sg.team == team]
+        studygroups_that_met = studygroups_that_met.filter(team=team)
         new_users = new_users.filter(id__in=members)
-        upcoming_studygroups = upcoming_studygroups.filter(facilitator__in=members)
+        upcoming_studygroups = upcoming_studygroups.filter(team=team)
 
     feedback = Feedback.objects.filter(study_group_meeting__in=meetings)
     studygroups_with_survey_responses = filter_studygroups_with_survey_responses(studygroups_that_ended)
@@ -217,8 +216,7 @@ def get_json_response(url):
 
 def get_studygroups_with_meetings(start_time, end_time, team=None):
     if team:
-        team_memberships = team.teammembership_set.active().values('user')
-        return StudyGroup.objects.published().filter(facilitator__in=team_memberships, meeting__meeting_date__gte=start_time, meeting__meeting_date__lt=end_time, meeting__deleted_at__isnull=True).distinct()
+        return StudyGroup.objects.published().filter(team=team, meeting__meeting_date__gte=start_time, meeting__meeting_date__lt=end_time, meeting__deleted_at__isnull=True).distinct()
 
     return StudyGroup.objects.published().filter(meeting__meeting_date__gte=start_time, meeting__meeting_date__lt=end_time, meeting__deleted_at__isnull=True).distinct()
 
@@ -242,9 +240,7 @@ def get_upcoming_studygroups(start_time):
 
 def get_studygroups_that_ended(start_time, end_time, team=None):
     if team:
-        team_memberships = team.teammembership_set.active().values('user')
-        return StudyGroup.objects.published().filter(end_date__gte=start_time, end_date__lt=end_time, facilitator__in=team_memberships)
-
+        return StudyGroup.objects.published().filter(end_date__gte=start_time, end_date__lt=end_time, team=team)
     return StudyGroup.objects.published().filter(end_date__gte=start_time, end_date__lt=end_time)
 
 def filter_studygroups_with_survey_responses(study_groups):
