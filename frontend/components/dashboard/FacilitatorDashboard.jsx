@@ -190,12 +190,18 @@ export default class FacilitatorDashboard extends React.Component {
                     </TabList>
                     <TabPanel>
                       <div data-aos='fade'>
-                        <TeamMembersTable teamId={this.props.teamId} />
+                        <TeamMembersTable 
+                          teamId={this.props.teamId}
+                          deleteTeamMembershipApiUrl={this.props.deleteTeamMembershipApiUrl}
+                        />
                       </div>
                     </TabPanel>
                     <TabPanel>
                       <div data-aos='fade'>
-                        <TeamInvitationsTable teamId={this.props.teamId} />
+                        <TeamInvitationsTable 
+                          teamId={this.props.teamId} 
+                          deleteTeamInvitationApiUrl={this.props.deleteTeamInvitationApiUrl}
+                        />
                       </div>
                     </TabPanel>
                     <TabPanel>
@@ -304,13 +310,6 @@ export default class FacilitatorDashboard extends React.Component {
               <Card>
                 <div className="card-title">Recent Successes</div>
                 <GlobalSuccesses />
-              </Card>
-            </div>
-
-            <div data-aos='fade'>
-              <Card>
-                <div className="card-title">Latest Posts on Instagram</div>
-                <InstagramFeed />
               </Card>
             </div>
 

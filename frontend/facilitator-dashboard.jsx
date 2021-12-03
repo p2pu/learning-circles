@@ -36,6 +36,8 @@ ReactDOM.render(
       createTeamInvitationLink={createTeamInvitationLink}
       deleteTeamInvitationLink={deleteTeamInvitationLink}
       teamMemberInvitationUrl={teamMemberInvitationUrl}
+      deleteTeamMembershipApiUrl={element.dataset.deleteTeamMembershipApiUrl}
+      deleteTeamInvitationApiUrl={element.dataset.deleteTeamInvitationApiUrl}
       editTeamUrl={editTeamUrl}
     />
   </ErrorBoundary>

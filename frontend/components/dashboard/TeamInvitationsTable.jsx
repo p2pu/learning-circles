@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ApiHelper from "../../helpers/ApiHelper";
-import moment from "moment";
+import axios from "axios"
 
 const PAGE_LIMIT = 5;
 
@@ -10,7 +10,8 @@ export default class TeamMembersTable extends Component {
     this.state = {
       teamMembers: [],
       limit: PAGE_LIMIT,
-      count: 0
+      count: 0,
+      deleteConfirmation: [null, null],
     };
   }
 
@@ -42,6 +43,32 @@ export default class TeamMembersTable extends Component {
     this.populateResources(params)
   }
 
+  handleDeleteInvitation = invitationId => {
+    const url = `${this.props.deleteTeamInvitationApiUrl}${invitationId}/`
+    axios({
+      url,
+      method: 'DELETE',
+    }).then(res => {
+      console.log(res)
+      if (res.status === 204) {
+        this.setState({
+          deleteConfirmation: ['success', 'Invitation was cancelled.'],
+        });
+        const params = { limit: PAGE_LIMIT, offset: this.state.offset };
+        this.populateResources(params)
+      } else {
+        this.setState({
+          deleteConfirmation: ['warning', 'Could not cancel invitation.'],
+        });
+      }
+    }).catch(err => {
+      console.log(err);
+      this.setState({
+        deleteConfirmation: ['warning', 'Could not cancel invitation.'],
+      });
+    })
+  }
+
 
   render() {
     const totalPages = Math.ceil(this.state.count / PAGE_LIMIT);
@@ -57,6 +84,11 @@ export default class TeamMembersTable extends Component {
 
     return (
       <div className="learning-circles-table">
+        { this.state.deleteConfirmation[0] && 
+          <div className={`alert alert-${this.state.deleteConfirmation[0]}`}>
+            {this.state.deleteConfirmation[1]}
+          </div>
+        }
         <div className="table-responsive d-none d-md-block">
           <table className="table">
             <thead>
@@ -64,6 +96,7 @@ export default class TeamMembersTable extends Component {
                 <td>Email</td>
                 <td>Role</td>
                 <td>Invitation sent</td>
+                <td></td>
               </tr>
             </thead>
             <tbody>
@@ -75,6 +108,9 @@ export default class TeamMembersTable extends Component {
                       <td>{ facilitator.email }</td>
                       <td>{ m.role }</td>
                       <td>{ m.created_at }</td>
+                      <td>
+                        <button onClick={e => {this.handleDeleteInvitation(m.id)}} className="p2pu-btn btn btn-sm orange">cancel</button>
+                      </td>
                     </tr>
                   )
                 })
@@ -102,6 +138,9 @@ export default class TeamMembersTable extends Component {
                       <div className="">{ facilitator.email }</div>
                       <div className="">{ m.role }</div>
                       <div className="">{ m.created_at }</div>
+                      <div>
+                        <button onClick={e => {this.handleDeleteInvitation(m.id)}} className="p2pu-btn btn btn-sm orange">cancel</button>
+                      </div>
                     </div>
                   </div>
                 </div>

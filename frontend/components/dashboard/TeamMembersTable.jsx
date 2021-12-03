@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import ApiHelper from "../../helpers/ApiHelper";
-import moment from "moment";
+import axios from "axios"
 
 const PAGE_LIMIT = 5;
+
+// TODO - click on remove, pop up modal for confirmation, on confirmation, POST delete and reload API results?
 
 export default class TeamMembersTable extends Component {
   constructor(props) {
@@ -10,7 +12,9 @@ export default class TeamMembersTable extends Component {
     this.state = {
       teamMembers: [],
       limit: PAGE_LIMIT,
-      count: 0
+      count: 0,
+      memberToDelete: null,
+      deleteConfirmation: [null, null],
     };
   }
 
@@ -42,6 +46,34 @@ export default class TeamMembersTable extends Component {
     this.populateResources(params)
   }
 
+  handleDeleteMember = memberId => {
+    const url = `${this.props.deleteTeamMembershipApiUrl}${memberId}/` 
+    axios({
+      url,
+      method: 'DELETE',
+    }).then(res => {
+      console.log(res)
+      if (res.status === 204) {
+        this.setState({
+          memberToDelete: null,
+          deleteConfirmation: ['success', 'Member was deleted.'],
+        });
+        const params = { limit: PAGE_LIMIT, offset: this.state.offset };
+        this.populateResources(params)
+      } else {
+        this.setState({
+          memberToDelete: null,
+          deleteConfirmation: ['warning', 'Could not delete team member.'],
+        });
+      }
+    }).catch(err => {
+      console.log(err);
+      this.setState({
+        memberToDelete: null,
+        deleteConfirmation: ['warning', 'Could not delete team member.'],
+      });
+    })
+  }
 
   render() {
     const totalPages = Math.ceil(this.state.count / PAGE_LIMIT);
@@ -57,6 +89,20 @@ export default class TeamMembersTable extends Component {
 
     return (
       <div className="learning-circles-table">
+        { this.state.deleteConfirmation[0] && 
+          <div className={`alert alert-${this.state.deleteConfirmation[0]}`}>
+            {this.state.deleteConfirmation[1]}
+          </div>
+        }
+        { this.state.memberToDelete &&
+          <div className="alert alert-danger">
+            <form onSubmit={e => {e.preventDefault(); this.handleDeleteMember(this.state.memberToDelete.id)}}>
+              <p>Are you sure you want to delete <strong>{ this.state.memberToDelete.facilitator.first_name } &lt;{ this.state.memberToDelete.facilitator.email }&gt;</strong> ?</p>
+              <button className="p2pu-btn btn btn-sm orange" type="submit">Delete</button>
+              <button className="p2pu-btn btn btn-sm gray" onClick={e => {e.preventDefault(); this.setState({memberToDelete: null}); }}>Cancel</button>
+            </form>
+          </div>
+        }
         <div className="table-responsive d-none d-md-block">
           <table className="table">
             <thead>
@@ -65,6 +111,7 @@ export default class TeamMembersTable extends Component {
                 <td>Email</td>
                 <td>Role</td>
                 <td>Joined P2PU</td>
+                <td></td>
               </tr>
             </thead>
             <tbody>
@@ -77,6 +124,12 @@ export default class TeamMembersTable extends Component {
                       <td>{ facilitator.email }</td>
                       <td>{ m.role }</td>
                       <td>{ facilitator.email_confirmed_at }</td>
+                      <td>
+                        <button 
+                          className="p2pu-btn btn btn-sm orange"
+                          onClick={e => {e.preventDefault(); this.setState({memberToDelete: m, deleteConfirmation: [null, null]})}}
+                        >remove</button>
+                      </td>
                     </tr>
                   )
                 })
@@ -97,6 +150,7 @@ export default class TeamMembersTable extends Component {
                       <div className="bold">Email</div>
                       <div className="bold">Role</div>
                       <div className="bold">Joined</div>
+                      <div></div>
                     </div>
 
                     <div className="flex-grow px-2">
@@ -104,6 +158,12 @@ export default class TeamMembersTable extends Component {
                       <div className="">{ facilitator.email }</div>
                       <div className="">{ m.role }</div>
                       <div className="">{ m.created_at }</div>
+                      <div>
+                        <button 
+                          className="p2pu-btn btn btn-sm orange"
+                          onClick={e => {e.preventDefault(); this.setState({memberToDelete: m, deleteConfirmation: [null, null]})}}
+                        >remove</button>
+                      </div>
                     </div>
                   </div>
                 </div>
