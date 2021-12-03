@@ -1072,7 +1072,7 @@ class TeamDetailView(SingleObjectMixin, View):
 
         if request.user.is_authenticated and team.teammembership_set.active().filter(user=request.user, role=TeamMembership.ORGANIZER).exists():
             #  ensure user is team organizer
-            serialized_team['team_invitation_url'] = team.team_invitation_url()
+            serialized_team['team_invitation_link'] = team.team_invitation_link()
 
         data['item'] = serialized_team
 
@@ -1216,22 +1216,22 @@ def facilitator_invitation_notifications(request):
 @user_is_team_organizer
 @login_required
 @require_http_methods(["POST"])
-def create_team_invitation_url(request, team_id):
+def create_team_invitation_link(request, team_id):
     team = Team.objects.get(pk=team_id)
     team.generate_invitation_token()
 
-    return json_response(request, { "status": "updated", "team_invitation_url": team.team_invitation_url() })
+    return json_response(request, { "status": "updated", "team_invitation_link": team.team_invitation_link() })
 
 
 @user_is_team_organizer
 @login_required
 @require_http_methods(["POST"])
-def delete_team_invitation_url(request, team_id):
+def delete_team_invitation_link(request, team_id):
     team = Team.objects.get(pk=team_id)
     team.invitation_token = None
     team.save()
 
-    return json_response(request, { "status": "deleted", "team_invitation_url": None })
+    return json_response(request, { "status": "deleted", "team_invitation_link": None })
 
 def serialize_announcement(announcement):
     return {

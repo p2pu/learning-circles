@@ -41,7 +41,7 @@ class Team(models.Model):
         except IntegrityError:
             generate_invitation_token(self)
 
-    def team_invitation_url(self):
+    def team_invitation_link(self):
         if self.invitation_token is None:
             return None
 

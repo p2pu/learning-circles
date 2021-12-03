@@ -13,9 +13,9 @@ const teamOrganizerName = element.dataset.teamOrganizerName === "None" ? null : 
 const teamInvitationConfirmationUrl = element.dataset.teamInvitationConfirmationUrl === "None" ? null : element.dataset.teamInvitationConfirmationUrl;
 const emailConfirmationUrl = element.dataset.emailConfirmationUrl === "None" ? null : element.dataset.emailConfirmationUrl;
 const userIsOrganizer = element.dataset.userIsOrganizer === "None" ? null : element.dataset.userIsOrganizer;
-const teamInvitationUrl = element.dataset.teamInvitationUrl === "None" ? null : element.dataset.teamInvitationUrl;
-const createTeamInvitationUrl = element.dataset.createTeamInvitationUrl === "None" ? null : element.dataset.createTeamInvitationUrl;
-const deleteTeamInvitationUrl = element.dataset.deleteTeamInvitationUrl === "None" ? null : element.dataset.deleteTeamInvitationUrl;
+const teamInvitationLink = element.dataset.teamInvitationLink === "None" ? null : element.dataset.teamInvitationLink;
+const createTeamInvitationLink = element.dataset.createTeamInvitationLink === "None" ? null : element.dataset.createTeamInvitationLink;
+const deleteTeamInvitationLink = element.dataset.deleteTeamInvitationLink === "None" ? null : element.dataset.deleteTeamInvitationLink;
 const teamMemberInvitationUrl = element.dataset.teamMemberInvitationUrl === "None" ? null : element.dataset.teamMemberInvitationUrl;
 const editTeamUrl = element.dataset.editTeamUrl === "None" ? null : element.dataset.editTeamUrl;
 
@@ -32,9 +32,9 @@ ReactDOM.render(
       teamInvitationConfirmationUrl={teamInvitationConfirmationUrl}
       emailConfirmationUrl={emailConfirmationUrl}
       userIsOrganizer={userIsOrganizer}
-      teamInvitationUrl={teamInvitationUrl}
-      createTeamInvitationUrl={createTeamInvitationUrl}
-      deleteTeamInvitationUrl={deleteTeamInvitationUrl}
+      teamInvitationLink={teamInvitationLink}
+      createTeamInvitationLink={createTeamInvitationLink}
+      deleteTeamInvitationLink={deleteTeamInvitationLink}
       teamMemberInvitationUrl={teamMemberInvitationUrl}
       editTeamUrl={editTeamUrl}
     />

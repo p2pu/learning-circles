@@ -201,9 +201,9 @@ export default class FacilitatorDashboard extends React.Component {
                     <TabPanel>
                       <div data-aos='fade'>
                         <OrganizerTeamInvitations
-                          teamInvitationUrl={this.props.teamInvitationUrl}
-                          createTeamInvitationUrl={this.props.createTeamInvitationUrl}
-                          deleteTeamInvitationUrl={this.props.deleteTeamInvitationUrl}
+                          teamInvitationLink={this.props.teamInvitationLink}
+                          createTeamInvitationLink={this.props.createTeamInvitationLink}
+                          deleteTeamInvitationLink={this.props.deleteTeamInvitationLink}
                           teamMemberInvitationUrl={this.props.teamMemberInvitationUrl}
                           showAlert={this.showAlert}
                         />
