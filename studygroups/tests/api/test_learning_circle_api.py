@@ -8,9 +8,12 @@ from django.conf import settings
 from unittest.mock import patch
 from freezegun import freeze_time
 
-from studygroups.models import generate_all_meetings
 from studygroups.models import StudyGroup
 from studygroups.models import Profile
+from studygroups.models import Course
+from studygroups.models import generate_all_meetings
+from studygroups.models import generate_all_meeting_dates
+from studygroups.models import generate_meetings_from_dates
 from studygroups.models import Team, TeamMembership
 from studygroups.views import LearningCircleListView
 from custom_registration.models import create_user
@@ -33,7 +36,6 @@ class TestLearningCircleApi(TestCase):
         mailchimp_patcher = patch('studygroups.models.profile.update_mailchimp_subscription')
         self.mock_maichimp = mailchimp_patcher.start()
         self.addCleanup(mailchimp_patcher.stop)
-
 
 
     def test_create_learning_circle(self):
@@ -1069,22 +1071,71 @@ class TestLearningCircleApi(TestCase):
 
 
     def test_get_learning_circles_by_team(self):
+
+        sg_count = StudyGroup.objects.count()
         facilitator2 = User.objects.get(pk=2)
-        sg = StudyGroup.objects.get(pk=4)
-        sg.facilitator = facilitator2
+        self.assertEqual(facilitator2.teammembership_set.active().count(), 1)
+        team = facilitator2.teammembership_set.active().first().team
+        sgdata = dict(            
+            course=Course.objects.first(),
+            facilitator=facilitator2,
+            description='blah',
+            venue_name='ACME public library',
+            venue_address='ACME rd 1',
+            venue_details='venue_details',
+            city='city',
+            latitude=0,
+            longitude=0,
+            start_date=datetime.date(2010,1,1),
+            end_date=datetime.date(2010,1,1) + datetime.timedelta(weeks=6),
+            meeting_time=datetime.time(12,0),
+            duration=90,
+            timezone='GMT',
+            facilitator_goal='the_facilitator_goal',
+            facilitator_concerns='the_facilitators_concerns',
+            draft=False,
+        )
+        sg = StudyGroup(**sgdata)
         sg.save()
 
-        sg = StudyGroup.objects.get(pk=3)
-        sg.facilitator = facilitator2
+        self.assertEqual(sg.team_id, team.id)
+
+        meeting_dates = generate_all_meeting_dates(
+            sg.start_date, sg.meeting_time, 6
+        )
+        generate_meetings_from_dates(sg, meeting_dates)
+
+        sgdata['name'] = 'another lc'
+        sg = StudyGroup(**sgdata)
         sg.save()
+        meeting_dates = generate_all_meeting_dates(
+            sg.start_date, sg.meeting_time, 6
+        )
+        generate_meetings_from_dates(sg, meeting_dates)
+
+        self.assertEqual(sg.team_id, team.id)
+        self.assertEqual(sg_count + 2, StudyGroup.objects.count())
+
+        self.assertEqual(StudyGroup.objects.active().filter(team=team).count(), 2)
 
         c = Client()
-        resp = c.get('/api/learningcircles/?team_id=2')
+        resp = c.get(f'/api/learningcircles/?team_id={team.id}')
         result = resp.json()
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(result["count"], 2)
-        self.assertEqual(result["items"][0]['id'], 3)
-        self.assertEqual(result["items"][1]['id'], 4)
+        self.assertEqual(result["items"][0]['id'], 5)
+        self.assertEqual(result["items"][1]['id'], 6)
+
+        # remove user from team
+        facilitator2.teammembership_set.active().first().delete()
+        
+        # ensure learning circles are still returned for the team
+        resp = c.get(f'/api/learningcircles/?team_id={team.id}')
+        result = resp.json()
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(result["count"], 2)
+        self.assertEqual(result["items"][0]['id'], 5)
+        self.assertEqual(result["items"][1]['id'], 6)
 
 
     def test_get_learning_circle_by_id(self):
