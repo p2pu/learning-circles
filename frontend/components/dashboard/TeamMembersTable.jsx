@@ -1,10 +1,34 @@
-import React, { Component } from "react";
+import React, { Component, useRef, useEffect } from "react";
 import ApiHelper from "../../helpers/ApiHelper";
 import axios from "axios"
 
 const PAGE_LIMIT = 5;
 
 // TODO - click on remove, pop up modal for confirmation, on confirmation, POST delete and reload API results?
+
+
+const ConfirmMemberRemoval = props => {
+  const {member, onDeletionAffirmed, onDeletionCancelled} = props;
+
+  const alert = useRef(null);
+  useEffect(() => {
+    let offset = alert.current.getBoundingClientRect().y;
+    window.scrollBy(0, offset - 160);
+  }, []);
+
+  return (
+    <div className="alert alert-danger" ref={alert}>
+      <form onSubmit={e => {e.preventDefault(); onDeletionAffirmed(member.id)}}>
+        <p>Are you sure you want to delete <strong>{ member.facilitator.first_name } &lt;{ member.facilitator.email }&gt;</strong> ?</p>
+        <button className="p2pu-btn btn btn-sm orange" type="submit">Delete</button>
+        <button 
+          className="p2pu-btn btn btn-sm gray" 
+          onClick={e => { e.preventDefault(); onDeletionCancelled()} }
+        >Cancel</button>
+      </form>
+    </div>
+  )
+}
 
 export default class TeamMembersTable extends Component {
   constructor(props) {
@@ -75,6 +99,10 @@ export default class TeamMembersTable extends Component {
     })
   }
 
+  handleRemoveClick = member => {
+    this.setState({memberToDelete: member, deleteConfirmation: [null, null]});
+  }
+
   render() {
     const totalPages = Math.ceil(this.state.count / PAGE_LIMIT);
     const currentPage = Math.ceil((this.state.offset + this.state.teamMembers.length) / PAGE_LIMIT);
@@ -95,13 +123,11 @@ export default class TeamMembersTable extends Component {
           </div>
         }
         { this.state.memberToDelete &&
-          <div className="alert alert-danger">
-            <form onSubmit={e => {e.preventDefault(); this.handleDeleteMember(this.state.memberToDelete.id)}}>
-              <p>Are you sure you want to delete <strong>{ this.state.memberToDelete.facilitator.first_name } &lt;{ this.state.memberToDelete.facilitator.email }&gt;</strong> ?</p>
-              <button className="p2pu-btn btn btn-sm orange" type="submit">Delete</button>
-              <button className="p2pu-btn btn btn-sm gray" onClick={e => {e.preventDefault(); this.setState({memberToDelete: null}); }}>Cancel</button>
-            </form>
-          </div>
+          <ConfirmMemberRemoval
+            member={this.state.memberToDelete}
+            onDeletionAffirmed={this.handleDeleteMember}
+            onDeletionCancelled={() => {this.setState({memberToDelete: null}); }}
+          />
         }
         <div className="table-responsive d-none d-md-block">
           <table className="table">
@@ -127,7 +153,7 @@ export default class TeamMembersTable extends Component {
                       <td>
                         <button 
                           className="p2pu-btn btn btn-sm secondary orange"
-                          onClick={e => {e.preventDefault(); this.setState({memberToDelete: m, deleteConfirmation: [null, null]})}}
+                          onClick={() => this.handleRemoveClick(m)}
                         >remove</button>
                       </td>
                     </tr>
@@ -161,7 +187,7 @@ export default class TeamMembersTable extends Component {
                       <div>
                         <button 
                           className="p2pu-btn btn btn-sm secondary orange"
-                          onClick={e => {e.preventDefault(); this.setState({memberToDelete: m, deleteConfirmation: [null, null]})}}
+                          onClick={() => this.handleRemoveClick(m)}
                         >remove</button>
                       </div>
                     </div>
