@@ -126,7 +126,7 @@ export default class TeamMembersTable extends Component {
                       <td>{ facilitator.email_confirmed_at }</td>
                       <td>
                         <button 
-                          className="p2pu-btn btn btn-sm orange"
+                          className="p2pu-btn btn btn-sm secondary orange"
                           onClick={e => {e.preventDefault(); this.setState({memberToDelete: m, deleteConfirmation: [null, null]})}}
                         >remove</button>
                       </td>
@@ -160,7 +160,7 @@ export default class TeamMembersTable extends Component {
                       <div className="">{ m.created_at }</div>
                       <div>
                         <button 
-                          className="p2pu-btn btn btn-sm orange"
+                          className="p2pu-btn btn btn-sm secondary orange"
                           onClick={e => {e.preventDefault(); this.setState({memberToDelete: m, deleteConfirmation: [null, null]})}}
                         >remove</button>
                       </div>
