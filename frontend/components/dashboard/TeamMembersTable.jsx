@@ -19,8 +19,8 @@ const ConfirmMemberRemoval = props => {
   return (
     <div className="alert alert-danger" ref={alert}>
       <form onSubmit={e => {e.preventDefault(); onDeletionAffirmed(member.id)}}>
-        <p>Are you sure you want to delete <strong>{ member.facilitator.first_name } &lt;{ member.facilitator.email }&gt;</strong> ?</p>
-        <button className="p2pu-btn btn btn-sm orange" type="submit">Delete</button>
+        <p>Are you sure you want to remove <strong>{ member.facilitator.first_name } &lt;{ member.facilitator.email }&gt;</strong> from the team? Their existing learning circles will remain associated with your team.</p>
+        <button className="p2pu-btn btn btn-sm orange" type="submit">Remove</button>
         <button 
           className="p2pu-btn btn btn-sm gray" 
           onClick={e => { e.preventDefault(); onDeletionCancelled()} }
