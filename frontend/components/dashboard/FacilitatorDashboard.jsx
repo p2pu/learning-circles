@@ -170,9 +170,6 @@ export default class FacilitatorDashboard extends React.Component {
                       </TabPanel>
                     </Tabs>
                   }
-                  <div className="text-right">
-                    <a href={"https://www.p2pu.org/en/teams/"}>See all teams</a>
-                  </div>
                 </Card>
               </div>
             }
