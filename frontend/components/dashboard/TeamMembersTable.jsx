@@ -1,8 +1,34 @@
-import React, { Component } from "react";
+import React, { Component, useRef, useEffect } from "react";
 import ApiHelper from "../../helpers/ApiHelper";
-import moment from "moment";
+import axios from "axios"
 
 const PAGE_LIMIT = 5;
+
+// TODO - click on remove, pop up modal for confirmation, on confirmation, POST delete and reload API results?
+
+
+const ConfirmMemberRemoval = props => {
+  const {member, onDeletionAffirmed, onDeletionCancelled} = props;
+
+  const alert = useRef(null);
+  useEffect(() => {
+    let offset = alert.current.getBoundingClientRect().y;
+    window.scrollBy(0, offset - 160);
+  }, []);
+
+  return (
+    <div className="alert alert-danger" ref={alert}>
+      <form onSubmit={e => {e.preventDefault(); onDeletionAffirmed(member.id)}}>
+        <p>Are you sure you want to remove <strong>{ member.facilitator.first_name } &lt;{ member.facilitator.email }&gt;</strong> from the team? Their existing learning circles will remain associated with your team.</p>
+        <button className="p2pu-btn btn btn-sm orange" type="submit">Remove</button>
+        <button 
+          className="p2pu-btn btn btn-sm gray" 
+          onClick={e => { e.preventDefault(); onDeletionCancelled()} }
+        >Cancel</button>
+      </form>
+    </div>
+  )
+}
 
 export default class TeamMembersTable extends Component {
   constructor(props) {
@@ -10,7 +36,9 @@ export default class TeamMembersTable extends Component {
     this.state = {
       teamMembers: [],
       limit: PAGE_LIMIT,
-      count: 0
+      count: 0,
+      memberToDelete: null,
+      deleteConfirmation: [null, null],
     };
   }
 
@@ -42,6 +70,38 @@ export default class TeamMembersTable extends Component {
     this.populateResources(params)
   }
 
+  handleDeleteMember = memberId => {
+    const url = `${this.props.deleteTeamMembershipApiUrl}${memberId}/` 
+    axios({
+      url,
+      method: 'DELETE',
+    }).then(res => {
+      console.log(res)
+      if (res.status === 204) {
+        this.setState({
+          memberToDelete: null,
+          deleteConfirmation: ['success', 'Member was deleted.'],
+        });
+        const params = { limit: PAGE_LIMIT, offset: this.state.offset };
+        this.populateResources(params)
+      } else {
+        this.setState({
+          memberToDelete: null,
+          deleteConfirmation: ['warning', 'Could not delete team member.'],
+        });
+      }
+    }).catch(err => {
+      console.log(err);
+      this.setState({
+        memberToDelete: null,
+        deleteConfirmation: ['warning', 'Could not delete team member.'],
+      });
+    })
+  }
+
+  handleRemoveClick = member => {
+    this.setState({memberToDelete: member, deleteConfirmation: [null, null]});
+  }
 
   render() {
     const totalPages = Math.ceil(this.state.count / PAGE_LIMIT);
@@ -57,6 +117,18 @@ export default class TeamMembersTable extends Component {
 
     return (
       <div className="learning-circles-table">
+        { this.state.deleteConfirmation[0] && 
+          <div className={`alert alert-${this.state.deleteConfirmation[0]}`}>
+            {this.state.deleteConfirmation[1]}
+          </div>
+        }
+        { this.state.memberToDelete &&
+          <ConfirmMemberRemoval
+            member={this.state.memberToDelete}
+            onDeletionAffirmed={this.handleDeleteMember}
+            onDeletionCancelled={() => {this.setState({memberToDelete: null}); }}
+          />
+        }
         <div className="table-responsive d-none d-md-block">
           <table className="table">
             <thead>
@@ -65,6 +137,7 @@ export default class TeamMembersTable extends Component {
                 <td>Email</td>
                 <td>Role</td>
                 <td>Joined P2PU</td>
+                <td></td>
               </tr>
             </thead>
             <tbody>
@@ -77,6 +150,12 @@ export default class TeamMembersTable extends Component {
                       <td>{ facilitator.email }</td>
                       <td>{ m.role }</td>
                       <td>{ facilitator.email_confirmed_at }</td>
+                      <td>
+                        <button 
+                          className="p2pu-btn btn btn-sm secondary orange"
+                          onClick={() => this.handleRemoveClick(m)}
+                        >remove</button>
+                      </td>
                     </tr>
                   )
                 })
@@ -97,6 +176,7 @@ export default class TeamMembersTable extends Component {
                       <div className="bold">Email</div>
                       <div className="bold">Role</div>
                       <div className="bold">Joined</div>
+                      <div></div>
                     </div>
 
                     <div className="flex-grow px-2">
@@ -104,6 +184,12 @@ export default class TeamMembersTable extends Component {
                       <div className="">{ facilitator.email }</div>
                       <div className="">{ m.role }</div>
                       <div className="">{ m.created_at }</div>
+                      <div>
+                        <button 
+                          className="p2pu-btn btn btn-sm secondary orange"
+                          onClick={() => this.handleRemoveClick(m)}
+                        >remove</button>
+                      </div>
                     </div>
                   </div>
                 </div>

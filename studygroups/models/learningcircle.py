@@ -86,9 +86,12 @@ class StudyGroup(LifeTimeTrackingModel):
     learner_survey_sent_at = models.DateTimeField(blank=True, null=True)
     facilitator_survey_sent_at = models.DateTimeField(blank=True, null=True)
 
+    team = models.ForeignKey('studygroups.Team', on_delete=models.SET_NULL, blank=True, null=True)
+
     objects = StudyGroupQuerySet.as_manager()
 
     def save(self, *args, **kwargs):
+        created = not self.pk
         # use course.caption if course_description is not set
         if self.course_description is None:
             self.course_description = self.course.caption
@@ -96,6 +99,11 @@ class StudyGroup(LifeTimeTrackingModel):
         if self.name is None:
             self.name = self.course.title
         super().save(*args, **kwargs)
+        if created:
+            # if the facilitator is part of a team, set the team field
+            if self.facilitator.teammembership_set.active().count():
+                self.team = self.facilitator.teammembership_set.active().first().team
+                self.save()
 
     def day(self):
         return calendar.day_name[self.start_date.weekday()]

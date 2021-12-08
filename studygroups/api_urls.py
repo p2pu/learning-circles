@@ -11,6 +11,8 @@ from .views import drf
 router = DefaultRouter()
 router.register(r'meeting_feedback', drf.FeedbackViewSet)
 router.register(r'learningcircle_feedback', drf.StudyGroupRatingViewSet, basename='learningcircle_feedback')
+router.register(r'team_invitation', drf.TeamInvitationViewSet, basename='team_invitations')
+router.register(r'team_membership', drf.TeamMembershipViewSet, basename='team_membership')
 
 # TODO split / indicate what is used on www.p2pu.org vs what is used for management UX
 
@@ -33,8 +35,8 @@ urlpatterns = [
     url(r'^instagram-feed/$', views.InstagramFeed.as_view(), name='api_instagram_feed'),
     url(r'^teams/$', views.TeamListView.as_view(), name='api_teams'),
     url(r'^teams/(?P<team_id>[\d]+)/$', views.TeamDetailView.as_view(), name='api_teams_detail'),
-    url(r'^teams/(?P<team_id>[\d]+)/invitation-url/create/$', views.create_team_invitation_url, name='api_teams_create_invitation_url'),
-    url(r'^teams/(?P<team_id>[\d]+)/invitation-url/delete/$', views.delete_team_invitation_url, name='api_teams_delete_invitation_url'),
+    url(r'^teams/(?P<team_id>[\d]+)/invitation-url/create/$', views.create_team_invitation_link, name='api_teams_create_invitation_url'),
+    url(r'^teams/(?P<team_id>[\d]+)/invitation-url/delete/$', views.delete_team_invitation_link, name='api_teams_delete_invitation_link'),
     url(r'^teams/members/$', views.TeamMembershipListView.as_view(), name='api_team_memberships'),
     url(r'^teams/invitations/$', views.TeamInvitationListView.as_view(), name='api_team_invitations'),
     url(r'^facilitator/invitations/$', views.facilitator_invitation_notifications, name='api_facilitator_invitations'),

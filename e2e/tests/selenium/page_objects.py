@@ -25,10 +25,10 @@ class BasePage(object):
 
     def fill_rich_text_field(self, locator, *text):
         tinymce_iframe = self.wait.until(expected_conditions.presence_of_element_located(locator))
-        self.driver.switch_to_frame(tinymce_iframe)
+        self.driver.switch_to.frame(tinymce_iframe)
         rich_text_field = self.wait.until(expected_conditions.presence_of_element_located(LearningCircleCreationPageLocators.TINYMCE_FIELD))
         rich_text_field.send_keys(*text)
-        self.driver.switch_to_default_content()
+        self.driver.switch_to.default_content()
 
 
 class LearningCircleCreationPage(BasePage):
