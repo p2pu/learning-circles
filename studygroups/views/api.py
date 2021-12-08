@@ -274,10 +274,7 @@ class LearningCircleListView(View):
 
         team_id = request.GET.get('team_id')
         if team_id is not None:
-            team = Team.objects.get(pk=team_id)
-            members = team.teammembership_set.active().values('user')
-            team_users = User.objects.filter(pk__in=members)
-            study_groups = study_groups.filter(facilitator__in=team_users)
+            study_groups = study_groups.filter(team_id=team_id)
 
         # TODO How is this different from scope=active?
         if 'active' in request.GET:
@@ -1002,6 +999,7 @@ def serialize_team_data(team):
         "email_address": team.email_address,
         "location": team.location,
         "facilitators": [],
+        "membership": team.membership,
     }
 
     members = team.teammembership_set.active().values('user')
@@ -1074,7 +1072,7 @@ class TeamDetailView(SingleObjectMixin, View):
 
         if request.user.is_authenticated and team.teammembership_set.active().filter(user=request.user, role=TeamMembership.ORGANIZER).exists():
             #  ensure user is team organizer
-            serialized_team['team_invitation_url'] = team.team_invitation_url()
+            serialized_team['team_invitation_link'] = team.team_invitation_link()
 
         data['item'] = serialized_team
 
@@ -1218,22 +1216,22 @@ def facilitator_invitation_notifications(request):
 @user_is_team_organizer
 @login_required
 @require_http_methods(["POST"])
-def create_team_invitation_url(request, team_id):
+def create_team_invitation_link(request, team_id):
     team = Team.objects.get(pk=team_id)
     team.generate_invitation_token()
 
-    return json_response(request, { "status": "updated", "team_invitation_url": team.team_invitation_url() })
+    return json_response(request, { "status": "updated", "team_invitation_link": team.team_invitation_link() })
 
 
 @user_is_team_organizer
 @login_required
 @require_http_methods(["POST"])
-def delete_team_invitation_url(request, team_id):
+def delete_team_invitation_link(request, team_id):
     team = Team.objects.get(pk=team_id)
     team.invitation_token = None
     team.save()
 
-    return json_response(request, { "status": "deleted", "team_invitation_url": None })
+    return json_response(request, { "status": "deleted", "team_invitation_link": None })
 
 def serialize_announcement(announcement):
     return {

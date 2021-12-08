@@ -11,8 +11,6 @@ from django.contrib.auth.models import User
 from .models import Event
 
 
-# Serializers define the API representation.
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

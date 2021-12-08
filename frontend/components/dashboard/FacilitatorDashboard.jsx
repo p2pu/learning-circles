@@ -170,9 +170,6 @@ export default class FacilitatorDashboard extends React.Component {
                       </TabPanel>
                     </Tabs>
                   }
-                  <div className="text-right">
-                    <a href={"https://www.p2pu.org/en/teams/"}>See all teams</a>
-                  </div>
                 </Card>
               </div>
             }
@@ -190,20 +187,26 @@ export default class FacilitatorDashboard extends React.Component {
                     </TabList>
                     <TabPanel>
                       <div data-aos='fade'>
-                        <TeamMembersTable teamId={this.props.teamId} />
+                        <TeamMembersTable 
+                          teamId={this.props.teamId}
+                          deleteTeamMembershipApiUrl={this.props.deleteTeamMembershipApiUrl}
+                        />
                       </div>
                     </TabPanel>
                     <TabPanel>
                       <div data-aos='fade'>
-                        <TeamInvitationsTable teamId={this.props.teamId} />
+                        <TeamInvitationsTable 
+                          teamId={this.props.teamId} 
+                          deleteTeamInvitationApiUrl={this.props.deleteTeamInvitationApiUrl}
+                        />
                       </div>
                     </TabPanel>
                     <TabPanel>
                       <div data-aos='fade'>
                         <OrganizerTeamInvitations
-                          teamInvitationUrl={this.props.teamInvitationUrl}
-                          createTeamInvitationUrl={this.props.createTeamInvitationUrl}
-                          deleteTeamInvitationUrl={this.props.deleteTeamInvitationUrl}
+                          teamInvitationLink={this.props.teamInvitationLink}
+                          createTeamInvitationLink={this.props.createTeamInvitationLink}
+                          deleteTeamInvitationLink={this.props.deleteTeamInvitationLink}
                           teamMemberInvitationUrl={this.props.teamMemberInvitationUrl}
                           showAlert={this.showAlert}
                         />
@@ -304,13 +307,6 @@ export default class FacilitatorDashboard extends React.Component {
               <Card>
                 <div className="card-title">Recent Successes</div>
                 <GlobalSuccesses />
-              </Card>
-            </div>
-
-            <div data-aos='fade'>
-              <Card>
-                <div className="card-title">Latest Posts on Instagram</div>
-                <InstagramFeed />
               </Card>
             </div>
 

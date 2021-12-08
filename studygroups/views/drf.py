@@ -8,6 +8,7 @@ from rest_framework import permissions
 from studygroups.models import Feedback
 from studygroups.models import StudyGroup
 from studygroups.models import TeamMembership
+from studygroups.models import TeamInvitation
 from studygroups.models import Meeting
 from studygroups.models import get_study_group_organizers
 
@@ -84,3 +85,58 @@ class StudyGroupRatingViewSet(
     queryset = StudyGroup.objects.all()
     serializer_class = StudyGroupFeedbackSerializer
     permission_classes = [permissions.IsAuthenticated, IsGroupFacilitatorII]
+
+
+
+
+
+
+class IsATeamOrganizer(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        """ give access to staff, user and team organizer """
+        study_group = obj
+        if request.user.is_staff \
+                or request.user == study_group.facilitator \
+                or TeamMembership.objects.active().filter(user=request.user, role=TeamMembership.ORGANIZER).exists():
+            return True
+        return False
+
+
+class TeamInvitationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeamInvitation
+        fields = ['pk', 'created_at', 'email', 'role', 'responded_at', 'joined']
+
+
+class TeamInvitationViewSet(
+        mixins.CreateModelMixin,
+        mixins.DestroyModelMixin,
+        mixins.RetrieveModelMixin,
+        mixins.ListModelMixin,
+        viewsets.GenericViewSet):
+    serializer_class = TeamInvitationSerializer
+    permission_classes = [permissions.IsAuthenticated, IsATeamOrganizer]
+
+    def get_queryset(self):
+        team_membership = TeamMembership.objects.active().filter(user=self.request.user, role=TeamMembership.ORGANIZER).get()
+        return TeamInvitation.objects.filter(team=team_membership.team, responded_at__isnull=True)
+
+
+class TeamMembershipSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TeamMembership
+        fields = ['pk', 'user', 'role', 'weekly_update_opt_in', 'created_at']
+
+
+class TeamMembershipViewSet(
+        mixins.CreateModelMixin,
+        mixins.DestroyModelMixin,
+        mixins.RetrieveModelMixin,
+        mixins.ListModelMixin,
+        viewsets.GenericViewSet):
+    serializer_class = TeamMembershipSerializer
+    permission_classes = [permissions.IsAuthenticated, IsATeamOrganizer]
+
+    def get_queryset(self):
+        team_membership = TeamMembership.objects.active().filter(user=self.request.user, role=TeamMembership.ORGANIZER).get()
+        return TeamMembership.objects.active().filter(team=team_membership.team)

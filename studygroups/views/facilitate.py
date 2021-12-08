@@ -766,9 +766,9 @@ class FacilitatorDashboard(TemplateView):
                 # add context for team organizers
                 if team_membership.role == TeamMembership.ORGANIZER:
                     context['user_is_organizer'] = True
-                    context['team_invitation_url'] = team_membership.team.team_invitation_url()
-                    context['create_team_invitation_url'] = reverse('api_teams_create_invitation_url', args=(team_membership.team.id,))
-                    context['delete_team_invitation_url'] = reverse('api_teams_delete_invitation_url', args=(team_membership.team.id,))
+                    context['team_invitation_link'] = team_membership.team.team_invitation_link()
+                    context['create_team_invitation_link'] = reverse('api_teams_create_invitation_url', args=(team_membership.team.id,))
+                    context['delete_team_invitation_link'] = reverse('api_teams_delete_invitation_link', args=(team_membership.team.id,))
                     context['team_member_invitation_url'] = reverse('studygroups_team_member_invite', args=(team_membership.team.id,))
                     context['edit_team_url'] = reverse('studygroups_team_edit', args=(team_membership.team.id,))
 

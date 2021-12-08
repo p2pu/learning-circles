@@ -8,7 +8,7 @@ export default class OrganizerTeamInvitations extends Component {
     this.state = {
       email: "",
       inviteError: null,
-      teamInvitationUrl: this.props.teamInvitationUrl,
+      teamInvitationLink: this.props.teamInvitationLink,
     };
   }
 
@@ -46,12 +46,12 @@ export default class OrganizerTeamInvitations extends Component {
 
   handleCreateUrl = () => {
     axios({
-      url: this.props.createTeamInvitationUrl,
+      url: this.props.createTeamInvitationLink,
       method: 'POST',
     }).then(res => {
       console.log(res)
       if (res.status === 200 && res.data.status === "updated") {
-        this.setState({ teamInvitationUrl: res.data.team_invitation_url })
+        this.setState({ teamInvitationLink: res.data.team_invitation_link })
       } else {
         this.props.showAlert("There was an error creating the URL. Please contact us at thepeople@p2pu.org.", "warning")
       }
@@ -63,12 +63,12 @@ export default class OrganizerTeamInvitations extends Component {
 
   handleDeleteUrl = () => {
     axios({
-      url: this.props.deleteTeamInvitationUrl,
+      url: this.props.deleteTeamInvitationLink,
       method: 'POST',
     }).then(res => {
       console.log(res)
       if (res.status === 200 && res.data.status === "deleted") {
-        this.setState({ teamInvitationUrl: res.data.team_invitation_url })
+        this.setState({ teamInvitationLink: res.data.team_invitation_link })
       } else {
         this.props.showAlert("There was an error deleting the URL. Please contact us at thepeople@p2pu.org.", "warning")
       }
@@ -100,10 +100,10 @@ export default class OrganizerTeamInvitations extends Component {
         <div className="invitation-link">
           <div className="card-title">Invitation Link</div>
           <p>Anyone with this URL will be able to join your team without an invitation. Share at your discretion!</p>
-          { this.state.teamInvitationUrl && <p><code className="copy-url">{this.state.teamInvitationUrl}</code></p> }
+          { this.state.teamInvitationLink && <p><code className="copy-url">{this.state.teamInvitationLink}</code></p> }
           <div>
             <button onClick={this.handleCreateUrl} className="p2pu-btn btn dark btn-sm">Generate new URL</button>
-            { this.state.teamInvitationUrl &&
+            { this.state.teamInvitationLink &&
               <button onClick={this.handleDeleteUrl} className="p2pu-btn dark btn secondary btn-sm">Delete URL</button>
             }
           </div>
