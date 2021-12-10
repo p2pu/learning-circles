@@ -9,6 +9,7 @@ import Card from './Card';
 import Notification from './Notification';
 import DiscourseTable from './DiscourseTable';
 import CoursesTable from './CoursesTable';
+import MemberLearningCirclesTable from './MemberLearningCirclesTable';
 import UpcomingLearningCirclesTable from './UpcomingLearningCirclesTable';
 import CurrentLearningCirclesTable from './CurrentLearningCirclesTable';
 import ActiveLearningCirclesTable from './ActiveLearningCirclesTable';
@@ -119,6 +120,13 @@ export default class FacilitatorDashboard extends React.Component {
               memberCalendarUrl={this.props.memberCalendarUrl}
               memberSupportUrl={this.props.memberSupportUrl}
             />
+
+            { this.props.isMemberTeam &&
+              <Card>
+                <div className="card-title">Member Learning Circles</div>
+                <MemberLearningCirclesTable />
+              </Card>
+            }
 
             <div>
               <Card>
