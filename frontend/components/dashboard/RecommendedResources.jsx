@@ -41,14 +41,8 @@ const RecommendedResources = props => {
             imgUrl="/static/images/icons/team-docs.svg"
             url="https://docs.p2pu.org/teams/about-teams"
           />
-          <ResourceCard
-            title="Member events"
-            imgUrl="/static/images/icons/member-events.svg"
-            url={props.memberCalendarUrl}
-          />
         </> 
       }
-
     </div>
   );
 }
