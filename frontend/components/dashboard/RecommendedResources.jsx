@@ -32,7 +32,7 @@ const RecommendedResources = props => {
         props.isMemberTeam && 
         <>
           <ResourceCard
-            title="Calendly link"
+            title="Meet with Q"
             imgUrl="/static/images/icons/team-support.svg"
             url={props.memberSupportUrl}
           />
