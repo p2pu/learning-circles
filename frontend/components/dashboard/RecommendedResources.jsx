@@ -16,7 +16,7 @@ const RecommendedResources = props => {
       <ResourceCard
         title="Getting started"
         imgUrl="/static/images/icons/getting-started.svg"
-        url="https://docs.p2pu.org"
+        url="https://docs.p2pu.org/methodology/learning-circle-checklist"
       />
       <ResourceCard
         title="Using the tools"
