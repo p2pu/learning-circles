@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import ApiHelper from "../../helpers/ApiHelper";
 import moment from "moment";
+import axios from 'axios';
 import { sortBy } from 'lodash';
 
 const PAGE_LIMIT = 4;
@@ -20,27 +20,15 @@ export default class LearningCirclesTable extends Component {
   }
 
   populateResources = (params={}) => {
-    const api = new ApiHelper('learningCircles');
-
-    const onSuccess = (data) => {
-      this.setState({ learningCircles: data.items, count: data.count, offset: data.offset, limit: data.limit })
-    }
-
-    const defaultParams = { limit: this.state.limit, offset: this.state.offset, scope: "unlisted"}
-
-    api.fetchResource({ callback: onSuccess, params: { ...defaultParams, ...params } })
-  }
-
-  nextPage = (e) => {
-    e.preventDefault();
-    const params = { limit: PAGE_LIMIT, offset: this.state.offset + this.state.learningCircles.length };
-    this.populateResources(params)
-  }
-
-  prevPage = (e) => {
-    e.preventDefault();
-    const params = { limit: PAGE_LIMIT, offset: this.state.offset - PAGE_LIMIT };
-    this.populateResources(params)
+    const url = '/api/drf/member_learningcircles/';
+    axios({url, method: 'GET', responseType: 'json'}).then(res => {
+      console.log(res);
+      if (res.data.errors) {
+      }
+      this.setState({ learningCircles: res.data.results, count: res.data.count})
+    }).catch(err => {
+      console.log(err)
+    });
   }
 
 
@@ -71,21 +59,18 @@ export default class LearningCirclesTable extends Component {
             <tbody>
               {
                 orderedLearningCircles.map(lc => {
-
-                  let date = 'n/a'
-                  if (lc.next_meeting_date) {
-                    date = moment(lc.next_meeting_date).format('MMM D, YYYY')
-                  } else if (lc.draft) {
-                    date = moment(lc.start_date).format('MMM D, YYYY')
-                  }
-
-                  const classes = lc.draft ? 'bg-cream-dark' : '';
+                  let date = moment(lc.next_meeting_date).format('MMM D, YYYY')
 
                   return(
-                    <tr key={ lc.id } className={`${classes}`}>
-                      <td>{`${lc.draft ? "[DRAFT] " : ""}${lc.name}`}</td>
+                    <tr key={ lc.id }>
+                      <td>{ lc.name }</td>
                       <td>{ date }</td>
-                      <td><a href={ lc.url } className="p2pu-btn btn btn-sm dark">signup</a></td>
+                      { !!lc.user_signup && 
+                        <td style={{textAlign: 'center'}}><strong>Signed up</strong></td>
+                      }
+                      { !lc.user_signup && 
+                        <td style={{textAlign: 'center'}}><a href={ lc.signup_url } className="p2pu-btn btn btn-sm dark">signup</a></td>
+                      }
                     </tr>
                   )
                 })
@@ -98,23 +83,25 @@ export default class LearningCirclesTable extends Component {
           {
             this.state.learningCircles.map(lc => {
               const date = lc.next_meeting_date ? moment(lc.next_meeting_date).format('MMM D, YYYY') : "n/a";
-              const classes = lc.draft ? 'bg-cream-dark' : '';
-
               return(
-                <div className={`meeting-card p-2 ${classes}`} key={lc.id}>
-                  <a className="bold" href={ lc.signup_url }>{`${lc.draft ? "[DRAFT] " : ""}${lc.name}`}</a>
+                <div className={`meeting-card p-2`} key={lc.id}>
+                  <p className="bold">{lc.name}</p>
 
                   <div className="d-flex">
                     <div className="pr-2">
-                      <div className="bold">First Meeting</div>
+                      <div className="bold">Next Meeting</div>
                     </div>
 
                     <div className="flex-grow px-2">
                       <div className="">{ date }</div>
                     </div>
                   </div>
-
-                  <a href={ lc.url } className="p2pu-btn btn btn-sm dark m-0 my-2">signup</a> 
+                  { !!lc.user_signup && 
+                    <p><strong>Signed up</strong></p>
+                  }
+                  { !lc.user_signup && 
+                    <a href={ lc.signup_url } className="p2pu-btn btn btn-sm dark m-0 my-2">signup</a> 
+                  }
                 </div>
               )
             })

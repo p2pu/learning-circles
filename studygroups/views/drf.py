@@ -1,4 +1,8 @@
 from django.urls import reverse
+from django.utils import timezone
+from django.db.models import OuterRef, Subquery, Q, Count, IntegerField
+from django.conf import settings
+from django.utils.text import slugify
 
 from rest_framework import generics
 from rest_framework import serializers, viewsets
@@ -87,10 +91,6 @@ class StudyGroupRatingViewSet(
     permission_classes = [permissions.IsAuthenticated, IsGroupFacilitatorII]
 
 
-
-
-
-
 class IsATeamOrganizer(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         """ give access to staff, user and team organizer """
@@ -140,3 +140,57 @@ class TeamMembershipViewSet(
     def get_queryset(self):
         team_membership = TeamMembership.objects.active().filter(user=self.request.user, role=TeamMembership.ORGANIZER).get()
         return TeamMembership.objects.active().filter(team=team_membership.team)
+
+
+
+class MemberLearningCircleSerializer(serializers.ModelSerializer):
+
+    next_meeting_date = serializers.DateField()
+    user_signup = serializers.IntegerField()
+    signup_url = serializers.SerializerMethodField()
+
+    def signup_url(self, obj):
+        return f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_signup', args=(slugify(obj.venue_name, allow_unicode=True), obj.id))
+
+    class Meta:
+        model = StudyGroup
+        fields = ['id', 'name', 'next_meeting_date', 'user_signup', 'signup_url']
+
+
+class IsMemberTeamMember(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        """ give access to staff, user and team organizer """
+        if request.user.is_staff \
+            or TeamMembership.objects.active().filter(user=request.user, team__membership=True).exists():
+            return True
+        return False
+
+
+class MemberLearningCircleViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    This viewset automatically provides `list` and `retrieve` actions.
+    """
+    serializer_class = MemberLearningCircleSerializer
+    permission_classes = [permissions.IsAuthenticated, IsMemberTeamMember]
+
+    def get_queryset(self):
+        today = timezone.now().date()
+        study_groups = StudyGroup.objects.published().prefetch_related('course', 'meeting_set', 'application_set').order_by('id')
+        upcoming_meetings = Meeting.objects.filter(
+            study_group=OuterRef('pk'), 
+            deleted_at__isnull=True,
+            meeting_date__gte=today
+        ).order_by('meeting_date')
+        study_groups = study_groups\
+            .filter(unlisted=True)\
+            .annotate(next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
+            .annotate(
+                user_signup=Count(
+                    'application', 
+                    filter=Q(application__email__iexact=self.request.user.email)
+                )
+            )\
+            .filter(Q(end_date__gte=today) | Q(draft=True))
+        return study_groups
+

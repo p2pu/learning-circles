@@ -199,10 +199,7 @@ class LearningCircleListView(View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        if request.user.is_authenticated and TeamMembership.objects.active().filter(user=request.user, team__membership=True).exists():
-            study_groups = StudyGroup.objects.published().prefetch_related('course', 'meeting_set', 'application_set').order_by('id')
-        else:
-            study_groups = StudyGroup.objects.published().filter(unlisted=False).prefetch_related('course', 'meeting_set', 'application_set').order_by('id')
+        study_groups = StudyGroup.objects.published().filter(unlisted=False).prefetch_related('course', 'meeting_set', 'application_set').order_by('id')
 
         if 'draft' in request.GET:
             study_groups = StudyGroup.objects.active().order_by('id')
@@ -246,13 +243,6 @@ class LearningCircleListView(View):
             elif scope == "completed":
                 study_groups = study_groups\
                 .filter(end_date__lt=today)
-            elif scope == "unlisted":
-                study_groups = study_groups\
-                .filter(unlisted=True)\
-                .annotate(next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
-                .filter(Q(end_date__gte=today) | Q(draft=True))
-
-
 
         q = request.GET.get('q', '').strip()
 
