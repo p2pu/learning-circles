@@ -42,7 +42,7 @@ idna==3.3
 importlib-metadata==4.8.2
 jmespath==0.10.0
 kombu==5.2.2
-lxml==4.6.4
+lxml==4.6.5
 Markdown==3.3.6
 outcome==1.1.0
 packaging==21.3
