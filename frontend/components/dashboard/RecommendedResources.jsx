@@ -1,9 +1,9 @@
 import React from "react";
 
 const ResourceCard = ({imgUrl, title, url}) => 
-  <div class="col d-flex resource-card">
-    <img src={imgUrl}/>
-    <h3>{title}</h3>
+  <div className="col-12 col-md d-flex flex-row flex-md-column resource-card mt-3 mt-md-4 text-md-center">
+    <img className="me-3 me-md-0" src={imgUrl}/>
+    <div className="title">{title}</div>
     <a href={url} target="_blank"></a>
   </div>;
 

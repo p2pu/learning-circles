@@ -136,12 +136,12 @@ export default class FacilitatorDashboard extends React.Component {
                       <Tab><span className="minicaps bold text-xs">Completed</span></Tab>
                     </TabList>
                     <TabPanel>
-                      <div data-aos='fade'>
+                      <div data-aos='fade' data-aos-anchor-placement="top-bottom">
                         <ActiveLearningCirclesTable user={true} />
                       </div>
                     </TabPanel>
                     <TabPanel>
-                      <div data-aos='fade'>
+                      <div data-aos='fade' data-aos-anchor-placement="top-bottom">
                         <CompletedLearningCirclesTable user={true} />
                       </div>
                     </TabPanel>
@@ -187,12 +187,12 @@ export default class FacilitatorDashboard extends React.Component {
                         <Tab><span className="minicaps bold text-xs">Completed</span></Tab>
                       </TabList>
                       <TabPanel>
-                        <div data-aos='fade'>
+                        <div data-aos='fade' data-aos-anchor-placement="top-bottom">
                           <ActiveLearningCirclesTable teamId={this.props.teamId} userIsOrganizer={this.props.userIsOrganizer} />
                         </div>
                       </TabPanel>
                       <TabPanel>
-                        <div data-aos='fade'>
+                        <div data-aos='fade' data-aos-anchor-placement="top-bottom">
                           <CompletedLearningCirclesTable teamId={this.props.teamId} userIsOrganizer={this.props.userIsOrganizer} />
                         </div>
                       </TabPanel>
@@ -214,7 +214,7 @@ export default class FacilitatorDashboard extends React.Component {
                       <Tab><span className="minicaps bold text-xs">Invite new members</span></Tab>
                     </TabList>
                     <TabPanel>
-                      <div data-aos='fade'>
+                      <div data-aos='fade' data-aos-anchor-placement="top-bottom">
                         <TeamMembersTable 
                           teamId={this.props.teamId}
                           deleteTeamMembershipApiUrl={this.props.deleteTeamMembershipApiUrl}
@@ -222,7 +222,7 @@ export default class FacilitatorDashboard extends React.Component {
                       </div>
                     </TabPanel>
                     <TabPanel>
-                      <div data-aos='fade'>
+                      <div data-aos='fade' data-aos-anchor-placement="top-bottom">
                         <TeamInvitationsTable 
                           teamId={this.props.teamId} 
                           deleteTeamInvitationApiUrl={this.props.deleteTeamInvitationApiUrl}
@@ -230,7 +230,7 @@ export default class FacilitatorDashboard extends React.Component {
                       </div>
                     </TabPanel>
                     <TabPanel>
-                      <div data-aos='fade'>
+                      <div data-aos='fade' data-aos-anchor-placement="top-bottom">
                         <OrganizerTeamInvitations
                           teamInvitationLink={this.props.teamInvitationLink}
                           createTeamInvitationLink={this.props.createTeamInvitationLink}
