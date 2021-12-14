@@ -20,9 +20,7 @@ class Notification extends React.Component {
           </div>
           {
             this.props.dismissable &&
-            <button type="button" className="close" onClick={() => { this.setState({ dismissed: true })}} aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
+            <button type="button" class="btn-close" onClick={() => { this.setState({ dismissed: true })}} aria-label="Close"></button>
           }
         </div>
       </Card>

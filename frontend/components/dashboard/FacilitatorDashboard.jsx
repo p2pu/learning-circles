@@ -9,6 +9,7 @@ import Card from './Card';
 import Notification from './Notification';
 import DiscourseTable from './DiscourseTable';
 import CoursesTable from './CoursesTable';
+import MemberLearningCirclesTable from './MemberLearningCirclesTable';
 import UpcomingLearningCirclesTable from './UpcomingLearningCirclesTable';
 import CurrentLearningCirclesTable from './CurrentLearningCirclesTable';
 import ActiveLearningCirclesTable from './ActiveLearningCirclesTable';
@@ -79,7 +80,7 @@ export default class FacilitatorDashboard extends React.Component {
 
   render() {
     return (
-      <div className="container-fluid">
+      <div className="container">
         <Alert
           show={this.state.alert.show}
           type={this.state.alert.type}
@@ -89,12 +90,8 @@ export default class FacilitatorDashboard extends React.Component {
         <div className="row">
           <div className="col-12">
             <Title user={this.state.user} userData={this.props.userData} />
-          </div>
-        </div>
 
-        <div className="row">
-          <div className="col-12 col-lg-8">
-            <div data-aos='fade'>
+            <div>
             {
               this.props.emailConfirmationUrl &&
               <EmailValidationNotification emailConfirmationUrl={this.props.emailConfirmationUrl} showAlert={this.showAlert} />
@@ -110,7 +107,21 @@ export default class FacilitatorDashboard extends React.Component {
             }
             </div>
 
-            <div data-aos='fade'>
+            <Announcements />
+
+            <RecommendedResources 
+              isMemberTeam={this.props.isMemberTeam}
+              memberSupportUrl={this.props.memberSupportUrl}
+            />
+
+            { this.props.isMemberTeam &&
+              <Card>
+                <div className="card-title">Member Learning Circles</div>
+                <MemberLearningCirclesTable />
+              </Card>
+            }
+
+            <div>
               <Card>
                 <div className="card-title">My Learning Circles</div>
                 {
@@ -142,9 +153,26 @@ export default class FacilitatorDashboard extends React.Component {
               </Card>
             </div>
 
+            <div>
+              <Card>
+                <div className="card-title">Courses I've Added</div>
+                {
+                  !this.state.user &&
+                  <p>You must be logged in to see your courses. <a className="p2pu-btn btn dark btn-sm" href={"/en/login_redirect/"}>Log in or register</a></p>
+                }
+                {
+                  this.state.user &&
+                  <CoursesTable userEmail={this.state.user} />
+                }
+                <div className="text-right">
+                  <a href={"https://www.p2pu.org/en/courses/"}>See all courses</a>
+                </div>
+              </Card>
+            </div>
+
             {
               this.props.teamId &&
-              <div data-aos='fade'>
+              <div>
                 <Card>
                   <div className="card-title">My Team's Learning Circles</div>
                   {
@@ -176,7 +204,7 @@ export default class FacilitatorDashboard extends React.Component {
 
             {
               this.props.userIsOrganizer &&
-              <div data-aos='fade'>
+              <div>
                 <Card>
                   <div className="card-title">Team Management</div>
                   <Tabs defaultIndex={0}>
@@ -220,93 +248,13 @@ export default class FacilitatorDashboard extends React.Component {
               </div>
             }
 
-
-            <div data-aos='fade'>
-              <Card>
-                <div className="card-title">What's Happening This Week</div>
-                <Tabs defaultIndex={0}>
-                  <TabList>
-                    <Tab><span className="minicaps bold text-xs">Globally</span></Tab>
-                    <Tab><span className="minicaps bold text-xs">My Team</span></Tab>
-                  </TabList>
-                  <TabPanel>
-                    <UpcomingMeetings scope="global" />
-                  </TabPanel>
-                  <TabPanel>
-                    {
-                      this.state.user ?
-                      <UpcomingMeetings scope="team" /> :
-                      <p>You must be logged in to see your team's activity. <a className="p2pu-btn btn dark btn-sm" href={"/en/login_redirect/"}>Log in or register</a></p>
-                    }
-                  </TabPanel>
-                </Tabs>
-                <div className="text-right">
-                  <a href={"https://www.p2pu.org/en/learning-circles/"}>See all learning circles</a>
-                </div>
-              </Card>
-            </div>
-
-            <div data-aos='fade'>
-              <Card>
-                <div className="card-title">Courses I've Added</div>
-                {
-                  !this.state.user &&
-                  <p>You must be logged in to see your courses. <a className="p2pu-btn btn dark btn-sm" href={"/en/login_redirect/"}>Log in or register</a></p>
-                }
-                {
-                  this.state.user &&
-                  <CoursesTable userEmail={this.state.user} />
-                }
-                <div className="text-right">
-                  <a href={"https://www.p2pu.org/en/courses/"}>See all courses</a>
-                </div>
-              </Card>
-            </div>
-
-            <div data-aos='fade'>
-              <Card>
-                <div className="card-title">Community Events</div>
-                <DiscourseTable endpoint={'/c/community-events.json?order=created'} />
-                <div className="text-right">
-                  <a href={"https://community.p2pu.org/c/community-events/"}>See all events</a>
-                </div>
-              </Card>
-            </div>
-
-
-            <div data-aos='fade'>
+            <div>
               <Card>
                 <div className="card-title">Latest Discussion</div>
                 <DiscourseTable endpoint={'/latest.json?order=created'} />
                 <div className="text-right">
                   <a href={"https://community.p2pu.org/"}>Go to the forum</a>
                 </div>
-              </Card>
-            </div>
-
-            <div data-aos='fade'>
-              <Card>
-                <div className="card-title">Facilitator Resources</div>
-                <RecommendedResources />
-                <div className="text-right">
-                  <a href={"https://www.p2pu.org/en/facilitate/"}>See all resources</a>
-                </div>
-              </Card>
-            </div>
-          </div>
-
-          <div className="col-12 col-lg-4">
-            <div data-aos="fade">
-              <FacilitatorProfile facilitator={this.props.userData} themeColor={"blue"} />
-            </div>
-            <div data-aos='fade'>
-              <Announcements />
-            </div>
-
-            <div data-aos='fade'>
-              <Card>
-                <div className="card-title">Recent Successes</div>
-                <GlobalSuccesses />
               </Card>
             </div>
 

@@ -49,6 +49,10 @@
   data-delete-team-membership-api-url="/api/drf/team_membership/"
   data-delete-team-invitation-api-url="/api/drf/team_invitation/"
   data-edit-team-url="{{ edit_team_url }}"
+  {% if is_member_team %}
+    data-is-member-team="true"
+    data-member-support-url="{{ member_support_url }}"
+  {% endif %}
 >
   <div class="loader"></div>
 </div>
