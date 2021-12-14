@@ -1,6 +1,4 @@
-import React, { Component } from "react";
-import axios from 'axios';
-import AOS from 'aos';
+import React from "react";
 
 const ResourceCard = ({imgUrl, title, url}) => 
   <div class="col d-flex resource-card">
