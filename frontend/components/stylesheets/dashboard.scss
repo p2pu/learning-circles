@@ -158,12 +158,8 @@ a.p2pu-btn {
 }
 
 .resource-card {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
   position: relative;
   align-items: center;
-  flex-direction: column;
-  text-align: center;
   text-transform: capitalize;
 }
 .resource-card > a {
@@ -172,6 +168,11 @@ a.p2pu-btn {
   left: 0;
   width: 100%;
   height: 100%;
+}
+
+.resource-card > .title {
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .resource-card > img {
