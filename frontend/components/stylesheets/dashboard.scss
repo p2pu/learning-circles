@@ -157,12 +157,14 @@ a.p2pu-btn {
   position: fixed;
 }
 
-
 .resource-card {
-  margin-top: 2rem;
+  margin-top: 1rem;
   margin-bottom: 1rem;
   position: relative;
   align-items: center;
+  flex-direction: column;
+  text-align: center;
+  text-transform: capitalize;
 }
 .resource-card > a {
   position: absolute;
@@ -173,6 +175,6 @@ a.p2pu-btn {
 }
 
 .resource-card > img {
-  padding: 0 1rem 0 0;
-  max-width: 128px;
+  //padding: 0 1rem 0 0;
+  max-width: 2rem;
 }

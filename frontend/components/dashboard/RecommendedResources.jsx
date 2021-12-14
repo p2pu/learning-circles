@@ -3,7 +3,7 @@ import axios from 'axios';
 import AOS from 'aos';
 
 const ResourceCard = ({imgUrl, title, url}) => 
-  <div class="col-12 col-md-6 col-lg-4 d-flex resource-card">
+  <div class="col d-flex resource-card">
     <img src={imgUrl}/>
     <h3>{title}</h3>
     <a href={url} target="_blank"></a>

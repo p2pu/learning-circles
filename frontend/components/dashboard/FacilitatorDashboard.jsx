@@ -92,12 +92,6 @@ export default class FacilitatorDashboard extends React.Component {
             <Title user={this.state.user} userData={this.props.userData} />
 
             <div>
-              <div className="card-actions text-right">
-                <a href="/en/accounts/settings/" class="btn p2pu-btn orange secondary">Account settings</a>
-              </div>
-            </div>
-
-            <div>
             {
               this.props.emailConfirmationUrl &&
               <EmailValidationNotification emailConfirmationUrl={this.props.emailConfirmationUrl} showAlert={this.showAlert} />
