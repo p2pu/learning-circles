@@ -3,14 +3,12 @@ import moment from "moment";
 import axios from 'axios';
 import { sortBy } from 'lodash';
 
-const PAGE_LIMIT = 4;
 
 export default class LearningCirclesTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
       learningCircles: [],
-      limit: PAGE_LIMIT,
       count: 0,
     };
   }
@@ -33,8 +31,6 @@ export default class LearningCirclesTable extends Component {
 
 
   render() {
-    const totalPages = Math.ceil(this.state.count / PAGE_LIMIT);
-    const currentPage = Math.ceil((this.state.offset + this.state.learningCircles.length) / PAGE_LIMIT);
     const orderedLearningCircles = sortBy(this.state.learningCircles, lc => lc.next_meeting_date || lc.start_date)
 
     if (this.state.learningCircles.length === 0) {
