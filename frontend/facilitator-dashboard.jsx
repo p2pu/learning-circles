@@ -20,7 +20,6 @@ const teamMemberInvitationUrl = element.dataset.teamMemberInvitationUrl === "Non
 const editTeamUrl = element.dataset.editTeamUrl === "None" ? null : element.dataset.editTeamUrl;
 
 
-
 ReactDOM.render(
   <ErrorBoundary scope="facilitator-dashboard">
     <FacilitatorDashboard
@@ -39,9 +38,9 @@ ReactDOM.render(
       deleteTeamMembershipApiUrl={element.dataset.deleteTeamMembershipApiUrl}
       deleteTeamInvitationApiUrl={element.dataset.deleteTeamInvitationApiUrl}
       editTeamUrl={editTeamUrl}
+      isMemberTeam={element.dataset.isMemberTeam}
+      memberSupportUrl={element.dataset.memberSupportUrl}
     />
-  </ErrorBoundary>
-  , element)
-
-
-
+  </ErrorBoundary>,
+  element
+)
