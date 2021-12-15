@@ -19,7 +19,7 @@
   {% endif %}
 </p>
 
-<p>{% blocktrans %}<a href="{{manage_url}}">Log in to your P2PU account</a> to manage your learning circle. You can monitor sign ups, send emails and SMS to your learners, and edit automated reminder messages at any time.{% endblocktrans %}</p>
+<p>{% blocktrans %}<a href="{{manage_url}}">Log in to your P2PU account</a> to manage your learning circle. You can use the dashboard to monitor sign ups, send emails and SMS to your learners, and edit automated reminder messages.{% endblocktrans %}</p>
 
 <p>{% trans "A handful of P2PU community members are copied on this email. So that they can better assist you, we are including your responses to the following questions:" %}</p>
 
@@ -32,8 +32,9 @@
 
 <p>{% trans "Looking for facilitation tips and strategies to run a great learning circle?" %}</p>
   <ul>
-    <li>{% blocktrans %}Read through <a href="http://docs.p2pu.org/">our handbook</a> for tips on facilitation and promotion{% endblocktrans %}</li>
-    <li>{% blocktrans %}Join an <a href="https://community.p2pu.org/c/community-events/upcoming-events/79">upcoming facilitator call</a>{% endblocktrans %}</li>
+    <li>{% blocktrans %}Read through our <a href="http://docs.p2pu.org/">Knowledge Base</a> for tips on facilitation and promotion{% endblocktrans %}</li>
+    <li>{% blocktrans %}Join an <a href="https://www.p2pu.org/en/events/">upcoming facilitator call</a> (first Wednesday of every month){% endblocktrans %}</li>
+    <li>{% blocktrans %}Create a <a href="https://docs.p2pu.org/courses/facilitator-guides">facilitator guide</a> to help you structure your learning circle{% endblocktrans %}</li>
     <li>{% blocktrans with course_title=study_group.course.title %}Post questions specific to “{{course_title}}” <a href="{{course_discourse_url}}">on our community forum</a>{% endblocktrans %}</li>
   </ul>
 </p>
