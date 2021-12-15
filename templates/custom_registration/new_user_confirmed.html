@@ -4,18 +4,16 @@
 
 <p>{% blocktrans with first_name=user.first_name %}Hi {{first_name}}{% endblocktrans %}</p>
 
-<p>{% trans "Thanks for joining Peer 2 Peer University. We have been waiting for you! :)" %}</p>
+<p>{% trans "Thanks for joining Peer 2 Peer University (P2PU). Here are a few things you can do to get started:" %}</p>
 
 {% url 'studygroups_facilitator' as dashboard_url %}
-<p>{% trans "Here are a few things you can do to orient yourself" %}:<p>
 <ul>
-  <li>{% blocktrans %}<a href="https://community.p2pu.org/t/introduce-yourself/1571/last">Introduce yourself</a> in our community space (log in using your P2PU account).{% endblocktrans %}</li>
-  <li>{% blocktrans %}<a href="https://www.p2pu.org/en/facilitate/">Visit www.p2pu.org/facilitate</a> to get your first learning circle up and running.{% endblocktrans %}</li>
-  <li>{% blocktrans %}<a href="https://www.p2pu.org/en/courses/">Review the courses</a> that other facilitators are using, and add new courses that you like from <a href="{{PROTOCOL}}://{{DOMAIN}}{{ dashboard_url }}">your dashboard</a>.{% endblocktrans %}</li>
-  <li>{% blocktrans %}<a href="https://www.flickr.com/groups/1202415@N23">See what P2PU looks like</a> in practice on Flickr{% endblocktrans %}</li>
+  <li>{% blocktrans %}<a href="https://community.p2pu.org/t/introduce-yourself/1571/last">Introduce yourself</a> in our community forum. (Use your P2PU account to log in!).{% endblocktrans %}</li>
+  <li>{% blocktrans %}Visit our <a href="https://docs.p2pu.org/">Knowledge Base</a> for information on planning your first learning circle.{% endblocktrans %}</li>
+  <li>{% blocktrans %}<a href="https://www.p2pu.org/en/learning-resources/">Review the learning resources</a> that other facilitators are using for their learning circles and add new resources from <a href="{{PROTOCOL}}://{{DOMAIN}}{{ dashboard_url }}">your dashboard</a>.{% endblocktrans %}</li>
 </ul>
 
-<p>{% blocktrans %}If you have any questions, our team and community of facilitators are standing by in <a href="https://community.p2pu.org/">the community group</a> to answer questions and share feedback. We hope to see you there!{% endblocktrans %}</p>
+<p>{% blocktrans %}If you have any questions, our team and community of facilitators <a href="https://community.p2pu.org/">in our community forum</a> can answer questions and share feedback. We hope to see you there!{% endblocktrans %}</p>
 
 <p>{% trans "Cheers" %},<br/>
 P2PU</p>
