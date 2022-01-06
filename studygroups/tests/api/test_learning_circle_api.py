@@ -1098,6 +1098,8 @@ class TestLearningCircleApi(TestCase):
         sg = StudyGroup(**sgdata)
         sg.save()
 
+        sg_ids = [sg.pk]
+
         self.assertEqual(sg.team_id, team.id)
 
         meeting_dates = generate_all_meeting_dates(
@@ -1108,6 +1110,7 @@ class TestLearningCircleApi(TestCase):
         sgdata['name'] = 'another lc'
         sg = StudyGroup(**sgdata)
         sg.save()
+        sg_ids += [sg.id]
         meeting_dates = generate_all_meeting_dates(
             sg.start_date, sg.meeting_time, 6
         )
@@ -1123,8 +1126,8 @@ class TestLearningCircleApi(TestCase):
         result = resp.json()
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(result["count"], 2)
-        self.assertEqual(result["items"][0]['id'], 5)
-        self.assertEqual(result["items"][1]['id'], 6)
+        self.assertIn(result["items"][0]['id'], sg_ids)
+        self.assertIn(result["items"][1]['id'], sg_ids)
 
         # remove user from team
         facilitator2.teammembership_set.active().first().delete()
@@ -1134,8 +1137,8 @@ class TestLearningCircleApi(TestCase):
         result = resp.json()
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(result["count"], 2)
-        self.assertEqual(result["items"][0]['id'], 5)
-        self.assertEqual(result["items"][1]['id'], 6)
+        self.assertIn(result["items"][0]['id'], sg_ids)
+        self.assertIn(result["items"][1]['id'], sg_ids)
 
 
     def test_get_learning_circle_by_id(self):

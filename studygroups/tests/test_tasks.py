@@ -321,6 +321,7 @@ class TestStudyGroupTasks(TestCase):
         team = Team.objects.create(name='test team')
         TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
         TeamMembership.objects.create(team=team, user=faci1, role=TeamMembership.MEMBER)
+        StudyGroup.objects.filter(pk=1).update(team=team)
 
         study_group = StudyGroup.objects.get(pk=1)
         meeting = Meeting()

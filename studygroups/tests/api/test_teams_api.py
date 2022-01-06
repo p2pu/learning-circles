@@ -38,7 +38,8 @@ class TestTeamsApi(TestCase):
             'intro_text',
             'website',
             'location',
-            'email_address'
+            'email_address',
+            'membership',
         ]
 
         resp_keys = list(res_data["items"][1].keys())
@@ -61,7 +62,8 @@ class TestTeamsApi(TestCase):
             'intro_text',
             'website',
             'location',
-            'email_address'
+            'email_address',
+            'membership',
         ]
 
         resp_keys = list(res_data["items"][0].keys())

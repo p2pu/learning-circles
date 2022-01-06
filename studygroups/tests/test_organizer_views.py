@@ -177,13 +177,14 @@ class TestOrganizerViews(TestCase):
     def test_weekly_report(self):
         organizer = create_user('organ@team.com', 'organ', 'test', 'password', False)
         faci1 = create_user('faci1@team.com', 'faci1', 'test', 'password', False)
-        StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
-        StudyGroup.objects.filter(pk=3).update(facilitator=faci1)
-        StudyGroup.objects.filter(pk=3).update(deleted_at=timezone.now())
-
         team = Team.objects.create(name='test team')
         TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
         TeamMembership.objects.create(team=team, user=faci1, role=TeamMembership.MEMBER)
+
+        StudyGroup.objects.filter(pk=1).update(facilitator=faci1, team=team)
+        StudyGroup.objects.filter(pk=3).update(facilitator=faci1, team=team)
+        StudyGroup.objects.filter(pk=3).update(deleted_at=timezone.now())
+
 
         study_group = StudyGroup.objects.get(pk=1)
         active_meeting = Meeting.objects.create(
