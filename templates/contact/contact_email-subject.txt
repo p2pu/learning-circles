@@ -1,1 +1,1 @@
-New contact from request from {{name}} <{{email}}>
+Support request from {{name}}

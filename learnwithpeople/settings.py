@@ -193,6 +193,8 @@ SERVER_EMAIL = env('SERVER_EMAIL', 'no-reply@p2pu.org')
 # Team email
 TEAM_EMAIL = env('TEAM_EMAIL', 'thepeople@p2pu.org')
 
+SUPPORT_EMAIL = env('SUPPORT_EMAIL', 'support@localhost')
+
 ##### Database config
 import dj_database_url
 DATABASES['default'] =  dj_database_url.config(default='sqlite:///{0}'.format(path('db.sqlite3')))

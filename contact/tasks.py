@@ -30,6 +30,8 @@ def send_contact_form_inquiry(email, name, content, source, organization=None):
         text_body,
         settings.DEFAULT_FROM_EMAIL,
         to,
+        cc=[settings.SUPPORT_EMAIL],
+        reply_to=[email, settings.SUPPORT_EMAIL]
     )
     email.attach_alternative(html_body, 'text/html')
     email.send()
