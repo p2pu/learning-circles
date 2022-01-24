@@ -22,6 +22,7 @@ from .learningcircle import Application
 from .learningcircle import Reminder
 from .learningcircle import Rsvp
 from .learningcircle import Feedback
+from .facilitator_guide import FacilitatorGuide
 
 import datetime
 import pytz
