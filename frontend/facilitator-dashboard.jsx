@@ -39,6 +39,7 @@ ReactDOM.render(
       deleteTeamInvitationApiUrl={element.dataset.deleteTeamInvitationApiUrl}
       editTeamUrl={editTeamUrl}
       isMemberTeam={element.dataset.isMemberTeam}
+      isStaff={element.dataset.isStaff}
       memberSupportUrl={element.dataset.memberSupportUrl}
     />
   </ErrorBoundary>,

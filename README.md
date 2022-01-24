@@ -34,9 +34,9 @@ To run the tests:
 docker-compose -f docker-compose.test.yml run --rm learning-circles /opt/django-venv/bin/python manage.py test
 ```
 
-To restore the database dump from pg_dump:
+To restore a database dump you need to use pg_restore installed in the learning-circles image, since that is the version used to create backups. Eg.
 ```
-docker-compose exec -T postgres pg_restore -U postgres -h localhost -d lc -c < your-data.dump
+docker-compose exec -T learning-circles pg_restore -c -f - < db.dump | docker-compose exec -T postgres psql -U postgres -d lc
 ```
 
 ## Deploying the code
