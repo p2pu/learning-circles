@@ -53,6 +53,9 @@
     data-is-member-team="true"
     data-member-support-url="{{ member_support_url }}"
   {% endif %}
+  {% if request.user.is_staff %}
+    data-is-staff="true"
+  {% endif %}
 >
   <div class="loader"></div>
 </div>

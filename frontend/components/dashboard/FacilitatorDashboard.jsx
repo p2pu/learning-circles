@@ -111,6 +111,7 @@ export default class FacilitatorDashboard extends React.Component {
 
             <RecommendedResources 
               isMemberTeam={this.props.isMemberTeam}
+              isStaff={this.props.isStaff}
               memberSupportUrl={this.props.memberSupportUrl}
             />
 
