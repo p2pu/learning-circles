@@ -439,7 +439,7 @@ class LearningCircleCountriesChart():
 
                     if country in data:
                         data[country] += 1
-                    elif country is "" or country is None:
+                    elif country == "" or country is None:
                         data["Not reported"] += 1
                     else:
                         data[country] = 1

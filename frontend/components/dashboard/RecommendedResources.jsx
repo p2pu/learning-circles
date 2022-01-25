@@ -27,7 +27,7 @@ const RecommendedResources = props => {
         url="https://www.p2pu.org/en/help/"
       />
       { 
-        props.isMemberTeam && 
+        (props.isMemberTeam || props.isStaff)&& 
         <>
           <ResourceCard
             title="Meet with Q"
@@ -38,6 +38,11 @@ const RecommendedResources = props => {
             title="Teams documentation"
             imgUrl="/static/images/icons/team-docs.svg"
             url="https://docs.p2pu.org/teams/about-teams"
+          />
+          <ResourceCard
+            title="Suggestion Board"
+            imgUrl="/static/images/icons/team-feedback.svg"
+            url="https://p2pu.noorahq.com/"
           />
         </> 
       }
