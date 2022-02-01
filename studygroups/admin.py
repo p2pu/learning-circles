@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django import forms
 
 # Register your models here.
 from studygroups.models import Course
@@ -70,9 +71,37 @@ class ReminderAdmin(admin.ModelAdmin):
     raw_id_fields = ['study_group', 'study_group_meeting']
 
 
+
+class FacilitatorGuideForm(forms.ModelForm):
+    class Meta:
+        model = FacilitatorGuide
+        fields = [
+            'study_group',
+            'title',
+            'caption',
+            'link',
+        ]
+
+
 class FacilitatorGuideAdmin(admin.ModelAdmin):
     raw_id_fields = ['user', 'study_group', 'course']
     list_display = ['title', 'course', 'user']
+
+    def get_form(self, request, obj=None, **kwargs):
+        """
+        Use special form during foo creation
+        """
+        defaults = {}
+        if obj is None:
+            defaults['form'] = FacilitatorGuideForm
+        defaults.update(kwargs)
+        return super().get_form(request, obj, **defaults)
+
+
+    def save_model(self, request, obj, form, change):
+        obj.course = obj.study_group.course
+        obj.user = obj.study_group.facilitator
+        super().save_model(request, obj, form, change)
 
 
 class StudyGroupInline(admin.TabularInline):
