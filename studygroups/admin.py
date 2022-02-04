@@ -99,8 +99,9 @@ class FacilitatorGuideAdmin(admin.ModelAdmin):
 
 
     def save_model(self, request, obj, form, change):
-        obj.course = obj.study_group.course
-        obj.user = obj.study_group.facilitator
+        if obj.study_group:
+            obj.course = obj.study_group.course
+            obj.user = obj.study_group.facilitator
         super().save_model(request, obj, form, change)
 
 
