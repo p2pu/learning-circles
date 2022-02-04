@@ -773,6 +773,7 @@ class FacilitatorDashboard(TemplateView):
                     context['edit_team_url'] = reverse('studygroups_team_edit', args=(team_membership.team.id,))
                 if team_membership.team.membership:
                     context['is_member_team'] = True
+                if team_membership.team.membership or user.is_staff:
                     context['member_support_url'] = settings.MEMBER_SUPPORT_URL
 
         return context
