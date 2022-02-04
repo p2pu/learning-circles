@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django import forms
 
 # Register your models here.
 from studygroups.models import Course
@@ -11,6 +12,7 @@ from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 from studygroups.models import Announcement
+from studygroups.models import FacilitatorGuide
 
 
 class ApplicationInline(admin.TabularInline):
@@ -27,6 +29,7 @@ class StudyGroupAdmin(admin.ModelAdmin):
     list_display = ['course', 'city', 'facilitator', 'start_date', 'day', 'signup_open', 'uuid']
     exclude = ['deleted_at']
     search_fields = ['course__title', 'uuid', 'city', 'facilitator__first_name']
+    raw_id_fields = ['course', 'facilitator']
 
     def get_queryset(self, request):
         return super().get_queryset(request).active()
@@ -66,6 +69,39 @@ def reminder_course_title(obj):
 class ReminderAdmin(admin.ModelAdmin):
     list_display = [reminder_course_title, 'email_subject', 'sent_at']
     raw_id_fields = ['study_group', 'study_group_meeting']
+
+
+
+class FacilitatorGuideForm(forms.ModelForm):
+    class Meta:
+        model = FacilitatorGuide
+        fields = [
+            'study_group',
+            'title',
+            'caption',
+            'link',
+        ]
+
+
+class FacilitatorGuideAdmin(admin.ModelAdmin):
+    raw_id_fields = ['user', 'study_group', 'course']
+    list_display = ['title', 'course', 'user']
+
+    def get_form(self, request, obj=None, **kwargs):
+        """
+        Use special form during foo creation
+        """
+        defaults = {}
+        if obj is None:
+            defaults['form'] = FacilitatorGuideForm
+        defaults.update(kwargs)
+        return super().get_form(request, obj, **defaults)
+
+
+    def save_model(self, request, obj, form, change):
+        obj.course = obj.study_group.course
+        obj.user = obj.study_group.facilitator
+        super().save_model(request, obj, form, change)
 
 
 class StudyGroupInline(admin.TabularInline):
@@ -109,6 +145,7 @@ class CourseAdmin(admin.ModelAdmin):
     exclude = ['deleted_at']
     inlines = [StudyGroupInline]
     search_fields = ['title', 'provider', 'topics', 'created_by__email', 'license']
+    raw_id_fields = ['created_by']
 
 
 class ProfileAdmin(admin.ModelAdmin):
@@ -132,3 +169,4 @@ admin.site.register(Team, TeamAdmin)
 admin.site.register(TeamInvitation)
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Announcement)
+admin.site.register(FacilitatorGuide, FacilitatorGuideAdmin)

@@ -36,6 +36,7 @@ from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 from studygroups.models import Announcement
+from studygroups.models import FacilitatorGuide
 from studygroups.models import generate_meetings_from_dates
 from studygroups.models import get_json_response
 from studygroups.models.course import course_platform_from_url
@@ -457,6 +458,7 @@ class CourseListView(View):
             "order": lambda v: (v, None) if v in ['title', 'usage', 'overall_rating', 'created_at', None] else (None, "must be 'title', 'usage', 'created_at', or 'overall_rating'"),
             "user": schema.boolean(),
             "include_unlisted": schema.boolean(),
+            "facilitator_guide": schema.boolean(),
         }
         data = schema.django_get_to_dict(request.GET)
         clean_data, errors = schema.validate(query_schema, data)
@@ -528,6 +530,9 @@ class CourseListView(View):
 
         if 'oer' in request.GET and request.GET.get('oer', False) == 'true':
             courses = courses.filter(license__in=Course.OER_LICENSES)
+
+        if clean_data.get('facilitator_guide'):
+            courses = courses.filter(id__in=FacilitatorGuide.objects.active().values('course_id'))
 
         if 'active' in request.GET:
             active = request.GET.get('active') == 'true'
