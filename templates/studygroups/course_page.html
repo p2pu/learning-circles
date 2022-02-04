@@ -128,6 +128,35 @@
   </div>
 </section>
 
+{% if course.facilitatorguide_set.count %}
+<section>
+	<div class="container">
+		<h3 class="pb-4">Facilitator Guides</h3>
+		<div class="row grid">
+      {% for guide in course.facilitatorguide_set.active %}
+				<div class="grid-item col-md-6 col-lg-4">
+					<div class="card p-0 generic cover-link">
+            <a href="{{guide.link}}" target="_blank"></a>
+						<div class="card-image">
+              {% if guide.image %}
+                <img src="{{guide.image}}" alt="Facilitator guide cover image" class="card-img-top">
+              {% else %}
+                
+              <img src="{% static 'images/icons/facilitator-guide' %}-{{forloop.counter}}.svg" alt="Facilitator guide cover image" class="card-img-top">
+              {% endif %}
+						</div>
+						<div class="card-header">
+              <h4 class="card-title">{{guide.title}}</h4>
+              <span>{{guide.caption}}</span>
+						</div>
+					</div>
+				</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
 <section class="bg-cream-dark">
   <div class="container">
     <h2>{% trans "Community Feedback" %}</h2>

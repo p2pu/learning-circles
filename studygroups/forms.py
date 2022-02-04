@@ -419,7 +419,10 @@ class TeamMembershipForm(forms.ModelForm):
         fields = ['weekly_update_opt_in']
         model = TeamMembership
         labels = {
-            'weekly_update_opt_in': _('Receive weekly update'),
+            'weekly_update_opt_in': _('Receive weekly team update'),
+        }
+        help_texts = {
+            'weekly_update_opt_in': _('Receive a weekly email update displaying your team\'s recent activity. (Sent every Monday)')
         }
 
 

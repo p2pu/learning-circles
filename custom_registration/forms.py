@@ -11,8 +11,11 @@ from django.utils.safestring import mark_safe
 from studygroups.models import Profile
 
 
+newsletter_label = _('P2PU can contact me')
+newsletter_help_text = _('Join our mailing list to learn about upcoming events, new courses, and news from the community. (Approximately six emails/year)')
+
 class SignupForm(UserCreationForm):
-    communication_opt_in = forms.BooleanField(required=False, initial=False, label=_('P2PU can contact me'), help_text=_('Join our mailing list to learn about upcoming events, new courses, and news from the community. (Approximately six emails/year)'))
+    communication_opt_in = forms.BooleanField(required=False, initial=False, label=newsletter_label, help_text=newsletter_help_text)
 
     consent_opt_in = forms.BooleanField(required=True, initial=False, label=mark_safe(_('I consent to P2PU storing my data and accept the <a href="https://www.p2pu.org/en/terms/">terms of service</a>')), help_text=_('P2PU values your privacy and will never sell your data.'))
 
@@ -61,14 +64,14 @@ class ProfileForm(forms.ModelForm):
             'bio': _('Short bio (max 500 characters)'),
             'contact_url': _('Contact URL'),
             'city': _('City'),
-            'communication_opt_in': _('Receive announcements'),
+            'communication_opt_in': newsletter_label,
         }
         placeholders = {
             'contact_url': _("Twitter, LinkedIn, website, etc.")
         }
         help_texts = {
              'contact_url': _('Where can potential team members find your contact information? i.e. Staff page, Twitter, personal website, etc.'),
-             'communication_opt_in': _('Check this box if you want to receive updates from the P2PU community about upcoming events and gatherings.')
+             'communication_opt_in': newsletter_help_text,
         }
         widgets = {
             'bio': forms.Textarea(attrs={'rows':5, 'cols':10}),
