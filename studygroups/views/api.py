@@ -193,6 +193,7 @@ class LearningCircleListView(View):
             "scope": schema.text(),
             "draft": schema.boolean(),
             "team_id": schema.integer(),
+            "cu_credit": schema.boolean(),
             "order": lambda v: (v, None) if v in ['name', 'start_date', 'created_at', 'first_meeting_date', 'last_meeting_date', None] else (None, "must be 'name', 'created_at', 'first_meeting_date', 'last_meeting_date', or 'start_date'"),
         }
         data = schema.django_get_to_dict(request.GET)
@@ -210,6 +211,9 @@ class LearningCircleListView(View):
         if 'user' in request.GET:
             user_id = request.user.id
             study_groups = study_groups.filter(facilitator=user_id)
+
+        if clean_data.get('cu_credit'):
+            study_groups = study_groups.filter(cu_credit=True)
 
         today = datetime.date.today()
         active_meetings = Meeting.objects.filter(study_group=OuterRef('pk'), deleted_at__isnull=True).order_by('meeting_date')

@@ -87,6 +87,8 @@ class StudyGroup(LifeTimeTrackingModel):
     learner_survey_sent_at = models.DateTimeField(blank=True, null=True)
     facilitator_survey_sent_at = models.DateTimeField(blank=True, null=True)
 
+    cu_credit = models.BooleanField(_('CU credit?'), default=False, help_text=_('Learning circle is eligible for credit from CU')) 
+
     team = models.ForeignKey('studygroups.Team', on_delete=models.SET_NULL, blank=True, null=True)
 
     objects = StudyGroupQuerySet.as_manager()
