@@ -1261,12 +1261,13 @@ class AnnouncementListView(View):
 
         return json_response(request, data)
 
+
 def cities(request):
     cities = StudyGroup.objects.published().annotate(city_len=Length('city')).filter(city_len__gt=1).values_list('city', flat=True).distinct('city')
 
     data = {
         "count": cities.count(),
-        "items": [{ "label": city, "value": city.split(',')[0].lower().replace(' ', '_') } for city in cities]
+        "items": [{ "label": city, "value": city } for city in cities]
     }
 
     return json_response(request, data)
