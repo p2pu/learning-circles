@@ -1173,10 +1173,10 @@ class TestLearningCircleApi(TestCase):
         result = resp.json()
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(result["count"], 4)
-        self.assertEqual(result["items"][0], { 'label': 'Boston', 'value': 'boston' })
-        self.assertEqual(result["items"][1], { 'label': 'Chicago', 'value': 'chicago' })
-        self.assertEqual(result["items"][2], { 'label': 'Kansas City', 'value': 'kansas_city' })
-        self.assertEqual(result["items"][3], { 'label': 'Toronto', 'value': 'toronto' })
+        self.assertEqual(result["items"][0], { 'label': 'Boston', 'value': 'Boston' })
+        self.assertEqual(result["items"][1], { 'label': 'Chicago', 'value': 'Chicago' })
+        self.assertEqual(result["items"][2], { 'label': 'Kansas City', 'value': 'Kansas City' })
+        self.assertEqual(result["items"][3], { 'label': 'Toronto', 'value': 'Toronto' })
 
 
     @freeze_time("2019-05-31")
