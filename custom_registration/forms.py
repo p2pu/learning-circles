@@ -34,7 +34,7 @@ class SignupForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'password1', 'password2', 'communication_opt_in', 'consent_opt_in']
+        fields = ['first_name', 'last_name', 'email', 'password1', 'password2', 'consent_opt_in', 'communication_opt_in']
 
 
 class CustomPasswordResetForm(PasswordResetForm):
