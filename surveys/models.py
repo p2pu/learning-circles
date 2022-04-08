@@ -20,12 +20,12 @@ class TypeformSurveyResponse(models.Model):
 
     def get_response_field(self, question_id):
         response = json.loads(self.response)
-        answers = response.get('answers', [])
+        answers = response.get('answers') or []
         return next((answer for answer in answers if answer["field"]["id"] == question_id), None)
 
     def get_value_by_ref(self, ref):
         response = json.loads(self.response)
-        answers = response.get('answers', [])
+        answers = response.get('answers') or []
         answer = next((answer for answer in answers if answer["field"]["ref"] == ref), None)
         if not answer:
             return None
@@ -79,7 +79,8 @@ def normalize_data(typeform_response):
     survey = json.loads(typeform_response.survey)
     response = json.loads(typeform_response.response)
     answers = {}
-    for answer in response.get('answers', []):
+    response_set = response.get('answers') or []
+    for answer in response_set:
         field_id = answer.get('field').get('id')
         value_key = answer.get('type')
         value = json.dumps(answer.get(value_key))
