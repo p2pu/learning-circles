@@ -79,7 +79,7 @@ def normalize_data(typeform_response):
     survey = json.loads(typeform_response.survey)
     response = json.loads(typeform_response.response)
     answers = {}
-    for answer in response.get('answers', {}):
+    for answer in response.get('answers', []):
         field_id = answer.get('field').get('id')
         value_key = answer.get('type')
         value = json.dumps(answer.get(value_key))
