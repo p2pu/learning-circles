@@ -154,7 +154,7 @@ def report_data(start_time, end_time, team=None):
     studygroups_that_met = get_studygroups_with_meetings(start_time, end_time)
     upcoming_studygroups = get_upcoming_studygroups(end_time)
     new_applications = get_new_applications(start_time, end_time)
-    new_users = get_new_users(start_time, end_time)
+    new_users = get_new_users(start_time, end_time, team)
     new_courses = get_new_courses(start_time, end_time)
 
     if team:
@@ -224,7 +224,11 @@ def get_studygroups_with_meetings(start_time, end_time, team=None):
 def get_new_studygroups(start_time, end_time):
     return StudyGroup.objects.published().filter(created_at__gte=start_time, created_at__lt=end_time)
 
-def get_new_users(start_time, end_time):
+def get_new_users(start_time, end_time, team=None):
+    if team:
+        new_user_ids = team.teammembership_set.active().filter(created_at__gte=start_time, created_at__lt=end_time).values('user')
+        return User.objects.filter(id__in=new_user_ids)
+
     return User.objects.filter(date_joined__gte=start_time, date_joined__lt=end_time)
 
 def get_new_applications(start_time, end_time):
@@ -248,6 +252,8 @@ def filter_studygroups_with_survey_responses(study_groups):
 
 def get_new_user_intros(new_users, limit=5):
     new_discourse_users = [ '{} {}'.format(user.first_name, user.last_name) for user in new_users ]
+
+    # TODO if this request fails, the whole weekly update will fail
     latest_introduction_posts = get_json_response("https://community.p2pu.org/t/1571/last.json")
 
     intros_from_new_users = []
