@@ -118,7 +118,7 @@ class TestCustomRegistrationViews(TestCase):
         })
         self.assertEqual(len(mail.outbox), 1)
 
-        match = re.search(r'/en/accounts/reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/', mail.outbox[0].body)
+        match = re.search(r'/en/accounts/reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{6}-[0-9A-Za-z]{32})/', mail.outbox[0].body)
         reset_url = match.group(0)
         set_password_url = '/en/accounts/reset/{}/set-password/'.format(match.group(1))
         res = c.get(reset_url)
@@ -211,7 +211,7 @@ class TestCustomRegistrationViews(TestCase):
         self.assertEqual(bob.profile.email_confirmed_at, None)
 
         # get email confirmation URL
-        match = re.search(r'/en/accounts/email_confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/', mail.outbox[0].body)
+        match = re.search(r'/en/accounts/email_confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{6}-[0-9A-Za-z]{32})/', mail.outbox[0].body)
         confirm_url = match.group(0)
         c.logout()
         res = c.get(confirm_url)

@@ -335,6 +335,9 @@ LOGGING_CONFIG = None
 import logging.config
 logging.config.dictConfig(LOGGING)
 
+# Explicitly set DEFAULT_AUTO_FIELD. Option added Django 3.2
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 #### Backup config ####
 
 BACKUP_DIR = os.environ.get('BACKUP_DIR', '/tmp') # Directory where backups will be stored locally

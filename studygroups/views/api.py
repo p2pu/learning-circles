@@ -83,22 +83,14 @@ def studygroups(request):
 
 
 class CustomSearchQuery(SearchQuery):
-    """ use to_tsquery to support partial matches """
+
     """ NOTE: This is potentially unsafe!!"""
-    def as_sql(self, compiler, connection):
-        query = re.sub(r'[!\'()|&\:=,\.\ \-\<\>@]+', ' ', self.value).strip().lower()
+    def __init__(self, value, search_type='raw', **kwargs):
+        # update passed in value to support prefix matching
+        query = re.sub(r'[!\'()|&\:=,\.\ \-\<\>@]+', ' ', value).strip().lower()
         tsquery = ":* & ".join(query.split(' '))
         tsquery += ":*"
-        params = [tsquery]
-        if self.config:
-            config_sql, config_params = compiler.compile(self.config)
-            template = 'to_tsquery({}::regconfig, %s)'.format(config_sql)
-            params = config_params + [tsquery]
-        else:
-            template = 'to_tsquery(%s)'
-        if self.invert:
-            template = '!!({})'.format(template)
-        return template, params
+        super().__init__(tsquery, search_type=search_type, **kwargs) 
 
 
 def serialize_learning_circle(sg):
