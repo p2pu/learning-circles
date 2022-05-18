@@ -183,7 +183,8 @@ def report_data(today, team=None):
 
     meetings_this_week = Meeting.objects.active()\
         .filter(meeting_date__gte=week_start, meeting_date__lt=week_end)\
-        .filter(study_group__in=study_groups)
+        .filter(study_group__in=study_groups)\
+        .order_by('meeting_date', 'meeting_time')
 
     studygroups_that_ended = study_groups.filter(end_date__gte=last_week_start, end_date__lt=week_start)
 

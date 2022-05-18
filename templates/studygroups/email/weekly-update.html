@@ -175,7 +175,7 @@
       <tbody>
         {% for studygroup in upcoming_studygroups %}
           <tr>
-            <td><a href="{{ studygroup.signup_url }}">{{ studygroup.first_meeting.meeting_datetime }}</a></td>
+            <td><a href="{{ studygroup.signup_url }}">{{ studygroup.name }}</a></td>
             <td>{{ studygroup.venue_name|title  }}</td>
             <td>
               {% blocktrans with first_name=studygroup.facilitator.first_name|title last_name=studygroup.facilitator.last_name|title email=studygroup.facilitator.email %}
@@ -222,18 +222,16 @@
           </tr>
         </thead>
         <tbody>
-          {% for meeting in meetings|dictsort:"meeting_datetime" %}
+          {% for meeting in meetings %}
             {% with study_group=meeting.study_group %}
-            {% blocktrans with meeting_date=meeting.meeting_datetime|date:"fA, l, M j" meeting_number=meeting.meeting_number learning_circle=study_group.name venue=study_group.venue_name first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name email=study_group.facilitator.email meeting_count=study_group.meeting_set.active.count studygroup_url=study_group.signup_url %}
             <tr>
-              <td><a href="{{ studygroup_url }}">{{ learning_circle }}</a></td>
-              <td>{{venue}}</td>
-              <td><a href="mailto:{{email}}">{{first_name}} {{last_name}}</a></td>
-              <td><!-- TODO --></td>
-              <td>{{ meeting_date }}</td>
-              <td>{{meeting_number}} of {{meeting_count}}</td>
+              <td><a href="{{ study_group.signup_url }}">{{ study_group.name }}</a></td>
+              <td>{{ study_group.venue_name }}</td>
+              <td><a href="mailto:{{ study_group.facilitator.email }}">{{ study_group.facilitator.first_name }} {{ study_group.facilitator.last_name }}</a></td>
+              <td>{{ study_group.application_set.active.count}}</td>
+              <td>{{ meeting.meeting_datetime|date:"fA, l, M j" }}</td>
+              <td>{{ meeting.meeting_number }} of {{ study_group.meeting_set.active.count }}</td>
             </tr>
-            {% endblocktrans %}
             {% endwith %}
           {% endfor %}
         </tbody>
@@ -265,19 +263,18 @@
         </tr>
       </thead>
       <tbody>
-        {% for studygroup in finished_studygroups %}
+        {% for study_group in finished_studygroups %}
           <tr>
-            <!-- TODO -->
-            {% blocktrans with first_name=studygroup.facilitator.first_name last_name=studygroup.facilitator.last_name email=studygroup.facilitator.email venue=studygroup.venue_name|title learning_circle=studygroup.name studygroup_url=studygroup.signup_url %}
-              <td><a href="{{ studygroup_url }}">{{ learning_circle }}</a></td>
-              <td>{{ venue }}</td>
-              <td><a href="mailto:{{email}}">{{first_name}} {{last_name}}</a></td>
-            {% endblocktrans %}
-            {% if studygroup in studygroups_with_survey_responses %}
-            <td><a href="{{ studygroup.report_url }}">{% trans "Learning Circle Insights" %}</a></td>
-            {% else %}
-            <td>{% trans "N/A" %}</td>
-            {% endif %}
+            <tr>
+              <td><a href="{{ study_group.signup_url }}">{{ study_group.name }}</a></td>
+              <td>{{ study_group.venue_name }}</td>
+              <td><a href="mailto:{{ study_group.facilitator.email }}">{{ study_group.facilitator.first_name }} {{ study_group.facilitator.last_name }}</a></td>
+              <td>{{ study_group.application_set.active.count}}</td>
+              <td>{{ study_group.last_meeting.meeting_datetime|date:"fA, l, M j" }}</td>
+              <td>
+                <a href="{% url 'studygroups_view_study_group' study_group.pk %}">{% trans "Mgmt page" %}</a>
+              </td>
+            </tr>
           </tr>
         {% endfor %}
       </tbody>
@@ -329,7 +326,7 @@
   <div class="report-section">
     <h2>
       <span class="section-header">
-        {% blocktrans count number=new_applications|length %}
+        {% blocktrans count number=new_applications.count %}
           {{ number }} learner signed up for a learning circle last week
         {% plural %}
           {{ number }} learners signed up for a learning circle last week
@@ -346,9 +343,9 @@
           </tr>
         </thead>
         <tbody>
-          {% for signup in new_applications|slice:":10" %}
+          {% for signup in new_applications %}
             <tr>
-              <td>{{ signup.study_group.name | title }}</td>
+              <td><a href="{{signup.study_group.signup_url}}">{{ signup.study_group.name | title }}</a></td>
               {% with answers=signup.get_signup_questions %}
                 <td>{{ answers.goals }}</td>
               {% endwith %}
