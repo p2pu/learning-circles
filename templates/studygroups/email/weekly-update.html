@@ -144,9 +144,15 @@
   <p>{{start_time|date:"l, F j, Y" }}</p>
 
 
-  {% if team and team.membership %}
-    <!-- TODO -->
-    <p>The next member learning circle, [title], begins on [weekday, month, date]. Sign up here or on your dashboard.</p>
+  {% if team and team.membership and member_studygroups %}
+    <p>Member learning circles are an opportunity to learn with colleagues from around the world. Sign up below or on your dashboard.</p>
+    <ul>
+      {% for lc in member_studygroups %}
+        <li>{% blocktrans with link=lc.signup_url title=lc.name start_date=lc.first_meeting.meeting_datetime %}
+          <a href="{{link}}">{{title}}</a> starting on {{start_date}}
+        {% endblocktrans %}</li>
+      {% endfor %}
+    </ul>
   {% endif %}
 
   <div class="report-section">
@@ -259,7 +265,7 @@
           <td>{% trans "Facilitator" %}</td>
           <td>{% trans "Sign ups" %}</td>
           <td>{% trans "Final meeting" %}</td>
-          <td>{% trans "More details" %}</td>
+          {% if staff_update %}<td>{% trans "More details" %}</td>{% endif %}
         </tr>
       </thead>
       <tbody>
@@ -271,9 +277,12 @@
               <td><a href="mailto:{{ study_group.facilitator.email }}">{{ study_group.facilitator.first_name }} {{ study_group.facilitator.last_name }}</a></td>
               <td>{{ study_group.application_set.active.count}}</td>
               <td>{{ study_group.last_meeting.meeting_datetime|date:"fA, l, M j" }}</td>
-              <td>
-                <a href="{% url 'studygroups_view_study_group' study_group.pk %}">{% trans "Mgmt page" %}</a>
-              </td>
+
+              {% if staff_update %}
+                <td>
+                  <a href="{% url 'studygroups_view_study_group' study_group.pk %}">{% trans "Mgmt page" %}</a>
+                </td>
+              {% endif %}
             </tr>
           </tr>
         {% endfor %}
@@ -390,9 +399,9 @@
     <h2>
       <span class="section-header">
       {% blocktrans count new_courses_count=new_courses_count %}
-        {{ new_courses_count }} learning resource was added by your team
+        {{ new_courses_count }} new learning resource was added by your team
       {% plural %}
-        {{ new_courses_count }} learning resources were added by your team
+        {{ new_courses_count }} new learning resources were added by your team
       {% endblocktrans %}
       </span>
     </h2>
@@ -411,14 +420,13 @@
     <h2>
       <span class="section-header">
       {% blocktrans count new_guides_count=new_facilitator_guides.count %}
-        Our global community added {{new_guides_count}} new facilitator guide
+        Our global community added {{new_guides_count}} new facilitator guide in the past 3 months.
       {% plural %}
-        Our global community added {{new_guides_count}} new facilitator guides
+        Our global community added {{new_guides_count}} new facilitator guides in the past 3 months.
       {% endblocktrans %}
       </span>
     </h2>
     <ul>
-      <!-- TODO add guides -->
       {% for guide in new_facilitator_guides %}
       <li><a href="{{guide.link}}">{{guide.title}}</a>: {{guide.caption}}</li> 
       {% endfor %}

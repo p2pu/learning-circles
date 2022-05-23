@@ -159,7 +159,7 @@ def report_data(today, team=None):
     # - feedback -> 7 days before
     # - signups -> past 7 days
     # - learning resources -> past 7 days
-    # - facilitator guides -> past 7 days
+    # - facilitator guides -> past 90 days
     # todays date
     # start of this week
 
@@ -196,7 +196,8 @@ def report_data(today, team=None):
 
     new_courses = Course.objects.active().filter(created_at__gte=last_week_start, created_at__lt=week_start, unlisted=False)
 
-    new_facilitator_guides = FacilitatorGuide.objects.active().filter(created_at__gte=last_week_start)
+    new_facilitator_guides = FacilitatorGuide.objects.active().filter(created_at__gte=week_start-datetime.timedelta(days=90))
+    member_studygroups = []
 
 
     if team:
@@ -212,6 +213,8 @@ def report_data(today, team=None):
         new_members = team.teammembership_set.active().filter(created_at__gte=last_week_start, created_at__lt=week_start).values('user')
         new_users = User.objects.filter(id__in=new_members)
         upcoming_studygroups = upcoming_studygroups.filter(team=team)
+        if team.membership:
+            member_studygroups = StudyGroup.objects.active().filter(unlisted=True, start_date__gte=week_start)
 
     learners_reached = Application.objects.active().filter(study_group__in=studygroups_that_will_meet)
     studygroups_with_survey_responses = filter_studygroups_with_survey_responses(studygroups_that_ended)
@@ -244,6 +247,7 @@ def report_data(today, team=None):
         "new_courses": new_courses,
         "new_courses_count": new_courses.count(),
         "new_facilitator_guides": new_facilitator_guides,
+        "member_studygroups": member_studygroups,
     }
 
     if team:
