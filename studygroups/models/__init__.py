@@ -142,7 +142,7 @@ def get_all_meeting_times(study_group):
     return meetings
 
 
-def report_data(today, team=None):
+def weekly_update_data(today, team=None):
     """ Return data for the indicated time period
 
     If team is given, learning circles will be filtered by team

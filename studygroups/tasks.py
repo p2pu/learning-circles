@@ -11,7 +11,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.urls import reverse
 
 from studygroups.models import StudyGroup, Meeting, Reminder, Team, TeamMembership, Application
-from studygroups.models import report_data
+from studygroups.models import weekly_update_data
 from studygroups.models import community_digest_data
 from studygroups.models import get_study_group_organizers
 from studygroups.models import get_json_response
@@ -415,7 +415,7 @@ def send_weekly_update():
     }
 
     for team in Team.objects.all():
-        report_context = report_data(start_time, end_time, team)
+        report_context = weekly_update_data(start_time, end_time, team)
         # If there wasn't any activity during this period discard the update
         if report_context['active'] is False:
             continue
@@ -427,7 +427,7 @@ def send_weekly_update():
         timezone.deactivate()
 
         to = [member.user.email for member in team.teammembership_set.active().filter(weekly_update_opt_in=True)]
-        staff = [o.email for o in User.objects.filter(is_staff=True)]
+        staff = [o.email for o in User.objects.filter(is_staff=True)] # TODO only copy Q
         update = EmailMultiAlternatives(
             _('Weekly team update for {}'.format(team.name)),
             text_body,
@@ -439,8 +439,9 @@ def send_weekly_update():
         update.send()
 
     # send weekly update to staff
-    report_context = report_data(start_time, end_time)
+    report_context = weekly_update_data(start_time, end_time)
     report_context.update(context)
+    report_context['staff_update'] = True
     timezone.activate(pytz.timezone(settings.TIME_ZONE))
     translation.activate(settings.LANGUAGE_CODE)
     html_body = render_html_with_css('studygroups/email/weekly-update.html', report_context)
