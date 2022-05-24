@@ -128,8 +128,12 @@ urlpatterns = [
 
     url(r'^get-organizer-guide/$', OrganizerGuideForm.as_view(), name='studygroups_organizer_guide_form'),
 
-    url(r'^report/weekly/$', views.weekly_report, name='studygroups_weekly_report'),
-    url(r'^report/weekly/(?P<year>[\d]+)-(?P<month>[\d]+)-(?P<day>[\d]+)/$', views.weekly_report, name='studygroups_weekly_report_date'),
+    # These two URLs are deprecated, but kept for historic purposes
+    url(r'^report/weekly/$', RedirectView.as_view(pattern_name='studygroups_weekly_update') ),
+    url(r'^report/weekly/(?P<year>[\d]+)-(?P<month>[\d]+)-(?P<day>[\d]+)/$', RedirectView.as_view(pattern_name='studygroups_weekly_update_date')),
+
+    url(r'^weekly-update/$', views.weekly_update, name='studygroups_weekly_update'),
+    url(r'^weekly-update/(?P<year>[\d]+)-(?P<month>[\d]+)-(?P<day>[\d]+)/$', views.weekly_update, name='studygroups_weekly_update_date'),
 
     url(r'^receive_sms/$', views.receive_sms, name='studygroups_receive_sms'),
 

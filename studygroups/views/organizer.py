@@ -22,7 +22,6 @@ from studygroups.models import StudyGroup
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 from studygroups.models import Meeting
-from studygroups.models import weekly_update_data
 from studygroups.models import generate_all_meetings
 from studygroups.models import Team
 from studygroups.models import get_team_users
@@ -188,24 +187,6 @@ class TeamInvitationCreate(View):
         )
         send_team_invitation_email(team, invitation.email, request.user)
         return http.JsonResponse({"status": "CREATED"})
-
-
-@user_is_team_member
-def weekly_report(request, year=None, month=None, day=None):
-    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    if month and day and year:
-        today = today.replace(year=int(year), month=int(month), day=int(day))
-    # get team for current user
-    team = None
-    membership = TeamMembership.objects.active().filter(user=request.user).first()
-    if membership:
-        team = membership.team
-
-    context = weekly_update_data(today, team)
-    if request.user.is_staff:
-        context['staff_update'] = True
-    #context = weekly_update_data(today)
-    return render(request, 'studygroups/email/weekly-update.html', context)
 
 
 class OrganizerGuideForm(FormView):

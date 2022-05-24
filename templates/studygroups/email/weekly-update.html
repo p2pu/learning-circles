@@ -446,7 +446,7 @@
   <p>{% blocktrans %}Questions about your weekly update? Drop us a line at thepeople@p2pu.org.{% endblocktrans %}</p>
 
   {% if email %}
-    {% url 'studygroups_weekly_report_date' start_time.year start_time.month start_time.day as report_url %}
+    {% url 'studygroups_weekly_update_date' start_time.year start_time.month start_time.day as report_url %}
     <p>{% blocktrans %}You can also view this weekly update <a href="{{PROTOCOL}}://{{DOMAIN}}{{report_url}}">online</a>.{% endblocktrans %}</p>
   {% endif %}
 

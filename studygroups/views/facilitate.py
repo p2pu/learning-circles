@@ -45,12 +45,14 @@ from studygroups.models import generate_meetings_from_dates
 from studygroups.models import generate_all_meeting_dates
 from studygroups.models import get_study_group_organizers
 from studygroups.decorators import user_is_group_facilitator
+from studygroups.decorators import user_is_team_member
 from studygroups.decorators import study_group_is_published
 from studygroups.charts import OverallRatingBarChart
 from studygroups.discourse import create_discourse_topic
 from studygroups.utils import render_to_string_ctx
 from studygroups.views.api import serialize_course
 from studygroups.models.team import eligible_team_by_email_domain
+from studygroups.models import weekly_update_data
 
 logger = logging.getLogger(__name__)
 
@@ -792,4 +794,22 @@ class LeaveTeam(DeleteView):
             return http.HttpResponseRedirect(reverse('account_settings'))
 
         return super(LeaveTeam, self).get(request, *args, **kwargs)
+
+
+@user_is_team_member
+def weekly_update(request, year=None, month=None, day=None):
+    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    if month and day and year:
+        today = today.replace(year=int(year), month=int(month), day=int(day))
+    # get team for current user
+    team = None
+    membership = TeamMembership.objects.active().filter(user=request.user).first()
+    if membership:
+        team = membership.team
+
+    context = weekly_update_data(today, team)
+    if request.user.is_staff:
+        context['staff_update'] = True
+    #context = weekly_update_data(today)
+    return render(request, 'studygroups/email/weekly-update.html', context)
 
