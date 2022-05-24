@@ -159,7 +159,7 @@
     <h2>
       <span class="section-header">
         {% blocktrans count upcoming_studygroups_count=upcoming_studygroups_count %}
-          {{ upcoming_studygroups_count }} learning circle are scheduled to start
+          {{ upcoming_studygroups_count }} learning circle is scheduled to start
         {% plural %}
           {{ upcoming_studygroups_count }} learning circles are scheduled to start
         {% endblocktrans %}
@@ -173,6 +173,7 @@
           <td>{% trans "Learning circle" %}</td>
           <td>{% trans "Venue" %}</td>
           <td>{% trans "Facilitator" %}</td>
+          {% if staff_update %}<td>{% trans "Team" %}</td>{% endif %}
           <td>{% trans "Signups" %}</td>
           <td>{% trans "First meeting" %}</td>
           <td>{% trans "# LC for Facilitator" %}</td>
@@ -188,6 +189,7 @@
                 <a href="mailto:{{email}}">{{first_name}} {{last_name}}</a>
               {% endblocktrans %}
             </td>
+            {% if staff_update %}<td>{{ studygroup.team.name }}</td>{% endif %}
             <td>{{ studygroup.application_set.active.count }}</td>
             <td>{{ studygroup.first_meeting.meeting_datetime }}</td>
             <td>{{ studygroup.lc_number }}</td>
@@ -222,6 +224,7 @@
             <td>{% trans "Learning circle" %}</td>
             <td>{% trans "Venue" %}</td>
             <td>{% trans "Facilitator" %}</td>
+            {% if staff_update %}<td>{% trans "Team" %}</td>{% endif %}
             <td>{% trans "Signups" %}</td>
             <td>{% trans "Next meeting" %}</td>
             <td>{% trans "Meeting number" %}</td>
@@ -234,6 +237,7 @@
               <td><a href="{{ study_group.signup_url }}">{{ study_group.name }}</a></td>
               <td>{{ study_group.venue_name }}</td>
               <td><a href="mailto:{{ study_group.facilitator.email }}">{{ study_group.facilitator.first_name }} {{ study_group.facilitator.last_name }}</a></td>
+              {% if staff_update %}<td>{{ study_group.team.name }}</td>{% endif %}
               <td>{{ study_group.application_set.active.count}}</td>
               <td>{{ meeting.meeting_datetime|date:"fA, l, M j" }}</td>
               <td>{{ meeting.meeting_number }} of {{ study_group.meeting_set.active.count }}</td>
@@ -263,6 +267,7 @@
           <td>{% trans "Learning circle" %}</td>
           <td>{% trans "Venue" %}</td>
           <td>{% trans "Facilitator" %}</td>
+          {% if staff_update %}<td>{% trans "Team" %}</td>{% endif %}
           <td>{% trans "Sign ups" %}</td>
           <td>{% trans "Final meeting" %}</td>
           {% if staff_update %}<td>{% trans "More details" %}</td>{% endif %}
@@ -275,6 +280,7 @@
               <td><a href="{{ study_group.signup_url }}">{{ study_group.name }}</a></td>
               <td>{{ study_group.venue_name }}</td>
               <td><a href="mailto:{{ study_group.facilitator.email }}">{{ study_group.facilitator.first_name }} {{ study_group.facilitator.last_name }}</a></td>
+              {% if staff_update %}<td>{{ study_group.team.name }}</td>{% endif %}
               <td>{{ study_group.application_set.active.count}}</td>
               <td>{{ study_group.last_meeting.meeting_datetime|date:"fA, l, M j" }}</td>
 
@@ -381,6 +387,7 @@
         <tr>
           <td>{% trans "Name" %}</td>
           <td>{% trans "Email" %}</td>
+          {% if staff_update %}<td>{% trans "Team" %}</td>{% endif %}
         </tr>
       </thead>
       <tbody>
@@ -388,6 +395,7 @@
           <tr>
             <td>{{ user.first_name | title }} {{ user.last_name | title }}</td>
             <td>{{ user.email }}</td>
+            {% if staff_update %}<td>{{user.teammembership_set.active.first.team.name}}</td>{% endif %}
           </tr>
         {% endfor %}
       </tbody>
