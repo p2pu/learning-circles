@@ -415,7 +415,7 @@ def send_weekly_update():
     }
 
     for team in Team.objects.all():
-        report_context = weekly_update_data(start_time, end_time, team)
+        report_context = weekly_update_data(today, team)
         # If there wasn't any activity during this period discard the update
         if report_context['active'] is False:
             continue
@@ -439,7 +439,7 @@ def send_weekly_update():
         update.send()
 
     # send weekly update to staff
-    report_context = weekly_update_data(start_time, end_time)
+    report_context = weekly_update_data(today)
     report_context.update(context)
     report_context['staff_update'] = True
     timezone.activate(pytz.timezone(settings.TIME_ZONE))
