@@ -71,7 +71,7 @@ class StudyGroup(LifeTimeTrackingModel):
     timezone = models.CharField(max_length=128)
     signup_open = models.BooleanField(default=True)
     draft = models.BooleanField(default=True)
-    unlisted = models.BooleanField(default=False)
+    members_only = models.BooleanField(default=False)
     image = models.ImageField(blank=True)
     signup_question = models.CharField(max_length=256, blank=True)
     facilitator_goal = models.CharField(max_length=256, blank=True)

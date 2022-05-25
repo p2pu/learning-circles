@@ -53,7 +53,7 @@ logger = logging.getLogger(__name__)
 
 def studygroups(request):
     # TODO remove this API endpoint, where is it currently being used??
-    study_groups = StudyGroup.objects.published().filter(unlisted=False)
+    study_groups = StudyGroup.objects.published().filter(members_only=False)
     if 'course_id' in request.GET:
         study_groups = study_groups.filter(course_id=request.GET.get('course_id'))
 
@@ -193,7 +193,7 @@ class LearningCircleListView(View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        study_groups = StudyGroup.objects.published().filter(unlisted=False).prefetch_related('course', 'meeting_set', 'application_set').order_by('id')
+        study_groups = StudyGroup.objects.published().filter(members_only=False).prefetch_related('course', 'meeting_set', 'application_set').order_by('id')
 
         if 'draft' in request.GET:
             study_groups = StudyGroup.objects.active().order_by('id')
@@ -738,6 +738,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
+        # TODO - determine if meeting reminders should be regenerated
         # update learning circle
         published = False
         draft = data.get('draft', True)
