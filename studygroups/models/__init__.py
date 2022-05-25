@@ -1,6 +1,7 @@
 # coding=utf-8
 from django.db import models
 from django.db.models import Count, Max, Q, Sum, Case, When, IntegerField, Value, OuterRef, Subquery
+from django.db.models import Window
 from django.db.models import F
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
@@ -141,66 +142,112 @@ def get_all_meeting_times(study_group):
     return meetings
 
 
-def report_data(start_time, end_time, team=None):
+def weekly_update_data(today, team=None):
     """ Return data for the indicated time period
 
-    If team is given, study groups will be filtered by team
+    If team is given, learning circles will be filtered by team
+
+    past  last week start  this week start  now  this week ends
+    <-----------|----------------|-----------|----------|------->
+              Monday           Monday     Monday+     Monday
     """
+
+    # dates
+    # - to start -> in the future.
+    # - meeting this week -> in the next 7 days
+    # - wrapping up -> 7 days before
+    # - feedback -> 7 days before
+    # - signups -> past 7 days
+    # - learning resources -> past 7 days
+    # - facilitator guides -> past 90 days
+    # todays date
+    # start of this week
+
+    week_start = today - datetime.timedelta(days=today.weekday())
+    week_end = week_start + datetime.timedelta(days=7)
+    last_week_start = week_start - datetime.timedelta(days=7)
+
     study_groups = StudyGroup.objects.published()
-    meetings = Meeting.objects.active()\
-            .filter(meeting_date__gte=start_time, meeting_date__lt=end_time)\
-            .filter(study_group__in=study_groups)
-    studygroups_that_ended = get_studygroups_that_ended(start_time, end_time)
-    studygroups_that_met = get_studygroups_with_meetings(start_time, end_time)
-    upcoming_studygroups = get_upcoming_studygroups(end_time)
-    new_applications = get_new_applications(start_time, end_time)
-    new_users = get_new_users(start_time, end_time)
-    new_courses = get_new_courses(start_time, end_time)
+
+    # TODO should creation date or start date determine lc #
+    _facilitator_groups = StudyGroup.objects.published().filter(
+        facilitator=OuterRef('facilitator'),
+        start_date__lte=OuterRef('start_date')
+    ).order_by().values('facilitator').annotate(number=Count('pk'))
+
+    upcoming_studygroups = StudyGroup.objects.published().annotate(
+        lc_number=_facilitator_groups.values('number')[:1]
+    ).filter(start_date__gte=week_start)
+
+    studygroups_that_will_meet =  StudyGroup.objects.published().filter(meeting__meeting_date__gte=week_start, meeting__meeting_date__lt=week_end, meeting__deleted_at__isnull=True).distinct()
+
+    meetings_this_week = Meeting.objects.active()\
+        .filter(meeting_date__gte=week_start, meeting_date__lt=week_end)\
+        .filter(study_group__in=study_groups)\
+        .order_by('meeting_date', 'meeting_time')
+
+    studygroups_that_ended = study_groups.filter(end_date__gte=last_week_start, end_date__lt=week_start)
+
+    feedback = Feedback.objects.filter(study_group_meeting__meeting_date__gte=last_week_start, study_group_meeting__meeting_date__lt=week_start)
+
+    new_applications = Application.objects.active().filter(created_at__gte=last_week_start, created_at__lt=week_start)
+
+    new_users = User.objects.filter(date_joined__gte=last_week_start, date_joined__lt=week_start)
+
+    new_courses = Course.objects.active().filter(created_at__gte=last_week_start, created_at__lt=week_start, unlisted=False)
+
+    new_facilitator_guides = FacilitatorGuide.objects.active().filter(created_at__gte=week_start-datetime.timedelta(days=90))
+    member_studygroups = []
+
 
     if team:
         members = team.teammembership_set.active().values_list('user', flat=True)
         new_courses = new_courses.filter(created_by__in=members)
         new_applications = new_applications.filter(study_group__team=team)
-        meetings = meetings.filter(study_group__team=team)
+        meetings_this_week = meetings_this_week.filter(study_group__team=team)
         study_groups = study_groups.filter(team=team)
+        feedback = feedback.filter(study_group_meeting__study_group__team=team)
 
-        studygroups_that_ended = [sg for sg in studygroups_that_ended if sg.team == team]
-        studygroups_that_met = studygroups_that_met.filter(team=team)
-        new_users = new_users.filter(id__in=members)
+        studygroups_that_ended = studygroups_that_ended.filter(team=team)
+        studygroups_that_will_meet = studygroups_that_will_meet.filter(team=team)
+        new_members = team.teammembership_set.active().filter(created_at__gte=last_week_start, created_at__lt=week_start).values('user')
+        new_users = User.objects.filter(id__in=new_members)
         upcoming_studygroups = upcoming_studygroups.filter(team=team)
+        if team.membership:
+            member_studygroups = StudyGroup.objects.active().filter(unlisted=True, start_date__gte=week_start)
 
-    feedback = Feedback.objects.filter(study_group_meeting__in=meetings)
+    learners_reached = Application.objects.active().filter(study_group__in=studygroups_that_will_meet)
     studygroups_with_survey_responses = filter_studygroups_with_survey_responses(studygroups_that_ended)
-    intros_from_new_users = get_new_user_intros(new_users)
-    learners_reached = Application.objects.active().filter(study_group__in=studygroups_that_met)
 
     active = any([
-        len(meetings) > 0,
-        len(feedback) > 0,
-        len(studygroups_that_ended) > 0,
-        len(new_users) > 0,
-        len(new_courses) > 0,
-        len(new_applications) > 0,
+        upcoming_studygroups.count() > 0,
+        meetings_this_week.count() > 0,
+        studygroups_that_ended.count() > 0,
+        feedback.count() > 0,
+        new_applications.count() > 0,
+        new_users.count() > 0,
+        new_courses.count() > 0,
     ])
 
     report = {
+        'start_time': week_start,
         'active': active,
-        'meetings': meetings,
+        'meetings': meetings_this_week,
         'feedback': feedback,
         "finished_studygroups": studygroups_that_ended,
-        "finished_studygroups_count": len(studygroups_that_ended),
-        "studygroups_with_survey_responses": studygroups_with_survey_responses,
-        "studygroups_met_count": studygroups_that_met.count(),
+        "finished_studygroups_count": studygroups_that_ended.count(),
+        "studygroups_met_count": studygroups_that_will_meet.count(), # TODO rename context var
         "learners_reached_count": learners_reached.count(),
         "upcoming_studygroups": upcoming_studygroups,
         "upcoming_studygroups_count": upcoming_studygroups.count(),
         "new_applications": new_applications,
         "new_learners_count": new_applications.count(),
-        "intros_from_new_users": intros_from_new_users,
         "new_users": new_users,
         "new_users_count": new_users.count(),
         "new_courses": new_courses,
         "new_courses_count": new_courses.count(),
+        "new_facilitator_guides": new_facilitator_guides,
+        "member_studygroups": member_studygroups,
     }
 
     if team:
@@ -224,7 +271,11 @@ def get_studygroups_with_meetings(start_time, end_time, team=None):
 def get_new_studygroups(start_time, end_time):
     return StudyGroup.objects.published().filter(created_at__gte=start_time, created_at__lt=end_time)
 
-def get_new_users(start_time, end_time):
+def get_new_users(start_time, end_time, team=None):
+    if team:
+        new_user_ids = team.teammembership_set.active().filter(created_at__gte=start_time, created_at__lt=end_time).values('user')
+        return User.objects.filter(id__in=new_user_ids)
+
     return User.objects.filter(date_joined__gte=start_time, date_joined__lt=end_time)
 
 def get_new_applications(start_time, end_time):
@@ -248,6 +299,8 @@ def filter_studygroups_with_survey_responses(study_groups):
 
 def get_new_user_intros(new_users, limit=5):
     new_discourse_users = [ '{} {}'.format(user.first_name, user.last_name) for user in new_users ]
+
+    # TODO if this request fails, the whole weekly update will fail
     latest_introduction_posts = get_json_response("https://community.p2pu.org/t/1571/last.json")
 
     intros_from_new_users = []

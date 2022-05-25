@@ -72,7 +72,7 @@ class TestOrganizerViews(TestCase):
         assertAllowed('/en/')
         assertAllowed('/en/organize/')
         assertAllowed('/en/organize/{}/'.format(team.pk))
-        assertAllowed('/en/report/weekly/')
+        assertAllowed('/en/weekly-update/')
 
         # Make sure the organizer can access their study groups
         assertAllowed('/en/studygroup/1/')
@@ -117,7 +117,7 @@ class TestOrganizerViews(TestCase):
 
         assertAllowed('/en/')
         assertAllowed('/en/organize/')
-        assertAllowed('/en/report/weekly/')
+        assertAllowed('/en/weekly-update/')
 
         # Make sure staff can access study groups
         assertAllowed('/en/studygroup/1/')
@@ -208,7 +208,7 @@ class TestOrganizerViews(TestCase):
  
         c = Client()
         c.login(username='organ@team.com', password='password')
-        resp = c.get('/en/report/weekly/{0}/'.format(datetime.date(2016, 11, 21).strftime("%Y-%m-%d")))
+        resp = c.get('/en/weekly-update/{0}/'.format(datetime.date(2016, 11, 21).strftime("%Y-%m-%d")))
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.context['meetings']), 1)
         self.assertEqual(resp.context['meetings'][0].pk, active_meeting.pk)
