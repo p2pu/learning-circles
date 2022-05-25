@@ -427,13 +427,12 @@ def send_weekly_update():
         timezone.deactivate()
 
         to = [member.user.email for member in team.teammembership_set.active().filter(weekly_update_opt_in=True)]
-        staff = [o.email for o in User.objects.filter(is_staff=True)] # TODO only copy Q
         update = EmailMultiAlternatives(
             _('Weekly team update for {}'.format(team.name)),
             text_body,
             settings.DEFAULT_FROM_EMAIL,
-            cc=to,
-            bcc=staff
+            to=to,
+            cc=[settings.TEAM_MANAGER_EMAIL]
         )
         update.attach_alternative(html_body, 'text/html')
         update.send()
