@@ -303,7 +303,7 @@ class TestLearningCircleApi(TestCase):
         # Test as part of team with concern - organizer and welcome should be CC-ed
         team = Team.objects.create(name='awesome team')
         team.save()
-        organizer = create_user('org@niz.er', 'organ', 'izer', False)
+        organizer = create_user('org@niz.er', 'organ', 'izer', 'passowrd', False)
         TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
         TeamMembership.objects.create(team=team, user=self.facilitator, role=TeamMembership.MEMBER)
 

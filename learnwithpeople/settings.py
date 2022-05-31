@@ -23,9 +23,6 @@ ADMINS = (
     ('Admin', os.environ.get('ADMIN_EMAIL', 'admin@localhost') ),
 )
 
-COMMUNITY_MANAGER = os.environ.get('COMMUNITY_MANAGER_EMAIL', 'community@localhost')
-
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', 'youshouldchangethis')
 
@@ -195,6 +192,12 @@ TEAM_EMAIL = env('TEAM_EMAIL', 'thepeople@p2pu.org')
 
 SUPPORT_EMAIL = env('SUPPORT_EMAIL', 'support@localhost')
 
+
+MEMBER_SUPPORT_URL = env('MEMBER_SUPPORT_URL', '') # TODO rename to TEAM_SUPPORT_URL
+TEAM_MANAGER_EMAIL = env('TEAM_MANAGER_EMAIL', 'teams@localhost')
+
+COMMUNITY_MANAGER = os.environ.get('COMMUNITY_MANAGER_EMAIL', 'community@localhost')
+
 ##### Database config
 import dj_database_url
 DATABASES['default'] =  dj_database_url.config(default='sqlite:///{0}'.format(path('db.sqlite3')))
@@ -335,6 +338,9 @@ LOGGING_CONFIG = None
 import logging.config
 logging.config.dictConfig(LOGGING)
 
+# Explicitly set DEFAULT_AUTO_FIELD. Option added Django 3.2
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
 #### Backup config ####
 
 BACKUP_DIR = os.environ.get('BACKUP_DIR', '/tmp') # Directory where backups will be stored locally
@@ -403,4 +409,3 @@ BLEACH_DEFAULT_WIDGET = 'tinymce.widgets.TinyMCE'
 RECAPTCHA_SITE_KEY = env('RECAPTCHA_SITE_KEY', '')
 RECAPTCHA_SECRET_KEY = env('RECAPTCHA_SECRET_KEY', '')
 
-MEMBER_SUPPORT_URL = env('MEMBER_SUPPORT_URL', '')
