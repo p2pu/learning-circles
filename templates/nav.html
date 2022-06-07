@@ -26,14 +26,11 @@
                 <a class="dropdown-item" href="{% url 'studygroups_facilitator_studygroup_create' %}">Start a learning circle</a>
               </li>
 
-              {% if user|is_organizer %}
+              {% if user.is_staff %}
               <li>
                 <a class="dropdown-item" href="{% url 'studygroups_organize' %}">My team</a>
               </li>
-              {% endif %}
 
-
-              {% if user.is_staff %}
               <li>
                 <a class="dropdown-item" href="{% url 'studygroups_staff_dash' %}">Staff dash</a>
               </li>
