@@ -32,6 +32,7 @@ from studygroups.models import Course
 from studygroups.models import StudyGroup
 from studygroups.models import Application
 from studygroups.models import Meeting
+from studygroups.models import Reminder
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
@@ -41,6 +42,7 @@ from studygroups.models import generate_meetings_from_dates
 from studygroups.models import get_json_response
 from studygroups.models.course import course_platform_from_url
 from studygroups.models.team import eligible_team_by_email_domain
+from studygroups.models.learningcircle import generate_meeting_reminder
 
 from uxhelpers.utils import json_response
 
@@ -738,7 +740,16 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        # TODO - determine if meeting reminders should be regenerated
+        # determine if meeting reminders should be regenerated
+        regenerate_reminders = any([
+            study_group.name != data.get('name'),
+            study_group.venue_name != data.get('venue_name'),
+            study_group.venue_address != data.get('venue_address'),
+            study_group.venue_details != data.get('venue_details'),
+            study_group.venue_details != data.get('venue_details'),
+            study_group.language != data.get('language'),
+        ])
+
         # update learning circle
         published = False
         draft = data.get('draft', True)
@@ -775,6 +786,12 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         study_group.save()
         generate_meetings_from_dates(study_group, data.get('meetings', []))
 
+        if regenerate_reminders:
+            for meeting in study_group.meeting_set.active():
+                # if the reminder hasn't already been sent, regenerate it
+                if not Reminder.objects.filter(study_group_meeting=meeting, sent_at__isnull=False).exists():
+                    generate_meeting_reminder(meeting)
+        
         studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
         return json_response(request, { "status": "updated", "studygroup_url": studygroup_url })
 

@@ -471,11 +471,12 @@ class Reminder(models.Model):
 
 def generate_meeting_reminder(meeting):
     if Reminder.objects.filter(study_group_meeting=meeting).exists():
-        return None
+        reminder = Reminder.objects.get(study_group_meeting=meeting)
+    else:
+        reminder = Reminder()
+        reminder.study_group = meeting.study_group
+        reminder.study_group_meeting = meeting
 
-    reminder = Reminder()
-    reminder.study_group = meeting.study_group
-    reminder.study_group_meeting = meeting
     context = {
         'facilitator': meeting.study_group.facilitator,
         'study_group': meeting.study_group,
