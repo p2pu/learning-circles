@@ -450,6 +450,7 @@ class Reminder(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     sent_at = models.DateTimeField(blank=True, null=True)
+    edited_by_facilitator = models.BooleanField(default=False)
 
     def sent_at_tz(self):
         tz = pytz.timezone(self.study_group.timezone)
@@ -472,6 +473,7 @@ class Reminder(models.Model):
 def generate_meeting_reminder(meeting):
     if Reminder.objects.filter(study_group_meeting=meeting).exists():
         reminder = Reminder.objects.get(study_group_meeting=meeting)
+        reminder.edited_by_facilitator = False
     else:
         reminder = Reminder()
         reminder.study_group = meeting.study_group

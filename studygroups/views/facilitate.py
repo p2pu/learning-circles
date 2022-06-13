@@ -319,6 +319,9 @@ class StudyGroupUpdate(SingleObjectMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context['meetings'] = [m.to_json() for m in self.object.meeting_set.active()]
         context['hide_footer'] = True
+        if Reminder.objects.filter(study_group=self.object, edited_by_facilitator=True, sent_at__isnull=True).exists():
+            context['reminders_edited'] = True
+            messages.warning(self.request, _('You have edited meeting reminders for meetings in the future. Update the learning circle description or venue information will cause the reminders to be regenerated and your updates to be lost'))
         return context
 
 
@@ -463,7 +466,9 @@ def message_edit(request, study_group_id, message_id):
     if request.method == 'POST':
         form = form_class(request.POST, instance=reminder)
         if form.is_valid():
-            reminder = form.save()
+            reminder = form.save(commit=False)
+            reminder.edited_by_facilitator = True
+            reminder.save()
             messages.success(request, 'Message successfully edited')
             return http.HttpResponseRedirect(url)
     else:
