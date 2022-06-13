@@ -515,6 +515,7 @@ class TestFacilitatorViews(TestCase):
         reminder.refresh_from_db()
         self.assertIn('&lt;script&gt;alert("MUHAHAHA")&lt;/script&gt;', reminder.email_body)
         self.assertIn('<a href="https://www.p2pu.org">p2pu</a>', reminder.email_body)
+        self.assertTrue(reminder.edited_by_facilitator)
 
         mail.outbox = []
         send_reminder(reminder)
@@ -822,6 +823,3 @@ class TestFacilitatorViews(TestCase):
         response = c.get(url)
 
         self.assertRedirects(response, expected_redirect_url, fetch_redirect_response=False)
-
-
-
