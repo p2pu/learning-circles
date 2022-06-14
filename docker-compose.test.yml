@@ -2,8 +2,8 @@ version: '3'
 services:
   postgres:
     image: postgres:11
-    ports:
-    - "5432:5432"
+    volumes:
+    - ./compose/postgres:/var/lib/postgresql/data
   email:
     image: djfarrelly/maildev
     ports:
@@ -13,13 +13,12 @@ services:
     image: p2pu/learning-circles:local
     links:
     - selenium
-    ports:
-    - "8000:8000"
     volumes:
     - .:/opt/app
     depends_on:
     - postgres
     - email
+    - selenium
     command: /opt/django-venv/bin/python manage.py test
     environment:
     - DATABASE_URL=postgres://lc:password@postgres:5432/lc
