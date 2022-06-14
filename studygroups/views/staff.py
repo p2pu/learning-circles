@@ -17,6 +17,11 @@ from django.views.generic import ListView
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 from django.db.models.expressions import RawSQL
+from django.db.models import Count
+from django.db.models import Q
+from django.db.models import Prefetch
+from django.db.models import OuterRef
+from django.db.models import Subquery
 
 
 from studygroups.models import Application
@@ -269,13 +274,21 @@ class ExportStudyGroupsView(ListView):
 class ExportCoursesView(ListView):
 
     def get_queryset(self):
-        return Course.objects.active().prefetch_related('created_by')
+        team_membership = TeamMembership.objects.active().filter(user=OuterRef('created_by'))
+        return Course.objects.active()\
+            .filter(studygroup__deleted_at__isnull=True, studygroup__draft=False)\
+            .filter(facilitatorguide__deleted_at__isnull=True)\
+            .annotate(lc_count=Count('studygroup', distinct=True))\
+            .annotate(active_lc_count=Count('studygroup', distinct=True, filter=Q(studygroup__end_date__gte=timezone.now())))\
+            .annotate(facilitator_guide_count=Count('facilitatorguide', distinct=True))\
+            .annotate(team_name=Subquery(team_membership.values('team__name')[:1]))\
+            .select_related('created_by')
 
     def csv(self, **kwargs):
         response = http.HttpResponse(content_type="text/csv")
         ts = timezone.now().utcnow().isoformat()
         response['Content-Disposition'] = 'attachment; filename="courses-{}.csv"'.format(ts)
-        fields = [
+        db_fields = [
             'id',
             'title',
             'provider',
@@ -288,12 +301,16 @@ class ExportCoursesView(ListView):
             'unlisted',
             'license',
             'created_at',
+            'lc_count',
+            'active_lc_count',
+            'facilitator_guide_count',
+            'team_name',
         ]
         writer = csv.writer(response)
-        writer.writerow(fields)
+        writer.writerow(db_fields)
         for obj in self.object_list:
             data = [
-                getattr(obj, field) for field in fields
+                getattr(obj, field) for field in db_fields
             ]
             writer.writerow(data)
         return response
