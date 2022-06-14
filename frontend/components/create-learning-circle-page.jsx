@@ -86,7 +86,7 @@ export default class CreateLearningCirclePage extends React.Component {
     let courseId;
 
     if (this.props.learningCircle.reminders_edited){
-      this.showAlert(`You have edited meeting reminders for meetings in the future. Updating the learning circle description or venue information will cause the reminders to be regenerated and your updates to be lost.`, 'warning');
+      this.showAlert(`You have previously edited reminder messages for future meetings. Updating the learning circle name or venue information will cause the reminders to be regenerated and your edits will be lost.`, 'warning');
     }
 
 
