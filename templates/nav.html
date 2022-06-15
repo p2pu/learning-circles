@@ -26,14 +26,11 @@
                 <a class="dropdown-item" href="{% url 'studygroups_facilitator_studygroup_create' %}">Start a learning circle</a>
               </li>
 
-              {% if user|is_organizer %}
+              {% if user.is_staff %}
               <li>
                 <a class="dropdown-item" href="{% url 'studygroups_organize' %}">My team</a>
               </li>
-              {% endif %}
 
-
-              {% if user.is_staff %}
               <li>
                 <a class="dropdown-item" href="{% url 'studygroups_staff_dash' %}">Staff dash</a>
               </li>
@@ -96,7 +93,7 @@
             <ul class="dropdown-menu shadow py-md-0" aria-labelledby="dropdownNavLink" style="">
               <li><a class="dropdown-item" href="{{STATIC_SITE_URL}}/en/teams/" >Start a Team</a></li>
               <li><a class="dropdown-item" href="https://docs.p2pu.org/teams/about-teams" target="_blank" >Teams Documentation</a></li>
-              <li><a class="dropdown-item" href="{{STATIC_SITE_URL}}/en/about/#teams" >Current Teams</a></li>
+              <li><a class="dropdown-item" href="{{STATIC_SITE_URL}}/en/teams/#current-teams" >Current Teams</a></li>
             </ul>    
           </div>
 

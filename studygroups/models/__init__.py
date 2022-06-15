@@ -214,7 +214,7 @@ def weekly_update_data(today, team=None):
         new_users = User.objects.filter(id__in=new_members)
         upcoming_studygroups = upcoming_studygroups.filter(team=team)
         if team.membership:
-            member_studygroups = StudyGroup.objects.active().filter(unlisted=True, start_date__gte=week_start)
+            member_studygroups = StudyGroup.objects.active().filter(members_only=True, start_date__gte=week_start)
 
     learners_reached = Application.objects.active().filter(study_group__in=studygroups_that_will_meet)
     studygroups_with_survey_responses = filter_studygroups_with_survey_responses(studygroups_that_ended)

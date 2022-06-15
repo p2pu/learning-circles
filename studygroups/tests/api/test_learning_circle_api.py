@@ -330,6 +330,7 @@ class TestLearningCircleApi(TestCase):
         self.assertIn('org@niz.er', mail.outbox[0].cc)
         self.assertEqual(len(mail.outbox[0].cc), 2)
 
+
     def test_update_learning_circle(self):
         self.facilitator.profile.email_confirmed_at = timezone.now()
         self.facilitator.profile.save()
@@ -379,6 +380,7 @@ class TestLearningCircleApi(TestCase):
         url = '/api/learning-circle/{}/'.format(lc.pk)
         data['course'] = 1
         data["description"] = "Lets learn something else"
+        data["name"] = "A new LC name"
 
         # date shouldn't matter, but lets make it after the lc started
         with freeze_time('2019-03-01'):
@@ -390,6 +392,9 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(StudyGroup.objects.all().count(), 5)
         self.assertEqual(lc.course.id, 1)
         self.assertEqual(lc.description, "Lets learn something else")
+
+        # test that reminders were regenerated
+        self.assertIn('A new LC name', lc.reminder_set.first().email_subject)
 
 
     def test_update_learning_circle_date(self):

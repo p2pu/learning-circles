@@ -30,6 +30,13 @@ function dateObjectToStringForDB(date){
   return { meeting_date: `${year}-${month}-${day}`, meeting_time: `${hours}:${minutes}` };
 }
 
+function parseMeetingDate(meetingObj){
+  const parsedMeeting = JSON.parse(meetingObj)
+  const [year, month, day] = parsedMeeting['meeting_date'].split('-')
+  const [hour, minute] = parsedMeeting['meeting_time'].split(':')
+  const date = new Date(year, month-1, day, hour, minute)
+  return date
+}
 
 export default class CreateLearningCirclePage extends React.Component {
   static defaultProps = {
@@ -39,7 +46,7 @@ export default class CreateLearningCirclePage extends React.Component {
   constructor(props){
     super(props);
     console.log(this.props.learningCircle)
-    const meetings = this.props.learningCircle.meetings.map(m => this.parseMeetingDate(m)).sort((a,b) => a - b)
+    const meetings = this.props.learningCircle.meetings.map(m => parseMeetingDate(m)).sort((a,b) => a - b)
     this.state = {
       currentTab: 0,
       learningCircle: {
@@ -77,6 +84,11 @@ export default class CreateLearningCirclePage extends React.Component {
   componentDidMount() {
     const urlParams = new URL(window.location.href).searchParams;
     let courseId;
+
+    if (this.props.learningCircle.reminders_edited){
+      this.showAlert(`You have previously edited reminder messages for future meetings. Updating the learning circle name or venue information will cause the reminders to be regenerated and your edits will be lost.`, 'warning');
+    }
+
 
     if (urlParams.get('course_id')) {
       courseId = urlParams.get('course_id')
@@ -177,14 +189,6 @@ export default class CreateLearningCirclePage extends React.Component {
 
   formatMeetingDates = () => {
     return this.state.learningCircle.meetings.map(m=> dateObjectToStringForDB(m))
-  }
-
-  parseMeetingDate = (meetingObj) => {
-    const parsedMeeting = JSON.parse(meetingObj)
-    const [year, month, day] = parsedMeeting['meeting_date'].split('-')
-    const [hour, minute] = parsedMeeting['meeting_time'].split(':')
-    const date = new Date(year, month-1, day, hour, minute)
-    return date
   }
 
   _onSubmitForm(draft=true) {

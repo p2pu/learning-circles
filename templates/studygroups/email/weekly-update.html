@@ -191,7 +191,7 @@
             </td>
             {% if staff_update %}<td>{{ studygroup.team.name }}</td>{% endif %}
             <td>{{ studygroup.application_set.active.count }}</td>
-            <td>{{ studygroup.first_meeting.meeting_datetime }}</td>
+            <td>{{ studygroup.first_meeting.meeting_date|date:"N j" }}, at {{ studygroup.first_meeting.meeting_time|time:"fA" }} {{studygroup.timezone_display}}</td>
             <td>{{ studygroup.lc_number }}</td>
           </tr>
         {% endfor %}
@@ -239,7 +239,7 @@
               <td><a href="mailto:{{ study_group.facilitator.email }}">{{ study_group.facilitator.first_name }} {{ study_group.facilitator.last_name }}</a></td>
               {% if staff_update %}<td>{{ study_group.team.name }}</td>{% endif %}
               <td>{{ study_group.application_set.active.count}}</td>
-              <td>{{ meeting.meeting_datetime|date:"fA, l, M j" }}</td>
+              <td>{{ meeting.meeting_date|date:"l N j" }} at {{ meeting.meeting_time|time:"fA" }} {{study_group.timezone_display}}</td>
               <td>{{ meeting.meeting_number }} of {{ study_group.meeting_set.active.count }}</td>
             </tr>
             {% endwith %}
@@ -282,8 +282,7 @@
               <td><a href="mailto:{{ study_group.facilitator.email }}">{{ study_group.facilitator.first_name }} {{ study_group.facilitator.last_name }}</a></td>
               {% if staff_update %}<td>{{ study_group.team.name }}</td>{% endif %}
               <td>{{ study_group.application_set.active.count}}</td>
-              <td>{{ study_group.last_meeting.meeting_datetime|date:"fA, l, M j" }}</td>
-
+              <td>{{ study_group.last_meeting.meeting_date|date:"l N j" }} at {{ study_group.last_meeting.meeting_time|time:"fA" }} {{study_group.timezone_display}}</td>
               {% if staff_update %}
                 <td>
                   <a href="{% url 'studygroups_view_study_group' study_group.pk %}">{% trans "Mgmt page" %}</a>
@@ -419,7 +418,7 @@
         <li>{{ course.created_by.first_name }} {% trans "added" %} <a href="{% url 'studygroups_course_page' course.pk %}">{{ course.title }}</a></li>
       {% endfor %}
     </ul>
-    <p>{% blocktrans %}View all the resources added by our global community on the <a href="https://www.p2pu.org/en/courses/" target="_blank">learning resources page</a>.{% endblocktrans %}</p>
+    <p>{% blocktrans %}View all the resources added by our community on the <a href="https://www.p2pu.org/en/courses/" target="_blank">learning resources page</a>.{% endblocktrans %}</p>
   </div>
 
 
@@ -428,9 +427,9 @@
     <h2>
       <span class="section-header">
       {% blocktrans count new_guides_count=new_facilitator_guides.count %}
-        Our global community added {{new_guides_count}} new facilitator guide in the past 3 months.
+        Our community added {{new_guides_count}} new facilitator guide in the past 3 months.
       {% plural %}
-        Our global community added {{new_guides_count}} new facilitator guides in the past 3 months.
+        Our community added {{new_guides_count}} new facilitator guides in the past 3 months.
       {% endblocktrans %}
       </span>
     </h2>
@@ -449,9 +448,6 @@
     {% url 'studygroups_weekly_update_date' start_time.year start_time.month start_time.day as report_url %}
     <p>{% blocktrans %}You can also view this weekly update <a href="{{PROTOCOL}}://{{DOMAIN}}{{report_url}}">online</a>.{% endblocktrans %}</p>
   {% endif %}
-
-  {% url 'studygroups_facilitator' as dashboard_url %}
-  <p>{% blocktrans %}No longer want to receive this? Manage communication preferences from your <a href="{{PROTOCOL}}://{{DOMAIN}}{{dashboard_url}}">dashboard</a>.{% endblocktrans %}</p>
 
 {% block scripts %}
     <script src="{% static 'js/vendor/pygal-tooltips.min.js' %}"></script>

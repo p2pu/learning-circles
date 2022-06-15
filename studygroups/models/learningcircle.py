@@ -71,7 +71,7 @@ class StudyGroup(LifeTimeTrackingModel):
     timezone = models.CharField(max_length=128)
     signup_open = models.BooleanField(default=True)
     draft = models.BooleanField(default=True)
-    unlisted = models.BooleanField(default=False)
+    members_only = models.BooleanField(default=False)
     image = models.ImageField(blank=True)
     signup_question = models.CharField(max_length=256, blank=True)
     facilitator_goal = models.CharField(max_length=256, blank=True)
@@ -83,7 +83,7 @@ class StudyGroup(LifeTimeTrackingModel):
     course_rating_reason = models.TextField(blank=True)
 
     attach_ics = models.BooleanField(default=True) # TODO Remove this
-    did_not_happen = models.NullBooleanField(blank=True, null=True)  # Used by the facilitator to report if the learning circle didn't happen
+    did_not_happen = models.BooleanField(blank=True, null=True)  # Used by the facilitator to report if the learning circle didn't happen
     learner_survey_sent_at = models.DateTimeField(blank=True, null=True)
     facilitator_survey_sent_at = models.DateTimeField(blank=True, null=True)
 
@@ -450,6 +450,7 @@ class Reminder(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     sent_at = models.DateTimeField(blank=True, null=True)
+    edited_by_facilitator = models.BooleanField(default=False)
 
     def sent_at_tz(self):
         tz = pytz.timezone(self.study_group.timezone)
@@ -471,11 +472,13 @@ class Reminder(models.Model):
 
 def generate_meeting_reminder(meeting):
     if Reminder.objects.filter(study_group_meeting=meeting).exists():
-        return None
+        reminder = Reminder.objects.get(study_group_meeting=meeting)
+        reminder.edited_by_facilitator = False
+    else:
+        reminder = Reminder()
+        reminder.study_group = meeting.study_group
+        reminder.study_group_meeting = meeting
 
-    reminder = Reminder()
-    reminder.study_group = meeting.study_group
-    reminder.study_group_meeting = meeting
     context = {
         'facilitator': meeting.study_group.facilitator,
         'study_group': meeting.study_group,

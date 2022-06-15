@@ -115,7 +115,7 @@ export default class FacilitatorDashboard extends React.Component {
               memberSupportUrl={this.props.memberSupportUrl}
             />
 
-            { this.props.isMemberTeam &&
+            { (this.props.isMemberTeam || this.props.isStaff) &&
               <Card>
                 <div className="card-title">Member Learning Circles</div>
                 <MemberLearningCirclesTable />

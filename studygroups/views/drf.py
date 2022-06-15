@@ -150,6 +150,7 @@ class MemberLearningCircleSerializer(serializers.ModelSerializer):
     signup_url = serializers.SerializerMethodField()
 
     def signup_url(self, obj):
+        # TODO isn't this already defined on the model?
         return f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_signup', args=(slugify(obj.venue_name, allow_unicode=True), obj.id))
 
     class Meta:
@@ -183,7 +184,7 @@ class MemberLearningCircleViewSet(viewsets.ReadOnlyModelViewSet):
             meeting_date__gte=today
         ).order_by('meeting_date')
         study_groups = study_groups\
-            .filter(unlisted=True)\
+            .filter(members_only=True)\
             .annotate(next_meeting_date=Subquery(upcoming_meetings.values('meeting_date')[:1]))\
             .annotate(
                 user_signup=Count(
