@@ -188,6 +188,7 @@ class LearningCircleListView(View):
             "draft": schema.boolean(),
             "team_id": schema.integer(),
             "cu_credit": schema.boolean(),
+            "online": schema.boolean(),
             "order": lambda v: (v, None) if v in ['name', 'start_date', 'created_at', 'first_meeting_date', 'last_meeting_date', None] else (None, "must be 'name', 'created_at', 'first_meeting_date', 'last_meeting_date', or 'start_date'"),
         }
         data = schema.django_get_to_dict(request.GET)
@@ -205,6 +206,10 @@ class LearningCircleListView(View):
         if 'user' in request.GET:
             user_id = request.user.id
             study_groups = study_groups.filter(facilitator=user_id)
+
+        if 'online' in request.GET:
+            online = clean_data.get('online')
+            study_groups = study_groups.filter(online=online)
 
         if clean_data.get('cu_credit'):
             study_groups = study_groups.filter(cu_credit=True)
@@ -477,6 +482,7 @@ class CourseListView(View):
             else:
                 courses = courses.filter(unlisted=False)
 
+        # TODO this doesn't exclude drafts
         courses = courses.annotate(
             num_learning_circles=Sum(
                 Case(
