@@ -3,6 +3,8 @@ from django.urls import reverse, reverse_lazy
 from django import http
 from django import forms
 from django.forms import modelform_factory, HiddenInput
+from django.forms import modelformset_factory
+from django.forms import inlineformset_factory
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.generic.base import View
 from django.views.generic.base import RedirectView
@@ -596,6 +598,37 @@ def add_member(request, study_group_id):
     return render(request, 'studygroups/add_member.html', context)
 
 
+@method_decorator([user_is_group_facilitator, study_group_is_published], name='dispatch')
+class ApplicationCreateMultiple(FormView):
+    template_name = 'studygroups/add_members.html'
+    form_class = modelformset_factory(
+        Application,
+        fields=['name', 'email', 'mobile'],
+        extra=5
+    )
+    success_url = reverse_lazy('studygroups_facilitator')
+
+    def get_form(self):
+        queryset = Application.objects.none()
+        return self.form_class(queryset=queryset, **self.get_form_kwargs())
+
+    def form_valid(self, form):
+        study_group_id = self.kwargs.get('study_group_id')
+        study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+        applications = form.save(commit=False)
+        for application in applications:
+            if application.email and Application.objects.active().filter(email__iexact=application.email, study_group=study_group).exists():
+                messages.warning(self.request, _(f'{application.name} with email address {application.email} has already signed up.'))
+            elif application.mobile and Application.objects.active().filter(mobile=application.mobile, study_group=study_group).exists():
+                messages.warning(self.request, _(f'{application.name} with mobile number {application.mobile} has already signed up.'))
+            else:
+                application.study_group = study_group
+                application.save()
+
+        url = reverse('studygroups_view_study_group', args=(study_group_id,))
+        return http.HttpResponseRedirect(url)
+
+
 @method_decorator(login_required, name='dispatch')
 class InvitationConfirm(FormView):
     form_class = forms.Form
@@ -802,19 +835,20 @@ class LeaveTeam(DeleteView):
 
 
 @user_is_team_member
-def weekly_update(request, year=None, month=None, day=None):
+def weekly_update(request, team_id=None, year=None, month=None, day=None):
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     if month and day and year:
         today = today.replace(year=int(year), month=int(month), day=int(day))
     # get team for current user
     team = None
-    membership = TeamMembership.objects.active().filter(user=request.user).first()
-    if membership:
-        team = membership.team
-
+    if not request.user.is_staff:
+        membership = TeamMembership.objects.active().filter(user=request.user).first()
+        if membership:
+            team = membership.team
+    elif team_id:
+        team = get_object_or_404(Team, pk=team_id)
     context = weekly_update_data(today, team)
     if request.user.is_staff:
         context['staff_update'] = True
-    #context = weekly_update_data(today)
     return render(request, 'studygroups/email/weekly-update.html', context)
 
