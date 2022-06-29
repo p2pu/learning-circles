@@ -31,7 +31,7 @@ export default class FormTabs extends React.Component{
       ['city', 'country', 'venue_name', 'venue_details', 'venue_address', 'language'],
       ['start_date', 'meeting_time', 'timezone'],
       ['name', 'description', 'course_description', 'signup_question', 'venue_website'],
-      ['facilitator_goal', 'facilitator_concerns'],
+      ['facilitator_goal', 'facilitator_concerns', 'co_facilitators'],
     ];
     const tabErrors = tabFields.map( tab => Object.keys(errors).filter(e => tab.indexOf(e) != -1));
 
@@ -91,6 +91,7 @@ export default class FormTabs extends React.Component{
               <h4>Step 5: Finalize</h4>
               <FinalizeSection
                 updateFormData={this.props.updateFormData}
+                team={this.props.team}
                 learningCircle={this.props.learningCircle}
                 errors={this.props.errors}
               />

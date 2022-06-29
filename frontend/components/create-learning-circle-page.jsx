@@ -53,6 +53,33 @@ export default class CreateLearningCirclePage extends React.Component {
         ...this.props.learningCircle,
         meetings: meetings
       },
+      /* TEAM STUB DATA */
+      team: [
+        {
+          id: '85d4f3a7-7749-45ea-8a50-54e62803755f',
+          firstName: 'Vuyani',
+          lastName: 'Shabangu',
+          email: 'vuyani.shabangu@gmail.com',
+        },
+        {
+          id: '7e730fd6-ec4e-4dbc-a3d8-ff8ddddc0459',
+          firstName: 'Dirk',
+          lastName: 'Uys',
+          email: 'dirk@p2p2u.org',
+        },
+        {
+          id: 'e00ec51a-1d4b-486d-bc2d-338cb8c4e2ba',
+          firstName: 'Person',
+          lastName: 'Surname',
+          email: 'person.surname@p2pu.org',
+        },
+        {
+          id: '1ddd8630-4558-4e76-af5e-db6de57b8ec0',
+          firstName: 'Other',
+          lastName: 'Person',
+          email: 'other@p2pu.org',
+        },
+      ],
       showModal: false,
       showHelp: window.screen.width > DESKTOP_BREAKPOINT,
       user: this.props.user,
@@ -291,6 +318,7 @@ export default class CreateLearningCirclePage extends React.Component {
           allTabs={this.allTabs}
           changeTab={this.changeTab}
           learningCircle={this.state.learningCircle}
+          team={this.state.team}
           errors={this.state.errors}
           onCancel={this.onCancel}
           onSubmitForm={this.onSubmitForm}

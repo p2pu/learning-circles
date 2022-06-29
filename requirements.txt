@@ -51,7 +51,7 @@ phonenumberslite==8.12.38
 Pillow==8.4.0
 premailer==3.10.0
 prompt-toolkit==3.0.23
-psycopg2-binary==2.8.6
+psycopg2-binary==2.9.3
 pycparser==2.21
 pygal==3.0.0
 PyJWT==2.3.0

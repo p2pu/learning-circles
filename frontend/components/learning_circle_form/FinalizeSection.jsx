@@ -1,7 +1,17 @@
 import React from 'react'
-import { TextareaWithLabel } from 'p2pu-components'
+import { TextareaWithLabel, SelectWithLabel } from 'p2pu-components'
 
-const FinalizeSection = (props) => (
+const FinalizeSection = (props) => {
+
+  const populateTeamOptions = (team) => {
+    console.log(props.learningCircle)
+    return team.map(teamMember => {
+      return {label: teamMember.firstName + ' ' + teamMember.lastName + ', ' + teamMember.email,
+      value: teamMember.id}
+    })
+  }
+
+  return (
   <div>
     <TextareaWithLabel
       label={'What do you hope to achieve by facilitating this learning circle?'}
@@ -19,7 +29,18 @@ const FinalizeSection = (props) => (
       id={'id_facilitator_concerns'}
       errorMessage={props.errors.facilitator_concerns}
     />
+    <SelectWithLabel
+      className='lc-co-facilitator-input'
+      options={populateTeamOptions(props.team)}
+      name={'co_facilitators'}
+      id={'id_co_facilitators'}
+      value={props.learningCircle.co_facilitators}
+      handleChange={props.updateFormData}
+      label="Select your co-facilitator(s)"
+      isMulti={true}
+    />
   </div>
-);
+  );
+};
 
 export default FinalizeSection;
