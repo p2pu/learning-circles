@@ -18,6 +18,7 @@ from .team import *
 from .announcement import Announcement
 from .profile import Profile
 from .learningcircle import StudyGroup
+from .learningcircle import Facilitator
 from .learningcircle import Meeting
 from .learningcircle import Application
 from .learningcircle import Reminder
