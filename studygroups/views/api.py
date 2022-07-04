@@ -30,6 +30,7 @@ from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import user_is_team_organizer
 from studygroups.models import Course
 from studygroups.models import StudyGroup
+from studygroups.models import Facilitator
 from studygroups.models import Application
 from studygroups.models import Meeting
 from studygroups.models import Reminder
@@ -627,6 +628,10 @@ def _meetings_validator(meetings):
 
 
 def _make_learning_circle_schema(request):
+
+    # TODO - check that its a list, facilitator exists and is part of same team
+    facilitator_schema = lambda x: map(schema.integer(), x)
+
     post_schema = {
         "name": schema.text(length=128, required=False),
         "course": schema.chain([
@@ -655,6 +660,7 @@ def _make_learning_circle_schema(request):
         "duration": schema.integer(required=True),
         "timezone": schema.text(required=True, length=128),
         "signup_question": schema.text(length=256),
+        "facilitators": facilitator_schema,
         "facilitator_goal": schema.text(length=256),
         "facilitator_concerns": schema.text(length=256),
         "image_url": schema.chain([
@@ -725,8 +731,14 @@ class LearningCircleCreateView(View):
             study_group.draft = data.get('draft', True)
 
         study_group.save()
+
         # notification about new study group is sent at this point, but no associated meetings exists, which implies that the reminder can't use the date of the first meeting
         generate_meetings_from_dates(study_group, data.get('meetings', []))
+
+        # add all facilitators
+        for user_id in data.get('facilitators'):
+            f = Facilitator(study_group=study_group, user_id=user_id)
+            f.save()
 
         studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
         return json_response(request, { "status": "created", "studygroup_url": studygroup_url })
