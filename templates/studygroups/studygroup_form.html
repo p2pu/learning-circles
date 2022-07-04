@@ -31,9 +31,11 @@
   window.lc = window.lc || {};
   var learningCircle = {{ object.to_json|safe }};
   var meetings = {{ meetings|safe }};
+  var facilitators = {{ facilitators|safe }};
 
   window.lc = learningCircle;
   window.lc.meetings = meetings;
+  window.lc.facilitators = facilitators;
   window.lc.reminders_edited = {% if reminders_edited %}true{% else %}false{% endif %};
 </script>
 {% endif %}
