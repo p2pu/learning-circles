@@ -38,6 +38,12 @@ class Organizer(models.Model):
         return self.user.__str__()
 
 
+class Facilitator(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE, related_name='cofacilitators',)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+
 class StudyGroupQuerySet(SoftDeleteQuerySet):
 
     def published(self):
