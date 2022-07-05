@@ -125,7 +125,7 @@ class MeetingDelete(FacilitatorRedirectMixin, DeleteView):
 class ApplicationUpdate(FacilitatorRedirectMixin, UpdateView):
     model = Application
     form_class =  modelform_factory(Application, fields=['study_group', 'name', 'email', 'mobile'], widgets={'study_group': HiddenInput})
-    template_name = 'studygroups/add_member.html'
+    template_name = 'studygroups/add_learner.html'
 
 
 @method_decorator(user_is_group_facilitator, name="dispatch")
@@ -569,7 +569,7 @@ class MeetingRecapDismiss(SingleObjectMixin, View):
 
 @user_is_group_facilitator
 @study_group_is_published
-def add_member(request, study_group_id):
+def add_learner(request, study_group_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
 
     # only require name, email and/or mobile
@@ -597,12 +597,12 @@ def add_member(request, study_group_id):
         'form': form,
         'study_group': study_group,
     }
-    return render(request, 'studygroups/add_member.html', context)
+    return render(request, 'studygroups/add_learner.html', context)
 
 
 @method_decorator([user_is_group_facilitator, study_group_is_published], name='dispatch')
 class ApplicationCreateMultiple(FormView):
-    template_name = 'studygroups/add_members.html'
+    template_name = 'studygroups/add_learners.html'
     form_class = modelformset_factory(
         Application,
         form=ApplicationInlineForm,

@@ -79,10 +79,10 @@ urlpatterns = [
 
     url(r'^studygroup/(?P<study_group_id>[\d]+)/message/(?P<pk>[\d]+)/$', MessageView.as_view(), name='studygroups_message_view'),
 
-    url(r'^studygroup/(?P<study_group_id>[\d]+)/member/add/$', views.add_member, name='studygroups_add_member'),
-    url(r'^studygroup/(?P<study_group_id>[\d]+)/member/add-multiple/$', ApplicationCreateMultiple.as_view(), name='studygroups_add_members'),
-    url(r'^studygroup/(?P<study_group_id>[\d]+)/member/(?P<pk>[0-9]+)/edit/$', ApplicationUpdate.as_view(), name='studygroups_application_edit'),
-    url(r'^studygroup/(?P<study_group_id>[\d]+)/member/(?P<pk>[0-9]+)/delete/$', ApplicationDelete.as_view(), name='studygroups_application_delete'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/learner/add/$', views.add_learner, name='studygroups_add_learner'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/learner/add-multiple/$', ApplicationCreateMultiple.as_view(), name='studygroups_add_learners'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/learner/(?P<pk>[0-9]+)/edit/$', ApplicationUpdate.as_view(), name='studygroups_application_edit'),
+    url(r'^studygroup/(?P<study_group_id>[\d]+)/learner/(?P<pk>[0-9]+)/delete/$', ApplicationDelete.as_view(), name='studygroups_application_delete'),
 
     url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/survey/$', StudyGroupLearnerSurvey.as_view(), name='studygroups_learner_survey'),
     url(r'^studygroup/(?P<study_group_uuid>[\w-]+)/survey/done/$', TemplateView.as_view(template_name='studygroups/learner_survey_done.html'), name='studygroups_learnear_survey_done'),
