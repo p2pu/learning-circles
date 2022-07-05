@@ -576,10 +576,11 @@ def add_member(request, study_group_id):
     form_class =  modelform_factory(Application, form=ApplicationInlineForm)
 
     if request.method == 'POST':
-        form = form_class(request.POST, initial={'study_group': study_group})
+        form = form_class(request.POST)
         if form.is_valid():
             url = reverse('studygroups_view_study_group', args=(study_group_id,))
             application = form.save(commit=False)
+            application.study_group = study_group
             if application.email and Application.objects.active().filter(email__iexact=application.email, study_group=study_group).exists():
                 messages.warning(request, _('User with the given email address already signed up.'))
             elif application.mobile and Application.objects.active().filter(mobile=application.mobile, study_group=study_group).exists():
