@@ -30,7 +30,6 @@ import datetime
 import logging
 
 from tinymce.widgets import TinyMCE
-from crispy_forms.helper import FormHelper
 
 from studygroups.models import Team
 from studygroups.models import TeamMembership
@@ -574,7 +573,7 @@ def add_member(request, study_group_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
 
     # only require name, email and/or mobile
-    form_class =  modelform_factory(Application, fields=['study_group', 'name', 'email', 'mobile'], widgets={'study_group': HiddenInput})
+    form_class =  modelform_factory(Application, form=ApplicationInlineForm)
 
     if request.method == 'POST':
         form = form_class(request.POST, initial={'study_group': study_group})
@@ -612,9 +611,8 @@ class ApplicationCreateMultiple(FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        form_helper = FormHelper
-        form_helper.form_tag = False
-        context.update({'helper': form_helper})
+        study_group_id = self.kwargs.get('study_group_id')
+        context['study_group'] = get_object_or_404(StudyGroup, pk=study_group_id)
         return context
 
     def get_form(self):

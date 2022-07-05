@@ -120,15 +120,16 @@ class ApplicationInlineForm(forms.ModelForm):
     mobile = PhoneNumberField(required=False)
 
     def clean(self):
-        cleaned_data = super().clean()
-        if not cleaned_data.get('mobile') and not cleaned_data.get('email'):
+        prefix = f'{self.prefix}-' if self.prefix else ''
+        if self.data.get(prefix + 'name') and not self.data.get(prefix + 'mobile') and not self.data.get(prefix + 'email'):
             self.add_error('email', _('Please provide an email address or mobile number.'))
             self.add_error('mobile', _('Please provide an email address or mobile number.'))
+        cleaned_data = super().clean()
 
     class Meta:
         model = Application
         fields = ['name', 'email', 'mobile']
-        
+
 
 class OptOutForm(forms.Form):
     email = forms.EmailField(required=False)

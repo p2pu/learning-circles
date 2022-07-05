@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% load i18n %}
+{% load render_bundle from webpack_loader %}
 
 {% block content %}
 <div class="container">
@@ -8,15 +9,8 @@
     <div class="col-md-12">
       {% if study_group %}
         <a href="{% url 'studygroups_view_study_group' study_group.pk %}">{% trans "Back" %}</a>
-      {% elif object.study_group %}
-        <a href="{% url 'studygroups_view_study_group' object.study_group.pk %}">{% trans "Back" %}</a>
       {% endif %}
-
-      {% if object %}
-        <h2>{% blocktrans with name=object.name %}Update details for {{name}} {% endblocktrans %}</h2>
-      {% else %}
-        <h2>{% blocktrans with studygroup_name=study_group.name %}Add a new member to {{studygroup_name}} {% endblocktrans %}</h2>
-      {% endif %}
+      <h2>{% blocktrans with studygroup_name=study_group.name %}Add new learners to {{studygroup_name}} {% endblocktrans %}</h2>
     </div>
   </div>
   <div class="row">
@@ -31,7 +25,6 @@
           </ul>
         </div>
       {% endif %}
-
 
       {% for application_form in form %}
         <div class="row pb-5 pb-md-0">
@@ -54,12 +47,13 @@
           {% endif %}
       {% endfor %}
 
-      {% comment %}
-      {% crispy form helper %}
-      {% endcomment %}
-
       <p><button type="submit" class="btn btn-primary">{% if object %}{% trans "Save"%}{% else %}{% trans "Add" %}{% endif %}</button></p>
     </form>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+{% render_bundle 'common' %}
 {% endblock %}
