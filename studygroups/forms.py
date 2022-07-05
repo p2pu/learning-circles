@@ -116,6 +116,20 @@ class ApplicationForm(forms.ModelForm):
         }
 
 
+class ApplicationInlineForm(forms.ModelForm):
+    mobile = PhoneNumberField(required=False)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if not cleaned_data.get('mobile') and not cleaned_data.get('email'):
+            self.add_error('email', _('Please provide an email address or mobile number.'))
+            self.add_error('mobile', _('Please provide an email address or mobile number.'))
+
+    class Meta:
+        model = Application
+        fields = ['name', 'email', 'mobile']
+        
+
 class OptOutForm(forms.Form):
     email = forms.EmailField(required=False)
     mobile = PhoneNumberField(required=False, label=_('Phone Number for SMS'))

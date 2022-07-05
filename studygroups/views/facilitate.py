@@ -30,6 +30,7 @@ import datetime
 import logging
 
 from tinymce.widgets import TinyMCE
+from crispy_forms.helper import FormHelper
 
 from studygroups.models import Team
 from studygroups.models import TeamMembership
@@ -39,6 +40,7 @@ from studygroups.models import Meeting
 from studygroups.models import Course
 from studygroups.models import Application
 from studygroups.models import Reminder
+from studygroups.forms import ApplicationInlineForm
 from studygroups.forms import CourseForm
 from studygroups.forms import StudyGroupForm
 from studygroups.forms import MeetingForm
@@ -603,10 +605,17 @@ class ApplicationCreateMultiple(FormView):
     template_name = 'studygroups/add_members.html'
     form_class = modelformset_factory(
         Application,
-        fields=['name', 'email', 'mobile'],
+        form=ApplicationInlineForm,
         extra=5
     )
     success_url = reverse_lazy('studygroups_facilitator')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        form_helper = FormHelper
+        form_helper.form_tag = False
+        context.update({'helper': form_helper})
+        return context
 
     def get_form(self):
         queryset = Application.objects.none()
@@ -618,9 +627,9 @@ class ApplicationCreateMultiple(FormView):
         applications = form.save(commit=False)
         for application in applications:
             if application.email and Application.objects.active().filter(email__iexact=application.email, study_group=study_group).exists():
-                messages.warning(self.request, _(f'{application.name} with email address {application.email} has already signed up.'))
+                messages.warning(self.request, _(f'A learner with the email address {application.email} has already signed up.'))
             elif application.mobile and Application.objects.active().filter(mobile=application.mobile, study_group=study_group).exists():
-                messages.warning(self.request, _(f'{application.name} with mobile number {application.mobile} has already signed up.'))
+                messages.warning(self.request, _(f'A learner with the mobile number {application.mobile} has already signed up.'))
             else:
                 application.study_group = study_group
                 application.save()

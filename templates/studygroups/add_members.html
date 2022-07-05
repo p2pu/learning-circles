@@ -23,19 +23,41 @@
     <form action="" method="POST">
       {% csrf_token %}
       {{ form.management_form }}
+
+      {% if form.non_form_errors %}
+        <div class="col-md-12">
+          <ul class="m-0">
+              {{ form.non_form_errors|unordered_list }}
+          </ul>
+        </div>
+      {% endif %}
+
+
       {% for application_form in form %}
-      <div class="row pb-5 pb-md-0">
-        <div class="col-md-4">
-          {{ application_form.name|as_crispy_field }}
+        <div class="row pb-5 pb-md-0">
+          <div class="col-md-4">
+            {{ application_form.name|as_crispy_field }}
+          </div>
+          <div class="col-md-4">
+            {{ application_form.email|as_crispy_field }}
+          </div>
+          <div class="col-md-4">
+            {{ application_form.mobile|as_crispy_field }}
+          </div>
         </div>
-        <div class="col-md-4">
-          {{ application_form.email|as_crispy_field }}
-        </div>
-        <div class="col-md-4">
-          {{ application_form.mobile|as_crispy_field }}
-        </div>
-      </div>
+          {% if application_form.non_field_errors %}
+            <div class="col-md-12 mb-5 alert alert-block alert-danger">
+              <ul class="m-0">
+                {{ application_form.non_field_errors|unordered_list }}
+              </ul>
+            </div>
+          {% endif %}
       {% endfor %}
+
+      {% comment %}
+      {% crispy form helper %}
+      {% endcomment %}
+
       <p><button type="submit" class="btn btn-primary">{% if object %}{% trans "Save"%}{% else %}{% trans "Add" %}{% endif %}</button></p>
     </form>
   </div>
