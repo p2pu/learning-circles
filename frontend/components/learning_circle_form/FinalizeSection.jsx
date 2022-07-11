@@ -32,9 +32,9 @@ const FinalizeSection = (props) => {
     <SelectWithLabel
       className='lc-co-facilitator-input'
       options={populateTeamOptions(props.team)}
-      name={'co_facilitators'}
-      id={'id_co_facilitators'}
-      value={props.learningCircle.co_facilitators}
+      name={'facilitators'}
+      id={'id_facilitators'}
+      value={props.learningCircle.facilitators}
       handleChange={props.updateFormData}
       label="Select your co-facilitator(s)"
       isMulti={true}

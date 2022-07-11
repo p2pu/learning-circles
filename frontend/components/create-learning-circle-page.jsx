@@ -56,25 +56,25 @@ export default class CreateLearningCirclePage extends React.Component {
       /* TEAM STUB DATA */
       team: [
         {
-          id: '85d4f3a7-7749-45ea-8a50-54e62803755f',
+          id: 1,
           firstName: 'Vuyani',
           lastName: 'Shabangu',
           email: 'vuyani.shabangu@gmail.com',
         },
         {
-          id: '7e730fd6-ec4e-4dbc-a3d8-ff8ddddc0459',
+          id: 2,
           firstName: 'Dirk',
           lastName: 'Uys',
           email: 'dirk@p2p2u.org',
         },
         {
-          id: 'e00ec51a-1d4b-486d-bc2d-338cb8c4e2ba',
+          id: 3,
           firstName: 'Person',
           lastName: 'Surname',
           email: 'person.surname@p2pu.org',
         },
         {
-          id: '1ddd8630-4558-4e76-af5e-db6de57b8ec0',
+          id: 4,
           firstName: 'Other',
           lastName: 'Person',
           email: 'other@p2pu.org',
