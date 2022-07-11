@@ -6,8 +6,9 @@ const FinalizeSection = (props) => {
   const populateTeamOptions = (team) => {
     console.log(props.learningCircle)
     return team.map(teamMember => {
-      return {label: teamMember.firstName + ' ' + teamMember.lastName + ', ' + teamMember.email,
-      value: teamMember.id}
+      const parsedTeamMember = JSON.parse(teamMember)
+      return {label: parsedTeamMember.firstName + ' ' + parsedTeamMember.lastName + ', ' + parsedTeamMember.email,
+      value: parsedTeamMember.id}
     })
   }
 

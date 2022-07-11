@@ -319,6 +319,7 @@ class StudyGroupUpdate(SingleObjectMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context['meetings'] = [m.to_json() for m in self.object.meeting_set.active()]
         context['facilitators'] = [f.user_id for f in self.object.cofacilitators.all()]
+        context['team'] = [t.to_json() for t in TeamMembership.objects.active()]
         context['hide_footer'] = True
         if Reminder.objects.filter(study_group=self.object, edited_by_facilitator=True, sent_at__isnull=True).exists():
             context['reminders_edited'] = True

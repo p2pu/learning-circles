@@ -53,33 +53,7 @@ export default class CreateLearningCirclePage extends React.Component {
         ...this.props.learningCircle,
         meetings: meetings
       },
-      /* TEAM STUB DATA */
-      team: [
-        {
-          id: 1,
-          firstName: 'Vuyani',
-          lastName: 'Shabangu',
-          email: 'vuyani.shabangu@gmail.com',
-        },
-        {
-          id: 2,
-          firstName: 'Dirk',
-          lastName: 'Uys',
-          email: 'dirk@p2p2u.org',
-        },
-        {
-          id: 3,
-          firstName: 'Person',
-          lastName: 'Surname',
-          email: 'person.surname@p2pu.org',
-        },
-        {
-          id: 4,
-          firstName: 'Other',
-          lastName: 'Person',
-          email: 'other@p2pu.org',
-        },
-      ],
+      team: this.props.learningCircle.team,
       showModal: false,
       showHelp: window.screen.width > DESKTOP_BREAKPOINT,
       user: this.props.user,
