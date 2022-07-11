@@ -627,10 +627,18 @@ def _meetings_validator(meetings):
         return mtngs, None
 
 
-def _make_learning_circle_schema(request):
-
+def _facilitators_validator(facilitators):
     # TODO - check that its a list, facilitator exists and is part of same team
-    facilitator_schema = lambda x: map(schema.integer(), x)
+    results = list(map(schema.integer(), facilitators))
+    errors = list(filter(lambda x: x, map(lambda x: x[1], results)))
+    fcltrs = list(map(lambda x: x[0], results))
+    if errors:
+        return None, 'Invalid meeting data'
+    else:
+        return fcltrs, None
+
+
+def _make_learning_circle_schema(request):
 
     post_schema = {
         "name": schema.text(length=128, required=False),
@@ -660,7 +668,7 @@ def _make_learning_circle_schema(request):
         "duration": schema.integer(required=True),
         "timezone": schema.text(required=True, length=128),
         "signup_question": schema.text(length=256),
-        "facilitators": facilitator_schema,
+        "facilitators": _facilitators_validator,
         "facilitator_goal": schema.text(length=256),
         "facilitator_concerns": schema.text(length=256),
         "image_url": schema.chain([
