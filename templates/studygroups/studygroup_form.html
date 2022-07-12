@@ -25,6 +25,8 @@
 <script src="https://www.google.com/recaptcha/api.js?render={{RECAPTCHA_SITE_KEY}}"></script>
 <script>
   window.RECAPTCHA_SITE_KEY = "{{RECAPTCHA_SITE_KEY}}";
+  var team = {{ team|safe }};
+  window.team = team;
 </script>
 {% if object.pk %}
 <script>
@@ -37,7 +39,6 @@
   window.lc = learningCircle;
   window.lc.meetings = meetings;
   window.lc.facilitators = facilitators;
-  window.lc.team = team;
   window.lc.reminders_edited = {% if reminders_edited %}true{% else %}false{% endif %};
 </script>
 {% endif %}

@@ -53,7 +53,7 @@ export default class CreateLearningCirclePage extends React.Component {
         ...this.props.learningCircle,
         meetings: meetings
       },
-      team: this.props.learningCircle.team,
+      team: this.props.team,
       showModal: false,
       showHelp: window.screen.width > DESKTOP_BREAKPOINT,
       user: this.props.user,

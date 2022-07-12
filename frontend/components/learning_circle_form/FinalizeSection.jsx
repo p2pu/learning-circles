@@ -4,7 +4,6 @@ import { TextareaWithLabel, SelectWithLabel } from 'p2pu-components'
 const FinalizeSection = (props) => {
 
   const populateTeamOptions = (team) => {
-    console.log(props.learningCircle)
     return team.map(teamMember => {
       const parsedTeamMember = JSON.parse(teamMember)
       return {label: parsedTeamMember.firstName + ' ' + parsedTeamMember.lastName + ', ' + parsedTeamMember.email,
