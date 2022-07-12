@@ -236,8 +236,8 @@ class CourseUpdate(UpdateView):
         course = self.get_object()
         if not request.user.is_staff and course.created_by != request.user:
             raise PermissionDenied
-        other_study_groups =  StudyGroup.objects.active().filter(course=course).exclude(facilitator=request.user)
-        study_groups = StudyGroup.objects.active().filter(course=course, facilitator=request.user)
+        other_study_groups =  StudyGroup.objects.active().filter(course=course).exclude(facilitator=request.user) # TODO
+        study_groups = StudyGroup.objects.active().filter(course=course, facilitator=request.user) # TODO
         if study_groups.count() > 1 or other_study_groups.count() > 0:
             messages.warning(request, _('This course is being used by other learning circles and cannot be edited, please create a new course to make changes'))
             url = reverse('studygroups_facilitator')
@@ -277,6 +277,7 @@ class StudyGroupCreate(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(StudyGroupCreate, self).get_context_data(**kwargs)
+        # TODO get info for co-facilitators
         context['RECAPTCHA_SITE_KEY'] = settings.RECAPTCHA_SITE_KEY # required for inline signup
         context['hide_footer'] = True
         return context
@@ -295,7 +296,7 @@ class StudyGroupCreateLegacy(CreateView):
 
     def form_valid(self, form):
         study_group = form.save(commit=False)
-        study_group.facilitator = self.request.user
+        study_group.facilitator = self.request.user # TODO
 
         study_group.save()
         meeting_dates = generate_all_meeting_dates(
@@ -319,6 +320,9 @@ class StudyGroupUpdate(SingleObjectMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context['meetings'] = [m.to_json() for m in self.object.meeting_set.active()]
         context['facilitators'] = [f.user_id for f in self.object.cofacilitators.all()]
+        # TODO - only do this if 
+        # a) the currently authenticated user is in a team 
+        # or b) if it's a super user and the learning circle is part of a team
         context['team'] = [t.to_json() for t in TeamMembership.objects.active()]
         context['hide_footer'] = True
         if Reminder.objects.filter(study_group=self.object, edited_by_facilitator=True, sent_at__isnull=True).exists():
@@ -377,7 +381,7 @@ class StudyGroupPublish(SingleObjectMixin, View):
 
     def post(self, request, *args, **kwargs):
         study_group = self.get_object()
-        profile = study_group.facilitator.profile
+        profile = study_group.facilitator.profile # TODO
         if profile.email_confirmed_at is None:
             messages.warning(self.request, _("You need to confirm your email address before you can publish a learning circle."));
         else:
