@@ -9,4 +9,4 @@ const user = element.dataset.user === "AnonymousUser" ? null : element.dataset.u
 const learningCircle = window.lc;
 const tinymceScriptSrc = "/static/js/vendor/tinymce/tinymce.min.js";
 
-ReactDOM.render(<CreateLearningCirclePage user={user} learningCircle={learningCircle} tinymceScriptSrc={tinymceScriptSrc} />, element)
+ReactDOM.render(<CreateLearningCirclePage user={user} learningCircle={learningCircle} team={team} tinymceScriptSrc={tinymceScriptSrc} />, element)
