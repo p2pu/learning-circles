@@ -744,7 +744,8 @@ class LearningCircleCreateView(View):
         generate_meetings_from_dates(study_group, data.get('meetings', []))
 
         # add all facilitators
-        for user_id in data.get('facilitators'):
+        facilitators = set([request.user.id] + data.get('facilitators'))  # make user a facilitator
+        for user_id in facilitators:
             f = Facilitator(study_group=study_group, user_id=user_id)
             f.save()
 
@@ -817,6 +818,15 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
                 # if the reminder hasn't already been sent, regenerate it
                 if not Reminder.objects.filter(study_group_meeting=meeting, sent_at__isnull=False).exists():
                     generate_meeting_reminder(meeting)
+
+        # update facilitators
+        updated_facilitators = data.get('facilitators')
+        study_group.cofacilitators.exclude(id__in=updated_facilitators).delete()
+        current_facilicators_ids = study_group.cofacilitators.all().values_list('id')
+        to_add = [f_id for f_id in updated_facilitators if f_id not in current_facilicators_ids]
+        for user_id in to_add:
+            f = Facilitator(study_group=study_group, user_id=user_id)
+            f.save()
         
         studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
         return json_response(request, { "status": "updated", "studygroup_url": studygroup_url })
