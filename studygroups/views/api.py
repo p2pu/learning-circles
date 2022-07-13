@@ -45,6 +45,7 @@ from studygroups.models.course import course_platform_from_url
 from studygroups.models.team import eligible_team_by_email_domain
 from studygroups.models.learningcircle import generate_meeting_reminder
 from studygroups.tasks import send_cofacilitator_email
+from studygroups.tasks import send_cofacilitator_removed_email
 
 from uxhelpers.utils import json_response
 
@@ -825,10 +826,17 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
                     generate_meeting_reminder(meeting)
 
         # update facilitators
+        current_facilicators_ids = study_group.cofacilitators.all().values_list('user_id', flat=True)
+        print(f'current facilitators {current_facilicators_ids}')
         updated_facilitators = data.get('facilitators')
-        study_group.cofacilitators.exclude(id__in=updated_facilitators).delete()
-        current_facilicators_ids = study_group.cofacilitators.all().values_list('id')
+        print(f'post value {updated_facilitators}')
+        to_delete = study_group.cofacilitators.exclude(user_id__in=updated_facilitators)
+        for facilitator in to_delete:
+            send_cofacilitator_removed_email.delay(study_group.id, facilitator.user_id)
+        print(f'to delete: {to_delete}')
+        to_delete.delete()
         to_add = [f_id for f_id in updated_facilitators if f_id not in current_facilicators_ids]
+        print(f'to add: {to_add}')
         for user_id in to_add:
             f = Facilitator(study_group=study_group, user_id=user_id)
             f.save()

@@ -575,8 +575,25 @@ def send_cofacilitator_email(study_group_id, user_id):
         "study_group": StudyGroup.objects.get(pk=study_group_id),
         "facilitator": user,
     }
-    subject = render_to_string_ctx('studygroups/email/new_cofacilitator-subject.txt', context)
+    subject = render_to_string_ctx('studygroups/email/new_cofacilitator-subject.txt', context).strip('\n')
     html_body = render_html_with_css('studygroups/email/new_cofacilitator.html', context)
+    text_body = html_body_to_text(html_body)
+    to = [user.email]
+
+    msg = EmailMultiAlternatives(subject, text_body, settings.DEFAULT_FROM_EMAIL, to)
+    msg.attach_alternative(html_body, 'text/html')
+    msg.send()
+
+
+@shared_task
+def send_cofacilitator_removed_email(study_group_id, user_id):
+    user = User.objects.get(pk=user_id)
+    context = {
+        "study_group": StudyGroup.objects.get(pk=study_group_id),
+        "facilitator": user,
+    }
+    subject = render_to_string_ctx('studygroups/email/cofacilitator_removed-subject.txt', context).strip('\n')
+    html_body = render_html_with_css('studygroups/email/cofacilitator_removed.html', context)
     text_body = html_body_to_text(html_body)
     to = [user.email]
 

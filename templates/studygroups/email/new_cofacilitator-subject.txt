@@ -1,0 +1,1 @@
+{% load i18n %}{% blocktrans with learning_circle_name=study_group.name %}You have been added as a co-facilitator to {{learning_circle_name}}{% endblocktrans %}

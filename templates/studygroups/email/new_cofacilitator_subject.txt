@@ -1,1 +1,0 @@
-{% blocktrans %}You have been added as a co-facilitator{% endblocktrans %}
