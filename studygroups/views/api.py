@@ -44,6 +44,7 @@ from studygroups.models import get_json_response
 from studygroups.models.course import course_platform_from_url
 from studygroups.models.team import eligible_team_by_email_domain
 from studygroups.models.learningcircle import generate_meeting_reminder
+from studygroups.tasks import send_cofacilitator_email
 
 from uxhelpers.utils import json_response
 
@@ -629,6 +630,8 @@ def _meetings_validator(meetings):
 
 def _facilitators_validator(facilitators):
     # TODO - check that its a list, facilitator exists and is part of same team
+    if facilitators is None:
+        return [], None
     results = list(map(schema.integer(), facilitators))
     errors = list(filter(lambda x: x, map(lambda x: x[1], results)))
     fcltrs = list(map(lambda x: x[0], results))
@@ -748,6 +751,8 @@ class LearningCircleCreateView(View):
         for user_id in facilitators:
             f = Facilitator(study_group=study_group, user_id=user_id)
             f.save()
+            if user_id != request.user.id:
+                send_cofacilitator_email.delay(study_group.id, user_id)
 
         studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
         return json_response(request, { "status": "created", "studygroup_url": studygroup_url })
@@ -827,6 +832,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         for user_id in to_add:
             f = Facilitator(study_group=study_group, user_id=user_id)
             f.save()
+            send_cofacilitator_email.delay(study_group.pk, user_id)
         
         studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
         return json_response(request, { "status": "updated", "studygroup_url": studygroup_url })
