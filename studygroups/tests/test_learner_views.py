@@ -119,8 +119,8 @@ class TestLearnerViews(TestCase):
         c.login(username='hi@example.net', password='password')
         user1 = {'study_group': sg.pk, 'name': 'bob', 'email': 'bob@mail.com', 'mobile': '+27112223333'}
         user2 = {'study_group': sg.pk, 'name': 'anchovie', 'email': 'anchovie@mail.com', 'mobile': '+27112221111'}
-        resp = c.post(f'/en/studygroup/{sg.pk}/member/add/', user1)
-        resp = c.post(f'/en/studygroup/{sg.pk}/member/add/', user2)
+        resp = c.post(f'/en/studygroup/{sg.pk}/learner/add/', user1)
+        resp = c.post(f'/en/studygroup/{sg.pk}/learner/add/', user2)
         self.assertEqual(Application.objects.active().count(), 2)
         self.assertEqual(len(mail.outbox), 2)
         mail.outbox = []
@@ -152,7 +152,7 @@ class TestLearnerViews(TestCase):
         c = Client()
         c.login(username='hi@example.net', password='password')
         user1 = {'study_group': sg.pk, 'name': 'bob', 'mobile': '+27112223333'}
-        resp = c.post(f'/en/studygroup/{sg.pk}/member/add/', user1)
+        resp = c.post(f'/en/studygroup/{sg.pk}/learner/add/', user1)
         self.assertEqual(Application.objects.active().count(), 1)
         self.assertEqual(len(mail.outbox), 1)
         mail.outbox = []
