@@ -117,7 +117,7 @@ class ApplicationForm(forms.ModelForm):
 
 
 class ApplicationInlineForm(forms.ModelForm):
-    mobile = PhoneNumberField(required=False)
+    mobile = PhoneNumberField(required=False, help_text=_('Include the country code, eg. +1XXXXXXXXXX for US numbers'))
 
     def clean(self):
         prefix = f'{self.prefix}-' if self.prefix else ''
