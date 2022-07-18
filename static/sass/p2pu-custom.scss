@@ -42,3 +42,11 @@ $input-border-width:   1px;
 }
 
 
+#facilitator-guides::before {
+  content: '';
+  display: block;
+  height: 160px;
+  margin-top: -160px;
+  visibility: hidden;
+}
+
