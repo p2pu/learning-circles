@@ -18,7 +18,7 @@
         <h2>{% blocktrans with studygroup_name=study_group.name %}Add a new learner to {{studygroup_name}} {% endblocktrans %}</h2>
       {% endif %}
       {% url 'studygroups_add_learners' study_group.id as add_multiple_url %}
-      <p>{% blocktrans %}<a href="{{add_multiple_url}}">Click here</a> to add multiple learners{% endblocktrans%}</p>
+      <p>{% blocktrans %}<a href="{{add_multiple_url}}">Click here</a> to add multiple learners at once{% endblocktrans%}</p>
     </div>
   </div>
   <div class="row">
