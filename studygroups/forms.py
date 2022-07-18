@@ -116,6 +116,21 @@ class ApplicationForm(forms.ModelForm):
         }
 
 
+class ApplicationInlineForm(forms.ModelForm):
+    mobile = PhoneNumberField(required=False, help_text=_('Include the country code, ex. +1XXXXXXXXXX for US numbers'))
+
+    def clean(self):
+        prefix = f'{self.prefix}-' if self.prefix else ''
+        if self.data.get(prefix + 'name') and not self.data.get(prefix + 'mobile') and not self.data.get(prefix + 'email'):
+            self.add_error('email', _('Please provide an email address or mobile number.'))
+            self.add_error('mobile', _('Please provide an email address or mobile number.'))
+        cleaned_data = super().clean()
+
+    class Meta:
+        model = Application
+        fields = ['name', 'email', 'mobile']
+
+
 class OptOutForm(forms.Form):
     email = forms.EmailField(required=False)
     mobile = PhoneNumberField(required=False, label=_('Phone Number for SMS'))
