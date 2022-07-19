@@ -116,8 +116,8 @@ class TestFacilitatorViews(TestCase):
         assertForbidden('/en/studygroup/1/message/compose/')
         assertForbidden('/en/studygroup/1/message/edit/1/')
         assertForbidden('/en/studygroup/1/message/1/')
-        assertForbidden('/en/studygroup/1/member/add/')
-        assertForbidden('/en/studygroup/1/member/1/delete/')
+        assertForbidden('/en/studygroup/1/learner/add/')
+        assertForbidden('/en/studygroup/1/learner/1/delete/')
         assertForbidden('/en/studygroup/1/meeting/create/')
         assertForbidden('/en/studygroup/1/meeting/2/edit/')
         assertForbidden('/en/studygroup/1/meeting/2/delete/')
@@ -142,8 +142,8 @@ class TestFacilitatorViews(TestCase):
         assertAllowed('/en/studygroup/1/edit/')
         assertAllowed('/en/studygroup/1/message/compose/')
         assertStatus('/en/studygroup/1/message/edit/1111/', 404)
-        assertAllowed('/en/studygroup/1/member/add/')
-        assertStatus('/en/studygroup/1/member/2111/delete/', 404)
+        assertAllowed('/en/studygroup/1/learner/add/')
+        assertStatus('/en/studygroup/1/learner/2111/delete/', 404)
         assertAllowed('/en/studygroup/1/meeting/create/')
         assertStatus('/en/studygroup/1/meeting/2111/edit/', 404)
         assertStatus('/en/studygroup/1/meeting/2111/delete/', 404)
@@ -255,14 +255,14 @@ class TestFacilitatorViews(TestCase):
         self.assertEqual(len(mail.outbox), 0)
 
         # cannot add a learner
-        resp = c.get('/en/studygroup/{0}/member/add/'.format(study_groups.first().pk))
+        resp = c.get('/en/studygroup/{0}/learner/add/'.format(study_groups.first().pk))
         self.assertRedirects(resp, expected_redirect_url)
         learner_data = {
             "email": "learn@example.net",
             "name": "no name",
             "study_group": "515",
         }
-        resp = c.post(url_base + '/member/add/', data=learner_data)
+        resp = c.post(url_base + '/learner/add/', data=learner_data)
         self.assertRedirects(resp, expected_redirect_url)
         self.assertEqual(StudyGroup.objects.last().application_set.count(), 0)
 

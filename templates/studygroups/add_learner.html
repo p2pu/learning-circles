@@ -15,8 +15,10 @@
       {% if object %}
         <h2>{% blocktrans with name=object.name %}Update details for {{name}} {% endblocktrans %}</h2>
       {% else %}
-        <h2>{% blocktrans with studygroup_name=study_group.name %}Add a new member to {{studygroup_name}} {% endblocktrans %}</h2>
+        <h2>{% blocktrans with studygroup_name=study_group.name %}Add a new learner to {{studygroup_name}} {% endblocktrans %}</h2>
       {% endif %}
+      {% url 'studygroups_add_learners' study_group.id as add_multiple_url %}
+      <p>{% blocktrans %}<a href="{{add_multiple_url}}">Click here</a> to add multiple learners at once{% endblocktrans%}</p>
     </div>
   </div>
   <div class="row">
@@ -24,9 +26,14 @@
         <form action="" method="POST">
           {% csrf_token %}
           {{ form|crispy }}
-          <p><button type="submit" class="btn btn-primary">{% if object %}{% trans "Save"%}{% else %}{% trans "Add" %}{% endif %}</button></p>
+          <p><button type="submit" class="p2pu-btn btn btn-primary">{% if object %}{% trans "Save"%}{% else %}{% trans "Add" %}{% endif %}</button></p>
         </form>
     </div>
   </div>
+  <div class="row">
+    <div class="col-md-8 col-sm-12">
+    </div>
+  </div>
+
 </div>
 {% endblock %}

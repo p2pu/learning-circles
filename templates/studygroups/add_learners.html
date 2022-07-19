@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+{% load render_bundle from webpack_loader %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      {% if study_group %}
+        <a href="{% url 'studygroups_view_study_group' study_group.pk %}">{% trans "Back" %}</a>
+      {% endif %}
+      <h2>{% blocktrans with studygroup_name=study_group.name %}Add new learners to {{studygroup_name}} {% endblocktrans %}</h2>
+    </div>
+  </div>
+  <div class="row">
+    <form action="" method="POST">
+      {% csrf_token %}
+      {{ form.management_form }}
+
+      {% if form.non_form_errors %}
+        <div class="col-md-12">
+          <ul class="m-0">
+              {{ form.non_form_errors|unordered_list }}
+          </ul>
+        </div>
+      {% endif %}
+
+      {% for application_form in form %}
+        <div class="row pb-5 pb-md-0">
+          <div class="col-md-4">
+            {{ application_form.name|as_crispy_field }}
+          </div>
+          <div class="col-md-4">
+            {{ application_form.email|as_crispy_field }}
+          </div>
+          <div class="col-md-4">
+            {{ application_form.mobile|as_crispy_field }}
+          </div>
+        </div>
+          {% if application_form.non_field_errors %}
+            <div class="col-md-12 mb-5 alert alert-block alert-danger">
+              <ul class="m-0">
+                {{ application_form.non_field_errors|unordered_list }}
+              </ul>
+            </div>
+          {% endif %}
+      {% endfor %}
+
+      <p><button type="submit" class="btn btn-primary">{% if object %}{% trans "Save"%}{% else %}{% trans "Add" %}{% endif %}</button></p>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+{% render_bundle 'common' %}
+{% endblock %}
