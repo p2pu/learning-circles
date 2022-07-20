@@ -265,8 +265,7 @@ class LearningCircleListView(View):
                     'venue_name',
                     'venue_address',
                     'venue_details',
-                    'facilitator__first_name',
-                    'facilitator__last_name',
+                    'facilitator__first_name', # TODO - does this need to be cofacilitators__user__first_name?
                     config='simple'
                 )
             ).filter(search=tsquery)
@@ -897,82 +896,6 @@ class SignupView(View):
         application.communications_opt_in = clean_data.get('communications_opt_in', False)
         application.save()
         return json_response(request, {"status": "created"})
-
-
-class LandingPageLearningCirclesView(View):
-    """ return upcoming learning circles for landing page """
-    def get(self, request):
-
-        query_schema = {
-            "scope": schema.text(),
-        }
-        data = schema.django_get_to_dict(request.GET)
-        clean_data, errors = schema.validate(query_schema, data)
-        if errors != {}:
-            return json_response(request, {"status": "error", "errors": errors})
-
-        study_groups_unsliced = StudyGroup.objects.published()
-
-        if 'scope' in request.GET and request.GET.get('scope') == "team":
-            user = request.user
-            team_ids = TeamMembership.objects.active().filter(user=user).values("team")
-
-            if team_ids.count() == 0:
-                return json_response(request, { "status": "error", "errors": ["User is not on a team."] })
-
-            team_members = TeamMembership.objects.active().filter(team__in=team_ids).values("user")
-            study_groups_unsliced = study_groups_unsliced.filter(facilitator__in=team_members)
-
-        # get learning circles with image & upcoming meetings
-        study_groups = study_groups_unsliced.filter(
-            meeting__meeting_date__gte=timezone.now(),
-        ).annotate(
-            next_meeting_date=Min('meeting__meeting_date')
-        ).order_by('next_meeting_date')[:3]
-
-        # if there are less than 3 with upcoming meetings and an image
-        if study_groups.count() < 3:
-            # pad with learning circles with the most recent meetings
-            past_study_groups = study_groups_unsliced.filter(
-                meeting__meeting_date__lt=timezone.now(),
-            ).annotate(
-                next_meeting_date=Max('meeting__meeting_date')
-            ).order_by('-next_meeting_date')
-            study_groups = list(study_groups) + list(past_study_groups[:3-study_groups.count()])
-        data = {
-            'items': [ serialize_learning_circle(sg) for sg in study_groups ]
-        }
-        return json_response(request, data)
-
-
-class LandingPageStatsView(View):
-    """ Return stats for the landing page """
-    """
-    - Number of active learning circles
-    - Number of cities where learning circle happened
-    - Number of facilitators who ran at least 1 learning circle
-    - Number of learning circles to date
-    """
-    def get(self, request):
-        study_groups = StudyGroup.objects.published().filter(
-            meeting__meeting_date__gte=timezone.now()
-        ).annotate(
-            next_meeting_date=Min('meeting__meeting_date')
-        )
-        cities = StudyGroup.objects.published().filter(
-            latitude__isnull=False,
-            longitude__isnull=False,
-        ).distinct('city').values('city')
-        learning_circle_count = StudyGroup.objects.published().count()
-        facilitators = StudyGroup.objects.active().distinct('facilitator').values('facilitator')
-        cities_s = list(set([c['city'].split(',')[0].strip() for c in cities]))
-        data = {
-            "active_learning_circles": study_groups.count(),
-            "cities": len(cities_s),
-            "facilitators": facilitators.count(),
-            "learning_circle_count": learning_circle_count
-        }
-        return json_response(request, data)
 
 
 class ImageUploadView(View):
