@@ -33,6 +33,7 @@ from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 from studygroups.models import StudyGroup
+from studygroups.models import Facilitator
 from studygroups.models import Meeting
 from studygroups.models import Course
 from studygroups.models import Application
@@ -236,8 +237,8 @@ class CourseUpdate(UpdateView):
         course = self.get_object()
         if not request.user.is_staff and course.created_by != request.user:
             raise PermissionDenied
-        other_study_groups =  StudyGroup.objects.active().filter(course=course).exclude(facilitator=request.user)
-        study_groups = StudyGroup.objects.active().filter(course=course, facilitator=request.user)
+        other_study_groups =  StudyGroup.objects.active().filter(course=course).exclude(facilitator=request.user) # TODO
+        study_groups = StudyGroup.objects.active().filter(course=course, facilitator=request.user) # TODO
         if study_groups.count() > 1 or other_study_groups.count() > 0:
             messages.warning(request, _('This course is being used by other learning circles and cannot be edited, please create a new course to make changes'))
             url = reverse('studygroups_facilitator')
@@ -279,8 +280,10 @@ class StudyGroupCreate(TemplateView):
         context = super(StudyGroupCreate, self).get_context_data(**kwargs)
         context['RECAPTCHA_SITE_KEY'] = settings.RECAPTCHA_SITE_KEY # required for inline signup
         context['hide_footer'] = True
-        #TODO - Ensure users are from the same team as current user
-        context['team'] = [t.to_json() for t in TeamMembership.objects.active()]
+        context['team'] = []
+        if TeamMembership.objects.active().filter(user=self.request.user).exists():
+            team = TeamMembership.objects.active().filter(user=self.request.user).get().team
+            context['team'] = [t.to_json() for t in team.teammembership_set.active()]
         return context
 
 
@@ -298,8 +301,8 @@ class StudyGroupCreateLegacy(CreateView):
     def form_valid(self, form):
         study_group = form.save(commit=False)
         study_group.facilitator = self.request.user
-
         study_group.save()
+        Facilitator.obects.create(user=self.request.user, study_group=study_group)
         meeting_dates = generate_all_meeting_dates(
             study_group.start_date, study_group.meeting_time, form.cleaned_data['weeks']
         )
@@ -321,8 +324,11 @@ class StudyGroupUpdate(SingleObjectMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context['meetings'] = [m.to_json() for m in self.object.meeting_set.active()]
         context['facilitators'] = [f.user_id for f in self.object.cofacilitators.all()]
-        #TODO - Ensure users are from the same team as current user
-        context['team'] = [t.to_json() for t in TeamMembership.objects.active()]
+        # TODO - only do this if 
+        # a) the currently authenticated user is in a team 
+        # or b) if it's a super user and the learning circle is part of a team
+        if self.request.user.is_staff and self.object.team or TeamMembership.objects.active().filter(user=self.request.user).exists():
+            context['team'] = [t.to_json() for t in self.object.team.teammembership_set.active()]
         context['hide_footer'] = True
         if Reminder.objects.filter(study_group=self.object, edited_by_facilitator=True, sent_at__isnull=True).exists():
             context['reminders_edited'] = True
@@ -380,7 +386,7 @@ class StudyGroupPublish(SingleObjectMixin, View):
 
     def post(self, request, *args, **kwargs):
         study_group = self.get_object()
-        profile = study_group.facilitator.profile
+        profile = study_group.facilitator.profile # TODO
         if profile.email_confirmed_at is None:
             messages.warning(self.request, _("You need to confirm your email address before you can publish a learning circle."));
         else:

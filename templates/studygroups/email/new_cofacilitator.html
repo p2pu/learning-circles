@@ -1,0 +1,13 @@
+{% extends 'email_base.html' %}
+{% load i18n %}
+{% block body %}
+<p>{% blocktrans with facilitator_name=facilitator.first_name %}Hi {{facilitator_name}},{% endblocktrans %}</p>
+
+{% url 'studygroups_view_study_group' study_group.pk as manage_url %}
+<p>{% blocktrans with learning_circle=study_group.name %}
+You have been added as a facilitator to the learning circle <a href="{{manage_url}}">{{learning_circle}}</a>.
+{% endblocktrans %}</p>
+
+<p>{% trans "Cheers" %},</p>
+<p>P2PU</p>
+{% endblock %}

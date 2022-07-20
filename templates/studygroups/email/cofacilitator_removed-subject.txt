@@ -1,0 +1,1 @@
+{% load i18n %}{% blocktrans with learning_circle_name=study_group.name %}You've been removed as facilitator from {{learning_circle_name}}{% endblocktrans %}

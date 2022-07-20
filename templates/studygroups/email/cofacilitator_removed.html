@@ -1,0 +1,12 @@
+{% extends 'email_base.html' %}
+{% load i18n %}
+{% block body %}
+<p>{% blocktrans with facilitator_name=facilitator.first_name %}Hi {{facilitator_name}},{% endblocktrans %}</p>
+
+<p>{% blocktrans with learning_circle=study_group.name %}
+You have been removed as a facilitator from "{{learning_circle}}"
+{% endblocktrans %}</p>
+
+<p>{% trans "Cheers" %},</p>
+<p>P2PU</p>
+{% endblock %}
