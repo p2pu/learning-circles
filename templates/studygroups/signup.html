@@ -75,7 +75,10 @@
                 <span class="material-icons">face</span>
               </div>
               <div class="text">
-                {% blocktrans with first_name=study_group.facilitator.first_name %}Facilitated by {{first_name}}{% endblocktrans %}
+                {% blocktrans with first_name=study_group.facilitator.first_name %}Facilitated by: {% endblocktrans %}
+                {% for facilitator in facilitators %}
+                  {{ facilitator.first_name }}{%if forloop.last %}.{% else %},{% endif %}
+                {% endfor %}
               </div>
             </div>
 
@@ -144,14 +147,15 @@
   <section id="lc-description">
     <div class="container">
       <div class="row">
-        <div class="col-lg-4 d-flex justify-content-center">
+        <div class="col-lg-4 justify-content-center">
 
+          {% for facilitator in facilitators %}
           <div class="pos-relative card-outer">
             <div class="pos-relative card-upper">
               <div class="circle-bg"></div>
 
-              {% if study_group.facilitator.profile.avatar %}
-                <img class="img-fluid card-img drop-shadow" src="{{ study_group.facilitator.profile.avatar.url }}" alt="Facilitator image" />
+              {% if facilitator.profile.avatar %}
+                <img class="img-fluid card-img drop-shadow" src="{{ facilitator.profile.avatar.url }}" alt="Facilitator image" />
               {% else %}
                 <img class="img-fluid card-img drop-shadow" src="{% static 'images/avatars/p2pu_avatar_blue.png' %}">
               {% endif %}
@@ -160,9 +164,9 @@
             <div class="card card-lower card-body drop-shadow">
               <div class="profile-info text-center">
                 <p class="mt-4 mb-1 small">{% trans "Facilitated by" %}</p>
-                <h4 class="mb-3 mt-1">{{ study_group.facilitator.first_name }}</h4>
-                {% if study_group.facilitator.profile.bio %}
-                <p class="text-left">{{ study_group.facilitator.profile.bio }}</p>
+                <h4 class="mb-3 mt-1">{{ facilitator.first_name }}</h4>
+                {% if facilitator.profile.bio %}
+                <p class="text-left">{{ facilitator.profile.bio }}</p>
                 {% endif %}
               </div>
 
@@ -183,6 +187,7 @@
               </div>
             </div>
           </div>
+          {% endfor %}
         </div>
 
 
