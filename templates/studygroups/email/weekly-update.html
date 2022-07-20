@@ -435,7 +435,7 @@
     </h2>
     <ul>
       {% for guide in new_facilitator_guides %}
-      <li><a href="{{guide.link}}">{{guide.title}}</a>: {{guide.caption}}</li> 
+      <li>{{guide.title}}: {{guide.caption}} (<a href="{{PROTOCOL}}://{{DOMAIN}}{% url 'studygroups_course_page' guide.course.pk %}#facilitator-guides">View Guide</a>)</li>
       {% endfor %}
     </ul>
     <p>{% blocktrans %}View all the facilitator guides on the <a href="https://www.p2pu.org/en/courses/" target="_blank">learning resources page</a>.{% endblocktrans %}</p>
