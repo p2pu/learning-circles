@@ -33,6 +33,7 @@ from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 from studygroups.models import StudyGroup
+from studygroups.models import Facilitator
 from studygroups.models import Meeting
 from studygroups.models import Course
 from studygroups.models import Application
@@ -277,11 +278,12 @@ class StudyGroupCreate(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(StudyGroupCreate, self).get_context_data(**kwargs)
-        # TODO get info for co-facilitators
         context['RECAPTCHA_SITE_KEY'] = settings.RECAPTCHA_SITE_KEY # required for inline signup
         context['hide_footer'] = True
-        #TODO - Ensure users are from the same team as current user
-        context['team'] = [t.to_json() for t in TeamMembership.objects.active()]
+        context['team'] = []
+        if TeamMembership.objects.active().filter(user=self.request.user).exists():
+            team = TeamMembership.objects.active().filter(user=self.request.user).get().team
+            context['team'] = [t.to_json() for t in team.teammembership_set.active()]
         return context
 
 
@@ -298,9 +300,9 @@ class StudyGroupCreateLegacy(CreateView):
 
     def form_valid(self, form):
         study_group = form.save(commit=False)
-        study_group.facilitator = self.request.user # TODO
-
+        study_group.facilitator = self.request.user
         study_group.save()
+        Facilitator.obects.create(user=self.request.user, study_group=study_group)
         meeting_dates = generate_all_meeting_dates(
             study_group.start_date, study_group.meeting_time, form.cleaned_data['weeks']
         )
@@ -325,7 +327,8 @@ class StudyGroupUpdate(SingleObjectMixin, TemplateView):
         # TODO - only do this if 
         # a) the currently authenticated user is in a team 
         # or b) if it's a super user and the learning circle is part of a team
-        context['team'] = [t.to_json() for t in TeamMembership.objects.active()]
+        if self.request.user.is_staff and self.object.team or TeamMembership.objects.active().filter(user=self.request.user).exists():
+            context['team'] = [t.to_json() for t in self.object.team.teammembership_set.active()]
         context['hide_footer'] = True
         if Reminder.objects.filter(study_group=self.object, edited_by_facilitator=True, sent_at__isnull=True).exists():
             context['reminders_edited'] = True
