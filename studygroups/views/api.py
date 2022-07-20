@@ -206,9 +206,9 @@ class LearningCircleListView(View):
         if 'id' in request.GET:
             id = request.GET.get('id')
             study_groups = StudyGroup.objects.filter(pk=int(id))
+
         if 'user' in request.GET:
-            user_id = request.user.id
-            study_groups = study_groups.filter(facilitator=user_id)
+            study_groups = study_groups.filter(cofacilitators__user=request.user)
 
         if 'online' in request.GET:
             online = clean_data.get('online')
