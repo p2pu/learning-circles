@@ -133,7 +133,6 @@ def signup(request, location, study_group_id):
         'mapbox_token': settings.MAPBOX_TOKEN,
         'completed': last_meeting is not None and last_meeting.meeting_date < datetime.date.today(),
         'RECAPTCHA_SITE_KEY': settings.RECAPTCHA_SITE_KEY,
-        'facilitators': [f.user for f in study_group.cofacilitators.all()]
     }
 
     #if study_group.venue_address:

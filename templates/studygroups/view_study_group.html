@@ -26,7 +26,8 @@
       <div class="offset-sm-3 col-sm-9 lc-details">
         <h1>{% if study_group.draft %}[DRAFT] {% endif %}{{study_group.name}}</h1>
         <div class="text">
-          {% blocktrans with first_name=study_group.facilitator.first_name %}Facilitated by {{first_name}}{% endblocktrans %}
+          Facilitated by 
+          {% for f in study_group.cofacilitators.all %}{% if forloop.last %} and {% else %}{% if not forloop.first %}, {% endif %}{% endif %}{{f.user.first_name}}{% endfor %}
         </div>
         <div class="text">
           {% blocktrans with link=study_group.course.link provider=study_group.course.provider %}Course materials provided by <a href="{{ link }}" target="_blank">{{ provider }}</a>{% endblocktrans %}
