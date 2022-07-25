@@ -99,6 +99,9 @@ class CustomSearchQuery(SearchQuery):
 
 
 def serialize_learning_circle(sg):
+
+    facilitators = [f.user.first_name for f in sg.cofacilitators.all()]
+    facilitators_legacy = ' and '.join(filter(lambda x: x, [', '.join(facilitators[:-1]), facilitators[-1]]))
     data = {
         "course": {
             "id": sg.course.pk,
@@ -110,7 +113,8 @@ def serialize_learning_circle(sg):
         },
         "id": sg.id,
         "name": sg.name,
-        "facilitator": sg.facilitator.first_name,
+        "facilitator": facilitators_legacy,
+        "facilitators": facilitators,
         "venue": sg.venue_name,
         "venue_address": sg.venue_address + ", " + sg.city,
         "venue_website": sg.venue_website,
@@ -199,7 +203,7 @@ class LearningCircleListView(View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        study_groups = StudyGroup.objects.published().filter(members_only=False).prefetch_related('course', 'meeting_set', 'application_set').order_by('id')
+        study_groups = StudyGroup.objects.published().filter(members_only=False).prefetch_related('course', 'meeting_set', 'application_set', 'cofacilitators', 'cofacilitators__user').order_by('id')
 
         if 'draft' in request.GET:
             study_groups = StudyGroup.objects.active().order_by('id')
