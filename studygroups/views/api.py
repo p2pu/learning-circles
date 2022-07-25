@@ -101,6 +101,9 @@ class CustomSearchQuery(SearchQuery):
 def serialize_learning_circle(sg):
 
     facilitators = [f.user.first_name for f in sg.cofacilitators.all()]
+    if not len(facilitators):
+        logging.error(f'Bad learnign circle : {sg.pk}')
+        facilitators = ['Unknown']
     facilitators_legacy = ' and '.join(filter(lambda x: x, [', '.join(facilitators[:-1]), facilitators[-1]]))
     data = {
         "course": {
