@@ -11,6 +11,23 @@ const FinalizeSection = (props) => {
     })
   }
 
+  const handleFacilitatorSelect = (value) => {
+    props.closeAlert()
+    if(facilitatorsRemoved(value, props)) {
+      const removedFacilitators = props.learningCircle.facilitators.filter(x => !value.facilitators.includes(x));
+      if(removedFacilitators.includes(props.userId)) {
+        props.showAlert('Removing yourself as a facilitator means you will no longer have access to this learning circle.', 'warning')
+      }
+    }
+    props.updateFormData(value)
+  }
+
+  const facilitatorsRemoved = (value) => {
+    return value.facilitators && props.learningCircle.facilitators && 
+    props.learningCircle.facilitators.length > value.facilitators.length;
+  }
+  
+
   return (
   <div>
     <TextareaWithLabel
@@ -36,7 +53,7 @@ const FinalizeSection = (props) => {
       id={'id_facilitators'}
       errorMessage={props.errors.facilitators}
       value={props.learningCircle.facilitators}
-      handleChange={props.updateFormData}
+      handleChange={handleFacilitatorSelect}
       label="Select your co-facilitator(s)"
       isMulti={true}
     />

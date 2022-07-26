@@ -91,6 +91,9 @@ export default class FormTabs extends React.Component{
               <h4>Step 5: Finalize</h4>
               <FinalizeSection
                 updateFormData={this.props.updateFormData}
+                userId={this.props.userId}
+                showAlert={this.props.showAlert}
+                closeAlert={this.props.closeAlert}
                 team={this.props.team}
                 learningCircle={this.props.learningCircle}
                 errors={this.props.errors}

@@ -57,6 +57,7 @@ export default class CreateLearningCirclePage extends React.Component {
       showModal: false,
       showHelp: window.screen.width > DESKTOP_BREAKPOINT,
       user: this.props.user,
+      userId: this.props.userId,
       errors: {},
       alert: { show: false },
       isSaving: false,
@@ -291,6 +292,7 @@ export default class CreateLearningCirclePage extends React.Component {
           currentTab={this.state.currentTab}
           allTabs={this.allTabs}
           changeTab={this.changeTab}
+          userId={this.props.userId}
           learningCircle={this.state.learningCircle}
           team={this.state.team}
           errors={this.state.errors}
@@ -299,6 +301,7 @@ export default class CreateLearningCirclePage extends React.Component {
           isSaving={this.state.isSaving}
           isPublishing={this.state.isPublishing}
           showAlert={this.showAlert}
+          closeAlert={this.closeAlert}
           tinymceScriptSrc={this.props.tinymceScriptSrc}
         />
         <HelpContainer currentTab={this.state.currentTab} />
