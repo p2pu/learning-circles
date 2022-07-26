@@ -94,9 +94,9 @@ class TeamInvitation(models.Model):
 
 def get_study_group_organizers(study_group):
     """ Return the organizers for the study group """
-    team_membership = TeamMembership.objects.active().filter(user=study_group.facilitator)
-    if team_membership.count() == 1:
-        organizers = team_membership.first().team.teammembership_set.active().filter(role=TeamMembership.ORGANIZER).values('user')
+    team = study_group.team
+    if team:
+        organizers = team.teammembership_set.active().filter(role=TeamMembership.ORGANIZER).values('user')
         return User.objects.filter(pk__in=organizers)
     return []
 
