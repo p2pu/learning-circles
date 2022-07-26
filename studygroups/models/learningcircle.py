@@ -194,17 +194,25 @@ class StudyGroup(LifeTimeTrackingModel):
 
     def to_dict(self):
         sg = self  # TODO - this logic is repeated in the API class
+        facilitators = [f.user.first_name for f in sg.cofacilitators.all()]
+        if not len(facilitators):
+            logging.error(f'Bad learnign circle : {sg.pk}')
+            facilitators = ['Unknown']
+        facilitators_legacy = ' and '.join(filter(lambda x: x, [', '.join(facilitators[:-1]), facilitators[-1]]))
+
         data = {
             "id": sg.pk,
             "name": sg.name,
-            "course": sg.course.id,
-            "course_title": sg.course.title,
-            "description": sg.description,
-            "course_description": sg.course_description,
+            "facilitator": facilitators_legacy,
+            "facilitators": facilitators,
             "venue_name": sg.venue_name,
             "venue_details": sg.venue_details,
             "venue_address": sg.venue_address,
             "venue_website": sg.venue_website,
+            "course": sg.course.id,
+            "course_title": sg.course.title,
+            "course_description": sg.course_description,
+            "description": sg.description,
             "city": sg.city,
             "region": sg.region,
             "country": sg.country,
@@ -214,22 +222,21 @@ class StudyGroup(LifeTimeTrackingModel):
             "place_id": sg.place_id,
             "online": sg.online,
             "language": sg.language,
+            "day": sg.day(),
             "start_date": sg.start_date,
             "start_datetime": self.local_start_date(),
-            "weeks": sg.weeks,
             "meeting_time": sg.meeting_time.strftime('%H:%M'),
-            "duration": sg.duration,
             "timezone": sg.timezone,
             "timezone_display": sg.timezone_display(),
+            "end_time": sg.end_time(),
+            "duration": sg.duration, # not in API endpoint
+            "weeks": sg.weeks,
+            "url": reverse('studygroups_view_study_group', args=(sg.id,)),
             "signup_question": sg.signup_question,
             "facilitator_goal": sg.facilitator_goal,
             "facilitator_concerns": sg.facilitator_concerns,
-            "day": sg.day(),
-            "end_time": sg.end_time(),
-            "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
-            "signup_count": sg.application_set.active().count(),
             "draft": sg.draft,
-            "url": reverse('studygroups_view_study_group', args=(sg.id,)),
+            "signup_count": sg.application_set.active().count(),
             "signup_url": reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
         }
         next_meeting = self.next_meeting()
