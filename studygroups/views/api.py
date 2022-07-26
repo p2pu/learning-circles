@@ -779,6 +779,11 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
+        if len(data.get('facilitators', [])) == 0:
+            errors = { 'facilitators': ['Cannot remove all faclitators from a learning circle']}
+            return json_response(request, {"status": "error", "errors": errors})
+
+
         # determine if meeting reminders should be regenerated
         regenerate_reminders = any([
             study_group.name != data.get('name'),

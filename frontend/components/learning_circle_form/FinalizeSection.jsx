@@ -34,6 +34,7 @@ const FinalizeSection = (props) => {
       options={populateTeamOptions(props.team)}
       name={'facilitators'}
       id={'id_facilitators'}
+      errorMessage={props.errors.facilitators}
       value={props.learningCircle.facilitators}
       handleChange={props.updateFormData}
       label="Select your co-facilitator(s)"
