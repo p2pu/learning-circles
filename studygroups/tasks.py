@@ -579,8 +579,8 @@ def send_cofacilitator_email(study_group_id, user_id, actor_user_id):
         "facilitator": user,
         "actor": actor,
     }
-    subject = render_to_string_ctx('studygroups/email/new_cofacilitator-subject.txt', context).strip('\n')
-    html_body = render_html_with_css('studygroups/email/new_cofacilitator.html', context)
+    subject = render_to_string_ctx('studygroups/email/facilitator_added-subject.txt', context).strip('\n')
+    html_body = render_html_with_css('studygroups/email/facilitator_added.html', context)
     text_body = html_body_to_text(html_body)
     to = [user.email]
 
@@ -603,8 +603,8 @@ def send_cofacilitator_removed_email(study_group_id, user_id, actor_user_id):
         "facilitator": user,
         "actor": actor,
     }
-    subject = render_to_string_ctx('studygroups/email/cofacilitator_removed-subject.txt', context).strip('\n')
-    html_body = render_html_with_css('studygroups/email/cofacilitator_removed.html', context)
+    subject = render_to_string_ctx('studygroups/email/facilitator_removed-subject.txt', context).strip('\n')
+    html_body = render_html_with_css('studygroups/email/facilitator_removed.html', context)
     text_body = html_body_to_text(html_body)
     to = [user.email]
 
