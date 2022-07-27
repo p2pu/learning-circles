@@ -28,6 +28,9 @@ import json
 import uuid
 import random
 import string
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # TODO remove organizer model - only use Facilitator model + Team Membership
@@ -196,7 +199,7 @@ class StudyGroup(LifeTimeTrackingModel):
         sg = self  # TODO - this logic is repeated in the API class
         facilitators = [f.user.first_name for f in sg.cofacilitators.all()]
         if not len(facilitators):
-            logging.error(f'Bad learnign circle : {sg.pk}')
+            logger.error(f'Bad learnign circle : {sg.pk}')
             facilitators = ['Unknown']
         facilitators_legacy = ' and '.join(filter(lambda x: x, [', '.join(facilitators[:-1]), facilitators[-1]]))
 
