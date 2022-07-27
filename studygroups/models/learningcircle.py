@@ -192,7 +192,7 @@ class StudyGroup(LifeTimeTrackingModel):
     def facilitators_display(self):
         facilitators = [f.user.first_name for f in self.cofacilitators.all()]
         if not len(facilitators):
-            logger.error(f'Learnign circle with no facilitators! pk={sg.pk}')
+            logger.error(f'Learnign circle with no facilitators! pk={self.pk}')
             facilitators = ['Unknown']
         # TODO i18n
         return ' and '.join(filter(lambda x: x, [', '.join(facilitators[:-1]), facilitators[-1]]))
