@@ -101,10 +101,6 @@ class CustomSearchQuery(SearchQuery):
 def serialize_learning_circle(sg):
 
     facilitators = [f.user.first_name for f in sg.cofacilitators.all()]
-    if not len(facilitators):
-        logger.error(f'Bad learnign circle : {sg.pk}')
-        facilitators = ['Unknown']
-    facilitators_legacy = ' and '.join(filter(lambda x: x, [', '.join(facilitators[:-1]), facilitators[-1]]))
     data = {
         "course": {
             "id": sg.course.pk,
@@ -116,7 +112,7 @@ def serialize_learning_circle(sg):
         },
         "id": sg.id,
         "name": sg.name,
-        "facilitator": facilitators_legacy,
+        "facilitator": sg.facilitators_display(),
         "facilitators": facilitators,
         "venue": sg.venue_name,
         "venue_address": sg.venue_address + ", " + sg.city,
@@ -759,7 +755,7 @@ class LearningCircleCreateView(View):
             f = Facilitator(study_group=study_group, user_id=user_id)
             f.save()
             if user_id != request.user.id:
-                send_cofacilitator_email.delay(study_group.id, user_id)
+                send_cofacilitator_email.delay(study_group.id, user_id, request.user.id)
 
         studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
         return json_response(request, { "status": "created", "studygroup_url": studygroup_url })
@@ -843,7 +839,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         print(f'post value {updated_facilitators}')
         to_delete = study_group.cofacilitators.exclude(user_id__in=updated_facilitators)
         for facilitator in to_delete:
-            send_cofacilitator_removed_email.delay(study_group.id, facilitator.user_id)
+            send_cofacilitator_removed_email.delay(study_group.id, facilitator.user_id, request.user.id)
         print(f'to delete: {to_delete}')
         to_delete.delete()
         to_add = [f_id for f_id in updated_facilitators if f_id not in current_facilicators_ids]
@@ -851,7 +847,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         for user_id in to_add:
             f = Facilitator(study_group=study_group, user_id=user_id)
             f.save()
-            send_cofacilitator_email.delay(study_group.pk, user_id)
+            send_cofacilitator_email.delay(study_group.pk, user_id, request.user.id)
         
         studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
         return json_response(request, { "status": "updated", "studygroup_url": studygroup_url })

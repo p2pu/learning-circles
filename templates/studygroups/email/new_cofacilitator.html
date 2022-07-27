@@ -4,9 +4,11 @@
 <p>{% blocktrans with facilitator_name=facilitator.first_name %}Hi {{facilitator_name}},{% endblocktrans %}</p>
 
 {% url 'studygroups_view_study_group' study_group.pk as manage_url %}
-<p>{% blocktrans with learning_circle=study_group.name %}
-You have been added as a facilitator to the learning circle <a href="{{manage_url}}">{{learning_circle}}</a>.
+<p>{% blocktrans with learning_circle=study_group.name actor_name=actor.first_name start_date=study_group.start_date|date:"F j, Y" %}
+{{actor_name}} has added you as an additional facilitator to the learning circle &ldquo;<a href="{{manage_url}}">{{learning_circle}}</a>&rdquo; starting on {{start_date}}.
 {% endblocktrans %}</p>
+
+<p>{% blocktrans %}The <a href="http://docs.p2pu.org/">P2PU Knowledge Base</a> has plenty of resources to help you get started with your learning circle. Here is a <a href="https://docs.p2pu.org/methodology/learning-circle-checklist">checklist for getting started</a> and <a href="https://docs.p2pu.org/facilitation/facilitation-basics#working-with-a-co-facilitator">the section on co-facilitation</a>.{% endblocktrans %}
 
 <p>{% trans "Cheers" %},</p>
 <p>P2PU</p>
