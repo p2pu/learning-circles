@@ -138,11 +138,6 @@ def signup(request, location, study_group_id):
     #if study_group.venue_address:
     #    context['map_url'] = "https://www.google.com/maps/search/?api=1&query={}".format(urllib.parse.quote(study_group.venue_address))
 
-    team_membership = TeamMembership.objects.active().filter(user=study_group.facilitator).first()
-    if team_membership:
-        context['team_name'] = team_membership.team.name
-        context['team_page_slug'] = team_membership.team.page_slug
-
     return render(request, 'studygroups/signup.html', context)
 
 
