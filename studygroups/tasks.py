@@ -183,7 +183,7 @@ def send_meeting_reminder(reminder):
                 text_body,
                 sender,
                 [email],
-                reply_to=[reminder.study_group.facilitator.email]
+                reply_to=[facilitator.user.email for facilitator in reminder.study_group.cofacilitators.all()]
             )
             reminder_email.attach_alternative(html_body, 'text/html')
             # attach icalendar event
@@ -196,6 +196,7 @@ def send_meeting_reminder(reminder):
             reminder_email.send()
         except Exception as e:
             logger.exception('Could not send email to ', email, exc_info=e)
+
     # Send to facilitator without RSVP & unsubscribe links
     try:
         base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
@@ -205,7 +206,8 @@ def send_meeting_reminder(reminder):
         email_body = re.sub(r'RSVP_NO_LINK', dashboard_link, email_body)
 
         context = {
-            "facilitator": reminder.study_group.facilitator,
+            "facilitator_names": meeting.study_group.facilitators_display(),
+            "show_dash_link": True,
             "reminder": reminder,
             "message": email_body,
         }
@@ -218,7 +220,7 @@ def send_meeting_reminder(reminder):
             subject,
             text_body,
             sender,
-            [reminder.study_group.facilitator.email]
+            [facilitator.user.email for facilitator in reminder.study_group.cofacilitators.all()]
         )
         reminder_email.attach_alternative(html_body, 'text/html')
         reminder_email.send()

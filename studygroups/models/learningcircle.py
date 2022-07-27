@@ -189,6 +189,13 @@ class StudyGroup(LifeTimeTrackingModel):
             return 'pending'
         return 'todo'
 
+    def facilitators_display(self):
+        facilitators = [f.user.first_name for f in self.cofacilitators.all()]
+        if not len(facilitators):
+            logger.error(f'Learnign circle with no facilitators! pk={sg.pk}')
+            facilitators = ['Unknown']
+        # TODO i18n
+        return ' and '.join(filter(lambda x: x, [', '.join(facilitators[:-1]), facilitators[-1]]))
 
 
     @property
@@ -496,11 +503,14 @@ def generate_meeting_reminder(meeting):
         reminder.study_group_meeting = meeting
 
     context = {
-        'facilitator': meeting.study_group.facilitator,
         'study_group': meeting.study_group,
         'next_meeting': meeting,
         'reminder': reminder,
     }
+    if meeting.study_group.cofacilitators.count() > 1:
+        context['facilitator_names'] = meeting.study_group.facilitators_display()
+    else:
+        context['facilitator_name'] = meeting.study_group.facilitators_display()
     timezone.activate(pytz.timezone(meeting.study_group.timezone))
     with use_language(meeting.study_group.language):
         reminder.email_subject = render_to_string_ctx(

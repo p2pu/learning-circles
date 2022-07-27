@@ -12,8 +12,12 @@ def make_meeting_ics(meeting):
     event.add('dtstart', meeting.meeting_datetime())
     event.add('dtend', meeting.meeting_datetime_end())
 
-    organizer = vCalAddress('MAILTO:{}'.format(study_group.facilitator.email))
-    organizer.params['cn'] = vText(study_group.facilitator.first_name)
+    # Only use the first facilitator or default to created_by
+    facilitator = study_group.facilitator
+    if study_group.cofacilitators.count():
+        facilitator = study_group.cofacilitators.first().user
+    organizer = vCalAddress('MAILTO:{}'.format(facilitator.email))
+    organizer.params['cn'] = vText(facilitator.first_name)
     organizer.params['role'] = vText('Facilitator')
     event['organizer'] = organizer
     event['location'] = vText('{}, {}, {}, {}'.format(
