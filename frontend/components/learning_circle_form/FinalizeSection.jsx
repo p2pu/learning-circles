@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { TextareaWithLabel, SelectWithLabel } from 'p2pu-components'
 
 const FinalizeSection = (props) => {
+
+  const [showSelfRemovalWarning, setShowSelfRemovalWarning] = useState(false);
 
   const populateTeamOptions = (team) => {
     return team.map(teamMember => {
@@ -12,11 +14,10 @@ const FinalizeSection = (props) => {
   }
 
   const handleFacilitatorSelect = (value) => {
-    props.closeAlert()
     if(facilitatorsRemoved(value, props)) {
       const removedFacilitators = props.learningCircle.facilitators.filter(x => !value.facilitators.includes(x));
       if(removedFacilitators.includes(props.userId)) {
-        props.showAlert('Removing yourself as a facilitator means you will no longer have access to this learning circle.', 'warning')
+        setShowSelfRemovalWarning(true);
       }
     }
     props.updateFormData(value)
@@ -25,6 +26,11 @@ const FinalizeSection = (props) => {
   const facilitatorsRemoved = (value) => {
     return value.facilitators && props.learningCircle.facilitators && 
     props.learningCircle.facilitators.length > value.facilitators.length;
+  }
+
+  const addCurrentUserToFacilitators = () => {
+    props.learningCircle.facilitators.push(props.userId);
+    setShowSelfRemovalWarning(false);
   }
   
 
@@ -46,17 +52,25 @@ const FinalizeSection = (props) => {
       id={'id_facilitator_concerns'}
       errorMessage={props.errors.facilitator_concerns}
     />
-    <SelectWithLabel
-      className='lc-co-facilitator-input'
-      options={populateTeamOptions(props.team)}
-      name={'facilitators'}
-      id={'id_facilitators'}
-      errorMessage={props.errors.facilitators}
-      value={props.learningCircle.facilitators}
-      handleChange={handleFacilitatorSelect}
-      label="Select your co-facilitator(s)"
-      isMulti={true}
-    />
+    <div className='lc-co-facilitator-input'>
+      <SelectWithLabel
+        options={populateTeamOptions(props.team)}
+        name={'facilitators'}
+        id={'id_facilitators'}
+        errorMessage={props.errors.facilitators}
+        value={props.learningCircle.facilitators}
+        handleChange={handleFacilitatorSelect}
+        label="Select your co-facilitator(s)"
+        isMulti={true}
+      />
+      {(showSelfRemovalWarning) &&
+      <div class="alert alert-warning rm-facilitator-warning" role="warning">
+        <p>You are removing yourself as a facilitator and will therefore no longer have access to this learning circle.</p>
+        <hr/>
+        <button type="button" class="btn btn-warning btn-sm" onClick={addCurrentUserToFacilitators}>Don't remove me</button>
+      </div>
+      }
+    </div>
   </div>
   );
 };
