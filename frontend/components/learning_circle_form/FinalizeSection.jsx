@@ -14,25 +14,22 @@ const FinalizeSection = (props) => {
   }
 
   const handleFacilitatorSelect = (value) => {
-    if(facilitatorsRemoved(value, props)) {
-      const removedFacilitators = props.learningCircle.facilitators.filter(x => !value.facilitators.includes(x));
+      const removedFacilitators = props.learningCircle.facilitators.filter(x => value.facilitators === null || !value.facilitators.includes(x));
       if(removedFacilitators.includes(props.userId)) {
         setShowSelfRemovalWarning(true);
       }
-    }
     props.updateFormData(value)
   }
 
-  const facilitatorsRemoved = (value) => {
-    return value.facilitators && props.learningCircle.facilitators && 
-    props.learningCircle.facilitators.length > value.facilitators.length;
-  }
-
   const addCurrentUserToFacilitators = () => {
-    props.learningCircle.facilitators.push(props.userId);
+    if(props.learningCircle.facilitators) {
+      props.learningCircle.facilitators.push(props.userId);
+    }
+    else {
+      props.learningCircle.facilitators = [props.userId];
+    }
     setShowSelfRemovalWarning(false);
   }
-  
 
   return (
   <div>
@@ -64,10 +61,10 @@ const FinalizeSection = (props) => {
         isMulti={true}
       />
       {(showSelfRemovalWarning) &&
-      <div class="alert alert-warning rm-facilitator-warning" role="warning">
+      <div className="alert alert-warning rm-facilitator-warning" role="warning">
         <p>You are removing yourself as a facilitator and will therefore no longer have access to this learning circle.</p>
         <hr/>
-        <button type="button" class="btn btn-warning btn-sm" onClick={addCurrentUserToFacilitators}>Don't remove me</button>
+        <button type="button" className="btn btn-warning btn-sm" onClick={addCurrentUserToFacilitators}>Don't remove me</button>
       </div>
       }
     </div>
