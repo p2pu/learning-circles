@@ -63,8 +63,7 @@ const FinalizeSection = (props) => {
       {(showSelfRemovalWarning) &&
       <div className="alert alert-warning rm-facilitator-warning" role="warning">
         <p>You are removing yourself as a facilitator and will therefore no longer have access to this learning circle.</p>
-        <hr/>
-        <button type="button" className="btn btn-warning btn-sm" onClick={addCurrentUserToFacilitators}>Don't remove me</button>
+        <button type="button" className="p2pu-btn dark" onClick={addCurrentUserToFacilitators}>Don't remove me</button>
       </div>
       }
     </div>
