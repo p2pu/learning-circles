@@ -205,7 +205,7 @@ def send_meeting_reminder(reminder):
         email_body = re.sub(r'RSVP_NO_LINK', dashboard_link, email_body)
 
         context = {
-            "facilitator_names": meeting.study_group.facilitators_display(),
+            "facilitator_names": reminder.study_group.facilitators_display(),
             "show_dash_link": True,
             "reminder": reminder,
             "message": email_body,
