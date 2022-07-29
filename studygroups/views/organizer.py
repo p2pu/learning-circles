@@ -114,21 +114,6 @@ class StudyGroupList(ListView):
 
 
 @method_decorator(user_is_organizer, name='dispatch')
-class MeetingList(ListView):
-    model = Meeting
-    paginate_by = 10
-
-    def get_queryset(self):
-        study_groups = StudyGroup.objects.published()
-        if not self.request.user.is_staff:
-            team_users = get_team_users(self.request.user)
-            study_groups = study_groups.filter(facilitator__in=team_users)
-
-        meetings = Meeting.objects.active().filter(study_group__in=study_groups)
-        return meetings
-
-
-@method_decorator(user_is_organizer, name='dispatch')
 class TeamMembershipDelete(DeleteView):
     model = TeamMembership
     success_url = reverse_lazy('studygroups_organize')
