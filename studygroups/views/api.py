@@ -788,9 +788,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
             study_group.venue_details != data.get('venue_details'),
             study_group.venue_details != data.get('venue_details'),
             study_group.language != data.get('language'),
-            #any([fa.id not in data.get('facilitators') for fa in study_group.cofacilitators.all()]),
-            study_group.cofacilitators.filter(user_id__in=data.get('facilitators')).count() != len(data.get('facilitators')),
-            study_group.cofacilitators.exclude(user_id__in=data.get('facilitators')).exists(),
+            set(study_group.cofacilitators.all().values_list('user__id')) != set(data.get('facilitators')),
         ])
 
         # update learning circle
