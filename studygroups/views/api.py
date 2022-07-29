@@ -788,6 +788,9 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
             study_group.venue_details != data.get('venue_details'),
             study_group.venue_details != data.get('venue_details'),
             study_group.language != data.get('language'),
+            #any([fa.id not in data.get('facilitators') for fa in study_group.cofacilitators.all()]),
+            study_group.cofacilitators.filter(user_id__in=data.get('facilitators')).count() != len(data.get('facilitators')),
+            study_group.cofacilitators.exclude(user_id__in=data.get('facilitators')).exists(),
         ])
 
         # update learning circle
@@ -826,12 +829,6 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         study_group.save()
         generate_meetings_from_dates(study_group, data.get('meetings', []))
 
-        if regenerate_reminders:
-            for meeting in study_group.meeting_set.active():
-                # if the reminder hasn't already been sent, regenerate it
-                if not Reminder.objects.filter(study_group_meeting=meeting, sent_at__isnull=False).exists():
-                    generate_meeting_reminder(meeting)
-
         # update facilitators
         current_facilicators_ids = study_group.cofacilitators.all().values_list('user_id', flat=True)
         print(f'current facilitators {current_facilicators_ids}')
@@ -848,6 +845,12 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
             f = Facilitator(study_group=study_group, user_id=user_id)
             f.save()
             send_cofacilitator_email.delay(study_group.pk, user_id, request.user.id)
+
+        if regenerate_reminders:
+            for meeting in study_group.meeting_set.active():
+                # if the reminder hasn't already been sent, regenerate it
+                if not Reminder.objects.filter(study_group_meeting=meeting, sent_at__isnull=False).exists():
+                    generate_meeting_reminder(meeting)
         
         studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
         return json_response(request, { "status": "updated", "studygroup_url": studygroup_url })
