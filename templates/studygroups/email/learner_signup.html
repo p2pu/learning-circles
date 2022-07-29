@@ -28,9 +28,6 @@ The address for the meeting is:<br/>
 <h2>{% trans "Meet your facilitator" %}</h2>
 {% endif %}
 
-
-{% for f in study_group.cofacilitators.all %}{% if forloop.last %} and {% else %}{% if not forloop.first %}, {% endif %}{% endif %}{{f.user.first_name}} {{f.user.last_name}}{% endfor %}
-
 {% with answers=application.get_signup_questions %}
 {% if answers.goals %}
 {% if study_group.cofacilitators.all.count == 1 %}
