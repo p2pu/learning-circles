@@ -45,8 +45,12 @@ def handle_new_application(sender, instance, created, **kwargs):
         ).strip('\n')
 
         facilitators = [f'{f.user.first_name} {f.user.last_name}' for f in application.study_group.cofacilitators.all()]
-
-        names = _(' and ').join(filter(lambda x: x, [', '.join(facilitators[:-1]), facilitators[-1]]))
+        if len(facilitators) == 0:
+            names = _('Unkown')
+        elif len(facilitators) == 1:
+            names = facilitators[0]
+        else:
+            names = _('%(first)s and %(last)s') % {'first': ', '.join(facilitators[:-1]), 'last': facilitators[-1]}
 
         learner_signup_html = render_html_with_css(
             'studygroups/email/learner_signup.html', {
