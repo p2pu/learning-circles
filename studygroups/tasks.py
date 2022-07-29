@@ -99,7 +99,6 @@ def _send_learner_survey(application):
     )
     querystring = '?learner={}'.format(application.uuid)
     survey_url = base_url + path + querystring
-    facilitator_email = application.study_group.facilitator.email
 
     context = {
         'learner_name': application.name,
@@ -118,7 +117,7 @@ def _send_learner_survey(application):
         txt,
         settings.DEFAULT_FROM_EMAIL,
         to,
-        reply_to=[facilitator_email]
+        reply_to=[facilitator.user.email for facilitator in application.study_group.cofacilitators.all()]
     )
     notification.attach_alternative(html, 'text/html')
     notification.send()
