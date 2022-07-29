@@ -284,7 +284,7 @@ class StudyGroupCreate(TemplateView):
         context['RECAPTCHA_SITE_KEY'] = settings.RECAPTCHA_SITE_KEY # required for inline signup
         context['hide_footer'] = True
         context['team'] = []
-        if TeamMembership.objects.active().filter(user=self.request.user).exists():
+        if self.request.user.is_authenticated and TeamMembership.objects.active().filter(user=self.request.user).exists():
             team = TeamMembership.objects.active().filter(user=self.request.user).get().team
             context['team'] = [t.to_json() for t in team.teammembership_set.active()]
         return context
