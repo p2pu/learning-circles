@@ -226,7 +226,7 @@ def send_meeting_reminder(reminder):
         reminder_email.send()
 
     except Exception as e:
-        logger.exception('Could not send email to ', reminder.study_group.facilitator.email, exc_info=e)
+        logger.exception('Could not send email to ', reminder.study_group.facilitator.email, exc_info=e) # TODO - Exception masks other errors!
 
 
 # If called directly, be sure to activate language to use for constructing URLs
@@ -297,7 +297,7 @@ def _send_meeting_wrapup(meeting):
         subject,
         text_body,
         settings.DEFAULT_FROM_EMAIL,
-        to=[study_group.facilitator.email],
+        to=[facilitator.user.email for facilitator in study_group.cofacilitators.all()]
     )
     message.attach_alternative(html_body, 'text/html')
     try:
