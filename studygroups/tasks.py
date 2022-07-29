@@ -255,7 +255,7 @@ def send_reminder(reminder):
                 context
             )
             text_body = html_body_to_text(html_body)
-        to += [reminder.study_group.facilitator.email]
+        to += [facilitator.user.email for facilitator in study_group.cofacilitators.all()]
         sender = 'P2PU <{0}>'.format(settings.DEFAULT_FROM_EMAIL)
         try:
             reminder_email = EmailMultiAlternatives(
@@ -264,7 +264,7 @@ def send_reminder(reminder):
                 sender,
                 [],
                 bcc=to,
-                reply_to=[reminder.study_group.facilitator.email],
+                reply_to=[facilitator.user.email for facilitator in study_group.cofacilitators.all()]
             )
             reminder_email.attach_alternative(html_body, 'text/html')
             reminder_email.send()
