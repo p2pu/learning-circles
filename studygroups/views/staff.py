@@ -22,6 +22,7 @@ from django.db.models import Q
 from django.db.models import Prefetch
 from django.db.models import OuterRef
 from django.db.models import Subquery
+from django.db.models import F, Case, When, Value, Sum, IntegerField
 
 
 from studygroups.models import Application
@@ -119,7 +120,25 @@ class ExportSignupsView(ListView):
 class ExportFacilitatorsView(ListView):
 
     def get_queryset(self):
-        return User.objects.all().prefetch_related('studygroup_set', 'studygroup_set__course')
+        learning_circles = StudyGroup.objects.select_related('course').published().filter(cofacilitators__user_id=OuterRef('pk')).order_by('-start_date')
+        return User.objects.all().annotate(
+            learning_circle_count=Sum(
+                Case(
+                    When(
+                        facilitator__study_group__deleted_at__isnull=True,
+                        facilitator__study_group__draft=False,
+                        then=Value(1),
+                        facilitator__user__id=F('id')
+                    ),
+                    default=Value(0), output_field=IntegerField()
+                )
+            )
+        ).annotate(
+            last_learning_circle_date=Subquery(learning_circles.values('start_date')[:1]),
+            last_learning_circle_name=Subquery(learning_circles.values('name')[:1]),
+            last_learning_circle_course=Subquery(learning_circles.values('course__title')[:1]),
+            last_learning_circle_venue=Subquery(learning_circles.values('venue_name')[:1])
+        )
 
 
     def csv(self, **kwargs):
@@ -141,23 +160,17 @@ class ExportFacilitatorsView(ListView):
         writer.writerow(field_names)
         for user in self.object_list:
             data = [
-                ' '.join([user.first_name ,user.last_name]),
+                ' '.join([user.first_name, user.last_name]),
                 user.email,
                 user.date_joined,
                 user.last_login,
                 user.profile.communication_opt_in if user.profile else False,
-                user.studygroup_set.active().count()
+                user.learning_circle_count,
+                user.last_learning_circle_date,
+                user.last_learning_circle_name,
+                user.last_learning_circle_course,
+                user.last_learning_circle_venue,
             ]
-            last_study_group = user.studygroup_set.active().order_by('start_date').last()
-            if last_study_group:
-                data += [
-                    last_study_group.start_date,
-                    last_study_group.name,
-                    last_study_group.course.title,
-                    last_study_group.venue_name
-                ]
-            else:
-                data += ['', '', '']
             writer.writerow(data)
         return response
 
