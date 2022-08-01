@@ -202,7 +202,7 @@ class ExportStudyGroupsView(ListView):
             'course id',
             'course title',
             'facilitator',
-            'faciltator email',
+            'facilitator email',
             'learning_circle_number',
             'location',
             'city',
@@ -217,6 +217,7 @@ class ExportStudyGroupsView(ListView):
             'learner survey',
             'learner survey responses',
             'did not happen',
+            'facilitator count',
         ]
         writer = csv.writer(response)
         writer.writerow(field_names)
@@ -253,9 +254,9 @@ class ExportStudyGroupsView(ListView):
                 data += ['']
 
             data += [sg.application_set.active().count()]
-            # team
-            if sg.facilitator.teammembership_set.active().count():
-                data += [sg.facilitator.teammembership_set.active().first().team.name]
+
+            if sg.team:
+                data += [sg.team.name]
             else:
                 data += ['']
 
@@ -273,6 +274,7 @@ class ExportStudyGroupsView(ListView):
             data += [learner_survey]
             data += [sg.learnersurveyresponse_set.count()]
             data += [sg.did_not_happen]
+            data += [sg.cofacilitators.count()]
 
             writer.writerow(data)
         return response
