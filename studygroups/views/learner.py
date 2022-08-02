@@ -341,7 +341,7 @@ class StudyGroupLearnerSurvey(TemplateView):
                     'study_group_name': study_group.name,
                     'course_title': study_group.course.title,
                     'learner_uuid': application.uuid,
-                    'facilitator_name': study_group.facilitator.first_name,
+                    'facilitator_names': study_group.facilitators_display(),
                 }
                 if goal_met:
                     context['goal_met'] = goal_met
@@ -351,7 +351,7 @@ class StudyGroupLearnerSurvey(TemplateView):
                     'study_group_uuid': study_group.uuid,
                     'study_group_name': study_group.name,
                     'course_title': study_group.course.title,
-                    'facilitator_name': study_group.facilitator.first_name,
+                    'facilitator_names': study_group.facilitators_display(),
                 }
 
         return render(request, self.template_name, context)
