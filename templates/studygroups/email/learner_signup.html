@@ -22,11 +22,19 @@ The address for the meeting is:<br/>
  {% endblocktrans %}
 </p>
 
+{% if study_group.cofacilitators.all.count > 1 %}
+<h2>{% trans "Meet your facilitators" %}</h2>
+{% else %}
 <h2>{% trans "Meet your facilitator" %}</h2>
+{% endif %}
 
 {% with answers=application.get_signup_questions %}
 {% if answers.goals %}
-<p>{% blocktrans with facilitator_first_name=study_group.facilitator.first_name facilitator_last_name=study_group.facilitator.last_name%}Your facilitator <strong>{{facilitator_first_name}} {{facilitator_last_name}}</strong> is copied on this email. If you have any questions for them you can reply to this message. To help your facilitator better assist you, we’re including your answers to the signup questions below.{% endblocktrans %}</p>
+{% if study_group.cofacilitators.all.count == 1 %}
+<p>{% blocktrans with facilitator_first_name=study_group.cofacilitators.first.user.first_name facilitator_last_name=study_group.cofacilitators.first.user.last_name %}Your facilitator <strong>{{facilitator_first_name}} {{facilitator_last_name}}</strong> is copied on this email. If you have any questions for them you can reply to this message. To help your facilitator better assist you, we’re including your answers to the signup questions below.{% endblocktrans %}</p>
+{% else %}
+<p>{% blocktrans %}Your facilitators <strong>{{facilitator_first_last_names}}</strong> are copied on this email. If you have any questions for them you can reply to this message. To help your facilitator better assist you, we’re including your answers to the signup questions below.{% endblocktrans %}</p>
+{% endif %}
 
 <ul style="list-style: none; padding: 1em; background: rgba(5, 199, 180, 15%); border-left: 10px solid rgba(5, 199, 180, 100%);">
     <li><strong>{% trans "Q: What is your goal for taking this learning circle?" %}</strong></li>
@@ -42,7 +50,11 @@ The address for the meeting is:<br/>
     {% endif %}
 </ul>
 {% else %}
-<p>{% blocktrans with facilitator_first_name=study_group.facilitator.first_name facilitator_last_name=study_group.facilitator.last_name%}Your facilitator <strong>{{facilitator_first_name}} {{facilitator_last_name}}</strong> is copied on this email. If you have any questions for them you can reply to this message.{% endblocktrans %}</p>
+{% if study_group.cofacilitators.all.count == 1 %}
+<p>{% blocktrans with facilitator_first_name=study_group.cofacilitators.first.user.first_name facilitator_last_name=study_group.cofacilitators.first.user.last_name %}Your facilitator <strong>{{facilitator_first_name}} {{facilitator_last_name}}</strong> is copied on this email. If you have any questions for them you can reply to this message.{% endblocktrans %}</p>
+{% else %}
+<p>{% blocktrans %}Your facilitators <strong>{{facilitator_first_last_names}}</strong> are copied on this email. If you have any questions for them you can reply to this message.{% endblocktrans %}</p>
+{% endif %}
 {% endif %}
 {% endwith %}
 

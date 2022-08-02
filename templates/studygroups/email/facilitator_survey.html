@@ -17,7 +17,7 @@
 }
 </style>
 
-<p>{% blocktrans %}Hi {{facilitator_name}},{% endblocktrans %}</p>
+<p>{% blocktrans with facilitator_names=study_group.facilitators_display %}Hi {{facilitator_names}}{% endblocktrans %}</p>
 
 <p>{% trans "Can you take a moment to share some final reflections about your learning circle? Your experience and feedback on this course is a big help for future facilitators!" %}</p>
 

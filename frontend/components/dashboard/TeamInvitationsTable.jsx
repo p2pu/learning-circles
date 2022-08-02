@@ -77,7 +77,7 @@ export default class TeamMembersTable extends Component {
     if (this.state.teamMembers.length === 0) {
       return(
         <div className="py-2">
-          <div>You don't have any team members.</div>
+          <div>You don't have any pending invitations.</div>
         </div>
       )
     }

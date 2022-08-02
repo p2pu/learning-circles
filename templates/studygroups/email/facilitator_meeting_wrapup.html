@@ -30,7 +30,7 @@
 </style>
 
 
-<p>{% blocktrans with first_name=study_group.facilitator.first_name %}Hi {{first_name}}{% endblocktrans %},</p>
+<p>{% blocktrans with first_names=study_group.facilitators_display %}Hi {{first_names}}{% endblocktrans %},</p>
 
 <p>{% trans "How did your learning circle go today?" %}</p>
 

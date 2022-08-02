@@ -30,6 +30,7 @@ from studygroups.tasks import send_team_invitation_email
 from studygroups.decorators import user_is_organizer
 from studygroups.decorators import user_is_team_member
 from studygroups.decorators import user_is_team_organizer
+from studygroups.decorators import user_is_staff
 from studygroups.forms import OrganizerGuideForm
 from studygroups.forms import TeamForm
 
@@ -101,31 +102,12 @@ def organize_team(request, team_id):
     return render(request, 'studygroups/organize.html', context)
 
 
-@method_decorator(user_is_organizer, name='dispatch')
+@method_decorator(user_is_staff, name='dispatch')
 class StudyGroupList(ListView):
     model = StudyGroup
 
     def get_queryset(self):
-        study_groups = StudyGroup.objects.published()
-        if not self.request.user.is_staff:
-            team_users = get_team_users(self.request.user)
-            study_groups = study_groups.filter(facilitator__in=team_users)
-        return study_groups
-
-
-@method_decorator(user_is_organizer, name='dispatch')
-class MeetingList(ListView):
-    model = Meeting
-    paginate_by = 10
-
-    def get_queryset(self):
-        study_groups = StudyGroup.objects.published()
-        if not self.request.user.is_staff:
-            team_users = get_team_users(self.request.user)
-            study_groups = study_groups.filter(facilitator__in=team_users)
-
-        meetings = Meeting.objects.active().filter(study_group__in=study_groups)
-        return meetings
+        return StudyGroup.objects.published()
 
 
 @method_decorator(user_is_organizer, name='dispatch')

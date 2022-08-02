@@ -339,8 +339,9 @@ def get_active_facilitators():
         studygroup_count=Count(
             Case(
                 When(
-                    studygroup__draft=False, studygroup__deleted_at__isnull=True,
-                    then=F('studygroup__id')
+                    facilitator__study_group__deleted_at__isnull=True,
+                    facilitator__study_group__draft=False, 
+                    then=F('facilitator__study_group__id')
                 ),
                 default=Value(0),
                 output_field=IntegerField()
@@ -350,20 +351,21 @@ def get_active_facilitators():
         latest_end_date=Max(
             Case(
                 When(
-                    studygroup__draft=False,
-                    studygroup__deleted_at__isnull=True,
-                    then='studygroup__end_date'
+                    facilitator__study_group__draft=False,
+                    facilitator__study_group__deleted_at__isnull=True,
+                    then='facilitator__study_group__end_date'
                 )
             )
         ),
         learners_count=Sum(
             Case(
                 When(
-                    studygroup__draft=False,
-                    studygroup__deleted_at__isnull=True,
-                    studygroup__application__deleted_at__isnull=True,
-                    studygroup__application__accepted_at__isnull=False, then=1
+                    facilitator__study_group__draft=False,
+                    facilitator__study_group__deleted_at__isnull=True,
+                    facilitator__study_group__application__deleted_at__isnull=True,
+                    facilitator__study_group__application__accepted_at__isnull=False, then=1
                 ),
+                default=Value(0),
                 output_field=IntegerField()
             )
         )

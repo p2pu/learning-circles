@@ -240,8 +240,8 @@ class CourseUpdate(UpdateView):
         course = self.get_object()
         if not request.user.is_staff and course.created_by != request.user:
             raise PermissionDenied
-        other_study_groups =  StudyGroup.objects.active().filter(course=course).exclude(facilitator=request.user) # TODO
-        study_groups = StudyGroup.objects.active().filter(course=course, facilitator=request.user) # TODO
+        other_study_groups =  StudyGroup.objects.active().filter(course=course).exclude(cofacilitators__user=request.user)
+        study_groups = StudyGroup.objects.active().filter(course=course, cofacilitators__user=request.user)
         if study_groups.count() > 1 or other_study_groups.count() > 0:
             messages.warning(request, _('This course is being used by other learning circles and cannot be edited, please create a new course to make changes'))
             url = reverse('studygroups_facilitator')
@@ -284,7 +284,7 @@ class StudyGroupCreate(TemplateView):
         context['RECAPTCHA_SITE_KEY'] = settings.RECAPTCHA_SITE_KEY # required for inline signup
         context['hide_footer'] = True
         context['team'] = []
-        if TeamMembership.objects.active().filter(user=self.request.user).exists():
+        if self.request.user.is_authenticated and TeamMembership.objects.active().filter(user=self.request.user).exists():
             team = TeamMembership.objects.active().filter(user=self.request.user).get().team
             context['team'] = [t.to_json() for t in team.teammembership_set.active()]
         return context

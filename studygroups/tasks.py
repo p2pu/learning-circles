@@ -35,15 +35,13 @@ logger = logging.getLogger(__name__)
 
 
 def _send_facilitator_survey(study_group):
-    facilitator_name = study_group.facilitator.first_name
     path = reverse('studygroups_facilitator_survey', kwargs={'study_group_uuid': study_group.uuid})
     base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
     survey_url = base_url + path
 
     context = {
         'study_group': study_group,
-        'facilitator': study_group.facilitator,
-        'facilitator_name': facilitator_name,
+        'show_dash_link': True,
         'survey_url': survey_url,
         'course_title': study_group.course.title,
         'study_group_name': study_group.name,
@@ -54,7 +52,7 @@ def _send_facilitator_survey(study_group):
         'studygroups/email/facilitator_survey',
         context
     )
-    to = [study_group.facilitator.email]
+    to = [f.user.email for f in study_group.cofacilitators.all()]
     cc = [settings.DEFAULT_FROM_EMAIL]
 
     message = EmailMultiAlternatives(
@@ -99,7 +97,6 @@ def _send_learner_survey(application):
     )
     querystring = '?learner={}'.format(application.uuid)
     survey_url = base_url + path + querystring
-    facilitator_email = application.study_group.facilitator.email
 
     context = {
         'learner_name': application.name,
@@ -118,7 +115,7 @@ def _send_learner_survey(application):
         txt,
         settings.DEFAULT_FROM_EMAIL,
         to,
-        reply_to=[facilitator_email]
+        reply_to=[facilitator.user.email for facilitator in application.study_group.cofacilitators.all()]
     )
     notification.attach_alternative(html, 'text/html')
     notification.send()
@@ -206,7 +203,7 @@ def send_meeting_reminder(reminder):
         email_body = re.sub(r'RSVP_NO_LINK', dashboard_link, email_body)
 
         context = {
-            "facilitator_names": meeting.study_group.facilitators_display(),
+            "facilitator_names": reminder.study_group.facilitators_display(),
             "show_dash_link": True,
             "reminder": reminder,
             "message": email_body,
@@ -226,7 +223,7 @@ def send_meeting_reminder(reminder):
         reminder_email.send()
 
     except Exception as e:
-        logger.exception('Could not send email to ', reminder.study_group.facilitator.email, exc_info=e)
+        logger.exception('Could not send email to ', reminder.study_group.facilitator.email, exc_info=e) # TODO - Exception masks other errors!
 
 
 # If called directly, be sure to activate language to use for constructing URLs
@@ -255,7 +252,7 @@ def send_reminder(reminder):
                 context
             )
             text_body = html_body_to_text(html_body)
-        to += [reminder.study_group.facilitator.email]
+        to += [facilitator.user.email for facilitator in study_group.cofacilitators.all()]
         sender = 'P2PU <{0}>'.format(settings.DEFAULT_FROM_EMAIL)
         try:
             reminder_email = EmailMultiAlternatives(
@@ -264,7 +261,7 @@ def send_reminder(reminder):
                 sender,
                 [],
                 bcc=to,
-                reply_to=[reminder.study_group.facilitator.email],
+                reply_to=[facilitator.user.email for facilitator in study_group.cofacilitators.all()]
             )
             reminder_email.attach_alternative(html_body, 'text/html')
             reminder_email.send()
@@ -297,7 +294,7 @@ def _send_meeting_wrapup(meeting):
         subject,
         text_body,
         settings.DEFAULT_FROM_EMAIL,
-        to=[study_group.facilitator.email],
+        to=[facilitator.user.email for facilitator in study_group.cofacilitators.all()]
     )
     message.attach_alternative(html_body, 'text/html')
     try:
