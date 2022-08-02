@@ -32,7 +32,7 @@ def user_is_group_facilitator(func):
         study_group = get_object_or_404(StudyGroup, pk=study_group_id)
         if args[0].user.is_staff \
                 or Facilitator.objects.filter(user=args[0].user, study_group=study_group).exists() \
-                or TeamMembership.objects.active().filter(user=args[0].user, role=TeamMembership.ORGANIZER).exists() and args[0].user in get_study_group_organizers(study_group):
+                or study_group.team and TeamMembership.objects.active().filter(user=args[0].user, role=TeamMembership.ORGANIZER, team=study_group.team).exists():
             return func(*args, **kwargs)
         raise PermissionDenied
     return login_required(decorated)
