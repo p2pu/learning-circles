@@ -14,10 +14,12 @@ const FinalizeSection = (props) => {
   }
 
   const handleFacilitatorSelect = (value) => {
+    if(props.learningCircle.facilitators) {
       const removedFacilitators = props.learningCircle.facilitators.filter(x => value.facilitators === null || !value.facilitators.includes(x));
       if(removedFacilitators.includes(props.userId)) {
         setShowSelfRemovalWarning(true);
       }
+    }
     props.updateFormData(value)
   }
 

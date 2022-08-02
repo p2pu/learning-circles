@@ -42,7 +42,7 @@ from studygroups.models import FacilitatorGuide
 from studygroups.models import generate_meetings_from_dates
 from studygroups.models import get_json_response
 from studygroups.models.course import course_platform_from_url
-from studygroups.models.team import eligible_team_by_email_domain
+from studygroups.models.team import eligible_team_by_email_domain, get_team_users
 from studygroups.models.learningcircle import generate_meeting_reminder
 from studygroups.tasks import send_cofacilitator_email
 from studygroups.tasks import send_cofacilitator_removed_email
@@ -635,6 +635,12 @@ def _facilitators_validator(facilitators):
     # TODO - check that its a list, facilitator exists and is part of same team
     if facilitators is None:
         return [], None
+    if not isinstance(facilitators, list):
+        return None, 'Invalid facilitators'
+    members_in_team = get_team_users(facilitators[0])
+    members_in_team_list = list(map(lambda x: x.id, members_in_team))
+    if not all(item in members_in_team_list for item in facilitators):
+        return None, 'Facilitators not part of the same team'
     results = list(map(schema.integer(), facilitators))
     errors = list(filter(lambda x: x, map(lambda x: x[1], results)))
     fcltrs = list(map(lambda x: x[0], results))
