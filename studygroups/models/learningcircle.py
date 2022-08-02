@@ -197,7 +197,7 @@ class StudyGroup(LifeTimeTrackingModel):
         if len(facilitators) == 1:
             return facilitators[0]
         else:
-            return _('%(first)s and %(last)s.') % {'first': ', '.join(facilitators[:-1]), 'last': facilitators[-1]}
+            return _('%(first)s and %(last)s') % {'first': ', '.join(facilitators[:-1]), 'last': facilitators[-1]}
 
 
     @property

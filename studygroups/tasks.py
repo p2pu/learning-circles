@@ -35,15 +35,13 @@ logger = logging.getLogger(__name__)
 
 
 def _send_facilitator_survey(study_group):
-    facilitator_name = study_group.facilitator.first_name
     path = reverse('studygroups_facilitator_survey', kwargs={'study_group_uuid': study_group.uuid})
     base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
     survey_url = base_url + path
 
     context = {
         'study_group': study_group,
-        'facilitator': study_group.facilitator,
-        'facilitator_name': facilitator_name,
+        'show_dash_link': True,
         'survey_url': survey_url,
         'course_title': study_group.course.title,
         'study_group_name': study_group.name,
@@ -54,7 +52,7 @@ def _send_facilitator_survey(study_group):
         'studygroups/email/facilitator_survey',
         context
     )
-    to = [study_group.facilitator.email]
+    to = [f.user.email for f in study_group.cofacilitators.all()]
     cc = [settings.DEFAULT_FROM_EMAIL]
 
     message = EmailMultiAlternatives(
