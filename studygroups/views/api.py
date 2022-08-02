@@ -268,7 +268,7 @@ class LearningCircleListView(View):
                     'venue_name',
                     'venue_address',
                     'venue_details',
-                    'facilitator__first_name', # TODO - does this need to be cofacilitators__user__first_name?
+                    'cofacilitators__user__first_name',
                     config='simple'
                 )
             ).filter(search=tsquery)
