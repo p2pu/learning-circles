@@ -29,6 +29,7 @@ import requests
 from studygroups.models import TeamMembership
 from studygroups.models import Profile
 from studygroups.forms import TeamMembershipForm
+from studygroups.models.learningcircle import StudyGroup
 from uxhelpers.utils import json_response
 from api import schema
 from .models import create_user
@@ -309,8 +310,14 @@ class AccountDeleteView(DeleteView):
         user.username = random_username
         user.save()
 
-        # delete any active or future learning circles
-        user.studygroup_set.update(deleted_at=timezone.now())
+        for lc in StudyGroup.objects.active().filter(cofacilitators__user=user):
+            if lc.cofacilitators.count() == 1:
+                lc.deleted_at = timezone.now()
+                
+            if lc.cofacilitators.count() > 1:
+                lc.cofacilitators.filter(user=user).delete()
+                
+            lc.save()
 
         # delete profile data
         profile = user.profile
