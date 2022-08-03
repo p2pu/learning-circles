@@ -632,15 +632,11 @@ def _meetings_validator(meetings):
 
 
 def _facilitators_validator(facilitators):
-    # TODO - check that its a list, facilitator exists and is part of same team
+    # TODO - check that its a list, facilitator exists
     if facilitators is None:
         return [], None
     if not isinstance(facilitators, list):
         return None, 'Invalid facilitators'
-    members_in_team = get_team_users(facilitators[0])
-    members_in_team_list = list(map(lambda x: x.id, members_in_team))
-    if not all(item in members_in_team_list for item in facilitators):
-        return None, 'Facilitators not part of the same team'
     results = list(map(schema.integer(), facilitators))
     errors = list(filter(lambda x: x, map(lambda x: x[1], results)))
     fcltrs = list(map(lambda x: x[0], results))
@@ -785,6 +781,11 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
             errors = { 'facilitators': ['Cannot remove all faclitators from a learning circle']}
             return json_response(request, {"status": "error", "errors": errors})
 
+        if study_group.team and len(data.get('facilitators', [])) > 1:
+            team_list = TeamMembership.objects.active().filter(team=study_group.team).values_list('user', flat=True)
+            if not all(item in team_list for item in data.get('facilitators', [])):
+                errors = { 'facilitators': ['Facilitators not part of the same team']}
+                return json_response(request, {"status": "error", "errors": errors})
 
         # determine if meeting reminders should be regenerated
         regenerate_reminders = any([
