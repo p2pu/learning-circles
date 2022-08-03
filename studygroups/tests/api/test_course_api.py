@@ -177,7 +177,7 @@ class TestCourseApi(TestCase):
         # create team with 2 users
         organizer = create_user('organ@team.com', 'organ', 'test', '1234', False)
         faci1 = create_user('faci1@team.com', 'faci1', 'test', '1234', False)
-        StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
+        StudyGroup.objects.filter(pk=1).update(created_by=faci1)
         mail.outbox = []
 
         # create team

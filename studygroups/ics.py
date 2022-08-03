@@ -13,7 +13,7 @@ def make_meeting_ics(meeting):
     event.add('dtend', meeting.meeting_datetime_end())
 
     # Only use the first facilitator or default to created_by
-    facilitator = study_group.facilitator
+    facilitator = study_group.created_by
     if study_group.cofacilitators.count():
         facilitator = study_group.cofacilitators.first().user
     organizer = vCalAddress('MAILTO:{}'.format(facilitator.email))

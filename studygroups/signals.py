@@ -101,9 +101,9 @@ def handle_new_study_group_creation(sender, instance, created, **kwargs):
         subject,
         text_body,
         settings.DEFAULT_FROM_EMAIL,
-        [study_group.facilitator.email],
+        [study_group.created_by.email],
         cc=cc,
-        reply_to=[study_group.facilitator.email] + cc
+        reply_to=[study_group.created_by.email] + cc
     )
     notification.attach_alternative(html_body, 'text/html')
     notification.send()

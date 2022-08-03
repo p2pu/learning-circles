@@ -126,7 +126,7 @@ class TestFacilitatorViews(TestCase):
     def test_facilitator_access(self):
         user = create_user('bob@example.net', 'bob', 'test', 'password')
         sg = StudyGroup.objects.get(pk=1)
-        sg.facilitator = user
+        sg.created_by = user
         sg.save()
         c = Client()
         c.login(username='bob@example.net', password='password')
@@ -161,7 +161,7 @@ class TestFacilitatorViews(TestCase):
             resp = c.post('/en/studygroup/create/legacy/', data)
             sg = StudyGroup.objects.last()
             self.assertRedirects(resp, '/en/studygroup/{}/'.format(sg.pk))
-        study_groups = StudyGroup.objects.filter(facilitator=user)
+        study_groups = StudyGroup.objects.filter(created_by=user)
         self.assertEquals(study_groups.count(), 1)
         lc = study_groups.first()
         self.assertEquals(study_groups.first().meeting_set.count(), 6)
@@ -182,7 +182,7 @@ class TestFacilitatorViews(TestCase):
         with freeze_time('2018-07-20'):
             resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
             self.assertEqual(resp.json()['status'], 'created')
-        study_groups = StudyGroup.objects.filter(facilitator=user)
+        study_groups = StudyGroup.objects.filter(created_by=user)
         self.assertEqual(study_groups.count(), 1)
         lc = study_groups.first()
         self.assertEqual(lc.meeting_set.count(), 6)
@@ -202,7 +202,7 @@ class TestFacilitatorViews(TestCase):
         with freeze_time('2018-07-20'):
             resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
             self.assertEqual(resp.json()['status'], 'created')
-        study_groups = StudyGroup.objects.filter(facilitator=user)
+        study_groups = StudyGroup.objects.filter(created_by=user)
         self.assertEqual(study_groups.count(), 1)
         lc = study_groups.first()
         resp = c.post('/en/studygroup/{0}/publish/'.format(lc.pk))
@@ -221,7 +221,7 @@ class TestFacilitatorViews(TestCase):
         with freeze_time('2018-07-20'):
             resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
             self.assertEqual(resp.json()['status'], 'created')
-        study_groups = StudyGroup.objects.filter(facilitator=user)
+        study_groups = StudyGroup.objects.filter(created_by=user)
         self.assertEqual(study_groups.count(), 1)
         self.assertEqual(study_groups.first().meeting_set.count(), 6)
 
@@ -279,7 +279,7 @@ class TestFacilitatorViews(TestCase):
             resp = c.post('/en/studygroup/create/legacy/', data)
             sg = StudyGroup.objects.last()
             self.assertRedirects(resp, '/en/studygroup/{}/'.format(sg.pk))
-        study_groups = StudyGroup.objects.filter(facilitator=user)
+        study_groups = StudyGroup.objects.filter(created_by=user)
         self.assertEquals(study_groups.count(), 1)
         lc = study_groups.first()
         self.assertEquals(study_groups.first().meeting_set.active().count(), 6)
@@ -355,7 +355,7 @@ class TestFacilitatorViews(TestCase):
         sgd['start_date'] = (datetime.datetime.now() + datetime.timedelta(weeks=2)).date().isoformat()
         resp = c.post('/api/learning-circle/', data=json.dumps(sgd), content_type='application/json')
         self.assertEqual(resp.json()['status'], 'created')
-        study_groups = StudyGroup.objects.filter(facilitator=user)
+        study_groups = StudyGroup.objects.filter(created_by=user)
         study_group = study_groups.first()
         self.assertEqual(study_groups.count(), 1)
         self.assertEqual(study_group.meeting_set.count(), 6)
@@ -377,7 +377,7 @@ class TestFacilitatorViews(TestCase):
         with freeze_time('2019-07-20'):
             resp = c.post('/en/studygroup/create/legacy/', data)
             self.assertEquals(resp.status_code, 200)
-        study_groups = StudyGroup.objects.filter(facilitator=user)
+        study_groups = StudyGroup.objects.filter(created_by=user)
         self.assertEquals(study_groups.count(), 0)
 
 
@@ -391,7 +391,7 @@ class TestFacilitatorViews(TestCase):
         with freeze_time('2018-07-20'):
             resp = c.post('/api/learning-circle/', data=json.dumps(self.STUDY_GROUP_DATA), content_type='application/json')
             self.assertEqual(resp.json()['status'], 'created')
-        study_groups = StudyGroup.objects.filter(facilitator=user)
+        study_groups = StudyGroup.objects.filter(created_by=user)
         self.assertEqual(study_groups.count(), 1)
         lc = study_groups.first()
         self.assertEqual(lc.meeting_set.count(), 6)
@@ -606,7 +606,7 @@ class TestFacilitatorViews(TestCase):
     def test_user_accept_invitation(self):
         organizer = create_user('organ@team.com', 'organ', 'test', '1234', False)
         faci1 = create_user('faci1@team.com', 'faci1', 'test', '1234', False)
-        StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
+        StudyGroup.objects.filter(pk=1).update(created_by=faci1)
 
         # create team
         team = Team.objects.create(name='test team')
@@ -629,7 +629,7 @@ class TestFacilitatorViews(TestCase):
     def test_user_reject_invitation(self):
         organizer = create_user('organ@team.com', 'organ', 'test', '1234', False)
         faci1 = create_user('faci1@team.com', 'faci1', 'test', '1234', False)
-        StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
+        StudyGroup.objects.filter(pk=1).update(created_by=faci1)
 
         # create team
         team = Team.objects.create(name='test team')
@@ -712,7 +712,7 @@ class TestFacilitatorViews(TestCase):
         course = Course.objects.create(**course_data)
         sg = StudyGroup.objects.get(pk=1)
         sg.course = course
-        sg.facilitator = user2
+        sg.created_by = user2
         sg.save()
         c = Client()
         c.login(username='bob@example.net', password='password')
@@ -741,7 +741,7 @@ class TestFacilitatorViews(TestCase):
         course = Course.objects.create(**course_data)
         sg = StudyGroup.objects.get(pk=1)
         sg.course = course
-        sg.facilitator = facilitator
+        sg.created_by = facilitator
         sg.save()
         c = Client()
         c.login(username='hi@example.net', password='password')

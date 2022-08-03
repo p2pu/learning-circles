@@ -51,7 +51,7 @@ class TestOrganizerViews(TestCase):
         TeamMembership.objects.create(team=team, user=faci1, role=TeamMembership.MEMBER)
 
         sg = StudyGroup.objects.get(pk=1)
-        sg.facilitator = faci1
+        sg.created_by = faci1
         sg.save()
 
         c = Client()
@@ -138,11 +138,11 @@ class TestOrganizerViews(TestCase):
         faci2 = create_user('faci2@team.com', 'faci2', 'test', 'password', False)
 
         sg = StudyGroup.objects.get(pk=1)
-        sg.facilitator = faci1
+        sg.created_by = faci1
         sg.save()
 
         sg = StudyGroup.objects.get(pk=2)
-        sg.facilitator = faci2
+        sg.created_by = faci2
         sg.save()
         
         # create team
@@ -181,8 +181,8 @@ class TestOrganizerViews(TestCase):
         TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
         TeamMembership.objects.create(team=team, user=faci1, role=TeamMembership.MEMBER)
 
-        StudyGroup.objects.filter(pk=1).update(facilitator=faci1, team=team)
-        StudyGroup.objects.filter(pk=3).update(facilitator=faci1, team=team)
+        StudyGroup.objects.filter(pk=1).update(created_by=faci1, team=team)
+        StudyGroup.objects.filter(pk=3).update(created_by=faci1, team=team)
         StudyGroup.objects.filter(pk=3).update(deleted_at=timezone.now())
 
 

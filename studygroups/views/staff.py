@@ -185,7 +185,7 @@ class ExportStudyGroupsView(ListView):
 
     def get_queryset(self):
         return StudyGroup.objects.all().prefetch_related('course', 'facilitator', 'meeting_set').annotate(
-            learning_circle_number=RawSQL("RANK() OVER(PARTITION BY facilitator_id ORDER BY created_at ASC)", [])
+            learning_circle_number=RawSQL("RANK() OVER(PARTITION BY created_by_id ORDER BY created_at ASC)", [])
         )
 
     def csv(self, **kwargs):
@@ -201,8 +201,8 @@ class ExportStudyGroupsView(ListView):
             'draft',
             'course id',
             'course title',
-            'facilitator',
-            'facilitator email',
+            'created by',
+            'created by email',
             'learning_circle_number',
             'location',
             'city',
@@ -231,8 +231,8 @@ class ExportStudyGroupsView(ListView):
                 'yes' if sg.draft else 'no',
                 sg.course.id,
                 sg.course.title,
-                ' '.join([sg.facilitator.first_name, sg.facilitator.last_name]),
-                sg.facilitator.email,
+                ' '.join([sg.created_by.first_name, sg.created_by.last_name]),
+                sg.created_by.email,
                 sg.learning_circle_number,
                 ' ' .join([sg.venue_name, sg.venue_address]),
                 sg.city,

@@ -784,8 +784,9 @@ class FacilitatorExperienceChart():
             counts = []
 
             for sg in study_groups:
-                facilitator = sg.facilitator
-                sg_count = StudyGroup.objects.published().filter(start_date__lte=sg.start_date, facilitator=facilitator).count()
+                facilitator = sg.created_by
+                # TODO
+                sg_count = StudyGroup.objects.published().filter(start_date__lte=sg.start_date, created_by=facilitator).count()
                 counts.append(sg_count)
 
             counter = Counter(counts)

@@ -250,7 +250,7 @@ class TestStudyGroupTasks(TestCase):
         send_reminder(reminder)
         self.assertEqual(len(mail.outbox), 2) # should be sent to facilitator & application
         self.assertEqual(mail.outbox[0].to[0], data['email'])
-        self.assertEqual(mail.outbox[1].to[0], sg.facilitator.email)
+        self.assertEqual(mail.outbox[1].to[0], sg.created_by.email)
         self.assertFalse(send_message.called)
         self.assertNotIn('{0}/{1}/rsvp/'.format(settings.DOMAIN, get_language()), mail.outbox[1].alternatives[0][0])
         self.assertIn('{0}/{1}/'.format(settings.DOMAIN, get_language()), mail.outbox[1].alternatives[0][0])
@@ -315,7 +315,7 @@ class TestStudyGroupTasks(TestCase):
     def test_send_weekly_report(self):
         organizer = create_user('organ@team.com', 'organ', 'test', '1234', False)
         faci1 = create_user('faci1@team.com', 'faci', 'test', 'password', False)
-        StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
+        StudyGroup.objects.filter(pk=1).update(created_by=faci1)
         mail.outbox = []
 
         team = Team.objects.create(name='test team')
@@ -350,7 +350,7 @@ class TestStudyGroupTasks(TestCase):
     def test_dont_send_weekly_report(self):
         organizer = create_user('organ@team.com', 'organ', 'test', '1234', False)
         faci1 = create_user('faci1@team.com', 'faci', 'test', 'password', False)
-        StudyGroup.objects.filter(pk=1).update(facilitator=faci1)
+        StudyGroup.objects.filter(pk=1).update(created_by=faci1)
         mail.outbox = []
 
         team = Team.objects.create(name='test team')
@@ -484,7 +484,7 @@ class TestStudyGroupTasks(TestCase):
             send_facilitator_survey(sg)
             self.assertEqual(len(mail.outbox), 1)
             self.assertIn('{0}/en/studygroup/{1}/facilitator_survey/'.format(settings.DOMAIN, sg.uuid), mail.outbox[0].body)
-            self.assertIn(sg.facilitator.email, mail.outbox[0].to)
+            self.assertIn(sg.created_by.email, mail.outbox[0].to)
             self.assertNotEqual(sg.facilitator_survey_sent_at, None)
 
 

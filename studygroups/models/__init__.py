@@ -172,9 +172,9 @@ def weekly_update_data(today, team=None):
 
     # TODO should creation date or start date determine lc #
     _facilitator_groups = StudyGroup.objects.published().filter(
-        facilitator=OuterRef('facilitator'),
+        created_by=OuterRef('created_by'), ## TODO - this uses creator rather than facilitator
         start_date__lte=OuterRef('start_date')
-    ).order_by().values('facilitator').annotate(number=Count('pk'))
+    ).order_by().values('created_by').annotate(number=Count('pk'))
 
     upcoming_studygroups = StudyGroup.objects.published().annotate(
         lc_number=_facilitator_groups.values('number')[:1]

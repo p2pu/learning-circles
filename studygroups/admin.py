@@ -29,7 +29,7 @@ class StudyGroupAdmin(admin.ModelAdmin):
     list_display = ['course', 'city', 'facilitators', 'start_date', 'day', 'signup_open', 'uuid']
     exclude = ['deleted_at']
     search_fields = ['course__title', 'uuid', 'city', 'cofacilitators__user__first_name', 'cofacilitators__user__email']
-    raw_id_fields = ['course', 'facilitator']
+    raw_id_fields = ['course', 'created_by']
 
     def facilitators(self, study_group):
         return study_group.facilitators_display()
@@ -104,7 +104,7 @@ class FacilitatorGuideAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if obj.study_group:
             obj.course = obj.study_group.course
-            obj.user = obj.study_group.facilitator
+            obj.user = obj.study_group.created_by
         super().save_model(request, obj, form, change)
 
 

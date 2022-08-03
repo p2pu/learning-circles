@@ -223,7 +223,7 @@ def send_meeting_reminder(reminder):
         reminder_email.send()
 
     except Exception as e:
-        logger.exception('Could not send email to ', reminder.study_group.facilitator.email, exc_info=e) # TODO - Exception masks other errors!
+        logger.exception('Could not send email to facilitator', exc_info=e) # TODO - Exception masks other errors!
 
 
 # If called directly, be sure to activate language to use for constructing URLs

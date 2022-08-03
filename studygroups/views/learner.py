@@ -55,12 +55,11 @@ class TeamPage(DetailView):
         context = super(TeamPage, self).get_context_data(**kwargs)
         two_weeks = (datetime.datetime.now() - datetime.timedelta(weeks=2)).date()
 
-        team_users = TeamMembership.objects.active().filter(team=self.object).values('user')
         study_group_ids = Meeting.objects.active()\
                 .filter(meeting_date__gte=timezone.now())\
                 .values('study_group')
         study_groups = StudyGroup.objects.published()\
-                .filter(facilitator__in=team_users)\
+                .filter(team=self.object)\
                 .filter(id__in=study_group_ids, signup_open=True)\
                 .order_by('start_date')
 

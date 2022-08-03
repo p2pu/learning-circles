@@ -82,7 +82,7 @@ class TestReportViews(TestCase):
         course = Course.objects.create(**course_data)
         sg = StudyGroup.objects.get(pk=1)
         sg.course = course
-        sg.facilitator = facilitator
+        sg.created_by = facilitator
         sg.save()
 
         data = dict(self.APPLICATION_DATA)
@@ -121,7 +121,7 @@ class TestReportViews(TestCase):
         course = Course.objects.create(**course_data)
         sg = StudyGroup.objects.get(pk=1)
         sg.course = course
-        sg.facilitator = facilitator
+        sg.created_by = facilitator
         sg.save()
 
         data = dict(self.APPLICATION_DATA)
@@ -163,7 +163,7 @@ class TestReportViews(TestCase):
         course = Course.objects.create(**course_data)
         sg = StudyGroup.objects.get(pk=1)
         sg.course = course
-        sg.facilitator = facilitator
+        sg.created_by = facilitator
         sg.save()
 
         data = dict(self.APPLICATION_DATA)

@@ -209,7 +209,7 @@ class TestSignupModels(TestCase):
         mail.outbox = []
         sg = StudyGroup(
             course=Course.objects.first(),
-            facilitator=facilitator,
+            created_by=facilitator,
             description='blah',
             venue_name='ACME publich library',
             venue_address='ACME rd 1',

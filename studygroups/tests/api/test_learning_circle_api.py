@@ -1160,7 +1160,7 @@ class TestLearningCircleApi(TestCase):
         request = factory.get('/api/learningcircles/?user=true')
         user = self.facilitator
         sg = StudyGroup.objects.get(pk=2)
-        sg.facilitator = user
+        sg.created_by = user
         sg.save()
 
         request.user = user

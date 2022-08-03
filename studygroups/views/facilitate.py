@@ -303,7 +303,7 @@ class StudyGroupCreateLegacy(CreateView):
 
     def form_valid(self, form):
         study_group = form.save(commit=False)
-        study_group.facilitator = self.request.user
+        study_group.created_by = self.request.user
         study_group.save()
         Facilitator.obects.create(user=self.request.user, study_group=study_group)
         meeting_dates = generate_all_meeting_dates(
@@ -389,7 +389,7 @@ class StudyGroupPublish(SingleObjectMixin, View):
 
     def post(self, request, *args, **kwargs):
         study_group = self.get_object()
-        profile = study_group.facilitator.profile # TODO
+        profile = study_group.created_by.profile # TODO
         if profile.email_confirmed_at is None:
             messages.warning(self.request, _("You need to confirm your email address before you can publish a learning circle."));
         else:

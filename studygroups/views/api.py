@@ -66,7 +66,7 @@ def studygroups(request):
         data = {
             "name": sg.name,
             "course_title": sg.course.title,
-            "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
+            "facilitator": sg.created_by.first_name + " " + sg.created_by.last_name,
             "venue": sg.venue_name,
             "venue_address": sg.venue_address + ", " + sg.city,
             "city": sg.city,
@@ -712,7 +712,7 @@ class LearningCircleCreateView(View):
             name=data.get('name', None),
             course=data.get('course'),
             course_description=data.get('course_description', None),
-            facilitator=request.user,
+            created_by=request.user,
             description=data.get('description'),
             venue_name=data.get('venue_name'),
             venue_address=data.get('venue_address'),
@@ -1011,7 +1011,7 @@ def serialize_team_data(team):
     }
 
     members = team.teammembership_set.active().values('user')
-    studygroup_count = StudyGroup.objects.published().filter(facilitator__in=members).count()
+    studygroup_count = StudyGroup.objects.published().filter(created_by__in=members).count() # TODO update to use StudyGroup.team
 
     serialized_team["studygroup_count"] = studygroup_count
 

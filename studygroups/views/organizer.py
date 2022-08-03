@@ -80,7 +80,7 @@ def organize_team(request, team_id):
 
     members = team.teammembership_set.active().values('user')
     team_users = User.objects.filter(pk__in=members)
-    study_groups = StudyGroup.objects.published().filter(facilitator__in=team_users)
+    study_groups = StudyGroup.objects.published().filter(team=team)
     facilitators = team_users
     invitations = TeamInvitation.objects.filter(team=team, responded_at__isnull=True)
     active_study_groups = study_groups.filter(
