@@ -585,6 +585,7 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(StudyGroup.objects.all().count(), 5)
         self.assertEqual(lc.meeting_set.all().count(), 2)
         data['draft'] = False
+        data['facilitators'] = [lc.created_by_id]
         # Update learning circle
         url = '/api/learning-circle/{}/'.format(lc.pk)
         resp = c.post(url, data=json.dumps(data), content_type='application/json')
@@ -1083,7 +1084,7 @@ class TestLearningCircleApi(TestCase):
         team = facilitator2.teammembership_set.active().first().team
         sgdata = dict(            
             course=Course.objects.first(),
-            facilitator=facilitator2,
+            created_by=facilitator2,
             description='blah',
             venue_name='ACME public library',
             venue_address='ACME rd 1',

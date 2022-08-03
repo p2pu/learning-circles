@@ -305,7 +305,7 @@ class StudyGroupCreateLegacy(CreateView):
         study_group = form.save(commit=False)
         study_group.created_by = self.request.user
         study_group.save()
-        Facilitator.obects.create(user=self.request.user, study_group=study_group)
+        Facilitator.objects.create(user=self.request.user, study_group=study_group)
         meeting_dates = generate_all_meeting_dates(
             study_group.start_date, study_group.meeting_time, form.cleaned_data['weeks']
         )

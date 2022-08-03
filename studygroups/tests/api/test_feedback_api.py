@@ -32,7 +32,7 @@ class TestFeedbackApi(TestCase):
         with patch('custom_registration.signals.send_email_confirm_email'):
             user = create_user('faci@example.net', 'b', 't', 'password', False)
             user.save()
-            self.created_by = user
+            self.facilitator = user
         sg = StudyGroup.objects.get(pk=1)
         sg.created_by = user
         sg.save()
