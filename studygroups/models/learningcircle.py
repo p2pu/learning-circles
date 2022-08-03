@@ -192,7 +192,7 @@ class StudyGroup(LifeTimeTrackingModel):
     def facilitators_display(self):
         facilitators = [f.user.first_name for f in self.cofacilitators.all()]
         if not len(facilitators):
-            logger.error(f'Learnign circle with no facilitators! pk={self.pk}')
+            logger.error(f'Learning circle with no facilitators! pk={self.pk}')
             return _('Unknown')
         if len(facilitators) == 1:
             return facilitators[0]
@@ -208,7 +208,7 @@ class StudyGroup(LifeTimeTrackingModel):
         sg = self  # TODO - this logic is repeated in the API class
         facilitators = [f.user.first_name for f in sg.cofacilitators.all()]
         if not len(facilitators):
-            logger.error(f'Bad learnign circle : {sg.pk}')
+            logger.error(f'Bad learning circle : {sg.pk}')
             facilitators = ['Unknown']
         facilitators_legacy = ' and '.join(filter(lambda x: x, [', '.join(facilitators[:-1]), facilitators[-1]]))
 
