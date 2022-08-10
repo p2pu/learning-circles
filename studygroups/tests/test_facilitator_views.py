@@ -12,6 +12,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 
 from studygroups.models import Course
+from studygroups.models import Facilitator
 from studygroups.models import StudyGroup
 from studygroups.models import Meeting
 from studygroups.models import Application
@@ -128,6 +129,7 @@ class TestFacilitatorViews(TestCase):
         sg = StudyGroup.objects.get(pk=1)
         sg.created_by = user
         sg.save()
+        Facilitator.objects.create(study_group=sg, user=user)
         c = Client()
         c.login(username='bob@example.net', password='password')
         def assertAllowed(url):

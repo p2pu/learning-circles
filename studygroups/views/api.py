@@ -748,9 +748,6 @@ class LearningCircleCreateView(View):
 
         study_group.save()
 
-        # notification about new study group is sent at this point, but no associated meetings exists, which implies that the reminder can't use the date of the first meeting
-        generate_meetings_from_dates(study_group, data.get('meetings', []))
-
         # add all facilitators
         facilitators = set([request.user.id] + data.get('facilitators'))  # make user a facilitator
         for user_id in facilitators:
@@ -758,6 +755,8 @@ class LearningCircleCreateView(View):
             f.save()
             if user_id != request.user.id:
                 send_cofacilitator_email.delay(study_group.id, user_id, request.user.id)
+
+        generate_meetings_from_dates(study_group, data.get('meetings', []))
 
         studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
         return json_response(request, { "status": "created", "studygroup_url": studygroup_url })

@@ -110,12 +110,12 @@ class StudyGroup(LifeTimeTrackingModel):
         # use course.title if name is not set
         if self.name is None:
             self.name = self.course.title
-        super().save(*args, **kwargs)
         if created:
             # if the creator is part of a team, set the team field
             if self.created_by.teammembership_set.active().count():
                 self.team = self.created_by.teammembership_set.active().first().team
-                self.save()
+        super().save(*args, **kwargs)
+
 
     def day(self):
         return calendar.day_name[self.start_date.weekday()]

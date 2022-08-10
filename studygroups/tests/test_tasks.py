@@ -13,6 +13,7 @@ from freezegun import freeze_time
 from studygroups.models import Course
 from studygroups.models import StudyGroup
 from studygroups.models import Meeting
+from studygroups.models import Facilitator
 from studygroups.models import Feedback
 from studygroups.models import Application
 from studygroups.models import Reminder

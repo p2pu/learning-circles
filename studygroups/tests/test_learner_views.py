@@ -10,6 +10,7 @@ from django.conf import settings
 from unittest.mock import patch
 
 from studygroups.models import StudyGroup
+from studygroups.models import Facilitator
 from studygroups.models import Meeting
 from studygroups.models import Application
 from studygroups.models import Rsvp
@@ -115,6 +116,7 @@ class TestLearnerViews(TestCase):
         sg = StudyGroup.objects.get(pk=1)
         sg.created_by = facilitator
         sg.save()
+        Facilitator.objects.create(study_group=sg, user=facilitator)
         c = Client()
         c.login(username='hi@example.net', password='password')
         user1 = {'study_group': sg.pk, 'name': 'bob', 'email': 'bob@mail.com', 'mobile': '+27112223333'}
@@ -149,6 +151,7 @@ class TestLearnerViews(TestCase):
         sg = StudyGroup.objects.get(pk=1)
         sg.created_by = facilitator
         sg.save()
+        Facilitator.objects.create(study_group=sg, user=facilitator)
         c = Client()
         c.login(username='hi@example.net', password='password')
         user1 = {'study_group': sg.pk, 'name': 'bob', 'mobile': '+27112223333'}

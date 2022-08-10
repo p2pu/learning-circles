@@ -192,6 +192,7 @@ def send_meeting_reminder(reminder):
                 reminder_email.attach(part)
             reminder_email.send()
         except Exception as e:
+            # TODO - this swallows any exception in the code
             logger.exception('Could not send email to ', email, exc_info=e)
 
     # Send to facilitator without RSVP & unsubscribe links
@@ -261,7 +262,7 @@ def send_reminder(reminder):
                 sender,
                 [],
                 bcc=to,
-                reply_to=[facilitator.user.email for facilitator in study_group.cofacilitators.all()]
+                reply_to=[facilitator.user.email for facilitator in reminder.study_group.cofacilitators.all()]
             )
             reminder_email.attach_alternative(html_body, 'text/html')
             reminder_email.send()

@@ -9,6 +9,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 
 from studygroups.models import StudyGroup
+from studygroups.models import Facilitator
 from studygroups.models import Profile
 from studygroups.models import Course
 from studygroups.models import generate_all_meetings
@@ -173,6 +174,7 @@ class TestLearningCircleApi(TestCase):
         }
         url = '/api/learning-circle/'
         self.assertEqual(StudyGroup.objects.all().count(), 4)
+        self.assertEqual(len(mail.outbox), 0)
         resp = c.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(resp.status_code, 200)
         lc = StudyGroup.objects.all().last()
@@ -181,6 +183,7 @@ class TestLearningCircleApi(TestCase):
             "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
+        self.assertEqual(lc.cofacilitators.count(), 1)
         self.assertEqual(lc.course.id, 3)
         self.assertEqual(lc.draft, False)
         self.assertEqual(lc.name, "Test learning circle")
@@ -189,10 +192,13 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(lc.start_date, datetime.date(2018,2,12))
         self.assertEqual(lc.meeting_time, datetime.time(17,1))
         self.assertEqual(lc.meeting_set.all().count(), 2)
+        self.assertEqual(lc.reminder_set.count(), 2)
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created!'.format(lc.name, lc.city))
         self.assertIn('faci@example.net', mail.outbox[0].to)
         self.assertIn('community@localhost', mail.outbox[0].cc)
+        # TODO test that correct faciltators are mentioned in reminders
+
 
 
     @freeze_time('2018-01-20')
@@ -381,6 +387,7 @@ class TestLearningCircleApi(TestCase):
         data['course'] = 1
         data["description"] = "Lets learn something else"
         data["name"] = "A new LC name"
+        data["facilitators"] = [f.user_id for f in lc.cofacilitators.all()]
 
         # date shouldn't matter, but lets make it after the lc started
         with freeze_time('2019-03-01'):
@@ -440,6 +447,7 @@ class TestLearningCircleApi(TestCase):
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
         self.assertEqual(lc.meeting_set.active().count(), 2)
+        data["facilitators"] = [f.user_id for f in lc.cofacilitators.all()]
 
 
         # update more than 2 days before start
@@ -505,6 +513,7 @@ class TestLearningCircleApi(TestCase):
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
         self.assertEqual(lc.meeting_set.active().count(), 2)
+        data["facilitators"] = [f.user_id for f in lc.cofacilitators.all()]
 
         # update less than 2 days before
         with freeze_time("2018-12-14"):
@@ -1163,6 +1172,7 @@ class TestLearningCircleApi(TestCase):
         sg = StudyGroup.objects.get(pk=2)
         sg.created_by = user
         sg.save()
+        Facilitator.objects.create(study_group=sg, user=user)
 
         request.user = user
 
