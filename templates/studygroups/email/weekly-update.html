@@ -185,9 +185,7 @@
             <td><a href="{{ studygroup.signup_url }}">{{ studygroup.name }}</a></td>
             <td>{{ studygroup.venue_name|title  }}</td>
             <td>
-              {% blocktrans with first_name=studygroup.facilitator.first_name|title last_name=studygroup.facilitator.last_name|title email=studygroup.facilitator.email %}
-                <a href="mailto:{{email}}">{{first_name}} {{last_name}}</a>
-              {% endblocktrans %}
+              {% for facilitator in studygroup.cofacilitators.all %}{% if forloop.last and not forloop.first %} and {% else %}{% if not forloop.first %}, {% endif %}{% endif %}<a href="mailto:{{facilitator.user.email}}">{{facilitator.user.first_name}} {{facilitator.user.last_name}}</a>{% endfor %}
             </td>
             {% if staff_update %}<td>{{ studygroup.team.name }}</td>{% endif %}
             <td>{{ studygroup.application_set.active.count }}</td>
@@ -236,7 +234,9 @@
             <tr>
               <td><a href="{{ study_group.signup_url }}">{{ study_group.name }}</a></td>
               <td>{{ study_group.venue_name }}</td>
-              <td><a href="mailto:{{ study_group.facilitator.email }}">{{ study_group.facilitator.first_name }} {{ study_group.facilitator.last_name }}</a></td>
+              <td>
+              {% for facilitator in study_group.cofacilitators.all %}{% if forloop.last and not forloop.first %} and {% else %}{% if not forloop.first %}, {% endif %}{% endif %}<a href="mailto:{{facilitator.user.email}}">{{facilitator.user.first_name}} {{facilitator.user.last_name}}</a>{% endfor %}
+              </td>
               {% if staff_update %}<td>{{ study_group.team.name }}</td>{% endif %}
               <td>{{ study_group.application_set.active.count}}</td>
               <td>{{ meeting.meeting_date|date:"l N j" }} at {{ meeting.meeting_time|time:"fA" }} {{study_group.timezone_display}}</td>
@@ -279,7 +279,9 @@
             <tr>
               <td><a href="{{ study_group.signup_url }}">{{ study_group.name }}</a></td>
               <td>{{ study_group.venue_name }}</td>
-              <td><a href="mailto:{{ study_group.facilitator.email }}">{{ study_group.facilitator.first_name }} {{ study_group.facilitator.last_name }}</a></td>
+              <td>
+              {% for facilitator in study_group.cofacilitators.all %}{% if forloop.last and not forloop.first %} and {% else %}{% if not forloop.first %}, {% endif %}{% endif %}<a href="mailto:{{facilitator.user.email}}">{{facilitator.user.first_name}} {{facilitator.user.last_name}}</a>{% endfor %}
+              </td>
               {% if staff_update %}<td>{{ study_group.team.name }}</td>{% endif %}
               <td>{{ study_group.application_set.active.count}}</td>
               <td>{{ study_group.last_meeting.meeting_date|date:"l N j" }} at {{ study_group.last_meeting.meeting_time|time:"fA" }} {{study_group.timezone_display}}</td>
@@ -313,8 +315,8 @@
         <li>
           <h3>{% blocktrans with studygroup_name=study_group.name %}{{studygroup_name}}{% endblocktrans %}</h3>
           <p>
-            {% blocktrans with venue=study_group.venue_name first_name=study_group.facilitator.first_name last_name=study_group.facilitator.last_name %}
-              Facilitated by {{first_name}} {{last_name}} at {{venue}}
+            {% blocktrans with venue=study_group.venue_name first_names=study_group.facilitators_display %}
+              Facilitated by {{first_names}} at {{venue}}
             {% endblocktrans %}
           </p>
           {% if feedback_response.rating %}
@@ -427,9 +429,9 @@
     <h2>
       <span class="section-header">
       {% blocktrans count new_guides_count=new_facilitator_guides.count %}
-        Our community added {{new_guides_count}} new facilitator guide in the past 3 months.
+        Our community added {{new_guides_count}} new facilitator guide in the past 3 months
       {% plural %}
-        Our community added {{new_guides_count}} new facilitator guides in the past 3 months.
+        Our community added {{new_guides_count}} new facilitator guides in the past 3 months
       {% endblocktrans %}
       </span>
     </h2>
