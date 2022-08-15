@@ -33,6 +33,10 @@ const FinalizeSection = (props) => {
     setShowSelfRemovalWarning(false);
   }
 
+  const hasTeam = () => {
+    return props.team.length > 0;
+  }
+
   return (
   <div>
     <TextareaWithLabel
@@ -56,12 +60,14 @@ const FinalizeSection = (props) => {
         options={populateTeamOptions(props.team)}
         name={'facilitators'}
         id={'id_facilitators'}
+        disabled={!hasTeam()}
         errorMessage={props.errors.facilitators}
         value={props.learningCircle.facilitators}
         handleChange={handleFacilitatorSelect}
         label="Select your co-facilitator(s)"
         isMulti={true}
       />
+      {(!hasTeam()) && <small>This feature is only available to teams</small>}
       {(showSelfRemovalWarning) &&
       <div className="alert alert-warning rm-facilitator-warning" role="warning">
         <p>You are removing yourself as a facilitator and will therefore no longer have access to this learning circle.</p>
