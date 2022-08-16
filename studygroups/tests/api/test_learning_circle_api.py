@@ -30,7 +30,7 @@ class TestLearningCircleApi(TestCase):
 
     def setUp(self):
         with patch('custom_registration.signals.send_email_confirm_email'):
-            user = create_user('faci@example.net', 'b', 't', 'password', False)
+            user = create_user('faci@example.net', 'Bobjanechris', 'Trailer', 'password', False)
             user.save()
             self.facilitator = user
 
@@ -621,6 +621,130 @@ class TestLearningCircleApi(TestCase):
             self.assertEqual(StudyGroup.objects.all().count(), 5)
             self.assertEqual(lc.start_date, datetime.date(2018, 12, 19))
             self.assertEqual(lc.meeting_set.active().count(), 2)
+
+
+
+    def test_update_learning_circle_facilitators(self):
+        cofacilitator = create_user('cofaci@example.net', 'badumorum', 'ta', 'password', False)
+
+        self.facilitator.profile.email_confirmed_at = timezone.now()
+        self.facilitator.profile.save()
+        c = Client()
+        c.login(username='faci@example.net', password='password')
+        data = {
+            "course": 3,
+            "description": "Lets learn something",
+            "course_description": "A real great course",
+            "venue_name": "75 Harrington",
+            "venue_details": "top floor",
+            "venue_address": "75 Harrington",
+            "city": "Cape Town",
+            "country": "South Africa",
+            "country_en": "South Africa",
+            "region": "Western Cape",
+            "latitude": 3.1,
+            "longitude": "1.3",
+            "place_id": "4",
+            "online": "false",
+            "language": "en",
+            "meeting_time": "17:01",
+            "duration": 50,
+            "timezone": "UTC",
+            "image": "/media/image.png",
+            "draft": False,
+            "meetings": [
+                { "meeting_date": "2018-02-12", "meeting_time": "17:01" },
+                { "meeting_date": "2018-02-19", "meeting_time": "17:01" },
+            ],
+        }
+        url = '/api/learning-circle/'
+        self.assertEqual(StudyGroup.objects.all().count(), 4)
+
+        resp = c.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        lc = StudyGroup.objects.all().last()
+        self.assertEqual(resp.json(), {
+            "status": "created",
+            "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
+        })
+        self.assertEqual(StudyGroup.objects.all().count(), 5)
+
+        # Update learning circle
+        lc = StudyGroup.objects.all().last()
+        self.assertFalse(lc.draft)
+        url = '/api/learning-circle/{}/'.format(lc.pk)
+        data["facilitators"] = [self.facilitator.pk, cofacilitator.pk]
+
+        with patch('studygroups.views.api.send_cofacilitator_email.delay') as send_cofacilitator_email:
+            resp = c.post(url, data=json.dumps(data), content_type='application/json')
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.json(), {
+                "status": "error",
+                "errors": {
+                    "facilitators": ["Facilitator not part of a team"],
+                }
+            })
+
+            team = Team.objects.create(name='Team Awesome')
+            lc.team = team
+            lc.save()
+            TeamMembership.objects.create(team=team, user=self.facilitator)
+            resp = c.post(url, data=json.dumps(data), content_type='application/json')
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.json(), {
+                "status": "error",
+                "errors": {
+                    "facilitators": ["Facilitators not part of the same team"],
+                }
+            })
+
+            TeamMembership.objects.create(team=team, user=cofacilitator)
+            resp = c.post(url, data=json.dumps(data), content_type='application/json')
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.json()['status'], 'updated')
+            self.assertTrue(send_cofacilitator_email.called)
+
+        self.assertIn(self.facilitator.first_name, lc.reminder_set.first().email_body)
+        self.assertIn(cofacilitator.first_name, lc.reminder_set.first().email_body)
+
+        c = Client()
+        c.login(username='cofaci@example.net', password='password')
+        resp = c.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()['status'], 'updated')
+
+        c = Client()
+        c.login(username='faci@example.net', password='password')
+
+        data["facilitators"] = []
+        resp = c.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json(), {
+            "status": "error",
+            "errors": {
+                "facilitators": ["Cannot remove all faclitators from a learning circle"],
+            }
+        })
+
+        with patch('studygroups.views.api.send_cofacilitator_removed_email.delay') as send_cofacilitator_removed_email:
+            data["facilitators"] = [cofacilitator.id]
+            resp = c.post(url, data=json.dumps(data), content_type='application/json')
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.json()['status'], 'updated')
+            self.assertTrue(send_cofacilitator_removed_email.called)
+
+        self.assertNotIn(self.facilitator.first_name, lc.reminder_set.first().email_body)
+        self.assertIn(cofacilitator.first_name, lc.reminder_set.first().email_body)
+
+        resp = c.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 403)
+
+        c = Client()
+        c.login(username='cofaci@example.net', password='password')
+        resp = c.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()['status'], 'updated')
+
 
 
     @freeze_time('2018-01-20')

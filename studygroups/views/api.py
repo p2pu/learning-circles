@@ -792,7 +792,11 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
             errors = { 'facilitators': ['Cannot remove all faclitators from a learning circle']}
             return json_response(request, {"status": "error", "errors": errors})
 
-        if study_group.team and len(data.get('facilitators', [])) > 1:
+        if len(data.get('facilitators', [])) > 1:
+            if not study_group.team:
+                errors = { 'facilitators': ['Facilitator not part of a team']}
+                return json_response(request, {"status": "error", "errors": errors})
+
             team_list = TeamMembership.objects.active().filter(team=study_group.team).values_list('user', flat=True)
             if not all(item in team_list for item in data.get('facilitators', [])):
                 errors = { 'facilitators': ['Facilitators not part of the same team']}
