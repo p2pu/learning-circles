@@ -81,6 +81,8 @@ class TestLearningCircleApi(TestCase):
             "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
+        self.assertEqual(lc.cofacilitators.all().count(), 1)
+        self.assertEqual(lc.cofacilitators.first().user_id, lc.created_by_id)
         self.assertEqual(lc.course.id, 3)
         self.assertEqual(lc.name, "Test learning circle")
         self.assertEqual(lc.description, 'Lets learn something')
@@ -92,6 +94,76 @@ class TestLearningCircleApi(TestCase):
         self.assertEqual(mail.outbox[0].subject, 'Your “{}” learning circle in {} has been created!'.format(lc.name, lc.city))
         self.assertIn('faci@example.net', mail.outbox[0].to)
         self.assertIn('community@localhost', mail.outbox[0].cc)
+
+
+    def test_create_learning_circle_with_cofacilitators(self):
+        cofacilitator = create_user('cofaci@example.net', 'ba', 'ta', 'password', False)
+        c = Client()
+        c.login(username='faci@example.net', password='password')
+        data = {
+            "name": "Test learning circle",
+            "course": 3,
+            "description": "Lets learn something",
+            "course_description": "A real great course",
+            "venue_name": "75 Harrington",
+            "venue_details": "top floor",
+            "venue_address": "75 Harrington",
+            "city": "Cape Town",
+            "country": "South Africa",
+            "country_en": "South Africa",
+            "region": "Western Cape",
+            "latitude": 3.1,
+            "longitude": "1.3",
+            "place_id": "1",
+            "online": "false",
+            "language": "en",
+            "meetings": [
+                { "meeting_date": "2018-02-12", "meeting_time": "17:01" },
+                { "meeting_date": "2018-02-19", "meeting_time": "17:01" },
+            ],
+            "meeting_time": "17:01",
+            "duration": 50,
+            "timezone": "UTC",
+            "image": "/media/image.png",
+            "facilitator_concerns": "blah blah",
+            "facilitators": [cofacilitator.pk],
+        }
+        url = '/api/learning-circle/'
+        self.assertEqual(StudyGroup.objects.all().count(), 4)
+
+        with patch('studygroups.views.api.send_cofacilitator_email.delay') as send_cofacilitator_email:
+            resp = c.post(url, data=json.dumps(data), content_type='application/json')
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.json(), {
+                "status": "error",
+                "errors": {
+                    "facilitators": ["Facilitator not part of a team"],
+                }
+            })
+
+            team = Team.objects.create(name='awesome team')
+            TeamMembership.objects.create(team=team, user=self.facilitator, role=TeamMembership.ORGANIZER)
+            resp = c.post(url, data=json.dumps(data), content_type='application/json')
+            self.assertEqual(resp.status_code, 200)
+            self.assertEqual(resp.json(), {
+                "status": "error",
+                "errors": {
+                    "facilitators": ["Facilitators not part of the same team"],
+                }
+            })
+
+            TeamMembership.objects.create(team=team, user=cofacilitator, role=TeamMembership.MEMBER)
+            resp = c.post(url, data=json.dumps(data), content_type='application/json')
+            self.assertEqual(resp.status_code, 200)
+            lc = StudyGroup.objects.all().last()
+            self.assertEqual(resp.json(), {
+                "status": "created",
+                "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
+            })
+            self.assertEqual(StudyGroup.objects.all().count(), 5)
+            self.assertEqual(lc.cofacilitators.all().count(), 2)
+            self.assertIn(cofacilitator.id, lc.cofacilitators.all().values_list('user_id', flat=True))
+            self.assertEqual(len(mail.outbox), 2)
 
 
     def test_create_learning_circle_without_name_or_course_description(self):

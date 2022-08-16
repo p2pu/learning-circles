@@ -699,6 +699,18 @@ class LearningCircleCreateView(View):
             logger.debug('schema error {0}'.format(json.dumps(errors)))
             return json_response(request, {"status": "error", "errors": errors})
 
+        if len(data.get('facilitators', [])) > 0:
+            team_membership =  TeamMembership.objects.active().filter(user=request.user).first()
+            if not team_membership:
+                errors = { 'facilitators': ['Facilitator not part of a team']}
+                return json_response(request, {"status": "error", "errors": errors})
+            team = TeamMembership.objects.active().filter(user=request.user).first().team
+            team_list = team.teammembership_set.active().values_list('user', flat=True)
+            if not all(item in team_list for item in data.get('facilitators', [])):
+                errors = { 'facilitators': ['Facilitators not part of the same team']}
+                return json_response(request, {"status": "error", "errors": errors})
+
+
         # start and end dates need to be set for db model to be valid
         start_date = data.get('meetings')[0].get('meeting_date')
         end_date = data.get('meetings')[-1].get('meeting_date')
