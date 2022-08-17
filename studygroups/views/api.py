@@ -851,16 +851,12 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
 
         # update facilitators
         current_facilicators_ids = study_group.cofacilitators.all().values_list('user_id', flat=True)
-        print(f'current facilitators {current_facilicators_ids}')
         updated_facilitators = data.get('facilitators')
-        print(f'post value {updated_facilitators}')
         to_delete = study_group.cofacilitators.exclude(user_id__in=updated_facilitators)
         for facilitator in to_delete:
             send_cofacilitator_removed_email.delay(study_group.id, facilitator.user_id, request.user.id)
-        print(f'to delete: {to_delete}')
         to_delete.delete()
         to_add = [f_id for f_id in updated_facilitators if f_id not in current_facilicators_ids]
-        print(f'to add: {to_add}')
         for user_id in to_add:
             f = Facilitator(study_group=study_group, user_id=user_id)
             f.save()
