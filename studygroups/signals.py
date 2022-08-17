@@ -44,7 +44,7 @@ def handle_new_application(sender, instance, created, **kwargs):
             }
         ).strip('\n')
 
-        facilitators = [f'{f.user.first_name} {f.user.last_name}' for f in application.study_group.cofacilitators.all()]
+        facilitators = [f'{f.user.first_name} {f.user.last_name}' for f in application.study_group.facilitator_set.all()]
         if len(facilitators) == 0:
             names = _('Unkown')
         elif len(facilitators) == 1:
@@ -63,7 +63,7 @@ def handle_new_application(sender, instance, created, **kwargs):
 
     to = [application.email]
     # CC facilitator and put in reply-to
-    facilitator_emails = set(application.study_group.cofacilitators.all().values_list('user__email', flat=True))
+    facilitator_emails = set(application.study_group.facilitator_set.all().values_list('user__email', flat=True))
     welcome_message = EmailMultiAlternatives(
         learner_signup_subject,
         learner_signup_body,
@@ -92,6 +92,7 @@ def handle_new_study_group_creation(sender, instance, created, **kwargs):
     # on all learning circles, CC p2pu
     cc = [settings.TEAM_EMAIL]
     # if the user is part of a team, send to the organizer(s)
+    # TODO not sure if this still works with team being part of learning circles
     cc += [ o.email for o in get_study_group_organizers(study_group)]
     # if there is a question, send to the welcoming comitte
     if study_group.facilitator_concerns:

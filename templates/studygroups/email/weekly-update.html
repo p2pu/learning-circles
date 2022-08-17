@@ -185,7 +185,7 @@
             <td><a href="{{ studygroup.signup_url }}">{{ studygroup.name }}</a></td>
             <td>{{ studygroup.venue_name|title  }}</td>
             <td>
-              {% for facilitator in studygroup.cofacilitators.all %}{% if forloop.last and not forloop.first %} and {% else %}{% if not forloop.first %}, {% endif %}{% endif %}<a href="mailto:{{facilitator.user.email}}">{{facilitator.user.first_name}} {{facilitator.user.last_name}}</a>{% endfor %}
+              {% for facilitator in studygroup.facilitator_set.all %}{% if forloop.last and not forloop.first %} and {% else %}{% if not forloop.first %}, {% endif %}{% endif %}<a href="mailto:{{facilitator.user.email}}">{{facilitator.user.first_name}} {{facilitator.user.last_name}}</a>{% endfor %}
             </td>
             {% if staff_update %}<td>{{ studygroup.team.name }}</td>{% endif %}
             <td>{{ studygroup.application_set.active.count }}</td>
@@ -235,7 +235,7 @@
               <td><a href="{{ study_group.signup_url }}">{{ study_group.name }}</a></td>
               <td>{{ study_group.venue_name }}</td>
               <td>
-              {% for facilitator in study_group.cofacilitators.all %}{% if forloop.last and not forloop.first %} and {% else %}{% if not forloop.first %}, {% endif %}{% endif %}<a href="mailto:{{facilitator.user.email}}">{{facilitator.user.first_name}} {{facilitator.user.last_name}}</a>{% endfor %}
+              {% for facilitator in study_group.facilitator_set.all %}{% if forloop.last and not forloop.first %} and {% else %}{% if not forloop.first %}, {% endif %}{% endif %}<a href="mailto:{{facilitator.user.email}}">{{facilitator.user.first_name}} {{facilitator.user.last_name}}</a>{% endfor %}
               </td>
               {% if staff_update %}<td>{{ study_group.team.name }}</td>{% endif %}
               <td>{{ study_group.application_set.active.count}}</td>
@@ -280,7 +280,7 @@
               <td><a href="{{ study_group.signup_url }}">{{ study_group.name }}</a></td>
               <td>{{ study_group.venue_name }}</td>
               <td>
-              {% for facilitator in study_group.cofacilitators.all %}{% if forloop.last and not forloop.first %} and {% else %}{% if not forloop.first %}, {% endif %}{% endif %}<a href="mailto:{{facilitator.user.email}}">{{facilitator.user.first_name}} {{facilitator.user.last_name}}</a>{% endfor %}
+              {% for facilitator in study_group.facilitator_set.all %}{% if forloop.last and not forloop.first %} and {% else %}{% if not forloop.first %}, {% endif %}{% endif %}<a href="mailto:{{facilitator.user.email}}">{{facilitator.user.first_name}} {{facilitator.user.last_name}}</a>{% endfor %}
               </td>
               {% if staff_update %}<td>{{ study_group.team.name }}</td>{% endif %}
               <td>{{ study_group.application_set.active.count}}</td>

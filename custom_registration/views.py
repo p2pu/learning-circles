@@ -310,12 +310,12 @@ class AccountDeleteView(DeleteView):
         user.username = random_username
         user.save()
 
-        for lc in StudyGroup.objects.active().filter(cofacilitators__user=user):
-            if lc.cofacilitators.count() == 1:
+        for lc in StudyGroup.objects.active().filter(facilitator__user=user):
+            if lc.facilitator_set.count() == 1:
                 lc.deleted_at = timezone.now()
                 
-            if lc.cofacilitators.count() > 1:
-                lc.cofacilitators.filter(user=user).delete()
+            if lc.facilitator_set.count() > 1:
+                lc.facilitator_set.filter(user=user).delete()
                 
             lc.save()
 

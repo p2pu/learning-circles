@@ -120,7 +120,7 @@ class ExportSignupsView(ListView):
 class ExportFacilitatorsView(ListView):
 
     def get_queryset(self):
-        learning_circles = StudyGroup.objects.select_related('course').published().filter(cofacilitators__user_id=OuterRef('pk')).order_by('-start_date')
+        learning_circles = StudyGroup.objects.select_related('course').published().filter(facilitator__user_id=OuterRef('pk')).order_by('-start_date')
         return User.objects.all().annotate(
             learning_circle_count=Sum(
                 Case(
@@ -184,7 +184,7 @@ class ExportFacilitatorsView(ListView):
 class ExportStudyGroupsView(ListView):
 
     def get_queryset(self):
-        return StudyGroup.objects.all().prefetch_related('course', 'facilitator', 'meeting_set').annotate(
+        return StudyGroup.objects.all().prefetch_related('course', 'facilitator_set', 'meeting_set').annotate(
             learning_circle_number=RawSQL("RANK() OVER(PARTITION BY created_by_id ORDER BY created_at ASC)", [])
         )
 
@@ -274,7 +274,7 @@ class ExportStudyGroupsView(ListView):
             data += [learner_survey]
             data += [sg.learnersurveyresponse_set.count()]
             data += [sg.did_not_happen]
-            data += [sg.cofacilitators.count()]
+            data += [sg.facilitator_set.count()]
 
             writer.writerow(data)
         return response

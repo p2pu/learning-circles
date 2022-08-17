@@ -81,8 +81,8 @@ class TestLearningCircleApi(TestCase):
             "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
-        self.assertEqual(lc.cofacilitators.all().count(), 1)
-        self.assertEqual(lc.cofacilitators.first().user_id, lc.created_by_id)
+        self.assertEqual(lc.facilitator_set.all().count(), 1)
+        self.assertEqual(lc.facilitator_set.first().user_id, lc.created_by_id)
         self.assertEqual(lc.course.id, 3)
         self.assertEqual(lc.name, "Test learning circle")
         self.assertEqual(lc.description, 'Lets learn something')
@@ -96,7 +96,7 @@ class TestLearningCircleApi(TestCase):
         self.assertIn('community@localhost', mail.outbox[0].cc)
 
 
-    def test_create_learning_circle_with_cofacilitators(self):
+    def test_create_learning_circle_with_facilitator_set(self):
         cofacilitator = create_user('cofaci@example.net', 'ba', 'ta', 'password', False)
         c = Client()
         c.login(username='faci@example.net', password='password')
@@ -161,8 +161,8 @@ class TestLearningCircleApi(TestCase):
                 "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
             })
             self.assertEqual(StudyGroup.objects.all().count(), 5)
-            self.assertEqual(lc.cofacilitators.all().count(), 2)
-            self.assertIn(cofacilitator.id, lc.cofacilitators.all().values_list('user_id', flat=True))
+            self.assertEqual(lc.facilitator_set.all().count(), 2)
+            self.assertIn(cofacilitator.id, lc.facilitator_set.all().values_list('user_id', flat=True))
             self.assertEqual(len(mail.outbox), 2)
 
 
@@ -255,7 +255,7 @@ class TestLearningCircleApi(TestCase):
             "studygroup_url": "{}://{}/en/studygroup/{}/".format(settings.PROTOCOL, settings.DOMAIN, lc.pk)
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
-        self.assertEqual(lc.cofacilitators.count(), 1)
+        self.assertEqual(lc.facilitator_set.count(), 1)
         self.assertEqual(lc.course.id, 3)
         self.assertEqual(lc.draft, False)
         self.assertEqual(lc.name, "Test learning circle")
@@ -459,7 +459,7 @@ class TestLearningCircleApi(TestCase):
         data['course'] = 1
         data["description"] = "Lets learn something else"
         data["name"] = "A new LC name"
-        data["facilitators"] = [f.user_id for f in lc.cofacilitators.all()]
+        data["facilitators"] = [f.user_id for f in lc.facilitator_set.all()]
 
         # date shouldn't matter, but lets make it after the lc started
         with freeze_time('2019-03-01'):
@@ -519,7 +519,7 @@ class TestLearningCircleApi(TestCase):
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
         self.assertEqual(lc.meeting_set.active().count(), 2)
-        data["facilitators"] = [f.user_id for f in lc.cofacilitators.all()]
+        data["facilitators"] = [f.user_id for f in lc.facilitator_set.all()]
 
 
         # update more than 2 days before start
@@ -585,7 +585,7 @@ class TestLearningCircleApi(TestCase):
         })
         self.assertEqual(StudyGroup.objects.all().count(), 5)
         self.assertEqual(lc.meeting_set.active().count(), 2)
-        data["facilitators"] = [f.user_id for f in lc.cofacilitators.all()]
+        data["facilitators"] = [f.user_id for f in lc.facilitator_set.all()]
 
         # update less than 2 days before
         with freeze_time("2018-12-14"):

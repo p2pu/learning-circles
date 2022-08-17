@@ -100,7 +100,7 @@ class CustomSearchQuery(SearchQuery):
 
 def serialize_learning_circle(sg):
 
-    facilitators = [f.user.first_name for f in sg.cofacilitators.all()]
+    facilitators = [f.user.first_name for f in sg.facilitator_set.all()]
     data = {
         "course": {
             "id": sg.course.pk,
@@ -202,7 +202,7 @@ class LearningCircleListView(View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        study_groups = StudyGroup.objects.published().filter(members_only=False).prefetch_related('course', 'meeting_set', 'application_set', 'cofacilitators', 'cofacilitators__user').order_by('id')
+        study_groups = StudyGroup.objects.published().filter(members_only=False).prefetch_related('course', 'meeting_set', 'application_set', 'facilitator_set', 'facilitator_set__user').order_by('id')
 
         if 'draft' in request.GET:
             study_groups = StudyGroup.objects.active().order_by('id')
@@ -211,7 +211,7 @@ class LearningCircleListView(View):
             study_groups = StudyGroup.objects.filter(pk=int(id))
 
         if 'user' in request.GET:
-            study_groups = study_groups.filter(cofacilitators__user=request.user)
+            study_groups = study_groups.filter(facilitator__user=request.user)
 
         if 'online' in request.GET:
             online = clean_data.get('online')
@@ -268,7 +268,7 @@ class LearningCircleListView(View):
                     'venue_name',
                     'venue_address',
                     'venue_details',
-                    'cofacilitators__user__first_name',
+                    'facilitator__user__first_name',
                     config='simple'
                 )
             ).filter(search=tsquery)
@@ -810,7 +810,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
             study_group.venue_details != data.get('venue_details'),
             study_group.venue_details != data.get('venue_details'),
             study_group.language != data.get('language'),
-            set(study_group.cofacilitators.all().values_list('user_id', flat=True)) != set(data.get('facilitators')),
+            set(study_group.facilitator_set.all().values_list('user_id', flat=True)) != set(data.get('facilitators')),
         ])
 
         # update learning circle
@@ -850,9 +850,9 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         generate_meetings_from_dates(study_group, data.get('meetings', []))
 
         # update facilitators
-        current_facilicators_ids = study_group.cofacilitators.all().values_list('user_id', flat=True)
+        current_facilicators_ids = study_group.facilitator_set.all().values_list('user_id', flat=True)
         updated_facilitators = data.get('facilitators')
-        to_delete = study_group.cofacilitators.exclude(user_id__in=updated_facilitators)
+        to_delete = study_group.facilitator_set.exclude(user_id__in=updated_facilitators)
         for facilitator in to_delete:
             send_cofacilitator_removed_email.delay(study_group.id, facilitator.user_id, request.user.id)
         to_delete.delete()
