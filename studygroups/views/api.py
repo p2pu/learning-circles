@@ -1023,7 +1023,7 @@ def serialize_team_data(team):
     }
 
     members = team.teammembership_set.active().values('user')
-    studygroup_count = StudyGroup.objects.published().filter(created_by__in=members).count() # TODO update to use StudyGroup.team
+    studygroup_count = StudyGroup.objects.published().filter(team=team).count()
 
     serialized_team["studygroup_count"] = studygroup_count
 
