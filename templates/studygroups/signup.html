@@ -173,7 +173,7 @@
                 {% if study_group.team %}
                   <div class="label">{% trans "Team" %}</div>
                   {% if study_group.team.page_slug %}
-                    <div><a href="https://www.p2pu.org/{{ study_group.team.page_slug }}" rel="noopener noreferrer">{{ team_name }}</a></div>
+                    <div><a href="https://www.p2pu.org/{{ study_group.team.page_slug }}" rel="noopener noreferrer">{{ study_group.team.name }}</a></div>
                   {% else %}
                     <div>{{ study_group.team.name }}</div>
                   {% endif %}
