@@ -327,9 +327,9 @@ class StudyGroupUpdate(SingleObjectMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context['meetings'] = [m.to_json() for m in self.object.meeting_set.active()]
         context['facilitators'] = [f.user_id for f in self.object.facilitator_set.all()]
-        # TODO - only do this if 
-        # a) the currently authenticated user is in a team 
-        # or b) if it's a super user and the learning circle is part of a team
+        # only do this if 
+        #   a) the currently authenticated user is in a team 
+        #   or b) if it's a super user and the learning circle is part of a team
         if self.request.user.is_staff and self.object.team or TeamMembership.objects.active().filter(user=self.request.user).exists():
             context['team'] = [t.to_json() for t in self.object.team.teammembership_set.active()]
         context['hide_footer'] = True
