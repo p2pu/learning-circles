@@ -75,18 +75,18 @@ class TestTeamsApi(TestCase):
 
     def test_team_data(self):
         c = Client()
-        response = c.get('/api/teams/')
-        self.assertEqual(response.status_code, 200)
-
-        res_data = response.json()
-        self.assertEqual(res_data["count"], 2)
-
-        team_json = res_data["items"][1]
 
         team = Team.objects.get(pk=1)
         organizer = User.objects.get(pk=1)
         organizer_studygroups_count = StudyGroup.objects.filter(created_by=organizer).count()
+        StudyGroup.objects.filter(created_by=organizer).update(team=team)
 
+        response = c.get('/api/teams/')
+        self.assertEqual(response.status_code, 200)
+        res_data = response.json()
+        self.assertEqual(res_data["count"], 2)
+
+        team_json = res_data["items"][1]
         self.assertEqual(team_json["member_count"], team.teammembership_set.active().count())
         self.assertEqual(team_json["facilitators"][0]["first_name"], organizer.first_name)
         self.assertEqual(team_json["studygroup_count"], organizer_studygroups_count)
