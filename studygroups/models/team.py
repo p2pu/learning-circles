@@ -6,13 +6,11 @@ from django.conf import settings
 from django.urls import reverse
 from django.utils.timezone import now
 from django_bleach.models import BleachField
-from django.core.serializers.json import DjangoJSONEncoder
-
 
 from .base import LifeTimeTrackingModel
 
 import uuid
-import json
+
 
 class Team(models.Model):
     name = models.CharField(max_length=128)
@@ -68,14 +66,13 @@ class TeamMembership(LifeTimeTrackingModel):
     def __str__(self):
         return 'Team membership: {}'.format(self.user.__str__())
             
-    def to_json(self):
-        data = {
+    def to_dict(self):
+        return {
             'id': self.user.pk,
             'email': self.user.email,
             'firstName': self.user.first_name,
             'lastName': self.user.last_name
         }
-        return json.dumps(data, cls=DjangoJSONEncoder)
 
 
 class TeamInvitation(models.Model):

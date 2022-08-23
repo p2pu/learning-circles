@@ -7,9 +7,8 @@ const FinalizeSection = (props) => {
 
   const populateTeamOptions = (team) => {
     return team.map(teamMember => {
-      const parsedTeamMember = JSON.parse(teamMember)
-      return {label: parsedTeamMember.firstName + ' ' + parsedTeamMember.lastName + ', ' + parsedTeamMember.email,
-      value: parsedTeamMember.id}
+      return {label: teamMember.firstName + ' ' + teamMember.lastName + ', ' + teamMember.email,
+      value: teamMember.id}
     })
   }
 
