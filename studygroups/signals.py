@@ -92,7 +92,6 @@ def handle_new_study_group_creation(sender, instance, created, **kwargs):
     # on all learning circles, CC p2pu
     cc = [settings.TEAM_EMAIL]
     # if the user is part of a team, send to the organizer(s)
-    # TODO not sure if this still works with team being part of learning circles
     cc += [ o.email for o in get_study_group_organizers(study_group)]
     # if there is a question, send to the welcoming comitte
     if study_group.facilitator_concerns:
