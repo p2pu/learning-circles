@@ -42,7 +42,8 @@ from studygroups.models import FacilitatorGuide
 from studygroups.models import generate_meetings_from_dates
 from studygroups.models import get_json_response
 from studygroups.models.course import course_platform_from_url
-from studygroups.models.team import eligible_team_by_email_domain, get_team_users
+from studygroups.models.team import eligible_team_by_email_domain
+from studygroups.models.team import get_team_users
 from studygroups.models.learningcircle import generate_meeting_reminder
 from studygroups.tasks import send_cofacilitator_email
 from studygroups.tasks import send_cofacilitator_removed_email
