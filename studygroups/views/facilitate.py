@@ -331,7 +331,7 @@ class StudyGroupUpdate(SingleObjectMixin, TemplateView):
         #   a) the currently authenticated user is in a team 
         #   or b) if it's a super user and the learning circle is part of a team
         if self.request.user.is_staff and self.object.team or TeamMembership.objects.active().filter(user=self.request.user).exists():
-            context['team'] = json.dumps([t.to_dict() for t in team.teammembership_set.active()])
+            context['team'] = json.dumps([t.to_dict() for t in self.object.team.teammembership_set.active()])
         context['hide_footer'] = True
         if Reminder.objects.filter(study_group=self.object, edited_by_facilitator=True, sent_at__isnull=True).exists():
             context['reminders_edited'] = True
