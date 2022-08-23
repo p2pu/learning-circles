@@ -64,7 +64,7 @@
               {% block body %}{% endblock %}
           </td>
         </tr>
-      {% if team or facilitator or user %}
+      {% if team or facilitator or user or show_dash_link %}
         {% url 'account_settings' as account_settings_url %}
         <tr>
           <td>

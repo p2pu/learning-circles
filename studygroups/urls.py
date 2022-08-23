@@ -25,7 +25,6 @@ from studygroups.views import StudyGroupLearnerSurvey
 from studygroups.views import StudyGroupFacilitatorSurvey
 from studygroups.views import StudyGroupDidNotHappen
 from studygroups.views import LeaveTeam
-from studygroups.views import MeetingList
 from studygroups.views import TeamMembershipDelete
 from studygroups.views import TeamInvitationCreate
 from studygroups.views import InvitationConfirm
@@ -123,7 +122,6 @@ urlpatterns = [
     url(r'^organize/$', views.organize, name='studygroups_organize'),
     url(r'^organize/(?P<team_id>[\d]+)/$', views.organize_team, name='studygroups_organize_team'),
     url(r'^organize/studygroups/$', StudyGroupList.as_view(), name='studygroups_organizer_studygroup_list'),
-    url(r'^organize/studygroup_meetings/$', MeetingList.as_view(), name='studygroups_organizer_studygroup_meetings'),
     url(r'^organize/teammembership/(?P<team_id>[\d]+)/(?P<user_id>[\d]+)/delete/$', TeamMembershipDelete.as_view(), name='studygroups_teammembership_delete'),
     url(r'^organize/team/(?P<team_id>[\d]+)/member/invite/$', TeamInvitationCreate.as_view(), name='studygroups_team_member_invite'),
     url(r'^organize/team/(?P<team_id>[\d]+)/edit/$', TeamUpdate.as_view(), name='studygroups_team_edit'),

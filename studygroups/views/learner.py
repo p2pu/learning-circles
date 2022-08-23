@@ -40,6 +40,9 @@ import string
 import cities
 import json
 import urllib
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class TeamPage(DetailView):
@@ -52,12 +55,11 @@ class TeamPage(DetailView):
         context = super(TeamPage, self).get_context_data(**kwargs)
         two_weeks = (datetime.datetime.now() - datetime.timedelta(weeks=2)).date()
 
-        team_users = TeamMembership.objects.active().filter(team=self.object).values('user')
         study_group_ids = Meeting.objects.active()\
                 .filter(meeting_date__gte=timezone.now())\
                 .values('study_group')
         study_groups = StudyGroup.objects.published()\
-                .filter(facilitator__in=team_users)\
+                .filter(team=self.object)\
                 .filter(id__in=study_group_ids, signup_open=True)\
                 .order_by('start_date')
 
@@ -137,11 +139,6 @@ def signup(request, location, study_group_id):
 
     #if study_group.venue_address:
     #    context['map_url'] = "https://www.google.com/maps/search/?api=1&query={}".format(urllib.parse.quote(study_group.venue_address))
-
-    team_membership = TeamMembership.objects.active().filter(user=study_group.facilitator).first()
-    if team_membership:
-        context['team_name'] = team_membership.team.name
-        context['team_page_slug'] = team_membership.team.page_slug
 
     return render(request, 'studygroups/signup.html', context)
 
@@ -277,9 +274,8 @@ def receive_sms(request):
     if signups.count() == 1:
         signup = signups.first()
         context['signup'] = signup
-        # TODO i18n
-        subject = 'New SMS reply from {0} <{1}>'.format(signup.name, sender)
-        to += [ signup.study_group.facilitator.email ]
+        subject = _('New SMS reply from {0} <{1}>').format(signup.name, sender)
+        to += [facilitator.user.email for facilitator in signup.study_group.facilitator_set.all()]
         next_meeting = signups.first().study_group.next_meeting()
         # TODO - replace this check with a check to see if the meeting reminder has been sent
         if next_meeting and next_meeting.meeting_datetime() - timezone.now() < datetime.timedelta(days=2):
@@ -344,7 +340,7 @@ class StudyGroupLearnerSurvey(TemplateView):
                     'study_group_name': study_group.name,
                     'course_title': study_group.course.title,
                     'learner_uuid': application.uuid,
-                    'facilitator_name': study_group.facilitator.first_name,
+                    'facilitator_names': study_group.facilitators_display(),
                 }
                 if goal_met:
                     context['goal_met'] = goal_met
@@ -354,7 +350,7 @@ class StudyGroupLearnerSurvey(TemplateView):
                     'study_group_uuid': study_group.uuid,
                     'study_group_name': study_group.name,
                     'course_title': study_group.course.title,
-                    'facilitator_name': study_group.facilitator.first_name,
+                    'facilitator_names': study_group.facilitators_display(),
                 }
 
         return render(request, self.template_name, context)

@@ -51,7 +51,8 @@ class TestOrganizerViews(TestCase):
         TeamMembership.objects.create(team=team, user=faci1, role=TeamMembership.MEMBER)
 
         sg = StudyGroup.objects.get(pk=1)
-        sg.facilitator = faci1
+        sg.created_by = faci1
+        sg.team = team
         sg.save()
 
         c = Client()
@@ -136,20 +137,22 @@ class TestOrganizerViews(TestCase):
         organizer = create_user('organ@team.com', 'organ', 'test', 'password', False)
         faci1 = create_user('faci1@team.com', 'faci1', 'test', 'password', False)
         faci2 = create_user('faci2@team.com', 'faci2', 'test', 'password', False)
-
-        sg = StudyGroup.objects.get(pk=1)
-        sg.facilitator = faci1
-        sg.save()
-
-        sg = StudyGroup.objects.get(pk=2)
-        sg.facilitator = faci2
-        sg.save()
         
         # create team
         team = Team.objects.create(name='test team')
         TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
         TeamMembership.objects.create(team=team, user=faci1, role=TeamMembership.MEMBER)
         TeamMembership.objects.create(team=team, user=faci2, role=TeamMembership.MEMBER)
+
+        sg = StudyGroup.objects.get(pk=1)
+        sg.created_by = faci1
+        sg.team = team
+        sg.save()
+
+        sg = StudyGroup.objects.get(pk=2)
+        sg.created_by = faci2
+        sg.team = team
+        sg.save()
 
         c = Client()
         c.login(username='organ@team.com', password='password')
@@ -181,8 +184,8 @@ class TestOrganizerViews(TestCase):
         TeamMembership.objects.create(team=team, user=organizer, role=TeamMembership.ORGANIZER)
         TeamMembership.objects.create(team=team, user=faci1, role=TeamMembership.MEMBER)
 
-        StudyGroup.objects.filter(pk=1).update(facilitator=faci1, team=team)
-        StudyGroup.objects.filter(pk=3).update(facilitator=faci1, team=team)
+        StudyGroup.objects.filter(pk=1).update(created_by=faci1, team=team)
+        StudyGroup.objects.filter(pk=3).update(created_by=faci1, team=team)
         StudyGroup.objects.filter(pk=3).update(deleted_at=timezone.now())
 
 

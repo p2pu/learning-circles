@@ -13,6 +13,7 @@ from selenium.webdriver.common.by import By
 from studygroups.models import Course
 from studygroups.models import StudyGroup
 from studygroups.models import Meeting
+from studygroups.models import Facilitator
 from custom_registration.models import create_user
 
 from datetime import timedelta, time
@@ -56,8 +57,9 @@ class LearningCircleManage(StaticLiveServerTestCase):
     def setUp(self):
         self.facilitator = create_user('hi@example.net', 'bowie', 'wowie', 'password')
         sg = StudyGroup.objects.get(pk=1)
-        sg.facilitator = self.facilitator
+        sg.created_by = self.facilitator
         sg.save()
+        Facilitator.objects.create(study_group=sg, user=self.facilitator)
         self.study_group = sg
         meeting_date = timezone.now() - timedelta(days=2)
         meeting = Meeting.objects.create(study_group=sg, meeting_date=meeting_date.date(), meeting_time=time(18, 0))

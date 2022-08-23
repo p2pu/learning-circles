@@ -53,9 +53,11 @@ export default class CreateLearningCirclePage extends React.Component {
         ...this.props.learningCircle,
         meetings: meetings
       },
+      team: this.props.team,
       showModal: false,
       showHelp: window.screen.width > DESKTOP_BREAKPOINT,
       user: this.props.user,
+      userId: this.props.userId,
       errors: {},
       alert: { show: false },
       isSaving: false,
@@ -290,7 +292,9 @@ export default class CreateLearningCirclePage extends React.Component {
           currentTab={this.state.currentTab}
           allTabs={this.allTabs}
           changeTab={this.changeTab}
+          userId={this.props.userId}
           learningCircle={this.state.learningCircle}
+          team={this.state.team}
           errors={this.state.errors}
           onCancel={this.onCancel}
           onSubmitForm={this.onSubmitForm}

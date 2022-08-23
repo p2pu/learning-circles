@@ -22,6 +22,7 @@ from django.db.models import Q
 from django.db.models import Prefetch
 from django.db.models import OuterRef
 from django.db.models import Subquery
+from django.db.models import F, Case, When, Value, Sum, IntegerField
 
 
 from studygroups.models import Application
@@ -119,7 +120,25 @@ class ExportSignupsView(ListView):
 class ExportFacilitatorsView(ListView):
 
     def get_queryset(self):
-        return User.objects.all().prefetch_related('studygroup_set', 'studygroup_set__course')
+        learning_circles = StudyGroup.objects.select_related('course').published().filter(facilitator__user_id=OuterRef('pk')).order_by('-start_date')
+        return User.objects.all().annotate(
+            learning_circle_count=Sum(
+                Case(
+                    When(
+                        facilitator__study_group__deleted_at__isnull=True,
+                        facilitator__study_group__draft=False,
+                        then=Value(1),
+                        facilitator__user__id=F('id')
+                    ),
+                    default=Value(0), output_field=IntegerField()
+                )
+            )
+        ).annotate(
+            last_learning_circle_date=Subquery(learning_circles.values('start_date')[:1]),
+            last_learning_circle_name=Subquery(learning_circles.values('name')[:1]),
+            last_learning_circle_course=Subquery(learning_circles.values('course__title')[:1]),
+            last_learning_circle_venue=Subquery(learning_circles.values('venue_name')[:1])
+        )
 
 
     def csv(self, **kwargs):
@@ -141,23 +160,17 @@ class ExportFacilitatorsView(ListView):
         writer.writerow(field_names)
         for user in self.object_list:
             data = [
-                ' '.join([user.first_name ,user.last_name]),
+                ' '.join([user.first_name, user.last_name]),
                 user.email,
                 user.date_joined,
                 user.last_login,
                 user.profile.communication_opt_in if user.profile else False,
-                user.studygroup_set.active().count()
+                user.learning_circle_count,
+                user.last_learning_circle_date,
+                user.last_learning_circle_name,
+                user.last_learning_circle_course,
+                user.last_learning_circle_venue,
             ]
-            last_study_group = user.studygroup_set.active().order_by('start_date').last()
-            if last_study_group:
-                data += [
-                    last_study_group.start_date,
-                    last_study_group.name,
-                    last_study_group.course.title,
-                    last_study_group.venue_name
-                ]
-            else:
-                data += ['', '', '']
             writer.writerow(data)
         return response
 
@@ -171,8 +184,8 @@ class ExportFacilitatorsView(ListView):
 class ExportStudyGroupsView(ListView):
 
     def get_queryset(self):
-        return StudyGroup.objects.all().prefetch_related('course', 'facilitator', 'meeting_set').annotate(
-            learning_circle_number=RawSQL("RANK() OVER(PARTITION BY facilitator_id ORDER BY created_at ASC)", [])
+        return StudyGroup.objects.all().prefetch_related('course', 'facilitator_set', 'meeting_set').annotate(
+            learning_circle_number=RawSQL("RANK() OVER(PARTITION BY created_by_id ORDER BY created_at ASC)", [])
         )
 
     def csv(self, **kwargs):
@@ -188,8 +201,8 @@ class ExportStudyGroupsView(ListView):
             'draft',
             'course id',
             'course title',
-            'facilitator',
-            'faciltator email',
+            'created by',
+            'created by email',
             'learning_circle_number',
             'location',
             'city',
@@ -204,6 +217,7 @@ class ExportStudyGroupsView(ListView):
             'learner survey',
             'learner survey responses',
             'did not happen',
+            'facilitator count',
         ]
         writer = csv.writer(response)
         writer.writerow(field_names)
@@ -217,8 +231,8 @@ class ExportStudyGroupsView(ListView):
                 'yes' if sg.draft else 'no',
                 sg.course.id,
                 sg.course.title,
-                ' '.join([sg.facilitator.first_name, sg.facilitator.last_name]),
-                sg.facilitator.email,
+                ' '.join([sg.created_by.first_name, sg.created_by.last_name]),
+                sg.created_by.email,
                 sg.learning_circle_number,
                 ' ' .join([sg.venue_name, sg.venue_address]),
                 sg.city,
@@ -240,9 +254,9 @@ class ExportStudyGroupsView(ListView):
                 data += ['']
 
             data += [sg.application_set.active().count()]
-            # team
-            if sg.facilitator.teammembership_set.active().count():
-                data += [sg.facilitator.teammembership_set.active().first().team.name]
+
+            if sg.team:
+                data += [sg.team.name]
             else:
                 data += ['']
 
@@ -260,6 +274,7 @@ class ExportStudyGroupsView(ListView):
             data += [learner_survey]
             data += [sg.learnersurveyresponse_set.count()]
             data += [sg.did_not_happen]
+            data += [sg.facilitator_set.count()]
 
             writer.writerow(data)
         return response

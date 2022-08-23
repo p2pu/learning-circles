@@ -7,7 +7,7 @@
 {% url 'studygroups_generate_course_discourse_topic' study_group.course.pk as course_discourse_url %}
 {% url 'studygroups_signup' location=study_group.venue_name|unicode_slugify study_group_id=study_group.pk as study_group_url%}
 
-<p>{% blocktrans with name=study_group.facilitator.first_name %}Hi {{name}}{% endblocktrans %},</p>
+<p>{% blocktrans with name=study_group.created_by.first_name %}Hi {{name}}{% endblocktrans %},</p>
 
 <p>{% blocktrans with studygroup_name=study_group.name city=study_group.city %}Congratulations! Your “{{studygroup_name}}” learning circle in {{city}} has been created.{% endblocktrans %}</p>
 

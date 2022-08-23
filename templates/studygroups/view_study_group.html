@@ -26,7 +26,7 @@
       <div class="offset-sm-3 col-sm-9 lc-details">
         <h1>{% if study_group.draft %}[DRAFT] {% endif %}{{study_group.name}}</h1>
         <div class="text">
-          {% blocktrans with first_name=study_group.facilitator.first_name %}Facilitated by {{first_name}}{% endblocktrans %}
+          Facilitated by {{study_group.facilitators_display}}
         </div>
         <div class="text">
           {% blocktrans with link=study_group.course.link provider=study_group.course.provider %}Course materials provided by <a href="{{ link }}" target="_blank">{{ provider }}</a>{% endblocktrans %}
@@ -96,7 +96,7 @@
           </div>
         </div>
       </div>
-      {% for meeting in study_group.meeting_set.active %}
+      {% for meeting in study_group.meetings %}
       {% with meeting_status=meeting.status feedback=meeting.feedback_set.first %}
       <div class="item {{ meeting_status }}" id="meeting-{{forloop.counter}}">
         <div class="icon"></div>
@@ -325,7 +325,7 @@
           </div>
         </div>
 
-        {% for message in study_group.reminder_set.all %}
+        {% for message in study_group.reminders %}
           <div class="row no-gutters retable-row">
             <div class="col-lg-7 pr-lg-2">
               <span class="d-lg-none"><strong>{% trans "Email subject:" %} </strong><br/></span>

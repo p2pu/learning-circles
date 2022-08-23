@@ -4,6 +4,7 @@ from studygroups.utils import render_to_string_ctx
 from django.core.mail import EmailMultiAlternatives, send_mail
 from django.conf import settings
 from django.utils import timezone
+from django.utils.translation import ugettext as _
 
 from studygroups.email_helper import render_html_with_css
 
@@ -43,23 +44,33 @@ def handle_new_application(sender, instance, created, **kwargs):
             }
         ).strip('\n')
 
+        facilitators = [f'{f.user.first_name} {f.user.last_name}' for f in application.study_group.facilitator_set.all()]
+        if len(facilitators) == 0:
+            names = _('Unkown')
+        elif len(facilitators) == 1:
+            names = facilitators[0]
+        else:
+            names = _('%(first)s and %(last)s') % {'first': ', '.join(facilitators[:-1]), 'last': facilitators[-1]}
+
         learner_signup_html = render_html_with_css(
             'studygroups/email/learner_signup.html', {
                 'application': application,
                 'advice': advice,
+                'facilitator_first_last_names': names,
             }
         )
         learner_signup_body = html_body_to_text(learner_signup_html)
 
     to = [application.email]
     # CC facilitator and put in reply-to
+    facilitator_emails = set(application.study_group.facilitator_set.all().values_list('user__email', flat=True))
     welcome_message = EmailMultiAlternatives(
         learner_signup_subject,
         learner_signup_body,
         settings.DEFAULT_FROM_EMAIL,
         to,
-        cc=[application.study_group.facilitator.email],
-        reply_to=[application.study_group.facilitator.email]
+        cc=facilitator_emails,
+        reply_to=facilitator_emails
     )
     welcome_message.attach_alternative(learner_signup_html, 'text/html')
     welcome_message.send()
@@ -90,9 +101,9 @@ def handle_new_study_group_creation(sender, instance, created, **kwargs):
         subject,
         text_body,
         settings.DEFAULT_FROM_EMAIL,
-        [study_group.facilitator.email],
+        [study_group.created_by.email],
         cc=cc,
-        reply_to=[study_group.facilitator.email] + cc
+        reply_to=[study_group.created_by.email] + cc
     )
     notification.attach_alternative(html_body, 'text/html')
     notification.send()

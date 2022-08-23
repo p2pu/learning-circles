@@ -155,7 +155,7 @@ class LearningCircleCreation(StaticLiveServerTestCase):
         self.wait.until(expected_conditions.url_changes('%s%s' % (self.live_server_url, '/en/studygroup/create/')))
 
         saved_studygroup = StudyGroup.objects.filter(draft=True).last()
-        self.assertEqual(saved_studygroup.facilitator, facilitator)
+        self.assertEqual(saved_studygroup.created_by, facilitator)
         self.assertTrue(expected_conditions.url_to_be('{}/en/studygroup/{}/'.format(self.live_server_url, saved_studygroup.id)))
 
 
@@ -196,7 +196,7 @@ class LearningCircleCreation(StaticLiveServerTestCase):
         self.wait.until(expected_conditions.url_changes('%s%s' % (self.live_server_url, '/en/studygroup/create/')))
 
         published_studygroup = StudyGroup.objects.published().last()
-        self.assertEqual(published_studygroup.facilitator, facilitator)
+        self.assertEqual(published_studygroup.created_by, facilitator)
         self.assertTrue(expected_conditions.url_to_be('{}/en/studygroup/{}/'.format(self.live_server_url, published_studygroup.id)))
 
 

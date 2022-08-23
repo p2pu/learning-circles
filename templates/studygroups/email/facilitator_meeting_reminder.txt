@@ -1,4 +1,4 @@
-{% extends 'email_base.txt' %}{% load i18n %}{% block body %}{% blocktrans with facilitator_name=facilitator.first_name %}Hi {{facilitator_name}},{% endblocktrans %}
+{% extends 'email_base.txt' %}{% load i18n %}{% block body %}{% blocktrans with facilitator_names=facilitator_names %}Hi {{facilitator_names}}.{% endblocktrans %}
 
 {% trans "The following message has been sent to your learning circle." %}
 

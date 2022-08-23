@@ -26,10 +26,13 @@ class ApplicationInline(admin.TabularInline):
 
 class StudyGroupAdmin(admin.ModelAdmin):
     inlines = [ApplicationInline]
-    list_display = ['course', 'city', 'facilitator', 'start_date', 'day', 'signup_open', 'uuid']
+    list_display = ['course', 'city', 'facilitators', 'start_date', 'day', 'signup_open', 'uuid']
     exclude = ['deleted_at']
-    search_fields = ['course__title', 'uuid', 'city', 'facilitator__first_name']
-    raw_id_fields = ['course', 'facilitator']
+    search_fields = ['course__title', 'uuid', 'city', 'facilitator__user__first_name', 'facilitator__user__email']
+    raw_id_fields = ['course', 'created_by']
+
+    def facilitators(self, study_group):
+        return study_group.facilitators_display()
 
     def get_queryset(self, request):
         return super().get_queryset(request).active()
@@ -101,7 +104,7 @@ class FacilitatorGuideAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if obj.study_group:
             obj.course = obj.study_group.course
-            obj.user = obj.study_group.facilitator
+            obj.user = obj.study_group.created_by
         super().save_model(request, obj, form, change)
 
 

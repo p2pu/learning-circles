@@ -1,0 +1,14 @@
+{% extends 'email_base.html' %}
+{% load i18n %}
+{% load extras %}
+{% block body %}
+<p>{% blocktrans with facilitator_name=facilitator.first_name %}Hi {{facilitator_name}},{% endblocktrans %}</p>
+
+{% url 'studygroups_signup' location=study_group.venue_name|unicode_slugify study_group_id=study_group.pk as signup_url %}
+<p>{% blocktrans with learning_circle=study_group.name %}You have been removed as a facilitator from the following learning circle <a href="{{PROTOCOL}}://{{DOMAIN}}{{signup_url}}">"{{learning_circle}}"</a>.{% endblocktrans %}</p>
+
+<p>{% trans "If you believe this was done in error, please contact your co-facilitator(s)." %}</p>
+
+<p>{% trans "Cheers" %},</p>
+<p>P2PU</p>
+{% endblock %}

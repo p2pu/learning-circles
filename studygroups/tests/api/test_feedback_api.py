@@ -15,6 +15,7 @@ from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import Meeting
 from studygroups.models import Feedback
+from studygroups.models import Facilitator
 from studygroups.views import LearningCircleListView
 from custom_registration.models import create_user
 from django.contrib.auth.models import User
@@ -34,8 +35,9 @@ class TestFeedbackApi(TestCase):
             user.save()
             self.facilitator = user
         sg = StudyGroup.objects.get(pk=1)
-        sg.facilitator = user
+        sg.created_by = user
         sg.save()
+        Facilitator.objects.create(study_group=sg, user=user)
 
         meeting = Meeting()
         meeting.study_group = sg
