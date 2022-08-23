@@ -124,6 +124,9 @@ class StudyGroup(LifeTimeTrackingModel):
         q = datetime.datetime.combine(self.start_date, self.meeting_time) + datetime.timedelta(minutes=self.duration)
         return q.time()
 
+    def meetings(self):
+        return self.meeting_set.active().order_by('meeting_date', 'meeting_time')
+
     def next_meeting(self):
         now = timezone.now()
         meeting_list = self.meeting_set.active().order_by('meeting_date', 'meeting_time')
@@ -198,6 +201,10 @@ class StudyGroup(LifeTimeTrackingModel):
             return facilitators[0]
         else:
             return _('%(first)s and %(last)s') % {'first': ', '.join(facilitators[:-1]), 'last': facilitators[-1]}
+
+
+    def reminders(self):
+        return sorted(self.reminder_set.all(), key=lambda x: x.send_at())
 
 
     @property
