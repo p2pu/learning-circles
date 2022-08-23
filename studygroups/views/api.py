@@ -642,7 +642,7 @@ def _facilitators_validator(facilitators):
     errors = list(filter(lambda x: x, map(lambda x: x[1], results)))
     fcltrs = list(map(lambda x: x[0], results))
     if errors:
-        return None, 'Invalid meeting data'
+        return None, 'Invalid facilitator data'
     else:
         return fcltrs, None
 
