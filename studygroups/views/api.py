@@ -30,6 +30,7 @@ from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import user_is_team_organizer
 from studygroups.models import Course
 from studygroups.models import StudyGroup
+from studygroups.models import Facilitator
 from studygroups.models import Application
 from studygroups.models import Meeting
 from studygroups.models import Reminder
@@ -42,7 +43,10 @@ from studygroups.models import generate_meetings_from_dates
 from studygroups.models import get_json_response
 from studygroups.models.course import course_platform_from_url
 from studygroups.models.team import eligible_team_by_email_domain
+from studygroups.models.team import get_team_users
 from studygroups.models.learningcircle import generate_meeting_reminder
+from studygroups.tasks import send_cofacilitator_email
+from studygroups.tasks import send_cofacilitator_removed_email
 
 from uxhelpers.utils import json_response
 
@@ -63,7 +67,7 @@ def studygroups(request):
         data = {
             "name": sg.name,
             "course_title": sg.course.title,
-            "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
+            "facilitator": sg.created_by.first_name + " " + sg.created_by.last_name,
             "venue": sg.venue_name,
             "venue_address": sg.venue_address + ", " + sg.city,
             "city": sg.city,
@@ -96,6 +100,8 @@ class CustomSearchQuery(SearchQuery):
 
 
 def serialize_learning_circle(sg):
+
+    facilitators = [f.user.first_name for f in sg.facilitator_set.all()]
     data = {
         "course": {
             "id": sg.course.pk,
@@ -107,7 +113,8 @@ def serialize_learning_circle(sg):
         },
         "id": sg.id,
         "name": sg.name,
-        "facilitator": sg.facilitator.first_name,
+        "facilitator": sg.facilitators_display(),
+        "facilitators": facilitators,
         "venue": sg.venue_name,
         "venue_address": sg.venue_address + ", " + sg.city,
         "venue_website": sg.venue_website,
@@ -196,16 +203,16 @@ class LearningCircleListView(View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
-        study_groups = StudyGroup.objects.published().filter(members_only=False).prefetch_related('course', 'meeting_set', 'application_set').order_by('id')
+        study_groups = StudyGroup.objects.published().filter(members_only=False).prefetch_related('course', 'meeting_set', 'application_set', 'facilitator_set', 'facilitator_set__user').order_by('id')
 
         if 'draft' in request.GET:
             study_groups = StudyGroup.objects.active().order_by('id')
         if 'id' in request.GET:
             id = request.GET.get('id')
             study_groups = StudyGroup.objects.filter(pk=int(id))
+
         if 'user' in request.GET:
-            user_id = request.user.id
-            study_groups = study_groups.filter(facilitator=user_id)
+            study_groups = study_groups.filter(facilitator__user=request.user)
 
         if 'online' in request.GET:
             online = clean_data.get('online')
@@ -262,8 +269,7 @@ class LearningCircleListView(View):
                     'venue_name',
                     'venue_address',
                     'venue_details',
-                    'facilitator__first_name',
-                    'facilitator__last_name',
+                    'facilitator__user__first_name',
                     config='simple'
                 )
             ).filter(search=tsquery)
@@ -626,7 +632,23 @@ def _meetings_validator(meetings):
         return mtngs, None
 
 
+def _facilitators_validator(facilitators):
+    # TODO - check that its a list, facilitator exists
+    if facilitators is None:
+        return [], None
+    if not isinstance(facilitators, list):
+        return None, 'Invalid facilitators'
+    results = list(map(schema.integer(), facilitators))
+    errors = list(filter(lambda x: x, map(lambda x: x[1], results)))
+    fcltrs = list(map(lambda x: x[0], results))
+    if errors:
+        return None, 'Invalid facilitator data'
+    else:
+        return fcltrs, None
+
+
 def _make_learning_circle_schema(request):
+
     post_schema = {
         "name": schema.text(length=128, required=False),
         "course": schema.chain([
@@ -655,6 +677,7 @@ def _make_learning_circle_schema(request):
         "duration": schema.integer(required=True),
         "timezone": schema.text(required=True, length=128),
         "signup_question": schema.text(length=256),
+        "facilitators": _facilitators_validator,
         "facilitator_goal": schema.text(length=256),
         "facilitator_concerns": schema.text(length=256),
         "image_url": schema.chain([
@@ -677,6 +700,18 @@ class LearningCircleCreateView(View):
             logger.debug('schema error {0}'.format(json.dumps(errors)))
             return json_response(request, {"status": "error", "errors": errors})
 
+        if len(data.get('facilitators', [])) > 0:
+            team_membership =  TeamMembership.objects.active().filter(user=request.user).first()
+            if not team_membership:
+                errors = { 'facilitators': ['Facilitator not part of a team']}
+                return json_response(request, {"status": "error", "errors": errors})
+            team = TeamMembership.objects.active().filter(user=request.user).first().team
+            team_list = team.teammembership_set.active().values_list('user', flat=True)
+            if not all(item in team_list for item in data.get('facilitators', [])):
+                errors = { 'facilitators': ['Facilitators not part of the same team']}
+                return json_response(request, {"status": "error", "errors": errors})
+
+
         # start and end dates need to be set for db model to be valid
         start_date = data.get('meetings')[0].get('meeting_date')
         end_date = data.get('meetings')[-1].get('meeting_date')
@@ -686,7 +721,7 @@ class LearningCircleCreateView(View):
             name=data.get('name', None),
             course=data.get('course'),
             course_description=data.get('course_description', None),
-            facilitator=request.user,
+            created_by=request.user,
             description=data.get('description'),
             venue_name=data.get('venue_name'),
             venue_address=data.get('venue_address'),
@@ -725,7 +760,15 @@ class LearningCircleCreateView(View):
             study_group.draft = data.get('draft', True)
 
         study_group.save()
-        # notification about new study group is sent at this point, but no associated meetings exists, which implies that the reminder can't use the date of the first meeting
+
+        # add all facilitators
+        facilitators = set([request.user.id] + data.get('facilitators'))  # make user a facilitator
+        for user_id in facilitators:
+            f = Facilitator(study_group=study_group, user_id=user_id)
+            f.save()
+            if user_id != request.user.id:
+                send_cofacilitator_email.delay(study_group.id, user_id, request.user.id)
+
         generate_meetings_from_dates(study_group, data.get('meetings', []))
 
         studygroup_url = f"{settings.PROTOCOL}://{settings.DOMAIN}" + reverse('studygroups_view_study_group', args=(study_group.id,))
@@ -746,6 +789,20 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         if errors != {}:
             return json_response(request, {"status": "error", "errors": errors})
 
+        if len(data.get('facilitators', [])) == 0:
+            errors = { 'facilitators': ['Cannot remove all faclitators from a learning circle']}
+            return json_response(request, {"status": "error", "errors": errors})
+
+        if len(data.get('facilitators', [])) > 1:
+            if not study_group.team:
+                errors = { 'facilitators': ['Facilitator not part of a team']}
+                return json_response(request, {"status": "error", "errors": errors})
+
+            team_list = TeamMembership.objects.active().filter(team=study_group.team).values_list('user', flat=True)
+            if not all(item in team_list for item in data.get('facilitators', [])):
+                errors = { 'facilitators': ['Facilitators not part of the same team']}
+                return json_response(request, {"status": "error", "errors": errors})
+
         # determine if meeting reminders should be regenerated
         regenerate_reminders = any([
             study_group.name != data.get('name'),
@@ -754,6 +811,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
             study_group.venue_details != data.get('venue_details'),
             study_group.venue_details != data.get('venue_details'),
             study_group.language != data.get('language'),
+            set(study_group.facilitator_set.all().values_list('user_id', flat=True)) != set(data.get('facilitators')),
         ])
 
         # update learning circle
@@ -791,6 +849,19 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
 
         study_group.save()
         generate_meetings_from_dates(study_group, data.get('meetings', []))
+
+        # update facilitators
+        current_facilicators_ids = study_group.facilitator_set.all().values_list('user_id', flat=True)
+        updated_facilitators = data.get('facilitators')
+        to_delete = study_group.facilitator_set.exclude(user_id__in=updated_facilitators)
+        for facilitator in to_delete:
+            send_cofacilitator_removed_email.delay(study_group.id, facilitator.user_id, request.user.id)
+        to_delete.delete()
+        to_add = [f_id for f_id in updated_facilitators if f_id not in current_facilicators_ids]
+        for user_id in to_add:
+            f = Facilitator(study_group=study_group, user_id=user_id)
+            f.save()
+            send_cofacilitator_email.delay(study_group.pk, user_id, request.user.id)
 
         if regenerate_reminders:
             for meeting in study_group.meeting_set.active():
@@ -853,82 +924,6 @@ class SignupView(View):
         application.communications_opt_in = clean_data.get('communications_opt_in', False)
         application.save()
         return json_response(request, {"status": "created"})
-
-
-class LandingPageLearningCirclesView(View):
-    """ return upcoming learning circles for landing page """
-    def get(self, request):
-
-        query_schema = {
-            "scope": schema.text(),
-        }
-        data = schema.django_get_to_dict(request.GET)
-        clean_data, errors = schema.validate(query_schema, data)
-        if errors != {}:
-            return json_response(request, {"status": "error", "errors": errors})
-
-        study_groups_unsliced = StudyGroup.objects.published()
-
-        if 'scope' in request.GET and request.GET.get('scope') == "team":
-            user = request.user
-            team_ids = TeamMembership.objects.active().filter(user=user).values("team")
-
-            if team_ids.count() == 0:
-                return json_response(request, { "status": "error", "errors": ["User is not on a team."] })
-
-            team_members = TeamMembership.objects.active().filter(team__in=team_ids).values("user")
-            study_groups_unsliced = study_groups_unsliced.filter(facilitator__in=team_members)
-
-        # get learning circles with image & upcoming meetings
-        study_groups = study_groups_unsliced.filter(
-            meeting__meeting_date__gte=timezone.now(),
-        ).annotate(
-            next_meeting_date=Min('meeting__meeting_date')
-        ).order_by('next_meeting_date')[:3]
-
-        # if there are less than 3 with upcoming meetings and an image
-        if study_groups.count() < 3:
-            # pad with learning circles with the most recent meetings
-            past_study_groups = study_groups_unsliced.filter(
-                meeting__meeting_date__lt=timezone.now(),
-            ).annotate(
-                next_meeting_date=Max('meeting__meeting_date')
-            ).order_by('-next_meeting_date')
-            study_groups = list(study_groups) + list(past_study_groups[:3-study_groups.count()])
-        data = {
-            'items': [ serialize_learning_circle(sg) for sg in study_groups ]
-        }
-        return json_response(request, data)
-
-
-class LandingPageStatsView(View):
-    """ Return stats for the landing page """
-    """
-    - Number of active learning circles
-    - Number of cities where learning circle happened
-    - Number of facilitators who ran at least 1 learning circle
-    - Number of learning circles to date
-    """
-    def get(self, request):
-        study_groups = StudyGroup.objects.published().filter(
-            meeting__meeting_date__gte=timezone.now()
-        ).annotate(
-            next_meeting_date=Min('meeting__meeting_date')
-        )
-        cities = StudyGroup.objects.published().filter(
-            latitude__isnull=False,
-            longitude__isnull=False,
-        ).distinct('city').values('city')
-        learning_circle_count = StudyGroup.objects.published().count()
-        facilitators = StudyGroup.objects.active().distinct('facilitator').values('facilitator')
-        cities_s = list(set([c['city'].split(',')[0].strip() for c in cities]))
-        data = {
-            "active_learning_circles": study_groups.count(),
-            "cities": len(cities_s),
-            "facilitators": facilitators.count(),
-            "learning_circle_count": learning_circle_count
-        }
-        return json_response(request, data)
 
 
 class ImageUploadView(View):
@@ -1029,7 +1024,7 @@ def serialize_team_data(team):
     }
 
     members = team.teammembership_set.active().values('user')
-    studygroup_count = StudyGroup.objects.published().filter(facilitator__in=members).count()
+    studygroup_count = StudyGroup.objects.published().filter(team=team).count()
 
     serialized_team["studygroup_count"] = studygroup_count
 

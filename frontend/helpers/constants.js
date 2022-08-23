@@ -49,14 +49,6 @@ export const API_ENDPOINTS = {
     baseUrl: '/api/courses/topics/?',
     searchParams: []
   },
-  stats: {
-    baseUrl: '/api/landing-page-stats/?',
-    searchParams: []
-  },
-  landingPage: {
-    baseUrl: '/api/landing-page-learning-circles/?',
-    searchParams: ['team', 'scope']
-  },
   images: {
     postUrl: '/api/upload_image/'
   },

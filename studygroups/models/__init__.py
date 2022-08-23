@@ -18,6 +18,7 @@ from .team import *
 from .announcement import Announcement
 from .profile import Profile
 from .learningcircle import StudyGroup
+from .learningcircle import Facilitator
 from .learningcircle import Meeting
 from .learningcircle import Application
 from .learningcircle import Reminder
@@ -171,9 +172,9 @@ def weekly_update_data(today, team=None):
 
     # TODO should creation date or start date determine lc #
     _facilitator_groups = StudyGroup.objects.published().filter(
-        facilitator=OuterRef('facilitator'),
+        created_by=OuterRef('created_by'), ## TODO - this uses creator rather than facilitator
         start_date__lte=OuterRef('start_date')
-    ).order_by().values('facilitator').annotate(number=Count('pk'))
+    ).order_by().values('created_by').annotate(number=Count('pk'))
 
     upcoming_studygroups = StudyGroup.objects.published().annotate(
         lc_number=_facilitator_groups.values('number')[:1]
@@ -338,8 +339,9 @@ def get_active_facilitators():
         studygroup_count=Count(
             Case(
                 When(
-                    studygroup__draft=False, studygroup__deleted_at__isnull=True,
-                    then=F('studygroup__id')
+                    facilitator__study_group__deleted_at__isnull=True,
+                    facilitator__study_group__draft=False, 
+                    then=F('facilitator__study_group__id')
                 ),
                 default=Value(0),
                 output_field=IntegerField()
@@ -349,20 +351,21 @@ def get_active_facilitators():
         latest_end_date=Max(
             Case(
                 When(
-                    studygroup__draft=False,
-                    studygroup__deleted_at__isnull=True,
-                    then='studygroup__end_date'
+                    facilitator__study_group__draft=False,
+                    facilitator__study_group__deleted_at__isnull=True,
+                    then='facilitator__study_group__end_date'
                 )
             )
         ),
         learners_count=Sum(
             Case(
                 When(
-                    studygroup__draft=False,
-                    studygroup__deleted_at__isnull=True,
-                    studygroup__application__deleted_at__isnull=True,
-                    studygroup__application__accepted_at__isnull=False, then=1
+                    facilitator__study_group__draft=False,
+                    facilitator__study_group__deleted_at__isnull=True,
+                    facilitator__study_group__application__deleted_at__isnull=True,
+                    facilitator__study_group__application__accepted_at__isnull=False, then=1
                 ),
+                default=Value(0),
                 output_field=IntegerField()
             )
         )

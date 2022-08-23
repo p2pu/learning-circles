@@ -7,10 +7,10 @@ from django.urls import reverse
 from django.utils.timezone import now
 from django_bleach.models import BleachField
 
-
 from .base import LifeTimeTrackingModel
 
 import uuid
+
 
 class Team(models.Model):
     name = models.CharField(max_length=128)
@@ -65,6 +65,14 @@ class TeamMembership(LifeTimeTrackingModel):
 
     def __str__(self):
         return 'Team membership: {}'.format(self.user.__str__())
+            
+    def to_dict(self):
+        return {
+            'id': self.user.pk,
+            'email': self.user.email,
+            'firstName': self.user.first_name,
+            'lastName': self.user.last_name
+        }
 
 
 class TeamInvitation(models.Model):
@@ -83,9 +91,9 @@ class TeamInvitation(models.Model):
 
 def get_study_group_organizers(study_group):
     """ Return the organizers for the study group """
-    team_membership = TeamMembership.objects.active().filter(user=study_group.facilitator)
-    if team_membership.count() == 1:
-        organizers = team_membership.first().team.teammembership_set.active().filter(role=TeamMembership.ORGANIZER).values('user')
+    team = study_group.team
+    if team:
+        organizers = team.teammembership_set.active().filter(role=TeamMembership.ORGANIZER).values('user')
         return User.objects.filter(pk__in=organizers)
     return []
 

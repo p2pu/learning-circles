@@ -28,6 +28,9 @@ import json
 import uuid
 import random
 import string
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # TODO remove organizer model - only use Facilitator model + Team Membership
@@ -36,6 +39,12 @@ class Organizer(models.Model):
 
     def __str__(self):
         return self.user.__str__()
+
+
+class Facilitator(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE)
+    added_at = models.DateTimeField(auto_now_add=True)
 
 
 class StudyGroupQuerySet(SoftDeleteQuerySet):
@@ -63,7 +72,7 @@ class StudyGroup(LifeTimeTrackingModel):
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     place_id = models.CharField(max_length=256, blank=True)  # Algolia place_id
     online = models.BooleanField(default=False) # indicate if the meetings will take place online
-    facilitator = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     start_date = models.DateField()  # This field caches first_meeting.meeting_date
     meeting_time = models.TimeField()
     end_date = models.DateField()  # This field caches last_meeting.meeting_date
@@ -101,12 +110,12 @@ class StudyGroup(LifeTimeTrackingModel):
         # use course.title if name is not set
         if self.name is None:
             self.name = self.course.title
-        super().save(*args, **kwargs)
         if created:
-            # if the facilitator is part of a team, set the team field
-            if self.facilitator.teammembership_set.active().count():
-                self.team = self.facilitator.teammembership_set.active().first().team
-                self.save()
+            # if the creator is part of a team, set the team field
+            if self.created_by.teammembership_set.active().count():
+                self.team = self.created_by.teammembership_set.active().first().team
+        super().save(*args, **kwargs)
+
 
     def day(self):
         return calendar.day_name[self.start_date.weekday()]
@@ -180,6 +189,15 @@ class StudyGroup(LifeTimeTrackingModel):
             return 'pending'
         return 'todo'
 
+    def facilitators_display(self):
+        facilitators = [f.user.first_name for f in self.facilitator_set.all()]
+        if not len(facilitators):
+            logger.error(f'Learning circle with no facilitators! pk={self.pk}')
+            return _('Unknown')
+        if len(facilitators) == 1:
+            return facilitators[0]
+        else:
+            return _('%(first)s and %(last)s') % {'first': ', '.join(facilitators[:-1]), 'last': facilitators[-1]}
 
 
     @property
@@ -188,17 +206,25 @@ class StudyGroup(LifeTimeTrackingModel):
 
     def to_dict(self):
         sg = self  # TODO - this logic is repeated in the API class
+        facilitators = [f.user.first_name for f in sg.facilitator_set.all()]
+        if not len(facilitators):
+            logger.error(f'Bad learning circle : {sg.pk}')
+            facilitators = ['Unknown']
+        facilitators_legacy = ' and '.join(filter(lambda x: x, [', '.join(facilitators[:-1]), facilitators[-1]]))
+
         data = {
             "id": sg.pk,
             "name": sg.name,
-            "course": sg.course.id,
-            "course_title": sg.course.title,
-            "description": sg.description,
-            "course_description": sg.course_description,
+            "facilitator": facilitators_legacy,
+            "facilitators": facilitators,
             "venue_name": sg.venue_name,
             "venue_details": sg.venue_details,
             "venue_address": sg.venue_address,
             "venue_website": sg.venue_website,
+            "course": sg.course.id,
+            "course_title": sg.course.title,
+            "course_description": sg.course_description,
+            "description": sg.description,
             "city": sg.city,
             "region": sg.region,
             "country": sg.country,
@@ -208,22 +234,21 @@ class StudyGroup(LifeTimeTrackingModel):
             "place_id": sg.place_id,
             "online": sg.online,
             "language": sg.language,
+            "day": sg.day(),
             "start_date": sg.start_date,
             "start_datetime": self.local_start_date(),
-            "weeks": sg.weeks,
             "meeting_time": sg.meeting_time.strftime('%H:%M'),
-            "duration": sg.duration,
             "timezone": sg.timezone,
             "timezone_display": sg.timezone_display(),
+            "end_time": sg.end_time(),
+            "duration": sg.duration, # not in API endpoint
+            "weeks": sg.weeks,
+            "url": reverse('studygroups_view_study_group', args=(sg.id,)),
             "signup_question": sg.signup_question,
             "facilitator_goal": sg.facilitator_goal,
             "facilitator_concerns": sg.facilitator_concerns,
-            "day": sg.day(),
-            "end_time": sg.end_time(),
-            "facilitator": sg.facilitator.first_name + " " + sg.facilitator.last_name,
-            "signup_count": sg.application_set.active().count(),
             "draft": sg.draft,
-            "url": reverse('studygroups_view_study_group', args=(sg.id,)),
+            "signup_count": sg.application_set.active().count(),
             "signup_url": reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
         }
         next_meeting = self.next_meeting()
@@ -480,11 +505,14 @@ def generate_meeting_reminder(meeting):
         reminder.study_group_meeting = meeting
 
     context = {
-        'facilitator': meeting.study_group.facilitator,
         'study_group': meeting.study_group,
         'next_meeting': meeting,
         'reminder': reminder,
     }
+    if meeting.study_group.facilitator_set.count() > 1:
+        context['facilitator_names'] = meeting.study_group.facilitators_display()
+    else:
+        context['facilitator_name'] = meeting.study_group.facilitators_display()
     timezone.activate(pytz.timezone(meeting.study_group.timezone))
     with use_language(meeting.study_group.language):
         reminder.email_subject = render_to_string_ctx(

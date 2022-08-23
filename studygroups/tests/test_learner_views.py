@@ -10,6 +10,7 @@ from django.conf import settings
 from unittest.mock import patch
 
 from studygroups.models import StudyGroup
+from studygroups.models import Facilitator
 from studygroups.models import Meeting
 from studygroups.models import Application
 from studygroups.models import Rsvp
@@ -78,7 +79,7 @@ class TestLearnerViews(TestCase):
         # Make sure notification was sent
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].to[0], self.APPLICATION_DATA['email'])
-        self.assertEqual(mail.outbox[0].cc[0], study_group.facilitator.email)
+        self.assertEqual(mail.outbox[0].cc[0], study_group.created_by.email)
         self.assertIn('The first meeting will be on Monday, 23 March at 6:30 p.m.', mail.outbox[0].body)
 
 
@@ -113,8 +114,9 @@ class TestLearnerViews(TestCase):
         facilitator = create_user('hi@example.net', 'bowie', 'wowie', 'password')
         mail.outbox = []
         sg = StudyGroup.objects.get(pk=1)
-        sg.facilitator = facilitator
+        sg.created_by = facilitator
         sg.save()
+        Facilitator.objects.create(study_group=sg, user=facilitator)
         c = Client()
         c.login(username='hi@example.net', password='password')
         user1 = {'study_group': sg.pk, 'name': 'bob', 'email': 'bob@mail.com', 'mobile': '+27112223333'}
@@ -147,8 +149,9 @@ class TestLearnerViews(TestCase):
         facilitator = create_user('hi@example.net', 'bowie', 'wowie', 'password')
         mail.outbox = []
         sg = StudyGroup.objects.get(pk=1)
-        sg.facilitator = facilitator
+        sg.created_by = facilitator
         sg.save()
+        Facilitator.objects.create(study_group=sg, user=facilitator)
         c = Client()
         c.login(username='hi@example.net', password='password')
         user1 = {'study_group': sg.pk, 'name': 'bob', 'mobile': '+27112223333'}
@@ -260,7 +263,7 @@ class TestLearnerViews(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertTrue(mail.outbox[0].subject.find(signup_data['name']) > 0)
         self.assertTrue(mail.outbox[0].subject.find(signup_data['mobile']) > 0)
-        self.assertIn(StudyGroup.objects.get(pk=1).facilitator.email, mail.outbox[0].to)
+        self.assertIn(StudyGroup.objects.get(pk=1).created_by.email, mail.outbox[0].to)
         self.assertIn('admin@localhost', mail.outbox[0].bcc)
 
         mail.outbox = []
@@ -269,7 +272,7 @@ class TestLearnerViews(TestCase):
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertTrue(mail.outbox[0].subject.find(signup_data['mobile']) > 0)
-        self.assertNotIn(StudyGroup.objects.get(pk=1).facilitator.email, mail.outbox[0].to)
+        self.assertNotIn(StudyGroup.objects.get(pk=1).created_by.email, mail.outbox[0].to)
         self.assertIn('admin@localhost', mail.outbox[0].to)
 
 
@@ -297,7 +300,7 @@ class TestLearnerViews(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertTrue(mail.outbox[0].subject.find('+12812347890') > 0)
         self.assertTrue(mail.outbox[0].subject.find('Test User') > 0)
-        self.assertIn(StudyGroup.objects.get(pk=1).facilitator.email, mail.outbox[0].to)
+        self.assertIn(StudyGroup.objects.get(pk=1).created_by.email, mail.outbox[0].to)
         self.assertIn('{0}/{1}/rsvp/?user=%2B12812347890&study_group=1&meeting_date={2}&attending=yes&sig='.format(settings.DOMAIN, get_language(), urllib.parse.quote(next_meeting.meeting_datetime().isoformat())), mail.outbox[0].body)
         self.assertIn('{0}/{1}/rsvp/?user=%2B12812347890&study_group=1&meeting_date={2}&attending=no&sig='.format(settings.DOMAIN, get_language(), urllib.parse.quote(next_meeting.meeting_datetime().isoformat())), mail.outbox[0].body)
 

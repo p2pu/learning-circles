@@ -75,7 +75,9 @@
                 <span class="material-icons">face</span>
               </div>
               <div class="text">
-                {% blocktrans with first_name=study_group.facilitator.first_name %}Facilitated by {{first_name}}{% endblocktrans %}
+                {% blocktrans with first_name=study_group.facilitator.first_name %}Facilitated by {% endblocktrans %}
+
+                {% for f in study_group.facilitator_set.all %}{% if forloop.last and not forloop.first %} and {% else %}{% if not forloop.first %}, {% endif %}{% endif %}{{f.user.first_name}}{% endfor %}
               </div>
             </div>
 
@@ -144,14 +146,15 @@
   <section id="lc-description">
     <div class="container">
       <div class="row">
-        <div class="col-lg-4 d-flex justify-content-center">
+        <div class="col-lg-4 justify-content-center">
 
+          {% for facilitator in study_group.facilitator_set.all %}
           <div class="pos-relative card-outer">
             <div class="pos-relative card-upper">
               <div class="circle-bg"></div>
 
-              {% if study_group.facilitator.profile.avatar %}
-                <img class="img-fluid card-img drop-shadow" src="{{ study_group.facilitator.profile.avatar.url }}" alt="Facilitator image" />
+              {% if facilitator.user.profile.avatar %}
+                <img class="img-fluid card-img drop-shadow" src="{{ facilitator.user.profile.avatar.url }}" alt="Facilitator image" />
               {% else %}
                 <img class="img-fluid card-img drop-shadow" src="{% static 'images/avatars/p2pu_avatar_blue.png' %}">
               {% endif %}
@@ -160,29 +163,30 @@
             <div class="card card-lower card-body drop-shadow">
               <div class="profile-info text-center">
                 <p class="mt-4 mb-1 small">{% trans "Facilitated by" %}</p>
-                <h4 class="mb-3 mt-1">{{ study_group.facilitator.first_name }}</h4>
-                {% if study_group.facilitator.profile.bio %}
-                <p class="text-left">{{ study_group.facilitator.profile.bio }}</p>
+                <h4 class="mb-3 mt-1">{{ facilitator.user.first_name }}</h4>
+                {% if facilitator.user.profile.bio %}
+                <p class="text-left">{{ facilitator.user.profile.bio }}</p>
                 {% endif %}
               </div>
 
               <div class="grid-wrapper small">
-                {% if team_name %}
+                {% if study_group.team %}
                   <div class="label">{% trans "Team" %}</div>
-                  {% if team_page_slug %}
-                    <div><a href="https://www.p2pu.org/{{ team_page_slug }}" rel="noopener noreferrer">{{ team_name }}</a></div>
+                  {% if study_group.team.page_slug %}
+                    <div><a href="https://www.p2pu.org/{{ study_group.team.page_slug }}" rel="noopener noreferrer">{{ study_group.team.name }}</a></div>
                   {% else %}
-                    <div>{{ team_name }}</div>
+                    <div>{{ study_group.team.name }}</div>
                   {% endif %}
                 {% endif %}
 
-                {% if study_group.facilitator.profile.city %}
+                {% if facilitator.user.profile.city %}
                   <div class="label">{% trans "City" %}</div>
-                  <div>{{ study_group.facilitator.profile.city }}</div>
+                  <div>{{ facilitator.user.profile.city }}</div>
                 {% endif %}
               </div>
             </div>
           </div>
+          {% endfor %}
         </div>
 
 

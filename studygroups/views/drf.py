@@ -14,6 +14,7 @@ from studygroups.models import StudyGroup
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 from studygroups.models import Meeting
+from studygroups.models import Facilitator
 from studygroups.models import get_study_group_organizers
 
 
@@ -31,26 +32,21 @@ class FeedbackSerializer(serializers.ModelSerializer):
 class IsGroupFacilitator(permissions.BasePermission):
 
     def check_permission(self, user, study_group):
-        if user.is_staff or user == study_group.facilitator \
-                or TeamMembership.objects.active().filter(user=user, role=TeamMembership.ORGANIZER).exists() and user in get_study_group_organizers(study_group):
+        if user.is_staff \
+                or Facilitator.objects.filter(user=user, study_group=study_group).exists() \
+                or study_group.team and TeamMembership.objects.active().filter(user=user, role=TeamMembership.ORGANIZER, team=study_group.team).exists():
             return True
         return False
 
-    
     def has_permission(self, request, view):
         meeting_id = request.data.get('study_group_meeting')
         meeting = Meeting.objects.get(pk=meeting_id)
         return self.check_permission(request.user, meeting.study_group)
 
-
     def has_object_permission(self, request, view, obj):
         """ give access to staff, user and team organizer """
         study_group = obj.study_group_meeting.study_group
-        if request.user.is_staff \
-                or request.user == study_group.facilitator \
-                or TeamMembership.objects.active().filter(user=request.user, role=TeamMembership.ORGANIZER).exists() and request.user in get_study_group_organizers(study_group):
-            return True
-        return False
+        return self.check_permission(request.user, study_group)
 
 
 class FeedbackViewSet(
@@ -70,8 +66,8 @@ class IsGroupFacilitatorII(permissions.BasePermission):
         """ give access to staff, user and team organizer """
         study_group = obj
         if request.user.is_staff \
-                or request.user == study_group.facilitator \
-                or TeamMembership.objects.active().filter(user=request.user, role=TeamMembership.ORGANIZER).exists() and request.user in get_study_group_organizers(study_group):
+                or Facilitator.objects.filter(user=request.user, study_group=study_group).exists() \
+                or study_group.team and TeamMembership.objects.active().filter(user=request.user, role=TeamMembership.ORGANIZER, team=study_group.team).exists():
             return True
         return False
 
@@ -93,10 +89,8 @@ class StudyGroupRatingViewSet(
 
 class IsATeamOrganizer(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        """ give access to staff, user and team organizer """
-        study_group = obj
+        """ give access to staff and team organizer """
         if request.user.is_staff \
-                or request.user == study_group.facilitator \
                 or TeamMembership.objects.active().filter(user=request.user, role=TeamMembership.ORGANIZER).exists():
             return True
         return False

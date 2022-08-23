@@ -85,7 +85,7 @@ class TestTeamsApi(TestCase):
 
         team = Team.objects.get(pk=1)
         organizer = User.objects.get(pk=1)
-        organizer_studygroups_count = StudyGroup.objects.filter(facilitator=organizer).count()
+        organizer_studygroups_count = StudyGroup.objects.filter(created_by=organizer).count()
 
         self.assertEqual(team_json["member_count"], team.teammembership_set.active().count())
         self.assertEqual(team_json["facilitators"][0]["first_name"], organizer.first_name)
