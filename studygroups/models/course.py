@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.db.models import F
 from django.utils.translation import ugettext_lazy as _
+from django.core.paginator import Paginator
 
 from .base import LifeTimeTrackingModel
 
@@ -115,4 +116,21 @@ class Course(LifeTimeTrackingModel):
         all_surveys = list(map(learner_survey_summary, learner_surveys))
         all_surveys += list(map(facilitator_survey_summary, facilitator_surveys))
         return all_surveys
+
+    def get_course_reviews_paginated(self):
+        from studygroups.models import StudyGroup
+        from surveys.models import LearnerSurveyResponse
+        from surveys.models import FacilitatorSurveyResponse
+        from surveys.models import learner_survey_summary
+        from surveys.models import facilitator_survey_summary
+
+        studygroup_ids = StudyGroup.objects.filter(course=self.id).distinct().values_list("id", flat=True)
+        learner_surveys = LearnerSurveyResponse.objects.filter(study_group__in=studygroup_ids)
+        facilitator_surveys = FacilitatorSurveyResponse.objects.filter(study_group__in=studygroup_ids)
+
+        all_surveys = list(map(learner_survey_summary, learner_surveys))
+        all_surveys += list(map(facilitator_survey_summary, facilitator_surveys))
+        paginator = Paginator(all_surveys, 4)
+        page_obj = paginator.get_page(1)
+        return {'page_obj': page_obj}
 

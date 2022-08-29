@@ -174,6 +174,27 @@ class CoursePage(DetailView):
 
         return context
 
+class CourseReviewsPage(DetailView):
+    model = Course
+    template_name = 'studygroups/course_reviews_page.html'
+    context_object_name = 'course'
+
+    def get_queryset(self):
+        return super().get_queryset().active()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        usage = StudyGroup.objects.filter(course=self.object.id).count()
+        rating_step_counts = json.loads(self.object.rating_step_counts)
+        similar_courses = [ serialize_course(course) for course in self.object.similar_courses()]
+
+        context['usage'] = usage
+        context['rating_counts_chart'] = OverallRatingBarChart(rating_step_counts).generate()
+        context['rating_step_counts'] = rating_step_counts
+        context['similar_courses'] = json.dumps(similar_courses, cls=DjangoJSONEncoder)
+
+        return context
+
 
 def generate_course_discourse_topic(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
