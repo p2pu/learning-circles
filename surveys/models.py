@@ -312,6 +312,9 @@ def facilitator_survey_summary(survey_response):
         "recommendation_reason": "",
     }
     """
+    summary = {'response_date': survey_response.responded_at}
     if survey_response.form_id == settings.TYPEFORM_FACILITATOR_SURVEY_FORM:
-        return _new_facilitator_survey_summary(survey_response)
-    return _old_facilitator_survey_summary(survey_response)
+        summary.update(_new_facilitator_survey_summary(survey_response))
+    else:
+        summary.update(_old_facilitator_survey_summary(survey_response))
+    return summary

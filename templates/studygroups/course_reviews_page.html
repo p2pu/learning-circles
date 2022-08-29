@@ -74,7 +74,7 @@
   <div class="container">
     <h2>{% trans "Reviews" %}</h2>
         <div class="row grid reviews">
-      {% for rating in course.get_course_reviews %}
+      {% for rating in page_obj %}
       {% if rating.course_rating_reason %}
       <div class="grid-item col-12 py-2">
         <div class="row py-3">
@@ -95,21 +95,21 @@
       <a href="" class="text-center btn text-orange">View course discussion</a>
       {% endcomment %}
     </div>
-    <p>{{ course.get_course_reviews_paginated.page_obj }}</p>
+    <p>{{ page_obj }}</p>
     <div class="pagination justify-content-center">
       <span class="step-links">
-          {% if course.get_course_reviews_paginated.page_obj.has_previous %}
+          {% if page_obj.has_previous %}
               <a href="?page=1">&laquo; first</a>
-              <a href="?page={{ course.get_course_reviews_paginated.page_obj }}">previous</a>
+              <a href="?page={{ page_obj }}">previous</a>
           {% endif %}
 
           <span class="current">
-              Page {{ course.get_course_reviews_paginated.page_obj }} of {{ course.get_course_reviews_paginated.page_obj }}.
+              Page {{ page_obj }} of {{ page_obj }}.
           </span>
 
-          {% if course.get_course_reviews_paginated.page_obj.has_next %}
-              <a href="?page={{ course.get_course_reviews_paginated.page_obj.next_page_number }}">next</a>
-              <a href="?page={{ course.get_course_reviews_paginated.page_obj.paginator.num_pages }}">last &raquo;</a>
+          {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}">next</a>
+              <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
           {% endif %}
       </span>
   </div>

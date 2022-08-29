@@ -23,11 +23,13 @@ from django.utils.decorators import method_decorator
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
+from django.core.paginator import Paginator
 
 import re
 import json
 import datetime
 import logging
+from surveys.models import FacilitatorSurveyResponse, facilitator_survey_summary
 
 from tinymce.widgets import TinyMCE
 
@@ -184,14 +186,13 @@ class CourseReviewsPage(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        usage = StudyGroup.objects.filter(course=self.object.id).count()
-        rating_step_counts = json.loads(self.object.rating_step_counts)
-        similar_courses = [ serialize_course(course) for course in self.object.similar_courses()]
+        course = self.get_object()
+        surveys = FacilitatorSurveyResponse.objects.filter(study_group__course=course)
+        surveys = map(facilitator_survey_summary, surveys)
+        surveys = filter(lambda s: s.get('course_rating_reason'), surveys)
+        paginator = Paginator(list(surveys), 4)
 
-        context['usage'] = usage
-        context['rating_counts_chart'] = OverallRatingBarChart(rating_step_counts).generate()
-        context['rating_step_counts'] = rating_step_counts
-        context['similar_courses'] = json.dumps(similar_courses, cls=DjangoJSONEncoder)
+        context['page_obj'] = paginator.get_page(self.request.GET.get('page'))
 
         return context
 
