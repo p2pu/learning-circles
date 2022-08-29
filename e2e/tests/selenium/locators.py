@@ -36,7 +36,7 @@ class LearningCircleCreationPageLocators(object):
     DANGER_ALERT = (By.CSS_SELECTOR, ".alert.alert-danger")
     ALERT_CLOSE_BUTTON = (By.CSS_SELECTOR, ".alert.alert-dismissible .btn-close")
 
-    COURSE_CARDS = (By.CSS_SELECTOR, "#react-tabs-1 .search-results .result-item")
+    COURSE_CARDS = (By.CSS_SELECTOR, "#react-tabs-1 .search-results .course")
     PUBLISH_BUTTON = (By.CSS_SELECTOR, ".action-bar button.publish")
     SAVE_BUTTON = (By.CSS_SELECTOR, ".action-bar button.save")
     MODAL_BUTTON = (By.ID, "recurrence-modal-btn")
