@@ -262,8 +262,8 @@ class CourseUpdate(UpdateView):
         course = self.get_object()
         if not request.user.is_staff and course.created_by != request.user:
             raise PermissionDenied
-        other_study_groups =  StudyGroup.objects.active().filter(course=course).exclude(cofacilitators__user=request.user)
-        study_groups = StudyGroup.objects.active().filter(course=course, cofacilitators__user=request.user)
+        other_study_groups =  StudyGroup.objects.active().filter(course=course).exclude(facilitator__user=request.user)
+        study_groups = StudyGroup.objects.active().filter(course=course, facilitator__user=request.user)
         if study_groups.count() > 1 or other_study_groups.count() > 0:
             messages.warning(request, _('This course is being used by other learning circles and cannot be edited, please create a new course to make changes'))
             url = reverse('studygroups_facilitator')
@@ -308,7 +308,7 @@ class StudyGroupCreate(TemplateView):
         context['team'] = []
         if self.request.user.is_authenticated and TeamMembership.objects.active().filter(user=self.request.user).exists():
             team = TeamMembership.objects.active().filter(user=self.request.user).get().team
-            context['team'] = [t.to_json() for t in team.teammembership_set.active()]
+            context['team'] = json.dumps([t.to_dict() for t in team.teammembership_set.active()])
         return context
 
 
@@ -348,12 +348,12 @@ class StudyGroupUpdate(SingleObjectMixin, TemplateView):
         self.object = self.get_object()
         context = super().get_context_data(**kwargs)
         context['meetings'] = [m.to_json() for m in self.object.meeting_set.active()]
-        context['facilitators'] = [f.user_id for f in self.object.cofacilitators.all()]
-        # TODO - only do this if 
-        # a) the currently authenticated user is in a team 
-        # or b) if it's a super user and the learning circle is part of a team
+        context['facilitators'] = [f.user_id for f in self.object.facilitator_set.all()]
+        # only do this if 
+        #   a) the currently authenticated user is in a team 
+        #   or b) if it's a super user and the learning circle is part of a team
         if self.request.user.is_staff and self.object.team or TeamMembership.objects.active().filter(user=self.request.user).exists():
-            context['team'] = [t.to_json() for t in self.object.team.teammembership_set.active()]
+            context['team'] = json.dumps([t.to_dict() for t in self.object.team.teammembership_set.active()])
         context['hide_footer'] = True
         if Reminder.objects.filter(study_group=self.object, edited_by_facilitator=True, sent_at__isnull=True).exists():
             context['reminders_edited'] = True

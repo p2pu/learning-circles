@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('added_at', models.DateTimeField(auto_now_add=True)),
-                ('study_group', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='cofacilitators', to='studygroups.studygroup')),
+                ('study_group', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='studygroups.studygroup')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),

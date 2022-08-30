@@ -275,7 +275,7 @@ def receive_sms(request):
         signup = signups.first()
         context['signup'] = signup
         subject = _('New SMS reply from {0} <{1}>').format(signup.name, sender)
-        to += [facilitator.user.email for facilitator in signup.study_group.cofacilitators.all()]
+        to += [facilitator.user.email for facilitator in signup.study_group.facilitator_set.all()]
         next_meeting = signups.first().study_group.next_meeting()
         # TODO - replace this check with a check to see if the meeting reminder has been sent
         if next_meeting and next_meeting.meeting_datetime() - timezone.now() < datetime.timedelta(days=2):

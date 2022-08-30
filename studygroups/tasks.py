@@ -52,7 +52,7 @@ def _send_facilitator_survey(study_group):
         'studygroups/email/facilitator_survey',
         context
     )
-    to = [f.user.email for f in study_group.cofacilitators.all()]
+    to = [f.user.email for f in study_group.facilitator_set.all()]
     cc = [settings.DEFAULT_FROM_EMAIL]
 
     message = EmailMultiAlternatives(
@@ -115,7 +115,7 @@ def _send_learner_survey(application):
         txt,
         settings.DEFAULT_FROM_EMAIL,
         to,
-        reply_to=[facilitator.user.email for facilitator in application.study_group.cofacilitators.all()]
+        reply_to=[facilitator.user.email for facilitator in application.study_group.facilitator_set.all()]
     )
     notification.attach_alternative(html, 'text/html')
     notification.send()
@@ -180,7 +180,7 @@ def send_meeting_reminder(reminder):
                 text_body,
                 sender,
                 [email],
-                reply_to=[facilitator.user.email for facilitator in reminder.study_group.cofacilitators.all()]
+                reply_to=[facilitator.user.email for facilitator in reminder.study_group.facilitator_set.all()]
             )
             reminder_email.attach_alternative(html_body, 'text/html')
             # attach icalendar event
@@ -218,7 +218,7 @@ def send_meeting_reminder(reminder):
             subject,
             text_body,
             sender,
-            [facilitator.user.email for facilitator in reminder.study_group.cofacilitators.all()]
+            [facilitator.user.email for facilitator in reminder.study_group.facilitator_set.all()]
         )
         reminder_email.attach_alternative(html_body, 'text/html')
         reminder_email.send()
@@ -253,7 +253,7 @@ def send_reminder(reminder):
                 context
             )
             text_body = html_body_to_text(html_body)
-        to += [facilitator.user.email for facilitator in reminder.study_group.cofacilitators.all()]
+        to += [facilitator.user.email for facilitator in reminder.study_group.facilitator_set.all()]
         sender = 'P2PU <{0}>'.format(settings.DEFAULT_FROM_EMAIL)
         try:
             reminder_email = EmailMultiAlternatives(
@@ -262,7 +262,7 @@ def send_reminder(reminder):
                 sender,
                 [],
                 bcc=to,
-                reply_to=[facilitator.user.email for facilitator in reminder.study_group.cofacilitators.all()]
+                reply_to=[facilitator.user.email for facilitator in reminder.study_group.facilitator_set.all()]
             )
             reminder_email.attach_alternative(html_body, 'text/html')
             reminder_email.send()
@@ -295,7 +295,7 @@ def _send_meeting_wrapup(meeting):
         subject,
         text_body,
         settings.DEFAULT_FROM_EMAIL,
-        to=[facilitator.user.email for facilitator in study_group.cofacilitators.all()]
+        to=[facilitator.user.email for facilitator in study_group.facilitator_set.all()]
     )
     message.attach_alternative(html_body, 'text/html')
     try:

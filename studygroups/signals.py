@@ -44,7 +44,7 @@ def handle_new_application(sender, instance, created, **kwargs):
             }
         ).strip('\n')
 
-        facilitators = [f'{f.user.first_name} {f.user.last_name}' for f in application.study_group.cofacilitators.all()]
+        facilitators = [f'{f.user.first_name} {f.user.last_name}' for f in application.study_group.facilitator_set.all()]
         if len(facilitators) == 0:
             names = _('Unkown')
         elif len(facilitators) == 1:
@@ -63,7 +63,7 @@ def handle_new_application(sender, instance, created, **kwargs):
 
     to = [application.email]
     # CC facilitator and put in reply-to
-    facilitator_emails = set(application.study_group.cofacilitators.all().values_list('user__email', flat=True))
+    facilitator_emails = set(application.study_group.facilitator_set.all().values_list('user__email', flat=True))
     welcome_message = EmailMultiAlternatives(
         learner_signup_subject,
         learner_signup_body,

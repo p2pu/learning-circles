@@ -28,7 +28,7 @@ class StudyGroupAdmin(admin.ModelAdmin):
     inlines = [ApplicationInline]
     list_display = ['course', 'city', 'facilitators', 'start_date', 'day', 'signup_open', 'uuid']
     exclude = ['deleted_at']
-    search_fields = ['course__title', 'uuid', 'city', 'cofacilitators__user__first_name', 'cofacilitators__user__email']
+    search_fields = ['course__title', 'uuid', 'city', 'facilitator__user__first_name', 'facilitator__user__email']
     raw_id_fields = ['course', 'created_by']
 
     def facilitators(self, study_group):
