@@ -57,6 +57,7 @@ from studygroups.charts import OverallRatingBarChart
 from studygroups.discourse import create_discourse_topic
 from studygroups.utils import render_to_string_ctx
 from studygroups.views.api import serialize_course
+from studygroups.views.api import serialize_learning_circle
 from studygroups.models.team import eligible_team_by_email_domain
 from studygroups.models import weekly_update_data
 
@@ -165,11 +166,14 @@ class CoursePage(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        usage = StudyGroup.objects.filter(course=self.object.id).count()
+        usage = StudyGroup.objects.published().filter(course=self.object.id).count()
+        learning_circles = StudyGroup.objects.published().filter(course=self.object.id)[:5]
+
         rating_step_counts = json.loads(self.object.rating_step_counts)
         similar_courses = [ serialize_course(course) for course in self.object.similar_courses()]
 
         context['usage'] = usage
+        context['learning_circles'] = list(map(serialize_learning_circle, learning_circles))
         context['rating_counts_chart'] = OverallRatingBarChart(rating_step_counts).generate()
         context['rating_step_counts'] = rating_step_counts
         context['similar_courses'] = json.dumps(similar_courses, cls=DjangoJSONEncoder)

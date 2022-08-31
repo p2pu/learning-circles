@@ -109,7 +109,7 @@ class Course(LifeTimeTrackingModel):
 
         facilitator_surveys = FacilitatorSurveyResponse.objects.filter(study_group__course=self)
         all_surveys = map(facilitator_survey_summary, facilitator_surveys)
-        all_surveys = filter(lambda s: s.get('course_rating_reason'), all_surverys)
+        all_surveys = filter(lambda s: s.get('course_rating_reason'), all_surveys)
 
         return list(all_surveys)
 
