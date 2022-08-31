@@ -106,7 +106,7 @@ def serialize_learning_circle(sg):
         "course": {
             "id": sg.course.pk,
             "title": sg.course.title,
-            "provider": sg.course.provider,
+            "provider": sg.course.provider, # TODO
             "link": sg.course.link,
             "course_page_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse('studygroups_course_page', args=(sg.course.id,)),
             "discourse_topic_url": sg.course.discourse_topic_url if sg.course.discourse_topic_url else settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_generate_course_discourse_topic", args=(sg.course.id,)),
@@ -432,15 +432,18 @@ def _course_check(course_id):
 
 
 def serialize_course(course):
+    # TODO
     data = {
         "id": course.id,
         "title": course.title,
+        "resource_format": course.resource_format,
         "provider": course.provider,
         "platform": course.platform,
         "link": course.link,
         "caption": course.caption,
         "on_demand": course.on_demand,
         "topics": [t.strip() for t in course.topics.split(',')] if course.topics else [],
+        "topics_curated": [t.strip() for t in course.topics_curated.split(',')] if course.topics_curated else [],
         "language": course.language,
         "overall_rating": course.overall_rating,
         "total_ratings": course.total_ratings,
