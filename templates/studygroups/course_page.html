@@ -176,7 +176,9 @@
           <i class="fs-1 material-icons">{% if course.overall_rating >= 5 %}star{% elif course.overall_rating > 4 %}star_half{% else %}star_outline{% endif %}</i>
         </div>
         <div class="col-12 text-uppercase">
-          {% blocktrans count total_ratings=course.total_ratings %}{{ total_ratings }} rating{% plural %}{{ total_ratings }} ratings{% endblocktrans %}</div>
+          {% blocktrans count total_ratings=course.get_num_of_learner_reviews %}{{ total_ratings }} facilitator rating{% plural %}{{ total_ratings }} facilitator ratings{% endblocktrans %} | 
+          {% blocktrans count total_ratings=course.get_num_of_facilitator_reviews %}{{ total_ratings }} learner rating{% plural %}{{ total_ratings }} learner ratings{% endblocktrans %}
+        </div>
         {% endif %}
       </div>
 
@@ -260,24 +262,23 @@
 
     <h3>{% trans "Reviews" %}</h3>
     <div class="row grid reviews">
-      {% for rating in course.get_course_reviews %}
+      {% for rating in course.get_course_reviews|dictsort:"course_rating_reason"|slice:"10" %}
       {% if rating.course_rating_reason %}
       <div class="grid-item col-12 py-2">
         <div class="row py-3">
           <div class="col-12 col-lg-11 col-xl-10">
             <div class="lowbrow row py-3">
               <div class="stars stars-{{rating.course_rating}} mb-2 mb-md-0 align-items-center pe-md-0 d-flex col-12 col-md-auto">
-                <span></span><span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span><span></span><span class="date"> {{rating.response_date | date:'M Y'}}</span>
               </div>
             </div>
             <p>{{rating.course_rating_reason}}</p>
-            <p>{{rating.response_date | date:'Y'}}</p>
           </div>
         </div>
       </div>
       {% endif %}
       {% endfor %}
-
+      <a href="reviews" class="text-center btn text-orange">More reviews</a>
       {% comment %}
       <a href="" class="text-center btn text-orange">View course discussion</a>
       {% endcomment %}
@@ -287,7 +288,7 @@
 
 <section>
   <div class="container">
-      <div class="text-center">
+      <!--<div class="text-center">
         {% if course.discourse_topic_url %}
         <a href="{{ course.discourse_topic_url }}" class="text-center btn p2pu-btn orange">{% trans "View discussion" %}</a>
         {% else %}
@@ -297,13 +298,12 @@
           <input type="submit" class="text-center btn p2pu-btn orange" value="{% trans "Start discussion" %}"></input>
         </form>
         {% endif %}
-      </div>
+      </div>-->
   </div>
 </section>
 
 
 
-{% comment %}
 <section>
   <div class="container">
     <h2 class="py-4">
@@ -314,33 +314,35 @@
       {% endblocktrans %}
     </h2>
     <div class="row grid">
-
+      {% for learning_circle in learning_circles %}
       <div class="grid-item col-md-6 col-lg-4">
-        <div class="card learning-circle in-progress">
-          <div class="status-tag">in progress</div>
-          <div class="card-image">
-            <img src="{{ site.baseurl }}/assets/images/p2pu-ogimg-default.jpg" alt="P2PU Monthly Facilitator Call" class="card-img-top">
+        
+          <div class="card learning-circle in-progress">
+            <div class="status-tag">in progress</div>
+            <div class="card-image">
+              <img src="{{learner_circle.image}}" alt="{{learning_circle.name}}" class="card-img-top">
+            </div>
+            <div class="card-header">
+              <span class="eyebrow">{{learning_circle.start_date}}</span>
+              <h3 class="card-title">{{learning_circle.name}}</h3>
+            </div>
+            <div class="card-body">
+              <span class="schedule"><i class="material-icons">schedule</i>12:00 PM to 1:00 PM (EDT)</span>
+              <span class="duration"><i class="material-icons">today</i>13 meetings starting June 9, 2021</span>
+              <span class="city-country"> <i class="material-icons">place</i>Detroit</span>
+              <span class="facilitator"><i class="material-icons">face</i>Facilitated by {{learning_circle.facilitator}}</span>
+              <span class="location"><i class="material-icons">store</i>Meeting at Online</span>
+            </div>
+            <div class="card-footer">
+              <button class="btn p2pu-btn btn-sm gray mx-auto d-block">Sign up</button>
+            </div>
           </div>
-          <div class="card-header">
-            <span class="eyebrow">Started June 9, 2021</span>
-            <h3 class="card-title">P2PU Monthly Facilitator Call</h3>
-          </div>
-          <div class="card-body">
-            <span class="schedule"><i class="material-icons">schedule</i>12:00 PM to 1:00 PM (EDT)</span>
-            <span class="duration"><i class="material-icons">today</i>13 meetings starting June 9, 2021</span>
-            <span class="city-country"> <i class="material-icons">place</i>Detroit</span>
-            <span class="facilitator"><i class="material-icons">face</i>Facilitated by Qumisha</span>
-            <span class="location"><i class="material-icons">store</i>Meeting at Online</span>
-          </div>
-          <div class="card-footer">
-            <button class="btn p2pu-btn btn-sm gray mx-auto d-block">Sign up</button>
-          </div>
-        </div>
+        
       </div>
+      {% endfor %}
     </div>
   </div>
 </section>
-{% endcomment %}
 {% endblock %}
 
 {% block scripts %}

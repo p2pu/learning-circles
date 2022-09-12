@@ -28,7 +28,7 @@
   <header class="container page-header">
     <div class="row">
       <div class="col-12 mt-4 mt-lg-5">
-        <a href="{{STATIC_SITE_URL}}/en/learning-resources/" class="btn back p2pu-btn btn-sm btn-md-base secondary gray mt-md-4">
+        <a href="/en/course/{{course.id}}" class="btn back p2pu-btn btn-sm btn-md-base secondary gray mt-md-4">
           <span>Back to Learning Resource</span>
         </a>
        
@@ -95,7 +95,7 @@
       <a href="" class="text-center btn text-orange">View course discussion</a>
       {% endcomment %}
     </div>
-    <p>{{ page_obj }}</p>
+    <p>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</p>
     <div class="pagination justify-content-center">
       <span class="step-links">
           {% if page_obj.has_previous %}
@@ -104,7 +104,7 @@
           {% endif %}
 
           <span class="current">
-              Page {{ page_obj }} of {{ page_obj }}.
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
           </span>
 
           {% if page_obj.has_next %}

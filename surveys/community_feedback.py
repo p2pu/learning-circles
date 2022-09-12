@@ -26,4 +26,5 @@ def calculate_course_ratings(course):
     course.rating_step_counts = json.dumps(step_counts)
     course.overall_rating = overall_rating
     course.total_ratings = total_ratings
+    course.learner_ratings = 10
     course.save()

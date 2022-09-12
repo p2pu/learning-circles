@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from django.db.models import F
 from django.utils.translation import ugettext_lazy as _
 from django.core.paginator import Paginator
+from django.db.models.functions import Length
+
 
 from .base import LifeTimeTrackingModel
 
@@ -104,17 +106,33 @@ class Course(LifeTimeTrackingModel):
 
     def get_course_reviews(self):
         from studygroups.models import StudyGroup
-        from surveys.models import LearnerSurveyResponse
         from surveys.models import FacilitatorSurveyResponse
-        from surveys.models import learner_survey_summary
         from surveys.models import facilitator_survey_summary
 
         studygroup_ids = StudyGroup.objects.filter(course=self.id).distinct().values_list("id", flat=True)
-        learner_surveys = LearnerSurveyResponse.objects.filter(study_group__in=studygroup_ids)
         facilitator_surveys = FacilitatorSurveyResponse.objects.filter(study_group__in=studygroup_ids)
-
-        all_surveys = list(map(learner_survey_summary, learner_surveys))
-        all_surveys += list(map(facilitator_survey_summary, facilitator_surveys))
+        all_surveys = list(map(facilitator_survey_summary, facilitator_surveys))
         return all_surveys
+
+    def get_num_of_facilitator_reviews(self):
+        from studygroups.models import StudyGroup
+        from surveys.models import FacilitatorSurveyResponse
+        from surveys.models import facilitator_survey_summary
+
+        studygroup_ids = StudyGroup.objects.filter(course=self.id).distinct().values_list("id", flat=True)
+        facilitator_surveys = FacilitatorSurveyResponse.objects.filter(study_group__in=studygroup_ids)
+        surveys_set = set(facilitator_surveys)
+        all_surveys = list(map(facilitator_survey_summary, surveys_set))
+        return len(all_surveys)
+
+    def get_num_of_learner_reviews(self):
+        from studygroups.models import StudyGroup
+        from surveys.models import LearnerSurveyResponse
+        from surveys.models import learner_survey_summary
+
+        studygroup_ids = StudyGroup.objects.filter(course=self.id).distinct().values_list("id", flat=True)
+        learner_surveys = LearnerSurveyResponse.objects.filter(study_group__in=studygroup_ids)
+        all_surveys = list(map(learner_survey_summary, learner_surveys))
+        return len(all_surveys)
 
 
