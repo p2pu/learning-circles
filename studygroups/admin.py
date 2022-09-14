@@ -3,6 +3,7 @@ from django import forms
 
 # Register your models here.
 from studygroups.models import Course
+from studygroups.models import TopicGuide
 from studygroups.models import StudyGroup
 from studygroups.models import Meeting
 from studygroups.models import Application
@@ -165,6 +166,7 @@ class MeetingAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Course, CourseAdmin)
+admin.site.register(TopicGuide)
 admin.site.register(StudyGroup, StudyGroupAdmin)
 admin.site.register(Meeting, MeetingAdmin)
 admin.site.register(Application, ApplicationAdmin)

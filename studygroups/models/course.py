@@ -37,6 +37,14 @@ def course_platform_from_url(url):
     return platform
 
 
+class TopicGuide(models.Model):
+    title = models.CharField(max_length=64)
+    url = models.URLField()
+
+    def __str__(self):
+        return self.title
+
+
 class Course(LifeTimeTrackingModel):
     RESOURCE_FORMATS = [
         ('course', 'Online Course'),
@@ -55,7 +63,7 @@ class Course(LifeTimeTrackingModel):
     caption = models.CharField(max_length=500)
     on_demand = models.BooleanField()
     topics = models.CharField(max_length=500) # changed to keyword in UI
-    topics_curated = models.CharField(max_length=500, blank=True) 
+    topic_guides = models.ManyToManyField(TopicGuide)
     language = models.CharField(max_length=6) # ISO language code
     created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE) # TODO maybe rename to added_by
     unlisted = models.BooleanField(default=False)

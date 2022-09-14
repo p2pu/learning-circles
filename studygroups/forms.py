@@ -229,6 +229,7 @@ class CourseForm(forms.ModelForm):
             'caption',
             'on_demand',
             'topics',
+            'topic_guides',
             'language',
             'license',
         ]
@@ -237,7 +238,7 @@ class CourseForm(forms.ModelForm):
             'link': _('Resource URL'),
             'provider': _('Resourse creator'),
             'caption': _('Resourse description (500 character limit)'),
-            'topics': _('Resourse keywords'),
+            'topics': _('Keywords'),
             'license': _('Course license'),
         }
         help_texts = {
@@ -245,6 +246,7 @@ class CourseForm(forms.ModelForm):
              'link': _('Paste full URL above.'),
              'caption': _('Write 1-2 sentences that describe what people will accomplish if they use this resource. This description is what learners will see when signing up for learning circles, and what facilitators will see when selecting a resourse.'),
              'topics': _('Select or create a few keywords that will help learners and future facilitators find this resourse.'),
+             'topic_guides': _('Add course to topic guides.'),
         }
 
 

@@ -40,6 +40,7 @@ from studygroups.models import StudyGroup
 from studygroups.models import Facilitator
 from studygroups.models import Meeting
 from studygroups.models import Course
+from studygroups.models import TopicGuide
 from studygroups.models import Application
 from studygroups.models import Reminder
 from studygroups.forms import ApplicationInlineForm
@@ -242,6 +243,7 @@ class CourseCreate(CreateView):
             item.strip().lower() for sublist in topics for item in sublist[0].split(',')
         ]
         context['topics'] = list(set(topics))
+        context['topic_guides'] = TopicGuide.objects.all()
         return context
 
     def form_valid(self, form):
@@ -284,6 +286,7 @@ class CourseUpdate(UpdateView):
             item.strip().lower() for sublist in topics for item in sublist[0].split(',')
         ]
         context['topics'] = list(set(topics))
+        context['topic_guides'] = TopicGuide.objects.all()
         return context
 
     def form_valid(self, form):

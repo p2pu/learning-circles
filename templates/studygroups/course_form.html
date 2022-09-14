@@ -52,7 +52,13 @@ window.reactData.topics = [
 {% for topic in topics %}"{{topic}}",
 {% endfor %}
 ];
-
+window.reactData.topicGuides = [
+  {% for topicGuide in topic_guides %}{
+    value: {{topicGuide.pk}},
+    label: "{{topicGuide.title}}",
+  },
+{% endfor %}
+];
 </script>
 
 <script>
