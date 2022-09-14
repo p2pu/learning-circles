@@ -174,7 +174,6 @@ class CoursePage(DetailView):
         context['rating_step_counts'] = rating_step_counts
         context['similar_courses'] = json.dumps(similar_courses, cls=DjangoJSONEncoder)
         context['learning_circles'] = StudyGroup.objects.filter(course=self.object.id)
-        context['reviews']
 
         return context
 

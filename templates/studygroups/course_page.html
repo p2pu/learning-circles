@@ -66,6 +66,12 @@
                   {% for topic in course.topic_list %}{{topic}}{% if not forloop.last %}, {% endif %}{% endfor %}
                 </td>
               </tr>
+              <tr class="topics">
+                <th scope="row">{% trans "Key Words" %}</th>
+                <td class="topics-list">
+                  {% for topic in course.topic_list %}{{topic}}{% if not forloop.last %}, {% endif %}{% endfor %}
+                </td>
+              </tr>
               <tr>
                 <th scope="row">{% trans "Added by" %}</th>
                 <td class="">
@@ -262,7 +268,7 @@
 
     <h3>{% trans "Reviews" %}</h3>
     <div class="row grid reviews">
-      {% for rating in course.get_course_reviews|dictsort:"course_rating_reason"|slice:"10" %}
+      {% for rating in course.get_course_reviews %}
       {% if rating.course_rating_reason %}
       <div class="grid-item col-12 py-2">
         <div class="row py-3">
