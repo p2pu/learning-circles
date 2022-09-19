@@ -223,30 +223,31 @@ class CourseForm(forms.ModelForm):
         model = Course
         fields = [
             'title',
-            'link',
-            'resource_format',
             'provider',
+            'resource_format',
+            'link',
             'caption',
-            'on_demand',
-            'topics',
             'topic_guides',
+            'topics',
             'language',
             'license',
         ]
         labels = {
-            'title': _('Resource title'),
-            'link': _('Resource URL'),
-            'provider': _('Resourse creator'),
-            'caption': _('Resourse description (500 character limit)'),
+            'title': _('Title'),
+            'link': _('URL'),
+            'provider': _('Creator'),
+            'caption': _('Description (500 character limit)'),
             'topics': _('Keywords'),
-            'license': _('Course license'),
+            'topic_guides': _('Topics'),
+            'license': _('License'),
+            'resource_format': _('Format'),
         }
         help_texts = {
              'provider': _('e.g. MIT, University of Michigan, Khan Academy.'),
              'link': _('Paste full URL above.'),
-             'caption': _('Write 1-2 sentences that describe what people will accomplish if they use this resource. This description is what learners will see when signing up for learning circles, and what facilitators will see when selecting a resourse.'),
+             'caption': _('Write 1-2 sentences describing what people will learn from this resource. This is what learners will see when signing up for learning circles, and what facilitators will see when selecting a resource.'),
              'topics': _('Select or create a few keywords that will help learners and future facilitators find this resourse.'),
-             'topic_guides': _('Add course to topic guides.'),
+             'topic_guides': _('Add your resource to one of P2PU’s existing topic guides.'),
         }
 
 

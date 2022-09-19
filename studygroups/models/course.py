@@ -52,6 +52,7 @@ class Course(LifeTimeTrackingModel):
         ('video', 'Video'),
         ('article', 'Article'),
         ('group', 'Interest Group'),
+        ('other', 'Other'),
     ] # TODO not sure I want to make this a enum/choice field ?
 
     OER_LICENSES = ['CC-BY', 'CC-BY-SA', 'CC-BY-NC', 'CC-BY-NC-SA', 'Public Domain']
@@ -62,8 +63,8 @@ class Course(LifeTimeTrackingModel):
     resource_format = models.CharField(max_length=128, choices=RESOURCE_FORMATS)
     caption = models.CharField(max_length=500)
     on_demand = models.BooleanField()
-    topics = models.CharField(max_length=500) # changed to keyword in UI
-    topic_guides = models.ManyToManyField(TopicGuide)
+    topics = models.CharField(max_length=500, blank=True) # changed to keyword in UI
+    topic_guides = models.ManyToManyField(TopicGuide, blank=True, null=True)
     language = models.CharField(max_length=6) # ISO language code
     created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE) # TODO maybe rename to added_by
     unlisted = models.BooleanField(default=False)
