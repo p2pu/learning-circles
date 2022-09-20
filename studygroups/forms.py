@@ -209,7 +209,6 @@ class CourseForm(forms.ModelForm):
         (False, _('Not sure')),
     )
     license = forms.ChoiceField(choices=LICENSES, initial='', required=False)
-    on_demand = forms.ChoiceField(choices=AVAILABILITY_CHOICES, initial=True, label= _('Availability'), help_text=_('Select “Always available” if the resourse is openly licensed or on-demand, meaning that there are no scheduled start and end dates for availability.'))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

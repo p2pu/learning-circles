@@ -62,7 +62,7 @@ class Course(LifeTimeTrackingModel):
     link = models.URLField()
     resource_format = models.CharField(max_length=128, choices=RESOURCE_FORMATS)
     caption = models.CharField(max_length=500)
-    on_demand = models.BooleanField()
+    on_demand = models.BooleanField(default=False)
     topics = models.CharField(max_length=500, blank=True) # changed to keyword in UI
     topic_guides = models.ManyToManyField(TopicGuide, blank=True, null=True)
     language = models.CharField(max_length=6) # ISO language code
