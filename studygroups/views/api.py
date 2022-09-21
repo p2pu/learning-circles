@@ -29,6 +29,7 @@ import logging
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import user_is_team_organizer
 from studygroups.models import Course
+from studygroups.models import TopicGuide
 from studygroups.models import StudyGroup
 from studygroups.models import Facilitator
 from studygroups.models import Application
@@ -372,6 +373,7 @@ class LearningCircleListView(View):
         return json_response(request, data)
 
 
+# TODO is this still used on the EU sites?
 class LearningCircleTopicListView(View):
     """ Return topics for listed courses """
     def get(self, request):
@@ -532,10 +534,10 @@ class CourseListView(View):
 
         if 'topics' in request.GET:
             topics = request.GET.get('topics').split(',')
-            query = Q(topics__icontains=topics[0])
+            topic_query = Q(topic_guides__title=topics[0].lower())
             for topic in topics[1:]:
-                query = Q(topics__icontains=topic) | query
-            courses = courses.filter(query)
+                topic_query = Q(topic_guides__title=topic.lower) | topic_query
+            courses = courses.filter(topic_query)
 
         if 'languages' in request.GET:
             languages = request.GET.get('languages').split(',')
@@ -575,16 +577,13 @@ class CourseListView(View):
 class CourseTopicListView(View):
     """ Return topics for listed courses """
     def get(self, request):
-        topics = Course.objects.active()\
-                .filter(unlisted=False)\
-                .exclude(topics='')\
-                .values_list('topics')
-        topics = [
-            item.strip().lower() for sublist in topics for item in sublist[0].split(',')
-        ]
-        from collections import Counter
+        topics = TopicGuide.objects.all().values_list('title', flat=True)
         data = {}
-        data['topics'] = { k: v for k, v in list(Counter(topics).items()) }
+        # for backwards compatibily, this endpoint should return a dictionary.
+        # it used to be {topic: number of courses using topic}, but since the
+        # counts aren't being used, it's just returning 0 to avoid extra load
+        # on the db
+        data['topics'] = { k: 1 for k in topics } 
         return json_response(request, data)
 
 
