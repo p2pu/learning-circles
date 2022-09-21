@@ -10,7 +10,7 @@ botocore==1.23.14
 cachetools==4.2.4
 cairocffi==1.3.0
 CairoSVG==2.5.2
-celery==5.2.1
+celery==5.2.2
 certifi==2021.10.8
 cffi==1.15.0
 charset-normalizer==2.0.8
