@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import {Creatable} from 'react-select'
-import css from 'react-select/dist/react-select.css'
+import {default as ReactSelect} from 'react-select'
+//import css from 'react-select/dist/react-select.css'
 
 export default class TopicInput extends Component {
   constructor(props){
@@ -23,12 +23,14 @@ export default class TopicInput extends Component {
     const topicOptions = Array.from(this.props.topics);
     topicOptions.sort();
 
+    // TODO probably need to do more to upgrade this package
+
     return(
       <span>
         <input type="hidden" value={this.state.topics.map(t=>t.value).join(',')} name="topics" />
-        <Creatable
+        <ReactSelect
           name="topics_input"
-          multi={true}
+          isMulti={true}
           value={this.state.topics}
           onChange={this.handleSelect}
           options={topicOptions.map(topic => {
