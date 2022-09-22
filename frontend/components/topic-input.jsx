@@ -30,7 +30,7 @@ export default class TopicInput extends Component {
         <input type="hidden" value={this.state.topics.map(t=>t.value).join(',')} name="topics" />
         <ReactSelect
           name="topics_input"
-          multi={true}
+          isMulti={true}
           value={this.state.topics}
           onChange={this.handleSelect}
           options={topicOptions.map(topic => {
