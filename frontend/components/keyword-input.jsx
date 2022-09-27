@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import CreatableSelect from 'react-select/creatable';
 
-export default class TopicInput extends Component {
+export default class KeywordInput extends Component {
   constructor(props){
     super(props);
     let topics = [];
@@ -13,10 +13,8 @@ export default class TopicInput extends Component {
   }
 
   handleSelect(selected){
-    const newTopicList = selected.map(option => option.value)
     this.setState({ topics: selected });
   }
-
 
   render(props) {
     const topicOptions = Array.from(this.props.topics);

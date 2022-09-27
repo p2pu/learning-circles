@@ -13,15 +13,22 @@ const TopicInput = (props) => {
 
   return(
     <span>
-      <select type="hidden" name="topic_guides" multiple style={{display:"none"}}>
+      <select 
+        type="hidden"
+        name="topic_guides"
+        multiple
+        style={{display:"none"}}
+        value={selectedGuides.map( t => t.value )}
+      >
         {
           selectedGuides.map( t => {
             return (
-              <option value={t.value} selected key={t.value}>{t.label}</option>
+              <option value={t.value} key={t.value}>{t.label}</option>
             )
           })
         }
       </select>
+
       <Select
         name="topics_input"
         isMulti={true}

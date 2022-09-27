@@ -29,12 +29,16 @@ ReactDOM.render(
 );
 
 const topicGuidesEl = document.getElementById('div_id_topic_guides');
+const options = topicGuidesEl.querySelectorAll('option[selected]');
+console.log(options);
+let values = [];
+options.forEach( ({value, label}) => values.push( { value, label } ));
 let topicGuideDiv = document.createElement('div');
 topicGuidesEl.querySelector('#id_topic_guides').replaceWith(topicGuideDiv);
 
 ReactDOM.render(
   <TopicInput
-    value={[]}
+    value={values}
     topics={window.reactData.topicGuides}
   />,
   topicGuideDiv

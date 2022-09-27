@@ -250,6 +250,7 @@ class CourseCreate(CreateView):
         self.object = form.save(commit=False)
         self.object.created_by = self.request.user
         self.object.save()
+        form.save_m2m()
         messages.success(self.request, _('Your course has been added. You can now create a learning circle using it.'))
         return http.HttpResponseRedirect(self.get_success_url())
 
@@ -290,14 +291,10 @@ class CourseUpdate(UpdateView):
         return context
 
     def form_valid(self, form):
-        # courses created by staff will be global
-        messages.success(self.request, _('Your course has been created. You can now create a learning circle using it.'))
-        if self.request.user.is_staff:
-            return super(CourseUpdate, self).form_valid(form)
-        self.object = form.save(commit=False)
-        self.object.created_by = self.request.user
-        self.object.save()
+        messages.success(self.request, _('Your course has been updated.'))
+        self.object = form.save()
         return http.HttpResponseRedirect(self.get_success_url())
+
 
     def get_success_url(self):
         url = reverse('studygroups_facilitator')
