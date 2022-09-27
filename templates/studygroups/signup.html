@@ -77,7 +77,7 @@
               <div class="text">
                 {% blocktrans with first_name=study_group.facilitator.first_name %}Facilitated by {% endblocktrans %}
 
-                {% for f in study_group.cofacilitators.all %}{% if forloop.last and not forloop.first %} and {% else %}{% if not forloop.first %}, {% endif %}{% endif %}{{f.user.first_name}}{% endfor %}
+                {% for f in study_group.facilitator_set.all %}{% if forloop.last and not forloop.first %} and {% else %}{% if not forloop.first %}, {% endif %}{% endif %}{{f.user.first_name}}{% endfor %}
               </div>
             </div>
 
@@ -148,7 +148,7 @@
       <div class="row">
         <div class="col-lg-4 justify-content-center">
 
-          {% for facilitator in study_group.cofacilitators.all %}
+          {% for facilitator in study_group.facilitator_set.all %}
           <div class="pos-relative card-outer">
             <div class="pos-relative card-upper">
               <div class="circle-bg"></div>
@@ -173,7 +173,7 @@
                 {% if study_group.team %}
                   <div class="label">{% trans "Team" %}</div>
                   {% if study_group.team.page_slug %}
-                    <div><a href="https://www.p2pu.org/{{ study_group.team.page_slug }}" rel="noopener noreferrer">{{ team_name }}</a></div>
+                    <div><a href="https://www.p2pu.org/{{ study_group.team.page_slug }}" rel="noopener noreferrer">{{ study_group.team.name }}</a></div>
                   {% else %}
                     <div>{{ study_group.team.name }}</div>
                   {% endif %}

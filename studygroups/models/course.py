@@ -40,25 +40,43 @@ def course_platform_from_url(url):
     return platform
 
 
+class TopicGuide(models.Model):
+    title = models.CharField(max_length=64)
+    url = models.URLField()
+
+    def __str__(self):
+        return self.title
+
+
 class Course(LifeTimeTrackingModel):
+    RESOURCE_FORMATS = [
+        ('course', 'Online Course'),
+        ('book', 'Book'),
+        ('video', 'Video'),
+        ('article', 'Article'),
+        ('group', 'Interest Group'),
+    ] # TODO not sure I want to make this a enum/choice field ?
+
     OER_LICENSES = ['CC-BY', 'CC-BY-SA', 'CC-BY-NC', 'CC-BY-NC-SA', 'Public Domain']
 
     title = models.CharField(max_length=128)
-    provider = models.CharField(max_length=256)
+    provider = models.CharField(max_length=256) # changed to creator in UI
     link = models.URLField()
+    resource_format = models.CharField(max_length=128, choices=RESOURCE_FORMATS)
     caption = models.CharField(max_length=500)
     on_demand = models.BooleanField()
-    topics = models.CharField(max_length=500)
+    topics = models.CharField(max_length=500) # changed to keyword in UI
+    topic_guides = models.ManyToManyField(TopicGuide)
     language = models.CharField(max_length=6) # ISO language code
-    created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE) # TODO maybe rename to added_by
     unlisted = models.BooleanField(default=False)
     archived = models.BooleanField(default=False)
-    license = models.CharField(max_length=128, blank=True)
-    platform = models.CharField(max_length=256, blank=True)
+    license = models.CharField(max_length=128, default="Not sure")
+    platform = models.CharField(max_length=256, blank=True) # this field is deprecated, but kept for the API
 
-    overall_rating = models.FloatField(default=0)
-    total_ratings = models.SmallIntegerField(default=0)
-    rating_step_counts = models.TextField(default="{}") # JSON value
+    overall_rating = models.FloatField(default=0)                                # TODO
+    total_ratings = models.SmallIntegerField(default=0)                          # TODO
+    rating_step_counts = models.TextField(default="{}") # JSON value             # TODO
     discourse_topic_url = models.URLField(blank=True)
 
     def __str__(self):
@@ -95,12 +113,6 @@ class Course(LifeTimeTrackingModel):
 
         return courses
 
-    def detect_platform_from_link(self):
-        platform = course_platform_from_url(self.link)
-
-        self.platform = platform
-        self.save()
-
     def discourse_topic_default_body(self):
         return _("<p>What recommendations do you have for other facilitators who are using \"{}\"? Consider sharing additional resources you found helpful, activities that worked particularly well, and some reflections on who this course is best suited for. For more information, see this course on <a href='https://learningcircles.p2pu.org{}'>P2PU’s course page</a>.</p>".format(self.title, reverse('studygroups_course_page', args=(self.id,))))
 
@@ -109,10 +121,11 @@ class Course(LifeTimeTrackingModel):
         from surveys.models import FacilitatorSurveyResponse
         from surveys.models import facilitator_survey_summary
 
-        studygroup_ids = StudyGroup.objects.filter(course=self.id).distinct().values_list("id", flat=True)
-        facilitator_surveys = FacilitatorSurveyResponse.objects.filter(study_group__in=studygroup_ids)
-        all_surveys = list(map(facilitator_survey_summary, facilitator_surveys))
-        return all_surveys
+        facilitator_surveys = FacilitatorSurveyResponse.objects.filter(study_group__course=self)
+        all_surveys = map(facilitator_survey_summary, facilitator_surveys)
+        all_surveys = filter(lambda s: s.get('course_rating_reason'), all_surveys)
+
+        return list(all_surveys)
 
     def get_num_of_facilitator_reviews(self):
         from studygroups.models import StudyGroup
@@ -121,8 +134,7 @@ class Course(LifeTimeTrackingModel):
 
         studygroup_ids = StudyGroup.objects.filter(course=self.id).distinct().values_list("id", flat=True)
         facilitator_surveys = FacilitatorSurveyResponse.objects.filter(study_group__in=studygroup_ids)
-        surveys_set = set(facilitator_surveys)
-        all_surveys = list(map(facilitator_survey_summary, surveys_set))
+        all_surveys = list(map(facilitator_survey_summary, facilitator_surveys))
         return len(all_surveys)
 
     def get_num_of_learner_reviews(self):

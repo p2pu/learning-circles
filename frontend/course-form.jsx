@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import KeywordInput from './components/keyword-input'
 import TopicInput from './components/topic-input'
 
 const element = document.getElementById('div_id_topics');
@@ -20,9 +21,21 @@ if (error) {
 input.replaceWith(div);
 
 ReactDOM.render(
-  <TopicInput
+  <KeywordInput
     value={value}
     topics={window.reactData.topics}
   />,
   div
+);
+
+const topicGuidesEl = document.getElementById('div_id_topic_guides');
+let topicGuideDiv = document.createElement('div');
+topicGuidesEl.querySelector('#id_topic_guides').replaceWith(topicGuideDiv);
+
+ReactDOM.render(
+  <TopicInput
+    value={[]}
+    topics={window.reactData.topicGuides}
+  />,
+  topicGuideDiv
 );

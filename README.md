@@ -1,4 +1,4 @@
-# Learning circles [![Build Status](https://travis-ci.org/p2pu/learning-circles.svg?branch=master)](https://travis-ci.org/p2pu/learning-circles)
+# Learning circles
 
 Learning circles are study groups that meet weekly at a physical location to work together through an online course.
 

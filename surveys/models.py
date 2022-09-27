@@ -108,12 +108,12 @@ def normalize_data(typeform_response):
         }
         answers['facilitator'] = {
             'field_title': 'Facilitator',
-            'answer': typeform_response.study_group.facilitator.email,
+            'answer': typeform_response.study_group.created_by.email,
         }
-        if hasattr(typeform_response.study_group.facilitator, 'teammembership'):
+        if typeform_response.study_group.team:
             answers['team'] = {
                 'field_title': 'Team',
-                'answer': typeform_response.study_group.facilitator.teammembership.team.name
+                'answer': typeform_response.study_group.team.name
             }
 
     return answers

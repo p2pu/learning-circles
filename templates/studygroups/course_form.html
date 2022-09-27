@@ -21,10 +21,10 @@
 
     <div class="col-md-12 col-sm-12">
       {% if object %}
-      <h2>{% trans "Edit course" %}</h2>
+      <h2>{% trans "Edit resourse" %}</h2>
       {% else %}
-      <h2>{% trans "Add a course" %}</h2>
-      <p>{% blocktrans %}Want to run an online course that isn&#39;t listed on our website yet? Just fill in this form and then you&#39;ll be able to select this course when creating learning circles going forward. This course will also be visible to other facilitators on the <a href="https://www.p2pu.org/en/courses/">courses page</a>.{% endblocktrans %}</p>
+      <h2>{% trans "Add a learning resourse" %}</h2>
+      <p>{% blocktrans %}Want to use a learning resource that isn&#39;t listed on our website yet? Just fill in this form and then you&#39;ll be able to select the resourse when creating learning circles going forward. This resourse will also be visible to other facilitators on the <a href="https://www.p2pu.org/en/learning-resources/">learning resourses page</a>.{% endblocktrans %}</p>
       {% endif %}
 
       {% crispy form %}
@@ -52,7 +52,13 @@ window.reactData.topics = [
 {% for topic in topics %}"{{topic}}",
 {% endfor %}
 ];
-
+window.reactData.topicGuides = [
+  {% for topicGuide in topic_guides %}{
+    value: {{topicGuide.pk}},
+    label: "{{topicGuide.title}}",
+  },
+{% endfor %}
+];
 </script>
 
 <script>

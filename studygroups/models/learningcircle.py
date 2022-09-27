@@ -43,7 +43,7 @@ class Organizer(models.Model):
 
 class Facilitator(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE, related_name='cofacilitators',)
+    study_group = models.ForeignKey('studygroups.StudyGroup', on_delete=models.CASCADE)
     added_at = models.DateTimeField(auto_now_add=True)
 
 
@@ -124,6 +124,9 @@ class StudyGroup(LifeTimeTrackingModel):
         q = datetime.datetime.combine(self.start_date, self.meeting_time) + datetime.timedelta(minutes=self.duration)
         return q.time()
 
+    def meetings(self):
+        return self.meeting_set.active().order_by('meeting_date', 'meeting_time')
+
     def next_meeting(self):
         now = timezone.now()
         meeting_list = self.meeting_set.active().order_by('meeting_date', 'meeting_time')
@@ -190,7 +193,7 @@ class StudyGroup(LifeTimeTrackingModel):
         return 'todo'
 
     def facilitators_display(self):
-        facilitators = [f.user.first_name for f in self.cofacilitators.all()]
+        facilitators = [f.user.first_name for f in self.facilitator_set.all()]
         if not len(facilitators):
             logger.error(f'Learning circle with no facilitators! pk={self.pk}')
             return _('Unknown')
@@ -200,13 +203,17 @@ class StudyGroup(LifeTimeTrackingModel):
             return _('%(first)s and %(last)s') % {'first': ', '.join(facilitators[:-1]), 'last': facilitators[-1]}
 
 
+    def reminders(self):
+        return sorted(self.reminder_set.all(), key=lambda x: x.send_at())
+
+
     @property
     def weeks(self):
         return (self.end_date - self.start_date).days//7 + 1
 
     def to_dict(self):
         sg = self  # TODO - this logic is repeated in the API class
-        facilitators = [f.user.first_name for f in sg.cofacilitators.all()]
+        facilitators = [f.user.first_name for f in sg.facilitator_set.all()]
         if not len(facilitators):
             logger.error(f'Bad learning circle : {sg.pk}')
             facilitators = ['Unknown']
@@ -509,7 +516,7 @@ def generate_meeting_reminder(meeting):
         'next_meeting': meeting,
         'reminder': reminder,
     }
-    if meeting.study_group.cofacilitators.count() > 1:
+    if meeting.study_group.facilitator_set.count() > 1:
         context['facilitator_names'] = meeting.study_group.facilitators_display()
     else:
         context['facilitator_name'] = meeting.study_group.facilitators_display()

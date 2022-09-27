@@ -3,6 +3,7 @@ from django import forms
 
 # Register your models here.
 from studygroups.models import Course
+from studygroups.models import TopicGuide
 from studygroups.models import StudyGroup
 from studygroups.models import Meeting
 from studygroups.models import Application
@@ -28,7 +29,7 @@ class StudyGroupAdmin(admin.ModelAdmin):
     inlines = [ApplicationInline]
     list_display = ['course', 'city', 'facilitators', 'start_date', 'day', 'signup_open', 'uuid']
     exclude = ['deleted_at']
-    search_fields = ['course__title', 'uuid', 'city', 'cofacilitators__user__first_name', 'cofacilitators__user__email']
+    search_fields = ['course__title', 'uuid', 'city', 'facilitator__user__first_name', 'facilitator__user__email']
     raw_id_fields = ['course', 'created_by']
 
     def facilitators(self, study_group):
@@ -165,6 +166,7 @@ class MeetingAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Course, CourseAdmin)
+admin.site.register(TopicGuide)
 admin.site.register(StudyGroup, StudyGroupAdmin)
 admin.site.register(Meeting, MeetingAdmin)
 admin.site.register(Application, ApplicationAdmin)

@@ -14,8 +14,8 @@ def make_meeting_ics(meeting):
 
     # Only use the first facilitator or default to created_by
     facilitator = study_group.created_by
-    if study_group.cofacilitators.count():
-        facilitator = study_group.cofacilitators.first().user
+    if study_group.facilitator_set.count():
+        facilitator = study_group.facilitator_set.first().user
     organizer = vCalAddress('MAILTO:{}'.format(facilitator.email))
     organizer.params['cn'] = vText(facilitator.first_name)
     organizer.params['role'] = vText('Facilitator')
