@@ -658,7 +658,6 @@ class TestFacilitatorViews(TestCase):
             caption='learn by means of magic',
             on_demand=True,
             topics='html,test',
-            keywords='html,test',
             language='en',
             created_by=user
         )
@@ -684,7 +683,6 @@ class TestFacilitatorViews(TestCase):
             caption='learn by means of magic',
             on_demand=True,
             topics='html,test',
-            keywords='html,test',
             language='en',
             created_by=user
         )
@@ -710,7 +708,6 @@ class TestFacilitatorViews(TestCase):
             caption='learn by means of magic',
             on_demand=True,
             topics='html,test',
-            keywords='html,test',
             language='en',
             created_by=user
         )
@@ -740,7 +737,6 @@ class TestFacilitatorViews(TestCase):
             caption='learn by means of magic',
             on_demand=True,
             topics='html,test',
-            keywords='html,test',
             language='en',
             created_by=facilitator
         )

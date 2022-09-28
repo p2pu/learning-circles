@@ -69,7 +69,7 @@
               <tr class="topics">
                 <th scope="row">{% trans "Key Words" %}</th>
                 <td class="topics-list">
-                  {% for topic in course.keywords %}{{topic}}{% if not forloop.last %}, {% endif %}{% endfor %}
+                  {% for topic in course.topic_list %}{{topic}}{% if not forloop.last %}, {% endif %}{% endfor %}
                 </td>
               </tr>
               <tr>
@@ -268,7 +268,7 @@
 
     <h3>{% trans "Reviews" %}</h3>
     <div class="row grid reviews">
-      {% for rating in course.get_course_reviews|slice:"3" %}
+      {% for rating in course.get_course_reviews %}
       {% if rating.course_rating_reason %}
       <div class="grid-item col-12 py-2">
         <div class="row py-3">
@@ -310,7 +310,7 @@
           <div class="card learning-circle in-progress">
             <div class="status-tag">in progress</div>
             <div class="card-image">
-              <img src="{{learning_circle.image_url}}"" alt="{{learning_circle.name}}" class="card-img-top">
+              <img src="https://raw.githubusercontent.com/p2pu/learning-circles/course-reviews-display/static/images/p2pu-ogimg-default.jpg" alt="{{learning_circle.name}}" class="card-img-top">
             </div>
             <div class="card-header">
               <span class="eyebrow">{{learning_circle.start_date}}</span>

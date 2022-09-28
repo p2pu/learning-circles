@@ -67,7 +67,6 @@ class Course(LifeTimeTrackingModel):
     caption = models.CharField(max_length=500)
     on_demand = models.BooleanField(default=False)
     topics = models.CharField(max_length=500, blank=True) # changed to keyword in UI
-    keywords = models.CharField(max_length=500, blank=True)
     topic_guides = models.ManyToManyField(TopicGuide, blank=True, null=True)
     language = models.CharField(max_length=6) # ISO language code
     created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE) # TODO maybe rename to added_by
