@@ -4,23 +4,8 @@
 {% load i18n %}
 
 {% block page_title %}
-  {{ course.title }}
+  {{ course.title }} reviews
 {% endblock %}
-
-<!-- SEO -->
-
-{% block page_meta %}
-  <meta property="og:title" content="{{ course.title }}" />
-  <meta name="description" content="{{ course.caption }}" />
-  <meta property="og:description" content="{{ course.caption }}" />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.get_full_path }}" />
-  <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.get_full_path }}">
-  <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'images/p2pu-ogimg-default.jpg' %}" />
-  <meta property="og:image:height" content="628" />
-  <meta property="og:image:width" content="1200" />
-{% endblock %}
-
 
 {% block content %}
 
@@ -28,72 +13,35 @@
   <header class="container page-header">
     <div class="row">
       <div class="col-12 mt-4 mt-lg-5">
-        <a href="/en/course/{{course.id}}" class="btn back p2pu-btn btn-sm btn-md-base secondary gray mt-md-4">
+        <a href="{% url "studygroups_course_page" course.id %}" class="btn back p2pu-btn btn-sm btn-md-base secondary gray mt-md-4">
           <span>Back to Learning Resource</span>
         </a>
-       
       </div>
-      
-      
     </div>
   </header>
 </div>
 
-
-
-{% if course.facilitatorguide_set.count %}
-<section id="facilitator-guides" class="pt-0">
-	<div class="container">
-		<h3 class="pb-4">Facilitator Guides</h3>
-		<div class="row grid">
-      {% for guide in course.facilitatorguide_set.active %}
-				<div class="grid-item col-md-6 col-lg-4">
-					<div class="card p-0 generic cover-link">
-            <a href="{{guide.link}}" target="_blank"></a>
-						<div class="card-image">
-              {% if guide.image %}
-                <img src="{{guide.image}}" alt="Facilitator guide cover image" class="card-img-top">
-              {% else %}
-                
-              <img src="{% static 'images/icons/facilitator-guide' %}-{{forloop.counter}}.svg" alt="Facilitator guide cover image" class="card-img-top">
-              {% endif %}
-						</div>
-						<div class="card-header">
-              <h4 class="card-title">{{guide.title}}</h4>
-              <span>{{guide.caption}}</span>
-						</div>
-					</div>
-				</div>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-{% endif %}
-
 <section class="bg-cream-dark">
   <div class="container">
     <h2>{% trans "Reviews" %}</h2>
-        <div class="row grid reviews">
-      {% for rating in page_obj %}
+    <div class="row grid reviews">
+    {% for rating in page_obj %}
       {% if rating.course_rating_reason %}
-      <div class="grid-item col-12 py-2">
-        <div class="row py-3">
-          <div class="col-12 col-lg-11 col-xl-10">
-            <div class="lowbrow row py-3">
-              <div class="stars stars-{{rating.course_rating}} mb-2 mb-md-0 align-items-center pe-md-0 d-flex col-12 col-md-auto">
-                <span></span><span></span><span></span><span></span><span></span><span class="date"> {{rating.response_date | date:'M Y'}}</span>
+        <div class="grid-item col-12 py-2">
+          <div class="row py-3">
+            <div class="col-12 col-lg-11 col-xl-10">
+              <div class="lowbrow row py-3">
+                <div class="stars stars-{{rating.course_rating}} mb-2 mb-md-0 align-items-center pe-md-0 d-flex col-12 col-md-auto">
+                  <span></span><span></span><span></span><span></span><span></span><span class="date"> {{rating.response_date | date:'M Y'}}</span>
+                </div>
               </div>
+              <p>{{rating.course_rating_reason}}</p>
             </div>
-            <p>{{rating.course_rating_reason}}</p>
           </div>
         </div>
-      </div>
       {% endif %}
-      {% endfor %}
+    {% endfor %}
 
-      {% comment %}
-      <a href="" class="text-center btn text-orange">View course discussion</a>
-      {% endcomment %}
     </div>
     <p>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</p>
     <div class="pagination justify-content-center">
@@ -112,62 +60,12 @@
               <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
           {% endif %}
       </span>
-  </div>
-  </div>
-</section>
-
-<section>
-  <div class="container">
-      <div class="text-center">
-        
-      </div>
-  </div>
-</section>
-
-
-
-{% comment %}
-<section>
-  <div class="container">
-    <h2 class="py-4">
-      {% blocktrans count usage=usage %}
-        {{ usage }} learning circle used this resource
-      {% plural %}
-        {{ usage }} learning circles used this resource
-      {% endblocktrans %}
-    </h2>
-    <div class="row grid">
-
-      <div class="grid-item col-md-6 col-lg-4">
-        <div class="card learning-circle in-progress">
-          <div class="status-tag">in progress</div>
-          <div class="card-image">
-            <img src="{{ site.baseurl }}/assets/images/p2pu-ogimg-default.jpg" alt="P2PU Monthly Facilitator Call" class="card-img-top">
-          </div>
-          <div class="card-header">
-            <span class="eyebrow">Started June 9, 2021</span>
-            <h3 class="card-title">P2PU Monthly Facilitator Call</h3>
-          </div>
-          <div class="card-body">
-            <span class="schedule"><i class="material-icons">schedule</i>12:00 PM to 1:00 PM (EDT)</span>
-            <span class="duration"><i class="material-icons">today</i>13 meetings starting June 9, 2021</span>
-            <span class="city-country"> <i class="material-icons">place</i>Detroit</span>
-            <span class="facilitator"><i class="material-icons">face</i>Facilitated by Qumisha</span>
-            <span class="location"><i class="material-icons">store</i>Meeting at Online</span>
-          </div>
-          <div class="card-footer">
-            <button class="btn p2pu-btn btn-sm gray mx-auto d-block">Sign up</button>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </section>
-{% endcomment %}
+
 {% endblock %}
 
 {% block scripts %}
-<script src="{% static 'js/vendor/pygal-tooltips.min.js' %}"></script>
 {% render_bundle 'common' %}
-{% render_bundle 'course-page' %}
 {% endblock %}
