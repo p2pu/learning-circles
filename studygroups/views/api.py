@@ -446,6 +446,7 @@ def serialize_course(course):
         "on_demand": course.on_demand,
         "topics": [t.strip() for t in course.topics.split(',')] if course.topics else [],
         "topic_guides": [t.title for t in course.topic_guides.all()] if course.topic_guides else [],
+        "keywords": [t.strip() for t in course.keywords.split(',')] if course.keywords else [],
         "language": course.language,
         "overall_rating": course.overall_rating,
         "total_ratings": course.total_ratings,

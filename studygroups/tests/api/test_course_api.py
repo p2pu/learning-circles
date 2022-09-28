@@ -32,6 +32,7 @@ class TestCourseApi(TestCase):
             'language',
             'title',
             'topics',
+            'keywords',
             'caption',
             'link',
             'provider',
