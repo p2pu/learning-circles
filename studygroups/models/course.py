@@ -7,6 +7,7 @@ from django.db.models import F
 from django.utils.translation import ugettext_lazy as _
 from django.core.paginator import Paginator
 
+
 from .base import LifeTimeTrackingModel
 
 import json
@@ -25,6 +26,7 @@ KNOWN_COURSE_PLATFORMS = {
     "www.open.edu/openlearn/": "OpenLearn",
     "www.codecademy.com/": "CodeAcademy",
 }
+
 
 
 def course_platform_from_url(url):
@@ -115,7 +117,7 @@ class Course(LifeTimeTrackingModel):
         return _("<p>What recommendations do you have for other facilitators who are using \"{}\"? Consider sharing additional resources you found helpful, activities that worked particularly well, and some reflections on who this course is best suited for. For more information, see this course on <a href='https://learningcircles.p2pu.org{}'>P2PU’s course page</a>.</p>".format(self.title, reverse('studygroups_course_page', args=(self.id,))))
 
     def get_course_reviews(self):
-        # return only facilitator surveys with a rating_reason
+        from studygroups.models import StudyGroup
         from surveys.models import FacilitatorSurveyResponse
         from surveys.models import facilitator_survey_summary
 
@@ -124,3 +126,25 @@ class Course(LifeTimeTrackingModel):
         all_surveys = filter(lambda s: s.get('course_rating_reason'), all_surveys)
 
         return list(all_surveys)
+
+    def get_num_of_facilitator_reviews(self):
+        from studygroups.models import StudyGroup
+        from surveys.models import FacilitatorSurveyResponse
+        from surveys.models import facilitator_survey_summary
+
+        studygroup_ids = StudyGroup.objects.filter(course=self.id).distinct().values_list("id", flat=True)
+        facilitator_surveys = FacilitatorSurveyResponse.objects.filter(study_group__in=studygroup_ids)
+        all_surveys = list(map(facilitator_survey_summary, facilitator_surveys))
+        return len(all_surveys)
+
+    def get_num_of_learner_reviews(self):
+        from studygroups.models import StudyGroup
+        from surveys.models import LearnerSurveyResponse
+        from surveys.models import learner_survey_summary
+
+        studygroup_ids = StudyGroup.objects.filter(course=self.id).distinct().values_list("id", flat=True)
+        learner_surveys = LearnerSurveyResponse.objects.filter(study_group__in=studygroup_ids)
+        all_surveys = list(map(learner_survey_summary, learner_surveys))
+        return len(all_surveys)
+
+
