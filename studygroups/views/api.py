@@ -266,7 +266,7 @@ class LearningCircleListView(View):
                     'name',
                     'course__title',
                     'course__provider',
-                    'course__topics',
+                    'course__keywords',
                     'venue_name',
                     'venue_address',
                     'venue_details',
@@ -317,9 +317,11 @@ class LearningCircleListView(View):
             )
             # NOTE could use haversine approximation to filter more accurately
 
-        if 'topics' in request.GET:
+        # TODO this should either be called keywords or search for topics
+        # also, this might not be used anymore
+        if 'topics' in request.GET: 
             topics = request.GET.get('topics').split(',')
-            query = Q(course__topics__icontains=topics[0])
+            query = Q(course__topics__icontains=topics[0]) # TODO
             for topic in topics[1:]:
                 query = Q(course__topics__icontains=topic) | query
             study_groups = study_groups.filter(query)
@@ -444,7 +446,7 @@ def serialize_course(course):
         "link": course.link,
         "caption": course.caption,
         "on_demand": course.on_demand,
-        "topics": [t.strip() for t in course.topics.split(',')] if course.topics else [],
+        "topics": [t.strip() for t in course.keywords.split(',')] if course.keywords else [],
         "topic_guides": [t.title for t in course.topic_guides.all()] if course.topic_guides else [],
         "language": course.language,
         "overall_rating": course.overall_rating,
@@ -529,7 +531,7 @@ class CourseListView(View):
         if query:
             tsquery = CustomSearchQuery(query, config='simple')
             courses = courses.annotate(
-                search=SearchVector('topics', 'title', 'caption', 'provider', config='simple')
+                search=SearchVector('keywords', 'title', 'caption', 'provider', config='simple')
             ).filter(search=tsquery)
 
         if 'topics' in request.GET:

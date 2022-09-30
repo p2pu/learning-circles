@@ -65,7 +65,7 @@ class Course(LifeTimeTrackingModel):
     resource_format = models.CharField(max_length=128, choices=RESOURCE_FORMATS)
     caption = models.CharField(max_length=500)
     on_demand = models.BooleanField(default=False)
-    topics = models.CharField(max_length=500, blank=True) # changed to keyword in UI
+    keywords = models.CharField(max_length=500, blank=True) # changed to keyword in UI
     topic_guides = models.ManyToManyField(TopicGuide, blank=True, null=True)
     language = models.CharField(max_length=6) # ISO language code
     created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE) # TODO maybe rename to added_by
@@ -82,8 +82,8 @@ class Course(LifeTimeTrackingModel):
     def __str__(self):
         return self.title
 
-    def topic_list(self):
-        return self.topics.split(',')
+    def keyword_list(self):
+        return self.keywords.split(',')
 
     def rating_step_counts_json(self):
         return json.loads(self.rating_step_counts)
@@ -94,10 +94,10 @@ class Course(LifeTimeTrackingModel):
         return max(steps.values())
 
     def similar_courses(self):
-        topics = self.topics.split(',')
-        query = Q(topics__icontains=topics[0])
-        for topic in topics[1:]:
-            query = Q(topics__icontains=topic) | query
+        keywords = self.keywords.split(',')
+        query = Q(keywords__icontains=keywordss[0])
+        for keyword in keywords[1:]:
+            query = Q(keywords__icontains=keyword) | query
 
         courses = Course.objects.filter(unlisted=False, deleted_at__isnull=True).filter(query).exclude(id=self.id).annotate(
             num_learning_circles=Sum(

@@ -235,14 +235,14 @@ class CourseCreate(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(CourseCreate, self).get_context_data(**kwargs)
-        topics = Course.objects.active()\
+        keywords = Course.objects.active()\
                 .filter(unlisted=False)\
-                .exclude(topics='')\
-                .values_list('topics')
-        topics = [
-            item.strip().lower() for sublist in topics for item in sublist[0].split(',')
+                .exclude(keywords='')\
+                .values_list('keywords')
+        keywords = [
+            item.strip().lower() for sublist in keywords for item in sublist[0].split(',')
         ]
-        context['topics'] = list(set(topics))
+        context['keywords'] = list(set(keywords))
         context['topic_guides'] = TopicGuide.objects.all()
         return context
 
@@ -279,14 +279,14 @@ class CourseUpdate(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(CourseUpdate, self).get_context_data(**kwargs)
-        topics = Course.objects.active()\
+        keywords = Course.objects.active()\
                 .filter(unlisted=False)\
-                .exclude(topics='')\
-                .values_list('topics')
-        topics = [
-            item.strip().lower() for sublist in topics for item in sublist[0].split(',')
+                .exclude(keywords='')\
+                .values_list('keywords')
+        keywords = [
+            item.strip().lower() for sublist in keywords for item in sublist[0].split(',')
         ]
-        context['topics'] = list(set(topics))
+        context['keywords'] = list(set(keywords))
         context['topic_guides'] = TopicGuide.objects.all()
         return context
 

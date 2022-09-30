@@ -31,7 +31,7 @@ class TestCourseApi(TestCase):
             'learning_circles',
             'language',
             'title',
-            'topics',
+            'keywords',
             'caption',
             'link',
             'provider',
@@ -84,17 +84,17 @@ class TestCourseApi(TestCase):
     def test_search_by_topics(self):
         c = Client()
         # no matches
-        resp = c.get('/api/courses/', {'topics': 'supercalifragilistic'})
+        resp = c.get('/api/courses/', {'keywords': 'supercalifragilistic'})
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()["count"], 0)
 
         # match 1 topic
-        resp = c.get('/api/courses/', {'topics': 'uniquetopic1'})
+        resp = c.get('/api/courses/', {'keywords': 'uniquetopic1'})
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()["count"], 1)
 
         # match 2 different courses
-        resp = c.get('/api/courses/', {'topics': 'uniquetopic1,uniquetopic2'})
+        resp = c.get('/api/courses/', {'keywords': 'uniquetopic1,uniquetopic2'})
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()["count"], 2)
 

@@ -146,10 +146,10 @@ class CourseAdmin(admin.ModelAdmin):
         return not course.unlisted
     listed.boolean = True
 
-    list_display = ['id', 'title', 'provider', 'topics', learning_circles, created_by, email, listed, 'license']
+    list_display = ['id', 'title', 'provider', 'keywords', learning_circles, created_by, email, listed, 'license']
     exclude = ['deleted_at']
     inlines = [StudyGroupInline]
-    search_fields = ['title', 'provider', 'topics', 'created_by__email', 'license']
+    search_fields = ['title', 'provider', 'keywords', 'created_by__email', 'license']
     raw_id_fields = ['created_by']
 
 

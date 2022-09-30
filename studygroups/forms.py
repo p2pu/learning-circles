@@ -227,7 +227,7 @@ class CourseForm(forms.ModelForm):
             'link',
             'caption',
             'topic_guides',
-            'topics',
+            'keywords',
             'language',
             'license',
         ]
@@ -236,7 +236,7 @@ class CourseForm(forms.ModelForm):
             'link': _('URL'),
             'provider': _('Creator'),
             'caption': _('Description (500 character limit)'),
-            'topics': _('Keywords'),
+            'keywords': _('Keywords'),
             'topic_guides': _('Topics'),
             'license': _('License'),
             'resource_format': _('Format'),
@@ -245,7 +245,7 @@ class CourseForm(forms.ModelForm):
              'provider': _('e.g. MIT, University of Michigan, Khan Academy.'),
              'link': _('Paste full URL above.'),
              'caption': _('Write 1-2 sentences describing what people will learn from this resource. This is what learners will see when signing up for learning circles, and what facilitators will see when selecting a resource.'),
-             'topics': _('Select or create a few keywords that will help learners and future facilitators find this resourse.'),
+             'keywords': _('Select or create a few keywords that will help learners and future facilitators find this resourse.'),
              'topic_guides': _('Add your resource to one of P2PU’s existing topic guides.'),
         }
 

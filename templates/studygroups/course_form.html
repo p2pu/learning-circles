@@ -48,8 +48,8 @@ $(document).ready(function(){
   $('.timeinput').timepicker({ 'step': 15, 'timeFormat': 'h:i A' });
 });
 window.reactData = window.reactData || {};
-window.reactData.topics = [
-{% for topic in topics %}"{{topic}}",
+window.reactData.keywords = [
+{% for keyword in keywords %}"{{keyword}}",
 {% endfor %}
 ];
 window.reactData.topicGuides = [

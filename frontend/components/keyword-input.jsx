@@ -4,34 +4,34 @@ import CreatableSelect from 'react-select/creatable';
 export default class KeywordInput extends Component {
   constructor(props){
     super(props);
-    let topics = [];
+    let keywords = [];
     if (props.value){
-      topics = props.value.split(',').map(e => { return {label: e, value: e};});
+      keywords = props.value.split(',').map(e => { return {label: e, value: e};});
     }
-    this.state = {topics: topics}
+    this.state = {keywords: keywords}
     this.handleSelect = this.handleSelect.bind(this);
   }
 
   handleSelect(selected){
-    this.setState({ topics: selected });
+    this.setState({ keywords: selected });
   }
 
   render(props) {
-    const topicOptions = Array.from(this.props.topics);
+    const topicOptions = Array.from(this.props.keywords);
     topicOptions.sort();
 
     return(
       <span>
-        <input type="hidden" value={this.state.topics.map(t=>t.value).join(',')} name="topics" />
+        <input type="hidden" value={this.state.keywords.map(t=>t.value).join(',')} name="keywords" />
         <CreatableSelect
-          name="topics_input"
+          name="keywords_input"
           isMulti={true}
-          value={this.state.topics}
+          value={this.state.keywords}
           onChange={this.handleSelect}
-          options={topicOptions.map(topic => {
+          options={topicOptions.map(keyword => {
             return {
-              value: topic,
-              label: topic,
+              value: keyword,
+              label: keyword,
             };
           })}
         />

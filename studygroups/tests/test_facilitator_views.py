@@ -657,7 +657,7 @@ class TestFacilitatorViews(TestCase):
             link='https://course.magick/test',
             caption='learn by means of magic',
             on_demand=True,
-            topics='html,test',
+            keywords='html,test',
             language='en',
             created_by=user
         )
@@ -667,10 +667,10 @@ class TestFacilitatorViews(TestCase):
         # make sure bob123 can edit the course
         course_url = '/en/course/{}/edit/'.format(course.id)
         resp = c.get(course_url)
-        course_data['topics'] = 'magic'
+        course_data['keywords'] = 'magic'
         resp = c.post(course_url, course_data)
         self.assertRedirects(resp, '/en/')
-        self.assertEqual(Course.objects.get(pk=course.id).topics, 'magic')
+        self.assertEqual(Course.objects.get(pk=course.id).keywords, 'magic')
 
 
     def test_cant_edit_other_facilitators_course(self):
@@ -682,7 +682,7 @@ class TestFacilitatorViews(TestCase):
             link='https://course.magick/test',
             caption='learn by means of magic',
             on_demand=True,
-            topics='html,test',
+            keywords='html,test',
             language='en',
             created_by=user
         )
@@ -692,10 +692,10 @@ class TestFacilitatorViews(TestCase):
         course_url = '/en/course/{}/edit/'.format(course.id)
         resp = c.get(course_url)
         self.assertEqual(resp.status_code, 403)
-        course_data['topics'] = 'magic'
+        course_data['keywords'] = 'magic'
         resp = c.post(course_url, course_data)
         self.assertEqual(resp.status_code, 403)
-        self.assertEqual(Course.objects.get(pk=course.id).topics, 'html,test')
+        self.assertEqual(Course.objects.get(pk=course.id).keywords, 'html,test')
 
 
     def test_cant_edit_used_course(self):
@@ -707,7 +707,7 @@ class TestFacilitatorViews(TestCase):
             link='https://course.magick/test',
             caption='learn by means of magic',
             on_demand=True,
-            topics='html,test',
+            keywords='html,test',
             language='en',
             created_by=user
         )
@@ -722,10 +722,10 @@ class TestFacilitatorViews(TestCase):
         course_url = '/en/course/{}/edit/'.format(course.id)
         resp = c.get(course_url)
         self.assertRedirects(resp, '/en/')
-        course_data['topics'] = 'magic'
+        course_data['keywords'] = 'magic'
         resp = c.post(course_url, course_data)
         self.assertRedirects(resp, '/en/')
-        self.assertEqual(Course.objects.get(pk=course.id).topics, 'html,test')
+        self.assertEqual(Course.objects.get(pk=course.id).keywords, 'html,test')
 
 
     def test_study_group_facilitator_survey(self):
@@ -736,7 +736,7 @@ class TestFacilitatorViews(TestCase):
             link='https://course.magick/test',
             caption='learn by means of magic',
             on_demand=True,
-            topics='html,test',
+            keywords='html,test',
             language='en',
             created_by=facilitator
         )

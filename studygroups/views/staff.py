@@ -310,7 +310,7 @@ class ExportCoursesView(ListView):
             'link',
             'caption',
             'on_demand',
-            'topics',
+            'keywords',
             'language',
             'created_by',
             'unlisted',
