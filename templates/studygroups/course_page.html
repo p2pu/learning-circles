@@ -63,13 +63,13 @@
               <tr class="topics">
                 <th scope="row">{% trans "Topics" %}</th>
                 <td class="topics-list">
-                  {% for topic in course.topic_list %}{{topic}}{% if not forloop.last %}, {% endif %}{% endfor %}
+                  {% for topic in course.topic_guides.all %}<a href="{{topic.url}}">{{topic.title}}</a>{% if not forloop.last %}, {% endif %}{% empty %}{% trans "None" %}{% endfor %}
                 </td>
               </tr>
               <tr class="topics">
-                <th scope="row">{% trans "Key Words" %}</th>
-                <td class="topics-list">
-                  {% for topic in course.topic_list %}{{topic}}{% if not forloop.last %}, {% endif %}{% endfor %}
+                <th scope="row">{% trans "Keywords" %}</th>
+                <td class="keywords-list">
+                  {% for keyword in course.keyword_list %}{{keyword}}{% if not forloop.last %}, {% endif %}{% endfor %}
                 </td>
               </tr>
               <tr>
@@ -100,15 +100,13 @@
         <div class="table-responsive">
           <table class="table">
             <tbody>
-              <tr class="provider">
-                <th scope="row">{% trans "Provider" %}</th>
-                <td>{{ course.provider }}</td>
+              <tr>
+                <th scope="row">{% trans "Format" %}</th>
+                <td>{{course.get_format_display}}</td>
               </tr>
-              <tr class="platform">
-                <th scope="row">{% trans "Platform" %}</th>
-                <td>
-                  {% if course.platform %}{{ course.platform }}{% else %}{% trans "Unknown" %}{% endif %}
-                </td>
+              <tr class="provider">
+                <th scope="row">{% trans "Creator" %}</th>
+                <td>{{ course.provider }}</td>
               </tr>
               <tr class="website">
                 <th scope="row">{% trans "Website" %}</th>
@@ -116,15 +114,9 @@
                   <a href="{{ course.link }}" rel="nofollow" target="_blank">{% trans "Visit the website" %}</a>
                 </td>
               </tr>
-              <tr class="platform">
-                <th scope="row">{% trans "Access" %}</th>
-                <td>
-                  {% if course.on_demand %}
-                    {% trans "Always available" %}
-                  {% else %}
-                    {% trans "Check availability" %}
-                  {% endif %}
-                </td>
+              <tr>
+                <th scope="row">{% trans "Language" %}</th>
+                <td>{{course.get_language_display}}</td>
               </tr>
             </tbody>
           </table>
@@ -304,9 +296,7 @@
         {{ usage }} learning circles used this resource
       {% endblocktrans %}
     </h2>
-    <div class="row grid" data-learning-circles="{{learning_circles}}">
-      
-    </div>
+    <div id="course-learning-circles" data-default-image-url="{% static 'images/learning-circle-default.jpg' %}"></div>
   </div>
 </section>
 {% endblock %}

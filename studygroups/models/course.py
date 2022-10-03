@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.db.models import F
 from django.utils.translation import ugettext_lazy as _
 from django.core.paginator import Paginator
+from django.utils.translation import get_language_info
 
 
 from .base import LifeTimeTrackingModel
@@ -41,6 +42,7 @@ def course_platform_from_url(url):
 
 class TopicGuide(models.Model):
     title = models.CharField(max_length=64)
+    # TODO slug = models.SlugField(max_length=64)
     url = models.URLField()
 
     def __str__(self):
@@ -95,7 +97,7 @@ class Course(LifeTimeTrackingModel):
 
     def similar_courses(self):
         keywords = self.keywords.split(',')
-        query = Q(keywords__icontains=keywordss[0])
+        query = Q(keywords__icontains=keywords[0])
         for keyword in keywords[1:]:
             query = Q(keywords__icontains=keyword) | query
 
@@ -147,4 +149,12 @@ class Course(LifeTimeTrackingModel):
         all_surveys = list(map(learner_survey_summary, learner_surveys))
         return len(all_surveys)
 
+    def get_language_display(self):
+        language_info = get_language_info(self.language)
+        return language_info.get('name_translated')
+
+    def get_format_display(self):
+        f = ( i[1] for i in Course.RESOURCE_FORMATS if i[0] == self.resource_format )
+        value = next(f, 'Unknown')
+        return value
 
