@@ -1,8 +1,15 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import DiscourseTopicPreview from './components/discourse-topic-preview'
-import SimilarCoursesPreview from './components/similar-courses-preview'
 import CourseLearningCircles from './components/course-learning-circles'
 
-const learningCircles = document.getElementById('course-learning-circles-data');
-reactDOM.render(<CourseLearningCircles learningCircles={learningCircles} />, document.getElementById('course-learning-circles'));
+const dataEl = document.getElementById('course-learning-circles-data');
+const learningCircles = JSON.parse(dataEl.textContent);
+const reactRoot = document.getElementById('course-learning-circles');
+
+ReactDOM.render(
+  <CourseLearningCircles 
+    learningCircles={learningCircles}
+    defaultImageUrl={reactRoot.dataset.defaultImageUrl}
+  />,
+  reactRoot
+);
