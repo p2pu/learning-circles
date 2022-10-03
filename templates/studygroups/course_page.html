@@ -304,32 +304,8 @@
         {{ usage }} learning circles used this resource
       {% endblocktrans %}
     </h2>
-    <div class="row grid">
-      {% for learning_circle in learning_circles %}
-      <div class="grid-item col-md-6 col-lg-4">
-          <div class="card learning-circle in-progress">
-            <div class="status-tag">in progress</div>
-            <div class="card-image">
-              <img src="https://raw.githubusercontent.com/p2pu/learning-circles/course-reviews-display/static/images/p2pu-ogimg-default.jpg" alt="{{learning_circle.name}}" class="card-img-top">
-            </div>
-            <div class="card-header">
-              <span class="eyebrow">{{learning_circle.start_date}}</span>
-              <h3 class="card-title">{{learning_circle.name}}</h3>
-            </div>
-            <div class="card-body">
-              <span class="schedule"><i class="material-icons">schedule</i>12:00 PM to 1:00 PM (EDT)</span>
-              <span class="duration"><i class="material-icons">today</i>13 meetings starting June 9, 2021</span>
-              <span class="city-country"> <i class="material-icons">place</i>Detroit</span>
-              <span class="facilitator"><i class="material-icons">face</i>Facilitated by {{learning_circle.facilitator}}</span>
-              <span class="location"><i class="material-icons">store</i>Meeting at Online</span>
-            </div>
-            <div class="card-footer">
-              <button class="btn p2pu-btn btn-sm gray mx-auto d-block">Sign up</button>
-            </div>
-          </div>
-        
-      </div>
-      {% endfor %}
+    <div class="row grid" data-learning-circles="{{learning_circles}}">
+      
     </div>
   </div>
 </section>
