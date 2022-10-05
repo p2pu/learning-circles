@@ -134,12 +134,9 @@ section{
         }
       }
     }
-    .reviews{
-      .grid-item{
-        >.row{
-          border-top: 1px solid;
-        }
-      }
+    .reviews .review{
+      border-top: 1px solid;
+      padding: 1rem 0;
     }
     &:last-of-type .table-responsive table tbody tr:first-of-type{
       @include media-breakpoint-down(md) {
