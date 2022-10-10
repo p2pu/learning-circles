@@ -12,7 +12,7 @@ class Command(BaseCommand):
         courses = Course.objects.active()
         for course in courses:
             keywords = [t.lower().strip() for t in course.keywords.split(',')]
-            course_guides = [guide for guide in guides if guide.title in keywords]
+            course_guides = [guide for guide in guides if guide.slug in keywords]
             if course_guides:
                 print(f'Adding {course_guides} to {course}')
                 course.topic_guides.add(*course_guides)

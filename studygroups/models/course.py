@@ -42,7 +42,7 @@ def course_platform_from_url(url):
 
 class TopicGuide(models.Model):
     title = models.CharField(max_length=64)
-    # TODO slug = models.SlugField(max_length=64)
+    slug = models.SlugField(max_length=64) # start out by matching slug to old topics/keywords
     url = models.URLField()
 
     def __str__(self):

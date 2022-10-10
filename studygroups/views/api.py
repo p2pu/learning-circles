@@ -321,9 +321,9 @@ class LearningCircleListView(View):
         # also, this might not be used anymore
         if 'topics' in request.GET: 
             topics = request.GET.get('topics').split(',')
-            query = Q(course__topics__icontains=topics[0]) # TODO
+            query = Q(course__keywords__icontains=topics[0]) # TODO
             for topic in topics[1:]:
-                query = Q(course__topics__icontains=topic) | query
+                query = Q(course__keywords__icontains=topic) | query
             study_groups = study_groups.filter(query)
 
         if 'weekdays' in request.GET:
@@ -388,8 +388,8 @@ class LearningCircleTopicListView(View):
         topics = Course.objects.active()\
             .filter(unlisted=False)\
             .filter(id__in=course_ids)\
-            .exclude(topics='')\
-            .values_list('topics')
+            .exclude(keywords='')\
+            .values_list('keywords')
         topics = [
             item.strip().lower() for sublist in topics for item in sublist[0].split(',')
         ]
@@ -539,9 +539,10 @@ class CourseListView(View):
 
         if 'topics' in request.GET:
             topics = request.GET.get('topics').split(',')
-            topic_query = Q(topic_guides__title=topics[0].lower())
+            print(topics)
+            topic_query = Q(topic_guides__slug=topics[0].lower())
             for topic in topics[1:]:
-                topic_query = Q(topic_guides__title=topic.lower) | topic_query
+                topic_query = Q(topic_guides__slug=topic.lower()) | topic_query
             courses = courses.filter(topic_query)
 
         if 'languages' in request.GET:
@@ -582,13 +583,10 @@ class CourseListView(View):
 class CourseTopicListView(View):
     """ Return topics for listed courses """
     def get(self, request):
-        topics = TopicGuide.objects.all().values_list('title', flat=True)
-        data = {}
-        # for backwards compatibily, this endpoint should return a dictionary.
-        # it used to be {topic: number of courses using topic}, but since the
-        # counts aren't being used, it's just returning 0 to avoid extra load
-        # on the db
-        data['topics'] = { k: 1 for k in topics } 
+        topics = TopicGuide.objects.all()
+        data = {
+            'topics': { k.slug: k.title for k in topics }
+        }
         return json_response(request, data)
 
 
