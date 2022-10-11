@@ -655,8 +655,8 @@ class TestFacilitatorViews(TestCase):
             title='Course 1011',
             provider='CourseMagick',
             link='https://course.magick/test',
+            resource_format='course',
             caption='learn by means of magic',
-            on_demand=True,
             keywords='html,test',
             language='en',
             created_by=user
@@ -667,6 +667,7 @@ class TestFacilitatorViews(TestCase):
         # make sure bob123 can edit the course
         course_url = '/en/course/{}/edit/'.format(course.id)
         resp = c.get(course_url)
+        self.assertEqual(resp.status_code, 200)
         course_data['keywords'] = 'magic'
         resp = c.post(course_url, course_data)
         self.assertRedirects(resp, '/en/')
@@ -695,36 +696,6 @@ class TestFacilitatorViews(TestCase):
         course_data['keywords'] = 'magic'
         resp = c.post(course_url, course_data)
         self.assertEqual(resp.status_code, 403)
-        self.assertEqual(Course.objects.get(pk=course.id).keywords, 'html,test')
-
-
-    def test_cant_edit_used_course(self):
-        user = create_user('bob@example.net', 'first', 'last', 'password')
-        user2 = create_user('bob2@example.net', 'first', 'last', 'password')
-        course_data = dict(
-            title='Course 1011',
-            provider='CourseMagick',
-            link='https://course.magick/test',
-            caption='learn by means of magic',
-            on_demand=True,
-            keywords='html,test',
-            language='en',
-            created_by=user
-        )
-        course = Course.objects.create(**course_data)
-        sg = StudyGroup.objects.get(pk=1)
-        sg.course = course
-        sg.created_by = user2
-        sg.save()
-        c = Client()
-        c.login(username='bob@example.net', password='password')
-        # make sure bob123 can edit the course
-        course_url = '/en/course/{}/edit/'.format(course.id)
-        resp = c.get(course_url)
-        self.assertRedirects(resp, '/en/')
-        course_data['keywords'] = 'magic'
-        resp = c.post(course_url, course_data)
-        self.assertRedirects(resp, '/en/')
         self.assertEqual(Course.objects.get(pk=course.id).keywords, 'html,test')
 
 

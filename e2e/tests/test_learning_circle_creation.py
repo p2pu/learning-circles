@@ -19,7 +19,7 @@ import socket
 
 @override_settings(ALLOWED_HOSTS=['*'])
 class LearningCircleCreation(StaticLiveServerTestCase):
-    fixtures = ['test_courses.json']
+    fixtures = ['test_courses.json', 'test_studygroups.json']
     host = '0.0.0.0'
 
     @classmethod

@@ -13,6 +13,7 @@ from studygroups.models import Application
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import Course
+from studygroups.models import TopicGuide
 from custom_registration.models import create_user
 
 import datetime
@@ -30,14 +31,18 @@ class TestCourseApi(TestCase):
         item_fields = [
             'learning_circles',
             'language',
+            'language_display',
             'title',
             'keywords',
+            'topics',
+            'format',
             'caption',
             'link',
             'provider',
             'id',
             'on_demand',
             'platform',
+            'creator',
             'overall_rating',
             'total_ratings',
             'rating_step_counts',
@@ -84,19 +89,16 @@ class TestCourseApi(TestCase):
     def test_search_by_topics(self):
         c = Client()
         # no matches
-        resp = c.get('/api/courses/', {'keywords': 'supercalifragilistic'})
+        topic_guide = TopicGuide.objects.create(title='Topic 1', slug='topic-1')
+        resp = c.get('/api/courses/', {'topics': 'topic-1'})
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()["count"], 0)
 
         # match 1 topic
-        resp = c.get('/api/courses/', {'keywords': 'uniquetopic1'})
+        Course.objects.get(pk=1).topic_guides.add(topic_guide)
+        resp = c.get('/api/courses/', {'topics': 'topic-1'})
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(resp.json()["count"], 1)
-
-        # match 2 different courses
-        resp = c.get('/api/courses/', {'keywords': 'uniquetopic1,uniquetopic2'})
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json()["count"], 2)
 
 
     def test_find_by_q_incremental(self):
@@ -153,23 +155,6 @@ class TestCourseApi(TestCase):
         # TODO
         pass
 
-    def test_detect_platform(self):
-        c = Client()
-
-        # detect Coursera
-        resp = c.get('/api/courses/detect-platform/', {'url': 'https://www.coursera.org/learn/interactive-python-2'})
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json()["platform"], "Coursera")
-
-        # detect edx
-        resp = c.get('/api/courses/detect-platform/', {'url': 'https://www.edx.org/micromasters/data-science'})
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json()["platform"], "edX")
-
-        # no match
-        resp = c.get('/api/courses/detect-platform/', {'url': 'http://example.com/'})
-        self.assertEqual(resp.status_code, 200)
-        self.assertEqual(resp.json()["platform"], "")
 
     def test_team_unlisted(self):
         c = Client()

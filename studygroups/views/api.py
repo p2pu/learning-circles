@@ -42,7 +42,6 @@ from studygroups.models import Announcement
 from studygroups.models import FacilitatorGuide
 from studygroups.models import generate_meetings_from_dates
 from studygroups.models import get_json_response
-from studygroups.models.course import course_platform_from_url
 from studygroups.models.team import eligible_team_by_email_domain
 from studygroups.models.team import get_team_users
 from studygroups.models.learningcircle import generate_meeting_reminder
@@ -440,14 +439,13 @@ def serialize_course(course):
     data = {
         "id": course.id,
         "title": course.title,
-        "resource_format": course.resource_format,
-        "provider": course.provider, # TODO remove
-        "platform": course.platform, # TODO remove
+        "format": course.get_format_display(),
+        "provider": course.provider, # TODO remove - atm still used by erasmus project sites
+        "platform": course.platform, # TODO remove - ""
         "creator": course.provider,
         "link": course.link,
         "caption": course.caption,
         "on_demand": course.on_demand,
-        "format": course.get_format_display(),
         "keywords": [t.strip() for t in course.keywords.split(',')] if course.keywords else [],
         "topics": [t.title for t in course.topic_guides.all()] if course.topic_guides else [],
         "language": course.language,
@@ -942,13 +940,6 @@ class ImageUploadView(View):
             return json_response(request, {"image_url": image_url})
         else:
             return json_response(request, {'error': 'not a valid image'})
-
-
-def detect_platform_from_url(request):
-    url = request.GET.get('url', "")
-    platform = course_platform_from_url(url)
-
-    return json_response(request, { "platform": platform })
 
 
 class CourseLanguageListView(View):
