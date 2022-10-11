@@ -7,7 +7,7 @@ class LearningCircleCreationPageLocators(object):
     NEXT_TAB_BUTTON = (By.CSS_SELECTOR, ".action-bar button.next-tab")
     CITY_SELECT = (By.CSS_SELECTOR, ".city-select input")
     CITY_SELECT_INPUT = (By.CSS_SELECTOR, ".city-select input")
-    CITY_SELECT_OPTION = (By.CSS_SELECTOR, ".city-select .place-select__menu")
+    CITY_SELECT_OPTION = (By.CSS_SELECTOR, ".city-select .place-select__option")
     TAB_1 = (By.CSS_SELECTOR, "#react-tabs-0")
     TAB_1_TITLE = (By.CSS_SELECTOR, "#react-tabs-1 h4")
     TAB_2 = (By.CSS_SELECTOR, "#react-tabs-2")
