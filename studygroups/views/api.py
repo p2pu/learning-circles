@@ -317,8 +317,8 @@ class LearningCircleListView(View):
             )
             # NOTE could use haversine approximation to filter more accurately
 
-        # TODO this should either be called keywords or search for topics
-        # also, this might not be used anymore
+        # TODO this filter is still used by some of the erasmus project sites
+        # it should either be called keywords or use the topics
         if 'topics' in request.GET: 
             topics = request.GET.get('topics').split(',')
             query = Q(course__keywords__icontains=topics[0]) # TODO
@@ -539,7 +539,6 @@ class CourseListView(View):
 
         if 'topics' in request.GET:
             topics = request.GET.get('topics').split(',')
-            print(topics)
             topic_query = Q(topic_guides__slug=topics[0].lower())
             for topic in topics[1:]:
                 topic_query = Q(topic_guides__slug=topic.lower()) | topic_query
