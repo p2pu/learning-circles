@@ -1278,6 +1278,7 @@ class AnnouncementListView(View):
 
 
 def cities(request):
+    # TODO is this view used anywhere?
     cities = StudyGroup.objects.published().annotate(city_len=Length('city')).filter(city_len__gt=1).values_list('city', flat=True).distinct('city')
 
     data = {
@@ -1286,4 +1287,55 @@ def cities(request):
     }
 
     return json_response(request, data)
+
+
+def city_complete(request):
+    query = request.GET.get('query')
+
+    tsquery = CustomSearchQuery(query, config='simple')
+    study_groups = StudyGroup.objects.exclude(place_id='')
+    study_groups = study_groups.annotate(
+        search = SearchVector(
+            'city',
+            'region',
+            'country',
+            'country_en',
+            config='simple'
+        )
+    ).filter(search=tsquery)
+
+    places = study_groups.values_list('city', 'region', 'country', 'country_en', 'latitude', 'longitude', 'place_id').distinct('place_id', 'city').order_by('city')
+
+    data = {
+        "cities": [
+            {
+                'city': place[0],
+                'region': place[1],
+                'country': place[2],
+                'country_en': place[3],
+                'latitude': place[4],
+                'longitude': place[5],
+                'place_id': place[6],
+
+            } for place in places
+        ]
+    }
+    return json_response(request, data)
+
+
+def city_info(request, place_id):
+    place = StudyGroup.objects.filter(place_id=place_id).values_list('city', 'region', 'country', 'country_en', 'latitude', 'longitude', 'place_id').first()
+    data = {
+        'city': place[0],
+        'region': place[1],
+        'country': place[2],
+        'country_en': place[3],
+        'latitude': place[4],
+        'longitude': place[5],
+        'place_id': place[6],
+    }
+    return json_response(request, data)
+
+        
+
 

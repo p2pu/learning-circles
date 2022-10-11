@@ -172,21 +172,7 @@ export default class CreateLearningCirclePage extends React.Component {
 
   extractPlaceData = place => {
     if (!place) return null
-
-    const country = place.country ? place.country.default : null;
-    const country_en = place.country && place.country.en ? place.country.en : country;
-    const placeData = {
-      city: place.locale_names.default[0],
-      region: place.administrative ? place.administrative[0] : null,
-      country: country,
-      country_en: country_en,
-      latitude: place._geoloc ? place._geoloc.lat : null,
-      longitude: place._geoloc ? place._geoloc.lng : null,
-      place_id: place.objectID ? place.objectID : null,
-      place: null, // remove Algolia place object
-    }
-
-    return placeData
+    return place
   }
 
   formatMeetingDates = () => {

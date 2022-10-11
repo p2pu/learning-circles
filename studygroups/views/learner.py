@@ -68,6 +68,7 @@ class TeamPage(DetailView):
 
 
 def city(request, city_name):
+    # TODO remove this view
     matches = [ c for c in cities.read_autocomplete_list() if c.lower().startswith(city_name.lower()) ]
 
     if len(matches) == 1 and matches[0] != city_name:

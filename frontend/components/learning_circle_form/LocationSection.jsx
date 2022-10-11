@@ -1,10 +1,11 @@
 import React from 'react'
 import {
-  PlaceSelect,
   InputWithLabel,
   SwitchWithLabels,
   LanguageSelect
 } from 'p2pu-components'
+
+import PlaceSelect from './place-select';
 
 
 const LocationSection = (props) => {
