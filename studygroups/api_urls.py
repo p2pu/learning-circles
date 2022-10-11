@@ -27,7 +27,6 @@ urlpatterns = [
     url(r'^courses/$', views.CourseListView.as_view(), name='api_courses'),
     url(r'^courses/topics/$', views.CourseTopicListView.as_view(), name='api_course_topics'),
     url(r'^courses/languages/$', views.CourseLanguageListView.as_view(), name='api_course_languages'),
-    url(r'^courses/detect-platform/$', views.detect_platform_from_url, name='api_course_detect_platform'),
     url(r'^signup/$', views.SignupView.as_view(), name='api_learningcircles_signup'),
     url(r'^learning-circle/$', views.LearningCircleCreateView.as_view(), name='api_learningcircles_create'),
     url(r'^learning-circle/(?P<study_group_id>[\d]+)/$', views.LearningCircleUpdateView.as_view(), name='api_learningcircles_update'),
