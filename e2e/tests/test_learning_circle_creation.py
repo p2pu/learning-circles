@@ -72,6 +72,7 @@ class LearningCircleCreation(StaticLiveServerTestCase):
 
 
     def test_learning_circle_errors(self):
+        studygroup_count = StudyGroup.objects.all().count()
         user_data = {
             "email": "teddy@test.com",
             "first_name": "Ted",
@@ -117,8 +118,7 @@ class LearningCircleCreation(StaticLiveServerTestCase):
         creation_page.go_to_tab_4()
         self.assertTrue(expected_conditions.visibility_of_all_elements_located(LearningCircleCreationPageLocators.ERROR_MESSAGE))
 
-        studygroup_count = StudyGroup.objects.all().count()
-        self.assertEqual(studygroup_count, 0)
+        self.assertEqual(studygroup_count, StudyGroup.objects.all().count())
 
 
     def test_save_draft_learning_circle(self):
