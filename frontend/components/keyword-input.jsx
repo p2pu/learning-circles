@@ -1,6 +1,10 @@
 import React, { Component } from 'react'
 import CreatableSelect from 'react-select/creatable';
 
+/*
+ * Input for selecting multiple keywords as a comma seperated string 
+ */
+
 export default class KeywordInput extends Component {
   constructor(props){
     super(props);
@@ -17,8 +21,8 @@ export default class KeywordInput extends Component {
   }
 
   render(props) {
-    const topicOptions = Array.from(this.props.keywords);
-    topicOptions.sort();
+    const keywordOptions = Array.from(this.props.keywords);
+    keywordOptions.sort();
 
     return(
       <span>
@@ -28,7 +32,7 @@ export default class KeywordInput extends Component {
           isMulti={true}
           value={this.state.keywords}
           onChange={this.handleSelect}
-          options={topicOptions.map(keyword => {
+          options={keywordOptions.map(keyword => {
             return {
               value: keyword,
               label: keyword,
@@ -38,5 +42,4 @@ export default class KeywordInput extends Component {
       </span>
     )
   }
-
 }
