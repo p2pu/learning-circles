@@ -2,10 +2,10 @@ import React, { useState } from 'react'
 import Select from 'react-select';
 
 const TopicInput = (props) => {
-  const [selectedGuides, setSelectedGuides] = useState(props.value || []);
+  const [selectedTopics, setSelectedTopics] = useState(props.value || []);
 
   const handleSelect = (selected) => {
-    setSelectedGuides(selected);
+    setSelectedTopics(selected);
   }
 
   const topicOptions = Array.from(props.topics);
@@ -18,10 +18,10 @@ const TopicInput = (props) => {
         name="topic_guides"
         multiple
         style={{display:"none"}}
-        value={selectedGuides.map( t => t.value )}
+        value={selectedTopics.map( t => t.value )}
       >
         {
-          selectedGuides.map( t => {
+          selectedTopics.map( t => {
             return (
               <option value={t.value} key={t.value}>{t.label}</option>
             )
@@ -32,7 +32,7 @@ const TopicInput = (props) => {
       <Select
         name="topics_input"
         isMulti={true}
-        value={selectedGuides}
+        value={selectedTopics}
         onChange={handleSelect}
         options={topicOptions}
       />
