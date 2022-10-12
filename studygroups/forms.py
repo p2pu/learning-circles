@@ -216,7 +216,7 @@ class CourseForm(forms.ModelForm):
         if self.instance:
             self.helper.add_input(Submit('submit', 'Save'))
         else:
-            self.helper.add_input(Submit('submit', 'Add resourse'))
+            self.helper.add_input(Submit('submit', 'Add resource'))
 
     class Meta:
         model = Course
@@ -245,7 +245,7 @@ class CourseForm(forms.ModelForm):
              'provider': _('e.g. MIT, University of Michigan, Khan Academy.'),
              'link': _('Paste full URL above.'),
              'caption': _('Write 1-2 sentences describing what people will learn from this resource. This is what learners will see when signing up for learning circles, and what facilitators will see when selecting a resource.'),
-             'keywords': _('Select or create a few keywords that will help learners and future facilitators find this resourse.'),
+             'keywords': _('Select or create a few keywords that will help learners and future facilitators find this resource.'),
              'topic_guides': _('Add your resource to one of P2PU’s existing topic guides.'),
         }
 
@@ -273,9 +273,9 @@ class StudyGroupForm(forms.ModelForm):
             HTML("""<p>For inspiration, check out <a href="https://www.flickr.com/search/?license=2%2C3%2C4%2C5%2C6%2C9" target="_blank">openly licensed images on Flickr</a>.</p>""")
         )
         self.helper.layout.insert(1, HTML("""
-            <p>You can learn more about each resourse and explore what other people are facilitating on the <a href="https://www.p2pu.org/en/courses/">resourses page</a>.</p>
-            <p>Or add an online resourse that isn&#39;t already listed.</p>
-            <p><a class="btn btn-primary" href="{% url 'studygroups_course_create' %}">Add a new resourse</a></p>
+            <p>You can learn more about each resource and explore what other people are facilitating on the <a href="https://www.p2pu.org/en/courses/">resources page</a>.</p>
+            <p>Or add an online resource that isn&#39;t already listed.</p>
+            <p><a class="btn btn-primary" href="{% url 'studygroups_course_create' %}">Add a new resource</a></p>
         """))
 
         if self.instance.pk:
@@ -359,7 +359,7 @@ class StudyGroupForm(forms.ModelForm):
             'facilitator_concerns',
         ]
         labels = {
-            'course': _('Choose the resourse that your learning circle will study.'),
+            'course': _('Choose the resource that your learning circle will study.'),
             'name': _('Set a title for your learning circle.'),
             'description': _('Share a welcome message with potential learners.'),
             'course_description': _('Describe the learning resource that you will be using.'),
@@ -378,9 +378,9 @@ class StudyGroupForm(forms.ModelForm):
         }
         help_texts = {
             'course': '',
-            'name': _('Leave this blank to use the resourse title.'),
-            'description': _('You can include a bit about yourself, why you’re facilitating this resourse, and anything else you want people to know before they sign up.'),
-            'course_description': _('Leave this blank to use the resourse description.'),
+            'name': _('Leave this blank to use the resource title.'),
+            'description': _('You can include a bit about yourself, why you’re facilitating this resource, and anything else you want people to know before they sign up.'),
+            'course_description': _('Leave this blank to use the resource description.'),
             'venue_name': _('Name of the venue, e.g. Pretoria Library or Bekka\'s house'),
             'venue_details': _('e.g. second floor kitchen or Room 409 (third floor)'),
             'venue_address': _('Write it out like you were mailing a letter.'),

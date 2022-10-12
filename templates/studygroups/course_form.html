@@ -21,10 +21,10 @@
 
     <div class="col-md-12 col-sm-12">
       {% if object %}
-      <h2>{% trans "Edit resourse" %}</h2>
+      <h2>{% trans "Edit resource" %}</h2>
       {% else %}
-      <h2>{% trans "Add a learning resourse" %}</h2>
-      <p>{% blocktrans %}Want to use a learning resource that isn&#39;t listed on our website yet? Just fill in this form and then you&#39;ll be able to select the resourse when creating learning circles going forward. This resourse will also be visible to other facilitators on the <a href="https://www.p2pu.org/en/learning-resources/">learning resourses page</a>.{% endblocktrans %}</p>
+      <h2>{% trans "Add a learning resource" %}</h2>
+      <p>{% blocktrans %}Want to use a learning resource that isn&#39;t listed on our website yet? Just fill in this form and then you&#39;ll be able to select the resource when creating learning circles going forward. This resource will also be visible to other facilitators on the <a href="https://www.p2pu.org/en/learning-resources/">learning resources page</a>.{% endblocktrans %}</p>
       {% endif %}
 
       {% crispy form %}
