@@ -61,14 +61,14 @@
           <table class="table mb-0 mb-md-3">
             <tbody>
               {% if course.topic_guides.all.count %}
-              <tr class="topics">
+              <tr>
                 <th scope="row">{% trans "Topics" %}</th>
                 <td class="topics-list">
                   {% for topic in course.topic_guides.all %}<a href="{{topic.url}}">{{topic.title}}</a>{% if not forloop.last %}, {% endif %}{% empty %}{% trans "None" %}{% endfor %}
                 </td>
               </tr>
               {% endif %}
-              <tr class="topics">
+              <tr>
                 <th scope="row">{% trans "Keywords" %}</th>
                 <td class="keywords-list">
                   {% for keyword in course.keyword_list %}{{keyword}}{% if not forloop.last %}, {% endif %}{% endfor %}
