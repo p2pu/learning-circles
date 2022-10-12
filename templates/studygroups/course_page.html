@@ -176,8 +176,8 @@
           <i class="fs-1 material-icons">{% if course.overall_rating >= 5 %}star{% elif course.overall_rating > 4 %}star_half{% else %}star_outline{% endif %}</i>
         </div>
         <div class="col-12 text-uppercase">
-          {% blocktrans count total_ratings=course.get_num_of_learner_reviews %}{{ total_ratings }} facilitator rating{% plural %}{{ total_ratings }} facilitator ratings{% endblocktrans %} | 
-          {% blocktrans count total_ratings=course.get_num_of_facilitator_reviews %}{{ total_ratings }} learner rating{% plural %}{{ total_ratings }} learner ratings{% endblocktrans %}
+          {% blocktrans count total_ratings=course.get_num_of_facilitator_reviews %}{{ total_ratings }} facilitator rating{% plural %}{{ total_ratings }} facilitator ratings{% endblocktrans %} | 
+          {% blocktrans count total_ratings=course.get_num_of_learner_reviews %}{{ total_ratings }} learner rating{% plural %}{{ total_ratings }} learner ratings{% endblocktrans %}
         </div>
         {% endif %}
       </div>
