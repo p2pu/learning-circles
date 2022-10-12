@@ -106,7 +106,6 @@ urlpatterns = [
     url(r'^course/(?P<pk>[\d]+)/reviews/$', CourseReviewsPage.as_view(), name='studygroups_course_reviews_page'),
     url(r'^course/(?P<pk>[\d]+)/edit/$', CourseUpdate.as_view(), name='studygroups_course_edit'),
     url(r'^course/(?P<pk>[\d]+)/delete/$', CourseDelete.as_view(), name='studygroups_course_delete'),
-    url(r'^course/(?P<course_id>[\d]+)/discourse_topic/$', views.generate_course_discourse_topic, name='studygroups_generate_course_discourse_topic'),
 
     url(r'^facilitator/$', RedirectView.as_view(url='/'), name='studygroups_facilitator_deprecated'),
     url(r'^facilitator/team-invitation/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm'),

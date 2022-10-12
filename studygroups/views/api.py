@@ -109,7 +109,6 @@ def serialize_learning_circle(sg):
             "provider": sg.course.provider, # TODO
             "link": sg.course.link,
             "course_page_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse('studygroups_course_page', args=(sg.course.id,)),
-            "discourse_topic_url": sg.course.discourse_topic_url if sg.course.discourse_topic_url else settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_generate_course_discourse_topic", args=(sg.course.id,)),
         },
         "id": sg.id,
         "name": sg.name,
@@ -458,7 +457,6 @@ def serialize_course(course):
         "course_edit_path": reverse("studygroups_course_edit", args=(course.id,)),
         "created_at": course.created_at,
         "unlisted": course.unlisted,
-        "discourse_topic_url": course.discourse_topic_url if course.discourse_topic_url else settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_generate_course_discourse_topic", args=(course.id,)),
     }
 
     if hasattr(course, 'num_learning_circles'):

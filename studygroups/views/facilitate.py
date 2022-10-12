@@ -195,36 +195,11 @@ class CourseReviewsPage(DetailView):
         surveys = FacilitatorSurveyResponse.objects.filter(study_group__course=course)
         surveys = map(facilitator_survey_summary, surveys)
         surveys = filter(lambda s: s.get('course_rating_reason'), surveys)
-        paginator = Paginator(list(surveys), 4)
+        paginator = Paginator(list(surveys), 20)
 
         context['page_obj'] = paginator.get_page(self.request.GET.get('page'))
 
         return context
-
-
-def generate_course_discourse_topic(request, course_id):
-    course = get_object_or_404(Course, pk=course_id)
-
-    if course.discourse_topic_url:
-        return http.HttpResponseRedirect(course.discourse_topic_url)
-
-    post_title = "{} ({})".format(course.title, course.provider)
-    post_category = settings.DISCOURSE_COURSES_AND_TOPICS_CATEGORY_ID
-    post_raw = "{}".format(course.discourse_topic_default_body())
-
-    try:
-        response_json = create_discourse_topic(post_title, post_category, post_raw)
-        topic_slug = response_json.get('topic_slug', None)
-        topic_id = response_json.get('topic_id', None)
-        topic_url = "{}/t/{}/{}".format(settings.DISCOURSE_BASE_URL, topic_slug, topic_id)
-        course.discourse_topic_url = topic_url
-        course.save()
-
-        return http.HttpResponseRedirect(topic_url)
-
-    except:
-        courses_and_topics_category_url = "{}/c/learning-circles/courses-and-topics".format(settings.DISCOURSE_BASE_URL)
-        return http.HttpResponseRedirect(courses_and_topics_category_url)
 
 
 @method_decorator(login_required, name="dispatch")

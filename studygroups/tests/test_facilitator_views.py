@@ -745,54 +745,9 @@ class TestFacilitatorViews(TestCase):
 
         expected_create_studygroup_url = reverse('studygroups_facilitator_studygroup_create') + "?course_id={}".format(course.id)
         expected_rating_step_counts = json.loads(course.rating_step_counts)
-        expected_generate_discourse_topic_url = reverse('studygroups_generate_course_discourse_topic', args=(course.id,))
 
         self.assertEqual(response.context_data['usage'], 1)
         self.assertIsNotNone(response.context_data['rating_counts_chart'])
         self.assertEqual(response.context_data['rating_step_counts'], expected_rating_step_counts)
         self.assertEqual(len(json.loads(response.context_data['similar_courses'])), 3)
         self.assertIn(expected_create_studygroup_url, str(response.content))
-        self.assertIn(expected_generate_discourse_topic_url, str(response.content))
-
-
-    @patch('studygroups.views.facilitate.create_discourse_topic')
-    def test_generate_course_discourse_topic(self, mock_request):
-        course = Course.objects.get(pk=3)
-        url = reverse('studygroups_generate_course_discourse_topic', args=(course.id,))
-
-        mock_slug = "test-slug"
-        mock_id = "123"
-        mock_url = "{}/t/{}/{}".format("https://community.p2pu.org", mock_slug, mock_id)
-        mock_response = {
-            "topic_slug": mock_slug,
-            "topic_id": mock_id
-        }
-        mock_request.configure_mock(return_value=mock_response)
-
-        c = Client()
-        response = c.get(url)
-
-        self.assertRedirects(response, mock_url, fetch_redirect_response=False)
-
-
-    @patch('studygroups.views.facilitate.create_discourse_topic')
-    def test_generate_course_discourse_topic_failure(self, mock_request):
-        course = Course.objects.get(pk=3)
-        url = reverse('studygroups_generate_course_discourse_topic', args=(course.id,))
-
-        mock_slug = "test-slug"
-        mock_id = "123"
-        mock_url = "{}/t/{}/{}".format("https://community.p2pu.org", mock_slug, mock_id)
-        mock_response = {
-            "topic_slug": mock_slug,
-            "topic_id": mock_id
-        }
-        mock_request.configure_mock(return_value=mock_response)
-        mock_request.side_effect = Exception('Mock Exception')
-
-        expected_redirect_url = "{}/c/learning-circles/courses-and-topics".format(settings.DISCOURSE_BASE_URL)
-
-        c = Client()
-        response = c.get(url)
-
-        self.assertRedirects(response, expected_redirect_url, fetch_redirect_response=False)
