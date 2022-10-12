@@ -3,6 +3,10 @@ import ReactDOM from 'react-dom'
 import KeywordInput from './components/keyword-input'
 import TopicInput from './components/topic-input'
 
+/*
+ * Replace keywords and topics form input with react components
+ */
+
 const element = document.getElementById('div_id_keywords');
 let error = element.querySelector('#error_1_id_keywords');
 let input = element.querySelector('#id_keywords');
