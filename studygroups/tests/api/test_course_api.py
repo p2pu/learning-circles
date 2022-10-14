@@ -51,7 +51,6 @@ class TestCourseApi(TestCase):
             'course_edit_path',
             'created_at',
             'unlisted',
-            'discourse_topic_url',
         ]
         resp_keys = list(resp.json()["items"][0].keys())
         for key in resp_keys:
