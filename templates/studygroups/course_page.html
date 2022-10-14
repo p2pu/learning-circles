@@ -164,7 +164,7 @@
       <div class="col-12 col-md-5 col-lg-6 text-center">
         <div class="col-12 display-3">
           <span style="font-size: 2em;">
-            {% if course.overall_rating %}{{ course.overall_rating }}{% else %}--</div>{% endif %}
+            {% if course.overall_rating %}{{ course.overall_rating }}{% else %}--{% endif %}
           </span>
         </div>
         {% if course.overall_rating %}
@@ -279,7 +279,7 @@
       {% endif %}
       {% endfor %}
       <div class="text-center">
-      <a href="reviews" class="text-center btn text-orange">More reviews</a>
+        <a href="reviews" class="text-center btn text-orange">More reviews</a>
       </div>
     </div>
   </div>
