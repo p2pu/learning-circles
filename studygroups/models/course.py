@@ -8,36 +8,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.paginator import Paginator
 from django.utils.translation import get_language_info
 
-
 from .base import LifeTimeTrackingModel
 
 import json
-
-KNOWN_COURSE_PLATFORMS = {
-    "www.edx.org/": "edX",
-    "www.futurelearn.com/": "FutureLearn",
-    "ocw.mit.edu/": "MIT OpenCourseWare",
-    "www.coursera.org/": "Coursera",
-    "www.khanacademy.org/": "Khan Academy",
-    "www.lynda.com/": "Lynda",
-    "oli.cmu.edu/": "Open Learning Initiative",
-    "www.udemy.com/": "Udemy",
-    "www.udacity.com/": "Udacity",
-    "course.oeru.org/": "OERu",
-    "www.open.edu/openlearn/": "OpenLearn",
-    "www.codecademy.com/": "CodeAcademy",
-}
-
-
-
-def course_platform_from_url(url):
-    platform = ""
-
-    for domain in KNOWN_COURSE_PLATFORMS.keys():
-        if domain in url:
-            platform = KNOWN_COURSE_PLATFORMS[domain]
-
-    return platform
 
 
 class TopicGuide(models.Model):
