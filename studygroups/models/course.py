@@ -107,8 +107,7 @@ class Course(LifeTimeTrackingModel):
         from surveys.models import FacilitatorSurveyResponse
         from surveys.models import facilitator_survey_summary
 
-        studygroup_ids = StudyGroup.objects.filter(course=self.id).distinct().values_list("id", flat=True)
-        facilitator_surveys = FacilitatorSurveyResponse.objects.filter(study_group__in=studygroup_ids)
+        facilitator_surveys = FacilitatorSurveyResponse.objects.filter(study_group__course=self)
         all_surveys = list(map(facilitator_survey_summary, facilitator_surveys))
         return len(all_surveys)
 
@@ -117,8 +116,7 @@ class Course(LifeTimeTrackingModel):
         from surveys.models import LearnerSurveyResponse
         from surveys.models import learner_survey_summary
 
-        studygroup_ids = StudyGroup.objects.filter(course=self.id).distinct().values_list("id", flat=True)
-        learner_surveys = LearnerSurveyResponse.objects.filter(study_group__in=studygroup_ids)
+        learner_surveys = LearnerSurveyResponse.objects.filter(study_group__course=self)
         all_surveys = list(map(learner_survey_summary, learner_surveys))
         return len(all_surveys)
 
