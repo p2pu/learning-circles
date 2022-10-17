@@ -315,7 +315,7 @@ class LearningCircleListView(View):
             )
             # NOTE could use haversine approximation to filter more accurately
 
-        # TODO this filter is still used by some of the erasmus project sites
+        # TODO this filter is still used by some of the Erasmus project sites
         # it should either be called keywords or use the topics
         if 'topics' in request.GET: 
             topics = request.GET.get('topics').split(',')
