@@ -16,3 +16,4 @@ tmp/*.png
 *.mo
 scripts/*
 docker.env
+compose/

@@ -21,10 +21,10 @@
 
     <div class="col-md-12 col-sm-12">
       {% if object %}
-      <h2>{% trans "Edit course" %}</h2>
+      <h2>{% trans "Edit resource" %}</h2>
       {% else %}
-      <h2>{% trans "Add a course" %}</h2>
-      <p>{% blocktrans %}Want to run an online course that isn&#39;t listed on our website yet? Just fill in this form and then you&#39;ll be able to select this course when creating learning circles going forward. This course will also be visible to other facilitators on the <a href="https://www.p2pu.org/en/courses/">courses page</a>.{% endblocktrans %}</p>
+      <h2>{% trans "Add a learning resource" %}</h2>
+      <p>{% blocktrans %}Want to use a learning resource that isn&#39;t listed on our website yet? Just fill in this form and then you&#39;ll be able to select the resource when creating learning circles going forward. This resource will also be visible to other facilitators on the <a href="https://www.p2pu.org/en/learning-resources/">learning resources page</a>.{% endblocktrans %}</p>
       {% endif %}
 
       {% crispy form %}
@@ -48,30 +48,17 @@ $(document).ready(function(){
   $('.timeinput').timepicker({ 'step': 15, 'timeFormat': 'h:i A' });
 });
 window.reactData = window.reactData || {};
-window.reactData.topics = [
-{% for topic in topics %}"{{topic}}",
+window.reactData.keywords = [
+{% for keyword in keywords %}"{{keyword}}",
 {% endfor %}
 ];
-
-</script>
-
-<script>
-$(document).ready(function(){
-  $('#id_link').blur(function(e) {
-    var url = e.currentTarget.value;
-    var apiEndpoint = "{% url 'api_course_detect_platform' %}?url=" + url;
-
-    $.ajax(apiEndpoint, {
-      success: function(data) {
-        $("#id_platform").val(data.platform)
-      },
-      error: function(err) {
-        console.log(err);
-      }
-    })
-  });
-});
-
+window.reactData.topicGuides = [
+  {% for topicGuide in topic_guides %}{
+    value: {{topicGuide.pk}},
+    label: "{{topicGuide.title}}",
+  },
+  {% endfor %}
+];
 </script>
 
 {% render_bundle 'common' %}

@@ -29,6 +29,7 @@ import logging
 from studygroups.decorators import user_is_group_facilitator
 from studygroups.decorators import user_is_team_organizer
 from studygroups.models import Course
+from studygroups.models import TopicGuide
 from studygroups.models import StudyGroup
 from studygroups.models import Facilitator
 from studygroups.models import Application
@@ -41,7 +42,6 @@ from studygroups.models import Announcement
 from studygroups.models import FacilitatorGuide
 from studygroups.models import generate_meetings_from_dates
 from studygroups.models import get_json_response
-from studygroups.models.course import course_platform_from_url
 from studygroups.models.team import eligible_team_by_email_domain
 from studygroups.models.team import get_team_users
 from studygroups.models.learningcircle import generate_meeting_reminder
@@ -106,10 +106,9 @@ def serialize_learning_circle(sg):
         "course": {
             "id": sg.course.pk,
             "title": sg.course.title,
-            "provider": sg.course.provider,
+            "provider": sg.course.provider, # TODO
             "link": sg.course.link,
             "course_page_url": settings.PROTOCOL + '://' + settings.DOMAIN + reverse('studygroups_course_page', args=(sg.course.id,)),
-            "discourse_topic_url": sg.course.discourse_topic_url if sg.course.discourse_topic_url else settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_generate_course_discourse_topic", args=(sg.course.id,)),
         },
         "id": sg.id,
         "name": sg.name,
@@ -265,7 +264,7 @@ class LearningCircleListView(View):
                     'name',
                     'course__title',
                     'course__provider',
-                    'course__topics',
+                    'course__keywords',
                     'venue_name',
                     'venue_address',
                     'venue_details',
@@ -316,11 +315,13 @@ class LearningCircleListView(View):
             )
             # NOTE could use haversine approximation to filter more accurately
 
-        if 'topics' in request.GET:
+        # TODO this filter is still used by some of the Erasmus project sites
+        # it should either be called keywords or use the topics
+        if 'topics' in request.GET: 
             topics = request.GET.get('topics').split(',')
-            query = Q(course__topics__icontains=topics[0])
+            query = Q(course__keywords__icontains=topics[0]) # TODO
             for topic in topics[1:]:
-                query = Q(course__topics__icontains=topic) | query
+                query = Q(course__keywords__icontains=topic) | query
             study_groups = study_groups.filter(query)
 
         if 'weekdays' in request.GET:
@@ -372,6 +373,7 @@ class LearningCircleListView(View):
         return json_response(request, data)
 
 
+# TODO is this still used on the EU sites?
 class LearningCircleTopicListView(View):
     """ Return topics for listed courses """
     def get(self, request):
@@ -384,8 +386,8 @@ class LearningCircleTopicListView(View):
         topics = Course.objects.active()\
             .filter(unlisted=False)\
             .filter(id__in=course_ids)\
-            .exclude(topics='')\
-            .values_list('topics')
+            .exclude(keywords='')\
+            .values_list('keywords')
         topics = [
             item.strip().lower() for sublist in topics for item in sublist[0].split(',')
         ]
@@ -432,16 +434,21 @@ def _course_check(course_id):
 
 
 def serialize_course(course):
+    # TODO
     data = {
         "id": course.id,
         "title": course.title,
-        "provider": course.provider,
-        "platform": course.platform,
+        "format": course.get_format_display(),
+        "provider": course.provider, # TODO remove - atm still used by erasmus project sites
+        "platform": course.platform, # TODO remove - ""
+        "creator": course.provider,
         "link": course.link,
         "caption": course.caption,
         "on_demand": course.on_demand,
-        "topics": [t.strip() for t in course.topics.split(',')] if course.topics else [],
+        "keywords": [t.strip() for t in course.keywords.split(',')] if course.keywords else [],
+        "topics": [t.title for t in course.topic_guides.all()] if course.topic_guides else [],
         "language": course.language,
+        "language_display": course.get_language_display(),
         "overall_rating": course.overall_rating,
         "total_ratings": course.total_ratings,
         "rating_step_counts": course.rating_step_counts,
@@ -450,7 +457,6 @@ def serialize_course(course):
         "course_edit_path": reverse("studygroups_course_edit", args=(course.id,)),
         "created_at": course.created_at,
         "unlisted": course.unlisted,
-        "discourse_topic_url": course.discourse_topic_url if course.discourse_topic_url else settings.PROTOCOL + '://' + settings.DOMAIN + reverse("studygroups_generate_course_discourse_topic", args=(course.id,)),
     }
 
     if hasattr(course, 'num_learning_circles'):
@@ -524,15 +530,15 @@ class CourseListView(View):
         if query:
             tsquery = CustomSearchQuery(query, config='simple')
             courses = courses.annotate(
-                search=SearchVector('topics', 'title', 'caption', 'provider', config='simple')
+                search=SearchVector('keywords', 'title', 'caption', 'provider', config='simple')
             ).filter(search=tsquery)
 
         if 'topics' in request.GET:
             topics = request.GET.get('topics').split(',')
-            query = Q(topics__icontains=topics[0])
+            topic_query = Q(topic_guides__slug=topics[0].lower())
             for topic in topics[1:]:
-                query = Q(topics__icontains=topic) | query
-            courses = courses.filter(query)
+                topic_query = Q(topic_guides__slug=topic.lower()) | topic_query
+            courses = courses.filter(topic_query)
 
         if 'languages' in request.GET:
             languages = request.GET.get('languages').split(',')
@@ -572,16 +578,10 @@ class CourseListView(View):
 class CourseTopicListView(View):
     """ Return topics for listed courses """
     def get(self, request):
-        topics = Course.objects.active()\
-                .filter(unlisted=False)\
-                .exclude(topics='')\
-                .values_list('topics')
-        topics = [
-            item.strip().lower() for sublist in topics for item in sublist[0].split(',')
-        ]
-        from collections import Counter
-        data = {}
-        data['topics'] = { k: v for k, v in list(Counter(topics).items()) }
+        topics = TopicGuide.objects.all()
+        data = {
+            'topics': { k.slug: k.title for k in topics }
+        }
         return json_response(request, data)
 
 
@@ -938,13 +938,6 @@ class ImageUploadView(View):
             return json_response(request, {"image_url": image_url})
         else:
             return json_response(request, {'error': 'not a valid image'})
-
-
-def detect_platform_from_url(request):
-    url = request.GET.get('url', "")
-    platform = course_platform_from_url(url)
-
-    return json_response(request, { "platform": platform })
 
 
 class CourseLanguageListView(View):

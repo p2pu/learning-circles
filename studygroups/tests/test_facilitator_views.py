@@ -655,9 +655,9 @@ class TestFacilitatorViews(TestCase):
             title='Course 1011',
             provider='CourseMagick',
             link='https://course.magick/test',
+            resource_format='course',
             caption='learn by means of magic',
-            on_demand=True,
-            topics='html,test',
+            keywords='html,test',
             language='en',
             created_by=user
         )
@@ -667,10 +667,11 @@ class TestFacilitatorViews(TestCase):
         # make sure bob123 can edit the course
         course_url = '/en/course/{}/edit/'.format(course.id)
         resp = c.get(course_url)
-        course_data['topics'] = 'magic'
+        self.assertEqual(resp.status_code, 200)
+        course_data['keywords'] = 'magic'
         resp = c.post(course_url, course_data)
         self.assertRedirects(resp, '/en/')
-        self.assertEqual(Course.objects.get(pk=course.id).topics, 'magic')
+        self.assertEqual(Course.objects.get(pk=course.id).keywords, 'magic')
 
 
     def test_cant_edit_other_facilitators_course(self):
@@ -682,7 +683,7 @@ class TestFacilitatorViews(TestCase):
             link='https://course.magick/test',
             caption='learn by means of magic',
             on_demand=True,
-            topics='html,test',
+            keywords='html,test',
             language='en',
             created_by=user
         )
@@ -692,40 +693,10 @@ class TestFacilitatorViews(TestCase):
         course_url = '/en/course/{}/edit/'.format(course.id)
         resp = c.get(course_url)
         self.assertEqual(resp.status_code, 403)
-        course_data['topics'] = 'magic'
+        course_data['keywords'] = 'magic'
         resp = c.post(course_url, course_data)
         self.assertEqual(resp.status_code, 403)
-        self.assertEqual(Course.objects.get(pk=course.id).topics, 'html,test')
-
-
-    def test_cant_edit_used_course(self):
-        user = create_user('bob@example.net', 'first', 'last', 'password')
-        user2 = create_user('bob2@example.net', 'first', 'last', 'password')
-        course_data = dict(
-            title='Course 1011',
-            provider='CourseMagick',
-            link='https://course.magick/test',
-            caption='learn by means of magic',
-            on_demand=True,
-            topics='html,test',
-            language='en',
-            created_by=user
-        )
-        course = Course.objects.create(**course_data)
-        sg = StudyGroup.objects.get(pk=1)
-        sg.course = course
-        sg.created_by = user2
-        sg.save()
-        c = Client()
-        c.login(username='bob@example.net', password='password')
-        # make sure bob123 can edit the course
-        course_url = '/en/course/{}/edit/'.format(course.id)
-        resp = c.get(course_url)
-        self.assertRedirects(resp, '/en/')
-        course_data['topics'] = 'magic'
-        resp = c.post(course_url, course_data)
-        self.assertRedirects(resp, '/en/')
-        self.assertEqual(Course.objects.get(pk=course.id).topics, 'html,test')
+        self.assertEqual(Course.objects.get(pk=course.id).keywords, 'html,test')
 
 
     def test_study_group_facilitator_survey(self):
@@ -736,7 +707,7 @@ class TestFacilitatorViews(TestCase):
             link='https://course.magick/test',
             caption='learn by means of magic',
             on_demand=True,
-            topics='html,test',
+            keywords='html,test',
             language='en',
             created_by=facilitator
         )
@@ -774,54 +745,9 @@ class TestFacilitatorViews(TestCase):
 
         expected_create_studygroup_url = reverse('studygroups_facilitator_studygroup_create') + "?course_id={}".format(course.id)
         expected_rating_step_counts = json.loads(course.rating_step_counts)
-        expected_generate_discourse_topic_url = reverse('studygroups_generate_course_discourse_topic', args=(course.id,))
 
         self.assertEqual(response.context_data['usage'], 1)
         self.assertIsNotNone(response.context_data['rating_counts_chart'])
         self.assertEqual(response.context_data['rating_step_counts'], expected_rating_step_counts)
         self.assertEqual(len(json.loads(response.context_data['similar_courses'])), 3)
         self.assertIn(expected_create_studygroup_url, str(response.content))
-        self.assertIn(expected_generate_discourse_topic_url, str(response.content))
-
-
-    @patch('studygroups.views.facilitate.create_discourse_topic')
-    def test_generate_course_discourse_topic(self, mock_request):
-        course = Course.objects.get(pk=3)
-        url = reverse('studygroups_generate_course_discourse_topic', args=(course.id,))
-
-        mock_slug = "test-slug"
-        mock_id = "123"
-        mock_url = "{}/t/{}/{}".format("https://community.p2pu.org", mock_slug, mock_id)
-        mock_response = {
-            "topic_slug": mock_slug,
-            "topic_id": mock_id
-        }
-        mock_request.configure_mock(return_value=mock_response)
-
-        c = Client()
-        response = c.get(url)
-
-        self.assertRedirects(response, mock_url, fetch_redirect_response=False)
-
-
-    @patch('studygroups.views.facilitate.create_discourse_topic')
-    def test_generate_course_discourse_topic_failure(self, mock_request):
-        course = Course.objects.get(pk=3)
-        url = reverse('studygroups_generate_course_discourse_topic', args=(course.id,))
-
-        mock_slug = "test-slug"
-        mock_id = "123"
-        mock_url = "{}/t/{}/{}".format("https://community.p2pu.org", mock_slug, mock_id)
-        mock_response = {
-            "topic_slug": mock_slug,
-            "topic_id": mock_id
-        }
-        mock_request.configure_mock(return_value=mock_response)
-        mock_request.side_effect = Exception('Mock Exception')
-
-        expected_redirect_url = "{}/c/learning-circles/courses-and-topics".format(settings.DISCOURSE_BASE_URL)
-
-        c = Client()
-        response = c.get(url)
-
-        self.assertRedirects(response, expected_redirect_url, fetch_redirect_response=False)

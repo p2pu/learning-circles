@@ -60,10 +60,18 @@
         <div class="table-responsive">
           <table class="table mb-0 mb-md-3">
             <tbody>
-              <tr class="topics">
+              {% if course.topic_guides.all.count %}
+              <tr>
                 <th scope="row">{% trans "Topics" %}</th>
                 <td class="topics-list">
-                  {% for topic in course.topic_list %}{{topic}}{% if not forloop.last %}, {% endif %}{% endfor %}
+                  {% for topic in course.topic_guides.all %}<a href="{{topic.url}}">{{topic.title}}</a>{% if not forloop.last %}, {% endif %}{% empty %}{% trans "None" %}{% endfor %}
+                </td>
+              </tr>
+              {% endif %}
+              <tr>
+                <th scope="row">{% trans "Keywords" %}</th>
+                <td class="keywords-list">
+                  {% for keyword in course.keyword_list %}{{keyword}}{% if not forloop.last %}, {% endif %}{% endfor %}
                 </td>
               </tr>
               <tr>
@@ -94,31 +102,23 @@
         <div class="table-responsive">
           <table class="table">
             <tbody>
-              <tr class="provider">
-                <th scope="row">{% trans "Provider" %}</th>
-                <td>{{ course.provider }}</td>
+              <tr>
+                <th scope="row">{% trans "Format" %}</th>
+                <td>{{course.get_format_display}}</td>
               </tr>
-              <tr class="platform">
-                <th scope="row">{% trans "Platform" %}</th>
-                <td>
-                  {% if course.platform %}{{ course.platform }}{% else %}{% trans "Unknown" %}{% endif %}
-                </td>
+              <tr class="provider">
+                <th scope="row">{% trans "Creator" %}</th>
+                <td>{{ course.provider }}</td>
               </tr>
               <tr class="website">
                 <th scope="row">{% trans "Website" %}</th>
                 <td>
-                  <a href="{{ course.link }}" rel="nofollow" target="_blank">{% trans "Visit the website" %}</a>
+                  <a href="{{ course.link }}" rel="nofollow" target="_blank">{{ course.link }}</a>
                 </td>
               </tr>
-              <tr class="platform">
-                <th scope="row">{% trans "Access" %}</th>
-                <td>
-                  {% if course.on_demand %}
-                    {% trans "Always available" %}
-                  {% else %}
-                    {% trans "Check availability" %}
-                  {% endif %}
-                </td>
+              <tr>
+                <th scope="row">{% trans "Language" %}</th>
+                <td>{{course.get_language_display}}</td>
               </tr>
             </tbody>
           </table>
@@ -164,7 +164,7 @@
       <div class="col-12 col-md-5 col-lg-6 text-center">
         <div class="col-12 display-3">
           <span style="font-size: 2em;">
-            {% if course.overall_rating %}{{ course.overall_rating }}{% else %}--</div>{% endif %}
+            {% if course.overall_rating %}{{ course.overall_rating }}{% else %}--{% endif %}
           </span>
         </div>
         {% if course.overall_rating %}
@@ -176,7 +176,9 @@
           <i class="fs-1 material-icons">{% if course.overall_rating >= 5 %}star{% elif course.overall_rating > 4 %}star_half{% else %}star_outline{% endif %}</i>
         </div>
         <div class="col-12 text-uppercase">
-          {% blocktrans count total_ratings=course.total_ratings %}{{ total_ratings }} rating{% plural %}{{ total_ratings }} ratings{% endblocktrans %}</div>
+          {% blocktrans count total_ratings=course.get_num_of_facilitator_reviews %}{{ total_ratings }} facilitator rating{% plural %}{{ total_ratings }} facilitator ratings{% endblocktrans %} | 
+          {% blocktrans count total_ratings=course.get_num_of_learner_reviews %}{{ total_ratings }} learner rating{% plural %}{{ total_ratings }} learner ratings{% endblocktrans %}
+        </div>
         {% endif %}
       </div>
 
@@ -258,53 +260,36 @@
 
     </div>
 
-    {% comment %}
+    {% if course_rating_reason.get_course_reviews %}
     <h3>{% trans "Reviews" %}</h3>
-    <div class="row grid reviews">
-      {% for rating in course.get_course_reviews %}
+    <div class="reviews">
+      {% for rating in course.get_course_reviews|slice:3 %}
       {% if rating.course_rating_reason %}
-      <div class="grid-item col-12 py-2">
-        <div class="row py-3">
-          <div class="col-12 col-lg-11 col-xl-10">
-            <div class="lowbrow row py-3">
-              <div class="stars stars-{{rating.course_rating}} mb-2 mb-md-0 align-items-center pe-md-0 d-flex col-12 col-md-auto">
-                <span></span><span></span><span></span><span></span><span></span>
-              </div>
+        <div class="review">
+          <div class="lowbrow row py-3">
+            <div class="stars stars-{{rating.course_rating}} mb-2 mb-md-0 align-items-center pe-md-0 d-flex col-12 col-md-auto">
+              <span></span><span></span><span></span><span></span><span></span><span class="date"> {{rating.response_date | date:'M Y'}}</span>
             </div>
-            <p>{{rating.course_rating_reason}}</p>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <p>{{rating.course_rating_reason}}</p>
+            </div>
           </div>
         </div>
-      </div>
       {% endif %}
       {% endfor %}
-      {% endcomment %}
-
-      {% comment %}
-      <a href="" class="text-center btn text-orange">View course discussion</a>
-      {% endcomment %}
-    </div>
-  </div>
-</section>
-
-<section>
-  <div class="container">
+      {% if course_rating_reason.get_course_reviews|length > 3 %}
       <div class="text-center">
-        {% if course.discourse_topic_url %}
-        <a href="{{ course.discourse_topic_url }}" class="text-center btn p2pu-btn orange">{% trans "View discussion" %}</a>
-        {% else %}
-        <p>{% trans "This resource has not yet been discussed by the P2PU community." %}</p>
-        <form action="{% url 'studygroups_generate_course_discourse_topic' course.pk %}" method="POST">
-          {% csrf_token %}
-          <input type="submit" class="text-center btn p2pu-btn orange" value="{% trans "Start discussion" %}"></input>
-        </form>
-        {% endif %}
+        <a href="reviews" class="text-center btn text-orange">More reviews</a>
       </div>
+      {% endif %}
+    </div>
+    {% endif %}
   </div>
 </section>
 
 
-
-{% comment %}
 <section>
   <div class="container">
     <h2 class="py-4">
@@ -314,37 +299,13 @@
         {{ usage }} learning circles used this resource
       {% endblocktrans %}
     </h2>
-    <div class="row grid">
-
-      <div class="grid-item col-md-6 col-lg-4">
-        <div class="card learning-circle in-progress">
-          <div class="status-tag">in progress</div>
-          <div class="card-image">
-            <img src="{{ site.baseurl }}/assets/images/p2pu-ogimg-default.jpg" alt="P2PU Monthly Facilitator Call" class="card-img-top">
-          </div>
-          <div class="card-header">
-            <span class="eyebrow">Started June 9, 2021</span>
-            <h3 class="card-title">P2PU Monthly Facilitator Call</h3>
-          </div>
-          <div class="card-body">
-            <span class="schedule"><i class="material-icons">schedule</i>12:00 PM to 1:00 PM (EDT)</span>
-            <span class="duration"><i class="material-icons">today</i>13 meetings starting June 9, 2021</span>
-            <span class="city-country"> <i class="material-icons">place</i>Detroit</span>
-            <span class="facilitator"><i class="material-icons">face</i>Facilitated by Qumisha</span>
-            <span class="location"><i class="material-icons">store</i>Meeting at Online</span>
-          </div>
-          <div class="card-footer">
-            <button class="btn p2pu-btn btn-sm gray mx-auto d-block">Sign up</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div id="course-learning-circles" data-default-image-url="{% static 'images/learning-circle-default.jpg' %}"></div>
   </div>
 </section>
-{% endcomment %}
 {% endblock %}
-
 {% block scripts %}
+
+{{ learning_circles|json_script:"course-learning-circles-data" }}
 <script src="{% static 'js/vendor/pygal-tooltips.min.js' %}"></script>
 {% render_bundle 'common' %}
 {% render_bundle 'course-page' %}
