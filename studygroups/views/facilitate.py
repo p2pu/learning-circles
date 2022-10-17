@@ -168,7 +168,7 @@ class CoursePage(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         usage = StudyGroup.objects.published().filter(course=self.object.id).count()
-        learning_circles = StudyGroup.objects.published().filter(course=self.object.id)[:5]
+        learning_circles = StudyGroup.objects.published().filter(course=self.object.id).order_by('-start_date')[:9]
 
         rating_step_counts = json.loads(self.object.rating_step_counts)
         similar_courses = [ serialize_course(course) for course in self.object.similar_courses()]

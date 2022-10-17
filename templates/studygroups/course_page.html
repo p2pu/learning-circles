@@ -113,7 +113,7 @@
               <tr class="website">
                 <th scope="row">{% trans "Website" %}</th>
                 <td>
-                  <a href="{{ course.link }}" rel="nofollow" target="_blank">{% trans "Visit the website" %}</a>
+                  <a href="{{ course.link }}" rel="nofollow" target="_blank">{{ course.link }}</a>
                 </td>
               </tr>
               <tr>
@@ -260,6 +260,7 @@
 
     </div>
 
+    {% if course_rating_reason.get_course_reviews %}
     <h3>{% trans "Reviews" %}</h3>
     <div class="reviews">
       {% for rating in course.get_course_reviews|slice:3 %}
@@ -278,14 +279,15 @@
         </div>
       {% endif %}
       {% endfor %}
+      {% if course_rating_reason.get_course_reviews|length > 3 %}
       <div class="text-center">
         <a href="reviews" class="text-center btn text-orange">More reviews</a>
       </div>
+      {% endif %}
     </div>
+    {% endif %}
   </div>
 </section>
-
-
 
 
 <section>
