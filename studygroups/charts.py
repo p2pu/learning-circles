@@ -480,7 +480,8 @@ class TopTopicsChart():
     def get_data(self):
         data = {}
         course_ids = StudyGroup.objects.filter(id__in=self.study_group_ids).values_list('course')
-        course_topics = Course.objects.filter(id__in=course_ids).exclude(topics="").values_list("topics")
+        # TODO topics were renamed to keywords
+        course_topics = Course.objects.filter(id__in=course_ids).exclude(keywords="").values_list("keywords")
         topics = [
             item.strip().lower().capitalize() for sublist in course_topics for item in sublist[0].split(',')
         ]

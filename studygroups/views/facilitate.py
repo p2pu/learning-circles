@@ -23,11 +23,13 @@ from django.utils.decorators import method_decorator
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
+from django.core.paginator import Paginator
 
 import re
 import json
 import datetime
 import logging
+from surveys.models import FacilitatorSurveyResponse, facilitator_survey_summary
 
 from tinymce.widgets import TinyMCE
 
@@ -38,6 +40,7 @@ from studygroups.models import StudyGroup
 from studygroups.models import Facilitator
 from studygroups.models import Meeting
 from studygroups.models import Course
+from studygroups.models import TopicGuide
 from studygroups.models import Application
 from studygroups.models import Reminder
 from studygroups.forms import ApplicationInlineForm
@@ -55,6 +58,7 @@ from studygroups.charts import OverallRatingBarChart
 from studygroups.discourse import create_discourse_topic
 from studygroups.utils import render_to_string_ctx
 from studygroups.views.api import serialize_course
+from studygroups.views.api import serialize_learning_circle
 from studygroups.models.team import eligible_team_by_email_domain
 from studygroups.models import weekly_update_data
 
@@ -163,41 +167,39 @@ class CoursePage(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        usage = StudyGroup.objects.filter(course=self.object.id).count()
+        usage = StudyGroup.objects.published().filter(course=self.object.id).count()
+        learning_circles = StudyGroup.objects.published().filter(course=self.object.id).order_by('-start_date')[:9]
+
         rating_step_counts = json.loads(self.object.rating_step_counts)
         similar_courses = [ serialize_course(course) for course in self.object.similar_courses()]
 
         context['usage'] = usage
+        context['learning_circles'] = list(map(serialize_learning_circle, learning_circles))
         context['rating_counts_chart'] = OverallRatingBarChart(rating_step_counts).generate()
         context['rating_step_counts'] = rating_step_counts
         context['similar_courses'] = json.dumps(similar_courses, cls=DjangoJSONEncoder)
 
         return context
 
+class CourseReviewsPage(DetailView):
+    model = Course
+    template_name = 'studygroups/course_reviews_page.html'
+    context_object_name = 'course'
 
-def generate_course_discourse_topic(request, course_id):
-    course = get_object_or_404(Course, pk=course_id)
+    def get_queryset(self):
+        return super().get_queryset().active()
 
-    if course.discourse_topic_url:
-        return http.HttpResponseRedirect(course.discourse_topic_url)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        course = self.get_object()
+        surveys = FacilitatorSurveyResponse.objects.filter(study_group__course=course)
+        surveys = map(facilitator_survey_summary, surveys)
+        surveys = filter(lambda s: s.get('course_rating_reason'), surveys)
+        paginator = Paginator(list(surveys), 20)
 
-    post_title = "{} ({})".format(course.title, course.provider)
-    post_category = settings.DISCOURSE_COURSES_AND_TOPICS_CATEGORY_ID
-    post_raw = "{}".format(course.discourse_topic_default_body())
+        context['page_obj'] = paginator.get_page(self.request.GET.get('page'))
 
-    try:
-        response_json = create_discourse_topic(post_title, post_category, post_raw)
-        topic_slug = response_json.get('topic_slug', None)
-        topic_id = response_json.get('topic_id', None)
-        topic_url = "{}/t/{}/{}".format(settings.DISCOURSE_BASE_URL, topic_slug, topic_id)
-        course.discourse_topic_url = topic_url
-        course.save()
-
-        return http.HttpResponseRedirect(topic_url)
-
-    except:
-        courses_and_topics_category_url = "{}/c/learning-circles/courses-and-topics".format(settings.DISCOURSE_BASE_URL)
-        return http.HttpResponseRedirect(courses_and_topics_category_url)
+        return context
 
 
 @method_decorator(login_required, name="dispatch")
@@ -208,20 +210,22 @@ class CourseCreate(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(CourseCreate, self).get_context_data(**kwargs)
-        topics = Course.objects.active()\
+        keywords = Course.objects.active()\
                 .filter(unlisted=False)\
-                .exclude(topics='')\
-                .values_list('topics')
-        topics = [
-            item.strip().lower() for sublist in topics for item in sublist[0].split(',')
+                .exclude(keywords='')\
+                .values_list('keywords')
+        keywords = [
+            item.strip().lower() for sublist in keywords for item in sublist[0].split(',')
         ]
-        context['topics'] = list(set(topics))
+        context['keywords'] = list(set(keywords))
+        context['topic_guides'] = TopicGuide.objects.all()
         return context
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.created_by = self.request.user
         self.object.save()
+        form.save_m2m()
         messages.success(self.request, _('Your course has been added. You can now create a learning circle using it.'))
         return http.HttpResponseRedirect(self.get_success_url())
 
@@ -240,35 +244,26 @@ class CourseUpdate(UpdateView):
         course = self.get_object()
         if not request.user.is_staff and course.created_by != request.user:
             raise PermissionDenied
-        other_study_groups =  StudyGroup.objects.active().filter(course=course).exclude(facilitator__user=request.user)
-        study_groups = StudyGroup.objects.active().filter(course=course, facilitator__user=request.user)
-        if study_groups.count() > 1 or other_study_groups.count() > 0:
-            messages.warning(request, _('This course is being used by other learning circles and cannot be edited, please create a new course to make changes'))
-            url = reverse('studygroups_facilitator')
-            return http.HttpResponseRedirect(url)
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(CourseUpdate, self).get_context_data(**kwargs)
-        topics = Course.objects.active()\
+        keywords = Course.objects.active()\
                 .filter(unlisted=False)\
-                .exclude(topics='')\
-                .values_list('topics')
-        topics = [
-            item.strip().lower() for sublist in topics for item in sublist[0].split(',')
+                .exclude(keywords='')\
+                .values_list('keywords')
+        keywords = [
+            item.strip().lower() for sublist in keywords for item in sublist[0].split(',')
         ]
-        context['topics'] = list(set(topics))
+        context['keywords'] = list(set(keywords))
+        context['topic_guides'] = TopicGuide.objects.all()
         return context
 
     def form_valid(self, form):
-        # courses created by staff will be global
-        messages.success(self.request, _('Your course has been created. You can now create a learning circle using it.'))
-        if self.request.user.is_staff:
-            return super(CourseUpdate, self).form_valid(form)
-        self.object = form.save(commit=False)
-        self.object.created_by = self.request.user
-        self.object.save()
+        messages.success(self.request, _('Your course has been updated.'))
+        self.object = form.save()
         return http.HttpResponseRedirect(self.get_success_url())
+
 
     def get_success_url(self):
         url = reverse('studygroups_facilitator')

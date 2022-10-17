@@ -22,13 +22,13 @@ const goal_rating_qs = urlParams.get('goal_rating');
 if (goal_rating_qs && goal_rating_qs != goal_rating){
   goal_rating = goal_rating_qs;
   // post goal_rating to backend
-  data = {
+  let data = {
     facilitator_goal_rating: goal_rating,
   };
-  axios(element.dataset.postRatingUrl, {method: 'PUT', data: _formData}).then(res => {
+  axios(element.dataset.postRatingUrl, {method: 'PUT', data}).then(res => {
+
   }).catch(err => {
   });
-
 }
 
 const params = {

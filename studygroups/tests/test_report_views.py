@@ -75,7 +75,7 @@ class TestReportViews(TestCase):
             link='https://course.magick/test',
             caption='learn by means of magic',
             on_demand=True,
-            topics='html,test',
+            keywords='html,test',
             language='en',
             created_by=facilitator
         )
@@ -114,7 +114,7 @@ class TestReportViews(TestCase):
             link='https://course.magick/test',
             caption='learn by means of magic',
             on_demand=True,
-            topics='html,test',
+            keywords='html,test',
             language='en',
             created_by=facilitator
         )
@@ -156,7 +156,7 @@ class TestReportViews(TestCase):
             link='https://course.magick/test',
             caption='learn by means of magic',
             on_demand=True,
-            topics='html,test',
+            keywords='html,test',
             language='en',
             created_by=facilitator
         )

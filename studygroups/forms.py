@@ -209,7 +209,6 @@ class CourseForm(forms.ModelForm):
         (False, _('Not sure')),
     )
     license = forms.ChoiceField(choices=LICENSES, initial='', required=False)
-    on_demand = forms.ChoiceField(choices=AVAILABILITY_CHOICES, initial=True, label= _('Availability'), help_text=_('Select “Always available” if the course is openly licensed or on-demand, meaning that there are no scheduled start and end dates for course availability.'))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -217,36 +216,37 @@ class CourseForm(forms.ModelForm):
         if self.instance:
             self.helper.add_input(Submit('submit', 'Save'))
         else:
-            self.helper.add_input(Submit('submit', 'Create course'))
+            self.helper.add_input(Submit('submit', 'Add resource'))
 
     class Meta:
         model = Course
         fields = [
             'title',
-            'link',
-            'platform',
             'provider',
+            'resource_format',
+            'link',
             'caption',
-            'on_demand',
-            'topics',
+            'topic_guides',
+            'keywords',
             'language',
             'license',
         ]
         labels = {
-            'title': _('Course title'),
-            'provider': _('Course creator'),
-            'platform': _('Course platform'),
-            'link': _('Course website'),
-            'caption': _('Course description (500 character limit)'),
-            'topic': _('Course topics'),
-            'license': _('Course license'),
+            'title': _('Title'),
+            'link': _('URL'),
+            'provider': _('Creator'),
+            'caption': _('Description (500 character limit)'),
+            'keywords': _('Keywords'),
+            'topic_guides': _('Topics'),
+            'license': _('License'),
+            'resource_format': _('Format'),
         }
         help_texts = {
              'provider': _('e.g. MIT, University of Michigan, Khan Academy.'),
-             'platform': _('e.g. Coursera, edX, FutureLearn, Udacity.'),
              'link': _('Paste full URL above.'),
-             'caption': _('Write 1-2 sentences that describe what people will accomplish if they take this course. This description is what learners will see when signing up for learning circles, and what facilitators will see when selecting a course.'),
-             'topics': _('Select or create a few topics that will help learners and future facilitators find this course.'),
+             'caption': _('Write 1-2 sentences describing what people will learn from this resource. This is what learners will see when signing up for learning circles, and what facilitators will see when selecting a resource.'),
+             'keywords': _('Select or create a few keywords that will help learners and future facilitators find this resource.'),
+             'topic_guides': _('Add your resource to one of P2PU’s existing topic guides.'),
         }
 
 
@@ -273,9 +273,9 @@ class StudyGroupForm(forms.ModelForm):
             HTML("""<p>For inspiration, check out <a href="https://www.flickr.com/search/?license=2%2C3%2C4%2C5%2C6%2C9" target="_blank">openly licensed images on Flickr</a>.</p>""")
         )
         self.helper.layout.insert(1, HTML("""
-            <p>You can learn more about each course and explore what other people are facilitating on the <a href="https://www.p2pu.org/en/courses/">courses page</a>.</p>
-            <p>Or add an online course that isn&#39;t already listed.</p>
-            <p><a class="btn btn-primary" href="{% url 'studygroups_course_create' %}">Add a new course</a></p>
+            <p>You can learn more about each resource and explore what other people are facilitating on the <a href="https://www.p2pu.org/en/courses/">resources page</a>.</p>
+            <p>Or add an online resource that isn&#39;t already listed.</p>
+            <p><a class="btn btn-primary" href="{% url 'studygroups_course_create' %}">Add a new resource</a></p>
         """))
 
         if self.instance.pk:
@@ -359,10 +359,10 @@ class StudyGroupForm(forms.ModelForm):
             'facilitator_concerns',
         ]
         labels = {
-            'course': _('Choose the course that your learning circle will study.'),
+            'course': _('Choose the resource that your learning circle will study.'),
             'name': _('Set a title for your learning circle.'),
             'description': _('Share a welcome message with potential learners.'),
-            'course_description': _('Describe the course materials that you will be using.'),
+            'course_description': _('Describe the learning resource that you will be using.'),
             'venue_name': _('Where will you meet?'),
             'venue_details': _('Where is the specific meeting spot?'),
             'venue_address': _('What is the address of the venue?'),
@@ -378,9 +378,9 @@ class StudyGroupForm(forms.ModelForm):
         }
         help_texts = {
             'course': '',
-            'name': _('Leave this blank to use the course title.'),
-            'description': _('You can include a bit about yourself, why you’re facilitating this course, and anything else you want people to know before they sign up.'),
-            'course_description': _('Leave this blank to use the course description.'),
+            'name': _('Leave this blank to use the resource title.'),
+            'description': _('You can include a bit about yourself, why you’re facilitating this resource, and anything else you want people to know before they sign up.'),
+            'course_description': _('Leave this blank to use the resource description.'),
             'venue_name': _('Name of the venue, e.g. Pretoria Library or Bekka\'s house'),
             'venue_details': _('e.g. second floor kitchen or Room 409 (third floor)'),
             'venue_address': _('Write it out like you were mailing a letter.'),

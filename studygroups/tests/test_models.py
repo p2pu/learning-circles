@@ -14,7 +14,6 @@ from studygroups.models import accept_application
 from studygroups.models import create_rsvp
 from studygroups.models import generate_all_meetings
 from studygroups.models import generate_meetings_from_dates
-from studygroups.models.course import KNOWN_COURSE_PLATFORMS
 from studygroups.utils import gen_rsvp_querystring
 from studygroups.utils import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
@@ -256,12 +255,3 @@ class TestSignupModels(TestCase):
         self.assertEqual(mail.outbox[0].subject, 'Your learning circle on Monday, 23 March, 6:30PM has been rescheduled')
         send_message.assert_called_with('+27713213213', 'Your learning circle on Monday, 23 March, 6:30PM is now on Monday, 1 April, 6:30PM. Reply STOP to unsubscribe.')
 
-
-class TestCourseModel(TestCase):
-    fixtures = ['test_courses.json', 'test_studygroups.json', 'test_applications.json', 'test_survey_responses.json']
-
-    def test_detect_platform_from_link(self):
-        course = Course.objects.get(pk=4)
-        self.assertEqual(course.platform, "")
-        course.detect_platform_from_link()
-        self.assertEqual(course.platform, KNOWN_COURSE_PLATFORMS["www.khanacademy.org/"])
