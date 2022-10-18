@@ -1,10 +1,14 @@
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
 from django.contrib.postgres.search import SearchQuery
 from django.contrib.postgres.search import SearchVector
 
 import re
+import json
 
 from cities.models import City
 from uxhelpers.utils import json_response
+from api import schema
 
 
 # TODO copypasta from studygroups.views.api
@@ -44,3 +48,27 @@ def city_search(request):
         "cities": list(places)
     }
     return json_response(request, data)
+
+
+@login_required
+@require_http_methods(['POST'])
+def city_add(request):
+    post_schema = {
+        "city": schema.text(required=True, length=256),
+        "region": schema.text(required=True, length=256),
+        "country": schema.text(required=True, length=256),
+        "country_en": schema.text(required=True, length=256),
+        "latitude": schema.floating_point(),
+        "longitude": schema.floating_point()
+    }
+
+    data = json.loads(request.body)
+    data, errors = schema.validate(post_schema, data)
+    if errors != {}:
+        return json_response(request, {"status": "error", "errors": errors})
+
+    # TODO generate a place id?
+    City.ojbects.create(data)
+    return json_response(request, {"status": "created"})
+
+
