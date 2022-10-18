@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'backup',
     'analytics',
     'uxhelpers',
+    'cities',
     'custom_registration',
     'advice',
     'surveys',

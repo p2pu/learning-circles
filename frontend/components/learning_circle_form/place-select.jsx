@@ -20,7 +20,7 @@ const InputWrapper = props => {
   );
 }
 
-const PLACE_ENDPOINT = '/api/city';
+const PLACE_ENDPOINT = '/api/cities';
 
 export default class PlaceSelect extends Component {
   constructor(props) {
@@ -61,7 +61,7 @@ export default class PlaceSelect extends Component {
   }
 
   searchPlaces = (query) => {
-    const url = `${PLACE_ENDPOINT}/complete/`;
+    const url = `${PLACE_ENDPOINT}/search/`;
     return axios({
       url,
       method: 'GET',
@@ -75,7 +75,7 @@ export default class PlaceSelect extends Component {
   }
 
   fetchPlaceById = (placeId) => {
-    const url = `${PLACE_ENDPOINT}/${placeId}`;
+    const url = `${PLACE_ENDPOINT}/${placeId}/`;
 
     axios.get(url)
       .then(res => {
