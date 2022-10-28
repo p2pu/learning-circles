@@ -2,23 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import AsyncSelect from 'react-select/async';
 import AsyncCreatableSelect from 'react-select/async-creatable';
-
-const InputWrapper = props => {
-  const { id, name, label, required, disabled, errorMessage, helpText, classes, children } = props;
-  const wrapperClasses = `form-group ${classes ? classes : ""} ${disabled ? "disabled" : ""}`
-
-  return (
-    <div className={wrapperClasses} id={id}>
-      <label htmlFor={name} className='input-label'>
-        {label}
-        {required && '*'}
-      </label>
-      { helpText && <div className='form-text help-text'>{ helpText }</div> }
-      { React.cloneElement(children, { id: name, name, required }) }
-      { errorMessage && <div className='error-message minicaps'>{ errorMessage }</div> }
-    </div>
-  );
-}
+import InputWrapper from 'p2pu-components/dist/InputFields/InputWrapper'
 
 const PLACE_ENDPOINT = '/api/cities';
 
@@ -51,13 +35,6 @@ export default class PlaceSelect extends Component {
     console.log(selected)
     this.props.handleChange({ [this.props.name]: value })
     this.setState({ selected })
-  }
-
-  handleCreate = (inputValue) => {
-    return {
-      label: inputValue,
-      value: { city: inputValue }
-    };
   }
 
   searchPlaces = (query) => {
@@ -97,7 +74,6 @@ export default class PlaceSelect extends Component {
   render() {
     const { label, name, id, value, required, disabled, errorMessage, helpText, classes, selectClasses, noResultsText, placeholder, isClearable, isMulti, ...rest } = this.props
     const { selected } = this.state;
-    //getNewOptionData={ this.handleCreate }
 
     return(
       <InputWrapper

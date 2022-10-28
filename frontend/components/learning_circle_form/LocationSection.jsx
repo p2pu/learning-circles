@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {
   InputWithLabel,
   SwitchWithLabels,
@@ -6,10 +6,12 @@ import {
 } from 'p2pu-components'
 
 import PlaceSelect from './place-select';
-
+import CityForm from './CityForm';
 
 const LocationSection = (props) => {
-  const place = !!props.learningCircle.place_id ? { objectID: props.learningCircle.place_id } : props.learningCircle.place
+  const place = !!props.learningCircle.place_id ? { objectID: props.learningCircle.place_id } : props.learningCircle.place;
+
+  const [addCity, setAddCity] = useState(false);
 
   const onOnlineChanged = ({online}) => {
     let {venue_name} = props.learningCircle;
@@ -28,16 +30,38 @@ const LocationSection = (props) => {
         value={Boolean(props.learningCircle.online)}
         name='online'
       />
-      <PlaceSelect
-        label={props.learningCircle.online?'Where are you based?':'What city are you meeting in?'}
-        name='place'
-        id='place_id'
-        classes="form-group"
-        value={place}
-        handleChange={props.updateFormData}
-        errorMessage={props.errors.city}
-        required={true}
-      />
+      { !addCity && 
+        <>
+          <PlaceSelect
+            label={props.learningCircle.online?'Where are you based?':'What city are you meeting in?'}
+            name='place'
+            id='place_id'
+            classes="form-group"
+            value={place}
+            handleChange={props.updateFormData}
+            errorMessage={props.errors.city}
+            required={true}
+          />
+          <p>Click here if you don't see your city in the list <button className="p2pu-btn btn btn-sm blue" onClick={() => setAddCity(true)}>Add City</button></p>
+        </>
+      }
+      { 
+        addCity &&
+        <>
+          <CityForm 
+            label={props.learningCircle.online?'Where are you based?':'What city are you meeting in?'}
+            name='place'
+            id='place_id'
+            classes="form-group"
+            value={place}
+            handleChange={props.updateFormData}
+            errorMessage={props.errors.city}
+            required={true}
+
+          /> 
+          <p>Go back to search for your city in the list <button className="p2pu-btn btn btn-sm blue" onClick={() => setAddCity(false)}>Select City</button></p>
+        </>
+      }
       <InputWithLabel
         label='Where will you meet?'
         placeholder={props.learningCircle.online?'E.g. Online':'E.g. Pretoria Library'}
