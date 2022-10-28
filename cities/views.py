@@ -29,18 +29,19 @@ def city_info(request, place_id):
 
 
 def city_search(request):
+    cities = City.objects.all()
     query = request.GET.get('query')
-
-    tsquery = CustomSearchQuery(query, config='simple')
-    cities = City.objects.all().annotate(
-        search = SearchVector(
-            'city',
-            'region',
-            'country',
-            'country_en',
-            config='simple'
-        )
-    ).filter(search=tsquery)
+    if query:
+        tsquery = CustomSearchQuery(query, config='simple')
+        cities = cities.annotate(
+            search = SearchVector(
+                'city',
+                'region',
+                'country',
+                'country_en',
+                config='simple'
+            )
+        ).filter(search=tsquery)
 
     places = cities.values('city', 'region', 'country', 'country_en', 'latitude', 'longitude', 'place_id').distinct('city', 'region', 'country').order_by('city')
 
@@ -48,6 +49,29 @@ def city_search(request):
         "cities": list(places)
     }
     return json_response(request, data)
+
+
+def country_search(request):
+    cities = City.objects.all()
+    query = request.GET.get('query')
+    if query:
+        tsquery = CustomSearchQuery(query, config='simple')
+        cities = City.objects.all().annotate(
+            search = SearchVector(
+                'country',
+                'country_en',
+                config='simple'
+            )
+        ).filter(search=tsquery)
+
+    countries = cities.values('country', 'country_en').distinct('country_en', 'country').order_by('country')
+
+    data = {
+        "countries": list(countries)
+    }
+    return json_response(request, data)
+
+
 
 
 @login_required
@@ -70,5 +94,3 @@ def city_add(request):
     # TODO generate a place id?
     City.ojbects.create(data)
     return json_response(request, {"status": "created"})
-
-

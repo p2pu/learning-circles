@@ -9,3 +9,4 @@ class City(models.Model):
     latitude = models.DecimalField(max_digits=8, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     place_id = models.CharField(max_length=256, blank=True)  # Algolia place_id
+    geonameid = models.CharField(max_length=32, blank=True)  # Geoname.org geonameid
