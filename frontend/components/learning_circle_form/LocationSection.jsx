@@ -104,6 +104,7 @@ const LocationSection = (props) => {
       <LanguageSelect
         label='What language should P2PU use to communicate details about your learning circle?'
         helpText='Participants will receive communications in this language.'
+        selectClasses='react-select'
         placeholder='Pick a language'
         value={props.learningCircle.language}
         handleChange={props.updateFormData}

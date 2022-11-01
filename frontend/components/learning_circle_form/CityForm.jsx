@@ -46,7 +46,7 @@ const CountryInput = props => {
       <AsyncCreatableSelect
         name={ name }
         cacheOptions
-        className={ `city-select ${selectClasses}` }
+        className={ `react-select ${selectClasses}` }
         value={ {label: value.country, value} }
         onChange={ handleSelect }
         onCreateOption={ handleCreateOption }
