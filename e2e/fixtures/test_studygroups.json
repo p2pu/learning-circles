@@ -19,6 +19,20 @@
 },
 {
    "fields": {
+      "city": "Kitchener",
+      "region": "Ontario",
+      "country": "Canada",
+      "country_en": "Canada",
+      "latitude" : "41.850030",
+      "longitude" : "-87.650050",
+      "place_id": "12345"
+
+   },
+   "model": "cities.city",
+   "pk": 1
+},
+{
+   "fields": {
       "created_at": "2015-03-23T15:18:39.462Z",
       "updated_at": "2015-03-23T15:18:39.462Z",
       "name": "Test learning circle",

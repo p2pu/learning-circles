@@ -88,7 +88,7 @@ export default class PlaceSelect extends Component {
         <AsyncSelect
           name={ name }
           cacheOptions
-          className={ `react-select ${selectClasses}` }
+          className={ `city-select react-select ${selectClasses}` }
           value={ selected }
           onChange={ this.handleSelect }
           noResultsText={ noResultsText }
