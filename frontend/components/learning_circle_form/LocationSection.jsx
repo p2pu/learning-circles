@@ -9,9 +9,18 @@ import PlaceSelect from './place-select';
 import CityForm from './CityForm';
 
 const LocationSection = (props) => {
-  const place = !!props.learningCircle.place_id ? { objectID: props.learningCircle.place_id } : props.learningCircle.place;
+  const place = {
+    city: props.learningCircle.city,
+    region: props.learningCircle.region,
+    country: props.learningCircle.country,
+    country_en: props.learningCircle.country_en,
+    latitude: props.learningCircle.latitude,
+    longitude: props.learningCircle.longitude,
+    place_id: props.learningCircle.place_id, // TODO geonameid
+  };
 
-  const [addCity, setAddCity] = useState(false);
+  const addCity = props.learningCircle.addCity;
+  const setAddCity = value => props.updateFormData({addCity: value});
 
   const onOnlineChanged = ({online}) => {
     let {venue_name} = props.learningCircle;
@@ -42,7 +51,7 @@ const LocationSection = (props) => {
             errorMessage={props.errors.city}
             required={true}
           />
-          <p>Click here if you don't see your city in the list <button className="p2pu-btn btn btn-sm blue" onClick={() => setAddCity(true)}>Add City</button></p>
+          <div claddName="form-text help-text">Click here if you don't see your city in the list <button className="p2pu-btn btn btn-sm blue" onClick={() => setAddCity(true)}>Add City</button></div>
         </>
       }
       { 
@@ -57,9 +66,8 @@ const LocationSection = (props) => {
             handleChange={props.updateFormData}
             errorMessage={props.errors.city}
             required={true}
-
           /> 
-          <p>Go back to search for your city in the list <button className="p2pu-btn btn btn-sm blue" onClick={() => setAddCity(false)}>Select City</button></p>
+          <div claddName="form-text help-text">Go back to search for your city in the list <button className="p2pu-btn btn btn-sm blue" onClick={() => setAddCity(false)}>Select City</button></div>
         </>
       }
       <InputWithLabel

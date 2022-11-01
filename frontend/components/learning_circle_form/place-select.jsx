@@ -32,9 +32,8 @@ export default class PlaceSelect extends Component {
 
   handleSelect = (selected) => {
     const value = selected ? selected.value : null
-    console.log(selected)
-    this.props.handleChange({ [this.props.name]: value })
-    this.setState({ selected })
+    this.props.handleChange({ ...value });
+    this.setState({ selected });
   }
 
   searchPlaces = (query) => {
@@ -47,7 +46,7 @@ export default class PlaceSelect extends Component {
       let options = res.data.cities.map(place => this.generateCityOption(place));
       return options
     }).catch(err => {
-      console.log(err)
+      console.log(err);
     })
   }
 

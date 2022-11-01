@@ -3,30 +3,39 @@ import axios from 'axios';
 import InputWrapper from 'p2pu-components/dist/InputFields/InputWrapper'
 import AsyncCreatableSelect from 'react-select/async-creatable';
 
-const PLACE_ENDPOINT = '/api/cities';
 
 const CountryInput = props => {
 
-  const { label, name, id, value, required, disabled, errorMessage, helpText, classes, selectClasses, noResultsText, placeholder, isClearable, isMulti, ...rest } = props
-  const { selected } = {};
+  const { onChange, label, name, id, value, required, disabled, errorMessage, helpText, classes, selectClasses, noResultsText, placeholder, isClearable, isMulti, place, ...rest } = props
 
   const handleSelect = selected => {
+    console.log(selected);
+    const {country, country_en} = selected.value;
+    onChange({ country, country_en });
   }
 
   const searchPlaces = (query) => {
-    const url = `${PLACE_ENDPOINT}/search/country/`;
+    const url = "/api/cities/search/country/";
     return axios({
       url,
       method: 'GET',
       params: { "query": query },
     }).then(res => {
       let options = res.data.countries.map(country => (
-        {label: country['country'], value: country['country']}
+        {label: country['country'], value: country}
       ));
       return options
     }).catch(err => {
       console.log(err)
     })
+  }
+
+  const handleCreateOption = label => {
+    const newOption = {
+      label,
+      value: { country: label, country_en: label }
+    }
+    handleSelect(newOption);
   }
 
   return (
@@ -38,8 +47,9 @@ const CountryInput = props => {
         name={ name }
         cacheOptions
         className={ `city-select ${selectClasses}` }
-        value={ selected }
+        value={ {label: value.country, value} }
         onChange={ handleSelect }
+        onCreateOption={ handleCreateOption }
         noResultsText={ noResultsText }
         placeholder={ placeholder }
         loadOptions={ searchPlaces }
@@ -65,43 +75,65 @@ const CountryInput = props => {
 }
 
 const RegionInput = props => {
+  // TODO should I just use input with label?
+  const {name, value, onChange} = props;
   return (
     <InputWrapper
       label='Region'
       {...props}
     >
-      <input type="text"  className="form-control"/>
+      <input 
+        type="text"
+        value={value}
+        className="form-control"
+        onChange={(e) => onChange({[name]: e.target.value})}
+      />
     </InputWrapper>
   );
 }
 
 const CityInput = props => {
+  const {name, value, onChange} = props;
   return (
     <InputWrapper 
       label="City"
       {...props}
     >
-      <input type="text"  className="form-control"/>
+      <input 
+        type="text"
+        value={value}
+        className="form-control"
+        onChange={(e) => onChange({[name]: e.target.value})}
+      />
     </InputWrapper>
   );
 }
 
 const CityForm = (props) => {
+  const {city, country, country_en, region} = props.value;
+  const handleChange = update => {
+    console.log('change of scenery', update);
+    props.handleChange({...props.value, ...update, place_id: null, latitude: null, longitude: null });
+  };
   return (
-    <form>
-      <div>
-        <label>What city are you meeting in?*</label>
-        <CountryInput
-          name="country"
-        />
-        <RegionInput
-          name="region"
-        />
-        <CityInput
-          name="city"
-        />
-      </div>
-    </form>
+    <div>
+      <label>What city are you meeting in?*</label>
+      <CountryInput
+        name="country"
+        onChange={handleChange}
+        value={ {country, country_en} }
+      />
+      <RegionInput
+        name="region"
+        onChange={handleChange}
+        value={region}
+      />
+      <CityInput
+        name="city"
+        onChange={handleChange}
+        value={city}
+      />
+    </div>
   );
 }
 
