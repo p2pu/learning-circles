@@ -28,7 +28,7 @@ export default class FormTabs extends React.Component{
     // map props.errors to tabs
     const tabFields = [
       ['course'],
-      ['city', 'country', 'venue_name', 'venue_details', 'venue_address', 'language'],
+      ['city', 'region', 'country', 'venue_name', 'venue_details', 'venue_address', 'language'],
       ['start_date', 'meeting_time', 'timezone'],
       ['name', 'description', 'course_description', 'signup_question', 'venue_website'],
       ['facilitator_goal', 'facilitator_concerns', 'facilitators'],

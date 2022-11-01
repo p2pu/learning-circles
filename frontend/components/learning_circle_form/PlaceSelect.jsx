@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import AsyncSelect from 'react-select/async';
-import AsyncCreatableSelect from 'react-select/async-creatable';
 import InputWrapper from 'p2pu-components/dist/InputFields/InputWrapper'
 
-const PLACE_ENDPOINT = '/api/cities';
 
 export default class PlaceSelect extends Component {
   constructor(props) {
@@ -20,16 +18,6 @@ export default class PlaceSelect extends Component {
     this.state = { hits: [], selected };
   }
 
-  componentDidMount() {
-    if (this.props.value) {
-      const { value, name, handleChange } =  this.props
-
-      if (!!value.objectID) {
-        this.fetchPlaceById(value.objectID);
-      }
-    }
-  }
-
   handleSelect = (selected) => {
     const value = selected ? selected.value : null
     this.props.handleChange({ ...value });
@@ -37,7 +25,7 @@ export default class PlaceSelect extends Component {
   }
 
   searchPlaces = (query) => {
-    const url = `${PLACE_ENDPOINT}/search/`;
+    const url = "/api/cities/search/";
     return axios({
       url,
       method: 'GET',
@@ -48,19 +36,6 @@ export default class PlaceSelect extends Component {
     }).catch(err => {
       console.log(err);
     })
-  }
-
-  fetchPlaceById = (placeId) => {
-    const url = `${PLACE_ENDPOINT}/${placeId}/`;
-
-    axios.get(url)
-      .then(res => {
-        const value = this.generateCityOption(res.data)
-        this.handleSelect(value)
-      })
-      .catch(err => {
-        console.log(err)
-      })
   }
 
   generateCityOption = (place) => {

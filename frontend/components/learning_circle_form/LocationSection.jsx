@@ -51,7 +51,7 @@ const LocationSection = (props) => {
             errorMessage={props.errors.city}
             required={true}
           />
-          <div claddName="form-text help-text">Click here if you don't see your city in the list <button className="p2pu-btn btn btn-sm blue" onClick={() => setAddCity(true)}>Add City</button></div>
+          <div className="form-text help-text">Click here if you don't see your city in the list <button className="p2pu-btn btn btn-sm blue" onClick={() => setAddCity(true)}>Add City</button></div>
         </>
       }
       { 
@@ -64,10 +64,10 @@ const LocationSection = (props) => {
             classes="form-group"
             value={place}
             handleChange={props.updateFormData}
-            errorMessage={props.errors.city}
+            errors={props.errors}
             required={true}
           /> 
-          <div claddName="form-text help-text">Go back to search for your city in the list <button className="p2pu-btn btn btn-sm blue" onClick={() => setAddCity(false)}>Select City</button></div>
+          <div className="form-text help-text">Go back to search for your city in the list <button className="p2pu-btn btn btn-sm blue" onClick={() => setAddCity(false)}>Select City</button></div>
         </>
       }
       <InputWithLabel

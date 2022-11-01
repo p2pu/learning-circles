@@ -2,19 +2,20 @@ import React from 'react'
 import axios from 'axios';
 import InputWrapper from 'p2pu-components/dist/InputFields/InputWrapper'
 import AsyncCreatableSelect from 'react-select/async-creatable';
+import InputWithLabel from 'p2pu-components/dist/InputFields/InputWithLabel'
 
 
 const CountryInput = props => {
-
-  const { onChange, label, name, id, value, required, disabled, errorMessage, helpText, classes, selectClasses, noResultsText, placeholder, isClearable, isMulti, place, ...rest } = props
+  const { handleChange, name, value, disabled, selectClasses, noResultsText, placeholder, isClearable, ...rest } = props;
 
   const handleSelect = selected => {
     console.log(selected);
     const {country, country_en} = selected.value;
-    onChange({ country, country_en });
+    handleChange({ country, country_en });
   }
 
   const searchPlaces = (query) => {
+
     const url = "/api/cities/search/country/";
     return axios({
       url,
@@ -40,7 +41,6 @@ const CountryInput = props => {
 
   return (
     <InputWrapper
-      label='Country'
       {...props}
     >
       <AsyncCreatableSelect
@@ -54,7 +54,6 @@ const CountryInput = props => {
         placeholder={ placeholder }
         loadOptions={ searchPlaces }
         isClearable={ isClearable }
-        isMulti={ isMulti }
         isDisabled={ disabled }
         classNamePrefix={'place-select'}
         theme={theme => ({
@@ -69,45 +68,10 @@ const CountryInput = props => {
         })}
         {...rest}
       />
-
     </InputWrapper>
   );
 }
 
-const RegionInput = props => {
-  // TODO should I just use input with label?
-  const {name, value, onChange} = props;
-  return (
-    <InputWrapper
-      label='Region'
-      {...props}
-    >
-      <input 
-        type="text"
-        value={value}
-        className="form-control"
-        onChange={(e) => onChange({[name]: e.target.value})}
-      />
-    </InputWrapper>
-  );
-}
-
-const CityInput = props => {
-  const {name, value, onChange} = props;
-  return (
-    <InputWrapper 
-      label="City"
-      {...props}
-    >
-      <input 
-        type="text"
-        value={value}
-        className="form-control"
-        onChange={(e) => onChange({[name]: e.target.value})}
-      />
-    </InputWrapper>
-  );
-}
 
 const PlaceInput = (props) => {
   const {city, country, country_en, region} = props.value;
@@ -119,22 +83,29 @@ const PlaceInput = (props) => {
     <div>
       <label>What city are you meeting in?*</label>
       <CountryInput
+        label='Country'
         name="country"
-        onChange={handleChange}
+        handleChange={handleChange}
         value={ {country, country_en} }
+        isClearable={true}
       />
-      <RegionInput
+      <InputWithLabel
+        label="Region"
+        placeholder="Enter the region or province."
         name="region"
-        onChange={handleChange}
+        handleChange={handleChange}
+        errorMessage={props.errors.region}
         value={region}
       />
-      <CityInput
+      <InputWithLabel
+        label="City"
         name="city"
-        onChange={handleChange}
+        handleChange={handleChange}
+        errorMessage={props.errors.city}
         value={city}
       />
     </div>
   );
 }
 
-export default PlaceInput;
+export default PlaceInput
