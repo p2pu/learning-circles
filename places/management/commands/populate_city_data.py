@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q
 
 from studygroups.models import StudyGroup
-from cities.models import City
+from places.models import City
 
 class Command(BaseCommand):
     help = 'Populate cities data based on current learning circles'

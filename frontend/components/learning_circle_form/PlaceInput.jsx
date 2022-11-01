@@ -6,7 +6,7 @@ import InputWithLabel from 'p2pu-components/dist/InputFields/InputWithLabel'
 
 
 const CountryInput = props => {
-  const { handleChange, name, value, disabled, selectClasses, noResultsText, placeholder, isClearable, ...rest } = props;
+  const { handleChange, name, value, disabled, selectClasses, noResultsText, placeholder, ...rest } = props;
 
   const handleSelect = selected => {
     console.log(selected);
@@ -16,7 +16,7 @@ const CountryInput = props => {
 
   const searchPlaces = (query) => {
 
-    const url = "/api/cities/search/country/";
+    const url = "/api/places/search/country/";
     return axios({
       url,
       method: 'GET',
@@ -53,7 +53,6 @@ const CountryInput = props => {
         noResultsText={ noResultsText }
         placeholder={ placeholder }
         loadOptions={ searchPlaces }
-        isClearable={ isClearable }
         isDisabled={ disabled }
         classNamePrefix={'place-select'}
         theme={theme => ({
@@ -87,7 +86,6 @@ const PlaceInput = (props) => {
         name="country"
         handleChange={handleChange}
         value={ {country, country_en} }
-        isClearable={true}
       />
       <InputWithLabel
         label="Region"

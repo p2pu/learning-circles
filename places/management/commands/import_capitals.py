@@ -2,11 +2,11 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q
 
 from studygroups.models import StudyGroup
-from cities.models import City
-from cities.data import get_countries
-from cities.data import read_cities
-from cities.data import read_admin1_codes
-from cities.data import get_alternate_names
+from places.models import City
+from places.data import get_countries
+from places.data import read_cities
+from places.data import read_admin1_codes
+from places.data import get_alternate_names
 
 import requests
 import csv

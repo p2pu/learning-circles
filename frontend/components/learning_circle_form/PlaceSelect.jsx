@@ -25,7 +25,7 @@ export default class PlaceSelect extends Component {
   }
 
   searchPlaces = (query) => {
-    const url = "/api/cities/search/";
+    const url = "/api/places/search/city/";
     return axios({
       url,
       method: 'GET',

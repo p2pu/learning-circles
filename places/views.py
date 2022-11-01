@@ -6,7 +6,7 @@ from django.contrib.postgres.search import SearchVector
 import re
 import json
 
-from cities.models import City
+from places.models import City
 from uxhelpers.utils import json_response
 from api import schema
 
