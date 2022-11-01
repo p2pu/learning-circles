@@ -5,8 +5,8 @@ import {
   LanguageSelect
 } from 'p2pu-components'
 
-import PlaceSelect from './place-select';
-import CityForm from './CityForm';
+import PlaceSelect from './PlaceSelect';
+import PlaceInput from './PlaceInput';
 
 const LocationSection = (props) => {
   const place = {
@@ -57,7 +57,7 @@ const LocationSection = (props) => {
       { 
         addCity &&
         <>
-          <CityForm 
+          <PlaceInput
             label={props.learningCircle.online?'Where are you based?':'What city are you meeting in?'}
             name='place'
             id='place_id'

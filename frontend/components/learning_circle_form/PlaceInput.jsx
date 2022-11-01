@@ -109,7 +109,7 @@ const CityInput = props => {
   );
 }
 
-const CityForm = (props) => {
+const PlaceInput = (props) => {
   const {city, country, country_en, region} = props.value;
   const handleChange = update => {
     console.log('change of scenery', update);
@@ -137,4 +137,4 @@ const CityForm = (props) => {
   );
 }
 
-export default CityForm;
+export default PlaceInput;
