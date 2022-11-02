@@ -28,7 +28,7 @@
       "place_id": "12345"
 
    },
-   "model": "cities.city",
+   "model": "places.city",
    "pk": 1
 },
 {
