@@ -45,13 +45,13 @@ export default class CreateLearningCirclePage extends React.Component {
 
   constructor(props){
     super(props);
-    console.log(this.props.learningCircle)
     const meetings = this.props.learningCircle.meetings.map(m => parseMeetingDate(m)).sort((a,b) => a - b)
     this.state = {
       currentTab: 0,
       learningCircle: {
         ...this.props.learningCircle,
-        meetings: meetings
+        meetings: meetings,
+        addCity: !!this.props.learningCircle.city && !this.props.learningCircle.place_id
       },
       team: this.props.team,
       showModal: false,
@@ -170,11 +170,6 @@ export default class CreateLearningCirclePage extends React.Component {
     this.setState({ alert: { show: false }})
   }
 
-  extractPlaceData = place => {
-    if (!place) return null
-    return place
-  }
-
   formatMeetingDates = () => {
     return this.state.learningCircle.meetings.map(m=> dateObjectToStringForDB(m))
   }
@@ -184,16 +179,15 @@ export default class CreateLearningCirclePage extends React.Component {
       this.showModal();
     } else {
       this.setState({ isSaving: draft, isPublishing: !draft })
-      const placeData = this.extractPlaceData(this.state.learningCircle.place)
       let start_date = this.state.learningCircle.start_date;
       if (start_date && start_date instanceof Date){
         start_date = dateObjectToStringForDB(start_date)['meeting_date'];
       }
       const meetings = this.formatMeetingDates()
 
+      const {addCity, ...learningCircleData} = this.state.learningCircle; // Remove addCity (mis)used for ui state
       const data = {
-        ...this.state.learningCircle,
-        ...placeData,
+        ...learningCircleData,
         course: this.state.learningCircle.course.id,
         draft: draft,
         meetings: meetings,

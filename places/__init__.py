@@ -2,7 +2,7 @@ import codecs
 
 def read_admin1_codes():
     import unicodecsv
-    with open('cities/admin1CodesASCII.txt', 'rb') as csvfile:
+    with open('places/admin1CodesASCII.txt', 'rb') as csvfile:
         reader = unicodecsv.reader(csvfile, delimiter='\t', encoding='utf-8')
         data = list(reader)
     return data
@@ -32,14 +32,14 @@ def read_cities():
         'timezone',
         'modification date',
     ]
-    with open('cities/cities15000.txt', 'rb') as csvfile:
+    with open('places/cities15000.txt', 'rb') as csvfile:
         reader = unicodecsv.DictReader(csvfile, geoname_header, delimiter='\t', encoding='utf-8')
         data = list(reader)
     return data
 
 
 def read_autocomplete_list():
-    with codecs.open('cities/autocomplete_list.csv', 'r', 'utf-8') as f:
+    with codecs.open('places/autocomplete_list.csv', 'r', 'utf-8') as f:
         autocomplete_list = [l.strip('\n') for l in f]
     return autocomplete_list
 
@@ -59,6 +59,6 @@ def update_autocomplete_list():
         ])
         for city in read_cities()
     ]
-    with codecs.open('cities/autocomplete_list.csv', 'w', 'utf-8') as f:
+    with codecs.open('places/autocomplete_list.csv', 'w', 'utf-8') as f:
         f.write('\n'.join(cities))
 

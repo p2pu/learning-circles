@@ -1,0 +1,3376 @@
+[
+{
+    "model": "places.city",
+    "pk": 1,
+    "fields": {
+        "city": "Andorra la Vella",
+        "region": "Andorra la Vella",
+        "country": "Principat d’Andorra",
+        "country_en": "Andorra",
+        "latitude": "42.507790",
+        "longitude": "1.521090",
+        "place_id": "",
+        "geonameid": "3041563"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 2,
+    "fields": {
+        "city": "أبوظبي",
+        "region": "Abu Dhabi",
+        "country": "الإمارات العربية المتحدة",
+        "country_en": "United Arab Emirates",
+        "latitude": "24.451180",
+        "longitude": "54.396960",
+        "place_id": "",
+        "geonameid": "292968"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 3,
+    "fields": {
+        "city": "Kabul",
+        "region": "Kabul",
+        "country": "افغانستان",
+        "country_en": "Afghanistan",
+        "latitude": "34.528130",
+        "longitude": "69.172330",
+        "place_id": "",
+        "geonameid": "1138958"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 4,
+    "fields": {
+        "city": "St John's",
+        "region": "Saint John",
+        "country": "Antigua and Barbuda",
+        "country_en": "Antigua and Barbuda",
+        "latitude": "17.120960",
+        "longitude": "-61.843290",
+        "place_id": "",
+        "geonameid": "3576022"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 5,
+    "fields": {
+        "city": "The Valley",
+        "region": "The Valley",
+        "country": "Anguilla",
+        "country_en": "Anguilla",
+        "latitude": "18.217040",
+        "longitude": "-63.057830",
+        "place_id": "",
+        "geonameid": "3573374"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 6,
+    "fields": {
+        "city": "Tirana",
+        "region": "Tirana",
+        "country": "Shqipëri",
+        "country_en": "Albania",
+        "latitude": "41.327500",
+        "longitude": "19.818890",
+        "place_id": "",
+        "geonameid": "3183875"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 7,
+    "fields": {
+        "city": "Yerevan",
+        "region": "Yerevan",
+        "country": "Հայաստան",
+        "country_en": "Armenia",
+        "latitude": "40.181110",
+        "longitude": "44.513610",
+        "place_id": "",
+        "geonameid": "616052"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 8,
+    "fields": {
+        "city": "Luanda",
+        "region": "Luanda",
+        "country": "Angola",
+        "country_en": "Angola",
+        "latitude": "-8.836820",
+        "longitude": "13.234320",
+        "place_id": "",
+        "geonameid": "2240449"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 9,
+    "fields": {
+        "city": "Buenos Aires",
+        "region": "Ciudad Autónoma de Buenos Aires",
+        "country": "Argentina",
+        "country_en": "Argentina",
+        "latitude": "-34.613150",
+        "longitude": "-58.377230",
+        "place_id": "",
+        "geonameid": "3435910"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 10,
+    "fields": {
+        "city": "Pago Pago",
+        "region": "Eastern District",
+        "country": "American Samoa",
+        "country_en": "American Samoa",
+        "latitude": "-14.278060",
+        "longitude": "-170.702500",
+        "place_id": "",
+        "geonameid": "5881576"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 11,
+    "fields": {
+        "city": "Wien",
+        "region": "Wien",
+        "country": "Österreich",
+        "country_en": "Austria",
+        "latitude": "48.208490",
+        "longitude": "16.372080",
+        "place_id": "",
+        "geonameid": "2761369"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 12,
+    "fields": {
+        "city": "Canberra",
+        "region": "Australian Capital Territory",
+        "country": "Australia",
+        "country_en": "Australia",
+        "latitude": "-35.283460",
+        "longitude": "149.128070",
+        "place_id": "",
+        "geonameid": "2172517"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 13,
+    "fields": {
+        "city": "Oranjestad",
+        "region": "",
+        "country": "Aruba",
+        "country_en": "Aruba",
+        "latitude": "12.523980",
+        "longitude": "-70.027030",
+        "place_id": "",
+        "geonameid": "3577154"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 14,
+    "fields": {
+        "city": "Mariehamn",
+        "region": "Mariehamns stad",
+        "country": "Aland Islands",
+        "country_en": "Aland Islands",
+        "latitude": "60.097260",
+        "longitude": "19.934810",
+        "place_id": "",
+        "geonameid": "3041732"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 15,
+    "fields": {
+        "city": "Baku",
+        "region": "Baki",
+        "country": "Azərbaycan",
+        "country_en": "Azerbaijan",
+        "latitude": "40.377670",
+        "longitude": "49.892010",
+        "place_id": "",
+        "geonameid": "587084"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 16,
+    "fields": {
+        "city": "Sarajevo",
+        "region": "Federation of B&H",
+        "country": "Bosna i Hercegovina",
+        "country_en": "Bosnia and Herzegovina",
+        "latitude": "43.848640",
+        "longitude": "18.356440",
+        "place_id": "",
+        "geonameid": "3191281"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 17,
+    "fields": {
+        "city": "Bridgetown",
+        "region": "Saint Michael",
+        "country": "Barbados",
+        "country_en": "Barbados",
+        "latitude": "13.107320",
+        "longitude": "-59.620210",
+        "place_id": "",
+        "geonameid": "3374036"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 18,
+    "fields": {
+        "city": "Dhaka",
+        "region": "Dhaka",
+        "country": "বাংলাদেশ",
+        "country_en": "Bangladesh",
+        "latitude": "23.710400",
+        "longitude": "90.407440",
+        "place_id": "",
+        "geonameid": "1185241"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 19,
+    "fields": {
+        "city": "Brussel",
+        "region": "Brussels Hoofdstedelijk Gewest",
+        "country": "België",
+        "country_en": "Belgium",
+        "latitude": "50.850450",
+        "longitude": "4.348780",
+        "place_id": "",
+        "geonameid": "2800866"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 20,
+    "fields": {
+        "city": "Ouagadougou",
+        "region": "Centre",
+        "country": "Burkina Faso",
+        "country_en": "Burkina Faso",
+        "latitude": "12.365660",
+        "longitude": "-1.533880",
+        "place_id": "",
+        "geonameid": "2357048"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 21,
+    "fields": {
+        "city": "Sofia",
+        "region": "Област София град",
+        "country": "Bulgaria",
+        "country_en": "Bulgaria",
+        "latitude": "42.697510",
+        "longitude": "23.324150",
+        "place_id": "",
+        "geonameid": "727011"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 22,
+    "fields": {
+        "city": "Manama",
+        "region": "Manama",
+        "country": "البحرين",
+        "country_en": "Bahrain",
+        "latitude": "26.227870",
+        "longitude": "50.585650",
+        "place_id": "",
+        "geonameid": "290340"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 23,
+    "fields": {
+        "city": "Gitega",
+        "region": "Gitega",
+        "country": "Burundi",
+        "country_en": "Burundi",
+        "latitude": "-3.427080",
+        "longitude": "29.924630",
+        "place_id": "",
+        "geonameid": "426272"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 24,
+    "fields": {
+        "city": "Porto-Novo",
+        "region": "Ouémé",
+        "country": "Bénin",
+        "country_en": "Benin",
+        "latitude": "6.496460",
+        "longitude": "2.603590",
+        "place_id": "",
+        "geonameid": "2392087"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 25,
+    "fields": {
+        "city": "Gustavia",
+        "region": "",
+        "country": "Saint-Barthélemy",
+        "country_en": "Saint Barthelemy",
+        "latitude": "17.896180",
+        "longitude": "-62.849780",
+        "place_id": "",
+        "geonameid": "3579132"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 26,
+    "fields": {
+        "city": "Hamilton",
+        "region": "Hamilton city",
+        "country": "Bermuda",
+        "country_en": "Bermuda",
+        "latitude": "32.294900",
+        "longitude": "-64.783030",
+        "place_id": "",
+        "geonameid": "3573197"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 27,
+    "fields": {
+        "city": "Bandar Seri Begawan",
+        "region": "Brunei-Muara District",
+        "country": "Brunei",
+        "country_en": "Brunei",
+        "latitude": "4.890350",
+        "longitude": "114.940060",
+        "place_id": "",
+        "geonameid": "1820906"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 28,
+    "fields": {
+        "city": "Sucre",
+        "region": "Departamento de Chuquisaca",
+        "country": "Bolivia",
+        "country_en": "Bolivia",
+        "latitude": "-19.033320",
+        "longitude": "-65.262740",
+        "place_id": "",
+        "geonameid": "3903987"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 29,
+    "fields": {
+        "city": "Kralendijk",
+        "region": "Bonaire",
+        "country": "Bonaire, Saint Eustatius and Saba ",
+        "country_en": "Bonaire, Saint Eustatius and Saba ",
+        "latitude": "12.150000",
+        "longitude": "-68.266670",
+        "place_id": "",
+        "geonameid": "3513563"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 30,
+    "fields": {
+        "city": "Brasília",
+        "region": "Distrito Federal",
+        "country": "Brasil",
+        "country_en": "Brazil",
+        "latitude": "-15.779720",
+        "longitude": "-47.929720",
+        "place_id": "",
+        "geonameid": "3469058"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 31,
+    "fields": {
+        "city": "Nassau",
+        "region": "New Providence",
+        "country": "Bahamas",
+        "country_en": "Bahamas",
+        "latitude": "25.058230",
+        "longitude": "-77.343060",
+        "place_id": "",
+        "geonameid": "3571824"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 32,
+    "fields": {
+        "city": "Thimphu",
+        "region": "Thimphu",
+        "country": "འབྲུག",
+        "country_en": "Bhutan",
+        "latitude": "27.466090",
+        "longitude": "89.641910",
+        "place_id": "",
+        "geonameid": "1252416"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 33,
+    "fields": {
+        "city": "Gaborone",
+        "region": "Gaborone",
+        "country": "Botswana",
+        "country_en": "Botswana",
+        "latitude": "-24.654510",
+        "longitude": "25.908590",
+        "place_id": "",
+        "geonameid": "933773"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 34,
+    "fields": {
+        "city": "Мінск",
+        "region": "Мінск",
+        "country": "Belarus",
+        "country_en": "Belarus",
+        "latitude": "53.900000",
+        "longitude": "27.566670",
+        "place_id": "",
+        "geonameid": "625144"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 35,
+    "fields": {
+        "city": "Belmopan",
+        "region": "Cayo",
+        "country": "Belize",
+        "country_en": "Belize",
+        "latitude": "17.250000",
+        "longitude": "-88.766670",
+        "place_id": "",
+        "geonameid": "3582672"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 36,
+    "fields": {
+        "city": "Ottawa",
+        "region": "Ontario",
+        "country": "Canada",
+        "country_en": "Canada",
+        "latitude": "45.411170",
+        "longitude": "-75.698120",
+        "place_id": "",
+        "geonameid": "6094817"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 37,
+    "fields": {
+        "city": "West Island",
+        "region": "",
+        "country": "Kepulauan Cocos (Keeling)",
+        "country_en": "Cocos Islands",
+        "latitude": "-12.156810",
+        "longitude": "96.822510",
+        "place_id": "",
+        "geonameid": "7304591"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 38,
+    "fields": {
+        "city": "Kinshasa",
+        "region": "Kinshasa",
+        "country": "Democratic Republic of the Congo",
+        "country_en": "Democratic Republic of the Congo",
+        "latitude": "-4.327580",
+        "longitude": "15.313570",
+        "place_id": "",
+        "geonameid": "2314302"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 39,
+    "fields": {
+        "city": "Bangui",
+        "region": "Bangui",
+        "country": "République Centrafricaine",
+        "country_en": "Central African Republic",
+        "latitude": "4.361220",
+        "longitude": "18.554960",
+        "place_id": "",
+        "geonameid": "2389853"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 40,
+    "fields": {
+        "city": "Brazzaville",
+        "region": "Brazzaville",
+        "country": "République du Congo",
+        "country_en": "Republic of the Congo",
+        "latitude": "-4.266130",
+        "longitude": "15.283180",
+        "place_id": "",
+        "geonameid": "2260535"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 41,
+    "fields": {
+        "city": "Bern",
+        "region": "Kanton Bern",
+        "country": "Schweiz",
+        "country_en": "Switzerland",
+        "latitude": "46.948090",
+        "longitude": "7.447440",
+        "place_id": "",
+        "geonameid": "2661552"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 42,
+    "fields": {
+        "city": "Yamoussoukro",
+        "region": "Lacs",
+        "country": "Côte d’Ivoire",
+        "country_en": "Ivory Coast",
+        "latitude": "6.820550",
+        "longitude": "-5.276740",
+        "place_id": "",
+        "geonameid": "2279755"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 43,
+    "fields": {
+        "city": "Avarua",
+        "region": "Rarotonga",
+        "country": "Cook Islands",
+        "country_en": "Cook Islands",
+        "latitude": "-21.207500",
+        "longitude": "-159.775450",
+        "place_id": "",
+        "geonameid": "4035715"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 44,
+    "fields": {
+        "city": "Santiago",
+        "region": "Región Metropolitana de Santiago de Chile",
+        "country": "Chile",
+        "country_en": "Chile",
+        "latitude": "-33.456940",
+        "longitude": "-70.648270",
+        "place_id": "",
+        "geonameid": "3871336"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 45,
+    "fields": {
+        "city": "Yaoundé",
+        "region": "Centre",
+        "country": "Cameroon",
+        "country_en": "Cameroon",
+        "latitude": "3.866670",
+        "longitude": "11.516670",
+        "place_id": "",
+        "geonameid": "2220957"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 46,
+    "fields": {
+        "city": "Beijing",
+        "region": "Beijing",
+        "country": "中国",
+        "country_en": "China",
+        "latitude": "39.907500",
+        "longitude": "116.397230",
+        "place_id": "",
+        "geonameid": "1816670"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 47,
+    "fields": {
+        "city": "Bogotá",
+        "region": "Bogotá D.C.",
+        "country": "Colombia",
+        "country_en": "Colombia",
+        "latitude": "4.609710",
+        "longitude": "-74.081750",
+        "place_id": "",
+        "geonameid": "3688689"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 48,
+    "fields": {
+        "city": "San José",
+        "region": "San José",
+        "country": "Costa Rica",
+        "country_en": "Costa Rica",
+        "latitude": "9.933330",
+        "longitude": "-84.083330",
+        "place_id": "",
+        "geonameid": "3621849"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 49,
+    "fields": {
+        "city": "Havana",
+        "region": "Provincia de La Habana",
+        "country": "República de Cuba",
+        "country_en": "Cuba",
+        "latitude": "23.133020",
+        "longitude": "-82.383040",
+        "place_id": "",
+        "geonameid": "3553478"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 50,
+    "fields": {
+        "city": "Cidade da Praia",
+        "region": "Praia",
+        "country": "Cabo Verde",
+        "country_en": "Cabo Verde",
+        "latitude": "14.931520",
+        "longitude": "-23.512540",
+        "place_id": "",
+        "geonameid": "3374333"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 51,
+    "fields": {
+        "city": "Willemstad",
+        "region": "",
+        "country": "Curaçao",
+        "country_en": "Curacao",
+        "latitude": "12.108400",
+        "longitude": "-68.933540",
+        "place_id": "",
+        "geonameid": "3513090"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 52,
+    "fields": {
+        "city": "Flying Fish Cove",
+        "region": "",
+        "country": "Christmas Island",
+        "country_en": "Christmas Island",
+        "latitude": "-10.421720",
+        "longitude": "105.679120",
+        "place_id": "",
+        "geonameid": "2078127"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 53,
+    "fields": {
+        "city": "Λευκωσία",
+        "region": "Επαρχία Λευκωσίας",
+        "country": "Κύπρος",
+        "country_en": "Cyprus",
+        "latitude": "35.175310",
+        "longitude": "33.364200",
+        "place_id": "",
+        "geonameid": "146268"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 54,
+    "fields": {
+        "city": "Praha",
+        "region": "Praha",
+        "country": "Česko",
+        "country_en": "Czechia",
+        "latitude": "50.088040",
+        "longitude": "14.420760",
+        "place_id": "",
+        "geonameid": "3067696"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 55,
+    "fields": {
+        "city": "Berlin",
+        "region": "Berlin",
+        "country": "Germany",
+        "country_en": "Germany",
+        "latitude": "52.524370",
+        "longitude": "13.410530",
+        "place_id": "",
+        "geonameid": "2950159"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 56,
+    "fields": {
+        "city": "Djibouti",
+        "region": "Djibouti",
+        "country": "Djibouti",
+        "country_en": "Djibouti",
+        "latitude": "11.589010",
+        "longitude": "43.145030",
+        "place_id": "",
+        "geonameid": "223817"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 57,
+    "fields": {
+        "city": "Copenhagen",
+        "region": "Region Hovedstaden",
+        "country": "Danmark",
+        "country_en": "Denmark",
+        "latitude": "55.675940",
+        "longitude": "12.565530",
+        "place_id": "",
+        "geonameid": "2618425"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 58,
+    "fields": {
+        "city": "Roseau",
+        "region": "Saint George",
+        "country": "Dominica",
+        "country_en": "Dominica",
+        "latitude": "15.301740",
+        "longitude": "-61.388080",
+        "place_id": "",
+        "geonameid": "3575635"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 59,
+    "fields": {
+        "city": "Santo Domingo",
+        "region": "Nacional",
+        "country": "Dominican Republic",
+        "country_en": "Dominican Republic",
+        "latitude": "18.471860",
+        "longitude": "-69.892320",
+        "place_id": "",
+        "geonameid": "3492908"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 60,
+    "fields": {
+        "city": "الجزائر",
+        "region": "Algiers",
+        "country": "الجزائر",
+        "country_en": "Algeria",
+        "latitude": "36.732250",
+        "longitude": "3.087460",
+        "place_id": "",
+        "geonameid": "2507480"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 61,
+    "fields": {
+        "city": "Quito",
+        "region": "Pichincha",
+        "country": "Ecuador",
+        "country_en": "Ecuador",
+        "latitude": "-0.229850",
+        "longitude": "-78.524950",
+        "place_id": "",
+        "geonameid": "3652462"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 62,
+    "fields": {
+        "city": "Tallinn",
+        "region": "Harjumaa",
+        "country": "Estonia",
+        "country_en": "Estonia",
+        "latitude": "59.436960",
+        "longitude": "24.753530",
+        "place_id": "",
+        "geonameid": "588409"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 63,
+    "fields": {
+        "city": "Cairo",
+        "region": "Cairo",
+        "country": "مصر",
+        "country_en": "Egypt",
+        "latitude": "30.062630",
+        "longitude": "31.249670",
+        "place_id": "",
+        "geonameid": "360630"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 64,
+    "fields": {
+        "city": "Asmara",
+        "region": "Maekel",
+        "country": "Eretria",
+        "country_en": "Eritrea",
+        "latitude": "15.338050",
+        "longitude": "38.931840",
+        "place_id": "",
+        "geonameid": "343300"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 65,
+    "fields": {
+        "city": "Madrid",
+        "region": "Comunidad Autónoma de Madrid",
+        "country": "España",
+        "country_en": "Spain",
+        "latitude": "40.416500",
+        "longitude": "-3.702560",
+        "place_id": "",
+        "geonameid": "3117735"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 66,
+    "fields": {
+        "city": "Addis Ababa",
+        "region": "Addis Ababa",
+        "country": "ኢትዮጵያ",
+        "country_en": "Ethiopia",
+        "latitude": "9.024970",
+        "longitude": "38.746890",
+        "place_id": "",
+        "geonameid": "344979"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 67,
+    "fields": {
+        "city": "Helsinki",
+        "region": "Uusimaa",
+        "country": "Suomi",
+        "country_en": "Finland",
+        "latitude": "60.169520",
+        "longitude": "24.935450",
+        "place_id": "",
+        "geonameid": "658225"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 68,
+    "fields": {
+        "city": "Suva",
+        "region": "Central",
+        "country": "Fiji",
+        "country_en": "Fiji",
+        "latitude": "-18.141610",
+        "longitude": "178.441490",
+        "place_id": "",
+        "geonameid": "2198148"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 69,
+    "fields": {
+        "city": "Stanley",
+        "region": "",
+        "country": "Falkland Islands",
+        "country_en": "Falkland Islands",
+        "latitude": "-51.693820",
+        "longitude": "-57.857010",
+        "place_id": "",
+        "geonameid": "3426691"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 70,
+    "fields": {
+        "city": "Palikir",
+        "region": "Pohnpei",
+        "country": "Micronesia",
+        "country_en": "Micronesia",
+        "latitude": "6.924770",
+        "longitude": "158.161090",
+        "place_id": "",
+        "geonameid": "2081986"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 71,
+    "fields": {
+        "city": "Tórshavn",
+        "region": "Streymoy",
+        "country": "Føroyar",
+        "country_en": "Faroe Islands",
+        "latitude": "62.009730",
+        "longitude": "-6.771640",
+        "place_id": "",
+        "geonameid": "2611396"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 72,
+    "fields": {
+        "city": "Paris",
+        "region": "Région Île-de-France",
+        "country": "France",
+        "country_en": "France",
+        "latitude": "48.853410",
+        "longitude": "2.348800",
+        "place_id": "",
+        "geonameid": "2988507"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 73,
+    "fields": {
+        "city": "Libreville",
+        "region": "Estuaire",
+        "country": "Gabon",
+        "country_en": "Gabon",
+        "latitude": "0.392410",
+        "longitude": "9.453560",
+        "place_id": "",
+        "geonameid": "2399697"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 74,
+    "fields": {
+        "city": "London",
+        "region": "England",
+        "country": "United Kingdom",
+        "country_en": "United Kingdom",
+        "latitude": "51.508530",
+        "longitude": "-0.125740",
+        "place_id": "",
+        "geonameid": "2643743"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 75,
+    "fields": {
+        "city": "Saint George's",
+        "region": "Saint George",
+        "country": "Grenada",
+        "country_en": "Grenada",
+        "latitude": "12.052880",
+        "longitude": "-61.752260",
+        "place_id": "",
+        "geonameid": "3579925"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 76,
+    "fields": {
+        "city": "Tbilisi",
+        "region": "თბილისი",
+        "country": "საქართველო",
+        "country_en": "Georgia",
+        "latitude": "41.694110",
+        "longitude": "44.833680",
+        "place_id": "",
+        "geonameid": "611717"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 77,
+    "fields": {
+        "city": "Cayenne",
+        "region": "Guyane",
+        "country": "Guyane Française",
+        "country_en": "French Guiana",
+        "latitude": "4.933330",
+        "longitude": "-52.333330",
+        "place_id": "",
+        "geonameid": "3382160"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 78,
+    "fields": {
+        "city": "Saint Peter Port",
+        "region": "St Peter Port",
+        "country": "Guernsey",
+        "country_en": "Guernsey",
+        "latitude": "49.459810",
+        "longitude": "-2.535270",
+        "place_id": "",
+        "geonameid": "3042287"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 79,
+    "fields": {
+        "city": "Accra",
+        "region": "Greater Accra",
+        "country": "Ghana",
+        "country_en": "Ghana",
+        "latitude": "5.556020",
+        "longitude": "-0.196900",
+        "place_id": "",
+        "geonameid": "2306104"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 80,
+    "fields": {
+        "city": "Gibraltar",
+        "region": "",
+        "country": "Gibraltar",
+        "country_en": "Gibraltar",
+        "latitude": "36.144740",
+        "longitude": "-5.352570",
+        "place_id": "",
+        "geonameid": "2411585"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 81,
+    "fields": {
+        "city": "Nuuk",
+        "region": "Sermersooq",
+        "country": "Kalaallit Nunaat",
+        "country_en": "Greenland",
+        "latitude": "64.183470",
+        "longitude": "-51.721570",
+        "place_id": "",
+        "geonameid": "3421319"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 82,
+    "fields": {
+        "city": "Banjul",
+        "region": "City of Banjul",
+        "country": "The Gambia",
+        "country_en": "Gambia",
+        "latitude": "13.452740",
+        "longitude": "-16.578030",
+        "place_id": "",
+        "geonameid": "2413876"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 83,
+    "fields": {
+        "city": "Conakry",
+        "region": "Conakry",
+        "country": "Guinée",
+        "country_en": "Guinea",
+        "latitude": "9.537950",
+        "longitude": "-13.677290",
+        "place_id": "",
+        "geonameid": "2422465"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 84,
+    "fields": {
+        "city": "Basse-Terre",
+        "region": "Guadeloupe",
+        "country": "Guadeloupe",
+        "country_en": "Guadeloupe",
+        "latitude": "15.997140",
+        "longitude": "-61.732140",
+        "place_id": "",
+        "geonameid": "3579732"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 85,
+    "fields": {
+        "city": "Malabo",
+        "region": "Bioko Norte",
+        "country": "Equatorial Guinea",
+        "country_en": "Equatorial Guinea",
+        "latitude": "3.755780",
+        "longitude": "8.781660",
+        "place_id": "",
+        "geonameid": "2309527"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 86,
+    "fields": {
+        "city": "Αθήνα",
+        "region": "Αττική",
+        "country": "Greece",
+        "country_en": "Greece",
+        "latitude": "37.983760",
+        "longitude": "23.727840",
+        "place_id": "",
+        "geonameid": "264371"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 87,
+    "fields": {
+        "city": "Grytviken",
+        "region": "",
+        "country": "South Georgia and the South Sandwich Islands",
+        "country_en": "South Georgia and the South Sandwich Islands",
+        "latitude": "-54.281110",
+        "longitude": "-36.509200",
+        "place_id": "",
+        "geonameid": "3426466"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 88,
+    "fields": {
+        "city": "Ciudad de Guatemala",
+        "region": "Guatemala",
+        "country": "Guatemala",
+        "country_en": "Guatemala",
+        "latitude": "14.640720",
+        "longitude": "-90.513270",
+        "place_id": "",
+        "geonameid": "3598132"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 89,
+    "fields": {
+        "city": "Hagåtña",
+        "region": "Hagatna",
+        "country": "Guam",
+        "country_en": "Guam",
+        "latitude": "13.475670",
+        "longitude": "144.748860",
+        "place_id": "",
+        "geonameid": "4044012"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 90,
+    "fields": {
+        "city": "Bissau",
+        "region": "Bissau",
+        "country": "Guiné-Bissau",
+        "country_en": "Guinea-Bissau",
+        "latitude": "11.863570",
+        "longitude": "-15.597670",
+        "place_id": "",
+        "geonameid": "2374775"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 91,
+    "fields": {
+        "city": "Georgetown",
+        "region": "Demerara-Mahaica",
+        "country": "Guyana",
+        "country_en": "Guyana",
+        "latitude": "6.804480",
+        "longitude": "-58.155270",
+        "place_id": "",
+        "geonameid": "3378644"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 92,
+    "fields": {
+        "city": "Hong Kong",
+        "region": "中西區",
+        "country": "香港",
+        "country_en": "Hong Kong",
+        "latitude": "22.278320",
+        "longitude": "114.174690",
+        "place_id": "",
+        "geonameid": "1819729"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 93,
+    "fields": {
+        "city": "Tegucigalpa",
+        "region": "Francisco Morazán",
+        "country": "Honduras",
+        "country_en": "Honduras",
+        "latitude": "14.081800",
+        "longitude": "-87.206810",
+        "place_id": "",
+        "geonameid": "3600949"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 94,
+    "fields": {
+        "city": "Zagreb",
+        "region": "City of Zagreb",
+        "country": "Hrvatska",
+        "country_en": "Croatia",
+        "latitude": "45.814440",
+        "longitude": "15.977980",
+        "place_id": "",
+        "geonameid": "3186886"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 95,
+    "fields": {
+        "city": "Port-au-Prince",
+        "region": "Ouest",
+        "country": "Haiti",
+        "country_en": "Haiti",
+        "latitude": "18.543490",
+        "longitude": "-72.338810",
+        "place_id": "",
+        "geonameid": "3718426"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 96,
+    "fields": {
+        "city": "Budapest",
+        "region": "Budapest",
+        "country": "Magyarország",
+        "country_en": "Hungary",
+        "latitude": "47.498350",
+        "longitude": "19.040450",
+        "place_id": "",
+        "geonameid": "3054643"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 97,
+    "fields": {
+        "city": "Jakarta",
+        "region": "Jakarta",
+        "country": "Indonesia",
+        "country_en": "Indonesia",
+        "latitude": "-6.214620",
+        "longitude": "106.845130",
+        "place_id": "",
+        "geonameid": "1642911"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 98,
+    "fields": {
+        "city": "Dublin",
+        "region": "Leinster",
+        "country": "Ireland",
+        "country_en": "Ireland",
+        "latitude": "53.333060",
+        "longitude": "-6.248890",
+        "place_id": "",
+        "geonameid": "2964574"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 99,
+    "fields": {
+        "city": "Douglas",
+        "region": "Douglas",
+        "country": "Isle of Man",
+        "country_en": "Isle of Man",
+        "latitude": "54.150000",
+        "longitude": "-4.483330",
+        "place_id": "",
+        "geonameid": "3042237"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 100,
+    "fields": {
+        "city": "New Delhi",
+        "region": "National Capital Territory of Delhi",
+        "country": "India",
+        "country_en": "India",
+        "latitude": "28.635760",
+        "longitude": "77.224450",
+        "place_id": "",
+        "geonameid": "1261481"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 101,
+    "fields": {
+        "city": "Baghdad",
+        "region": "Baghdad",
+        "country": "العراق",
+        "country_en": "Iraq",
+        "latitude": "33.340580",
+        "longitude": "44.400880",
+        "place_id": "",
+        "geonameid": "98182"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 102,
+    "fields": {
+        "city": "Tehran",
+        "region": "استان تهران",
+        "country": "ایران",
+        "country_en": "Iran",
+        "latitude": "35.694390",
+        "longitude": "51.421510",
+        "place_id": "",
+        "geonameid": "112931"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 103,
+    "fields": {
+        "city": "Reykjavík",
+        "region": "Höfuðborgarsvæði",
+        "country": "Ísland",
+        "country_en": "Iceland",
+        "latitude": "64.135480",
+        "longitude": "-21.895410",
+        "place_id": "",
+        "geonameid": "3413829"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 104,
+    "fields": {
+        "city": "Roma",
+        "region": "Lazio",
+        "country": "Italia",
+        "country_en": "Italy",
+        "latitude": "41.891930",
+        "longitude": "12.511330",
+        "place_id": "",
+        "geonameid": "3169070"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 105,
+    "fields": {
+        "city": "Saint Helier",
+        "region": "St Helier",
+        "country": "Jersey",
+        "country_en": "Jersey",
+        "latitude": "49.188040",
+        "longitude": "-2.104910",
+        "place_id": "",
+        "geonameid": "3042091"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 106,
+    "fields": {
+        "city": "Kingston",
+        "region": "Kingston",
+        "country": "Jamaica",
+        "country_en": "Jamaica",
+        "latitude": "17.997020",
+        "longitude": "-76.793580",
+        "place_id": "",
+        "geonameid": "3489854"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 107,
+    "fields": {
+        "city": "عمّان",
+        "region": "محافظة عمّان",
+        "country": "الأردن",
+        "country_en": "Jordan",
+        "latitude": "31.955220",
+        "longitude": "35.945030",
+        "place_id": "",
+        "geonameid": "250441"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 108,
+    "fields": {
+        "city": "東京都",
+        "region": "東京都",
+        "country": "日本",
+        "country_en": "Japan",
+        "latitude": "35.689500",
+        "longitude": "139.691710",
+        "place_id": "",
+        "geonameid": "1850147"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 109,
+    "fields": {
+        "city": "Nairobi",
+        "region": "Nairobi Area",
+        "country": "Kenya",
+        "country_en": "Kenya",
+        "latitude": "-1.283330",
+        "longitude": "36.816670",
+        "place_id": "",
+        "geonameid": "184745"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 110,
+    "fields": {
+        "city": "Бишкек",
+        "region": "Бишкек Шаары",
+        "country": "Kyrgyzstan",
+        "country_en": "Kyrgyzstan",
+        "latitude": "42.870000",
+        "longitude": "74.590000",
+        "place_id": "",
+        "geonameid": "1528675"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 111,
+    "fields": {
+        "city": "Phnom Penh",
+        "region": "Phnom Penh",
+        "country": "កម្ពុជា",
+        "country_en": "Cambodia",
+        "latitude": "11.562450",
+        "longitude": "104.916010",
+        "place_id": "",
+        "geonameid": "1821306"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 112,
+    "fields": {
+        "city": "Tarawa",
+        "region": "Gilbert Islands",
+        "country": "Kiribati",
+        "country_en": "Kiribati",
+        "latitude": "1.327800",
+        "longitude": "172.976960",
+        "place_id": "",
+        "geonameid": "2110257"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 113,
+    "fields": {
+        "city": "موروني",
+        "region": "القمر الكبرى",
+        "country": "Comoros",
+        "country_en": "Comoros",
+        "latitude": "-11.702160",
+        "longitude": "43.255060",
+        "place_id": "",
+        "geonameid": "921772"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 114,
+    "fields": {
+        "city": "Basseterre",
+        "region": "Saint George Basseterre",
+        "country": "St Kitts and Nevis",
+        "country_en": "Saint Kitts and Nevis",
+        "latitude": "17.295500",
+        "longitude": "-62.724990",
+        "place_id": "",
+        "geonameid": "3575551"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 115,
+    "fields": {
+        "city": "평양직할시",
+        "region": "평양직할시",
+        "country": "North Korea",
+        "country_en": "North Korea",
+        "latitude": "39.033850",
+        "longitude": "125.754320",
+        "place_id": "",
+        "geonameid": "1871859"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 116,
+    "fields": {
+        "city": "서울특별시",
+        "region": "서울특별시",
+        "country": "대한민국",
+        "country_en": "South Korea",
+        "latitude": "37.566000",
+        "longitude": "126.978400",
+        "place_id": "",
+        "geonameid": "1835848"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 117,
+    "fields": {
+        "city": "Kuwait City",
+        "region": "Al Asimah",
+        "country": "الكويت",
+        "country_en": "Kuwait",
+        "latitude": "29.369720",
+        "longitude": "47.978330",
+        "place_id": "",
+        "geonameid": "285787"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 118,
+    "fields": {
+        "city": "George Town",
+        "region": "George Town",
+        "country": "Cayman Islands",
+        "country_en": "Cayman Islands",
+        "latitude": "19.286600",
+        "longitude": "-81.374360",
+        "place_id": "",
+        "geonameid": "3580661"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 119,
+    "fields": {
+        "city": "Nur-Sultan",
+        "region": "Астана",
+        "country": "Қазақстан",
+        "country_en": "Kazakhstan",
+        "latitude": "51.180100",
+        "longitude": "71.445980",
+        "place_id": "",
+        "geonameid": "1526273"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 120,
+    "fields": {
+        "city": "Vientiane",
+        "region": "Vientiane Prefecture",
+        "country": "ລາວ",
+        "country_en": "Laos",
+        "latitude": "17.966670",
+        "longitude": "102.600000",
+        "place_id": "",
+        "geonameid": "1651944"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 121,
+    "fields": {
+        "city": "بيروت",
+        "region": "Beyrouth",
+        "country": "لبنان",
+        "country_en": "Lebanon",
+        "latitude": "33.893320",
+        "longitude": "35.501570",
+        "place_id": "",
+        "geonameid": "276781"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 122,
+    "fields": {
+        "city": "Castries",
+        "region": "Castries",
+        "country": "Saint Lucia",
+        "country_en": "Saint Lucia",
+        "latitude": "13.995700",
+        "longitude": "-61.006140",
+        "place_id": "",
+        "geonameid": "3576812"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 123,
+    "fields": {
+        "city": "Vaduz",
+        "region": "Vaduz",
+        "country": "Liechtenstein",
+        "country_en": "Liechtenstein",
+        "latitude": "47.141510",
+        "longitude": "9.521540",
+        "place_id": "",
+        "geonameid": "3042030"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 124,
+    "fields": {
+        "city": "Colombo",
+        "region": "බස්නාහිර",
+        "country": "ශ්‍රී ලංකාව",
+        "country_en": "Sri Lanka",
+        "latitude": "6.935480",
+        "longitude": "79.848680",
+        "place_id": "",
+        "geonameid": "1248991"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 125,
+    "fields": {
+        "city": "Monrovia",
+        "region": "Montserrado",
+        "country": "Liberia",
+        "country_en": "Liberia",
+        "latitude": "6.300540",
+        "longitude": "-10.796900",
+        "place_id": "",
+        "geonameid": "2274895"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 126,
+    "fields": {
+        "city": "Maseru",
+        "region": "Maseru",
+        "country": "Lesotho",
+        "country_en": "Lesotho",
+        "latitude": "-29.316670",
+        "longitude": "27.483330",
+        "place_id": "",
+        "geonameid": "932505"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 127,
+    "fields": {
+        "city": "Vilnius",
+        "region": "Vilniaus apskritis",
+        "country": "Lietuva",
+        "country_en": "Lithuania",
+        "latitude": "54.689160",
+        "longitude": "25.279800",
+        "place_id": "",
+        "geonameid": "593116"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 128,
+    "fields": {
+        "city": "Luxembourg",
+        "region": "Luxembourg",
+        "country": "Lëtzebuerg",
+        "country_en": "Luxembourg",
+        "latitude": "49.611670",
+        "longitude": "6.130000",
+        "place_id": "",
+        "geonameid": "2960316"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 129,
+    "fields": {
+        "city": "Riga",
+        "region": "Rīga",
+        "country": "Latvija",
+        "country_en": "Latvia",
+        "latitude": "56.946000",
+        "longitude": "24.105890",
+        "place_id": "",
+        "geonameid": "456172"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 130,
+    "fields": {
+        "city": "Tripoli",
+        "region": "Tripoli",
+        "country": "ليبيا",
+        "country_en": "Libya",
+        "latitude": "32.887430",
+        "longitude": "13.187330",
+        "place_id": "",
+        "geonameid": "2210247"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 131,
+    "fields": {
+        "city": "Rabat",
+        "region": "Rabat-Salé-Kénitra",
+        "country": "المغرب",
+        "country_en": "Morocco",
+        "latitude": "34.013250",
+        "longitude": "-6.832550",
+        "place_id": "",
+        "geonameid": "2538475"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 132,
+    "fields": {
+        "city": "Monaco",
+        "region": "Municipality of Monaco",
+        "country": "Monaco",
+        "country_en": "Monaco",
+        "latitude": "43.733330",
+        "longitude": "7.416670",
+        "place_id": "",
+        "geonameid": "2993458"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 133,
+    "fields": {
+        "city": "Chișinău",
+        "region": "Municipiul Chișinău",
+        "country": "Republica Moldova",
+        "country_en": "Moldova",
+        "latitude": "47.005560",
+        "longitude": "28.857500",
+        "place_id": "",
+        "geonameid": "618426"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 134,
+    "fields": {
+        "city": "Подгорица",
+        "region": "Podgorica",
+        "country": "Црна Гора",
+        "country_en": "Montenegro",
+        "latitude": "42.441110",
+        "longitude": "19.263610",
+        "place_id": "",
+        "geonameid": "3193044"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 135,
+    "fields": {
+        "city": "Marigot",
+        "region": "",
+        "country": "Saint Martin",
+        "country_en": "Saint Martin",
+        "latitude": "18.068190",
+        "longitude": "-63.083020",
+        "place_id": "",
+        "geonameid": "3578851"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 136,
+    "fields": {
+        "city": "Antananarivo",
+        "region": "Analamanga",
+        "country": "Madagascar",
+        "country_en": "Madagascar",
+        "latitude": "-18.913680",
+        "longitude": "47.536130",
+        "place_id": "",
+        "geonameid": "1070940"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 137,
+    "fields": {
+        "city": "Majuro",
+        "region": "Majuro Atoll",
+        "country": "Marshall Islands",
+        "country_en": "Marshall Islands",
+        "latitude": "7.089710",
+        "longitude": "171.380270",
+        "place_id": "",
+        "geonameid": "2113779"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 138,
+    "fields": {
+        "city": "Скопје",
+        "region": "Grad Skopje",
+        "country": "North Macedonia",
+        "country_en": "North Macedonia",
+        "latitude": "41.996460",
+        "longitude": "21.431410",
+        "place_id": "",
+        "geonameid": "785842"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 139,
+    "fields": {
+        "city": "Bamako",
+        "region": "Bamako",
+        "country": "Mali",
+        "country_en": "Mali",
+        "latitude": "12.650000",
+        "longitude": "-8.000000",
+        "place_id": "",
+        "geonameid": "2460596"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 140,
+    "fields": {
+        "city": "Nay Pyi Taw",
+        "region": "Nay Pyi Taw",
+        "country": "မြန်မာ",
+        "country_en": "Myanmar",
+        "latitude": "19.745000",
+        "longitude": "96.129720",
+        "place_id": "",
+        "geonameid": "6611854"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 141,
+    "fields": {
+        "city": "Ulan Bator",
+        "region": "Ulaanbaatar",
+        "country": "Монгол",
+        "country_en": "Mongolia",
+        "latitude": "47.907710",
+        "longitude": "106.883240",
+        "place_id": "",
+        "geonameid": "2028462"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 142,
+    "fields": {
+        "city": "Macau",
+        "region": "",
+        "country": "澳门",
+        "country_en": "Macao",
+        "latitude": "22.200560",
+        "longitude": "113.546110",
+        "place_id": "",
+        "geonameid": "1821274"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 143,
+    "fields": {
+        "city": "Saipan",
+        "region": "Saipan",
+        "country": "Northern Mariana Islands",
+        "country_en": "Northern Mariana Islands",
+        "latitude": "15.212330",
+        "longitude": "145.754500",
+        "place_id": "",
+        "geonameid": "7828758"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 144,
+    "fields": {
+        "city": "Fort-de-France",
+        "region": "Martinique",
+        "country": "Martinique",
+        "country_en": "Martinique",
+        "latitude": "14.603650",
+        "longitude": "-61.074180",
+        "place_id": "",
+        "geonameid": "3570675"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 145,
+    "fields": {
+        "city": "Nouakchott",
+        "region": "",
+        "country": "موريتانيا",
+        "country_en": "Mauritania",
+        "latitude": "18.085810",
+        "longitude": "-15.978500",
+        "place_id": "",
+        "geonameid": "2377450"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 146,
+    "fields": {
+        "city": "Plymouth",
+        "region": "Saint Anthony",
+        "country": "Montserrat",
+        "country_en": "Montserrat",
+        "latitude": "16.705550",
+        "longitude": "-62.212920",
+        "place_id": "",
+        "geonameid": "3578069"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 147,
+    "fields": {
+        "city": "Valletta",
+        "region": "Valletta",
+        "country": "Malta",
+        "country_en": "Malta",
+        "latitude": "35.899680",
+        "longitude": "14.514800",
+        "place_id": "",
+        "geonameid": "2562305"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 148,
+    "fields": {
+        "city": "Port Louis",
+        "region": "Port Louis",
+        "country": "Mauritius",
+        "country_en": "Mauritius",
+        "latitude": "-20.161940",
+        "longitude": "57.498890",
+        "place_id": "",
+        "geonameid": "934154"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 149,
+    "fields": {
+        "city": "Male",
+        "region": "Kaafu Atoll",
+        "country": "Maldives",
+        "country_en": "Maldives",
+        "latitude": "4.175210",
+        "longitude": "73.509160",
+        "place_id": "",
+        "geonameid": "1282027"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 150,
+    "fields": {
+        "city": "Lilongwe",
+        "region": "Central Region",
+        "country": "Malawi",
+        "country_en": "Malawi",
+        "latitude": "-13.966920",
+        "longitude": "33.787250",
+        "place_id": "",
+        "geonameid": "927967"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 151,
+    "fields": {
+        "city": "Ciudad de México",
+        "region": "Ciudad de México",
+        "country": "México",
+        "country_en": "Mexico",
+        "latitude": "19.428470",
+        "longitude": "-99.127660",
+        "place_id": "",
+        "geonameid": "3530597"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 152,
+    "fields": {
+        "city": "Kuala Lumpur",
+        "region": "Kuala Lumpur",
+        "country": "Malaysia",
+        "country_en": "Malaysia",
+        "latitude": "3.141200",
+        "longitude": "101.686530",
+        "place_id": "",
+        "geonameid": "1735161"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 153,
+    "fields": {
+        "city": "Maputo",
+        "region": "Maputo City",
+        "country": "Moçambique",
+        "country_en": "Mozambique",
+        "latitude": "-25.965530",
+        "longitude": "32.583220",
+        "place_id": "",
+        "geonameid": "1040652"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 154,
+    "fields": {
+        "city": "Windhoek",
+        "region": "Khomas",
+        "country": "Namibia",
+        "country_en": "Namibia",
+        "latitude": "-22.559410",
+        "longitude": "17.083230",
+        "place_id": "",
+        "geonameid": "3352136"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 155,
+    "fields": {
+        "city": "Nouméa",
+        "region": "South Province",
+        "country": "Nouvelle-Calédonie",
+        "country_en": "New Caledonia",
+        "latitude": "-22.274070",
+        "longitude": "166.448840",
+        "place_id": "",
+        "geonameid": "2139521"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 156,
+    "fields": {
+        "city": "Niamey",
+        "region": "Niamey",
+        "country": "Niger",
+        "country_en": "Niger",
+        "latitude": "13.513660",
+        "longitude": "2.109800",
+        "place_id": "",
+        "geonameid": "2440485"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 157,
+    "fields": {
+        "city": "Kingston",
+        "region": "",
+        "country": "Norfolk Island",
+        "country_en": "Norfolk Island",
+        "latitude": "-29.054590",
+        "longitude": "167.966280",
+        "place_id": "",
+        "geonameid": "2161314"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 158,
+    "fields": {
+        "city": "Abuja",
+        "region": "FCT",
+        "country": "Nigeria",
+        "country_en": "Nigeria",
+        "latitude": "9.057850",
+        "longitude": "7.495080",
+        "place_id": "",
+        "geonameid": "2352778"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 159,
+    "fields": {
+        "city": "Managua",
+        "region": "Managua",
+        "country": "Nicaragua",
+        "country_en": "Nicaragua",
+        "latitude": "12.132820",
+        "longitude": "-86.250400",
+        "place_id": "",
+        "geonameid": "3617763"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 160,
+    "fields": {
+        "city": "Amsterdam",
+        "region": "Noord-Holland",
+        "country": "Nederland",
+        "country_en": "Netherlands",
+        "latitude": "52.374030",
+        "longitude": "4.889690",
+        "place_id": "",
+        "geonameid": "2759794"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 161,
+    "fields": {
+        "city": "Oslo",
+        "region": "Oslo Fylke",
+        "country": "Norge",
+        "country_en": "Norway",
+        "latitude": "59.912730",
+        "longitude": "10.746090",
+        "place_id": "",
+        "geonameid": "3143244"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 162,
+    "fields": {
+        "city": "Kathmandu",
+        "region": "Bagmati Province",
+        "country": "नेपाल",
+        "country_en": "Nepal",
+        "latitude": "27.701690",
+        "longitude": "85.320600",
+        "place_id": "",
+        "geonameid": "1283240"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 163,
+    "fields": {
+        "city": "Yaren",
+        "region": "Yaren",
+        "country": "Nauru",
+        "country_en": "Nauru",
+        "latitude": "-0.550850",
+        "longitude": "166.925200",
+        "place_id": "",
+        "geonameid": "7626461"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 164,
+    "fields": {
+        "city": "Alofi",
+        "region": "",
+        "country": "Niue",
+        "country_en": "Niue",
+        "latitude": "-19.054510",
+        "longitude": "-169.917680",
+        "place_id": "",
+        "geonameid": "4036284"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 165,
+    "fields": {
+        "city": "Wellington",
+        "region": "Wellington",
+        "country": "New Zealand",
+        "country_en": "New Zealand",
+        "latitude": "-41.286640",
+        "longitude": "174.775570",
+        "place_id": "",
+        "geonameid": "2179537"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 166,
+    "fields": {
+        "city": "Muscat",
+        "region": "Muscat",
+        "country": "عُمان",
+        "country_en": "Oman",
+        "latitude": "23.584130",
+        "longitude": "58.407780",
+        "place_id": "",
+        "geonameid": "287286"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 167,
+    "fields": {
+        "city": "Panamá",
+        "region": "Panamá",
+        "country": "Panamá",
+        "country_en": "Panama",
+        "latitude": "8.993600",
+        "longitude": "-79.519730",
+        "place_id": "",
+        "geonameid": "3703443"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 168,
+    "fields": {
+        "city": "Lima",
+        "region": "Lima",
+        "country": "Perú",
+        "country_en": "Peru",
+        "latitude": "-12.043180",
+        "longitude": "-77.028240",
+        "place_id": "",
+        "geonameid": "3936456"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 169,
+    "fields": {
+        "city": "Papeete",
+        "region": "Îles du Vent",
+        "country": "Polynésie française",
+        "country_en": "French Polynesia",
+        "latitude": "-17.534700",
+        "longitude": "-149.568430",
+        "place_id": "",
+        "geonameid": "4033936"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 170,
+    "fields": {
+        "city": "Port Moresby",
+        "region": "National Capital",
+        "country": "Papua New Guinea",
+        "country_en": "Papua New Guinea",
+        "latitude": "-9.477230",
+        "longitude": "147.150890",
+        "place_id": "",
+        "geonameid": "2088122"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 171,
+    "fields": {
+        "city": "Manila",
+        "region": "Metro Manila",
+        "country": "Philippines",
+        "country_en": "Philippines",
+        "latitude": "14.604200",
+        "longitude": "120.982200",
+        "place_id": "",
+        "geonameid": "1701668"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 172,
+    "fields": {
+        "city": "Islamabad",
+        "region": "وفاقی دارالحکومت‎",
+        "country": "پاکستان",
+        "country_en": "Pakistan",
+        "latitude": "33.721480",
+        "longitude": "73.043290",
+        "place_id": "",
+        "geonameid": "1176615"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 173,
+    "fields": {
+        "city": "Warszawa",
+        "region": "Mazovia",
+        "country": "Polska",
+        "country_en": "Poland",
+        "latitude": "52.229770",
+        "longitude": "21.011780",
+        "place_id": "",
+        "geonameid": "756135"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 174,
+    "fields": {
+        "city": "Saint-Pierre",
+        "region": "Saint-Pierre",
+        "country": "Saint-Pierre-et-Miquelon",
+        "country_en": "Saint Pierre and Miquelon",
+        "latitude": "46.779140",
+        "longitude": "-56.177300",
+        "place_id": "",
+        "geonameid": "3424934"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 175,
+    "fields": {
+        "city": "Adamstown",
+        "region": "",
+        "country": "Pitcairn Islands",
+        "country_en": "Pitcairn",
+        "latitude": "-25.065970",
+        "longitude": "-130.101470",
+        "place_id": "",
+        "geonameid": "4030723"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 176,
+    "fields": {
+        "city": "San Juan",
+        "region": "San Juan",
+        "country": "Puerto Rico",
+        "country_en": "Puerto Rico",
+        "latitude": "18.466330",
+        "longitude": "-66.105720",
+        "place_id": "",
+        "geonameid": "4568127"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 177,
+    "fields": {
+        "city": "Lisboa",
+        "region": "Distrito de Lisboa",
+        "country": "Portugal",
+        "country_en": "Portugal",
+        "latitude": "38.716670",
+        "longitude": "-9.133330",
+        "place_id": "",
+        "geonameid": "2267057"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 178,
+    "fields": {
+        "city": "Ngerulmud",
+        "region": "Melekeok",
+        "country": "Belau",
+        "country_en": "Palau",
+        "latitude": "7.500770",
+        "longitude": "134.623800",
+        "place_id": "",
+        "geonameid": "8063361"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 179,
+    "fields": {
+        "city": "Asunción",
+        "region": "Asunción",
+        "country": "Paraguay",
+        "country_en": "Paraguay",
+        "latitude": "-25.286460",
+        "longitude": "-57.647000",
+        "place_id": "",
+        "geonameid": "3439389"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 180,
+    "fields": {
+        "city": "Doha",
+        "region": "Baladīyat ad Dawḩah",
+        "country": "قطر",
+        "country_en": "Qatar",
+        "latitude": "25.285450",
+        "longitude": "51.530960",
+        "place_id": "",
+        "geonameid": "290030"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 181,
+    "fields": {
+        "city": "Saint-Denis",
+        "region": "Réunion",
+        "country": "La Réunion",
+        "country_en": "Reunion",
+        "latitude": "-20.882310",
+        "longitude": "55.450400",
+        "place_id": "",
+        "geonameid": "935264"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 182,
+    "fields": {
+        "city": "Bucharest",
+        "region": "București",
+        "country": "România",
+        "country_en": "Romania",
+        "latitude": "44.432250",
+        "longitude": "26.106260",
+        "place_id": "",
+        "geonameid": "683506"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 183,
+    "fields": {
+        "city": "Beograd",
+        "region": "Central Serbia",
+        "country": "Србија",
+        "country_en": "Serbia",
+        "latitude": "44.804010",
+        "longitude": "20.465130",
+        "place_id": "",
+        "geonameid": "792680"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 184,
+    "fields": {
+        "city": "Москва",
+        "region": "Москва",
+        "country": "Россия",
+        "country_en": "Russia",
+        "latitude": "55.752220",
+        "longitude": "37.615560",
+        "place_id": "",
+        "geonameid": "524901"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 185,
+    "fields": {
+        "city": "Kigali",
+        "region": "Kigali",
+        "country": "U Rwanda",
+        "country_en": "Rwanda",
+        "latitude": "-1.949950",
+        "longitude": "30.058850",
+        "place_id": "",
+        "geonameid": "202061"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 186,
+    "fields": {
+        "city": "Riyadh",
+        "region": "منطقة الرياض‎",
+        "country": "المملكة العربية السعودية",
+        "country_en": "Saudi Arabia",
+        "latitude": "24.687730",
+        "longitude": "46.721850",
+        "place_id": "",
+        "geonameid": "108410"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 187,
+    "fields": {
+        "city": "Honiara",
+        "region": "Honiara",
+        "country": "Solomon Islands",
+        "country_en": "Solomon Islands",
+        "latitude": "-9.433330",
+        "longitude": "159.950000",
+        "place_id": "",
+        "geonameid": "2108502"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 188,
+    "fields": {
+        "city": "Victoria",
+        "region": "English River",
+        "country": "Seychelles",
+        "country_en": "Seychelles",
+        "latitude": "-4.620010",
+        "longitude": "55.455010",
+        "place_id": "",
+        "geonameid": "241131"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 189,
+    "fields": {
+        "city": "Khartoum",
+        "region": "Khartoum",
+        "country": "السودان",
+        "country_en": "Sudan",
+        "latitude": "15.551770",
+        "longitude": "32.532410",
+        "place_id": "",
+        "geonameid": "379252"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 190,
+    "fields": {
+        "city": "Stockholm",
+        "region": "Stockholm",
+        "country": "Sverige",
+        "country_en": "Sweden",
+        "latitude": "59.329380",
+        "longitude": "18.068710",
+        "place_id": "",
+        "geonameid": "2673730"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 191,
+    "fields": {
+        "city": "Singapore",
+        "region": "",
+        "country": "Singapore",
+        "country_en": "Singapore",
+        "latitude": "1.289670",
+        "longitude": "103.850070",
+        "place_id": "",
+        "geonameid": "1880252"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 192,
+    "fields": {
+        "city": "Jamestown",
+        "region": "Saint Helena",
+        "country": "St. Helena",
+        "country_en": "Saint Helena",
+        "latitude": "-15.938720",
+        "longitude": "-5.716750",
+        "place_id": "",
+        "geonameid": "3370903"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 193,
+    "fields": {
+        "city": "Ljubljana",
+        "region": "Ljubljana",
+        "country": "Slovenija",
+        "country_en": "Slovenia",
+        "latitude": "46.051080",
+        "longitude": "14.505130",
+        "place_id": "",
+        "geonameid": "3196359"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 194,
+    "fields": {
+        "city": "Longyearbyen",
+        "region": "Svalbard",
+        "country": "Svalbard og Jan Mayen",
+        "country_en": "Svalbard and Jan Mayen",
+        "latitude": "78.223340",
+        "longitude": "15.646890",
+        "place_id": "",
+        "geonameid": "2729907"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 195,
+    "fields": {
+        "city": "Bratislava",
+        "region": "Bratislavský",
+        "country": "Slovakia",
+        "country_en": "Slovakia",
+        "latitude": "48.148160",
+        "longitude": "17.106740",
+        "place_id": "",
+        "geonameid": "3060972"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 196,
+    "fields": {
+        "city": "Freetown",
+        "region": "Western Area",
+        "country": "Sierra Leone",
+        "country_en": "Sierra Leone",
+        "latitude": "8.487140",
+        "longitude": "-13.235600",
+        "place_id": "",
+        "geonameid": "2409306"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 197,
+    "fields": {
+        "city": "San Marino",
+        "region": "San Marino",
+        "country": "San Marino",
+        "country_en": "San Marino",
+        "latitude": "43.936670",
+        "longitude": "12.446390",
+        "place_id": "",
+        "geonameid": "3168070"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 198,
+    "fields": {
+        "city": "Dakar",
+        "region": "Dakar",
+        "country": "Sénégal",
+        "country_en": "Senegal",
+        "latitude": "14.693700",
+        "longitude": "-17.444060",
+        "place_id": "",
+        "geonameid": "2253354"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 199,
+    "fields": {
+        "city": "Mogadishu",
+        "region": "Banaadir",
+        "country": "Soomaaliya",
+        "country_en": "Somalia",
+        "latitude": "2.037110",
+        "longitude": "45.343750",
+        "place_id": "",
+        "geonameid": "53654"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 200,
+    "fields": {
+        "city": "Paramaribo",
+        "region": "Paramaribo",
+        "country": "Suriname",
+        "country_en": "Suriname",
+        "latitude": "5.866380",
+        "longitude": "-55.166820",
+        "place_id": "",
+        "geonameid": "3383330"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 201,
+    "fields": {
+        "city": "Juba",
+        "region": "Central Equatoria",
+        "country": "Republic of South Sudan",
+        "country_en": "South Sudan",
+        "latitude": "4.851650",
+        "longitude": "31.582470",
+        "place_id": "",
+        "geonameid": "373303"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 202,
+    "fields": {
+        "city": "São Tomé",
+        "region": "São Tomé Island",
+        "country": "São Tomé e Príncipe",
+        "country_en": "Sao Tome and Principe",
+        "latitude": "0.336540",
+        "longitude": "6.727320",
+        "place_id": "",
+        "geonameid": "2410763"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 203,
+    "fields": {
+        "city": "San Salvador",
+        "region": "San Salvador",
+        "country": "El Salvador",
+        "country_en": "El Salvador",
+        "latitude": "13.689350",
+        "longitude": "-89.187180",
+        "place_id": "",
+        "geonameid": "3583361"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 204,
+    "fields": {
+        "city": "Philipsburg",
+        "region": "",
+        "country": "Sint-Maarten",
+        "country_en": "Sint Maarten",
+        "latitude": "18.026000",
+        "longitude": "-63.045820",
+        "place_id": "",
+        "geonameid": "3513392"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 205,
+    "fields": {
+        "city": "Damascus",
+        "region": "Dimashq",
+        "country": "سوريا",
+        "country_en": "Syria",
+        "latitude": "33.510200",
+        "longitude": "36.291280",
+        "place_id": "",
+        "geonameid": "170654"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 206,
+    "fields": {
+        "city": "Mbabane",
+        "region": "Hhohho",
+        "country": "Eswatini",
+        "country_en": "Eswatini",
+        "latitude": "-26.316670",
+        "longitude": "31.133330",
+        "place_id": "",
+        "geonameid": "934985"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 207,
+    "fields": {
+        "city": "Cockburn Town",
+        "region": "",
+        "country": "Turks and Caicos Islands",
+        "country_en": "Turks and Caicos Islands",
+        "latitude": "21.461220",
+        "longitude": "-71.141880",
+        "place_id": "",
+        "geonameid": "3576994"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 208,
+    "fields": {
+        "city": "N'Djamena",
+        "region": "N’Djaména",
+        "country": "Tchad",
+        "country_en": "Chad",
+        "latitude": "12.106720",
+        "longitude": "15.044400",
+        "place_id": "",
+        "geonameid": "2427123"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 209,
+    "fields": {
+        "city": "Port-aux-Français",
+        "region": "Kerguelen",
+        "country": "Terres australes françaises",
+        "country_en": "French Southern Territories",
+        "latitude": "-49.349160",
+        "longitude": "70.219370",
+        "place_id": "",
+        "geonameid": "1546102"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 210,
+    "fields": {
+        "city": "Lomé",
+        "region": "Maritime",
+        "country": "Togo",
+        "country_en": "Togo",
+        "latitude": "6.128740",
+        "longitude": "1.221540",
+        "place_id": "",
+        "geonameid": "2365267"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 211,
+    "fields": {
+        "city": "กรุงเทพมหานคร",
+        "region": "กรุงเทพฯ",
+        "country": "ไทย",
+        "country_en": "Thailand",
+        "latitude": "13.753980",
+        "longitude": "100.501440",
+        "place_id": "",
+        "geonameid": "1609350"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 212,
+    "fields": {
+        "city": "Dushanbe",
+        "region": "Dushanbe",
+        "country": "Тоҷикистон",
+        "country_en": "Tajikistan",
+        "latitude": "38.535750",
+        "longitude": "68.779050",
+        "place_id": "",
+        "geonameid": "1221874"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 213,
+    "fields": {
+        "city": "Dili",
+        "region": "Díli",
+        "country": "Timor Leste",
+        "country_en": "Timor Leste",
+        "latitude": "-8.558610",
+        "longitude": "125.573610",
+        "place_id": "",
+        "geonameid": "1645457"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 214,
+    "fields": {
+        "city": "Aşgabat",
+        "region": "Ashgabat",
+        "country": "Türkmenistan",
+        "country_en": "Turkmenistan",
+        "latitude": "37.950000",
+        "longitude": "58.383330",
+        "place_id": "",
+        "geonameid": "162183"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 215,
+    "fields": {
+        "city": "Tunis",
+        "region": "Tūnis",
+        "country": "تونس",
+        "country_en": "Tunisia",
+        "latitude": "36.818970",
+        "longitude": "10.165790",
+        "place_id": "",
+        "geonameid": "2464470"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 216,
+    "fields": {
+        "city": "Nuku‘alofa",
+        "region": "Tongatapu",
+        "country": "Tonga",
+        "country_en": "Tonga",
+        "latitude": "-21.139380",
+        "longitude": "-175.201800",
+        "place_id": "",
+        "geonameid": "4032402"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 217,
+    "fields": {
+        "city": "Ankara",
+        "region": "Ankara",
+        "country": "Türkiye",
+        "country_en": "Turkey",
+        "latitude": "39.919870",
+        "longitude": "32.854270",
+        "place_id": "",
+        "geonameid": "323786"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 218,
+    "fields": {
+        "city": "Port of Spain",
+        "region": "Port of Spain",
+        "country": "Trinidad and Tobago",
+        "country_en": "Trinidad and Tobago",
+        "latitude": "10.666680",
+        "longitude": "-61.518890",
+        "place_id": "",
+        "geonameid": "3573890"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 219,
+    "fields": {
+        "city": "Funafuti",
+        "region": "Funafuti",
+        "country": "Tuvalu",
+        "country_en": "Tuvalu",
+        "latitude": "-8.524250",
+        "longitude": "179.194170",
+        "place_id": "",
+        "geonameid": "2110394"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 220,
+    "fields": {
+        "city": "台北市",
+        "region": "Taiwan",
+        "country": "Taiwan",
+        "country_en": "Taiwan",
+        "latitude": "25.047760",
+        "longitude": "121.531850",
+        "place_id": "",
+        "geonameid": "1668341"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 221,
+    "fields": {
+        "city": "Dodoma",
+        "region": "Dodoma",
+        "country": "Tanzania",
+        "country_en": "Tanzania",
+        "latitude": "-6.172210",
+        "longitude": "35.739470",
+        "place_id": "",
+        "geonameid": "160196"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 222,
+    "fields": {
+        "city": "Kyiv",
+        "region": "Місто Київ",
+        "country": "Україна",
+        "country_en": "Ukraine",
+        "latitude": "50.454660",
+        "longitude": "30.523800",
+        "place_id": "",
+        "geonameid": "703448"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 223,
+    "fields": {
+        "city": "Kampala",
+        "region": "Central Region",
+        "country": "Uganda",
+        "country_en": "Uganda",
+        "latitude": "0.316280",
+        "longitude": "32.582190",
+        "place_id": "",
+        "geonameid": "232422"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 224,
+    "fields": {
+        "city": "Washington D.C.",
+        "region": "District of Columbia",
+        "country": "United States of America",
+        "country_en": "United States of America",
+        "latitude": "38.895110",
+        "longitude": "-77.036370",
+        "place_id": "",
+        "geonameid": "4140963"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 225,
+    "fields": {
+        "city": "Montevideo",
+        "region": "Montevideo",
+        "country": "Uruguay",
+        "country_en": "Uruguay",
+        "latitude": "-34.903280",
+        "longitude": "-56.188160",
+        "place_id": "",
+        "geonameid": "3441575"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 226,
+    "fields": {
+        "city": "Toshkent",
+        "region": "Tashkent",
+        "country": "Uzbekistan",
+        "country_en": "Uzbekistan",
+        "latitude": "41.264650",
+        "longitude": "69.216270",
+        "place_id": "",
+        "geonameid": "1512569"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 227,
+    "fields": {
+        "city": "Vatican City",
+        "region": "",
+        "country": "Vatican",
+        "country_en": "Vatican",
+        "latitude": "41.902680",
+        "longitude": "12.454140",
+        "place_id": "",
+        "geonameid": "6691831"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 228,
+    "fields": {
+        "city": "Kingstown",
+        "region": "Saint George",
+        "country": "St Vincent and Grenadines",
+        "country_en": "Saint Vincent and the Grenadines",
+        "latitude": "13.155270",
+        "longitude": "-61.227420",
+        "place_id": "",
+        "geonameid": "3577887"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 229,
+    "fields": {
+        "city": "Caracas",
+        "region": "Distrito Federal",
+        "country": "Venezuela",
+        "country_en": "Venezuela",
+        "latitude": "10.488010",
+        "longitude": "-66.879190",
+        "place_id": "",
+        "geonameid": "3646738"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 230,
+    "fields": {
+        "city": "Road Town",
+        "region": "",
+        "country": "British Virgin Islands",
+        "country_en": "British Virgin Islands",
+        "latitude": "18.426930",
+        "longitude": "-64.620790",
+        "place_id": "",
+        "geonameid": "3577430"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 231,
+    "fields": {
+        "city": "Charlotte Amalie",
+        "region": "Saint Thomas Island",
+        "country": "U.S. Virgin Islands",
+        "country_en": "U.S. Virgin Islands",
+        "latitude": "18.341900",
+        "longitude": "-64.930700",
+        "place_id": "",
+        "geonameid": "4795467"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 232,
+    "fields": {
+        "city": "Hà Nội",
+        "region": "Hanoi",
+        "country": "Việt Nam",
+        "country_en": "Vietnam",
+        "latitude": "21.024500",
+        "longitude": "105.841170",
+        "place_id": "",
+        "geonameid": "1581130"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 233,
+    "fields": {
+        "city": "Port-Vila",
+        "region": "Shefa",
+        "country": "Vanuatu",
+        "country_en": "Vanuatu",
+        "latitude": "-17.736480",
+        "longitude": "168.313660",
+        "place_id": "",
+        "geonameid": "2135171"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 234,
+    "fields": {
+        "city": "Mata-Utu",
+        "region": "Uvea",
+        "country": "Wallis and Futuna",
+        "country_en": "Wallis and Futuna",
+        "latitude": "-13.281630",
+        "longitude": "-176.174530",
+        "place_id": "",
+        "geonameid": "4034821"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 235,
+    "fields": {
+        "city": "Apia",
+        "region": "Tuamasaga",
+        "country": "Samoa",
+        "country_en": "Samoa",
+        "latitude": "-13.833330",
+        "longitude": "-171.766660",
+        "place_id": "",
+        "geonameid": "4035413"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 236,
+    "fields": {
+        "city": "Pristina",
+        "region": "Pristina",
+        "country": "Kosovë",
+        "country_en": "Kosovo",
+        "latitude": "42.672720",
+        "longitude": "21.166880",
+        "place_id": "",
+        "geonameid": "786714"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 237,
+    "fields": {
+        "city": "صنعاء",
+        "region": "امانه العاصمه",
+        "country": "Yemen",
+        "country_en": "Yemen",
+        "latitude": "15.354720",
+        "longitude": "44.206670",
+        "place_id": "",
+        "geonameid": "71137"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 238,
+    "fields": {
+        "city": "Mamoudzou",
+        "region": "Mamoudzou",
+        "country": "Mayotte",
+        "country_en": "Mayotte",
+        "latitude": "-12.782340",
+        "longitude": "45.228780",
+        "place_id": "",
+        "geonameid": "921815"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 239,
+    "fields": {
+        "city": "Pretoria",
+        "region": "Gauteng",
+        "country": "South Africa",
+        "country_en": "South Africa",
+        "latitude": "-25.744860",
+        "longitude": "28.187830",
+        "place_id": "",
+        "geonameid": "964137"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 240,
+    "fields": {
+        "city": "Lusaka",
+        "region": "Lusaka",
+        "country": "Zambia",
+        "country_en": "Zambia",
+        "latitude": "-15.406690",
+        "longitude": "28.287130",
+        "place_id": "",
+        "geonameid": "909137"
+    }
+},
+{
+    "model": "places.city",
+    "pk": 241,
+    "fields": {
+        "city": "Harare",
+        "region": "Harare",
+        "country": "Zimbabwe",
+        "country_en": "Zimbabwe",
+        "latitude": "-17.827720",
+        "longitude": "31.053370",
+        "place_id": "",
+        "geonameid": "890299"
+    }
+}
+]

@@ -1,10 +1,53 @@
 import codecs
 import unicodecsv
 import geonamescache
+import csv
+
+
+def get_alternate_names(geonameid):
+    geoname_header = [
+        'alternateNameId',
+        'geonameid',         
+        'isolanguage',       
+        'alternate name',    
+        'isPreferredName',   
+        'isShortName',       
+        'isColloquial',      
+        'isHistoric',        
+        'from',		  
+        'to',		  
+    ]
+    import subprocess
+    cmd = ['grep', str(geonameid), 'places/data/alternateNamesV2.txt']
+    output = subprocess.check_output(cmd).decode("utf-8")
+    #with open('places/data/alternateNamesV2.txt', 'rb') as csvfile:
+    reader = csv.DictReader(output.split('\n'), geoname_header, delimiter='\t')
+    data = list(filter(lambda x: x['geonameid'] == geonameid, reader))
+    return data
+
+
+def get_countries():
+    #data_url = 'https://download.geonames.org/export/dump/countryInfo.txt'
+    with open('places/data/countryInfo.txt', 'r') as csvfile:
+        data = [line for line in csvfile]
+        header = filter(lambda line: line.startswith('#ISO'), data)
+        header = next(header)
+        if not header:
+            return
+        header = header[1:].split('\t')
+        #print(header)
+        #print(data)
+        data = filter(lambda line: not line.startswith('#'), data)
+        reader = csv.DictReader(data, fieldnames=header, delimiter='\t')
+        return list(reader)
+
 
 def read_admin1_codes():
-    with open('cities/admin1CodesASCII.txt', 'rb') as csvfile:
-        reader = unicodecsv.reader(csvfile, delimiter='\t', encoding='utf-8')
+    with open('places/data/admin1CodesASCII.txt', 'rb') as csvfile:
+        header = [
+            "code", "name", "name ascii", "geonameid"
+        ]
+        reader = unicodecsv.DictReader(csvfile, fieldnames=header, delimiter='\t', encoding='utf-8')
         data = list(reader)
     return data
 
@@ -32,7 +75,7 @@ def read_cities():
         'timezone',
         'modification date',
     ]
-    with open('cities/cities15000.txt', 'rb') as csvfile:
+    with open('places/cities5000.txt', 'rb') as csvfile:
         reader = unicodecsv.DictReader(csvfile, geoname_header, delimiter='\t', encoding='utf-8')
         data = list(reader)
     return data
@@ -54,18 +97,18 @@ def update_city_list():
         ]
         for city in read_cities()
     ]
-    with open('cities/city_list.csv', 'w') as f:
+    with open('places/city_list.csv', 'w') as f:
         writer = unicodecsv.writer(f, encoding='utf-8')
         writer.writerows(cities)
 
 
 def read_city_list():
-    with open('cities/city_list.csv', 'r') as csvfile:
+    with open('places/city_list.csv', 'r') as csvfile:
         reader = unicodecsv.reader(csvfile, encoding='utf-8')
         data = list(reader)
     return data
 
-    with codecs.open('cities/city_list.csv', 'r', 'utf-8') as f:
+    with codecs.open('places/city_list.csv', 'r', 'utf-8') as f:
         autocomplete_list = [l.strip('\n') for l in f]
     return autocomplete_list
 
