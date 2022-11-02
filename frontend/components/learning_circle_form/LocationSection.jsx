@@ -1,15 +1,26 @@
-import React from 'react'
+import React, {useState} from 'react'
 import {
   InputWithLabel,
   SwitchWithLabels,
   LanguageSelect
 } from 'p2pu-components'
 
-import PlaceSelect from './place-select';
-
+import PlaceSelect from './PlaceSelect';
+import PlaceInput from './PlaceInput';
 
 const LocationSection = (props) => {
-  const place = !!props.learningCircle.place_id ? { objectID: props.learningCircle.place_id } : props.learningCircle.place
+  const place = {
+    city: props.learningCircle.city,
+    region: props.learningCircle.region,
+    country: props.learningCircle.country,
+    country_en: props.learningCircle.country_en,
+    latitude: props.learningCircle.latitude,
+    longitude: props.learningCircle.longitude,
+    place_id: props.learningCircle.place_id, // TODO geonameid
+  };
+
+  const addCity = props.learningCircle.addCity;
+  const setAddCity = value => props.updateFormData({addCity: value});
 
   const onOnlineChanged = ({online}) => {
     let {venue_name} = props.learningCircle;
@@ -28,16 +39,37 @@ const LocationSection = (props) => {
         value={Boolean(props.learningCircle.online)}
         name='online'
       />
-      <PlaceSelect
-        label={props.learningCircle.online?'Where are you based?':'What city are you meeting in?'}
-        name='place'
-        id='place_id'
-        classes="form-group"
-        value={place}
-        handleChange={props.updateFormData}
-        errorMessage={props.errors.city}
-        required={true}
-      />
+      { !addCity && 
+        <>
+          <PlaceSelect
+            label={props.learningCircle.online?'Where are you based?':'What city are you meeting in?'}
+            name='place'
+            id='place_id'
+            classes="form-group"
+            value={place}
+            handleChange={props.updateFormData}
+            errorMessage={props.errors.city}
+            required={true}
+          />
+          <div className="form-text help-text">Click here if you don't see your city in the list <button className="p2pu-btn btn btn-sm blue" onClick={() => setAddCity(true)}>Add City</button></div>
+        </>
+      }
+      { 
+        addCity &&
+        <>
+          <PlaceInput
+            label={props.learningCircle.online?'Where are you based?':'What city are you meeting in?'}
+            name='place'
+            id='place_id'
+            classes="form-group"
+            value={place}
+            handleChange={props.updateFormData}
+            errors={props.errors}
+            required={true}
+          /> 
+          <div className="form-text help-text">Go back to search for your city in the list <button className="p2pu-btn btn btn-sm blue" onClick={() => setAddCity(false)}>Select City</button></div>
+        </>
+      }
       <InputWithLabel
         label='Where will you meet?'
         placeholder={props.learningCircle.online?'E.g. Online':'E.g. Pretoria Library'}
@@ -72,6 +104,7 @@ const LocationSection = (props) => {
       <LanguageSelect
         label='What language should P2PU use to communicate details about your learning circle?'
         helpText='Participants will receive communications in this language.'
+        selectClasses='react-select'
         placeholder='Pick a language'
         value={props.learningCircle.language}
         handleChange={props.updateFormData}

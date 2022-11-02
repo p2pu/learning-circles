@@ -37,7 +37,7 @@ from studygroups.utils import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
 
 import string
-import cities
+import places
 import json
 import urllib
 import logging

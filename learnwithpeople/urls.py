@@ -18,6 +18,7 @@ urlpatterns = i18n_patterns(
 urlpatterns += [
     url(r'^api/', include('studygroups.api_urls')),
     url(r'^api/', include('contact.urls')),
+    url(r'^api/places/', include('places.urls')),
     url(r'^api/community_calendar/', include('community_calendar.api_urls')),
     url(r'^announce/', include('announce.urls')),
     url(r'^log/', include('client_logging.urls')),
