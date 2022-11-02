@@ -6,10 +6,9 @@ import InputWithLabel from 'p2pu-components/dist/InputFields/InputWithLabel'
 
 
 const CountryInput = props => {
-  const { handleChange, name, value, disabled, selectClasses, noResultsText, placeholder, ...rest } = props;
+  const { handleChange, name, value, disabled, selectClasses, noResultsText, ...rest } = props;
 
   const handleSelect = selected => {
-    console.log(selected);
     const {country, country_en} = selected.value;
     handleChange({ country, country_en });
   }
@@ -47,14 +46,14 @@ const CountryInput = props => {
         name={ name }
         cacheOptions
         className={ `react-select ${selectClasses}` }
-        value={ {label: value.country, value} }
+        value={ !!value.country?{label: value.country, value}:null }
         onChange={ handleSelect }
         onCreateOption={ handleCreateOption }
         noResultsText={ noResultsText }
-        placeholder={ placeholder }
         loadOptions={ searchPlaces }
         isDisabled={ disabled }
         classNamePrefix={'place-select'}
+        defaultOptions
         theme={theme => ({
           ...theme,
           colors: {
@@ -75,14 +74,14 @@ const CountryInput = props => {
 const PlaceInput = (props) => {
   const {city, country, country_en, region} = props.value;
   const handleChange = update => {
-    console.log('change of scenery', update);
     props.handleChange({...props.value, ...update, place_id: null, latitude: null, longitude: null });
   };
   return (
     <div>
-      <label>What city are you meeting in?*</label>
+      <label>{props.label}</label>
       <CountryInput
         label='Country'
+        placeholder="Start typing a country name..."
         name="country"
         handleChange={handleChange}
         value={ {country, country_en} }
@@ -97,6 +96,7 @@ const PlaceInput = (props) => {
       />
       <InputWithLabel
         label="City"
+        placeholder="Enter the City"
         name="city"
         handleChange={handleChange}
         errorMessage={props.errors.city}

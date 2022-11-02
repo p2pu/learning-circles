@@ -49,6 +49,8 @@ export default class PlaceSelect extends Component {
     const { label, name, id, value, required, disabled, errorMessage, helpText, classes, selectClasses, noResultsText, placeholder, isClearable, isMulti, ...rest } = this.props
     const { selected } = this.state;
 
+    const noOptionsMessage = ({inputValue}) => inputValue?noResultsText:'Enter search query';
+
     return(
       <InputWrapper
         label={label}
@@ -66,7 +68,7 @@ export default class PlaceSelect extends Component {
           className={ `city-select react-select ${selectClasses}` }
           value={ selected }
           onChange={ this.handleSelect }
-          noResultsText={ noResultsText }
+          noOptionsMessage={ noOptionsMessage}
           placeholder={ placeholder }
           loadOptions={ this.searchPlaces }
           isClearable={ isClearable }
