@@ -678,7 +678,7 @@ def _make_learning_circle_schema(request):
         "timezone": schema.text(required=True, length=128),
         "signup_question": schema.text(length=256),
         "facilitators": _facilitators_validator,
-        "facilitator_goal": schema.text(length=256),
+        "facilitator_goal": schema.text(required=True, length=256),
         "facilitator_concerns": schema.text(length=256),
         "image_url": schema.chain([
             schema.text(),

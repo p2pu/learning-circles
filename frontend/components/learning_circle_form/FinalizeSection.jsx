@@ -42,6 +42,7 @@ const FinalizeSection = (props) => {
       label={'What do you hope to achieve by facilitating this learning circle?'}
       value={props.learningCircle.facilitator_goal || ''}
       handleChange={props.updateFormData}
+      required
       name={'facilitator_goal'}
       id={'id_facilitator_goal'}
       errorMessage={props.errors.facilitator_goal}
