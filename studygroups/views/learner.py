@@ -35,9 +35,9 @@ from studygroups.forms import OptOutForm
 from studygroups.forms import OptOutConfirmationForm
 from studygroups.utils import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
+import places
 
 import string
-import places
 import json
 import urllib
 import logging
@@ -69,7 +69,7 @@ class TeamPage(DetailView):
 
 def city(request, city_name):
     # TODO remove this view
-    matches = [ c for c in cities.read_autocomplete_list() if c.lower().startswith(city_name.lower()) ]
+    matches = [ c for c in places.read_autocomplete_list() if c.lower().startswith(city_name.lower()) ]
 
     if len(matches) == 1 and matches[0] != city_name:
         return http.HttpResponseRedirect(reverse('studygroups_city', args=(matches[0],)))
