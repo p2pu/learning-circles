@@ -5,7 +5,7 @@ from django.contrib.postgres.search import SearchQuery
 from django.contrib.postgres.search import SearchVector
 from django.core.files.storage import get_storage_class
 from django.db import models
-from django.db.models import Q, F, Case, When, Value, Sum, Min, Max, OuterRef, Subquery, Count, CharField
+from django.db.models import Q, F, Case, When, Value, Sum, Min, Max, OuterRef, Subquery, Count, CharField, IntegerField, BooleanField
 from django.db.models.functions import Length
 from django.views import View
 from django.views.generic.detail import SingleObjectMixin
@@ -151,6 +151,8 @@ def serialize_learning_circle(sg):
         data["next_meeting_date"] = sg.next_meeting_date
     if hasattr(sg, 'status'):
         data["status"] = sg.status
+    if hasattr(sg, 'is_learner'):
+        data["is_learner"] = sg.is_learner
     return data
 
 
@@ -211,7 +213,22 @@ class LearningCircleListView(View):
             study_groups = StudyGroup.objects.filter(pk=int(id))
 
         if 'user' in request.GET:
-            study_groups = study_groups.filter(facilitator__user=request.user)
+            study_groups = study_groups.filter(
+                Q(facilitator__user=request.user) | Q(application__email__iexact=request.user.email)
+            )
+            study_groups = study_groups.annotate(
+                is_learner=Sum(
+                    Case(
+                        When(
+                            application__email__iexact=request.user.email,
+                            then=1
+                        ),
+                        default=0,
+                        output_field=BooleanField()
+                    )
+                )
+            )
+            # 
 
         if 'online' in request.GET:
             online = clean_data.get('online')

@@ -303,6 +303,16 @@ def receive_sms(request):
     return http.HttpResponse(status=200)
 
 
+class StudyGroupLearnerView(TemplateView):
+    template_name = 'studygroups/learning_circle_participant.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['study_group'] = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
+        return context
+
+
+
 class StudyGroupLearnerSurvey(TemplateView):
     template_name = 'studygroups/learner_survey.html'
 
