@@ -10,6 +10,7 @@ import Notification from './Notification';
 import DiscourseTable from './DiscourseTable';
 import CoursesTable from './CoursesTable';
 import MemberLearningCirclesTable from './MemberLearningCirclesTable';
+import ActiveLearningCircles from './ActiveLearningCircles';
 import CurrentLearningCirclesTable from './CurrentLearningCirclesTable';
 import ActiveLearningCirclesTable from './ActiveLearningCirclesTable';
 import CompletedLearningCirclesTable from './CompletedLearningCirclesTable';
@@ -119,6 +120,8 @@ export default class FacilitatorDashboard extends React.Component {
                 <MemberLearningCirclesTable />
               </Card>
             }
+
+            <ActiveLearningCircles />
 
             <div>
               <Card>
