@@ -464,13 +464,15 @@ class Meeting(LifeTimeTrackingModel):
         # TODO i18n
         return '{0}, {1} at {2}'.format(self.study_group.name, self.meeting_datetime(), self.study_group.venue_name)
 
-    def to_json(self):
-        data = {
+    def to_dict(self):
+        return {
             'study_group': self.study_group.pk,
             'meeting_date': self.meeting_date,
             'meeting_time': self.meeting_time
         }
-        return json.dumps(data, cls=DjangoJSONEncoder)
+
+    def to_json(self):
+        return json.dumps(self.to_dict(), cls=DjangoJSONEncoder)
 
 
 class Reminder(models.Model):
