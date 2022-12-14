@@ -26,7 +26,7 @@ const ActiveLearningCircle = ({image, name, venue, ...props}) => (
       <p>Venue: {venue}</p>
       <p>Next meeting: {props.next_meeting_date}</p>
       { props.is_learner && 
-        <a className="btn" href={`/studygroup/${props.id}/learn/`}>Learner button</a> }
+        <a className="btn p2pu-btn orange" href={`/studygroup/${props.id}/learn/`}>Learner button</a> }
     </div>
   </div>
 );

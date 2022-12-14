@@ -20,6 +20,8 @@ from django.db.models import Count
 from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 
 from studygroups.models import Course
 from studygroups.models import StudyGroup
@@ -35,6 +37,7 @@ from studygroups.forms import OptOutForm
 from studygroups.forms import OptOutConfirmationForm
 from studygroups.utils import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
+from studygroups.views.api import serialize_learning_circle
 import places
 
 import string
@@ -303,12 +306,42 @@ def receive_sms(request):
     return http.HttpResponse(status=200)
 
 
-class StudyGroupLearnerView(TemplateView):
+@method_decorator(login_required, name="dispatch")
+class StudyGroupParticipantView(TemplateView):
     template_name = 'studygroups/learning_circle_participant.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['study_group'] = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
+        study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
+        context['study_group'] = study_group
+        meetings = study_group.meeting_set.active()
+        messages = study_group.reminder_set.filter(sent_at__isnull=False)
+
+        def _meeting_to_dict(meeting):
+            d = meeting.to_dict()
+            d['meeting_datetime'] = meeting.meeting_datetime()
+            if meeting.rsvp_set.filter(application__email__iexact=self.request.user.email).exists():
+                d['rsvp'] = meeting.rsvp_set.filter(application__email__iexact=self.request.user.email).first().attending
+            return d
+
+        def _message_to_dict(message):
+            meeting = message.study_group_meeting
+            d = {
+                'sent_at': message.sent_at,
+                'meeting': meeting.id if meeting else None, 
+                'subject': message.email_subject,
+                'body': message.email_body,
+            }
+            # Do we need meeting date + time also?
+            # TODO should RSVP links be rewritten?
+            return d
+
+        react_data = {
+            'learning_circle': serialize_learning_circle(study_group),
+            'meetings': list(map(_meeting_to_dict, meetings)),
+            'messages': list(map(_message_to_dict, messages)),
+        }
+        context['react_data'] = react_data
         return context
 
 
