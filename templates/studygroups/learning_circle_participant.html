@@ -61,6 +61,7 @@
 </div>
 
 <div class="container-xl mt-5">
+  <div id="learning-circle-timeline" class="manage"></div>
   <div class="manage row">
     <div class="col-lg-7 lc-timeline">
       <div class="item {% if not study_group.draft %}done{% else %}todo{% endif %}">
@@ -289,8 +290,12 @@
 {% endlocaltime %}
 {% endblock %}
 {% block scripts %}
+
+{{ react_data|json_script:"react-data" }}
+
 {% render_bundle 'common' %}
 {% render_bundle 'learning-circle-participant' %}
+
 <script>
 $(document).ready(function () {
   $('[data-toggle="popover"]').popover();
