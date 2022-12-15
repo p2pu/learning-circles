@@ -5,11 +5,12 @@ const MeetingCard = props => {
   const {meeting_date, meeting_time} = props;
   const formattedDate = date(meeting_date, 'en-us');
   const formattedTime = time(meeting_time);
+  const done = new Date() > new Date(props.meeting_datetime);
   return (
-    <div className="item meeting" id={`meeting-${props.id}`}>
+    <div className={`item meeting ${done?'done':'todo'}`} id={`meeting-${props.id}`}>
       <div className="icon"></div>
       <div className="card">
-        <button className="card-collapse-toggle" data-bs-toggle="collapse" data-bs-target={`#collapse-meeting-${props.id}`} type="button" aria-expanded="true" aria-controls={`collapse-meeting-${props.id}`}><i className="fa fa-chevron-down"></i></button>
+        <button className={"card-collapse-toggle" + (done?' collapsed':'')} data-bs-toggle="collapse" data-bs-target={`#collapse-meeting-${props.id}`} type="button" aria-expanded={!done} aria-controls={`collapse-meeting-${props.id}`}><i className="fa fa-chevron-down"></i></button>
         <div className="card-title">Meeting #{props.meeting_number}: {formattedDate} {formattedTime}</div>
 
         <div class="collapse" id={`collapse-meeting-${props.id}`}>
@@ -21,14 +22,14 @@ const MeetingCard = props => {
 
 const MessageCard = props => {
   return (
-    <div className="item message" id={`meeting-${props.id}`}>
+    <div className="item message done" id={`meeting-${props.id}`}>
       <div className="icon"></div>
       <div className="card">
-        <button className="card-collapse-toggle" data-bs-toggle="collapse" data-bs-target={`#collapse-meeting-${props.id}`} type="button" aria-expanded="true" aria-controls={`collapse-meeting-${props.id}`}><i className="fa fa-chevron-down"></i></button>
-        <div className="card-title">{props.subject}</div>
-        <div>{props.sent_at}</div>
+        <button className="card-collapse-toggle collapsed" data-bs-toggle="collapse" data-bs-target={`#collapse-meeting-${props.id}`} type="button" aria-expanded="false" aria-controls={`collapse-meeting-${props.id}`}><i className="fa fa-chevron-down"></i></button>
+        <div className="card-title">Subject: {props.subject}</div>
+        <div>Sent: {date(props.sent_at)}</div>
         <div class="collapse" id={`collapse-meeting-${props.id}`}>
-          {props.body}
+          <div class="email-preview p-2" dangerouslySetInnerHTML={{__html: props.body}}></div>
         </div>
       </div>
     </div>
@@ -45,6 +46,7 @@ const dateCompare = (a, b) => {
 
 const ParticipantDash = props => {
   const {meetings, messages} = props;
+  //TODO meeting number assume meetings in date order
   let items = meetings.map( (meeting, i) => {
     return {
       component: MeetingCard,

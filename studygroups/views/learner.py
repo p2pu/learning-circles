@@ -314,7 +314,7 @@ class StudyGroupParticipantView(TemplateView):
         context = super().get_context_data(**kwargs)
         study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
         context['study_group'] = study_group
-        meetings = study_group.meeting_set.active()
+        meetings = study_group.meeting_set.active().order_by('meeting_date', 'meeting_time')
         messages = study_group.reminder_set.filter(sent_at__isnull=False)
 
         def _meeting_to_dict(meeting):
