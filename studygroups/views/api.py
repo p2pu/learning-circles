@@ -35,6 +35,7 @@ from studygroups.models import Facilitator
 from studygroups.models import Application
 from studygroups.models import Meeting
 from studygroups.models import Reminder
+from studygroups.models import Rsvp
 from studygroups.models import Team
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
@@ -940,6 +941,36 @@ class SignupView(View):
             application.mobile = clean_data.get('mobile')
         application.communications_opt_in = clean_data.get('communications_opt_in', False)
         application.save()
+        return json_response(request, {"status": "created"})
+
+
+@method_decorator(login_required, name="dispatch")
+class MeetingRsvpView(View):
+    def post(self, request):
+        post_schema = {
+            "meeting": schema.chain([
+                schema.integer(),
+                lambda x: (None, 'No matching meeting exists') if not Meeting.objects.filter(pk=int(x)).exists() else (Meeting.objects.get(pk=int(x)), None),
+            ], required=True),
+            "rsvp": schema.boolean(),
+        }
+        data = json.loads(request.body)
+        clean_data, errors = schema.validate(post_schema, data)
+        if errors != {}:
+            return json_response(request, {"status": "error", "errors": errors})
+
+        meeting = clean_data.get('meeting')
+        application_set = Application.objects.active().filter(study_group_id=meeting.study_group_id, email__iexact=request.user.email)
+        if not application_set.count() == 1:
+            return json_response(request, {"status": "error", "errors": {"_": ["no corresponding signup found"]}})
+
+        application = application_set.first()    
+        # get or update RSVP
+        obj, created = Rsvp.objects.update_or_create(
+            study_group_meeting=meeting,
+            application=application,
+            defaults={"attending": clean_data.get('rsvp')}
+        )
         return json_response(request, {"status": "created"})
 
 
