@@ -64,20 +64,6 @@
   <div id="learning-circle-timeline" class="manage"></div>
   <div class="manage row">
     <div class="col-lg-7 lc-timeline">
-      <div class="item {% if not study_group.draft %}done{% else %}todo{% endif %}">
-        <div class="icon"></div>
-        <div class="card">
-          <a class="card-collapse-toggle {% if not study_group.draft %}collapsed{% endif %}" data-bs-toggle="collapse" href="#collapse-publish" role="button" aria-expanded="true" aria-controls="collapse-publish"><i class="fa fa-chevron-down"></i></a>
-          <div class="card-title">Publish your learning circle</div>
-          <div class="collapse{% if study_group.draft %}.show{% endif %}" id="collapse-publish">
-              <div class="meeting-item done">
-                <p>Your learning circle is live! See it here:<br/>
-                <a href="{{PROTOCOL}}://{{DOMAIN}}{{signup_url}}">{{PROTOCOL}}://{{DOMAIN}}{{signup_url}}</a>
-                </p>
-              </div>
-          </div>
-        </div>
-      </div>
       {% for meeting in study_group.meetings %}
       {% with meeting_status=meeting.status feedback=meeting.feedback_set.first %}
       <div class="item {{ meeting_status }}" id="meeting-{{forloop.counter}}">
