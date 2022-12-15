@@ -1,27 +1,50 @@
 import React from 'react';
+
 import { date, day, time } from 'p2pu-components/dist/utils/i18n';
 
-const Rsvp = props => {
-  // TODO post meeting_id + yes/no
-  const onRsvp = e => {
-    e.preventDefault();
-    fetch('/rsvp', {
-      method: 'POST',
-      data: {}
-    });
-  }
+import DelayedPostForm from './manage/delayed-post-form';
 
+
+const RsvpForm = ({formData, updateForm}) => {
+  const handleChange = rsvpValue => e => {
+    e.preventDefault();
+    updateForm({rsvp: rsvpValue});
+  };
+  return (
+    <form>
+      <p>{ formData.rsvp === null ? "Can you attend this meeting?" : `You RSVPed ${formData.rsvp?'yes':'no'}. Change your RSVP?`}</p>
+      <button 
+        onClick={handleChange(true)}
+        className="btn p2pu-btn orange" 
+      >yes</button> / <button 
+        onClick={handleChange(false)}
+        className="btn p2pu-btn orange"
+      >no</button>
+    </form>
+  );
+}
+
+
+const Rsvp = props => {
   return (
     <div>
-      { (props.rsvp) 
+      { (props.rsvp && props.done) 
         && <p>You RSVPed {props.rsvp?'yes':'no'} for this meeting.</p>
       }
-      { (!props.rsvp && props.meetingId) && 
-        <p>Can you make this meeting? <button className="btn p2pu-btn orange">yes</button> / <button className="btn p2pu-btn orange">no</button></p> 
+      { (!props.done && props.meetingId) &&
+        <DelayedPostForm
+          createObject={true}
+          actionUrl="/api/rsvp/"
+          initialValues={{rsvp: props.rsvp, meeting: props.meetingId}}
+          onFormSubmitted={ updatedData => {} }
+        >
+          <RsvpForm/>
+        </DelayedPostForm>
       }
     </div>
   );
 };
+
 
 const MeetingCard = props => {
   const {meeting_date, meeting_time} = props;
@@ -40,7 +63,7 @@ const MeetingCard = props => {
         
         { (rsvp || !done) &&
           <div class={"collapse" + (!done?'.show':'')} id={`collapse-meeting-${props.id}`}>
-            <Rsvp rsvp={rsvp} meetingId={props.meeting_id} />
+            <Rsvp rsvp={rsvp} meetingId={props.meeting_id} done={done}/>
           </div>
         }
       </div>
