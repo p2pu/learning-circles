@@ -158,6 +158,24 @@ button.card-collapse-toggle {
   border: 1px solid $primary;
 }
 
+/* custom icons for meetings and messages*/
+.lc-timeline .item.message .icon::before{
+  @include timeline-item;
+  content: '';
+  background: url("../images/icons/message-white.svg") center center / 0.8em 0.8em no-repeat, $p2pu-blue;
+}
+.lc-timeline .item.meeting.done .icon::before{
+  @include timeline-item;
+  content: '';
+  background: url("../images/icons/calendar-white.svg") center center / 0.8em 0.8em no-repeat, $p2pu-blue;
+}
+.lc-timeline .item.meeting.todo .icon::before{
+  @include timeline-item;
+  content: '';
+  background: url("../images/icons/calendar-white.svg") center center / 0.8em 0.8em no-repeat, $p2pu-yellow;
+}
+
+
 .lc-timeline .item .card {
   margin-left: 2em;
 }
