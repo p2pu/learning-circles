@@ -320,6 +320,7 @@ class StudyGroupParticipantView(TemplateView):
         def _meeting_to_dict(meeting):
             d = meeting.to_dict()
             d['meeting_datetime'] = meeting.meeting_datetime()
+            d['meeting_id'] = meeting.pk
             if meeting.rsvp_set.filter(application__email__iexact=self.request.user.email).exists():
                 d['rsvp'] = meeting.rsvp_set.filter(application__email__iexact=self.request.user.email).first().attending
             return d
