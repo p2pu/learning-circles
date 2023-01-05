@@ -8,10 +8,7 @@ from places.data import read_cities
 from places.data import read_admin1_codes
 from places.data import get_alternate_names
 
-import requests
-import csv
-
-from pprint import pprint
+import json
 
 def get_local_names(geonameid, name, language):
     alt_names = get_alternate_names(geonameid)
@@ -37,8 +34,8 @@ class Command(BaseCommand):
         us_cities = list(filter(lambda city: int(city.get('population')) > 50000, us_cities))
         admin_codes = read_admin1_codes()
         us_admin_codes = list(filter(lambda region: region.get('code').startswith('US'), admin_codes))
-        print(len(us_cities))
-        return
+        #print(len(us_cities))
+
 
         for city in us_cities:
             region = next(filter(lambda region: region['code'] == f'{city["country code"]}.{city["admin1 code"]}', us_admin_codes), {'name': ''})
@@ -52,8 +49,9 @@ class Command(BaseCommand):
                 "longitude": city["longitude"],
                 "geonameid": city["geonameid"],
             }
-            print(f'\n{data}')
+            print(f'{json.dumps(data)},')
             
+            continue
             print(f'Search for city in db: {data}')
             matches = City.objects.filter(city=data['city'], region=data['region'], country=data['country'])
             if matches.count() == 1:
