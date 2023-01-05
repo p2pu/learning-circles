@@ -11,7 +11,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        UPDATE_URL = 'https://raw.githubusercontent.com/p2pu/learning-circles/places/us_cities50k.json'
+        UPDATE_URL = 'https://raw.githubusercontent.com/p2pu/learning-circles/master/places/us_cities50k.json'
         resp = requests.get(UPDATE_URL)
         us_cities = resp.json()
 
