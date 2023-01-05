@@ -324,7 +324,7 @@ def get_discourse_categories():
 
 def get_top_discourse_topics_and_users(limit=10):
     top_posts_json = get_json_response("https://community.p2pu.org/top/monthly.json")
-    return { 'topics': top_posts_json['topic_list']['topics'][:limit], 'users': top_posts_json['users'] }
+    return { 'topics': top_posts_json['topic_list']['topics'][:limit], 'users': top_posts_json.get('users', []) }
 
 def get_active_teams():
     today = datetime.datetime.now()
