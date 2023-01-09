@@ -57,7 +57,7 @@
     "react-spring": "^8.0.19",
     "react-tabs": "^2.2.1",
     "react-telephone-input": "^5.0.0",
-    "rrule": "^2.6.6",
+    "rrule": "^2.7.1",
     "sass": "^1.43.4",
     "sass-loader": "^7.2.0",
     "style-loader": "^0.13.2",
