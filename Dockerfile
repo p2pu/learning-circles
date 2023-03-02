@@ -2,6 +2,7 @@ FROM node:18 AS frontend
 WORKDIR /opt/app/
 COPY package.json /opt/app/
 COPY p2pu-theme/ /opt/app/p2pu-theme/
+COPY p2pu-components/ /opt/app/p2pu-components/
 RUN npm install --quiet --production
 COPY . /opt/app/
 RUN npm run build
