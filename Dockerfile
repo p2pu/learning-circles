@@ -1,4 +1,4 @@
-FROM node:14 AS frontend
+FROM node:18 AS frontend
 WORKDIR /opt/app/
 COPY package.json /opt/app/
 COPY p2pu-theme/ /opt/app/p2pu-theme/
