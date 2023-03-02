@@ -2,7 +2,6 @@ var path = require("path");
 var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 
 var fs = require("fs");
@@ -27,6 +26,7 @@ const reactBuild = {
   output: {
     path: path.resolve('./assets/dist/'),
     filename: "[name]-[hash].js",
+    clean: true,
   },
   devtool: 'source-map',
   module: {
@@ -70,8 +70,8 @@ const reactBuild = {
     }
   },
   plugins: [
-    new CleanWebpackPlugin(),
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    new webpack.IgnorePlugin(
+      { resourceRegExp: /^\.\/locale$/ }),//TODO, /moment$/),
     new BundleTracker({filename: './assets/frontend-webpack-manifest.json'}),
   ],
   resolve: {
@@ -93,27 +93,24 @@ const styleBuild = {
     rules: [
       {
         test: /\.woff2?$|\.ttf$|\.eot$|\.svg$|\.png$/,
-        use: [
-          {
-            loader: 'file-loader',
-          }
-        ]
+        type: 'asset/resource',
       },
       {
         test: /\.scss$/,
         use: [
-          MiniCssExtractPlugin.loader,
+          { loader: MiniCssExtractPlugin.loader },
           {
             loader: 'css-loader',
             options: {
               sourceMap: true,
             },
           },
+          { loader: 'resolve-url-loader' },
           {
             loader: 'sass-loader',
             options: {
               sourceMap: true,
-              includePaths: [path.resolve("./static/"), path.resolve("./node_modules/")]
+              //includePaths: [path.resolve("./static/"), path.resolve("./node_modules/")]
             }
           }
         ]
@@ -123,6 +120,7 @@ const styleBuild = {
   output: {
     path: path.resolve('./assets/dist/'),
     filename: "[name].[hash].js",
+    assetModuleFilename: '[name]-[hash][ext][query]',
   },
   plugins: [
     new MiniCssExtractPlugin({filename: "[name].[hash].css"}),
