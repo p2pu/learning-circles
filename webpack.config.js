@@ -26,6 +26,7 @@ const reactBuild = {
   output: {
     path: path.resolve('./assets/dist/'),
     filename: "[name]-[hash].js",
+    clean: true,
   },
   devtool: 'source-map',
   module: {
