@@ -38,7 +38,7 @@ jobs:
 
     - name: log into registry
       run: docker login --username ${username} --password ${password} ${registry}
-      with:
+      env:
         registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
