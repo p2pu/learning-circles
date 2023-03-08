@@ -44,4 +44,6 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: push docker image
-      run: docker push p2pu/learning-circles:${GITHUB_REF_NAME}
+      run: |
+        docker tag p2pu/learning-circles:${GITHUB_REF_NAME} ghcr.io/learning-circles:${GITHUB_REF_NAME}
+        docker push ghcr.io/p2pu/learning-circles:${GITHUB_REF_NAME}
