@@ -18,7 +18,7 @@ jobs:
         submodules: true
 
     - name: Build docker image
-      run: docker build -t p2pu/learning-circles .
+      run: docker build -t p2pu/learning-circles:${GITHUB_REF_NAME} .
 
     - name: start postgres container
 
@@ -28,25 +28,20 @@ jobs:
       run: docker run -d --name=selenium --shm-size="2g" -e SCREEN_HEIGHT=2048 selenium/standalone-chrome:4.0.0-20211102
 
     - name: run tests and fail if master or release
-      run: docker run --rm -i --link postgres --link selenium -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost -e RECAPTCHA_SITE_KEY=6Le0DW8bAAAAAJUHXcKkkASxZWMIwDypy1DiBBEX p2pu/learning-circles dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
+      run: docker run --rm -i --link postgres --link selenium -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost -e RECAPTCHA_SITE_KEY=6Le0DW8bAAAAAJUHXcKkkASxZWMIwDypy1DiBBEX p2pu/learning-circles:${GITHUB_REF_NAME} dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
       if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/release'
 
     - name: run tests and continue even if failed
-      run: docker run --rm -i --link postgres --link selenium -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost -e RECAPTCHA_SITE_KEY=6Le0DW8bAAAAAJUHXcKkkASxZWMIwDypy1DiBBEX p2pu/learning-circles dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
+      run: docker run --rm -i --link postgres --link selenium -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost -e RECAPTCHA_SITE_KEY=6Le0DW8bAAAAAJUHXcKkkASxZWMIwDypy1DiBBEX p2pu/learning-circles:${GITHUB_REF_NAME} dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
       continue-on-error: true
       if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/release'
 
-
-    - name: Log in to the Container registry
-      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+    - name: log into registry
+      run: docker login --username ${username} --password ${password} ${registry}
       with:
         registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build and push
-      uses: docker/build-push-action@v4
-      with:
-        push: true
-        tags: p2pu/puppeteer-docker:latest
-
+    - name: push docker image
+      run: docker push p2pu/learning-circles:${GITHUB_REF_NAME}
