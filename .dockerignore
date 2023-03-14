@@ -12,3 +12,5 @@ static_serve/
 .envrc
 upload
 Dockerfile
+compose/
+places/data/
