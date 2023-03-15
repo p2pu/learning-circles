@@ -540,6 +540,13 @@ class CourseListView(View):
                 topic_query = Q(topic_guides__slug=topic.lower()) | topic_query
             courses = courses.filter(topic_query)
 
+        if 'keywords' in request.GET:
+            keywords = request.GET.get('keywords').split(',')
+            keyword_query = Q(keywords__icontains=keywords[0].lower())
+            for keyword in keywords[1:]:
+                keyword_query = Q(keywords__icontains=keyword) | keyword_query
+            courses = courses.filter(keyword_query)
+
         if 'languages' in request.GET:
             languages = request.GET.get('languages').split(',')
             courses = courses.filter(language__in=languages)
