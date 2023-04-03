@@ -15,7 +15,7 @@ services:
     ports:
     - 1080:80
   frontend:
-    image: node:16-slim
+    image: node:18
     working_dir: /opt/app
     user: "1000"
     volumes:
