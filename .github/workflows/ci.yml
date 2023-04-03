@@ -22,7 +22,7 @@ jobs:
     - run: echo $IMAGE_TAG
 
     - name: Build docker image
-      run: docker build -t p2pu/learning-circles:${GITHUB_REF_NAME} .
+      run: docker build -t p2pu/learning-circles:${IMAGE_TAG} .
 
     - name: start postgres container
 
@@ -32,11 +32,11 @@ jobs:
       run: docker run -d --name=selenium --shm-size="2g" -e SCREEN_HEIGHT=2048 selenium/standalone-chrome:4.0.0-20211102
 
     - name: run tests and fail if master or release
-      run: docker run --rm -i --link postgres --link selenium -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost -e RECAPTCHA_SITE_KEY=6Le0DW8bAAAAAJUHXcKkkASxZWMIwDypy1DiBBEX p2pu/learning-circles:${GITHUB_REF_NAME} dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
+      run: docker run --rm -i --link postgres --link selenium -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost -e RECAPTCHA_SITE_KEY=6Le0DW8bAAAAAJUHXcKkkASxZWMIwDypy1DiBBEX p2pu/learning-circles:${IMAGE_TAG} dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
       if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/release'
 
     - name: run tests and continue even if failed
-      run: docker run --rm -i --link postgres --link selenium -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost -e RECAPTCHA_SITE_KEY=6Le0DW8bAAAAAJUHXcKkkASxZWMIwDypy1DiBBEX p2pu/learning-circles:${GITHUB_REF_NAME} dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
+      run: docker run --rm -i --link postgres --link selenium -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost -e RECAPTCHA_SITE_KEY=6Le0DW8bAAAAAJUHXcKkkASxZWMIwDypy1DiBBEX p2pu/learning-circles:${IMAGE_TAG} dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
       continue-on-error: true
       if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/release'
 
@@ -49,5 +49,5 @@ jobs:
 
     - name: push docker image
       run: |
-        docker tag p2pu/learning-circles:${GITHUB_REF_NAME} ghcr.io/p2pu/learning-circles:${GITHUB_REF_NAME}
-        docker push ghcr.io/p2pu/learning-circles:${GITHUB_REF_NAME}
+        docker tag p2pu/learning-circles:${IMAGE_TAG} ghcr.io/p2pu/learning-circles:${IMAGE_TAG}
+        docker push ghcr.io/p2pu/learning-circles:${IMAGE_TAG}
