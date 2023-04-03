@@ -19,8 +19,6 @@ jobs:
 
     - run: echo "IMAGE_TAG=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
 
-    - run: echo $IMAGE_TAG
-
     - name: Build docker image
       run: docker build -t p2pu/learning-circles:${IMAGE_TAG} .
 
