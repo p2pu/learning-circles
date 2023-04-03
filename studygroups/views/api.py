@@ -485,6 +485,9 @@ def serialize_course(course):
 
 class CourseListView(View):
     def get(self, request):
+
+        # TODO add extra fields to schema and update direct access to request.GET
+        # to use cleaned data
         query_schema = {
             "offset": schema.integer(),
             "limit": schema.integer(),
@@ -557,6 +560,14 @@ class CourseListView(View):
             for topic in topics[1:]:
                 topic_query = Q(topic_guides__slug=topic.lower()) | topic_query
             courses = courses.filter(topic_query)
+
+        if 'keywords' in request.GET:
+            keywords = request.GET.get('keywords', '').split(',')
+            keywords = list(filter(lambda x: x, keywords)) # get rid of falsy values
+            keyword_query = Q(keywords__icontains=keywords[0].lower())
+            for keyword in keywords[1:]:
+                keyword_query = Q(keywords__icontains=keyword) | keyword_query
+            courses = courses.filter(keyword_query)
 
         if 'languages' in request.GET:
             languages = request.GET.get('languages').split(',')
