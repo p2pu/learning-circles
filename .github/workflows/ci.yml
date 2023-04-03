@@ -6,18 +6,46 @@ on:
   pull_request:
     branches: ['**']
 
+env:
+  REGISTRY: ghcr.io
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: true
+
+    - run: echo "IMAGE_TAG=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
+
     - name: Build docker image
-      run: docker build -t p2pu/learning-circles .
+      run: docker build -t p2pu/learning-circles:${IMAGE_TAG} .
+
     - name: start postgres container
+
       run: docker run -d --name=postgres -e POSTGRES_PASSWORD=password postgres:11
+
     - name: start selenium container
       run: docker run -d --name=selenium --shm-size="2g" -e SCREEN_HEIGHT=2048 selenium/standalone-chrome:4.0.0-20211102
-    - name: run tests
-      run: docker run --rm -i --link postgres --link selenium -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost -e RECAPTCHA_SITE_KEY=6Le0DW8bAAAAAJUHXcKkkASxZWMIwDypy1DiBBEX p2pu/learning-circles dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
+
+    - name: run tests and fail if master or release
+      run: docker run --rm -i --link postgres --link selenium -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost -e RECAPTCHA_SITE_KEY=6Le0DW8bAAAAAJUHXcKkkASxZWMIwDypy1DiBBEX p2pu/learning-circles:${IMAGE_TAG} dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
+      if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/release'
+
+    - name: run tests and continue even if failed
+      run: docker run --rm -i --link postgres --link selenium -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost -e RECAPTCHA_SITE_KEY=6Le0DW8bAAAAAJUHXcKkkASxZWMIwDypy1DiBBEX p2pu/learning-circles:${IMAGE_TAG} dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
+      continue-on-error: true
+      if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/release'
+
+    - name: log into registry
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: push docker image
+      run: |
+        docker tag p2pu/learning-circles:${IMAGE_TAG} ghcr.io/p2pu/learning-circles:${IMAGE_TAG}
+        docker push ghcr.io/p2pu/learning-circles:${IMAGE_TAG}
