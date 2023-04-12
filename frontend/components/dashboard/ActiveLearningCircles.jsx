@@ -23,10 +23,20 @@ const ActiveLearningCircle = ({image, name, venue, ...props}) => (
     <img style={imgStyle} src={image || "/static/images/learning-circle-default.jpg"} />
     <div className="card" style={cardStyle} >
       <h5 className="card-title">{name}</h5>
-      <p>Venue: {venue}</p>
-      <p>Next meeting: {props.next_meeting_date}</p>
-      { props.is_learner && 
-        <a className="btn p2pu-btn orange" href={`/studygroup/${props.id}/learn/`}>Learner button</a> }
+      <div className="row">
+      <div className="col-9">
+        <p>Venue: {venue}</p>
+        <p>Next meeting: {props.next_meeting_date}</p>
+      </div>
+      <div className="col-3">
+        { props.is_learner && 
+          <a className="btn p2pu-btn blue" href={`/studygroup/${props.id}/learn/`}>Learner</a> 
+        }
+        { props.is_facilitator|| true &&
+          <a className="btn p2pu-btn orange" href={`/studygroup/${props.id}/learn/`}>Facilitator</a> 
+        }
+      </div>
+      </div>
     </div>
   </div>
 );
