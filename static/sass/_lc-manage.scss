@@ -39,6 +39,10 @@ button.card-collapse-toggle {
   }
 }
 
+.action-bar.participant {
+  background: $p2pu-blue;
+}
+
 .topbit {
   min-height: calc( (100vw - 30px)/4 - 30px);
 
@@ -64,6 +68,11 @@ button.card-collapse-toggle {
   background: $p2pu-yellow;
   border: 10px solid $p2pu-yellow;
   border-radius: 50%;
+
+  &.participant {
+    background: $p2pu-blue;
+    border-color: $p2pu-blue;
+  }
 
   @include media-breakpoint-up(sm) {
     margin-bottom: -120px;

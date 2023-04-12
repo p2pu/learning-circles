@@ -33,7 +33,7 @@
         </div>
       </div>
       <div class="col-sm-3">
-        <div class="lc-manage-image">
+        <div class="lc-manage-image participant">
           
           <div class="wrapper">
             {% if study_group.image %}
@@ -47,7 +47,7 @@
     </div>
   </div>
   {% url 'studygroups_signup' location=study_group.venue_name|unicode_slugify study_group_id=study_group.pk as signup_url %}
-  <div class="action-bar">
+  <div class="action-bar participant">
     <div class="container-xl">
       <div class="row">
         <div class="col-sm-9 offset-sm-3">
@@ -68,7 +68,6 @@
 
 {% block scripts %}
 {{ react_data|json_script:"react-data" }}
-{% render_bundle 'common' %}
 {% render_bundle 'learning-circle-participant' %}
 
 <script>
