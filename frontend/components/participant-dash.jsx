@@ -1,8 +1,15 @@
 import React from 'react';
 
-import { date, day, time } from 'p2pu-components/dist/utils/i18n';
+import { date, time} from 'p2pu-components/dist/utils/i18n';
 
 import DelayedPostForm from './manage/delayed-post-form';
+
+// TODO move to p2pu-components or i18n.js in frontend/helpers
+/* Opinionated date format for learning circles */
+export function meetingDateFormat(date_, locale){
+  const options = { weekday: 'long', month: 'long', day: 'numeric' }
+  return new Date(date_).toLocaleDateString(locale, options)
+}
 
 
 const RsvpForm = ({formData, updateForm}) => {
@@ -49,7 +56,7 @@ const Rsvp = props => {
 const MeetingCard = props => {
   const {meeting_date, meeting_time} = props;
   const {rsvp} = props;
-  const formattedDate = date(meeting_date, 'en-us');
+  const formattedDate = meetingDateFormat(meeting_date);
   const formattedTime = time(meeting_time);
   const done = new Date() > new Date(props.meeting_datetime);
   return (
@@ -59,7 +66,7 @@ const MeetingCard = props => {
         { (rsvp || !done) &&
           <button className={"card-collapse-toggle" + (done?' collapsed':'')} data-bs-toggle="collapse" data-bs-target={`#collapse-meeting-${props.id}`} type="button" aria-expanded={!done} aria-controls={`collapse-meeting-${props.id}`}><i className="fa fa-chevron-down"></i></button>
         }
-        <div className="card-title">Meeting #{props.meeting_number}: {formattedDate} {formattedTime}</div>
+        <div className="card-title">Meeting #{props.meeting_number}: {formattedDate}, {formattedTime}</div>
         
         { (rsvp || !done) &&
           <div class={"collapse" + (!done?'.show':'')} id={`collapse-meeting-${props.id}`}>
@@ -78,7 +85,7 @@ const MessageCard = props => {
       <div className="card">
         <button className="card-collapse-toggle collapsed" data-bs-toggle="collapse" data-bs-target={`#collapse-meeting-${props.id}`} type="button" aria-expanded="false" aria-controls={`collapse-meeting-${props.id}`}><i className="fa fa-chevron-down"></i></button>
         <div className="card-title">Subject: {props.subject}</div>
-        <div>Sent: {date(props.sent_at)}</div>
+        <div>Sent: {meetingDateFormat(props.sent_at)}</div>
         <div class="collapse" id={`collapse-meeting-${props.id}`}>
           <div class="email-preview p-2" dangerouslySetInnerHTML={{__html: props.body}}></div>
         </div>
