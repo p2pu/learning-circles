@@ -1,6 +1,8 @@
 {% load static %}
 {% load i18n %}
 
+{% if email_in_browser %}
+{% else %}
 <html>
 <style type="text/css">
   body.email {
@@ -61,7 +63,11 @@
         </tr>
         <tr>
           <td class="email-content">
+{% endif %}
               {% block body %}{% endblock %}
+
+{% if email_in_browser %}
+{% else %}
           </td>
         </tr>
       {% if team or facilitator or user or show_dash_link %}
@@ -76,3 +82,4 @@
     </table>
   </body>
 </html>
+{% endif %}

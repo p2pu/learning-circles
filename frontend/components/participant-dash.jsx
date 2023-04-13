@@ -118,7 +118,7 @@ const dateCompare = (a, b) => {
 }
 
 const ParticipantDash = props => {
-  const {meetings, messages} = props;
+  const {meetings, messages, signup_message, survey_link} = props;
   //TODO meeting number assume meetings in date order
   let items = meetings.map( (meeting, i) => {
     return {
@@ -135,6 +135,15 @@ const ParticipantDash = props => {
       data: msg,
     };
   })];
+
+  items = [
+    ...items,
+    {
+      component: MessageCard,
+      time: new Date(signup_message.sent_at),
+      data: signup_message,
+    }
+  ];
 
   items.sort( (a, b) => dateCompare(a.time, b.time));
 
