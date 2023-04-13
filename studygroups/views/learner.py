@@ -316,6 +316,7 @@ class StudyGroupParticipantView(TemplateView):
         study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
         application = Application.objects.filter(email__iexact=self.request.user.email).first()
         context['study_group'] = study_group
+        context['application'] = application
         meetings = study_group.meeting_set.active().order_by('meeting_date', 'meeting_time')
         messages = study_group.reminder_set.filter(sent_at__isnull=False)
 
@@ -359,12 +360,16 @@ class StudyGroupParticipantView(TemplateView):
             'sent_at': application.created_at,
         }
 
+        survey_link = reverse(
+            'studygroups_learner_survey',
+            kwargs={'study_group_uuid': study_group.uuid}
+        )
 
         react_data = {
             'learning_circle': serialize_learning_circle(study_group),
             'meetings': list(map(_meeting_to_dict, meetings)),
             'messages': list(map(_message_to_dict, messages)),
-            'survey_link': "TODO",
+            'survey_link': survey_link,
             'signup_message': signup_message,
         }
         context['react_data'] = react_data
