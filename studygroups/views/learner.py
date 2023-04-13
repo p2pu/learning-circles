@@ -38,6 +38,7 @@ from studygroups.forms import OptOutConfirmationForm
 from studygroups.utils import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
 from studygroups.views.api import serialize_learning_circle
+
 import places
 
 import string
@@ -313,6 +314,7 @@ class StudyGroupParticipantView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
+        application = Application.objects.filter(email__iexact=self.request.user.email).first()
         context['study_group'] = study_group
         meetings = study_group.meeting_set.active().order_by('meeting_date', 'meeting_time')
         messages = study_group.reminder_set.filter(sent_at__isnull=False)
@@ -337,10 +339,33 @@ class StudyGroupParticipantView(TemplateView):
             # TODO should RSVP links be rewritten?
             return d
 
+        signup_message_subject = render_to_string_ctx(
+           'studygroups/email/learner_signup-subject.txt', {
+                'application': application
+            }
+        ).strip('\n')
+
+        signup_message_html = render_to_string_ctx(
+            'studygroups/email/learner_signup.html', {
+                'application': application,
+                'facilitator_first_last_names': study_group.facilitators_display(),
+                'email_in_browser': True,
+            }
+        )
+
+        signup_message = {
+            'subject': signup_message_subject,
+            'body': signup_message_html,
+            'sent_at': application.created_at,
+        }
+
+
         react_data = {
             'learning_circle': serialize_learning_circle(study_group),
             'meetings': list(map(_meeting_to_dict, meetings)),
             'messages': list(map(_message_to_dict, messages)),
+            'survey_link': "TODO",
+            'signup_message': signup_message,
         }
         context['react_data'] = react_data
         return context
