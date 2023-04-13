@@ -18,7 +18,7 @@
   <div class="container-xl">
     <div class="heading row">
       <div class="offset-sm-3 col-sm-9 lc-details">
-        <h1>{% if study_group.draft %}[DRAFT] {% endif %}{{study_group.name}}</h1>
+        <h1>{{study_group.name}}</h1>
         <div class="text">
           Facilitated by {{study_group.facilitators_display}}
         </div>
@@ -51,9 +51,8 @@
     <div class="container-xl">
       <div class="row">
         <div class="col-sm-9 offset-sm-3">
-          <a class="p2pu-btn btn btn-primary" href="">{% trans "Edit" %}</a>
-          <a class="p2pu-btn btn btn-primary" href="{{ signup_url }}">{% trans "View" %}</a>
-          <a class="p2pu-btn btn btn-primary" href="">{% trans "Leave" %}</a>
+          <a class="p2pu-btn btn btn-primary" href="{{ signup_url }}">{% trans "View signup page" %}</a>
+          <a class="p2pu-btn btn btn-primary" href="{{ application.unapply_link }}">{% trans "Leave" %}</a>
         </div>
       </div>
     </div>
