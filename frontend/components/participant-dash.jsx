@@ -69,7 +69,7 @@ const MeetingCard = props => {
         <div className="card-title">Meeting #{props.meeting_number}: {formattedDate}, {formattedTime}</div>
         
         { (rsvp || !done) &&
-          <div class={"collapse" + (!done?'.show':'')} id={`collapse-meeting-${props.id}`}>
+          <div class={"collapse" + (!done?' show':'')} id={`collapse-meeting-${props.id}`}>
             <Rsvp rsvp={rsvp} meetingId={props.meeting_id} done={done}/>
           </div>
         }
@@ -101,7 +101,7 @@ const SurveyCard = props => {
       <div className="card">
         <button className="card-collapse-toggle" data-bs-toggle="collapse" data-bs-target="#collapse-survey" type="button" aria-expanded="true" aria-controls="collapse-survey"><i className="fa fa-chevron-down"></i></button>
         <div className="card-title">Reflect</div>
-        <div class="collapse.show" id="collapse-survey">
+        <div class="collapse show" id="collapse-survey">
           <p><a href={props.survey_link}>Complete survey</a></p>
         </div>
       </div>
