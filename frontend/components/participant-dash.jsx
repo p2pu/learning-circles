@@ -19,7 +19,7 @@ const RsvpForm = ({formData, updateForm}) => {
   };
   return (
     <form>
-      <p>{ formData.rsvp === null ? "Can you attend this meeting?" : `You RSVPed ${formData.rsvp?'yes':'no'}. Change your RSVP?`}</p>
+      <p>{ formData.rsvp === undefined ? "Can you attend this meeting?" : `You RSVPed ${formData.rsvp?'yes':'no'}. Change your RSVP?`}</p>
       <button 
         onClick={handleChange(true)}
         className="btn p2pu-btn orange" 
@@ -40,7 +40,7 @@ const Rsvp = props => {
       }
       { (!props.done && props.meetingId) &&
         <DelayedPostForm
-          createObject={true}
+          createObject={props.rsvp === undefined}
           actionUrl="/api/rsvp/"
           initialValues={{rsvp: props.rsvp, meeting: props.meetingId}}
           onFormSubmitted={ updatedData => {} }
@@ -69,7 +69,7 @@ const MeetingCard = props => {
         <div className="card-title">Meeting #{props.meeting_number}: {formattedDate}, {formattedTime}</div>
         
         { (rsvp || !done) &&
-          <div class={"collapse" + (!done?' show':'')} id={`collapse-meeting-${props.id}`}>
+          <div className={"collapse" + (!done?' show':'')} id={`collapse-meeting-${props.id}`}>
             <Rsvp rsvp={rsvp} meetingId={props.meeting_id} done={done}/>
           </div>
         }
@@ -86,8 +86,8 @@ const MessageCard = props => {
         <button className="card-collapse-toggle collapsed" data-bs-toggle="collapse" data-bs-target={`#collapse-meeting-${props.id}`} type="button" aria-expanded="false" aria-controls={`collapse-meeting-${props.id}`}><i className="fa fa-chevron-down"></i></button>
         <div className="card-title">Subject: {props.subject}</div>
         <div>Sent: {meetingDateFormat(props.sent_at)}</div>
-        <div class="collapse" id={`collapse-meeting-${props.id}`}>
-          <div class="email-preview p-2" dangerouslySetInnerHTML={{__html: props.body}}></div>
+        <div className="collapse" id={`collapse-meeting-${props.id}`}>
+          <div className="email-preview p-2" dangerouslySetInnerHTML={{__html: props.body}}></div>
         </div>
       </div>
     </div>
@@ -101,9 +101,16 @@ const SurveyCard = props => {
       <div className="card">
         <button className="card-collapse-toggle" data-bs-toggle="collapse" data-bs-target="#collapse-survey" type="button" aria-expanded="true" aria-controls="collapse-survey"><i className="fa fa-chevron-down"></i></button>
         <div className="card-title">Reflect</div>
-        <div class="collapse show" id="collapse-survey">
-          <p><a href={props.survey_link}>Complete survey</a></p>
-        </div>
+        { props.survey_completed &&
+          <div className="collapse show" id="collapse-survey">
+            <p>Thank you for completing the survey.</p>
+          </div>
+        }
+        { !props.survey_completed &&
+          <div className="collapse show" id="collapse-survey">
+            <p>Please complete this <a href={props.survey_link}>short survey</a>. Your feedback will help your facilitator and P2PU improve future learning circles.</p>
+          </div>
+        }
       </div>
     </div>
   );
@@ -118,7 +125,7 @@ const dateCompare = (a, b) => {
 }
 
 const ParticipantDash = props => {
-  const {meetings, messages, signup_message, survey_link} = props;
+  const {meetings, messages, signup_message, survey_link, survey_completed} = props;
   //TODO meeting number assume meetings in date order
   let items = meetings.map( (meeting, i) => {
     return {
@@ -155,7 +162,7 @@ const ParticipantDash = props => {
           return <item.component {...item.data} key={i} id={i} />
         })
       }
-      <SurveyCard {...{survey_link}} />
+      <SurveyCard {...{survey_link, survey_completed}} />
     </div>
   );
 }

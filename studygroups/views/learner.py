@@ -39,6 +39,8 @@ from studygroups.utils import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
 from studygroups.views.api import serialize_learning_circle
 
+from surveys.models import LearnerSurveyResponse
+
 import places
 
 import string
@@ -365,12 +367,16 @@ class StudyGroupParticipantView(TemplateView):
             kwargs={'study_group_uuid': study_group.uuid}
         )
 
+        survey_completed = LearnerSurveyResponse.objects.filter(learner=application, study_group=study_group).exists()
+
         react_data = {
             'learning_circle': serialize_learning_circle(study_group),
             'meetings': list(map(_meeting_to_dict, meetings)),
             'messages': list(map(_message_to_dict, messages)),
             'survey_link': survey_link,
+            'survey_completed': survey_completed,
             'signup_message': signup_message,
+            'application_id': application.id,
         }
         context['react_data'] = react_data
         return context
