@@ -29,12 +29,7 @@ const ActiveLearningCircle = ({image, name, venue, ...props}) => (
         <p>Next meeting: {props.next_meeting_date}</p>
       </div>
       <div className="col-3">
-        { props.is_learner && 
-          <a className="btn p2pu-btn blue" href={`/studygroup/${props.id}/learn/`}>Learner</a> 
-        }
-        { props.is_facilitator|| true &&
-          <a className="btn p2pu-btn orange" href={`/studygroup/${props.id}/learn/`}>Facilitator</a> 
-        }
+        <a className="btn p2pu-btn blue" href={`/studygroup/${props.id}/learn/`}>Learner dash</a> 
       </div>
       </div>
     </div>
