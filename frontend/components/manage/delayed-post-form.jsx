@@ -54,7 +54,7 @@ const DelayedPostForm = props => {
       <div className="text-muted">
         { pendingChanges && !isPosting && <span> pending updates</span> }
         { isPosting && <><div className="spinner-border spinner-border-sm" role="status"><span className="sr-only">saving...</span></div><span> saving changes</span></> }
-        { !pendingChanges && "changes saved" }
+        { !pendingChanges && !props.createObject && "changes saved" }
       </div>
     </>
   );
