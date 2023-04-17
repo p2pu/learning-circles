@@ -984,6 +984,9 @@ class MeetingRsvpView(View):
         )
         return json_response(request, {"status": "created"})
 
+    def put(self, request):
+        return self.post(request)
+
 
 class ImageUploadView(View):
     def post(self, request):
