@@ -19,6 +19,11 @@ jobs:
 
     - run: echo "IMAGE_TAG=${GITHUB_REF_NAME//\//-}" >> $GITHUB_ENV
 
+    - name: Add version info
+      run: |
+        sed -i "s/__version__ =.*/__version__ = \"$(git describe --always --tags)\"/" ./learnwithpeople/__init__.py
+        sed -i "s/GIT_REVISION.*/GIT_REVISION = \"$(git rev-parse HEAD)\"/" ./learnwithpeople/__init__.py
+
     - name: Build docker image
       run: docker build -t p2pu/learning-circles:${IMAGE_TAG} .
 
