@@ -19,18 +19,20 @@
     <div class="heading row">
       <div class="offset-sm-3 col-sm-9 lc-details">
         <h1>{{study_group.name}}</h1>
-        <div class="text">
+        <!--
+        <div class="text d-none d-sm-block">
           Facilitated by {{study_group.facilitators_display}}
         </div>
-        <div class="text">
+        <div class="text d-none d-sm-block">
           {% blocktrans with link=study_group.course.link provider=study_group.course.provider %}Course materials provided by <a href="{{ link }}" target="_blank">{{ provider }}</a>{% endblocktrans %}
         </div>
-        <div class="text">
+        <div class="text d-none d-sm-block">
           {% trans "Taking place at" %} {% if study_group.venue_website %}<a href="{{study_group.venue_website}}">{{ study_group.venue_name }}</a>{% else %}{{study_group.venue_name}}{% endif %}, {{study_group.venue_details}}, {{study_group.city}}
         </div>
-        <div class="text">
+        <div class="text d-none d-sm-block">
           {% include 'studygroups/recurrence_text.html' %}
         </div>
+        -->
       </div>
       <div class="col-sm-3">
         <div class="lc-manage-image participant">

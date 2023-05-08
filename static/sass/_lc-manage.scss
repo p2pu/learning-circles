@@ -29,8 +29,8 @@ button.card-collapse-toggle {
 }
 
 .action-bar {
-  margin-top: calc(30px - 50vw);
-  padding-top: calc(50vw - 15px);
+  margin-top: calc(30px - 35vw);
+  padding-top: calc(35vw - 15px);
   padding-bottom: 1em;
   @include media-breakpoint-up(sm) {
     margin-top: inherit;
@@ -113,6 +113,7 @@ button.card-collapse-toggle {
 .lc-timeline .item::before {
   content: '';
   width: 0;
+  left: 0.4em;
   border: 1px solid $primary;
   position: absolute;
   height: 100%;
@@ -130,7 +131,7 @@ button.card-collapse-toggle {
 
 @mixin timeline-item {
   position: absolute;
-  left: -0.7em;
+  left: -0.3em;
   top: 0.5em;
   width: 1.5em;
   height: 1.5em;
@@ -183,6 +184,12 @@ button.card-collapse-toggle {
   content: '';
   background: url("../images/icons/calendar-white.svg") center center / 0.8em 0.8em no-repeat, $p2pu-yellow;
 }
+.lc-timeline .item.info .icon::before{
+  @include timeline-item;
+  content: '';
+  background: url("../images/icons/info-white.svg") center center / 0.8em 0.8em no-repeat, $p2pu-blue;
+}
+
 
 
 .lc-timeline .item .card {

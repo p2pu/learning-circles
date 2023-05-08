@@ -214,22 +214,25 @@ class LearningCircleListView(View):
             study_groups = StudyGroup.objects.filter(pk=int(id))
 
         if 'user' in request.GET:
-            study_groups = study_groups.filter(
-                Q(facilitator__user=request.user) | Q(application__email__iexact=request.user.email)
-            )
-            study_groups = study_groups.annotate(
-                is_learner=Sum(
-                    Case(
-                        When(
-                            application__email__iexact=request.user.email,
-                            then=1
-                        ),
-                        default=0,
-                        output_field=BooleanField()
-                    )
-                )
-            )
-            # 
+            user_filter = Q(facilitator__user=request.user)
+            # include learning circles an user is signed up for
+            # if they have a confirmed email address
+            if request.user.profile.email_confirmed_at:
+                user_filter = user_filter | Q(application__email__iexact=request.user.email)
+            study_groups = study_groups.filter(user_filter)
+            if request.user.profile.email_confirmed_at:
+               study_groups = study_groups.annotate(
+                   is_learner=Sum(
+                       Case(
+                           When(
+                               application__email__iexact=request.user.email,
+                               then=1
+                           ),
+                           default=0,
+                           output_field=BooleanField()
+                       )
+                   )
+               )
 
         if 'online' in request.GET:
             online = clean_data.get('online')
@@ -620,15 +623,6 @@ def _image_check():
             return value.replace(settings.MEDIA_URL, '', 1), None
         else:
             return None, 'Image must be a valid URL for an existing file'
-    return _validate
-
-
-def _user_check(user):
-    def _validate(value):
-        if value is False:
-            if user.profile.email_confirmed_at is None:
-                return None, 'Users with unconfirmed email addresses cannot publish courses'
-        return value, None
     return _validate
 
 

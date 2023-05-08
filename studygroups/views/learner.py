@@ -315,8 +315,20 @@ class StudyGroupParticipantView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # If a user hasn't verified their email address and get to this link, just
+        # redirect them to the signup page
+        if not self.request.user.profile.email_confirmed_at:
+            redirect_url = reverse(
+                'studygroups_signup',
+                args=(slugify(obj.venue_name, allow_unicode=True), obj.id)
+            )
+            return HttpResponseRedirect(redirect_url)
+
         study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
-        application = Application.objects.filter(email__iexact=self.request.user.email).first()
+        application = Application.objects.filter(
+            email__iexact=self.request.user.email,
+            study_group=study_group
+        ).first()
         context['study_group'] = study_group
         context['application'] = application
         meetings = study_group.meeting_set.active().order_by('meeting_date', 'meeting_time')
@@ -376,11 +388,15 @@ class StudyGroupParticipantView(TemplateView):
             'survey_link': survey_link,
             'survey_completed': survey_completed,
             'signup_message': signup_message,
-            'application_id': application.id,
+            'application_id': application.id, # TODO Is this used?
+            'application': {
+                'id': application.id,
+                'name': application.name,
+                'email': application.email,
+            }
         }
         context['react_data'] = react_data
         return context
-
 
 
 class StudyGroupLearnerSurvey(TemplateView):
