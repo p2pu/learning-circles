@@ -124,6 +124,35 @@ const dateCompare = (a, b) => {
   return 0;
 }
 
+function facilitatorDisplay(facilitators){
+  if (facilitators.length == 1)
+    return facilitators[0];
+  if (facilitators.length == 2)
+    return `{facilitators[0]} and {facilitators[1]`;
+  if (facilitators.length > 2)
+    return `{facilitators.slice(0,-1).join(',')} and {facilitators[1]`;
+}
+
+const InfoCard = props => {
+  const {learning_circle} = props;
+  const {course} = learning_circle;
+  return (
+    <div className="item info" id="info">
+      <div className="icon"></div>
+      <div className="card">
+        <button className="card-collapse-toggle" data-bs-toggle="collapse" data-bs-target="#collapse-info" type="button" aria-expanded="true" aria-controls="collapse-info"><i className="fa fa-chevron-down"></i></button>
+        <div className="card-title">You've signed up as {props.application.name} &lt;{props.application.email}&gt;</div>
+        <div className="collapse show" id="collapse-info">
+          <p>This learning circle is facilitated by {facilitatorDisplay(learning_circle.facilitators)}</p>
+          <p>Course materials provided by <a href={course.link} target="_blank">{course.provider}</a></p>
+          <p>Taking place at { !!learning_circle.venue_website && <a href="{learning_circle.venue_website}">{ learning_circle.venue }</a>}{ !learning_circle.venue_website && learning_circle.venue}, {learning_circle.venue_address}</p>
+          <p></p>
+        </div>
+        </div>
+    </div>
+  );
+}
+
 const ParticipantDash = props => {
   const {meetings, messages, signup_message, survey_link, survey_completed} = props;
   //TODO meeting number assume meetings in date order
@@ -153,6 +182,7 @@ const ParticipantDash = props => {
   ];
 
   items.sort( (a, b) => dateCompare(a.time, b.time));
+  items = [ {component: InfoCard, data: props}, ...items]
 
   console.log(items);
   return (
