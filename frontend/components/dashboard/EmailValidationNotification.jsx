@@ -30,7 +30,7 @@ class EmailValidationNotification extends React.Component {
   render() {
     return (
       <Notification level="warning" dismissable={true}>
-        <p className="mb-0">Your email address has not yet been validated. Check your inbox for an email from us.</p>
+        <p className="mb-0">Your email address has not yet been validated. Certain features won’t be available and you won’t be able to see any learning circles that you might have signed up for until you validate your email address. Check your inbox for an email from us.</p>
         <a href="#" onClick={this.submitForm}>Re-send the validation email</a>
       </Notification>
     );
