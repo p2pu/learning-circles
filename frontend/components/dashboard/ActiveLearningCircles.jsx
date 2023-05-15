@@ -7,15 +7,15 @@ const imgStyle = {
   display: "inline-block",
   height: "150px",
   border: "5px solid #05c6b4",
-  'border-radius': "100%",
-  'z-index': "9",
+  borderRadius: "100%",
+  zIndex: "9",
 }
 
 const cardStyle = {
   margin: 0,
-  'margin-left': "-75px",
-  'padding-left': "calc(75px + 1rem)",
-  'z-index': "8",
+  marginLeft: "-75px",
+  paddingLeft: "calc(75px + 1rem)",
+  zIndex: "8",
 }
 
 const ActiveLearningCircle = ({image, name, venue, ...props}) => (
