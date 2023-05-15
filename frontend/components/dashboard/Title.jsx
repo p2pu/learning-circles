@@ -9,7 +9,7 @@ const DashboardTitle = ({ user, userData }) => {
           <p style={{ lineHeight: 1, marginBottom: '1rem' }}>Welcome to your learning circle dashboard.</p>
         </header>
         <div className="account-settings col text-md-end">
-            <a href="/en/accounts/settings/" class="btn btn-sm p2pu-btn orange secondary">Account settings</a>
+            <a href="/en/accounts/settings/" className="btn btn-sm p2pu-btn orange secondary">Account settings</a>
         </div>
       </div>
     )
