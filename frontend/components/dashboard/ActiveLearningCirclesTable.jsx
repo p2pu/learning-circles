@@ -68,7 +68,7 @@ export default class LearningCirclesTable extends Component {
                 { this.props.teamId && <td>Facilitator</td>}
                 <td>Signups</td>
                 <td>Next meeting</td>
-                { (this.props.user || this.props.userIsOrganizer) && <td></td> }
+                <td></td>
               </tr>
             </thead>
             <tbody>
@@ -89,9 +89,12 @@ export default class LearningCirclesTable extends Component {
                       <td>{`${lc.draft ? "[DRAFT] " : ""}${lc.name}`}</td>
                       <td>{ lc.venue }</td>
                       { this.props.teamId && <td>{ lc.facilitator }</td>}
-                      <td>{ lc.signup_count }</td>
+                      <td>{ lc.is_facilitator?lc.signup_count:'N/A' }</td>
                       <td>{ date }</td>
-                      { (this.props.user || this.props.userIsOrganizer) && <td><a href={ lc.studygroup_path } className="p2pu-btn btn btn-sm dark">manage</a></td> }
+                      <td>
+                        { ( lc.is_facilitator || this.props.userIsOrganizer) && <a href={ lc.studygroup_path } className="p2pu-btn btn btn-sm dark">manage</a> }
+                        <a href={`/studygroup/${lc.id}/learn/`} className="p2pu-btn btn btn-sm blue">Learner dash</a>
+                      </td>
                     </tr>
                   )
                 })
@@ -108,23 +111,24 @@ export default class LearningCirclesTable extends Component {
 
               return(
                 <div className={`meeting-card p-2 ${classes}`} key={lc.id}>
-                  <a className="bold" href={ lc.signup_url }>{`${lc.draft ? "[DRAFT] " : ""}${lc.name}`}</a>
+                  <strong className="bold">{`${lc.draft ? "[DRAFT] " : ""}${lc.name}`}</strong>
 
                   <div className="d-flex">
                     <div className="pr-2">
                       <div className="bold">Venue</div>
-                      <div className="bold">Signups</div>
+                      { lc.is_facilitator?<div className="bold">Signups</div>:''}
                       <div className="bold">First Meeting</div>
                     </div>
 
                     <div className="flex-grow px-2">
                       <div className="">{ lc.venue }</div>
-                      <div className="">{ lc.signup_count }</div>
+                      { lc.is_facilitator?<div className="">{ lc.signup_count }</div>:''}
                       <div className="">{ date }</div>
                     </div>
                   </div>
 
-                  { (this.props.user || this.props.userIsOrganizer) && <a href={ lc.studygroup_path } className="p2pu-btn btn btn-sm dark m-0 my-2">manage</a> }
+                  { (lc.is_facilitator || this.props.userIsOrganizer) && <a href={ lc.studygroup_path } className="p2pu-btn btn btn-sm dark m-0 my-2">manage</a> }
+                  <a href={`/studygroup/${lc.id}/learn/`} className="p2pu-btn btn btn-sm blue">Learner dash</a>
                 </div>
               )
             })

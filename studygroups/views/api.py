@@ -152,6 +152,8 @@ def serialize_learning_circle(sg):
         data["next_meeting_date"] = sg.next_meeting_date
     if hasattr(sg, 'status'):
         data["status"] = sg.status
+    if hasattr(sg, 'is_facilitator'):
+        data["is_facilitator"] = sg.is_facilitator
     if hasattr(sg, 'is_learner'):
         data["is_learner"] = sg.is_learner
     return data
@@ -233,6 +235,14 @@ class LearningCircleListView(View):
                        )
                    )
                )
+            study_groups = study_groups.annotate(
+                is_facilitator=Count(
+                    'facilitator',
+                    filter=Q(facilitator__user=request.user),
+                    distinct=True
+                )
+            )
+
 
         if 'online' in request.GET:
             online = clean_data.get('online')
