@@ -28,10 +28,10 @@ const CustomCourseSearch = (props) => {
         />
 
         <a data-bs-toggle="collapse" href="#searchFilters" role="button" aria-expanded="false" aria-controls="searchFilters">
-          Advanced options <i class="fa fa-chevron-down"></i>
+          Advanced options <i className="fa fa-chevron-down"></i>
         </a>
 
-        <div id="searchFilters" class="collapse">
+        <div id="searchFilters" className="collapse">
           <div className="col-12">
             <OrderCoursesForm {...props} />
           </div>
