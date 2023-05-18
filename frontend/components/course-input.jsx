@@ -1,5 +1,8 @@
 import React from 'react'
-import Autocomplete from 'react-autocomplete'
+//import Autocomplete from 'react-autocomplete'
+
+//TODO - need to implement input using react select to replace this
+const Autocomplete = props => <input type="text"></input>;
 
 export default class CourseInput extends React.Component{
   constructor(props){
