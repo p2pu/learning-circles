@@ -13,24 +13,33 @@ export function meetingDateFormat(date_, locale){
 
 
 const RsvpForm = ({formData, updateForm}) => {
-  const handleChange = rsvpValue => e => {
-    e.preventDefault();
-    updateForm({rsvp: rsvpValue});
+  const handleChange = e => {
+    updateForm({rsvp: e.target.value === "yes"});
   };
   return (
     <form>
-      <p>{ formData.rsvp === undefined ? "Can you attend this meeting?" : `You RSVPed ${formData.rsvp?'yes':'no'}. Change your RSVP?`}</p>
-      <button 
-        onClick={handleChange(true)}
-        className="btn p2pu-btn orange" 
-      >yes</button> / <button 
-        onClick={handleChange(false)}
-        className="btn p2pu-btn orange"
-      >no</button>
+      <p>Can you attend this meeting?</p>
+      <div className="form-check">
+        <input 
+          className="form-check-input"
+          type="radio" name="rsvp" value="yes" id="rsvpYes"
+          onChange={handleChange}
+          checked={formData.rsvp}
+        />
+        <label className="form-check-label" for="rsvpYes">Yes</label>
+      </div>
+      <div className="form-check">
+        <input 
+          className="form-check-input"
+          type="radio" name="rsvp" value="no" id="rsvpNo"
+          onChange={handleChange}
+          checked={formData.rsvp === false}
+        />
+        <label className="form-check-label" for="rsvpNo">No</label>
+      </div>
     </form>
   );
 }
-
 
 const Rsvp = props => {
   return (
