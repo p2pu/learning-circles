@@ -18,7 +18,7 @@ const RsvpForm = ({formData, updateForm}) => {
   };
   return (
     <form>
-      <p>Can you attend this meeting?</p>
+      <p>Will you attend this meeting?</p>
       <div className="form-check">
         <input 
           className="form-check-input"
