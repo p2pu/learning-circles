@@ -50,8 +50,11 @@ const ActiveLearningCircles = props => {
     api.fetchResource({ callback: onSuccess, params: defaultParams });
   }, []);
 
+  if (learningCircles.length == 0)
+    return <></>
+
   return (
-    <div>
+    <div style={{marginTop: '1.5rem', marginBottom: '-30px'}}>
       <h4>Active learning circles</h4>
       { learningCircles.map( (lc, i) => <ActiveLearningCircle key={i} {...lc} />) }
     </div>
