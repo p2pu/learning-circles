@@ -93,7 +93,7 @@ export default class LearningCirclesTable extends Component {
                       <td>{ date }</td>
                       <td>
                         { ( lc.is_facilitator || this.props.userIsOrganizer) && <a href={ lc.studygroup_path } className="p2pu-btn btn btn-sm dark">manage</a> }
-                        <a href={`/studygroup/${lc.id}/learn/`} className="p2pu-btn btn btn-sm blue">Learner dash</a>
+                        { lc.is_learner && <a href={`/studygroup/${lc.id}/learn/`} className="p2pu-btn btn btn-sm blue">Learner dash</a> }
                       </td>
                     </tr>
                   )
@@ -128,7 +128,7 @@ export default class LearningCirclesTable extends Component {
                   </div>
 
                   { (lc.is_facilitator || this.props.userIsOrganizer) && <a href={ lc.studygroup_path } className="p2pu-btn btn btn-sm dark m-0 my-2">manage</a> }
-                  <a href={`/studygroup/${lc.id}/learn/`} className="p2pu-btn btn btn-sm blue">Learner dash</a>
+                  { lc.is_learner && <a href={`/studygroup/${lc.id}/learn/`} className="p2pu-btn btn btn-sm blue">Learner dash</a> }
                 </div>
               )
             })
