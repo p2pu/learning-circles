@@ -43,7 +43,8 @@ const ActiveLearningCircles = props => {
   useEffect( () => {
     const api = new ApiHelper('learningCircles');
     const onSuccess = (data) => {
-      setLearningCircles(data.items);
+      let learningCircles = data.items.filter(item => item.is_learner);
+      setLearningCircles(learningCircles);
       //TODO, count: data.count, offset: data.offset, limit: data.limit })
     }
     const defaultParams = { user: true, draft: false, scope: "active" }
