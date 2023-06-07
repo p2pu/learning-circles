@@ -13,6 +13,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.utils.translation import ugettext as _
+from django.utils.text import slugify
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import FormView
 from django.views.generic import TemplateView
@@ -313,22 +314,23 @@ def receive_sms(request):
 class StudyGroupParticipantView(TemplateView):
     template_name = 'studygroups/learning_circle_participant.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        # If a user hasn't verified their email address and get to this link, just
-        # redirect them to the signup page
-        if not self.request.user.profile.email_confirmed_at:
-            redirect_url = reverse(
-                'studygroups_signup',
-                args=(slugify(obj.venue_name, allow_unicode=True), obj.id)
-            )
-            return HttpResponseRedirect(redirect_url)
-
+    def get(self, request, *args, **kwargs):
         study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
-        application = Application.objects.filter(
+        application = Application.objects.active().filter(
             email__iexact=self.request.user.email,
             study_group=study_group
         ).first()
+
+        # If a user isn't signed up or hasn't verified their email redirect them 
+        # to the signup page
+        if not application or not self.request.user.profile.email_confirmed_at:
+            redirect_url = reverse(
+                'studygroups_signup',
+                args=(slugify(study_group.venue_name, allow_unicode=True), study_group.id)
+            )
+            return HttpResponseRedirect(redirect_url)
+
+        context = self.get_context_data(**kwargs)
         context['study_group'] = study_group
         context['application'] = application
         meetings = study_group.meeting_set.active().order_by('meeting_date', 'meeting_time')
@@ -396,7 +398,8 @@ class StudyGroupParticipantView(TemplateView):
             }
         }
         context['react_data'] = react_data
-        return context
+
+        return render(request, self.template_name, context)
 
 
 class StudyGroupLearnerSurvey(TemplateView):
