@@ -5,7 +5,7 @@ from django.contrib.postgres.search import SearchQuery
 from django.contrib.postgres.search import SearchVector
 from django.core.files.storage import get_storage_class
 from django.db import models
-from django.db.models import Q, F, Case, When, Value, Sum, Min, Max, OuterRef, Subquery, Count, CharField, IntegerField, BooleanField
+from django.db.models import Q, F, Case, When, Value, Sum, Min, Max, OuterRef, Subquery, Count, CharField, IntegerField, BooleanField, Exists
 from django.db.models.functions import Length
 from django.views import View
 from django.views.generic.detail import SingleObjectMixin
@@ -184,6 +184,7 @@ def _limit_offset(request):
     return limit, offset
 
 
+#TODO this gets cached on the dashboard
 @method_decorator(cache_control(max_age=15*60), name='dispatch')
 class LearningCircleListView(View):
     def get(self, request):
@@ -220,21 +221,17 @@ class LearningCircleListView(View):
             # include learning circles an user is signed up for
             # if they have a confirmed email address
             if request.user.profile.email_confirmed_at:
-                user_filter = user_filter | Q(application__email__iexact=request.user.email)
+                user_filter = user_filter | Q(application__email__iexact=request.user.email, application__deleted_at__isnull=True)
             study_groups = study_groups.filter(user_filter)
             if request.user.profile.email_confirmed_at:
-               study_groups = study_groups.annotate(
-                   is_learner=Sum(
-                       Case(
-                           When(
-                               application__email__iexact=request.user.email,
-                               then=1
-                           ),
-                           default=0,
-                           output_field=BooleanField()
-                       )
-                   )
-               )
+                study_groups = study_groups.annotate(
+                    is_learner=Exists(
+                        Application.objects.active().filter(
+                            email__iexact=request.user.email,
+                            study_group_id=OuterRef('pk')
+                        )
+                    ),
+                )
             study_groups = study_groups.annotate(
                 is_facilitator=Count(
                     'facilitator',
