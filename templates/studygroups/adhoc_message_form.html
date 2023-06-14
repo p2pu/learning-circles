@@ -7,7 +7,7 @@
 <div class="container">
   <a href="{% url 'studygroups_view_study_group' study_group.pk %}">{% trans "Back" %}</a>
   <h2>{% blocktrans with studygroup_name=study_group.name venue_name=study_group.venue_name %}Send message to &quot;{{studygroup_name}}&quot; at {{venue_name}}{% endblocktrans %}</h2>
-  <p>{% trans "This email will go to all learning circle participants, with your email address set as the 'reply to' address." %}
+  <p>{% trans "This email will go to all learning circle participants, with your email address set as the 'reply to' address. Please note, it will also be visible on participants' dashboards, including any future participants." %}
   <p>{% trans "If any participants joined with a mobile number, an additional SMS field will appear below. SMS replies will be forwarded to you by email." %}</p>
   <form action="" method="POST">
     {% csrf_token %}
