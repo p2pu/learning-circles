@@ -4,6 +4,11 @@
 
 {{ message | safe }}
 
-<p>{% blocktrans %}To leave this learning circle and stop receiving messages, <a href="{{unsubscribe_link}}">click here</a>{% endblocktrans %}</p>
+{% url 'register' as register_url %}
+{% blocktrans %}
+<p><a href="{{PROTOCOL}}://{{DOMAIN}}{{ register_url }}">Create a P2PU account</a> to access your learning circle information online.</p>
+{% endblocktrans %}
+
+<p>{% blocktrans %}To leave this learning circle and stop receiving messages, <a href="{{unsubscribe_link}}">click here</a>{% endblocktrans %}.</p>
 
 {% endblock %}
