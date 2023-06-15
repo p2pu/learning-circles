@@ -189,6 +189,12 @@ button.card-collapse-toggle {
   content: '';
   background: url("../images/icons/info-white.svg") center center / 0.8em 0.8em no-repeat, $p2pu-blue;
 }
+.lc-timeline .item.credit .icon::before{
+  @include timeline-item;
+  content: '';
+  background: url("../images/icons/credit-white.svg") center center / 0.8em 0.8em no-repeat, $p2pu-blue;
+}
+
 
 
 
