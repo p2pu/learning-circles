@@ -137,9 +137,9 @@ function facilitatorDisplay(facilitators){
   if (facilitators.length == 1)
     return facilitators[0];
   if (facilitators.length == 2)
-    return `{facilitators[0]} and {facilitators[1]`;
+    return `${facilitators[0]} and ${facilitators[1]}`;
   if (facilitators.length > 2)
-    return `{facilitators.slice(0,-1).join(',')} and {facilitators[1]`;
+    return `${facilitators.slice(0,-1).join(', ')} and ${facilitators[facilitators.length-1]}`;
 }
 
 const InfoCard = props => {
