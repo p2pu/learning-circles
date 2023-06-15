@@ -63,6 +63,11 @@ The address for the meeting is:<br/>
 <p>During your learning circle, you'll see reminder emails from Peer 2 Peer University (P2PU). That's us! We make tools and resources to connect a global community of learners and facilitators around their shared interests. <a href="https://www.p2pu.org/en/about/" >Learn more about P2PU</a>.</p>
 {% endblocktrans %}
 
+{% url 'register' as register_url %}
+{% blocktrans %}
+<p><a href="{{PROTOCOL}}://{{DOMAIN}}{{ register_url }}">Create a P2PU account</a> to access your learning circle information online.</p>
+{% endblocktrans %}
+
 <p>{% trans "Cheers" %}</p>
 <p>P2PU</p>
 
