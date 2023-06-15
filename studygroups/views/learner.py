@@ -385,6 +385,7 @@ class StudyGroupParticipantView(TemplateView):
 
         react_data = {
             'learning_circle': serialize_learning_circle(study_group),
+            'cu_credit': study_group.cu_credit,
             'meetings': list(map(_meeting_to_dict, meetings)),
             'messages': list(map(_message_to_dict, messages)),
             'survey_link': survey_link,
