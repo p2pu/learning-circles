@@ -157,10 +157,24 @@ const InfoCard = props => {
           <p>Taking place at { !!learning_circle.venue_website && <a href="{learning_circle.venue_website}">{ learning_circle.venue }</a>}{ !learning_circle.venue_website && learning_circle.venue}, {learning_circle.venue_address}</p>
           <p></p>
         </div>
-        </div>
+      </div>
     </div>
   );
 }
+
+const CuCreditPrompt = props => {
+  return (
+    <div className="item credit" id="info">
+      <div className="icon"></div>
+
+      <div className="card">
+        <p>Participants in this learning circle have the option to earn college credit from College Unbound. In order to earn credit, you must complete a learning journal while participating in the learning circle. For more information, <a href="https://docs.p2pu.org/frequently-asked-questions#credit-bearing-faqs">refer to the FAQs</a>.</p>
+      </div>
+    </div>
+  );
+}
+
+
 
 const ParticipantDash = props => {
   const {meetings, messages, signup_message, survey_link, survey_completed} = props;
@@ -191,7 +205,17 @@ const ParticipantDash = props => {
   ];
 
   items.sort( (a, b) => dateCompare(a.time, b.time));
-  items = [ {component: InfoCard, data: props}, ...items]
+  if (props.cu_credit) {
+    items = [ 
+      {component: CuCreditPrompt, data: props},
+      ...items
+    ]
+  }
+
+  items = [ 
+    {component: InfoCard, data: props},
+    ...items
+  ]
 
   console.log(items);
   return (
