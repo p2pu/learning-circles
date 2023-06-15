@@ -56,7 +56,7 @@ const ActiveLearningCircles = props => {
 
   return (
     <div style={{marginTop: '1.5rem', marginBottom: '-30px'}}>
-      <h4>Active learning circles</h4>
+      <h4>Participating learning circles</h4>
       { learningCircles.map( (lc, i) => <ActiveLearningCircle key={i} {...lc} />) }
     </div>
   );
