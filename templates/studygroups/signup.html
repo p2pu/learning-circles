@@ -75,7 +75,7 @@
                 <span class="material-icons">face</span>
               </div>
               <div class="text">
-                {% blocktrans with first_name=study_group.facilitator.first_name %}Facilitated by {% endblocktrans %}
+                {% trans "Facilitated by " %}
 
                 {% for f in study_group.facilitator_set.all %}{% if forloop.last and not forloop.first %} and {% else %}{% if not forloop.first %}, {% endif %}{% endif %}{{f.user.first_name}}{% endfor %}
               </div>
