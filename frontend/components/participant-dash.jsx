@@ -214,25 +214,22 @@ const CuCreditPrompt = props => {
 
 const ParticipantDash = props => {
   const {meetings, messages, signup_message, survey_link, survey_completed} = props;
-  //TODO meeting number assume meetings in date order
-  let items = meetings.map( (meeting, i) => {
-    return {
-      component: MeetingCard,
-      time: new Date(meeting.meeting_datetime),
-      data: {meeting_number: i+1, ...meeting},
-    };
-  });
 
-  items = [...items, ...messages.map(msg => {
-    return {
-      component: MessageCard,
-      time: new Date(msg.sent_at),
-      data: msg,
-    };
-  })];
-
-  items = [
-    ...items,
+  let items = [
+    ...meetings.map( (meeting, i) => {
+      return {
+        component: MeetingCard,
+        time: new Date(meeting.meeting_datetime),
+        data: {meeting_number: i+1, ...meeting}, // TODO meeting number assume meetings are already in date order
+      };
+    }),
+    ...messages.map(msg => {
+      return {
+        component: MessageCard,
+        time: new Date(msg.sent_at),
+        data: msg,
+      };
+    }),
     {
       component: MessageCard,
       time: new Date(signup_message.sent_at),
@@ -241,21 +238,11 @@ const ParticipantDash = props => {
   ];
 
   items.sort( (a, b) => dateCompare(a.time, b.time));
-  if (props.cu_credit) {
-    items = [ 
-      {component: CuCreditPrompt, data: props},
-      ...items
-    ]
-  }
 
-  items = [ 
-    {component: InfoCard, data: props},
-    ...items
-  ]
-
-  console.log(items);
   return (
     <div className="lc-timeline">
+      <InfoCard {...props} />
+      { props.cu_credit && <CuCreditPrompt {...props}/>}
       { 
         items.map( (item, i) => {
           return <item.component {...item.data} key={i} id={i} />
