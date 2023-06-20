@@ -73,7 +73,16 @@ const MeetingCard = props => {
       <div className="icon"></div>
       <div className="card">
         { (rsvp || !done) &&
-          <button className={"card-collapse-toggle" + (done?' collapsed':'')} data-bs-toggle="collapse" data-bs-target={`#collapse-meeting-${props.id}`} type="button" aria-expanded={!done} aria-controls={`collapse-meeting-${props.id}`}><i className="fa fa-chevron-down"></i></button>
+          <button 
+            className={"card-collapse-toggle" + (done?' collapsed':'')}
+            data-bs-toggle="collapse"
+            data-bs-target={`#collapse-meeting-${props.id}`}
+            type="button"
+            aria-expanded={!done} 
+            aria-controls={`collapse-meeting-${props.id}`}
+          >
+            <i className="fa fa-chevron-down"></i>
+          </button>
         }
         <div className="card-title">Meeting #{props.meeting_number}: {formattedDate}, {formattedTime}</div>
         
@@ -92,7 +101,16 @@ const MessageCard = props => {
     <div className="item message done" id={`meeting-${props.id}`}>
       <div className="icon"></div>
       <div className="card">
-        <button className="card-collapse-toggle collapsed" data-bs-toggle="collapse" data-bs-target={`#collapse-meeting-${props.id}`} type="button" aria-expanded="false" aria-controls={`collapse-meeting-${props.id}`}><i className="fa fa-chevron-down"></i></button>
+        <button 
+          className="card-collapse-toggle collapsed"
+          data-bs-toggle="collapse"
+          data-bs-target={`#collapse-meeting-${props.id}`}
+          type="button"
+          aria-expanded="false"
+          aria-controls={`collapse-meeting-${props.id}`}
+        >
+          <i className="fa fa-chevron-down"></i>
+        </button>
         <div className="card-title">Subject: {props.subject}</div>
         <div>Sent: {meetingDateFormat(props.sent_at)}</div>
         <div className="collapse" id={`collapse-meeting-${props.id}`}>
@@ -108,7 +126,16 @@ const SurveyCard = props => {
     <div className="item survey todo" id="survey">
       <div className="icon"></div>
       <div className="card">
-        <button className="card-collapse-toggle" data-bs-toggle="collapse" data-bs-target="#collapse-survey" type="button" aria-expanded="true" aria-controls="collapse-survey"><i className="fa fa-chevron-down"></i></button>
+        <button
+          className="card-collapse-toggle"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapse-survey"
+          type="button"
+          aria-expanded="true"
+          aria-controls="collapse-survey"
+        >
+          <i className="fa fa-chevron-down"></i>
+        </button>
         <div className="card-title">Reflect</div>
         { props.survey_completed &&
           <div className="collapse show" id="collapse-survey">
@@ -149,7 +176,16 @@ const InfoCard = props => {
     <div className="item info" id="info">
       <div className="icon"></div>
       <div className="card">
-        <button className="card-collapse-toggle" data-bs-toggle="collapse" data-bs-target="#collapse-info" type="button" aria-expanded="true" aria-controls="collapse-info"><i className="fa fa-chevron-down"></i></button>
+        <button
+          className="card-collapse-toggle"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapse-info"
+          type="button"
+          aria-expanded="true"
+          aria-controls="collapse-info"
+        >
+          <i className="fa fa-chevron-down"></i>
+        </button>
         <div className="card-title">You've signed up as {props.application.name} &lt;{props.application.email}&gt;</div>
         <div className="collapse show" id="collapse-info">
           <p>This learning circle is facilitated by {facilitatorDisplay(learning_circle.facilitators)}</p>
