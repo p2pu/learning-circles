@@ -1008,9 +1008,12 @@ class CourseLanguageListView(View):
     def get(self, request):
         languages = Course.objects.active().filter(unlisted=False).values_list('language', flat=True)
         languages = set(languages)
-        languages_dict = [
-            get_language_info(language) for language in languages
-        ]
+        languages_dict = []
+        for language in languages:
+            try:
+                languages_dict = languages_dict + [get_language_info(language)]
+            except KeyError:
+                logger.error(f'Unkown language for a course: {language}')
 
         data = { "languages": languages_dict }
         return json_response(request, data)

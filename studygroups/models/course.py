@@ -11,7 +11,9 @@ from django.utils.translation import get_language_info
 from .base import LifeTimeTrackingModel
 
 import json
+import logging
 
+logger = logging.getLogger(__name__)
 
 class TopicGuide(models.Model):
     title = models.CharField(max_length=64)
@@ -121,8 +123,12 @@ class Course(LifeTimeTrackingModel):
         return len(all_surveys)
 
     def get_language_display(self):
-        language_info = get_language_info(self.language)
-        return language_info.get('name_translated')
+        try:
+            language_info = get_language_info(self.language)
+            return language_info.get('name_translated')
+        except KeyError as e:
+            logger.error(f'Course (pk={self.pk}) has an unkown language: {self.language}')
+        return self.language
 
     def get_format_display(self):
         f = ( i[1] for i in Course.RESOURCE_FORMATS if i[0] == self.resource_format )
