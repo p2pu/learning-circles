@@ -1,5 +1,6 @@
 import React from 'react'
-import { TextareaWithLabel, InputWithLabel, ImageUploader, URLInputWithLabel, RichTextWithLabel } from "p2pu-components";
+import { TextareaWithLabel, InputWithLabel, ImageUploader, URLInputWithLabel } from "p2pu-components";
+import RichTextWithLabel from "p2pu-components/dist/InputFields/RichTextWithLabel"
 import { DEFAULT_LC_IMAGE } from '../../helpers/constants'
 
 
