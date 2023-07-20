@@ -216,7 +216,7 @@ class LearningCircleListView(View):
             id = request.GET.get('id')
             study_groups = StudyGroup.objects.filter(pk=int(id))
 
-        if 'user' in request.GET:
+        if 'user' in request.GET and request.user.is_authenticated:
             user_filter = Q(facilitator__user=request.user)
             # include learning circles an user is signed up for
             # if they have a confirmed email address
