@@ -43,6 +43,9 @@ def backup_media():
         aws_secret=settings.BACKUP_AWS_SECRET_ACCESS_KEY
     )
 
+    # cleanup
+    os.remove(backup_dest)
+
 
 def backup_db():
     '''
@@ -80,3 +83,6 @@ def backup_db():
         aws_key=settings.BACKUP_AWS_ACCESS_KEY_ID,
         aws_secret=settings.BACKUP_AWS_SECRET_ACCESS_KEY
     )
+
+    # cleanup
+    os.remove(backup_dest)
