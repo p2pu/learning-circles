@@ -15,6 +15,7 @@ from .base import SoftDeleteQuerySet
 from .base import LifeTimeTrackingModel
 from .course import Course
 from .course import TopicGuide
+from .course_list import CourseList
 from .team import *
 from .announcement import Announcement
 from .profile import Profile
