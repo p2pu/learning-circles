@@ -8,7 +8,9 @@ import DelayedPostForm from './manage/delayed-post-form';
 /* Opinionated date format for learning circles */
 export function meetingDateFormat(date_, locale){
   const options = { weekday: 'long', month: 'long', day: 'numeric' }
-  return new Date(date_).toLocaleDateString(locale, options)
+  // Append time to make sure that the date is interpreted as givin in local time rather than UTC
+  // see https://maggiepint.com/2017/04/11/fixing-javascript-date-web-compatibility-and-reality/
+  return new Date(date_ + "T00:00").toLocaleDateString(locale, options)
 }
 
 
