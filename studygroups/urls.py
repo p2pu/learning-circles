@@ -30,7 +30,6 @@ from studygroups.views import TeamMembershipDelete
 from studygroups.views import TeamInvitationCreate
 from studygroups.views import InvitationConfirm
 from studygroups.views import OptOutView
-from studygroups.views import TeamPage
 from studygroups.views import ExportSignupsView
 from studygroups.views import ExportFacilitatorsView
 from studygroups.views import ExportStudyGroupsView
