@@ -52,30 +52,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def city(request, city_name):
-    # TODO remove this view
-    matches = [ c for c in places.read_autocomplete_list() if c.lower().startswith(city_name.lower()) ]
-
-    if len(matches) == 1 and matches[0] != city_name:
-        return http.HttpResponseRedirect(reverse('studygroups_city', args=(matches[0],)))
-
-    #TODO handle multiple matches. Ex. city_name = Springfield
-    #two_weeks = (datetime.datetime.now() - datetime.timedelta(weeks=2)).date()
-    #learning_circles = StudyGroup.objects.published().filter(city__istartswith=city_name)
-
-    study_group_ids = Meeting.objects.active().filter(meeting_date__gte=timezone.now()).values('study_group')
-    study_group_ids = study_group_ids.filter(study_group__city__istartswith=city_name)
-    learning_circles = StudyGroup.objects.published().filter(id__in=study_group_ids, signup_open=True).order_by('start_date')
-
-    #learning_circles = learning_circles.filter(signup_open=True, start_date__gte=two_weeks).order_by('start_date')
-
-    context = {
-        'learning_circles': learning_circles,
-        'city': city_name
-    }
-    return render(request, 'studygroups/city_list.html', context)
-
-
 def signup(request, location, study_group_id):
     study_group = get_object_or_404(StudyGroup, pk=study_group_id)
     if not study_group.deleted_at is None:

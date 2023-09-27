@@ -54,8 +54,6 @@ urlpatterns = [
 
     url(r'^courses/$', RedirectView.as_view(url='https://www.p2pu.org/en/courses/'), name='studygroups_courses'),
 
-    url(r'^city/(?P<city_name>[\w\W\ ,]+)/$', views.city, name='studygroups_city'),
-
     url(r'^studygroups/$', views.studygroups, name='studygroups_search'),
 
     url(r'^login_redirect/$', views.login_redirect, name='studygroups_login_redirect'),
