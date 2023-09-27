@@ -80,7 +80,7 @@ class ExportSignupsView(ListView):
         field_names = [
             'id', 'uuid', 'study group id', 'study group uuid', 'study group name', 'course',
             'location', 'name', 'email', 'mobile', 'signed up at'
-        ] + signup_questions + ['use_internet', 'survey completed']
+        ] + signup_questions + ['use_internet', 'survey completed', 'communications opt-in']
         writer = csv.writer(response)
         writer.writerow(field_names)
         for signup in self.object_list:
@@ -106,7 +106,8 @@ class ExportSignupsView(ListView):
                 [
                     digital_literacy,
                     'yes' if signup.learnersurveyresponse_set.count() else 'no'
-                ]
+                ] +
+                [ signup.communications_opt_in ]
             )
         return response
 
