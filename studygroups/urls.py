@@ -141,8 +141,6 @@ urlpatterns = [
 
     url(r'^receive_sms/$', views.receive_sms, name='studygroups_receive_sms'),
 
-    url(r'^(?P<slug>[\w-]+)/$', TeamPage.as_view(), name='studygroups_team_page'),
-
     url(r'^staff/dash/$', StaffDashView.as_view(), name='studygroups_staff_dash'),
     url(r'^digest/generate/$', DigestGenerateView.as_view(), name='studygroups_digest_generate'),
     url(r'^staff/dash/stats/$', StatsDashView.as_view(), name='studygroups_staff_dash_stats'),

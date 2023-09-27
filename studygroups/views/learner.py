@@ -52,28 +52,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class TeamPage(DetailView):
-    model = Team
-    template_name = 'studygroups/team_page.html'
-    slug_field = 'page_slug'
-    context_object_name = 'team'
-
-    def get_context_data(self, **kwargs):
-        context = super(TeamPage, self).get_context_data(**kwargs)
-        two_weeks = (datetime.datetime.now() - datetime.timedelta(weeks=2)).date()
-
-        study_group_ids = Meeting.objects.active()\
-                .filter(meeting_date__gte=timezone.now())\
-                .values('study_group')
-        study_groups = StudyGroup.objects.published()\
-                .filter(team=self.object)\
-                .filter(id__in=study_group_ids, signup_open=True)\
-                .order_by('start_date')
-
-        context['learning_circles'] = study_groups
-        return context
-
-
 def city(request, city_name):
     # TODO remove this view
     matches = [ c for c in places.read_autocomplete_list() if c.lower().startswith(city_name.lower()) ]
