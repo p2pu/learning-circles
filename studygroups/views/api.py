@@ -505,6 +505,7 @@ class CourseListView(View):
             "user": schema.boolean(),
             "include_unlisted": schema.boolean(),
             "facilitator_guide": schema.boolean(),
+            "course_list": schema.integer(),
         }
         data = schema.django_get_to_dict(request.GET)
         clean_data, errors = schema.validate(query_schema, data)
@@ -600,6 +601,11 @@ class CourseListView(View):
             else:
                 course_ids = StudyGroup.objects.published().exclude(id__in=study_group_ids).values('course')
             courses = courses.filter(id__in=course_ids)
+
+        if clean_data.get('course_list'):
+            courses = courses.filter(courselist__pk=clean_data.get('course_list')) 
+            # TODO should this parameter only be available for teams?
+            # TODO should this take the course list id, or be associated with the current users team membership?
 
         data = {
             'count': courses.count()
