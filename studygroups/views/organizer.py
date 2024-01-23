@@ -13,6 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.views.generic.base import View
+from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, DeleteView, FormView, UpdateView
 from django.views.generic import ListView
 from django.contrib import messages
@@ -213,4 +214,11 @@ class TeamUpdate(UpdateView):
         return super().form_valid(form)
 
 
+@method_decorator(user_is_team_organizer, name='dispatch')
+class TeamCourseList(TemplateView):
 
+    template_name = 'studygroups/team_courses.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
