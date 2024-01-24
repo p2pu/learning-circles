@@ -247,7 +247,8 @@ export default class FacilitatorDashboard extends React.Component {
                     <TabPanel>
                       <div data-aos='fade' data-aos-anchor-placement="top-bottom">
                         <CourseList
-                          teamId={this.props.teamId} 
+                          teamId={this.props.teamId}
+                          editTeamCourseListUrl={this.props.editTeamCourseListUrl}
                         />
                       </div>
                     </TabPanel>

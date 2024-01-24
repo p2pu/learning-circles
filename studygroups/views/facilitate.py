@@ -823,6 +823,7 @@ class FacilitatorDashboard(TemplateView):
                     context['delete_team_invitation_link'] = reverse('api_teams_delete_invitation_link', args=(team_membership.team.id,))
                     context['team_member_invitation_url'] = reverse('studygroups_team_member_invite', args=(team_membership.team.id,))
                     context['edit_team_url'] = reverse('studygroups_team_edit', args=(team_membership.team.id,))
+                    context['edit_team_course_list_url'] = reverse('studygroups_team_course_list', args=(team_membership.team.id,))
                 if team_membership.team.membership:
                     context['is_member_team'] = True
                 if team_membership.team.membership or user.is_staff:

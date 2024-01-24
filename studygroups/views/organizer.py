@@ -221,4 +221,5 @@ class TeamCourseList(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['team_course_ids'] = list(Course.objects.active().filter(courselist__team=self.kwargs.get('team_id')).values_list('id', flat=True))
         return context

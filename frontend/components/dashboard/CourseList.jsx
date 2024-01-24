@@ -116,6 +116,9 @@ const CourseList = props => {
         courses={courseList.courses}
         totalPages={1}
       />
+      <div className="text-right">
+        <a href={props.editTeamCourseListUrl}>Add courses</a>
+      </div>
     </>
   );
 }
