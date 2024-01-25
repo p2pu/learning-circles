@@ -9,24 +9,32 @@
 
 
 {% block content %}
-<div
-  id='team-courses'
-  data-user="{{ request.user }}"
-  data-team-id="{{ team_id }}"
-  data-team-role="{{ team_role }}"
-  data-team-name="{{ team_name }}"
-  data-team-organizer-name="{{ team_organizer_name }}"
-  data-user-is-organizer="{{ user_is_organizer }}"
-  {% if is_member_team %}
-    data-is-member-team="true"
-    data-member-support-url="{{ member_support_url }}"
-  {% endif %}
-  {% if request.user.is_staff %}
-    data-is-staff="true"
-    data-member-support-url="{{ member_support_url }}"
-  {% endif %}
->
-  <div class="loader"></div>
+
+<div class="container">
+  <div class="row my-3">
+    <a href="{% url 'studygroups_facilitator' %}"><i class="fas fa-arrow-left mr-2"></i>Back to my dashboard</a>
+  </div>
+
+  <div
+    id='team-courses'
+    data-user="{{ request.user }}"
+    data-team-id="{{ team_id }}"
+    data-team-role="{{ team_role }}"
+    data-team-name="{{ team_name }}"
+    data-team-organizer-name="{{ team_organizer_name }}"
+    data-user-is-organizer="{{ user_is_organizer }}"
+    data-team-course-ids="{{ team_course_ids }}"
+    {% if is_member_team %}
+      data-is-member-team="true"
+      data-member-support-url="{{ member_support_url }}"
+    {% endif %}
+    {% if request.user.is_staff %}
+      data-is-staff="true"
+      data-member-support-url="{{ member_support_url }}"
+    {% endif %}
+  >
+    <div class="loader"></div>
+  </div>
 </div>
 
 {% endblock %}

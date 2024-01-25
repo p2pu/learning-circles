@@ -1,12 +1,9 @@
-import React from 'react'
+import React, {useState} from 'react'
 import ReactDOM from 'react-dom'
 import ErrorBoundary from './components/error-boundary'
 
 import SearchProvider from 'p2pu-components/dist/Search/SearchProvider'
-import SearchCourses from 'p2pu-components/dist/Courses/SearchCourses'
 import CourseCard from 'p2pu-components/dist/Courses/CourseCard'
-//import BrowseCourses from 'p2pu-components/dist/Courses/Browse'
-import SearchAndFilter from 'p2pu-components/dist/Courses/SearchAndFilter'
 import SearchSummary from 'p2pu-components/dist/Courses/SearchSummary'
 import SearchBar from 'p2pu-components/dist/Search/SearchBar'
 
@@ -26,6 +23,8 @@ const user = element.dataset.user === "AnonymousUser" ? null : element.dataset.u
 const teamId = element.dataset.teamId === "None" ? null : element.dataset.teamId;
 const teamName = element.dataset.teamName === "None" ? null : element.dataset.teamName;
 const userIsOrganizer = element.dataset.userIsOrganizer === "None" ? null : element.dataset.userIsOrganizer;
+const teamCourseIds = element.dataset.teamCourseIds === "None" ? [] : JSON.parse(element.dataset.teamCourseIds);
+
 
 
 const BrowseCourses = props => {
@@ -47,7 +46,7 @@ const BrowseCourses = props => {
             courseLink={props.courseLink}
             moreInfo={props.moreInfo}
             onSelectResult={onSelectResult}
-            buttonText={t`Add this course`}
+            buttonText={props.teamCourseIds.indexOf(course.id)==-1?t`Add this course`:'Remove this course'}
             classes="mb-4"
           />
         ))
@@ -88,7 +87,7 @@ const CustomCourseSearch = (props) => {
       </div>
 
       <SearchSummary {...props} />
-      <BrowseCourses {...props} onSelectResult={ e=> console.log(e) }/>
+      <BrowseCourses {...props} />
     </>
   );
 }
@@ -96,16 +95,27 @@ const CustomCourseSearch = (props) => {
 
 const TeamCourseSelection = props => {
 
+  const {teamCourseIds: initialTeamCourseIds = []} = props;
+
+  const [teamCourseIds, setTeamCourseIds] = useState(initialTeamCourseIds);
+
   const handleSelectResult = selected => {
-    props.updateFormData({ course: selected })
-    scrollToTop()
+    // add course to team list and update state with team courses
+    console.log(selected)
+    if (teamCourseIds.indexOf(selected.id) !== -1){
+      setTeamCourseIds(teamCourseIds.filter( c => c !== selected.id ))
+      // TODO api call to remove course
+    }
+    else {
+      setTeamCourseIds(teamCourseIds.concat(selected.id))
+      // TODO api call to add course
+    }
   }
 
   return ( 
     <div id="team-course-selection">
       <h1>Select team courses</h1>
       <SearchProvider
-        columnBreakpoints={props.showHelp ? 1 : 3}
         searchSubject={'courses'}
         initialState={{languages: ['en']}}
         onSelectResult={handleSelectResult}
@@ -113,7 +123,9 @@ const TeamCourseSelection = props => {
         scrollContainer={'#team-course-selection'}
         NoResultsComponent={() => <p className="my-4">{`There are no matching courses.`}<a className="btn p2pu-btn btn-secondary" href={`${window.location.origin}${window.location.pathname}`}>Start over</a></p>}
       >
-        <CustomCourseSearch/>
+        <CustomCourseSearch
+            teamCourseIds={teamCourseIds}
+        />
       </SearchProvider>
     </div>
   );
@@ -125,6 +137,7 @@ ReactDOM.render(
       user={user}
       teamId={teamId}
       teamName={teamName}
+      teamCourseIds={teamCourseIds}
       userIsOrganizer={userIsOrganizer}
       isMemberTeam={element.dataset.isMemberTeam}
       isStaff={element.dataset.isStaff}
