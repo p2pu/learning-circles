@@ -1,12 +1,12 @@
 import React, {useState} from 'react'
 import ReactDOM from 'react-dom'
+
 import ErrorBoundary from './components/error-boundary'
 
 import SearchProvider from 'p2pu-components/dist/Search/SearchProvider'
 import CourseCard from 'p2pu-components/dist/Courses/CourseCard'
 import SearchSummary from 'p2pu-components/dist/Courses/SearchSummary'
 import SearchBar from 'p2pu-components/dist/Search/SearchBar'
-
 import OrderCoursesForm from 'p2pu-components/dist/Courses/OrderCoursesForm'
 import TopicsFilterForm from 'p2pu-components/dist/Courses/TopicsFilterForm'
 import LanguageFilterForm from 'p2pu-components/dist/Courses/LanguageFilterForm'
@@ -14,7 +14,10 @@ import OerFilterForm from 'p2pu-components/dist/Courses/OerFilterForm'
 import FacilitatorGuideFilterForm from 'p2pu-components/dist/Courses/FacilitatorGuideFilterForm'
 
 import { t } from 'ttag';
+import axios from "axios"
 
+axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 
 
 const element = document.getElementById('team-courses')
@@ -98,18 +101,36 @@ const TeamCourseSelection = props => {
   const {teamCourseIds: initialTeamCourseIds = []} = props;
 
   const [teamCourseIds, setTeamCourseIds] = useState(initialTeamCourseIds);
+  const [selectionError, setSelectionError] = useState('');
 
   const handleSelectResult = selected => {
     // add course to team list and update state with team courses
     console.log(selected)
-    if (teamCourseIds.indexOf(selected.id) !== -1){
-      setTeamCourseIds(teamCourseIds.filter( c => c !== selected.id ))
-      // TODO api call to remove course
-    }
-    else {
-      setTeamCourseIds(teamCourseIds.concat(selected.id))
-      // TODO api call to add course
-    }
+
+    const updatedCourseIds = teamCourseIds.indexOf(selected.id) !== -1 ? teamCourseIds.filter( c => c !== selected.id ) : teamCourseIds.concat(selected.id);
+
+    // TODO: pass this URL
+    const url = '/api/drf/course_list/1/';
+    axios({
+      url,
+      method: 'PATCH',
+      data: { courses: updatedCourseIds },
+      config: { headers: {'Content-Type': 'application/json' }}
+    }).then(res => {
+      console.log(res)
+      if (res.status === 200) {
+        //this.props.showAlert(`The course was added!`, "success")
+        //this.setState({ email: "", inviteError: null })
+        setTeamCourseIds(updatedCourseIds)
+        setSelectionError('');
+      } else {
+        setSelectionError(res.data.courses);
+      }
+    }).catch(err => {
+      setSelectionError("There was an error adding the course. Please contact us at thepeople@p2pu.org.", "warning")
+      console.log(err);
+    })
+
   }
 
   return ( 

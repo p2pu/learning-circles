@@ -144,10 +144,11 @@ class CourseListSerializer(serializers.ModelSerializer):
 
 
 class CourseListViewSet(
+        mixins.ListModelMixin,
         mixins.CreateModelMixin,
         mixins.DestroyModelMixin,
+        mixins.UpdateModelMixin,
         mixins.RetrieveModelMixin,
-        mixins.ListModelMixin,
         viewsets.GenericViewSet):
     serializer_class = CourseListSerializer
     permission_classes = [permissions.IsAuthenticated, IsATeamOrganizer] 
