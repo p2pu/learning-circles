@@ -48,6 +48,7 @@ export default class FormTabs extends React.Component{
               <CourseSection
                 updateFormData={this.props.updateFormData}
                 learningCircle={this.props.learningCircle}
+                teamCourseList={this.props.teamCourseList}
                 errors={this.props.errors}
                 showHelp={this.props.showHelp}
                 changeTab={this.props.changeTab}

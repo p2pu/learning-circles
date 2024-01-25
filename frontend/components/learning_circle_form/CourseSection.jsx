@@ -2,7 +2,6 @@ import React from 'react'
 //import { Search, BrowseCourses, CourseCard } from 'p2pu-components';
 
 import SearchProvider from 'p2pu-components/dist/Search/SearchProvider'
-import SearchCourses from 'p2pu-components/dist/Courses/SearchCourses'
 import CourseCard from 'p2pu-components/dist/Courses/CourseCard'
 import BrowseCourses from 'p2pu-components/dist/Courses/Browse'
 import SearchAndFilter from 'p2pu-components/dist/Courses/SearchAndFilter'
@@ -19,6 +18,34 @@ import FacilitatorGuideFilterForm from 'p2pu-components/dist/Courses/Facilitator
 import 'p2pu-components/dist/build.css';
 
 
+const TeamCourseFilter = (props) => {
+  if (!props.teamCourseList)
+    return null;
+
+  const handleChange = (event) => {
+    props.updateQueryParams({team: event.currentTarget.checked});
+  }
+
+  return (
+    <form className="filter">
+      <div className="input-group">
+        <div className="form-check">
+          <input 
+            className="form-check-input"
+            id="team-input"
+            name="team"
+            type="checkbox"
+            checked={Boolean(props.team)}
+            onChange={handleChange}
+          />
+          <label className="form-check-label" htmlFor="team-input">Limit to courses suggested for your team?</label>
+        </div>
+      </div>
+    </form>
+  );
+}
+
+
 const CustomCourseSearch = (props) => {
     return (
       <>
@@ -26,6 +53,7 @@ const CustomCourseSearch = (props) => {
           updateQueryParams={props.updateQueryParams}
           q={props.q}
         />
+        <TeamCourseFilter {...props} />
 
         <a data-bs-toggle="collapse" href="#searchFilters" role="button" aria-expanded="false" aria-controls="searchFilters">
           Advanced options <i className="fa fa-chevron-down"></i>
@@ -91,10 +119,14 @@ const CourseSection = (props) => {
           <SearchProvider
             columnBreakpoints={props.showHelp ? 1 : 3}
             searchSubject={'courses'}
-            initialState={{languages: ['en']}}
+            initialState={{
+              languages: ['en'],
+              team: props.teamCourseList,
+            }}
             onSelectResult={handleSelectResult}
             origin={window.location.origin}
             scrollContainer={'.tabs-container'}
+            teamCourseList={props.teamCourseList}
             NoResultsComponent={() => <p className="my-4">{`There are no matching courses.`}<a className="btn p2pu-btn btn-secondary" href={`${window.location.origin}${window.location.pathname}`}>Start over</a></p>}
           >
             <CustomCourseSearch/>

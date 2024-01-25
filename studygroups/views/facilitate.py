@@ -282,6 +282,8 @@ class StudyGroupCreate(TemplateView):
         if self.request.user.is_authenticated and TeamMembership.objects.active().filter(user=self.request.user).exists():
             team = TeamMembership.objects.active().filter(user=self.request.user).get().team
             context['team'] = json.dumps([t.to_dict() for t in team.teammembership_set.active()])
+            if Course.objects.active().filter(courselist__team=team).exists():
+                context['team_course_list'] = True
         return context
 
 
