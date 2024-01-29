@@ -20,16 +20,6 @@ axios.defaults.xsrfCookieName = 'csrftoken'
 axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 
 
-const element = document.getElementById('team-courses')
-
-const user = element.dataset.user === "AnonymousUser" ? null : element.dataset.user;
-const teamId = element.dataset.teamId === "None" ? null : element.dataset.teamId;
-const teamName = element.dataset.teamName === "None" ? null : element.dataset.teamName;
-const userIsOrganizer = element.dataset.userIsOrganizer === "None" ? null : element.dataset.userIsOrganizer;
-const teamCourseIds = element.dataset.teamCourseIds === "None" ? [] : JSON.parse(element.dataset.teamCourseIds);
-
-
-
 const BrowseCourses = props => {
   const { results, updateQueryParams, onSelectResult, columnBreakpoints, isLoading } = props;
 
@@ -110,7 +100,7 @@ const TeamCourseSelection = props => {
     const updatedCourseIds = teamCourseIds.indexOf(selected.id) !== -1 ? teamCourseIds.filter( c => c !== selected.id ) : teamCourseIds.concat(selected.id);
 
     // TODO: pass this URL
-    const url = '/api/drf/course_list/1/';
+    const url = props.courseListApiUrl;
     axios({
       url,
       method: 'PATCH',
@@ -152,17 +142,31 @@ const TeamCourseSelection = props => {
   );
 }
 
-ReactDOM.render(
-  <ErrorBoundary scope="team-courses">
-    <TeamCourseSelection
-      user={user}
-      teamId={teamId}
-      teamName={teamName}
-      teamCourseIds={teamCourseIds}
-      userIsOrganizer={userIsOrganizer}
-      isMemberTeam={element.dataset.isMemberTeam}
-      isStaff={element.dataset.isStaff}
-    />
-  </ErrorBoundary>,
-  element
-)
+function render(){
+  const element = document.getElementById('team-courses')
+
+  const {
+    courseListApiUrl,
+    isMemberTeam,
+    isStaff,
+  } = element.dataset;
+
+  const props = {
+    user: element.dataset.user === "AnonymousUser" ? null : element.dataset.user,
+    teamId: element.dataset.teamId === "None" ? null : element.dataset.teamId,
+    teamName: element.dataset.teamName === "None" ? null : element.dataset.teamName,
+    userIsOrganizer: element.dataset.userIsOrganizer === "None" ? null : element.dataset.userIsOrganizer,
+    teamCourseIds: element.dataset.teamCourseIds === "None" ? [] : JSON.parse(element.dataset.teamCourseIds),
+    courseListApiUrl,
+    isMemberTeam,
+    isStaff,
+  }
+
+  ReactDOM.render(
+    <ErrorBoundary scope="team-courses">
+      <TeamCourseSelection {...props} />
+    </ErrorBoundary>,
+    element
+  )
+}
+render();

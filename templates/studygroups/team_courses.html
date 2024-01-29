@@ -24,6 +24,7 @@
     data-team-organizer-name="{{ team_organizer_name }}"
     data-user-is-organizer="{{ user_is_organizer }}"
     data-team-course-ids="{{ team_course_ids }}"
+    data-course-list-api-url="{% url 'course_list-detail' course_list_id %}"
     {% if is_member_team %}
       data-is-member-team="true"
       data-member-support-url="{{ member_support_url }}"

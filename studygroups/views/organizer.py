@@ -19,6 +19,7 @@ from django.views.generic import ListView
 from django.contrib import messages
 
 from studygroups.models import Course
+from studygroups.models import CourseList
 from studygroups.models import StudyGroup
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
@@ -222,4 +223,5 @@ class TeamCourseList(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['team_course_ids'] = list(Course.objects.active().filter(courselist__team=self.kwargs.get('team_id')).values_list('id', flat=True))
+        context['course_list_id'] = CourseList.objects.filter(team_id=kwargs.get('team_id')).first().pk
         return context
