@@ -92,6 +92,7 @@ const TeamCourseSelection = props => {
 
   const [teamCourseIds, setTeamCourseIds] = useState(initialTeamCourseIds);
   const [selectionError, setSelectionError] = useState('');
+  const [isPosting, setIsPosting] = useState(false);
 
   const handleSelectResult = selected => {
     // add course to team list and update state with team courses
@@ -99,7 +100,7 @@ const TeamCourseSelection = props => {
 
     const updatedCourseIds = teamCourseIds.indexOf(selected.id) !== -1 ? teamCourseIds.filter( c => c !== selected.id ) : teamCourseIds.concat(selected.id);
 
-    // TODO: pass this URL
+    setIsPosting(true);
     const url = props.courseListApiUrl;
     axios({
       url,
@@ -107,6 +108,7 @@ const TeamCourseSelection = props => {
       data: { courses: updatedCourseIds },
       config: { headers: {'Content-Type': 'application/json' }}
     }).then(res => {
+      setIsPosting(false);
       console.log(res)
       if (res.status === 200) {
         //this.props.showAlert(`The course was added!`, "success")
@@ -117,6 +119,7 @@ const TeamCourseSelection = props => {
         setSelectionError(res.data.courses);
       }
     }).catch(err => {
+      setIsPosting(false);
       setSelectionError("There was an error adding the course. Please contact us at thepeople@p2pu.org.", "warning")
       console.log(err);
     })
@@ -138,6 +141,20 @@ const TeamCourseSelection = props => {
             teamCourseIds={teamCourseIds}
         />
       </SearchProvider>
+      <div 
+        style={
+          {
+            position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(255,255,255,0.9)',
+            display: 'flex', 'flex-direction': 'column', 'justify-content': 'center', 'text-align': 'center',
+          }
+        }
+        className={isPosting?'visible':'invisible'}
+      >
+        <div>
+          <span className="spinner-border spinner-border-sm" role="status"></span>&nbsp;
+          <span>Submitting data</span>
+        </div>
+      </div>
     </div>
   );
 }
