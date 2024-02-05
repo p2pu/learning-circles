@@ -11,7 +11,6 @@ const CourseTable = ({courses, totalPages}) => <>
           <td>Title</td>
           <td>Provider</td>
           <td>Date Added</td>
-          <td></td>
         </tr>
       </thead>
       <tbody>
@@ -25,7 +24,6 @@ const CourseTable = ({courses, totalPages}) => <>
                 <td><a href={course.course_page_path}>{`${course.unlisted ? "[UNLISTED] " : ""}${course.title}`}</a></td>
                 <td>{course.provider}</td>
                 <td>{date}</td>
-                <td><a href={course.course_edit_path} className="p2pu-btn btn btn-sm dark">edit</a></td>
               </tr>
             )
           })
@@ -112,13 +110,13 @@ const CourseList = props => {
   }, [])
   return (
     <>
+      <div className="text-right">
+        <a href={props.editTeamCourseListUrl}>Manage course list</a>
+      </div>
       <CourseTable
         courses={courseList.courses}
         totalPages={1}
       />
-      <div className="text-right">
-        <a href={props.editTeamCourseListUrl}>Add courses</a>
-      </div>
     </>
   );
 }
