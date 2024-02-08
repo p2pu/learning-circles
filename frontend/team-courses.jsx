@@ -116,11 +116,11 @@ const TeamCourseSelection = props => {
         setTeamCourseIds(updatedCourseIds)
         setSelectionError('');
       } else {
-        setSelectionError(res.data.courses);
+        setSelectionError("There was an error updating the course list. Please contact us at thepeople@p2pu.org if the problem persists.")
       }
     }).catch(err => {
       setIsPosting(false);
-      setSelectionError("There was an error adding the course. Please contact us at thepeople@p2pu.org.", "warning")
+      setSelectionError("There was an error updating the course list. Please contact us at thepeople@p2pu.org if the problem persists.")
       console.log(err);
     })
 
@@ -128,6 +128,10 @@ const TeamCourseSelection = props => {
 
   return ( 
     <div id="team-course-selection">
+      { 
+        Boolean(selectionError) &&
+        <div class="alert alert-danger" role="alert">{selectionError}</div>
+      }
       <h1>Select team courses</h1>
       <SearchProvider
         searchSubject={'courses'}
