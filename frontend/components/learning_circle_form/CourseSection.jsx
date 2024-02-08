@@ -13,37 +13,9 @@ import TopicsFilterForm from 'p2pu-components/dist/Courses/TopicsFilterForm'
 import LanguageFilterForm from 'p2pu-components/dist/Courses/LanguageFilterForm'
 import OerFilterForm from 'p2pu-components/dist/Courses/OerFilterForm'
 import FacilitatorGuideFilterForm from 'p2pu-components/dist/Courses/FacilitatorGuideFilterForm'
-
+import TeamCourseFilterForm from 'p2pu-components/dist/Courses/TeamCourseFilterForm'
 
 import 'p2pu-components/dist/build.css';
-
-
-const TeamCourseFilter = (props) => {
-  if (!props.teamCourseList)
-    return null;
-
-  const handleChange = (event) => {
-    props.updateQueryParams({team: event.currentTarget.checked});
-  }
-
-  return (
-    <form className="filter">
-      <div className="input-group">
-        <div className="form-check">
-          <input 
-            className="form-check-input"
-            id="team-input"
-            name="team"
-            type="checkbox"
-            checked={Boolean(props.team)}
-            onChange={handleChange}
-          />
-          <label className="form-check-label" htmlFor="team-input">Limit to courses suggested for your team?</label>
-        </div>
-      </div>
-    </form>
-  );
-}
 
 
 const CustomCourseSearch = (props) => {
@@ -53,7 +25,7 @@ const CustomCourseSearch = (props) => {
           updateQueryParams={props.updateQueryParams}
           q={props.q}
         />
-        <TeamCourseFilter {...props} />
+        <TeamCourseFilterForm {...props} />
 
         <a data-bs-toggle="collapse" href="#searchFilters" role="button" aria-expanded="false" aria-controls="searchFilters">
           Advanced options <i className="fa fa-chevron-down"></i>
