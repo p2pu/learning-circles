@@ -12,6 +12,7 @@ import TopicsFilterForm from 'p2pu-components/dist/Courses/TopicsFilterForm'
 import LanguageFilterForm from 'p2pu-components/dist/Courses/LanguageFilterForm'
 import OerFilterForm from 'p2pu-components/dist/Courses/OerFilterForm'
 import FacilitatorGuideFilterForm from 'p2pu-components/dist/Courses/FacilitatorGuideFilterForm'
+import TeamCourseFilterForm from 'p2pu-components/dist/Courses/TeamCourseFilterForm'
 
 import { t } from 'ttag';
 import axios from "axios"
@@ -77,6 +78,10 @@ const CustomCourseSearch = (props) => {
         <div className="col-12">
           <OerFilterForm {...props} />
         </div>
+      </div>
+
+      <div className="col-12">
+        <TeamCourseFilterForm {...props} teamCourseList={true} />
       </div>
 
       <SearchSummary {...props} />
