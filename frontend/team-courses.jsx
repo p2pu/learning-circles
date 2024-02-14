@@ -24,12 +24,8 @@ axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 const BrowseCourses = props => {
   const { results, updateQueryParams, onSelectResult, columnBreakpoints, isLoading } = props;
 
-  if (isLoading){
-    return <></>;
-  }
-
   return (
-    <div className="search-results">
+    <div className="search-results" aria-live="polite" aria-busy={isLoading}>
       {
         results.map((course, index) => (
           <CourseCard
@@ -45,6 +41,7 @@ const BrowseCourses = props => {
           />
         ))
       }
+      { isLoading && <div className="loader"></div> }
     </div>
   );
 }
@@ -143,7 +140,6 @@ const TeamCourseSelection = props => {
         initialState={{languages: ['en']}}
         onSelectResult={handleSelectResult}
         origin={window.location.origin}
-        scrollContainer={'#team-course-selection'}
         NoResultsComponent={() => <p className="my-4">{`There are no matching courses.`}<a className="btn p2pu-btn btn-secondary" href={`${window.location.origin}${window.location.pathname}`}>Start over</a></p>}
       >
         <CustomCourseSearch
@@ -154,7 +150,7 @@ const TeamCourseSelection = props => {
         style={
           {
             position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(255,255,255,0.9)',
-            display: 'flex', 'flex-direction': 'column', 'justify-content': 'center', 'text-align': 'center',
+            display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center',
           }
         }
         className={isPosting?'visible':'invisible'}
