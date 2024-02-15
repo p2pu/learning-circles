@@ -275,6 +275,7 @@ export default class CreateLearningCirclePage extends React.Component {
           userId={this.props.userId}
           learningCircle={this.state.learningCircle}
           team={this.state.team}
+          teamCourseList={this.props.teamCourseList}
           errors={this.state.errors}
           onCancel={this.onCancel}
           onSubmitForm={this.onSubmitForm}

@@ -16,6 +16,7 @@ from studygroups.models import TeamInvitation
 from studygroups.models import Meeting
 from studygroups.models import Facilitator
 from studygroups.models import get_study_group_organizers
+from studygroups.models import CourseList
 
 
 class FeedbackSerializer(serializers.ModelSerializer):
@@ -135,6 +136,28 @@ class TeamMembershipViewSet(
         team_membership = TeamMembership.objects.active().filter(user=self.request.user, role=TeamMembership.ORGANIZER).get()
         return TeamMembership.objects.active().filter(team=team_membership.team)
 
+
+class CourseListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseList
+        fields = ['pk', 'team', 'courses'] 
+
+
+class CourseListViewSet(
+        mixins.ListModelMixin,
+        mixins.CreateModelMixin,
+        mixins.DestroyModelMixin,
+        mixins.UpdateModelMixin,
+        mixins.RetrieveModelMixin,
+        viewsets.GenericViewSet):
+    serializer_class = CourseListSerializer
+    permission_classes = [permissions.IsAuthenticated, IsATeamOrganizer] 
+    # TODO organizers can edit / facilitators can view
+    # TODO only one list per team - ie create should be create or update
+
+    def get_queryset(self):
+        team_membership = TeamMembership.objects.active().filter(user=self.request.user, role=TeamMembership.ORGANIZER).get()
+        return CourseList.objects.filter(team=team_membership.team)
 
 
 class MemberLearningCircleSerializer(serializers.ModelSerializer):

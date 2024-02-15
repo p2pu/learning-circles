@@ -282,6 +282,8 @@ class StudyGroupCreate(TemplateView):
         if self.request.user.is_authenticated and TeamMembership.objects.active().filter(user=self.request.user).exists():
             team = TeamMembership.objects.active().filter(user=self.request.user).get().team
             context['team'] = json.dumps([t.to_dict() for t in team.teammembership_set.active()])
+            if Course.objects.active().filter(courselist__team=team).exists():
+                context['team_course_list'] = True
         return context
 
 
@@ -823,6 +825,7 @@ class FacilitatorDashboard(TemplateView):
                     context['delete_team_invitation_link'] = reverse('api_teams_delete_invitation_link', args=(team_membership.team.id,))
                     context['team_member_invitation_url'] = reverse('studygroups_team_member_invite', args=(team_membership.team.id,))
                     context['edit_team_url'] = reverse('studygroups_team_edit', args=(team_membership.team.id,))
+                    context['edit_team_course_list_url'] = reverse('studygroups_team_course_list', args=(team_membership.team.id,))
                 if team_membership.team.membership:
                     context['is_member_team'] = True
                 if team_membership.team.membership or user.is_staff:

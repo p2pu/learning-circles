@@ -26,6 +26,7 @@ import TeamInvitationsTable from './TeamInvitationsTable'
 import OrganizerTeamInvitations from './OrganizerTeamInvitations'
 import FacilitatorProfile from './FacilitatorProfile'
 import Announcements from './Announcements'
+import CourseList from './CourseList'
 
 import 'react-tabs/style/react-tabs.css';
 import 'aos/dist/aos.css';
@@ -214,6 +215,7 @@ export default class FacilitatorDashboard extends React.Component {
                       <Tab><span className="minicaps bold text-xs">Team members</span></Tab>
                       <Tab><span className="minicaps bold text-xs">Pending invitations</span></Tab>
                       <Tab><span className="minicaps bold text-xs">Invite new members</span></Tab>
+                      <Tab><span className="minicaps bold text-xs">Course list</span></Tab>
                     </TabList>
                     <TabPanel>
                       <div data-aos='fade' data-aos-anchor-placement="top-bottom">
@@ -239,6 +241,14 @@ export default class FacilitatorDashboard extends React.Component {
                           deleteTeamInvitationLink={this.props.deleteTeamInvitationLink}
                           teamMemberInvitationUrl={this.props.teamMemberInvitationUrl}
                           showAlert={this.showAlert}
+                        />
+                      </div>
+                    </TabPanel>
+                    <TabPanel>
+                      <div data-aos='fade' data-aos-anchor-placement="top-bottom">
+                        <CourseList
+                          teamId={this.props.teamId}
+                          editTeamCourseListUrl={this.props.editTeamCourseListUrl}
                         />
                       </div>
                     </TabPanel>

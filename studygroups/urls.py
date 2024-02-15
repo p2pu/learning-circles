@@ -30,7 +30,6 @@ from studygroups.views import TeamMembershipDelete
 from studygroups.views import TeamInvitationCreate
 from studygroups.views import InvitationConfirm
 from studygroups.views import OptOutView
-from studygroups.views import TeamPage
 from studygroups.views import ExportSignupsView
 from studygroups.views import ExportFacilitatorsView
 from studygroups.views import ExportStudyGroupsView
@@ -43,6 +42,7 @@ from studygroups.views import DigestGenerateView
 from studygroups.views import FacilitatorDashboard
 from studygroups.views import OrganizerGuideForm
 from studygroups.views import TeamUpdate
+from studygroups.views import TeamCourseList
 from studygroups.views import MessageView
 from studygroups.views import MeetingRecap
 from studygroups.views import MeetingRecapDismiss
@@ -53,8 +53,6 @@ urlpatterns = [
     url(r'^$', FacilitatorDashboard.as_view(), name='studygroups_facilitator'),
 
     url(r'^courses/$', RedirectView.as_view(url='https://www.p2pu.org/en/courses/'), name='studygroups_courses'),
-
-    url(r'^city/(?P<city_name>[\w\W\ ,]+)/$', views.city, name='studygroups_city'),
 
     url(r'^studygroups/$', views.studygroups, name='studygroups_search'),
 
@@ -127,6 +125,7 @@ urlpatterns = [
     url(r'^organize/teammembership/(?P<team_id>[\d]+)/(?P<user_id>[\d]+)/delete/$', TeamMembershipDelete.as_view(), name='studygroups_teammembership_delete'),
     url(r'^organize/team/(?P<team_id>[\d]+)/member/invite/$', TeamInvitationCreate.as_view(), name='studygroups_team_member_invite'),
     url(r'^organize/team/(?P<team_id>[\d]+)/edit/$', TeamUpdate.as_view(), name='studygroups_team_edit'),
+    url(r'^organize/team/(?P<team_id>[\d]+)/course_list/$', TeamCourseList.as_view(), name='studygroups_team_course_list'),
 
     url(r'^get-organizer-guide/$', OrganizerGuideForm.as_view(), name='studygroups_organizer_guide_form'),
 
@@ -140,8 +139,6 @@ urlpatterns = [
     url(r'^weekly-update/(?P<team_id>[\d]+)/(?P<year>[\d]+)-(?P<month>[\d]+)-(?P<day>[\d]+)/$', views.weekly_update, name='studygroups_weekly_update_team_date'),
 
     url(r'^receive_sms/$', views.receive_sms, name='studygroups_receive_sms'),
-
-    url(r'^(?P<slug>[\w-]+)/$', TeamPage.as_view(), name='studygroups_team_page'),
 
     url(r'^staff/dash/$', StaffDashView.as_view(), name='studygroups_staff_dash'),
     url(r'^digest/generate/$', DigestGenerateView.as_view(), name='studygroups_digest_generate'),

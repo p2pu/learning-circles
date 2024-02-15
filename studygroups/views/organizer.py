@@ -13,11 +13,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 from django.views.generic.base import View
+from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, DeleteView, FormView, UpdateView
 from django.views.generic import ListView
 from django.contrib import messages
 
 from studygroups.models import Course
+from studygroups.models import CourseList
 from studygroups.models import StudyGroup
 from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
@@ -213,4 +215,15 @@ class TeamUpdate(UpdateView):
         return super().form_valid(form)
 
 
+@method_decorator(user_is_team_organizer, name='dispatch')
+class TeamCourseList(TemplateView):
 
+    template_name = 'studygroups/team_courses.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['team_course_ids'] = list(Course.objects.active().filter(courselist__team=self.kwargs.get('team_id')).values_list('id', flat=True))
+        if not CourseList.objects.filter(team_id=kwargs.get('team_id')).exists():
+            CourseList.objects.create(team_id=kwargs.get('team_id'))
+        context['course_list_id'] = CourseList.objects.filter(team_id=kwargs.get('team_id')).first().pk
+        return context

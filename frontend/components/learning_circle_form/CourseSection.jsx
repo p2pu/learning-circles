@@ -2,7 +2,6 @@ import React from 'react'
 //import { Search, BrowseCourses, CourseCard } from 'p2pu-components';
 
 import SearchProvider from 'p2pu-components/dist/Search/SearchProvider'
-import SearchCourses from 'p2pu-components/dist/Courses/SearchCourses'
 import CourseCard from 'p2pu-components/dist/Courses/CourseCard'
 import BrowseCourses from 'p2pu-components/dist/Courses/Browse'
 import SearchAndFilter from 'p2pu-components/dist/Courses/SearchAndFilter'
@@ -14,7 +13,7 @@ import TopicsFilterForm from 'p2pu-components/dist/Courses/TopicsFilterForm'
 import LanguageFilterForm from 'p2pu-components/dist/Courses/LanguageFilterForm'
 import OerFilterForm from 'p2pu-components/dist/Courses/OerFilterForm'
 import FacilitatorGuideFilterForm from 'p2pu-components/dist/Courses/FacilitatorGuideFilterForm'
-
+import TeamCourseFilterForm from 'p2pu-components/dist/Courses/TeamCourseFilterForm'
 
 import 'p2pu-components/dist/build.css';
 
@@ -26,6 +25,7 @@ const CustomCourseSearch = (props) => {
           updateQueryParams={props.updateQueryParams}
           q={props.q}
         />
+        <TeamCourseFilterForm {...props} />
 
         <a data-bs-toggle="collapse" href="#searchFilters" role="button" aria-expanded="false" aria-controls="searchFilters">
           Advanced options <i className="fa fa-chevron-down"></i>
@@ -91,10 +91,14 @@ const CourseSection = (props) => {
           <SearchProvider
             columnBreakpoints={props.showHelp ? 1 : 3}
             searchSubject={'courses'}
-            initialState={{languages: ['en']}}
+            initialState={{
+              languages: ['en'],
+              team: props.teamCourseList,
+            }}
             onSelectResult={handleSelectResult}
             origin={window.location.origin}
             scrollContainer={'.tabs-container'}
+            teamCourseList={props.teamCourseList}
             NoResultsComponent={() => <p className="my-4">{`There are no matching courses.`}<a className="btn p2pu-btn btn-secondary" href={`${window.location.origin}${window.location.pathname}`}>Start over</a></p>}
           >
             <CustomCourseSearch/>

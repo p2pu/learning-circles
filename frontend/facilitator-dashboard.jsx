@@ -18,6 +18,7 @@ const createTeamInvitationLink = element.dataset.createTeamInvitationLink === "N
 const deleteTeamInvitationLink = element.dataset.deleteTeamInvitationLink === "None" ? null : element.dataset.deleteTeamInvitationLink;
 const teamMemberInvitationUrl = element.dataset.teamMemberInvitationUrl === "None" ? null : element.dataset.teamMemberInvitationUrl;
 const editTeamUrl = element.dataset.editTeamUrl === "None" ? null : element.dataset.editTeamUrl;
+const editTeamCourseListUrl = element.dataset.editTeamCourseListUrl === "None" ? null : element.dataset.editTeamCourseListUrl;
 
 
 ReactDOM.render(
@@ -38,6 +39,7 @@ ReactDOM.render(
       deleteTeamMembershipApiUrl={element.dataset.deleteTeamMembershipApiUrl}
       deleteTeamInvitationApiUrl={element.dataset.deleteTeamInvitationApiUrl}
       editTeamUrl={editTeamUrl}
+      editTeamCourseListUrl={editTeamCourseListUrl}
       isMemberTeam={element.dataset.isMemberTeam}
       isStaff={element.dataset.isStaff}
       memberSupportUrl={element.dataset.memberSupportUrl}
