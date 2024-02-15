@@ -54,8 +54,6 @@ const CourseTable = ({courses, currentPage, totalPages, nextPage, prevPage}) => 
                 <div className="">{ date }</div>
               </div>
             </div>
-
-            <a href={ course.course_edit_path } className="p2pu-btn btn btn-sm dark m-0 my-2">edit</a>
           </div>
         )
       })
