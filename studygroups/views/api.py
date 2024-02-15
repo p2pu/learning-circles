@@ -605,8 +605,6 @@ class CourseListView(View):
 
         if clean_data.get('course_list'):
             courses = courses.filter(courselist__pk=clean_data.get('course_list')) 
-            # TODO should this parameter only be available for teams?
-            # TODO should this take the course list id, or be associated with the current users team membership?
 
         if clean_data.get('team'):
             team_membership =  TeamMembership.objects.active().filter(user=request.user).first()
