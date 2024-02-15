@@ -505,6 +505,8 @@ class CourseListView(View):
             "user": schema.boolean(),
             "include_unlisted": schema.boolean(),
             "facilitator_guide": schema.boolean(),
+            "course_list": schema.integer(),
+            "team": schema.boolean(),
         }
         data = schema.django_get_to_dict(request.GET)
         clean_data, errors = schema.validate(query_schema, data)
@@ -600,6 +602,18 @@ class CourseListView(View):
             else:
                 course_ids = StudyGroup.objects.published().exclude(id__in=study_group_ids).values('course')
             courses = courses.filter(id__in=course_ids)
+
+        if clean_data.get('course_list'):
+            courses = courses.filter(courselist__pk=clean_data.get('course_list')) 
+
+        if clean_data.get('team'):
+            team_membership =  TeamMembership.objects.active().filter(user=request.user).first()
+            if not team_membership:
+                errors = { 'team': ['Facilitator not part of a team']}
+                return json_response(request, {"status": "error", "errors": errors})
+            team = TeamMembership.objects.active().filter(user=request.user).first().team
+            courses = courses.filter(courselist__team=team) 
+
 
         data = {
             'count': courses.count()

@@ -3,6 +3,7 @@ from django import forms
 
 # Register your models here.
 from studygroups.models import Course
+from studygroups.models import CourseList
 from studygroups.models import TopicGuide
 from studygroups.models import StudyGroup
 from studygroups.models import Meeting
@@ -153,6 +154,10 @@ class CourseAdmin(admin.ModelAdmin):
     raw_id_fields = ['created_by']
 
 
+class CourseListAdmin(admin.ModelAdmin):
+    filter_horizontal = ['courses']
+
+
 class ProfileAdmin(admin.ModelAdmin):
     def user(profile):
         return " ".join([profile.user.first_name, profile.user.last_name])
@@ -166,6 +171,7 @@ class MeetingAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Course, CourseAdmin)
+admin.site.register(CourseList, CourseListAdmin)
 admin.site.register(TopicGuide)
 admin.site.register(StudyGroup, StudyGroupAdmin)
 admin.site.register(Meeting, MeetingAdmin)

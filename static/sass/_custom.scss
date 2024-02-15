@@ -1,3 +1,10 @@
+.form-check {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .report-measurement.shadow {
   box-shadow: -2px 2px 6px rgba(0,0,0,0.2);
 }

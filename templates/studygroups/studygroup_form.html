@@ -28,6 +28,7 @@
   var team = {{ team|safe }};
   window.team = team;
   window.currentUserId = {{user.id|safe}};
+  window.teamCourseList = {% if team_course_list %}true{% else %}false{% endif %};
 </script>
 {% if object.pk %}
 <script>
@@ -35,7 +36,7 @@
   var learningCircle = {{ object.to_json|safe }};
   var meetings = {{ meetings|safe }};
   var facilitators = {{ facilitators|safe }};
-  var team = {{ team|safe }};
+  var team = {{ team|safe }}; //TODO seems like team isn't properly passed to react?
 
   window.lc = learningCircle;
   window.lc.meetings = meetings;
