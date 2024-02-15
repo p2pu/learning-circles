@@ -225,5 +225,5 @@ class TeamCourseList(TemplateView):
         context['team_course_ids'] = list(Course.objects.active().filter(courselist__team=self.kwargs.get('team_id')).values_list('id', flat=True))
         if not CourseList.objects.filter(team_id=kwargs.get('team_id')).exists():
             CourseList.objects.create(team_id=kwargs.get('team_id'))
-        context['course_list_id'] = CourseList.objects.filter(team_id=kwargs.get('team_id')).first().pk # TODO only works if team has a course list
+        context['course_list_id'] = CourseList.objects.filter(team_id=kwargs.get('team_id')).first().pk
         return context
