@@ -113,8 +113,6 @@ const TeamCourseSelection = props => {
       setIsPosting(false);
       console.log(res)
       if (res.status === 200) {
-        //this.props.showAlert(`The course was added!`, "success")
-        //this.setState({ email: "", inviteError: null })
         setTeamCourseIds(updatedCourseIds)
         setSelectionError('');
       } else {
