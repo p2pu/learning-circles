@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { RRule } from 'rrule'
 import DayPicker, { DateUtils } from 'react-day-picker';
-import Modal from 'react-responsive-modal';
 import moment from 'moment'
 
 import { parseTime, printTime } from 'helpers/datetime';
