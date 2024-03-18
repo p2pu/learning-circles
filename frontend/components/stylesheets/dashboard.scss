@@ -51,6 +51,11 @@
   }
 }
 
+/* cancel out react-tabs bundled styling for focussed tabs */
+.react-tabs__tab:focus:after {
+  content: none !important;
+}
+
 .react-tabs__tab-list {
   border-bottom: 1px solid $gray-light;
 

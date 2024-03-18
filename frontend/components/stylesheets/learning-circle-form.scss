@@ -87,6 +87,7 @@ html {
       &.react-tabs__tab--selected {
         border-radius: 0;
         background-color: white;
+        outline: none !important;
       }
     }
 

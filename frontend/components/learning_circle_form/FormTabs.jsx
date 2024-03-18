@@ -8,6 +8,7 @@ import FinalizeSection from './FinalizeSection';
 
 import 'react-tabs/style/react-tabs.css';
 import 'p2pu-components/dist/build.css';
+import '../stylesheets/learning-circle-form.scss';
 
 
 export default class FormTabs extends React.Component{
