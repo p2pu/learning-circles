@@ -43,7 +43,7 @@ class LearningCircleCreationPageLocators(object):
     SCHEDULE_MEETINGS_BUTTON = (By.ID, "schedule-meetings-btn")
     ERROR_MESSAGE = (By.CSS_SELECTOR, ".error-message.minicaps")
     TINYMCE_FIELD = (By.ID, "tinymce")
-    CALENDAR_TODAY = (By.CSS_SELECTOR, ".DayPicker-Day--today")
+    CALENDAR_TODAY = (By.CSS_SELECTOR, ".rdp-day--today")
     ACCEPT_SUGGESTED_DATES_BUTTON = (By.ID, "accept-suggestions-btn")
 
 
