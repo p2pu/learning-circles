@@ -5,7 +5,7 @@ CairoSVG
 celery
 crispy-bootstrap5
 dj-database-url
-Django==3.2.18
+Django==3.2.25
 django-bleach
 django-cors-headers
 django-crispy-forms
