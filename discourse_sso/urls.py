@@ -1,7 +1,7 @@
-from django.conf.urls import url
+from django.urls import re_path
 
 from . import views
 
 urlpatterns = [
-    url(r'^sso_redirect/$', views.discourse_sso, name='discourse_sso'),
+    re_path(r'^sso_redirect/$', views.discourse_sso, name='discourse_sso'),
 ]
