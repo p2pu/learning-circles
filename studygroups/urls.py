@@ -81,7 +81,7 @@ urlpatterns = [
     re_path(r'^studygroup/(?P<study_group_id>[\d]+)/learner/add/$', views.add_learner, name='studygroups_add_learner'),
     re_path(r'^studygroup/(?P<study_group_id>[\d]+)/learner/add-multiple/$', ApplicationCreateMultiple.as_view(), name='studygroups_add_learners'),
     re_path(r'^studygroup/(?P<study_group_id>[\d]+)/learner/(?P<pk>[0-9]+)/edit/$', ApplicationUpdate.as_view(), name='studygroups_application_edit'),
-    re_path(r'^studygroup/(?P<study_group_id>[\d]+)/learner/(?P<pk>[0-9]+)/delete/$', ApplicationDelete.as_view(), name='studygroups_application_delete',
+    re_path(r'^studygroup/(?P<study_group_id>[\d]+)/learner/(?P<pk>[0-9]+)/delete/$', ApplicationDelete.as_view(), name='studygroups_application_delete'),
 
     re_path(r'^studygroup/(?P<study_group_uuid>[\w-]+)/survey/$', StudyGroupLearnerSurvey.as_view(), name='studygroups_learner_survey'),
     re_path(r'^studygroup/(?P<study_group_uuid>[\w-]+)/survey/done/$', TemplateView.as_view(template_name='studygroups/learner_survey_done.html'), name='studygroups_learnear_survey_done'),
