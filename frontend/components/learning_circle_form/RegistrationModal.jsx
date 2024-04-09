@@ -8,6 +8,7 @@ import { API_ENDPOINTS } from '../../helpers/constants'
 
 import '../stylesheets/learning-circle-form.scss';
 import 'p2pu-components/dist/build.css';
+import 'react-responsive-modal/styles.css';
 
 
 axios.defaults.xsrfCookieName = 'csrftoken'
@@ -68,7 +69,7 @@ export default class RegistrationModal extends React.Component {
 
   render() {
     return (
-      <Modal open={this.props.open} onClose={this.props.closeModal} classNames={{modal: 'p2pu-modal', overlay: 'modal-overlay'}}>
+      <Modal open={this.props.open} onClose={this.props.closeModal} classNames={{modal: 'p2pu-modal', overlay: 'modal-overlay'}} center >
         <div className='registration-modal-content'>
           {
             this.state.registration &&

@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { RRule } from 'rrule'
-import DayPicker, { DateUtils } from 'react-day-picker';
-import Modal from 'react-responsive-modal';
+import { DayPicker } from 'react-day-picker';
+import { isSameDay } from "date-fns";
 import moment from 'moment'
 
 import { parseTime, printTime } from 'helpers/datetime';
@@ -13,11 +13,9 @@ import {
   TimeZoneSelect,
 } from 'p2pu-components'
 
-//import TimePickerWithLabel from 'p2pu-components/dist/InputFields/TimePickerWithLabel';
-
 import Alert from './Alert'
 
-import 'react-day-picker/lib/style.css';
+import 'react-day-picker/dist/style.css';
 
 /*
 
@@ -102,11 +100,9 @@ class MeetingScheduler extends React.Component {
     const count = parseInt(recurrenceRules.meeting_count) <= MAX_MEETING_COUNT && parseInt(recurrenceRules.meeting_count) >= MIN_MEETING_COUNT ? parseInt(recurrenceRules.meeting_count) : DEFAULT_MEETING_COUNT;
 
     let opts = {
-      dtstart: utcDate,
+      dtstart: learningCircle.meetings[0],
       count: count,
       freq: RRule.WEEKLY,
-      interval: 1,
-      byweekday: recurrenceRules.weekday
     }
 
     const rule = new RRule(opts)
@@ -149,19 +145,17 @@ class MeetingScheduler extends React.Component {
 
     if (isFirstDate) {
       this.props.updateFormData({ meetings: [day] })
-
-      const weekday = WEEKDAYS[day.getDay()] ? WEEKDAYS[day.getDay()].value : null;
+      
+      // TODO previously this actually update state (recurrenceRules), but since generateSuggestedMeetings relies on updated props
+      // doing it as a callback to setState defers it until the updateFormData updated the state. Not ideal and could lead to errors
+      // at some point, who knows ¯\_(ツ)_/¯
       this.setState({
         ...this.state,
-        recurrenceRules: {
-          ...this.state.recurrenceRules,
-           weekday: weekday
-        }
       }, this.generateSuggestedMeetings)
 
     } else {
       const selectedIndex = selectedDays.findIndex(meeting =>
-        DateUtils.isSameDay(day, meeting)
+        isSameDay(day, meeting)
       );
 
       if (selectedIndex >= 0) {
@@ -202,7 +196,7 @@ class MeetingScheduler extends React.Component {
   deleteMeeting = (date) => {
     const meetings = [...this.props.learningCircle.meetings]
     const selectedIndex = meetings.findIndex(meeting =>
-      DateUtils.isSameDay(date, meeting)
+      isSameDay(date, meeting)
     );
 
     if (selectedIndex >= 0) {
@@ -238,7 +232,7 @@ class MeetingScheduler extends React.Component {
     const { learningCircle, errors, updateFormData } = this.props;
     const { meetings } = learningCircle;
 
-    const suggestedDatesArr = suggestedDates.filter(sd => !meetings.find(m => DateUtils.isSameDay(m, sd)))
+    const suggestedDatesArr = suggestedDates.filter(sd => !meetings.find(m => isSameDay(m, sd)))
 
     const selectedDates = meetings.sort((a,b) => { return a - b })
     const suggestedDatesObj = suggestedDatesArr.sort((a,b) => { return a - b })
@@ -252,7 +246,7 @@ class MeetingScheduler extends React.Component {
 
     const modifiers = {
       suggested: (d) => {
-        return suggestedDates.find(sg => DateUtils.isSameDay(sg,d)) && !meetings.find(m => DateUtils.isSameDay(m,d))
+        return suggestedDates.find(sg => isSameDay(sg,d)) && !meetings.find(m => isSameDay(m,d))
       },
     };
 
@@ -308,16 +302,15 @@ class MeetingScheduler extends React.Component {
 
         <div className="meeting-scheduler mb-4">
           <div className="row calendar my-3">
-            <div className="col-12 col-xl-6 d-flex justify-content-center" style={{ flex: '1 1 auto' }}>
-              <div>
-                <DayPicker
-                  id="calendar"
-                  selectedDays={displayMeetings}
-                  onDayClick={handleDayClick}
-                  modifiers={modifiers}
-                  numberOfMonths={window.screen.width >= 1200 ? 2 : 1}
-                />
-              </div>
+            <div className="col-12 col-xl-6" style={{ flex: '1 1 auto' }}>
+              <DayPicker
+                id="calendar"
+                selected={displayMeetings}
+                onDayClick={handleDayClick}
+                modifiers={modifiers}
+                modifiersClassNames={{suggested: "suggested"}}
+                numberOfMonths={window.screen.width >= 1200 ? 2 : 1}
+              />
             </div>
 
             <div className="col-12 col-xl-6 d-flex flex-column">
