@@ -211,13 +211,13 @@ ALLOWED_HOSTS = ['*']
 
 # Exempt trusted domains
 CSRF_TRUSTED_ORIGINS = [
-    '.p2pu.org',
+    'https://*.p2pu.org',
 ]
 if DEBUG:
     CSRF_TRUSTED_ORIGINS += [
-      'localhost:8000',
-      'localhost:3001',
-      'localhost:4000',
+        'http://localhost:8000',
+        'http://localhost:3001',
+        'http://localhost:4000',
     ]
 
 # CORS config
