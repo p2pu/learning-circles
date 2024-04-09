@@ -3,7 +3,7 @@ from django.views import View
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.http import urlsafe_base64_decode
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.debug import sensitive_post_parameters
@@ -310,6 +310,7 @@ class AccountDeleteView(DeleteView):
         user.username = random_username
         user.save()
 
+        # ?? delete learning circles if user is deleted? Should this maybe only happen for upcoming and draft lerning circles?
         for lc in StudyGroup.objects.active().filter(facilitator__user=user):
             if lc.facilitator_set.count() == 1:
                 lc.deleted_at = timezone.now()
@@ -318,6 +319,8 @@ class AccountDeleteView(DeleteView):
                 lc.facilitator_set.filter(user=user).delete()
                 
             lc.save()
+
+        # TODO delete team membership
 
         # delete profile data
         profile = user.profile

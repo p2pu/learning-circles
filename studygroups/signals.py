@@ -4,7 +4,7 @@ from studygroups.utils import render_to_string_ctx
 from django.core.mail import EmailMultiAlternatives, send_mail
 from django.conf import settings
 from django.utils import timezone
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 from studygroups.email_helper import render_html_with_css
 

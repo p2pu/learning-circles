@@ -5,7 +5,7 @@ from email.mime.text import MIMEText
 from django.conf import settings
 from django.utils import timezone
 from django.utils import translation
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
 from django.urls import reverse

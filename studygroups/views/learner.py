@@ -12,7 +12,7 @@ from django import http
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.utils.text import slugify
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import FormView
