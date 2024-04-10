@@ -3,7 +3,7 @@ WORKDIR /opt/app/
 COPY package.json package-lock.json /opt/app/
 COPY p2pu-theme/ /opt/app/p2pu-theme/
 COPY p2pu-components/ /opt/app/p2pu-components/
-RUN npm install --quiet --production
+RUN npm install --omit=dev
 COPY . /opt/app/
 RUN npm run build
 
