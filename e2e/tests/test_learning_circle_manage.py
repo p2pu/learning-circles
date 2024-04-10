@@ -36,11 +36,11 @@ class LearningCircleManage(StaticLiveServerTestCase):
         chrome_options.add_argument('--disable-gpu')
         #chrome_options.add_argument('--auto-open-devtools-for-tabs')
         chrome_options.add_argument('--start-maximized')
-        capabilities = DesiredCapabilities.CHROME
-        capabilities['loggingPrefs'] = { 'browser':'ALL' }
+        #capabilities = DesiredCapabilities.CHROME
+        #capabilities['loggingPrefs'] = { 'browser':'ALL' }
         cls.driver = webdriver.Remote(
           command_executor='http://selenium:4444/wd/hub',
-          desired_capabilities=capabilities,
+          #desired_capabilities=capabilities,
           options=chrome_options
         )
         timeout = 10
