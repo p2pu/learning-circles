@@ -57,9 +57,9 @@ class EventDelete(DeleteView):
     model = Event
     success_url = reverse_lazy('studygroups_facilitator')
 
-    def delete(self, request, *args, **kwargs):
+    def form_valid(self, form):
         messages.success(self.request, _('Your event has been deleted.'))
-        return super().delete(request, *args, **kwargs)
+        return super().form_valid(request, form)
 
 
 @method_decorator(login_required, name="dispatch")

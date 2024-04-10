@@ -290,7 +290,7 @@ class AccountDeleteView(DeleteView):
     def get_object(self):
         return self.request.user
 
-    def delete(self, request, *args, **kwargs):
+    def form_valid(self, form):
         user = self.request.user
 
         # mark user account as deleted
