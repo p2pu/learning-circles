@@ -7,8 +7,8 @@ async-timeout==4.0.3
 attrs==23.2.0
 billiard==4.2.0
 bleach==5.0.1
-boto3==1.34.80
-botocore==1.34.80
+boto3==1.34.81
+botocore==1.34.81
 cachetools==5.3.3
 cairocffi==1.6.1
 CairoSVG==2.7.1
@@ -26,7 +26,7 @@ cssselect2==0.7.0
 cssutils==2.10.2
 defusedxml==0.7.1
 dj-database-url==2.1.0
-Django==4.0.10
+Django==4.1.13
 django-bleach==3.1.0
 django-cors-headers==4.3.1
 django-crispy-forms==2.0
