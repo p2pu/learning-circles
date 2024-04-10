@@ -1,13 +1,13 @@
 version: '3'
 services:
   postgres:
-    image: postgres:11
+    image: postgres:16
     ports:
     - 5432:5432
     environment:
     - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
-    - ./compose/postgres:/var/lib/postgresql/data
+    - ./compose/postgres-16:/var/lib/postgresql/data
   rabbitmq:
     image: rabbitmq:3
   email:
@@ -22,8 +22,10 @@ services:
     - .:/opt/app
     command: sh -c "npm i && npm run watch"
   learning-circles:
-    build: .
     image: p2pu/learning-circles:local
+    build: 
+      context: .
+      network: host
     ports:
     - 8000:8000
     volumes:
