@@ -1,12 +1,12 @@
 services:
   postgres:
-    image: postgres:16
+    image: postgres:15
     ports:
     - 5432:5432
     environment:
     - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
-    - ./compose/postgres-16:/var/lib/postgresql/data
+    - ./compose/postgres-15:/var/lib/postgresql/data
   rabbitmq:
     image: rabbitmq:3
   email:
