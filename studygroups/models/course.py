@@ -4,7 +4,7 @@ from django.urls import reverse  # TODO ideally this shouldn't be in the model
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.db.models import F
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.core.paginator import Paginator
 from django.utils.translation import get_language_info
 
@@ -43,7 +43,7 @@ class Course(LifeTimeTrackingModel):
     caption = models.CharField(max_length=500)
     on_demand = models.BooleanField(default=False)
     keywords = models.CharField(max_length=500, blank=True)
-    topic_guides = models.ManyToManyField(TopicGuide, blank=True, null=True)
+    topic_guides = models.ManyToManyField(TopicGuide, blank=True)
     language = models.CharField(max_length=6) # ISO language code
     created_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE) # TODO maybe rename to added_by
     unlisted = models.BooleanField(default=False)

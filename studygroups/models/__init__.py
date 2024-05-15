@@ -5,7 +5,7 @@ from django.db.models import Window
 from django.db.models import F
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.urls import reverse  # TODO ideally this shouldn't be in the model

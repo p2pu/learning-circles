@@ -29,7 +29,7 @@ jobs:
 
     - name: start postgres container
 
-      run: docker run -d --name=postgres -e POSTGRES_PASSWORD=password postgres:11
+      run: docker run -d --name=postgres -e POSTGRES_PASSWORD=password postgres:15
 
     - name: start selenium container
       run: docker run -d --name=selenium --shm-size="2g" -e SCREEN_HEIGHT=2048 selenium/standalone-chrome:4.0.0-20211102
@@ -38,9 +38,9 @@ jobs:
       run: docker run --rm -i --link postgres --link selenium -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost -e RECAPTCHA_SITE_KEY=6Le0DW8bAAAAAJUHXcKkkASxZWMIwDypy1DiBBEX p2pu/learning-circles:${IMAGE_TAG} dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
       if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/release'
 
-    - name: run tests and continue even if failed
+    - name: run tests and continue even if failed (put back hard fail until LTS is merged)
       run: docker run --rm -i --link postgres --link selenium -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost -e RECAPTCHA_SITE_KEY=6Le0DW8bAAAAAJUHXcKkkASxZWMIwDypy1DiBBEX p2pu/learning-circles:${IMAGE_TAG} dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
-      continue-on-error: true
+      continue-on-error: false
       if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/release'
 
     - name: log into registry

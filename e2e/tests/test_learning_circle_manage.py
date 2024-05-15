@@ -36,11 +36,11 @@ class LearningCircleManage(StaticLiveServerTestCase):
         chrome_options.add_argument('--disable-gpu')
         #chrome_options.add_argument('--auto-open-devtools-for-tabs')
         chrome_options.add_argument('--start-maximized')
-        capabilities = DesiredCapabilities.CHROME
-        capabilities['loggingPrefs'] = { 'browser':'ALL' }
+        #capabilities = DesiredCapabilities.CHROME
+        #capabilities['loggingPrefs'] = { 'browser':'ALL' }
         cls.driver = webdriver.Remote(
           command_executor='http://selenium:4444/wd/hub',
-          desired_capabilities=capabilities,
+          #desired_capabilities=capabilities,
           options=chrome_options
         )
         timeout = 10
@@ -125,7 +125,7 @@ class LearningCircleManage(StaticLiveServerTestCase):
             (By.CSS_SELECTOR, "#meeting-1-feedback #id_attendance")
         ))
 
-        attendance = self.driver.find_element_by_css_selector("#meeting-1-feedback #id_attendance")
+        attendance = self.driver.find_element(By.CSS_SELECTOR, "#meeting-1-feedback #id_attendance")
         actions = ActionChains(self.driver)
         actions.pause(1)
         actions.move_to_element(attendance).perform()
@@ -170,7 +170,7 @@ class LearningCircleManage(StaticLiveServerTestCase):
             (By.CSS_SELECTOR, rating_qs)
         ))
 
-        rating_feedback = self.driver.find_element_by_css_selector(rating_qs)
+        rating_feedback = self.driver.find_element(By.CSS_SELECTOR, rating_qs)
         actions = ActionChains(self.driver)
         actions.pause(1)
         actions.move_to_element(rating_feedback)
@@ -201,7 +201,8 @@ class LearningCircleManage(StaticLiveServerTestCase):
         
         self.driver.execute_script('window.scrollBy(0, 800);')
         self.assertEquals(StudyGroup.objects.get(pk=1).course_rating, None)
-        course_rating = self.driver.find_element_by_css_selector(
+        course_rating = self.driver.find_element(
+            By.CSS_SELECTOR,
             "div.star-rating-input:nth-child(2) > label:nth-child(4) > svg:nth-child(2)"
         )
         actions = ActionChains(self.driver)

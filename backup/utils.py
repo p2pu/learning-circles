@@ -52,7 +52,7 @@ def backup_db():
     make a backup of the database
     '''
 
-    if settings.DATABASES['default']['ENGINE'] != 'django.db.backends.postgresql_psycopg2':
+    if settings.DATABASES['default']['ENGINE'] != 'django.db.backends.postgresql':
         raise BackupFailed('Database engine not supported')
 
     timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%d')

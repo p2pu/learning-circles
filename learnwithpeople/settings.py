@@ -211,13 +211,13 @@ ALLOWED_HOSTS = ['*']
 
 # Exempt trusted domains
 CSRF_TRUSTED_ORIGINS = [
-    '.p2pu.org',
+    'https://*.p2pu.org',
 ]
 if DEBUG:
     CSRF_TRUSTED_ORIGINS += [
-      'localhost:8000',
-      'localhost:3001',
-      'localhost:4000',
+        'http://localhost:8000',
+        'http://localhost:3001',
+        'http://localhost:4000',
     ]
 
 # CORS config
@@ -341,6 +341,9 @@ logging.config.dictConfig(LOGGING)
 
 # Explicitly set DEFAULT_AUTO_FIELD. Option added Django 3.2
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+# Update for Django 4.0 - Keep on using pytz until it's deprecated
+USE_DEPRECATED_PYTZ = True
 
 #### Backup config ####
 
