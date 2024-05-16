@@ -6,7 +6,7 @@ const element = document.getElementById('div_id_mobile');
 
 if (element) {
   let label = element.querySelector('label');
-  let hint = element.querySelector('#hint_id_mobile');
+  let hint = element.querySelector('#div_id_mobile .form-text');
   let error = element.querySelector('#error_1_id_mobile');
   let input = element.querySelector('#id_mobile');
 
