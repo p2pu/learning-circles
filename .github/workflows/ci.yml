@@ -38,7 +38,7 @@ jobs:
       run: docker run --rm -i --link postgres --link selenium -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost -e RECAPTCHA_SITE_KEY=6Le0DW8bAAAAAJUHXcKkkASxZWMIwDypy1DiBBEX p2pu/learning-circles:${IMAGE_TAG} dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
       if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/release'
 
-    - name: run tests and continue even if failed (put back hard fail until LTS is merged)
+    - name: run tests and continue even if failed
       run: docker run --rm -i --link postgres --link selenium -e DATABASE_URL=postgres://postgres:password@postgres/lc -e SECRET_KEY=abc -e ADMIN_EMAIL=admin@localhost -e RECAPTCHA_SITE_KEY=6Le0DW8bAAAAAJUHXcKkkASxZWMIwDypy1DiBBEX p2pu/learning-circles:${IMAGE_TAG} dockerize -wait tcp://postgres:5432 /opt/django-venv/bin/python /opt/app/manage.py test
       continue-on-error: true
       if: github.ref != 'refs/heads/master' && github.ref != 'refs/heads/release'
