@@ -5,14 +5,14 @@ CairoSVG
 celery
 crispy-bootstrap5
 dj-database-url
-Django==3.2.18
+Django==4.2.11
 django-bleach
 django-cors-headers
 django-crispy-forms
 django-filter
 django-phonenumber-field
 django-tinymce
-django-webpack-loader==0.5.0
+django-webpack-loader
 djangorestframework
 freezegun
 geonamescache
@@ -22,7 +22,7 @@ Markdown
 phonenumberslite
 Pillow
 premailer
-psycopg2-binary==2.8.6
+psycopg2-binary
 pygal
 requests
 s3-backup-rotate==0.3.3
