@@ -6,6 +6,7 @@ from studygroups.models import Course
 from studygroups.models import CourseList
 from studygroups.models import TopicGuide
 from studygroups.models import StudyGroup
+from studygroups.models import Facilitator
 from studygroups.models import Meeting
 from studygroups.models import Application
 from studygroups.models import Reminder
@@ -24,11 +25,14 @@ class ApplicationInline(admin.TabularInline):
     def get_queryset(self, request):
         return super().get_queryset(request).active()
 
+class FacilitatorInline(admin.TabularInline):
+    model = Facilitator
+    raw_id_fields = ['user']
 
 
 class StudyGroupAdmin(admin.ModelAdmin):
-    inlines = [ApplicationInline]
-    list_display = ['course', 'city', 'facilitators', 'start_date', 'day', 'signup_open', 'uuid']
+    inlines = [ApplicationInline, FacilitatorInline]
+    list_display = ['name', 'city', 'facilitators', 'start_date', 'day', 'signup_open', 'uuid']
     exclude = ['deleted_at']
     search_fields = ['course__title', 'uuid', 'city', 'facilitator__user__first_name', 'facilitator__user__email']
     raw_id_fields = ['course', 'created_by']

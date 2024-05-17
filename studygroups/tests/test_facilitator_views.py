@@ -340,8 +340,11 @@ class TestFacilitatorViews(TestCase):
             del data['weeks']
             resp = c.post('/en/studygroup/create/legacy/', data)
             self.assertEqual(resp.status_code, 200)
-            expected_error_message = 'Please provide the length of the learning circle in weeks'
-            self.assertFormError(resp, 'form', 'weeks', expected_error_message)
+            expected_errors = [
+                'This field is required.',
+                'Please provide the length of the learning circle in weeks',
+            ]
+            self.assertFormError(resp, 'form', 'weeks', expected_errors)
 
 
 

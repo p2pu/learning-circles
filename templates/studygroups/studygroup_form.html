@@ -27,7 +27,7 @@
   window.RECAPTCHA_SITE_KEY = "{{RECAPTCHA_SITE_KEY}}";
   var team = {{ team|safe }};
   window.team = team;
-  window.currentUserId = {{user.id|safe}};
+  window.currentUserId = {% if user.id %}{{user.id|safe}}{% else %}undefined{% endif %};
   window.teamCourseList = {% if team_course_list %}true{% else %}false{% endif %};
 </script>
 {% if object.pk %}

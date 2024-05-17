@@ -36,6 +36,7 @@
     "bootstrap-icons": "^1.5.0",
     "css-loader": "^6.7.3",
     "custom-event-polyfill": "^1.0.7",
+    "date-fns": "^3.6.0",
     "jquery": "^3.6.0",
     "jsonp": "^0.2.1",
     "lodash": "^4.17.21",
@@ -43,21 +44,16 @@
     "moment": "^2.18.1",
     "p2pu-components": "file:p2pu-components",
     "p2pu-theme": "file:p2pu-theme",
-    "places.js": "^1.4.18",
     "promise-polyfill": "^6.0.2",
     "prop-types": "^15.6.2",
-    "react": "^16.14.0",
-    "react-day-picker": "^7.4.8",
-    "react-dom": "^16.14.0",
-    "react-loading": "^2.0.3",
-    "react-modal": "^3.1.11",
-    "react-responsive-modal": "^2.0.0",
-    "react-select": "^4.3.1",
-    "react-spring": "^8.0.19",
-    "react-tabs": "^2.1.1",
-    "react-telephone-input": "^5.0.0",
+    "react": "^18.2.0",
+    "react-day-picker": "^8.10.0",
+    "react-dom": "^18.2.0",
+    "react-responsive-modal": "^6.4.2",
+    "react-select": "^5.8.0",
+    "react-tabs": "^4.3.0",
     "resolve-url-loader": "^5.0.0",
-    "rrule": "^2.6.6",
+    "rrule": "^2.8.1",
     "sass": "^1.43.4",
     "sass-loader": "^13.2.0",
     "style-loader": "^3.3.1",
@@ -73,7 +69,7 @@
   },
   "babel": {
     "presets": [
-      "@babel/react"
+      "@babel/preset-react"
     ],
     "plugins": [
       "@babel/plugin-proposal-class-properties"

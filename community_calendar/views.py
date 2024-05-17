@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from django.utils import formats
 from django.utils import timezone 
 from django.utils.decorators import method_decorator
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django import http
 
 from .models import Event
@@ -57,9 +57,9 @@ class EventDelete(DeleteView):
     model = Event
     success_url = reverse_lazy('studygroups_facilitator')
 
-    def delete(self, request, *args, **kwargs):
+    def form_valid(self, form):
         messages.success(self.request, _('Your event has been deleted.'))
-        return super().delete(request, *args, **kwargs)
+        return super().form_valid(request, form)
 
 
 @method_decorator(login_required, name="dispatch")

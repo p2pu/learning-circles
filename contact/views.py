@@ -28,7 +28,7 @@ class ContactAPIView(APIView):
         # call async task to send email
         send_contact_form_inquiry.delay(**serializer.data)
 
-        if request.GET.get('next') and not request.is_ajax():
+        if request.GET.get('next') and not request.headers.get('Content-Type') == 'application/json':
             # TODO should this be validated?
             return http.HttpResponseRedirect(request.GET.get('next'))
 

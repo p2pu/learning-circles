@@ -29,7 +29,7 @@ jobs:
 
     - name: start postgres container
 
-      run: docker run -d --name=postgres -e POSTGRES_PASSWORD=password postgres:11
+      run: docker run -d --name=postgres -e POSTGRES_PASSWORD=password postgres:15
 
     - name: start selenium container
       run: docker run -d --name=selenium --shm-size="2g" -e SCREEN_HEIGHT=2048 selenium/standalone-chrome:4.0.0-20211102

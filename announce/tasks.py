@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.urls import reverse
 from studygroups.utils import render_to_string_ctx
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 import requests
 from requests.auth import HTTPBasicAuth

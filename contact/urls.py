@@ -1,7 +1,7 @@
-from django.conf.urls import url
+from django.urls import re_path
 
 from contact import views
 
 urlpatterns = [
-    url(r'^contact/$', views.ContactAPIView.as_view(), name='api_contact_form')
+    re_path(r'^contact/$', views.ContactAPIView.as_view(), name='api_contact_form')
 ]

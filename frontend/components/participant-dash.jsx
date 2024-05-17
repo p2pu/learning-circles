@@ -114,7 +114,20 @@ const MessageCard = props => {
           <i className="fa fa-chevron-down"></i>
         </button>
         <div className="card-title">Subject: {props.subject}</div>
-        <div>Sent: {meetingDateFormat(props.sent_at)}</div>
+        <div>
+          Sent: {
+            new Date(props.sent_at).toLocaleDateString(
+              undefined,
+              { weekday: 'long', month: 'long', day: 'numeric' }
+            )
+          }&nbsp;at&nbsp;
+          { 
+            new Date(props.sent_at).toLocaleTimeString(
+              undefined,
+              {hour: 'numeric', minute: '2-digit'}
+            )
+          }
+        </div>
         <div className="collapse" id={`collapse-meeting-${props.id}`}>
           <div className="email-preview p-2" dangerouslySetInnerHTML={{__html: props.body}}></div>
         </div>

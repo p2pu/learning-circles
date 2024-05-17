@@ -342,10 +342,10 @@ class TestStudyGroupTasks(TestCase):
             send_weekly_update()
 
         self.assertEqual(len(mail.outbox), 2)
-        self.assertEqual(mail.outbox[0].to[0], 'faci1@team.com')
-        self.assertEqual(mail.outbox[0].to[1], 'organ@team.com')
-        self.assertEqual(mail.outbox[0].cc[0], 'teams@localhost')
-        self.assertEqual(mail.outbox[1].to[0], 'admin@test.com')
+        self.assertIn('faci1@team.com', mail.outbox[0].to)
+        self.assertIn('organ@team.com', mail.outbox[0].to)
+        self.assertIn('teams@localhost', mail.outbox[0].cc)
+        self.assertIn('admin@test.com', mail.outbox[1].to)
 
 
     def test_dont_send_weekly_report(self):

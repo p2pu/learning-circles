@@ -2,7 +2,7 @@
 from django import forms
 from django.conf import settings
 from django.conf.global_settings import LANGUAGES
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.utils import timezone
 from django.utils.text import slugify
 from django.contrib.auth.models import User
