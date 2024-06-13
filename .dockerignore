@@ -14,3 +14,4 @@ upload
 Dockerfile
 compose/
 places/data/
+docker.env
