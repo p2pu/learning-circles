@@ -1,24 +1,17 @@
 {% extends 'base.html' %}
 {% load i18n %}
+{% load render_bundle from webpack_loader %}
 
 {% block page_title %}
-  {% trans "Nico's dash" %}
+  {% trans "Q's dash" %}
 {% endblock %}
 
 {% block content %}
-
 <div class="container">
-  <h2>{% trans "Nico's dash" %}</h2>
+  <h2>{% trans "Q's dash" %}</h2>
 
-  <h3>{% trans "Export" %}<h3>
-    <ul class="row list-unstyled">
-      <li class="col d-flex mb-3"><a class="btn btn-primary w-100" href="{% url 'studygroups_export_facilitators' %}"><i class="fas fa-download" aria-hidden="true"></i><br/>{% trans "Users" %}</a></li>
-      <li class="col d-flex mb-3"><a class="btn btn-primary w-100" href="{% url 'studygroups_export_signups' %}"><i class="fas fa-download" aria-hidden="true"></i><br/>{% trans "Signups" %}</a></li>
-      <li class="col d-flex mb-3"><a class="btn btn-primary w-100" href="{% url 'studygroups_export_studygroups' %}"><i class="fas fa-download" aria-hidden="true"></i><br/>{% trans "Learning circles" %}</a></li>
-      <li class="col d-flex mb-3"><a class="btn btn-primary w-100" href="{% url 'studygroups_export_courses' %}"><i class="fas fa-download" aria-hidden="true"></i><br/>{% trans "Courses" %}</a></li>
-      <li class="col d-flex mb-3"><a class="btn btn-primary w-100" href="{% url 'survey_learner_responses_csv' %}"><i class="fas fa-download" aria-hidden="true"></i><br/>{% trans "Learning circle surveys" %}</a></li>
-      <li class="col d-flex mb-3"><a class="btn btn-primary w-100" href="{% url 'survey_facilitator_responses_csv' %}"><i class="fas fa-download" aria-hidden="true"></i><br/>{% trans "Facilitator surveys" %}</a></li>
-    </ul>
+  <h3>{% trans "Export" %}</h3>
+  <div id="download-links"></div>
 
   <h3>{% trans "Links" %}</h3>
   <ul>
@@ -39,5 +32,39 @@
     <li><p>Git revision: <a href="https://github.com/p2pu/learning-circles/tree/{{git_revision}}">{{ git_revision }}</a></p></li>
   </ul>
 </div>
+{% endblock %}
 
+{% block scripts %}
+  <script id="react-data" type="application/json">
+    {
+      "exportLinks": [
+        {
+          "url": "{% url 'studygroups_export_facilitators' %}",
+          "text": "{% trans "Users" %}"
+        },
+        {
+          "url": "{% url 'studygroups_export_signups' %}",
+          "text": "{% trans "Signups" %}"
+        },
+        {
+          "url": "{% url 'studygroups_export_studygroups' %}",
+          "text": "{% trans "Learning circles" %}"
+        },
+        {
+          "url": "{% url 'studygroups_export_courses' %}",
+          "text": "{% trans "Courses" %}"
+        },
+        {
+          "url": "{% url 'survey_learner_responses_csv' %}",
+          "text": "{% trans "Learning circle surveys" %}"
+        },
+        {
+          "url": "{% url 'survey_facilitator_responses_csv' %}",
+          "text": "{% trans "Facilitator surveys" %}"
+        }
+      ]
+    }
+  </script>
+
+  {% render_bundle 'staff-dashboard' %}
 {% endblock %}
