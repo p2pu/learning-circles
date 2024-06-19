@@ -13,6 +13,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.views.generic.base import View
+from django.views.generic.detail import SingleObjectMixin
 from django.views.generic import ListView
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
@@ -24,6 +25,7 @@ from django.db.models import OuterRef
 from django.db.models import Subquery
 from django.db.models import F, Case, When, Value, Sum, IntegerField
 
+from django_celery_results.models import TaskResult
 
 from studygroups.models import Application
 from studygroups.models import StudyGroup
@@ -33,8 +35,10 @@ from ..decorators import user_is_staff
 from learnwithpeople import __version__ as VERSION
 from learnwithpeople import GIT_REVISION
 from ..tasks import send_community_digest
-
+from ..tasks import export_signups
 from studygroups.forms import DigestGenerateForm
+
+from uxhelpers.utils import json_response
 
 
 @method_decorator(user_is_staff, name='dispatch')
@@ -45,6 +49,8 @@ class StaffDashView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['version'] = VERSION
         context['git_revision'] = GIT_REVISION
+        # TODO - see if there are any pending exports
+
         return context
 
 
@@ -66,55 +72,23 @@ class DigestGenerateView(FormView):
 
 
 @method_decorator(user_is_staff, name='dispatch')
-class ExportSignupsView(ListView):
-
-    def get_queryset(self):
-        return Application.objects.all().prefetch_related('study_group', 'study_group__course')
-
-
-    def csv(self, **kwargs):
-        response = http.HttpResponse(content_type="text/csv")
-        ts = timezone.now().utcnow().isoformat()
-        response['Content-Disposition'] = 'attachment; filename="signups-{}.csv"'.format(ts)
-        signup_questions = ['support', 'goals', 'computer_access']
-        field_names = [
-            'id', 'uuid', 'study group id', 'study group uuid', 'study group name', 'course',
-            'location', 'name', 'email', 'mobile', 'signed up at'
-        ] + signup_questions + ['use_internet', 'survey completed', 'communications opt-in']
-        writer = csv.writer(response)
-        writer.writerow(field_names)
-        for signup in self.object_list:
-            signup_data = json.loads(signup.signup_questions)
-            digital_literacy = 'n/a'
-            if signup_data.get('use_internet'):
-                digital_literacy = dict(Application.DIGITAL_LITERACY_CHOICES)[signup_data.get('use_internet')]
-            writer.writerow(
-                [
-                    signup.id,
-                    signup.uuid,
-                    signup.study_group_id,
-                    signup.study_group.uuid,
-                    signup.study_group.name,
-                    signup.study_group.course.title,
-                    signup.study_group.venue_name,
-                    signup.name,
-                    signup.email,
-                    signup.mobile,
-                    signup.created_at,
-                ] +
-                [ signup_data.get(key, 'n/a') for key in signup_questions ] +
-                [
-                    digital_literacy,
-                    'yes' if signup.learnersurveyresponse_set.count() else 'no'
-                ] +
-                [ signup.communications_opt_in ]
-            )
-        return response
-
+class ExportSignupsView(View):
 
     def get(self, request, *args, **kwargs):
-        self.object_list = self.get_queryset()
-        return self.csv(**kwargs)
+        result = export_signups.delay(request.user.id)
+        return json_response(request, {'task_id': result.id})
+
+
+@method_decorator(user_is_staff, name='dispatch')
+class ExportStatusView(SingleObjectMixin, View):
+    model = TaskResult
+    pk_url_kwarg = 'task_id'
+
+    def get(self, request, *args, **kwargs):
+        result = get_object_or_404(TaskResult, task_id= kwargs.get('task_id'))
+        # TODO - check that the task was an export
+        # TODO - return usefull data for the task
+        return json_response(request, {'task_id': result.task_id, 'status': result.status})
 
 
 @method_decorator(user_is_staff, name='dispatch')

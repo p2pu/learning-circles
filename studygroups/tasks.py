@@ -30,6 +30,10 @@ import pytz
 import os
 import re
 import dateutil.parser
+import tempfile
+import unicodecsv as csv
+import json
+
 
 logger = logging.getLogger(__name__)
 
@@ -615,3 +619,57 @@ def send_cofacilitator_removed_email(study_group_id, user_id, actor_user_id):
     )
     msg.attach_alternative(html_body, 'text/html')
     msg.send()
+
+
+@shared_task
+def export_signups(user_id):
+    """ user_id - the person requesting the export """
+    # get data for export
+    # write to stream/buffer
+    # upload to AWS S3
+    # Need a id/ref for creating a link that user can use
+    # add view for AWS presigned URL
+
+
+    object_list = Application.objects.all().prefetch_related('study_group', 'study_group__course')
+
+    temp_file = tempfile.TemporaryFile(mode='w+b')
+
+    ts = timezone.now().utcnow().isoformat()
+    signup_questions = ['support', 'goals', 'computer_access']
+    field_names = [
+        'id', 'uuid', 'study group id', 'study group uuid', 'study group name', 'course',
+        'location', 'name', 'email', 'mobile', 'signed up at'
+    ] + signup_questions + ['use_internet', 'survey completed', 'communications opt-in']
+    writer = csv.writer(temp_file)
+    writer.writerow(field_names)
+    for signup in object_list:
+        signup_data = json.loads(signup.signup_questions)
+        digital_literacy = 'n/a'
+        if signup_data.get('use_internet'):
+            digital_literacy = dict(Application.DIGITAL_LITERACY_CHOICES)[signup_data.get('use_internet')]
+        writer.writerow(
+            [
+                signup.id,
+                signup.uuid,
+                signup.study_group_id,
+                signup.study_group.uuid,
+                signup.study_group.name,
+                signup.study_group.course.title,
+                signup.study_group.venue_name,
+                signup.name,
+                signup.email,
+                signup.mobile,
+                signup.created_at,
+            ] +
+            [ signup_data.get(key, 'n/a') for key in signup_questions ] +
+            [
+                digital_literacy,
+                'yes' if signup.learnersurveyresponse_set.count() else 'no'
+            ] +
+            [ signup.communications_opt_in ]
+        )
+
+    # TODO - Upload to AWS S3 and generate presigned URL
+    return { "presign_url": "TODO" }
+
