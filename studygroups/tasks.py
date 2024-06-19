@@ -33,6 +33,8 @@ import dateutil.parser
 import tempfile
 import unicodecsv as csv
 import json
+import boto3
+from botocore.exceptions import ClientError
 
 
 logger = logging.getLogger(__name__)
@@ -670,6 +672,26 @@ def export_signups(user_id):
             [ signup.communications_opt_in ]
         )
 
-    # TODO - Upload to AWS S3 and generate presigned URL
-    return { "presign_url": "TODO" }
+    # Upload to AWS S3 and generate presigned URL
+    ts = timezone.now().utcnow().isoformat()
+    filename = 'signups-{}.csv'.format(ts)
+    key = '/'.join(['learning-circles', 'exports', filename])
+    bucket = settings.P2PU_RESOURCES_AWS_BUCKET
+
+    s3 = boto3.client('s3', aws_access_key_id=settings.P2PU_RESOURCES_AWS_ACCESS_KEY, aws_secret_access_key=settings.P2PU_RESOURCES_AWS_SECRET_KEY)
+    temp_file.seek(0)
+    response = s3.upload_fileobj(
+        temp_file, bucket, key,
+        ExtraArgs={'Expires': 3600}
+    )
+
+    try:
+        presigned_url = s3.generate_presigned_url(
+            'get_object', Params={'Bucket': bucket, 'Key': key}, ExpiresIn=3600
+        )
+    except ClientError as e:
+        logger.error(e)
+        return None
+
+    return { "presigned_url": presigned_url }
 
