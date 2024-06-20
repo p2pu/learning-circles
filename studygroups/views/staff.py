@@ -26,6 +26,7 @@ from django.db.models import Subquery
 from django.db.models import F, Case, When, Value, Sum, IntegerField
 
 from django_celery_results.models import TaskResult
+from celery.result import AsyncResult
 
 from studygroups.models import Application
 from studygroups.models import StudyGroup
@@ -80,15 +81,15 @@ class ExportSignupsView(View):
 
 
 @method_decorator(user_is_staff, name='dispatch')
-class ExportStatusView(SingleObjectMixin, View):
-    model = TaskResult
-    pk_url_kwarg = 'task_id'
+class ExportStatusView(View):
 
     def get(self, request, *args, **kwargs):
-        result = get_object_or_404(TaskResult, task_id= kwargs.get('task_id'))
+        task_id = kwargs.get('task_id')
+        #result = get_object_or_404(TaskResult, task_id=task_id)
         # TODO - check that the task was an export
         # TODO - return usefull data for the task
-        return json_response(request, {'task_id': result.task_id, 'status': result.status})
+        result = AsyncResult(task_id)
+        return json_response(request, {'task_id': result.task_id, 'status': result.state, 'result': result.result})
 
 
 @method_decorator(user_is_staff, name='dispatch')
