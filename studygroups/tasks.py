@@ -38,7 +38,6 @@ import pytz
 import os
 import re
 import dateutil.parser
-import tempfile
 import csv
 import json
 import io
