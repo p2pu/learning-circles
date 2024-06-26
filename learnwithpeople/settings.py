@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'webpack_loader',
     'tinymce',
     'django_bleach',
+    'django_celery_results',
     # own
     'studygroups',
     'backup',
@@ -257,6 +258,7 @@ GA_TRACKING_ID = env('GA_TRACKING_ID', 'UA-0000000-00')
 
 ####### Celery config #######
 CELERY_BROKER_URL = env('BROKER_URL', 'amqp://guest:guest@localhost//')
+CELERY_RESULT_BACKEND = 'django-db'
 
 from celery.schedules import crontab
 

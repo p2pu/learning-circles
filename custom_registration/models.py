@@ -42,7 +42,9 @@ class EmailConfirmTokenGenerator(PasswordResetTokenGenerator):
         # Remove last login timestamp from hash and replace with date
         # that email address was confirmed
         confirm_timestamp = '' if user.profile.email_confirmed_at is None else user.profile.email_confirmed_at.replace(microsecond=0, tzinfo=None)
-        return str(user.pk) + user.password + str(timestamp) + str(confirm_timestamp)
+        email_field = user.get_email_field_name()
+        email = getattr(user, email_field, "") or ""
+        return f'{user.pk}{user.password}{confirm_timestamp}{timestamp}{email}'
 
 
 def generate_user_token(user):
