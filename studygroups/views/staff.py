@@ -38,6 +38,7 @@ from learnwithpeople import GIT_REVISION
 from ..tasks import send_community_digest
 from ..tasks import export_signups
 from ..tasks import export_users
+from ..tasks import export_learning_circles
 from studygroups.forms import DigestGenerateForm
 
 from uxhelpers.utils import json_response
@@ -105,108 +106,11 @@ class ExportFacilitatorsView(View):
 
 
 @method_decorator(user_is_staff, name='dispatch')
-class ExportStudyGroupsView(ListView):
-
-    def get_queryset(self):
-        return StudyGroup.objects.all().prefetch_related('course', 'facilitator_set', 'meeting_set').annotate(
-            learning_circle_number=RawSQL("RANK() OVER(PARTITION BY created_by_id ORDER BY created_at ASC)", [])
-        )
-
-    def csv(self, **kwargs):
-        response = http.HttpResponse(content_type="text/csv")
-        ts = timezone.now().utcnow().isoformat()
-        response['Content-Disposition'] = 'attachment; filename="learning-circles-{}.csv"'.format(ts)
-        field_names = [
-            'id',
-            'uuid',
-            'name',
-            'date created',
-            'date deleted',
-            'draft',
-            'course id',
-            'course title',
-            'created by',
-            'created by email',
-            'learning_circle_number',
-            'location',
-            'city',
-            'time',
-            'day',
-            'last meeting',
-            'first meeting',
-            'signups',
-            'team',
-            'facilitator survey',
-            'facilitator survey completed',
-            'learner survey',
-            'learner survey responses',
-            'did not happen',
-            'facilitator count',
-        ]
-        writer = csv.writer(response)
-        writer.writerow(field_names)
-        for sg in self.object_list:
-            data = [
-                sg.pk,
-                sg.uuid,
-                sg.name,
-                sg.created_at,
-                sg.deleted_at,
-                'yes' if sg.draft else 'no',
-                sg.course.id,
-                sg.course.title,
-                ' '.join([sg.created_by.first_name, sg.created_by.last_name]),
-                sg.created_by.email,
-                sg.learning_circle_number,
-                ' ' .join([sg.venue_name, sg.venue_address]),
-                sg.city,
-                sg.meeting_time,
-                sg.day(),
-            ]
-            if sg.meeting_set.active().last():
-                data += [sg.meeting_set.active().order_by('meeting_date', 'meeting_time').last().meeting_date]
-            elif sg.deleted_at:
-                data += [sg.start_date]
-            else:
-                data += ['']
-
-            if sg.meeting_set.active().first():
-                data += [sg.meeting_set.active().order_by('meeting_date', 'meeting_time').first().meeting_date]
-            elif sg.deleted_at:
-                data += [sg.end_date]
-            else:
-                data += ['']
-
-            data += [sg.application_set.active().count()]
-
-            if sg.team:
-                data += [sg.team.name]
-            else:
-                data += ['']
-
-            base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
-            facilitator_survey =  '{}{}'.format(
-                base_url,
-                reverse('studygroups_facilitator_survey', args=(sg.uuid,))
-            )
-            data += [facilitator_survey]
-            data += ['yes' if sg.facilitatorsurveyresponse_set.count() else 'no']
-            learner_survey = '{}{}'.format(
-                base_url,
-                reverse('studygroups_learner_survey', args=(sg.uuid,))
-            )
-            data += [learner_survey]
-            data += [sg.learnersurveyresponse_set.count()]
-            data += [sg.did_not_happen]
-            data += [sg.facilitator_set.count()]
-
-            writer.writerow(data)
-        return response
-
+class ExportStudyGroupsView(View):
 
     def get(self, request, *args, **kwargs):
-        self.object_list = self.get_queryset()
-        return self.csv(**kwargs)
+        task = export_learning_circles.delay()
+        return json_response(request, {'task_id': task.id})
 
 
 @method_decorator(user_is_staff, name='dispatch')

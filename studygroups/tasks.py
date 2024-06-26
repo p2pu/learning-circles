@@ -12,6 +12,7 @@ from django.urls import reverse
 from django.db.models import OuterRef
 from django.db.models import Subquery
 from django.db.models import F, Case, When, Value, Sum, IntegerField
+from django.db.models.expressions import RawSQL
 
 
 from studygroups.models import StudyGroup, Meeting, Reminder, Team, TeamMembership, Application
@@ -753,3 +754,103 @@ def export_users():
     temp_file.seek(0)
 
     return upload_to_s3(temp_file, 'facilitators')
+
+
+@shared_task
+def export_learning_circles():
+    object_list = StudyGroup.objects.all().prefetch_related('course', 'facilitator_set', 'meeting_set').annotate(
+        learning_circle_number=RawSQL("RANK() OVER(PARTITION BY created_by_id ORDER BY created_at ASC)", [])
+    )
+
+    temp_file = io.BytesIO()
+    writer = csv.writer(io.TextIOWrapper(temp_file))
+
+    field_names = [
+        'id',
+        'uuid',
+        'name',
+        'date created',
+        'date deleted',
+        'draft',
+        'course id',
+        'course title',
+        'created by',
+        'created by email',
+        'learning_circle_number',
+        'location',
+        'city',
+        'time',
+        'day',
+        'last meeting',
+        'first meeting',
+        'signups',
+        'team',
+        'facilitator survey',
+        'facilitator survey completed',
+        'learner survey',
+        'learner survey responses',
+        'did not happen',
+        'facilitator count',
+    ]
+    writer.writerow(field_names)
+    for sg in object_list:
+        data = [
+            sg.pk,
+            sg.uuid,
+            sg.name,
+            sg.created_at,
+            sg.deleted_at,
+            'yes' if sg.draft else 'no',
+            sg.course.id,
+            sg.course.title,
+            ' '.join([sg.created_by.first_name, sg.created_by.last_name]),
+            sg.created_by.email,
+            sg.learning_circle_number,
+            ' ' .join([sg.venue_name, sg.venue_address]),
+            sg.city,
+            sg.meeting_time,
+            sg.day(),
+        ]
+        if sg.meeting_set.active().last():
+            data += [sg.meeting_set.active().order_by('meeting_date', 'meeting_time').last().meeting_date]
+        elif sg.deleted_at:
+            data += [sg.start_date]
+        else:
+            data += ['']
+
+        if sg.meeting_set.active().first():
+            data += [sg.meeting_set.active().order_by('meeting_date', 'meeting_time').first().meeting_date]
+        elif sg.deleted_at:
+            data += [sg.end_date]
+        else:
+            data += ['']
+
+        data += [sg.application_set.active().count()]
+
+        if sg.team:
+            data += [sg.team.name]
+        else:
+            data += ['']
+
+        base_url = f'{settings.PROTOCOL}://{settings.DOMAIN}'
+        facilitator_survey =  '{}{}'.format(
+            base_url,
+            reverse('studygroups_facilitator_survey', args=(sg.uuid,))
+        )
+        data += [facilitator_survey]
+        data += ['yes' if sg.facilitatorsurveyresponse_set.count() else 'no']
+        learner_survey = '{}{}'.format(
+            base_url,
+            reverse('studygroups_learner_survey', args=(sg.uuid,))
+        )
+        data += [learner_survey]
+        data += [sg.learnersurveyresponse_set.count()]
+        data += [sg.did_not_happen]
+        data += [sg.facilitator_set.count()]
+
+        writer.writerow(data)
+
+    temp_file.seek(0)
+
+    return upload_to_s3(temp_file, 'learning-circles')
+
