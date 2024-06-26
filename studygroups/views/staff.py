@@ -37,6 +37,7 @@ from learnwithpeople import __version__ as VERSION
 from learnwithpeople import GIT_REVISION
 from ..tasks import send_community_digest
 from ..tasks import export_signups
+from ..tasks import export_users
 from studygroups.forms import DigestGenerateForm
 
 from uxhelpers.utils import json_response
@@ -50,7 +51,7 @@ class StaffDashView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['version'] = VERSION
         context['git_revision'] = GIT_REVISION
-        # TODO - see if there are any pending exports
+        # TODO - see if there are any pending exports - Or recent exports
 
         return context
 
@@ -73,87 +74,34 @@ class DigestGenerateView(FormView):
 
 
 @method_decorator(user_is_staff, name='dispatch')
-class ExportSignupsView(View):
-
-    def get(self, request, *args, **kwargs):
-        result = export_signups.delay(request.user.id)
-        return json_response(request, {'task_id': result.id})
-
-
-@method_decorator(user_is_staff, name='dispatch')
 class ExportStatusView(View):
 
     def get(self, request, *args, **kwargs):
         task_id = kwargs.get('task_id')
-        #result = get_object_or_404(TaskResult, task_id=task_id)
         # TODO - check that the task was an export
-        # TODO - return usefull data for the task
         result = AsyncResult(task_id)
-        return json_response(request, {'task_id': result.task_id, 'status': result.state, 'result': result.result})
+        task_data = {
+            'task_id': result.task_id,
+            'status': result.state,
+            'result': result.result if result.state == 'SUCCESS' else None,
+        }
+        return json_response(request, task_data)
 
 
 @method_decorator(user_is_staff, name='dispatch')
-class ExportFacilitatorsView(ListView):
-
-    def get_queryset(self):
-        learning_circles = StudyGroup.objects.select_related('course').published().filter(facilitator__user_id=OuterRef('pk')).order_by('-start_date')
-        return User.objects.all().annotate(
-            learning_circle_count=Sum(
-                Case(
-                    When(
-                        facilitator__study_group__deleted_at__isnull=True,
-                        facilitator__study_group__draft=False,
-                        then=Value(1),
-                        facilitator__user__id=F('id')
-                    ),
-                    default=Value(0), output_field=IntegerField()
-                )
-            )
-        ).annotate(
-            last_learning_circle_date=Subquery(learning_circles.values('start_date')[:1]),
-            last_learning_circle_name=Subquery(learning_circles.values('name')[:1]),
-            last_learning_circle_course=Subquery(learning_circles.values('course__title')[:1]),
-            last_learning_circle_venue=Subquery(learning_circles.values('venue_name')[:1])
-        )
-
-
-    def csv(self, **kwargs):
-        response = http.HttpResponse(content_type="text/csv")
-        ts = timezone.now().utcnow().isoformat()
-        response['Content-Disposition'] = 'attachment; filename="facilitators-{}.csv"'.format(ts)
-        field_names = ['name',
-            'email',
-            'date joined',
-            'last login',
-            'communication opt-in',
-            'learning circles run',
-            'last learning circle date',
-            'last learning cirlce name',
-            'last learning circle course',
-            'last learning circle venue',
-        ]
-        writer = csv.writer(response)
-        writer.writerow(field_names)
-        for user in self.object_list:
-            data = [
-                ' '.join([user.first_name, user.last_name]),
-                user.email,
-                user.date_joined,
-                user.last_login,
-                user.profile.communication_opt_in if user.profile else False,
-                user.learning_circle_count,
-                user.last_learning_circle_date,
-                user.last_learning_circle_name,
-                user.last_learning_circle_course,
-                user.last_learning_circle_venue,
-            ]
-            writer.writerow(data)
-        return response
-
+class ExportSignupsView(View):
 
     def get(self, request, *args, **kwargs):
-        self.object_list = self.get_queryset()
-        return self.csv(**kwargs)
+        task = export_signups.delay(request.user.id)
+        return json_response(request, {'task_id': task.id})
+
+
+@method_decorator(user_is_staff, name='dispatch')
+class ExportFacilitatorsView(View):
+
+    def get(self, request, *args, **kwargs):
+        task = export_users.delay()
+        return json_response(request, {'task_id': task.id})
 
 
 @method_decorator(user_is_staff, name='dispatch')

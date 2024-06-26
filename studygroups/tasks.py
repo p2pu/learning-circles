@@ -9,6 +9,10 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
 from django.urls import reverse
+from django.db.models import OuterRef
+from django.db.models import Subquery
+from django.db.models import F, Case, When, Value, Sum, IntegerField
+
 
 from studygroups.models import StudyGroup, Meeting, Reminder, Team, TeamMembership, Application
 from studygroups.models import weekly_update_data
@@ -31,8 +35,9 @@ import os
 import re
 import dateutil.parser
 import tempfile
-import unicodecsv as csv
+import csv
 import json
+import io
 import boto3
 from botocore.exceptions import ClientError
 
@@ -623,27 +628,43 @@ def send_cofacilitator_removed_email(study_group_id, user_id, actor_user_id):
     msg.send()
 
 
+def upload_to_s3(file_obj, export_name):
+    ts = timezone.now().utcnow().isoformat()
+    filename = '{}-{}.csv'.format(export_name, ts)
+    key = '/'.join(['learning-circles', 'exports', filename])
+    bucket = settings.P2PU_RESOURCES_AWS_BUCKET
+
+    s3 = boto3.client('s3', aws_access_key_id=settings.P2PU_RESOURCES_AWS_ACCESS_KEY, aws_secret_access_key=settings.P2PU_RESOURCES_AWS_SECRET_KEY)
+    response = s3.upload_fileobj(
+        file_obj, bucket, key,
+    )
+    file_obj.close()
+
+    try:
+        presigned_url = s3.generate_presigned_url(
+            'get_object', Params={'Bucket': bucket, 'Key': key}, ExpiresIn=1800
+        )
+    except ClientError as e:
+        logger.error(e)
+        return None
+
+    return { "presigned_url": presigned_url, "export_name": export_name, "s3_key": key}
+
+
 @shared_task
 def export_signups(user_id):
     """ user_id - the person requesting the export """
-    # get data for export
-    # write to stream/buffer
-    # upload to AWS S3
-    # Need a id/ref for creating a link that user can use
-    # add view for AWS presigned URL
-
 
     object_list = Application.objects.all().prefetch_related('study_group', 'study_group__course')
 
-    temp_file = tempfile.TemporaryFile(mode='w+b')
-
-    ts = timezone.now().utcnow().isoformat()
     signup_questions = ['support', 'goals', 'computer_access']
     field_names = [
         'id', 'uuid', 'study group id', 'study group uuid', 'study group name', 'course',
         'location', 'name', 'email', 'mobile', 'signed up at'
     ] + signup_questions + ['use_internet', 'survey completed', 'communications opt-in']
-    writer = csv.writer(temp_file)
+
+    temp_file = io.BytesIO()
+    writer = csv.writer(io.TextIOWrapper(temp_file))
     writer.writerow(field_names)
     for signup in object_list:
         signup_data = json.loads(signup.signup_questions)
@@ -672,26 +693,63 @@ def export_signups(user_id):
             [ signup.communications_opt_in ]
         )
 
-    # Upload to AWS S3 and generate presigned URL
-    ts = timezone.now().utcnow().isoformat()
-    filename = 'signups-{}.csv'.format(ts)
-    key = '/'.join(['learning-circles', 'exports', filename])
-    bucket = settings.P2PU_RESOURCES_AWS_BUCKET
-
-    s3 = boto3.client('s3', aws_access_key_id=settings.P2PU_RESOURCES_AWS_ACCESS_KEY, aws_secret_access_key=settings.P2PU_RESOURCES_AWS_SECRET_KEY)
     temp_file.seek(0)
-    response = s3.upload_fileobj(
-        temp_file, bucket, key,
-        ExtraArgs={'Expires': 3600}
+
+    return upload_to_s3(temp_file, 'signups')
+    
+
+@shared_task
+def export_users():
+    learning_circles = StudyGroup.objects.select_related('course').published().filter(facilitator__user_id=OuterRef('pk')).order_by('-start_date')
+    users = User.objects.all().annotate(
+        learning_circle_count=Sum(
+            Case(
+                When(
+                    facilitator__study_group__deleted_at__isnull=True,
+                    facilitator__study_group__draft=False,
+                    then=Value(1),
+                    facilitator__user__id=F('id')
+                ),
+                default=Value(0), output_field=IntegerField()
+            )
+        )
+    ).annotate(
+        last_learning_circle_date=Subquery(learning_circles.values('start_date')[:1]),
+        last_learning_circle_name=Subquery(learning_circles.values('name')[:1]),
+        last_learning_circle_course=Subquery(learning_circles.values('course__title')[:1]),
+        last_learning_circle_venue=Subquery(learning_circles.values('venue_name')[:1])
     )
 
-    try:
-        presigned_url = s3.generate_presigned_url(
-            'get_object', Params={'Bucket': bucket, 'Key': key}, ExpiresIn=3600
-        )
-    except ClientError as e:
-        logger.error(e)
-        return None
+    temp_file = io.BytesIO()
+    writer = csv.writer(io.TextIOWrapper(temp_file))
 
-    return { "presigned_url": presigned_url }
+    field_names = ['name',
+        'email',
+        'date joined',
+        'last login',
+        'communication opt-in',
+        'learning circles run',
+        'last learning circle date',
+        'last learning cirlce name',
+        'last learning circle course',
+        'last learning circle venue',
+    ]
+    writer.writerow(field_names)
+    for user in users:
+        data = [
+            ' '.join([user.first_name, user.last_name]),
+            user.email,
+            user.date_joined,
+            user.last_login,
+            user.profile.communication_opt_in if user.profile else False,
+            user.learning_circle_count,
+            user.last_learning_circle_date,
+            user.last_learning_circle_name,
+            user.last_learning_circle_course,
+            user.last_learning_circle_venue,
+        ]
+        writer.writerow(data)
 
+    temp_file.seek(0)
+
+    return upload_to_s3(temp_file, 'facilitators')
