@@ -1,37 +1,16 @@
 from datetime import datetime, time
-import json
-import unicodecsv as csv
 
-from django import http
 from django.urls import reverse_lazy
-from django.shortcuts import render, get_object_or_404
-from django.urls import reverse
-from django.contrib.auth.models import User
 from django.contrib import messages
-from django.conf import settings
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext as _
 from django.views.generic.base import View
-from django.views.generic.detail import SingleObjectMixin
-from django.views.generic import ListView
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
-from django.db.models.expressions import RawSQL
-from django.db.models import Count
-from django.db.models import Q
-from django.db.models import Prefetch
-from django.db.models import OuterRef
-from django.db.models import Subquery
-from django.db.models import F, Case, When, Value, Sum, IntegerField
 
-from django_celery_results.models import TaskResult
 from celery.result import AsyncResult
 
-from studygroups.models import Application
-from studygroups.models import StudyGroup
-from studygroups.models import Course
-from studygroups.models import TeamMembership
 from ..decorators import user_is_staff
 from learnwithpeople import __version__ as VERSION
 from learnwithpeople import GIT_REVISION
