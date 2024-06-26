@@ -40,19 +40,23 @@
       "exportLinks": [
         {
           "url": "{% url 'studygroups_export_facilitators' %}",
-          "text": "{% trans "Users" %}"
+          "text": "{% trans "Users" %}",
+          "asynchronous": true
         },
         {
           "url": "{% url 'studygroups_export_signups' %}",
-          "text": "{% trans "Signups" %}"
+          "text": "{% trans "Signups" %}",
+          "asynchronous": true
         },
         {
           "url": "{% url 'studygroups_export_studygroups' %}",
-          "text": "{% trans "Learning circles" %}"
+          "text": "{% trans "Learning circles" %}",
+          "asynchronous": true
         },
         {
           "url": "{% url 'studygroups_export_courses' %}",
-          "text": "{% trans "Courses" %}"
+          "text": "{% trans "Courses" %}",
+          "asynchronous": true
         },
         {
           "url": "{% url 'survey_learner_responses_csv' %}",

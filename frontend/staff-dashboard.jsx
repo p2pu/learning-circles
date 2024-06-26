@@ -26,7 +26,7 @@ const ExportLinks = props => {
           const result = pollResp.data
           if (result.status == 'PENDING'){
             console.log(`keep on polling ${pollingUrl}, ${pollResp}`)
-            setTimeout(pollRequest, backoff, backoff*2)
+            setTimeout(pollRequest, backoff, Math.clamp(backoff*2, 2000, 16000))
           } else if (result.status == 'SUCCESS') {
             console.log(`done polling ${pollingUrl}, ${pollResp}`)
             setPollingUrl('')
@@ -50,7 +50,7 @@ const ExportLinks = props => {
       }
     }
 
-    pollRequest(5000)
+    pollRequest(2000)
 
   }
 
@@ -82,9 +82,9 @@ const ExportLinks = props => {
     <>
     <ul className="row list-unstyled">
       { 
-        props.exportLinks.map( ({url, text}, index) => 
+        props.exportLinks.map( ({url, text, asynchronous}, index) => 
           <li key={index} className="col d-flex mb-3">
-            <a className={"btn btn-primary w-100 " + (requestPending?"disabled":"") } href={url} onClick={onClick} ><i className="fas fa-download" aria-hidden="true"></i><br/>{text}</a>
+            <a className={"btn btn-primary w-100 " + (requestPending?"disabled":"") } href={url} onClick={asynchronous?onClick:undefined} ><i className="fas fa-download" aria-hidden="true"></i><br/>{text}</a>
           </li>
         )
       }
