@@ -9,6 +9,8 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
 from django.urls import reverse
+from django.db.models import Count
+from django.db.models import Q
 from django.db.models import OuterRef
 from django.db.models import Subquery
 from django.db.models import F, Case, When, Value, Sum, IntegerField
@@ -16,6 +18,7 @@ from django.db.models.expressions import RawSQL
 
 
 from studygroups.models import StudyGroup, Meeting, Reminder, Team, TeamMembership, Application
+from studygroups.models import Course
 from studygroups.models import weekly_update_data
 from studygroups.models import community_digest_data
 from studygroups.models import get_study_group_organizers
@@ -851,6 +854,49 @@ def export_learning_circles():
         writer.writerow(data)
 
     temp_file.seek(0)
-
     return upload_to_s3(temp_file, 'learning-circles')
+
+
+@shared_task
+def export_courses():
+    team_membership = TeamMembership.objects.active().filter(user=OuterRef('created_by'))
+    object_list = Course.objects.active()\
+        .filter(studygroup__deleted_at__isnull=True, studygroup__draft=False)\
+        .filter(facilitatorguide__deleted_at__isnull=True)\
+        .annotate(lc_count=Count('studygroup', distinct=True))\
+        .annotate(active_lc_count=Count('studygroup', distinct=True, filter=Q(studygroup__end_date__gte=timezone.now())))\
+        .annotate(facilitator_guide_count=Count('facilitatorguide', distinct=True))\
+        .annotate(team_name=Subquery(team_membership.values('team__name')[:1]))\
+        .select_related('created_by')
+
+    temp_file = io.BytesIO()
+    writer = csv.writer(io.TextIOWrapper(temp_file))
+
+    db_fields = [
+        'id',
+        'title',
+        'provider',
+        'link',
+        'caption',
+        'on_demand',
+        'keywords',
+        'language',
+        'created_by',
+        'unlisted',
+        'license',
+        'created_at',
+        'lc_count',
+        'active_lc_count',
+        'facilitator_guide_count',
+        'team_name',
+    ]
+    writer.writerow(db_fields)
+    for obj in object_list:
+        data = [
+            getattr(obj, field) for field in db_fields
+        ]
+        writer.writerow(data)
+
+    temp_file.seek(0)
+    return upload_to_s3(temp_file, 'courses')
 

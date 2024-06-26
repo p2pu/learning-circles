@@ -39,6 +39,7 @@ from ..tasks import send_community_digest
 from ..tasks import export_signups
 from ..tasks import export_users
 from ..tasks import export_learning_circles
+from ..tasks import export_courses
 from studygroups.forms import DigestGenerateForm
 
 from uxhelpers.utils import json_response
@@ -114,50 +115,8 @@ class ExportStudyGroupsView(View):
 
 
 @method_decorator(user_is_staff, name='dispatch')
-class ExportCoursesView(ListView):
-
-    def get_queryset(self):
-        team_membership = TeamMembership.objects.active().filter(user=OuterRef('created_by'))
-        return Course.objects.active()\
-            .filter(studygroup__deleted_at__isnull=True, studygroup__draft=False)\
-            .filter(facilitatorguide__deleted_at__isnull=True)\
-            .annotate(lc_count=Count('studygroup', distinct=True))\
-            .annotate(active_lc_count=Count('studygroup', distinct=True, filter=Q(studygroup__end_date__gte=timezone.now())))\
-            .annotate(facilitator_guide_count=Count('facilitatorguide', distinct=True))\
-            .annotate(team_name=Subquery(team_membership.values('team__name')[:1]))\
-            .select_related('created_by')
-
-    def csv(self, **kwargs):
-        response = http.HttpResponse(content_type="text/csv")
-        ts = timezone.now().utcnow().isoformat()
-        response['Content-Disposition'] = 'attachment; filename="courses-{}.csv"'.format(ts)
-        db_fields = [
-            'id',
-            'title',
-            'provider',
-            'link',
-            'caption',
-            'on_demand',
-            'keywords',
-            'language',
-            'created_by',
-            'unlisted',
-            'license',
-            'created_at',
-            'lc_count',
-            'active_lc_count',
-            'facilitator_guide_count',
-            'team_name',
-        ]
-        writer = csv.writer(response)
-        writer.writerow(db_fields)
-        for obj in self.object_list:
-            data = [
-                getattr(obj, field) for field in db_fields
-            ]
-            writer.writerow(data)
-        return response
+class ExportCoursesView(View):
 
     def get(self, request, *args, **kwargs):
-        self.object_list = self.get_queryset()
-        return self.csv(**kwargs)
+        task = export_courses.delay()
+        return json_response(request, {'task_id': task.id})
