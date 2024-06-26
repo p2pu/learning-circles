@@ -25,7 +25,7 @@ const ExportLinks = props => {
         if (pollResp.status === 200) {
           const result = pollResp.data
           if (result.status == 'PENDING'){
-            console.log(`done polling ${pollingUrl}, ${pollResp}`)
+            console.log(`keep on polling ${pollingUrl}, ${pollResp}`)
             setTimeout(pollRequest, backoff, backoff*2)
           } else if (result.status == 'SUCCESS') {
             console.log(`done polling ${pollingUrl}, ${pollResp}`)
@@ -33,10 +33,19 @@ const ExportLinks = props => {
             setExportUrl(result.result.presigned_url)
             setRequestPending(false)
             return
+          } else if (result.status == 'FAILURE') {
+            console.log(`done polling ${pollingUrl}, ${pollResp}`)
+            setPollingUrl('')
+            setRequestPending(false)
+            setErrorMessage('Something went wrong with the export.')
+            return
           }
+
         }
       } catch (e) {
-        setErrorMessage('Something went wrong while waiting for the result')
+        setPollingUrl('')
+        setErrorMessage('Something went wrong while waiting for the export to finish.')
+        setRequestPending(false)
         console.log(e)
       }
     }
@@ -59,12 +68,12 @@ const ExportLinks = props => {
         startPolling(`/en/export/status/${res.data.task_id}/`)
       } else {
         console.log('Export request returned unexpected status code', res)
-        setErrorMessage('Something went wrong creating the export')
+        setErrorMessage('Something went wrong creating the export.')
         setRequestPending(false)
       }
     }).catch(err => {
       console.log('Export request failed', err)
-      setErrorMessage('Something went wrong creating the export')
+      setErrorMessage('Something went wrong creating the export.')
       setRequestPending(false)
     })
   }
