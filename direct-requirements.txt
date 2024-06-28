@@ -7,6 +7,7 @@ crispy-bootstrap5
 dj-database-url
 Django==4.2.11
 django-bleach
+django-celery-results
 django-cors-headers
 django-crispy-forms
 django-filter

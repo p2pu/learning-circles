@@ -1,4 +1,4 @@
-from django.urls import include, re_path
+from django.urls import include, re_path, path
 from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 
@@ -31,6 +31,7 @@ from studygroups.views import TeamInvitationCreate
 from studygroups.views import InvitationConfirm
 from studygroups.views import OptOutView
 from studygroups.views import ExportSignupsView
+from studygroups.views import ExportStatusView
 from studygroups.views import ExportFacilitatorsView
 from studygroups.views import ExportStudyGroupsView
 from studygroups.views import ExportCoursesView
@@ -145,6 +146,8 @@ urlpatterns = [
     re_path(r'^staff/dash/stats/$', StatsDashView.as_view(), name='studygroups_staff_dash_stats'),
 
     re_path(r'^export/signups/$', ExportSignupsView.as_view(), name='studygroups_export_signups'),
+
+    path('export/status/<uuid:task_id>/', ExportStatusView.as_view(), name='studygroups_export_status'),
     re_path(r'^export/facilitators/$', ExportFacilitatorsView.as_view(), name='studygroups_export_facilitators'),
     re_path(r'^export/studygroups/$', ExportStudyGroupsView.as_view(), name='studygroups_export_studygroups'),
     re_path(r'^export/courses/$', ExportCoursesView.as_view(), name='studygroups_export_courses'),
