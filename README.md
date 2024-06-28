@@ -43,6 +43,21 @@ docker-compose exec -T learning-circles pg_restore -c -f - < db.dump | docker-co
 
 We maintain a set of ansible roles to deploy learning circles in a repo called [marvin](https://github.com/p2pu/marvin). If you wish to deploy your own version, that will serve as a good guide to set up your own deployment.
 
+You will need some 3rd party accounts for services like messaging, recapcha, etc to work:
+ - Mailgun - currently we're integrating using SMTP, so it should be easy to use another service
+ - Mailchip - when users sign up, they can join a mailing list
+ - Twilio - for text notifications
+ - Typeform - for surveying users
+ - AWS
+    - S3 access to store backups
+    - S3 access to temporarily store data exports
+
+
+To setup S3 access for temporary export:
+- create a S3 bucket and make sure to disable any public access
+- add a lifecycle policy to the bucket to ensure that exports are deleted
+- create a IAM user with access scoped to a single bucket
+
 To do a release:
 
  - Create a PR from master into release
@@ -50,7 +65,7 @@ To do a release:
  - Put the list of changes in the PR description
  - Wait for tests to pass (docker image won't be uploaded for PR)
  - Merge the PR
- - Wait for TravisCI to build the release docker image
+ - Wait for the GitHub action to finish building the docker image
  - Follow steps described [here](https://github.com/p2pu/marvin) to deploy latest release docker image
 
 To deploy the latest code to staging:
@@ -61,8 +76,8 @@ To deploy the latest code to staging:
 ## Quick guide to the code
 
 - Django, Postgres, Celery+RabbitMQ for async tasks.
-- Front-end functionality is a mix of old-school Django views and React + API backend.
-- An API is provided for use by https://www.p2pu.org and team sites.
+- Front-end functionality is a mix of Django template views and React + API backend.
+- An API is provided for use by https://www.p2pu.org, team sites and other rich interaction in the UI.
 - Site provides identity for Discourse SSO hosted at https://community.p2pu.org
 - Most code resides in the studygroups app.
 - Translation is done using [Transifex](https://www.transifex.com/p2pu/learning-circles/). Updated translation files are manually pulled from transifex.
