@@ -721,7 +721,7 @@ def export_users():
         last_learning_circle_name=Subquery(learning_circles.values('name')[:1]),
         last_learning_circle_course=Subquery(learning_circles.values('course__title')[:1]),
         last_learning_circle_venue=Subquery(learning_circles.values('venue_name')[:1])
-    )
+    ).filter(profile__email_confirmed_at__isnull=False)
 
     temp_file = io.BytesIO()
     writer = csv.writer(io.TextIOWrapper(temp_file))
@@ -736,6 +736,7 @@ def export_users():
         'last learning cirlce name',
         'last learning circle course',
         'last learning circle venue',
+        'team',
     ]
     writer.writerow(field_names)
     for user in users:
@@ -751,6 +752,9 @@ def export_users():
             user.last_learning_circle_course,
             user.last_learning_circle_venue,
         ]
+        team_membership = user.teammembership_set.active().first()
+        if team_membership:
+            data += [team_membership.team.page_slug]
         writer.writerow(data)
 
     temp_file.seek(0)
