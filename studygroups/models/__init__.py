@@ -330,8 +330,8 @@ def get_top_discourse_topics_and_users(limit=10):
 def get_active_teams():
     today = datetime.datetime.now()
     two_weeks_ago = today - relativedelta(days=+14)
-    memberships = StudyGroup.objects.published().filter(Q(start_date__gte=today) | Q(start_date__lte=today, end_date__gte=today) | Q(end_date__gt=two_weeks_ago, end_date__lte=today)).values_list('facilitator__teammembership', flat=True)
-    active_teams = Team.objects.filter(teammembership__in=memberships).distinct()
+    team_ids = StudyGroup.objects.published().filter(Q(start_date__gte=today) | Q(start_date__lte=today, end_date__gte=today) | Q(end_date__gt=two_weeks_ago, end_date__lte=today)).values_list('team', flat=True)
+    active_teams = Team.objects.filter(id__in=team_ids).distinct()
     return active_teams
 
 def get_active_facilitators():
