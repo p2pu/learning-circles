@@ -667,7 +667,8 @@ def export_signups(user_id):
     ] + signup_questions + ['use_internet', 'survey completed', 'communications opt-in']
 
     temp_file = io.BytesIO()
-    writer = csv.writer(io.TextIOWrapper(temp_file))
+    text_io_wrapper = io.TextIOWrapper(temp_file)
+    writer = csv.writer(text_io_wrapper)
     writer.writerow(field_names)
     for signup in object_list:
         signup_data = json.loads(signup.signup_questions)
@@ -696,6 +697,7 @@ def export_signups(user_id):
             [ signup.communications_opt_in ]
         )
 
+    text_io_wrapper.flush()
     temp_file.seek(0)
 
     return upload_to_s3(temp_file, 'signups')
@@ -724,7 +726,8 @@ def export_users():
     ).filter(profile__email_confirmed_at__isnull=False)
 
     temp_file = io.BytesIO()
-    writer = csv.writer(io.TextIOWrapper(temp_file))
+    text_io_wrapper = io.TextIOWrapper(temp_file)
+    writer = csv.writer(text_io_wrapper)
 
     field_names = ['name',
         'email',
@@ -757,6 +760,7 @@ def export_users():
             data += [team_membership.team.page_slug]
         writer.writerow(data)
 
+    text_io_wrapper.flush()
     temp_file.seek(0)
 
     return upload_to_s3(temp_file, 'facilitators')
@@ -769,7 +773,8 @@ def export_learning_circles():
     )
 
     temp_file = io.BytesIO()
-    writer = csv.writer(io.TextIOWrapper(temp_file))
+    text_io_wrapper = io.TextIOWrapper(temp_file)
+    writer = csv.writer(text_io_wrapper)
 
     field_names = [
         'id',
@@ -856,6 +861,7 @@ def export_learning_circles():
 
         writer.writerow(data)
 
+    text_io_wrapper.flush()
     temp_file.seek(0)
     return upload_to_s3(temp_file, 'learning-circles')
 
@@ -873,7 +879,9 @@ def export_courses():
         .select_related('created_by')
 
     temp_file = io.BytesIO()
-    writer = csv.writer(io.TextIOWrapper(temp_file))
+
+    text_io_wrapper = io.TextIOWrapper(temp_file)
+    writer = csv.writer(text_io_wrapper)
 
     db_fields = [
         'id',
@@ -900,6 +908,7 @@ def export_courses():
         ]
         writer.writerow(data)
 
+    text_io_wrapper.flush()
     temp_file.seek(0)
     return upload_to_s3(temp_file, 'courses')
 
