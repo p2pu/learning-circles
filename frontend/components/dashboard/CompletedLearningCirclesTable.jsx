@@ -79,7 +79,7 @@ export default class LearningCirclesTable extends Component {
                       <td>{`${lc.draft ? "[DRAFT] " : ""}${lc.name}`}</td>
                       <td>{ lc.venue }</td>
                       { this.props.teamId && <td>{ lc.facilitator }</td>}
-                      <td>{ lc.is_facilitator?lc.signup_count:'N/A' }</td>
+                      <td>{ (lc.is_facilitator || this.props.teamId)?lc.signup_count:'N/A' }</td>
                       <td>{ date }</td>
                       <td>
                         { (lc.is_facilitator || this.props.userIsOrganizer) && <a href={ lc.studygroup_path } className="p2pu-btn btn btn-sm dark">manage</a>}
@@ -106,13 +106,13 @@ export default class LearningCirclesTable extends Component {
                   <div className="d-flex">
                     <div className="pr-2">
                       <div className="bold">Venue</div>
-                      { lc.is_facilitator?<div className="bold">Signups</div>:''}
+                      { (lc.is_facilitator || this.props.teamId ) && <div className="bold">Signups</div> }
                       <div className="bold">Last Meeting</div>
                     </div>
 
                     <div className="flex-grow px-2">
                       <div className="">{ lc.venue }</div>
-                      { lc.is_facilitator?<div className="">{ lc.signup_count }</div>:''}
+                      { ( lc.is_facilitator || this.props.teamId ) && <div className="">{ lc.signup_count }</div> }
                       <div className="">{ date }</div>
                     </div>
                   </div>
