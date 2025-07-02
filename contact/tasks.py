@@ -9,7 +9,7 @@ from studygroups.utils import render_to_string_ctx
 
 
 @shared_task
-def send_contact_form_inquiry(email, name, content, source, organization=None):
+def send_contact_form_inquiry(email, name, content, source, organization=None, g_recaptcha_response=None):
     context = {
         "email": email,
         "name": name,
