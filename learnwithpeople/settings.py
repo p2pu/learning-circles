@@ -64,6 +64,9 @@ INSTALLED_APPS = [
     'community_calendar',
     'client_logging',
     'contact',
+    'content',
+    'courses',
+    'media',
 ]
 
 MIDDLEWARE = [
