@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load i18n %}
+{% load tz %}
+{% load extras %}
+{% load content_tags %}
+
+{% block content %}
+{% localtime off %}
+
+  <div class="container-xl">
+    <div class="row my-3">
+      <a href="/"><i class="fas fa-arrow-left mr-2"></i>Back to my dashboard</a>
+    </div>
+  </div>
+
+  <div class="topbit">
+    <div class="container-xl">
+      <div class="heading row">
+        <div class="offset-sm-3 col-sm-9 lc-details">
+          <h1>{{study_group.name}}</h1>
+        </div>
+        <div class="col-sm-3">
+          <div class="lc-manage-image participant">
+            
+            <div class="wrapper">
+              {% if study_group.image %}
+                <img class="img img-responsive full-width" src="{{study_group.image.url}}">
+              {% else %}
+                <img class="default-image img img-responsive full-width" src="{% static 'images/learning-circle-default.jpg' %}">
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% url 'studygroups_signup' location=study_group.venue_name|unicode_slugify study_group_id=study_group.pk as signup_url %}
+    <div class="action-bar participant">
+      <div class="container-xl">
+        <div class="row">
+          <div class="col-sm-9 offset-sm-3">
+            <a class="p2pu-btn btn btn-primary" href="mailto:{% for f in study_group.facilitator_set.all %}{% if not forloop.first%},{%endif%}{{f.user.email}}{% endfor %}">{% trans "Email facilitator(s)" %}</a>
+            <a class="p2pu-btn btn btn-primary" href="{{ signup_url }}">{% trans "View signup page" %}</a>
+            <a class="p2pu-btn btn btn-primary" href="{{ application.unapply_link }}">{% trans "Leave" %}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-xl mt-5">
+
+    <nav id="content-navbar" class="navbar bg-light px-3 mb-3 sticky-top" style="top: 10rem;">
+      <div class="dropdown">
+        <a class="btn btn-sm d-flex align-items-center secondary p2pu-btn gray mx-0 dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
+          {{ content_title }} <span class="material-icons">expand_more</span>
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="content-sections-dropdown">
+          {% for content in sections %}
+          <li><a class="dropdown-item" href="{% url 'studygroups_content_view' study_group.id content.id %}">{{ content.title }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <ul class="nav nav-pills">
+        {% for heading in h1_headings %}
+          <li class="nav-item">
+            <a class="nav-link" data-heading-index="{{ forloop.counter0 }}" href="#" >{{ heading}}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    <div id="learning-circle-timeline" class="manage mt-4">
+      {{ content|convert_content }}
+    </div>
+  </div>
+{% endlocaltime %}
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+$(document).ready(function () {
+  $('[data-toggle="popover"]').popover();
+});
+</script>
+{% if h1_headings %}
+<script>
+(function () {
+  var navLinks = document.querySelectorAll('#content-navbar .nav-link[data-heading-index]');
+  if (!navLinks.length) {
+    return;
+  }
+  var headingNodes = document.querySelectorAll('#learning-circle-timeline h1');
+  var slugify = function (text) {
+    return text
+      .toString()
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  };
+  navLinks.forEach(function (link) {
+    var idx = parseInt(link.dataset.headingIndex, 10);
+    var headingEl = headingNodes[idx];
+    if (!headingEl) {
+      link.classList.add('disabled');
+      link.removeAttribute('href');
+      return;
+    }
+    var slug = slugify(headingEl.textContent);
+    if (!slug) {
+      slug = 'content-heading-' + idx;
+    }
+    headingEl.id = slug;
+    link.setAttribute('href', '#' + slug);
+  });
+
+  var setActiveLink = function (id) {
+    navLinks.forEach(function (link) {
+      if (link.getAttribute('href') === '#' + id) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+  };
+
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        setActiveLink(entry.target.id);
+      }
+    });
+  }, {
+    rootMargin: '0px 0px -70% 0px',
+    threshold: 0
+  });
+
+  headingNodes.forEach(function (headingEl) {
+    observer.observe(headingEl);
+  });
+})();
+</script>
+{% endif %}
+{% endblock %}

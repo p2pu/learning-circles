@@ -25,11 +25,11 @@
 
 {% block content %}
 <div class="row">
-  <div id="sidebar-wrapper" class="span3">
+  <div id="sidebar-wrapper" class="col-3">
     {% include "courses/course_sidebar.html" %}
   </div>
    
-  <div id="content-container" class="span9">
+  <div id="content-container" class="col-9">
     <h2>{{ content.title }}</h2>
     {% include "courses/content_form_snip.html" %}
   </div>

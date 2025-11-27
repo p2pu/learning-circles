@@ -1,5 +1,6 @@
 from django import template
 from django.template.defaultfilters import stringfilter
+from django.utils.safestring import mark_safe
 
 import markdown
 import bleach
@@ -12,7 +13,7 @@ def add_target_blank(attrs, new=False):
     attrs[(None, 'target')] = '_blank'
     return attrs
 
-@register.filter
+@register.filter(is_safe=True)
 @stringfilter
 def convert_content( markdown_text ):
     html = markdown.markdown(markdown_text)#TODO , ['tables'])
@@ -22,6 +23,6 @@ def convert_content( markdown_text ):
     regex = re.compile(r'<pre\>.*?</pre\>', re.IGNORECASE|re.DOTALL)
     f = lambda m: re.sub(r'&amp;', '&', m.group(0))
     html = regex.sub(f, html)
-    return html
+    return mark_safe(html)
 
 convert_content.is_safe = True

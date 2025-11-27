@@ -17,13 +17,13 @@
           <p>
             <label for="id_title">{% trans "Title" %}</label>
             {{ form.title.errors }}
-            <input class="span8" type="text" id="id_title" name="title" value="{{form.title.value|default_if_none:""}}"/>
+            <input class="col-8" type="text" id="id_title" name="title" value="{{form.title.value|default_if_none:""}}"/>
           </p>
           <p>
             <label for="id_content">{% trans "Content" %}</label>
             {{ form.content.errors }}
             <div id="id_content-wmd-button-bar"></div>
-            <textarea id="id_content" name="content" class="span8" rows="20">{{form.content.value|default_if_none:""}}</textarea>
+            <textarea id="id_content" name="content" class="col-8" rows="20">{{form.content.value|default_if_none:""}}</textarea>
             <p class="help-block">
                 {% blocktrans %}You can use markdown for your content.
                     For some help on using markdown, look
@@ -37,7 +37,7 @@
         <div class="hidden" id="id_content-wmd-preview"></div>
         <div id="content-preview-placeholder"></div>
       </div>
-     <div class="tab-pane" id="md-cheatsheet-pane">
+      <div class="tab-pane" id="md-cheatsheet-pane">
        {% comment %}
          {% include 'learn/markdown_cheatsheet.html' %}
        {% endcomment %}

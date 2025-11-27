@@ -48,6 +48,7 @@ import string
 import json
 import urllib
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -409,3 +410,32 @@ class StudyGroupLearnerSurvey(TemplateView):
                 }
 
         return render(request, self.template_name, context)
+
+
+@method_decorator(login_required, name="dispatch")
+class ContentView(TemplateView):
+    template_name = 'studygroups/content_view.html'
+
+    def get(self, request, *args, **kwargs):
+        study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
+
+        import content.db
+        content = content.db.Content.objects.get(pk=kwargs.get('pk'))
+        
+        import courses.models
+        course_uri = courses.models.course_id2uri(study_group.course_content.pk)
+        sections = courses.models.get_course_content(course_uri)
+
+        markdown_content = content.latest.content
+        h1_headings = re.findall(r'^\s*#(?!#)\s+(.+)$', markdown_content, flags=re.MULTILINE)
+
+        context = {
+            "study_group": study_group,
+            "content": markdown_content,
+            "content_title": content.latest.title,
+            "sections": sections,
+            "h1_headings": h1_headings,
+        }
+
+        return render(request, self.template_name, context)
+

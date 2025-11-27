@@ -12,7 +12,7 @@ urlpatterns = i18n_patterns(
     re_path(r'^discourse/', include('discourse_sso.urls')),
     re_path(r'^surveys/', include('surveys.urls')),
     re_path(r'^community_calendar/', include('community_calendar.urls')),
-    re_path(r'^course/', include('courses.urls')),
+    re_path(r'^courses/', include('courses.urls')),
     re_path(r'^', include('studygroups.urls'))
 )
 
