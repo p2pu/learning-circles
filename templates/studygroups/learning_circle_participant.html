@@ -41,6 +41,7 @@
         <div class="col-sm-9 offset-sm-3">
           <a class="p2pu-btn btn btn-primary" href="mailto:{% for f in study_group.facilitator_set.all %}{% if not forloop.first%},{%endif%}{{f.user.email}}{% endfor %}">{% trans "Email facilitator(s)" %}</a>
           <a class="p2pu-btn btn btn-primary" href="{{ signup_url }}">{% trans "View signup page" %}</a>
+          {% if content_link %}<a class="p2pu-btn btn btn-primary" href="{{ content_link }}">{% trans "View content" %}</a>{% endif %}
           <a class="p2pu-btn btn btn-primary" href="{{ application.unapply_link }}">{% trans "Leave" %}</a>
         </div>
       </div>
