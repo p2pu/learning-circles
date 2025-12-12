@@ -139,7 +139,7 @@ def serialize_learning_circle(sg):
         "report_url": sg.report_url(),
         "studygroup_path": reverse('studygroups_view_study_group', args=(sg.id,)),
         "draft": sg.draft,
-        "signup_count": sg.application_set.active().count(),
+        "signup_count": sg.application_set.active().count(), # should this be serialized for public API endpionts?
         "signup_open": sg.signup_open and sg.end_date > datetime.date.today(),
     }
 
