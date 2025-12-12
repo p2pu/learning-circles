@@ -28,6 +28,7 @@ class CourseTags(models.Model):
     tag = models.CharField(max_length=64)
 
 
+# TODO remove
 class Cohort(models.Model):
 
     OPEN = "OPEN"
@@ -53,6 +54,7 @@ class Cohort(models.Model):
     signup = models.CharField(max_length=32, choices=SIGNUP_MODELS)
 
 
+# TODO remove
 class CohortSignup(models.Model):
 
     LEARNER = "LEARNER"
@@ -69,6 +71,7 @@ class CohortSignup(models.Model):
     leave_date = models.DateTimeField(blank=True, null=True)
 
 
+# TODO remove
 class CohortComment(models.Model):
 
     cohort = models.ForeignKey(Cohort, models.CASCADE, related_name="comment_set")

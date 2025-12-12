@@ -323,7 +323,7 @@ LOGGING = {
         },
         'console': {
             'class': 'logging.StreamHandler',
-            'level': 'DEBUG' if DEBUG else 'WARNING',
+            'level': 'WARNING' if DEBUG else 'WARNING',
         },
     },
     'root': {
@@ -351,7 +351,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 USE_DEPRECATED_PYTZ = True
 
 #### Backup config ####
-
 BACKUP_DIR = os.environ.get('BACKUP_DIR', '/tmp') # Directory where backups will be stored locally
 BACKUP_AWS_ACCESS_KEY_ID = os.environ.get('BACKUP_AWS_ACCESS_KEY_ID') # AWS key with access to backup bucket
 BACKUP_AWS_SECRET_ACCESS_KEY = os.environ.get('BACKUP_AWS_SECRET_ACCESS_KEY') # AWS secret for above key

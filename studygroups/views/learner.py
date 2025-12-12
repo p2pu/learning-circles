@@ -423,6 +423,7 @@ class StudyGroupLearnerSurvey(TemplateView):
         return render(request, self.template_name, context)
 
 
+# TODO protect view behind signup 
 @method_decorator(login_required, name="dispatch")
 class ContentView(TemplateView):
     template_name = 'studygroups/content_view.html'

@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load static %}
 
 
 <form action="" method="POST">
@@ -15,12 +16,13 @@
       <div class="tab-pane active" id="edit-tab-pane">
         <div id="content-editor">
           <p>
-            <label for="id_title">{% trans "Title" %}</label>
+            <label class="form-label" for="id_title">{% trans "Title" %}</label>
             {{ form.title.errors }}
-            <input class="col-8" type="text" id="id_title" name="title" value="{{form.title.value|default_if_none:""}}"/>
+            <input class="form-control" type="text" id="id_title" name="title" value="{{form.title.value|default_if_none:""}}"/>
           </p>
+
           <p>
-            <label for="id_content">{% trans "Content" %}</label>
+            <label class="form-label" for="id_content">{% trans "Content" %}</label>
             {{ form.content.errors }}
             <div id="id_content-wmd-button-bar"></div>
             <textarea id="id_content" name="content" class="col-8" rows="20">{{form.content.value|default_if_none:""}}</textarea>
@@ -48,4 +50,12 @@
   </div>
 </form>
 
-
+<script src="{% static 'js/vendor/tinymce/tinymce.min.js' %}"></script>
+<script>
+  tinymce.init({
+    selector: 'textarea#id_content'
+  });
+  tinymce.activeEditor.uploadImages(function(success) {
+    // TODO
+  });
+</script>

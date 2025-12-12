@@ -124,6 +124,7 @@ def create_course( request ):
 
 
 def import_project( request, project_slug ):
+    raise Exception('not implemented')
     from projects.models import Project
     project = get_object_or_404(Project, slug=project_slug)
     from courses import utils
@@ -170,6 +171,7 @@ def show_course( request, course_id, slug=None ):
 
 
 def course_learn_api_data( request, course_id ):
+    # TODO?
     """ return data required by the learn API """
     course_uri = course_model.course_id2uri(course_id)
     try:
@@ -183,6 +185,7 @@ def course_learn_api_data( request, course_id ):
 @login_required
 @require_organizer
 def course_add_badge( request, course_id ):
+    raise Exception('not implemented')
     context = { }
     context = _populate_course_context(request, course_id, context)
     context['badges_active'] = True
@@ -231,6 +234,7 @@ def course_admin_content( request, course_id ):
 
 
 def course_discussion( request, course_id ):
+    raise Exception('not implemented')
     course_uri = course_model.course_id2uri(course_id)
     course = _get_course_or_404(course_uri)
  
@@ -246,6 +250,7 @@ def course_discussion( request, course_id ):
 
 
 def course_people( request, course_id ):
+    raise Exception('not implemented')
     course_uri = course_model.course_id2uri(course_id)
     course = _get_course_or_404(course_uri)
  
@@ -318,6 +323,7 @@ def course_image( request, course_id ):
 
 @login_required
 def course_signup( request, course_id ):
+    raise Exception('not implemented')
     #NOTE: consider using cohort_id in URL to avoid cohort lookup
     cohort = course_model.get_course_cohort( course_id )
     user_uri = u"/uri/user/{0}".format(request.user.username)
@@ -333,6 +339,7 @@ def course_signup( request, course_id ):
 @require_http_methods(['POST'])
 @require_organizer
 def course_add_user( request, course_id ):
+    raise Exception('not implemented')
     cohort_uri = course_model.get_course_cohort_uri(course_id)
     redirect_url = reverse('courses_people', kwargs={'course_id': course_id})
     username = request.POST.get('username', None)
@@ -353,6 +360,7 @@ def course_add_user( request, course_id ):
 
 @login_required
 def course_leave( request, course_id, username ):
+    raise Exception('not implemented')
     cohort_uri = course_model.get_course_cohort_uri(course_id)
     user_uri = u"/uri/user/{0}".format(request.user.username)
     # TODO site admin should also be able to remove users
@@ -380,6 +388,7 @@ def course_leave( request, course_id, username ):
 @require_http_methods(['POST'])
 @require_organizer
 def course_add_organizer( request, course_id, username ):
+    raise Exception('not implemented')
     cohort_uri = course_model.get_course_cohort_uri(course_id)
     user_uri = u"/uri/user/{0}".format(request.user.username)
     is_organizer = course_model.is_cohort_organizer(
@@ -422,6 +431,7 @@ def course_change_status( request, course_id ):
 @require_http_methods(['POST'])
 @require_organizer
 def course_change_signup( request, course_id ):
+    raise Exception('not implemented')
     form = CohortSignupForm(request.POST)
     if form.is_valid():
         signup = form.cleaned_data['signup']
@@ -439,6 +449,7 @@ def course_change_signup( request, course_id ):
 @require_http_methods(['POST'])
 @require_organizer
 def course_change_term( request, course_id, term ):
+    raise Exception('not implemented')
     cohort_uri = course_model.get_course_cohort_uri( course_id )
     if term == 'fixed':
         form = CourseTermForm(request.POST)
@@ -493,6 +504,7 @@ def course_update_tags( request, course_id ):
 @login_required
 @require_organizer
 def course_announcement( request, course_id ):
+    raise Exception('not implemented')
     context = _populate_course_context(request, course_id, {})
     context['announcement_active'] = True
 
@@ -516,6 +528,7 @@ def course_announcement( request, course_id ):
 @login_required
 @require_organizer
 def course_export_emails( request, course_id ):
+    raise Exception('not implemented')
     if not request.user.has_perm('users.trusted_user'):
         msg = _('You do not have permission to view this page')
         return http.HttpResponseForbidden(msg)
