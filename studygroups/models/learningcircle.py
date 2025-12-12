@@ -79,6 +79,7 @@ class StudyGroup(LifeTimeTrackingModel):
     duration = models.PositiveIntegerField(default=90)  # meeting duration in minutes
     timezone = models.CharField(max_length=128)
     signup_open = models.BooleanField(default=True)
+    signup_limit = models.SmallIntegerField(blank=True, null=True)
     draft = models.BooleanField(default=True)
     members_only = models.BooleanField(default=False)
     image = models.ImageField(blank=True)
@@ -255,6 +256,7 @@ class StudyGroup(LifeTimeTrackingModel):
             "facilitator_goal": sg.facilitator_goal,
             "facilitator_concerns": sg.facilitator_concerns,
             "draft": sg.draft,
+            "signup_limit": sg.signup_limit,
             "signup_count": sg.application_set.active().count(),
             "signup_url": reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
         }
