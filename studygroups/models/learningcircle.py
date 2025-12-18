@@ -212,6 +212,15 @@ class StudyGroup(LifeTimeTrackingModel):
     def weeks(self):
         return (self.end_date - self.start_date).days//7 + 1
 
+
+    @property
+    def at_capacity(self):
+        if self.signup_limit == 0:
+            return False
+        signup_count = self.application_set.active().count()
+        return signup_count >= self.signup_limit
+
+
     def to_dict(self):
         sg = self  # TODO - this logic is repeated in the API class
         facilitators = [f.user.first_name for f in sg.facilitator_set.all()]
