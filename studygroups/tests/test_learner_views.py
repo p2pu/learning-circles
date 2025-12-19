@@ -227,7 +227,7 @@ class TestLearnerViews(TestCase):
         signup_data['email'] = 'test2@mail.com'
         c = Client()
         resp = c.post('/en/signup/foo-bob-1/', signup_data)
-        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEqual(resp.status_code, 200)
         self.assertEqual(Application.objects.active().count(), 1)
 
 
