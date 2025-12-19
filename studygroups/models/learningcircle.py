@@ -215,7 +215,7 @@ class StudyGroup(LifeTimeTrackingModel):
 
     @property
     def at_capacity(self):
-        if self.signup_limit == 0:
+        if not self.signup_limit:
             return False
         signup_count = self.application_set.active().count()
         return signup_count >= self.signup_limit
