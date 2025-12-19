@@ -57,8 +57,7 @@ def signup(request, location, study_group_id):
     if not study_group.deleted_at is None:
         raise http.Http404(_("Learning circle does not exist"))
 
-    signup_count = study_group.application_set.active().count()
-    at_capacity = study_group.signup_limit > 0 and signup_count >= study_group.signup_limit
+    at_capacity = study_group.at_capacity
 
     if request.method == 'POST':
         # handle over capacity signup
