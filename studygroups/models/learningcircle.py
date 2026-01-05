@@ -265,7 +265,7 @@ class StudyGroup(LifeTimeTrackingModel):
             "facilitator_goal": sg.facilitator_goal,
             "facilitator_concerns": sg.facilitator_concerns,
             "draft": sg.draft,
-            "signup_limit": sg.signup_limit,
+            "signup_limit": sg.signup_limit or 0,
             "signup_count": sg.application_set.active().count(),
             "signup_url": reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
         }
