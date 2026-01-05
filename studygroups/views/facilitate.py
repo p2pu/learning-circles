@@ -649,7 +649,6 @@ class ApplicationCreateMultiple(FormView):
         return form_class(queryset=queryset, **kwargs)
 
     def form_valid(self, form):
-        # TODO take signup_limit into account
         study_group_id = self.kwargs.get('study_group_id')
         study_group = get_object_or_404(StudyGroup, pk=study_group_id)
         applications = form.save(commit=False)
@@ -660,9 +659,8 @@ class ApplicationCreateMultiple(FormView):
 
             if len(applications) > available_signups:
                 url = reverse('studygroups_view_study_group', args=(study_group_id,))
-                messages.warning(self.request, 'No more available signups, please increase signup limit first')
+                messages.warning(self.request, 'Adding participants will exceed the signup limit, please increase the limit first.')
                 return http.HttpResponseRedirect(url)
-
 
 
         for application in applications:
