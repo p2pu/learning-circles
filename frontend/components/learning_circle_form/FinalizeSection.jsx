@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { TextareaWithLabel, SelectWithLabel } from 'p2pu-components'
+import { TextareaWithLabel, SelectWithLabel, InputWithLabel } from 'p2pu-components'
 
 const FinalizeSection = (props) => {
 
@@ -54,6 +54,19 @@ const FinalizeSection = (props) => {
       id={'id_facilitator_concerns'}
       errorMessage={props.errors.facilitator_concerns}
     />
+    <InputWithLabel
+      label={'Limit the number of people that can sign up'}
+      helpText='0 means unlimited'
+      type='number'
+      value={props.learningCircle.signup_limit}
+      handleChange={props.updateFormData}
+      name='signup_limit'
+      id='id_signup_limit'
+      errorMessage={props.errors.signup_limit}
+    />
+    <div>
+      <a href="https://docs.p2pu.org/tools-and-resources/tools-for-learning-circles/managing-learning-circles#limiting-learning-circle-signups">More info about signup limits</a>
+    </div>
     <div className='lc-co-facilitator-input'>
       <SelectWithLabel
         options={populateTeamOptions(props.team)}
