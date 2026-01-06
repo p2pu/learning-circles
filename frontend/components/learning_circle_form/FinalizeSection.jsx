@@ -65,7 +65,7 @@ const FinalizeSection = (props) => {
       errorMessage={props.errors.signup_limit}
     />
     <div>
-      <a>Link to docs explaining what this means</a>
+      <a href="https://docs.p2pu.org/tools-and-resources/tools-for-learning-circles/managing-learning-circles#limiting-learning-circle-signups">More info about signup limits</a>
     </div>
     <div className='lc-co-facilitator-input'>
       <SelectWithLabel
