@@ -123,18 +123,6 @@ def create_course( request ):
     return render(request, 'courses/create_course.html', context)
 
 
-def import_project( request, project_slug ):
-    raise Exception('not implemented')
-    from projects.models import Project
-    project = get_object_or_404(Project, slug=project_slug)
-    from courses import utils
-    course = utils.import_project(project, project.name[:3])
-    cohort = course_model.get_course_cohort(course['uri'])
-    user_uri = u"/uri/user/{0}".format(request.user.username)
-    course_model.add_user_to_cohort(cohort['uri'], user_uri, "ORGANIZER")
-    return course_slug_redirect(request, course['id'])
-
-
 @require_organizer
 def clone_course( request, course_id ):
     course_uri = course_model.course_id2uri(course_id)
@@ -184,40 +172,6 @@ def course_learn_api_data( request, course_id ):
 
 @login_required
 @require_organizer
-def course_add_badge( request, course_id ):
-    raise Exception('not implemented')
-    context = { }
-    context = _populate_course_context(request, course_id, context)
-    context['badges_active'] = True
-    user = request.user
-
-    form = CourseEmbeddedUrlForm()
-
-    if request.method == "POST":
-        form = CourseEmbeddedUrlForm(request.POST)
-
-        if form.is_valid():
-            content = None
-            user_uri = u"/uri/user/{0}".format(user.username)
-            try:
-                content = add_content_from_response(
-                    context['course']['uri'],
-                    form.cleaned_data['url'], user_uri)
-            except BadgeNotFoundException:
-                form = CourseEmbeddedUrlForm()
-                messages.error(request, _('Error! We could not retrieve this Badge'))
-            if content:
-                redirect_url = reverse('courses_content_show',
-                                       kwargs={'course_id': course_id,
-                                               'content_id': content['id']})
-                return http.HttpResponseRedirect(redirect_url)
-
-    context['form'] = form
-    return render(request, 'courses/course_badges.html', context)
-
-
-@login_required
-@require_organizer
 def course_admin_content( request, course_id ):
     course_uri = course_model.course_id2uri(course_id)
     course = _get_course_or_404(course_uri)
@@ -229,43 +183,6 @@ def course_admin_content( request, course_id ):
     return render(
         request,
         'courses/course_admin_content.html',
-        context
-    )
-
-
-def course_discussion( request, course_id ):
-    raise Exception('not implemented')
-    course_uri = course_model.course_id2uri(course_id)
-    course = _get_course_or_404(course_uri)
- 
-    context = { }
-    context = _populate_course_context(request, course_id, context)
-    context['discussion_active'] = True
-
-    return render(
-        request,
-        'courses/course_discussion.html',
-        context
-    )
-
-
-def course_people( request, course_id ):
-    raise Exception('not implemented')
-    course_uri = course_model.course_id2uri(course_id)
-    course = _get_course_or_404(course_uri)
- 
-    context = { }
-    context = _populate_course_context(request, course_id, context)
-
-    from users.models import get_user_profile_image_url
-    for user in context['cohort']['users'].values():
-        user['profile_image_url'] = get_user_profile_image_url(user['uri'])
-
-    context['people_active'] = True
-
-    return render(
-        request,
-        'courses/course_people.html',
         context
     )
 
@@ -322,66 +239,39 @@ def course_image( request, course_id ):
 
 
 @login_required
-def course_signup( request, course_id ):
-    raise Exception('not implemented')
-    #NOTE: consider using cohort_id in URL to avoid cohort lookup
-    cohort = course_model.get_course_cohort( course_id )
-    user_uri = u"/uri/user/{0}".format(request.user.username)
-    if cohort['signup'] == "OPEN":
-        course_model.add_user_to_cohort(cohort['uri'], user_uri, "LEARNER", True)
-        messages.success(request, _("You are now signed up for this course."))
-    else:
-        messages.error(request, _("This course isn't open for signup."))
-    return course_slug_redirect( request, course_id )
-
-
-@login_required
-@require_http_methods(['POST'])
 @require_organizer
-def course_add_user( request, course_id ):
-    raise Exception('not implemented')
-    cohort_uri = course_model.get_course_cohort_uri(course_id)
-    redirect_url = reverse('courses_people', kwargs={'course_id': course_id})
-    username = request.POST.get('username', None)
-
-    if not username:
-        messages.error(request, _("Please select a user to add."))
-        return http.HttpResponseRedirect(redirect_url)
-
-    user_uri = u"/uri/user/{0}".format(username)
-    try:
-        course_model.add_user_to_cohort(cohort_uri, user_uri, "LEARNER")
-        messages.success(request, _("User added."))
-    except course_model.ResourceNotFoundException as e:
-        messages.error(request, _("User does not exist."))
-
-    return http.HttpResponseRedirect(redirect_url)
-
-
-@login_required
-def course_leave( request, course_id, username ):
-    raise Exception('not implemented')
-    cohort_uri = course_model.get_course_cohort_uri(course_id)
+def course_content_image_upload( request, course_id ):
+    course_uri = course_model.course_id2uri(course_id)
     user_uri = u"/uri/user/{0}".format(request.user.username)
-    # TODO site admin should also be able to remove users
-    is_organizer = course_model.is_cohort_organizer(
-        user_uri, cohort_uri
+    if request.method == 'POST':
+        image_form = CourseImageForm(request.POST, request.FILES)
+        if image_form.is_valid():
+            image_file = request.FILES['image']
+            image = media_model.upload_image(image_file, course_uri)
+            if request.headers.get('accept') == 'application/json' or request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return http.JsonResponse({
+                    'status': 'success',
+                    'image_uri': image['uri'],
+                    'image_url': image['url'],
+                })
+            redirect_url = reverse('courses_show',
+                kwargs={'course_id': course_id, 'slug': 'ermm'}
+            )
+
+            return http.HttpResponseRedirect(redirect_url)
+        else:
+            messages.error(request, _("Could not upload image"))
+    else:
+        image_form = CourseImageForm()
+ 
+    context = _populate_course_context(request, course_id, {})
+    context["form"] = image_form
+
+    return render(
+        request,
+        'courses/content_image_form.html',
+        context
     )
-    removed = False
-    error_message = _("Could not remove user")
-    if username == request.user.username or is_organizer:
-        removed, error_message = course_model.remove_user_from_cohort(
-            cohort_uri, u"/uri/user/{0}".format(username)
-        )
-
-    if not removed:
-        messages.error(request, error_message)
-
-    if is_organizer:
-        redirect_url = reverse('courses_people', kwargs={'course_id': course_id})
-        return http.HttpResponseRedirect(redirect_url)
-
-    return course_slug_redirect( request, course_id)
 
 
 @login_required
@@ -430,47 +320,6 @@ def course_change_status( request, course_id ):
 @login_required
 @require_http_methods(['POST'])
 @require_organizer
-def course_change_signup( request, course_id ):
-    raise Exception('not implemented')
-    form = CohortSignupForm(request.POST)
-    if form.is_valid():
-        signup = form.cleaned_data['signup']
-        cohort_uri = course_model.get_course_cohort_uri(course_id)
-        cohort = course_model.update_cohort(cohort_uri, signup=signup.upper())
-        if not cohort:
-            messages.error( request, _("Could not change cohort signup"))
-    else:
-        request.messages.error(request, _("Invalid choice for signup"))
-    redirect_url = reverse('courses_settings', kwargs={'course_id': course_id})
-    return http.HttpResponseRedirect(redirect_url)
-
-
-@login_required
-@require_http_methods(['POST'])
-@require_organizer
-def course_change_term( request, course_id, term ):
-    raise Exception('not implemented')
-    cohort_uri = course_model.get_course_cohort_uri( course_id )
-    if term == 'fixed':
-        form = CourseTermForm(request.POST)
-        if form.is_valid():
-            course_model.update_cohort(
-                cohort_uri,
-                term=term.upper(),
-                start_date=form.cleaned_data['start_date'],
-                end_date=form.cleaned_data['end_date']
-            )
-        else:
-            messages.error( request, _("Could not update fixed term dates"))
-    elif term == 'rolling':
-        course_model.update_cohort(cohort_uri, term=term.upper())
-    redirect_url = reverse('courses_settings', kwargs={'course_id': course_id})
-    return http.HttpResponseRedirect(redirect_url)
-
-
-@login_required
-@require_http_methods(['POST'])
-@require_organizer
 def course_update_attribute( request, course_id, attribute):
     course_uri = course_model.course_id2uri(course_id)
     form = CourseUpdateForm(request.POST)
@@ -499,55 +348,6 @@ def course_update_tags( request, course_id ):
 
     redirect_url = reverse('courses_settings', kwargs={'course_id': course_id})
     return http.HttpResponseRedirect(redirect_url)
-
-
-@login_required
-@require_organizer
-def course_announcement( request, course_id ):
-    raise Exception('not implemented')
-    context = _populate_course_context(request, course_id, {})
-    context['announcement_active'] = True
-
-    if request.method == "POST" and len(request.POST.get('announcement_text', '')) > 0:
-        text = request.POST.get('announcement_text')
-        course_model.send_course_announcement(
-            context['course']['uri'],
-            text
-        )
-        messages.success(request, _('The announcement has been sent!'))
-        redirect_url = reverse('courses_show', kwargs={'course_id': course_id, 'slug': context['course']['slug']})
-        return http.HttpResponseRedirect(redirect_url)
-
-    return render(
-        request,
-        'courses/course_announcement.html',
-        context
-    )
-
-
-@login_required
-@require_organizer
-def course_export_emails( request, course_id ):
-    raise Exception('not implemented')
-    if not request.user.has_perm('users.trusted_user'):
-        msg = _('You do not have permission to view this page')
-        return http.HttpResponseForbidden(msg)
-    
-    course_uri = course_model.course_id2uri(course_id)
-    cohort = course_model.get_course_cohort(course_uri)
-
-    response = http.HttpResponse(mimetype='text/csv')
-    response['Content-Disposition'] = 'attachment; '
-    response['Content-Disposition'] += 'filename=detailed_report.csv'
-    writer = unicodecsv.writer(response)
-    writer.writerow(["username", "email address", "signup date"])
-
-    for user in cohort['users'].values():
-        username = user['uri'].strip('/').split('/')[-1]
-        user['email'] = User.objects.get(username=username).email
-        writer.writerow([username, user['email'], user['signup_date']])
-
-    return response
 
 
 def show_content( request, course_id, content_id):

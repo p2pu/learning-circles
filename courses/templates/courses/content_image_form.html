@@ -2,12 +2,15 @@
 {% load i18n %}
 
 
-{% block title %}{{content.title}}{% endblock %}
-{% block bodyclasses %}course-content{% endblock%}
+{% block title %}Upload a course{% endblock %}
+{% block bodyclasses %}course-create{% endblock%}
 
 {% block css %}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/course.css">
 <link rel="stylesheet" href="{{ STATIC_URL }}pagedown/pagedown.css">
+{% endblock %}
+
+{% block links %}
 {% endblock %}
 
 {% block breadcrumbs_title %}
@@ -20,34 +23,35 @@
     <span class="divider">&rsaquo;</span>
     <a href="{% url courses_show course_id=course.id slug=course.slug%}">{{course.title}}</a>
   </li>
-
 {% endblock %}
 
+
 {% block content %}
+
 <div class="row">
   <div id="sidebar-wrapper" class="col-3">
     {% include "courses/course_sidebar.html" %}
   </div>
-   
+
   <div id="content-container" class="col-9">
-    <h2>{{ content.title }}</h2>
-    {% include "courses/content_form_snip.html" %}
+    <form action="" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form }}
+      <input type="submit" value="upload"/>
+    </form>
   </div>
-</div>
 {% endblock %}
 
-{% block script %}
+{% block js %}
   <script src="{{ STATIC_URL }}pagedown/Markdown.Converter.js"></script>
   <script src="{{ STATIC_URL }}pagedown/Markdown.Sanitizer.js"></script>
   <script src="{{ STATIC_URL }}pagedown/Markdown.Editor.js"></script>
 
   <script type="text/javascript">
     $(document).ready(function(){
-      /*
       var converter1 = Markdown.getSanitizingConverter();
       var editor1 = new Markdown.Editor(converter1, "id_content");
       editor1.run();
-      */
     });
   </script>
 
@@ -61,10 +65,12 @@
             {
                 "content":$("#id_content").attr("value"),
                 "csrfmiddlewaretoken": "{{ csrf_token }}"
-            }
-        );
-      });
+            });
+        });
+
+        $('#MDCStrigger').bind('click', function(e){
+            $('#md-cheatsheet').tab('show');
+        });
     });
   </script>
-
 {% endblock %}
