@@ -295,7 +295,7 @@ class StudyGroupParticipantView(TemplateView):
             sections = courses.models.get_course_content(course_uri)
             context['content_link'] = reverse(
                 'studygroups_content_view',
-                args=(study_group.pk, sections[0]['id'],)
+                args=(study_group.pk, sections[1]['id'],) #TODO skipping nr 0
             )
 
 
@@ -438,12 +438,13 @@ class ContentView(TemplateView):
         
         import courses.models
         course_uri = courses.models.course_id2uri(study_group.course_content.pk)
-        sections = courses.models.get_course_content(course_uri)
+        sections = courses.models.get_course_content(course_uri)[1:] #TODO 
 
         markdown_content = content.latest.content
         h1_headings = re.findall(r'^\s*#(?!#)\s+(.+)$', markdown_content, flags=re.MULTILINE)
 
         context = {
+            "scroll_top": True,
             "study_group": study_group,
             "content": markdown_content,
             "content_title": content.latest.title,
