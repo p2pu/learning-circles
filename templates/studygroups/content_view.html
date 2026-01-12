@@ -50,28 +50,34 @@
     </div>
   </div>
 
+    <nav id="content-navbar" class="navbar bg-light px-3 mt-5 mb-2 sticky-top">
+      <div class="container-xl flex-nowrap">
+        <div class="dropdown flex-shrink-0">
+          <a class="btn btn-sm d-flex align-items-center secondary p2pu-btn gray mx-0 dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
+            {{ content_title }} <span class="material-icons">expand_more</span>
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="content-sections-dropdown">
+            {% for content in sections %}
+            <li><a class="dropdown-item" href="{% url 'studygroups_content_view' study_group.id content.id %}">{{ content.title }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+     
+        <div class="flex-grow-1">
+          <ul class="nav nav-pills">
+            {% for heading in h1_headings %}
+              <li class="nav-item">
+                <a class="nav-link" data-heading-index="{{ forloop.counter0 }}" href="#" >{{ heading}}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+
   <div class="container-xl mt-5">
 
-    <nav id="content-navbar" class="navbar bg-light px-3 mb-3 sticky-top" style="top: 10rem;">
-      <div class="dropdown">
-        <a class="btn btn-sm d-flex align-items-center secondary p2pu-btn gray mx-0 dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
-          {{ content_title }} <span class="material-icons">expand_more</span>
-        </a>
-        <ul class="dropdown-menu" aria-labelledby="content-sections-dropdown">
-          {% for content in sections %}
-          <li><a class="dropdown-item" href="{% url 'studygroups_content_view' study_group.id content.id %}">{{ content.title }}</a></li>
-          {% endfor %}
-        </ul>
-      </div>
-
-      <ul class="nav nav-pills">
-        {% for heading in h1_headings %}
-          <li class="nav-item">
-            <a class="nav-link" data-heading-index="{{ forloop.counter0 }}" href="#" >{{ heading}}</a>
-          </li>
-        {% endfor %}
-      </ul>
-    </nav>
 
     <div id="learning-circle-timeline" class="manage mt-4">
       {{ content|convert_content }}
@@ -87,6 +93,7 @@ $(document).ready(function () {
   $('[data-toggle="popover"]').popover();
 });
 </script>
+
 {% if h1_headings %}
 <script>
 (function () {
@@ -146,5 +153,6 @@ $(document).ready(function () {
   });
 })();
 </script>
+
 {% endif %}
 {% endblock %}
