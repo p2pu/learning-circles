@@ -318,19 +318,15 @@ def create_content( request, course_id ):
             content = content_model.create_content(**content_data)
             course_model.add_course_content(course['uri'], content['uri'])
 
-            redirect_url = request.POST.get('next_url', None)
-            if not redirect_url:
-                redirect_url = reverse('courses_show',
-                    kwargs={'course_id': course['id'], 'slug': course['slug']}
-                )
+            redirect_url = reverse('courses_show',
+                kwargs={'course_id': course['id'], 'slug': course['slug']}
+            )
             return http.HttpResponseRedirect(redirect_url)
     else:
         form = ContentForm()
 
     context = { 'form': form }
     context = _populate_course_context(request, course_id, context)
-    if request.GET.get('next_url', None):
-        context['next_url'] = request.GET.get('next_url', None)
 
     return render(
         request,
@@ -360,11 +356,9 @@ def edit_content( request, course_id, content_id ):
                 content_data['content'], user_uri
             )
             
-            redirect_url = request.POST.get('next_url', None)
-            if not redirect_url:
-                redirect_url = reverse('courses_content_show',
-                    kwargs={'course_id': course_id, 'content_id': content_id}
-                )
+            redirect_url = reverse('courses_content_show',
+                kwargs={'course_id': course_id, 'content_id': content_id}
+            )
             return http.HttpResponseRedirect(redirect_url)
     else:
         form = ContentForm(initial=content)
@@ -374,8 +368,6 @@ def edit_content( request, course_id, content_id ):
         'content': content,
     }
     context = _populate_course_context(request, course_id, context)
-    if request.GET.get('next_url', None):
-        context['next_url'] = request.GET.get('next_url', None)
     return render(
         request,
         'courses/edit_content.html', 
