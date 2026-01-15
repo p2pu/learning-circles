@@ -24,7 +24,6 @@ from courses.forms import CourseUpdateForm
 from courses.forms import CourseTermForm
 from courses.forms import CourseImageForm
 from courses.forms import CourseStatusForm
-from courses.forms import CohortSignupForm
 from courses.forms import CourseTagsForm
 from courses.forms import CourseEmbeddedUrlForm
 from courses.decorators import require_organizer
@@ -34,7 +33,6 @@ from courses.badges_oembed import BadgeNotFoundException
 from content import models as content_model
 from content.forms import ContentForm
 
-#from learn import models as learn_model
 from media import models as media_model
 
 
@@ -44,10 +42,7 @@ log = logging.getLogger(__name__)
 def _get_course_or_404( course_uri ):
     try:
         course = course_model.get_course(course_uri)
-    #except course_model.ResourceDeletedException:
-    #    raise http.
-    except:
-        # TODO: this masks all exceptions that may happen in get_course!
+    except course_model.ResourceNotFoundException as e:
         raise http.Http404
     return course
 
@@ -63,33 +58,12 @@ def _populate_course_context( request, course_id, context ):
     if 'image_uri' in course:
         context['course']['image'] = media_model.get_image(course['image_uri'])
 
-    #NOTE if performance becomes a problem dont fetch cohort
-    cohort = course_model.get_course_cohort(course_uri)
-    context['cohort'] = cohort
     user_uri = u"/uri/user/{0}".format(request.user.username)
-    context['organizer'] = course_model.is_cohort_organizer(
-        user_uri, cohort['uri']
-    )
+    context['organizer'] = course_model.is_organizer(course_uri, user_uri)
     context['organizer'] |= request.user.is_superuser
     context['admin'] = request.user.is_superuser
     context['can_edit'] = context['organizer'] and not course['status'] == 'archived'
     context['trusted_user'] = request.user.has_perm('users.trusted_user')
-    if course_model.user_in_cohort(user_uri, cohort['uri']):
-        if not context['organizer']:
-            context['show_leave_course'] = True
-        context['learner'] = True
-    elif cohort['signup'] == "OPEN":
-        context['show_signup'] = True
-
-    #try:
-    #    course_lists = learn_model.get_lists_for_course(reverse(
-    #        'courses_slug_redirect',
-    #        kwargs={'course_id': course_id}
-    #    ))
-    #    f = lambda l: l['name'] not in ['drafts', 'listed', 'archived']
-    #    context['lists'] = filter(f, course_lists)
-    #except:
-    #    log.error("Could not get lists for course!")
 
     if 'based_on_uri' in course:
         course['based_on'] = course_model.get_course(course['based_on_uri'])
@@ -158,18 +132,6 @@ def show_course( request, course_id, slug=None ):
     return render(request, 'courses/course.html', context)
 
 
-def course_learn_api_data( request, course_id ):
-    # TODO?
-    """ return data required by the learn API """
-    course_uri = course_model.course_id2uri(course_id)
-    try:
-        course_data = course_model.get_course_learn_api_data(course_uri)
-    except:
-        raise http.Http404
-
-    return http.HttpResponse(json.dumps(course_data), mimetype="application/json")
-
-
 @login_required
 @require_organizer
 def course_admin_content( request, course_id ):
@@ -201,14 +163,6 @@ def course_settings( request, course_id ):
     context['status_form'] = CourseStatusForm(course)
     tags = ", ".join(course_model.get_course_tags(course_uri))
     context['tags_form'] = CourseTagsForm({'tags': tags})
-    if context['cohort']['term'] == 'FIXED':
-        context['term_form'] = CourseTermForm(context['cohort'])
-    else:
-        context['term_form'] = CourseTermForm()
-    context['signup_form'] = CohortSignupForm(
-        initial={'signup': context['cohort']['signup']}
-    )
-
     context['settings_active'] = True
 
     return render(
@@ -272,28 +226,6 @@ def course_content_image_upload( request, course_id ):
         'courses/content_image_form.html',
         context
     )
-
-
-@login_required
-@require_http_methods(['POST'])
-@require_organizer
-def course_add_organizer( request, course_id, username ):
-    raise Exception('not implemented')
-    cohort_uri = course_model.get_course_cohort_uri(course_id)
-    user_uri = u"/uri/user/{0}".format(request.user.username)
-    is_organizer = course_model.is_cohort_organizer(
-        user_uri, cohort_uri
-    )
-    if not is_organizer and not request.user.is_superuser:
-        messages.error( request, _("Only other organizers can add a new organizer") )
-        return course_slug_redirect( request, course_id)
-    new_organizer_uri = u"/uri/user/{0}".format(username)
-    course_model.remove_user_from_cohort(cohort_uri, new_organizer_uri)
-    course_model.add_user_to_cohort(cohort_uri, new_organizer_uri, "ORGANIZER")
-
-    #TODO
-    redirect_url = reverse('courses_people', kwargs={'course_id': course_id})
-    return http.HttpResponseRedirect(redirect_url)
 
 
 @login_required

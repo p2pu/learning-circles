@@ -1,3 +1,0 @@
-{% load i18n %}
-
-{% blocktrans with hashtag=course.hashtag %}P2PU Course Announcement #{{ hashtag }}{% endblocktrans %}

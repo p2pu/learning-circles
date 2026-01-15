@@ -14,10 +14,6 @@ urlpatterns = [
         views.course_slug_redirect,
         name='courses_slug_redirect'),
 
-    re_path(r'^(?P<course_id>[\d]+)/learn_api_data/$',
-        views.course_learn_api_data,
-        name='courses_learn_api_data'),
-
     re_path(r'^(?P<course_id>[\d]+)/admin_content/$',
         views.course_admin_content,
         name='courses_admin_content'),

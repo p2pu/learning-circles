@@ -9,10 +9,7 @@ def require_organizer( function ):
         course_id = kwargs.get('course_id')
         course_uri = course_model.course_id2uri(course_id)
         user_uri = "/uri/user/{0}".format(request.user.username)
-        cohort = course_model.get_course_cohort(course_uri)
-        organizer = course_model.is_cohort_organizer(
-            user_uri, cohort['uri']
-        )
+        organizer = course_model.is_organizer(course_uri, user_uri)
         organizer |= request.user.is_superuser
         if not organizer:
             return http.HttpResponseForbidden(_("You need to be a course organizer."))

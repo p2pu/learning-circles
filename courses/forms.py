@@ -53,13 +53,3 @@ class CourseStatusForm(forms.Form):
     ]
 
     status = forms.ChoiceField(choices=STATUS_CHOICES, widget=RadioSelect)
-
-
-SIGNUP_CHOICES = [
-    ("OPEN", _("Open"),), 
-    ("MODERATED", _("Moderated"),),
-    ("CLOSED", _("Closed"),)
-]
-
-class CohortSignupForm(forms.Form):
-    signup = forms.ChoiceField(choices=SIGNUP_CHOICES, widget=RadioSelect)
