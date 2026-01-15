@@ -1,12 +1,12 @@
 from django.test import Client
+from django.test import TestCase
 from django.contrib.auth.models import User
-from users.models import create_profile
 
-from test_utils import TestCase
-
+from custom_registration.models import create_user
 from courses import models as course_model
 from content import models as content_model
-from mock import patch
+
+from unittest.mock import patch
 
 
 class CourseTests(TestCase):
@@ -27,22 +27,19 @@ class CourseTests(TestCase):
         self.client = Client()
         self.locale = 'en'
 
-        django_user = User(
-            username=self.test_username,
-            email=self.test_email,
+        self.user = create_user(
+            self.test_email,
+            self.test_username,
+            'lastname',
+            self.test_password
         )
-        self.user = create_profile(django_user)
-        self.user.set_password(self.test_password)
-        self.user.save()
         
-        django_user2 = User(
-            username=self.test_username2,
-            email=self.test_email2,
+        self.user2 = create_user(
+            self.test_email2,
+            self.test_username2,
+            'lastname2',
+            self.test_password2
         )
-        self.user2 = create_profile(django_user2)
-        self.user2.set_password(self.test_password2)
-        self.user2.save()
-
 
         self.course = course_model.create_course(
             **{
@@ -78,15 +75,8 @@ class CourseTests(TestCase):
         self.assertTrue(not about == None)
         self.assertEqual(about['title'], "About")
 
-        # test that a cohort was created
-        cohort = course_model.get_course_cohort(course['uri'])
-        self.assertTrue(not cohort == None)
-
         self.assertTrue(
-            course_model.user_in_cohort('/uri/user/testuser', cohort['uri'])
-        )
-        self.assertTrue(
-            course_model.is_cohort_organizer('/uri/user/testuser', cohort['uri'])
+            course_model.is_organizer(course['uri'], '/uri/user/testuser')
         )
 
     def test_course_get(self):
@@ -103,37 +93,6 @@ class CourseTests(TestCase):
         self.assertTrue('status' in course)
         self.assertTrue('about_uri' in course)
         self.assertTrue('content' in course)
-
-    def test_add_content(self):
-        pass
-
-    def test_add_user(self):
-        cohort = course_model.get_course_cohort(self.course['uri'])
-        course_model.add_user_to_cohort(
-            cohort['uri'], '/uri/user/bob', 'ORGANIZER')
-        cohort2 = course_model.get_course_cohort(self.course['uri'])
-        self.assertEqual(len(cohort['users']), len(cohort2['users'])-1)
-
-    def test_remove_user(self):
-        pass
-
-    def test_make_organizer(self):
-        pass
-
-    def test_send_course_announcement(self):
-        course = course_model.create_course(
-            **{
-                "title": "A test course",
-                "hashtag": "ATC-1",
-                "description": "This course is all about ABC",
-                "language": "en",
-                "organizer_uri": '/uri/user/testuser/'
-            }
-        )
-        with patch('notifications.models.send_notifications_i18n') as send_notification:
-            course_model.send_course_announcement(course['uri'], 'Notification text')
-            self.assertTrue(send_notification.called)
-            #TODO test parameters sent to send_notification
 
 
     def test_clone_course(self):
@@ -166,9 +125,7 @@ class CourseTests(TestCase):
             course_model.get_course(course['uri'])
 
     def test_get_courses(self):
-        user = User(username='testuser99', email='99@example.com')
-        user = create_profile(user)
-        user.save()
+        user = create_user('99@example.com', 'testuser99', 'last', 'password')
 
         course = course_model.create_course(
             **{
