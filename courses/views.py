@@ -27,8 +27,6 @@ from courses.forms import CourseStatusForm
 from courses.forms import CourseTagsForm
 from courses.forms import CourseEmbeddedUrlForm
 from courses.decorators import require_organizer
-from courses.badges_oembed import add_content_from_response
-from courses.badges_oembed import BadgeNotFoundException
 
 from content import models as content_model
 from content.forms import ContentForm
