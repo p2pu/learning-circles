@@ -139,6 +139,7 @@ def serialize_learning_circle(sg):
         "report_url": sg.report_url(),
         "studygroup_path": reverse('studygroups_view_study_group', args=(sg.id,)),
         "draft": sg.draft,
+        "signup_limit": sg.signup_limit or 0,
         "signup_count": sg.application_set.active().count(), # should this be serialized for public API endpionts?
         "signup_open": sg.signup_open and sg.end_date > datetime.date.today(),
     }
@@ -721,6 +722,7 @@ def _make_learning_circle_schema(request):
         "duration": schema.integer(required=True),
         "timezone": schema.text(required=True, length=128),
         "signup_question": schema.text(length=256),
+        "signup_limit": schema.integer(required=False),
         "facilitators": _facilitators_validator,
         "facilitator_goal": schema.text(length=256),
         "facilitator_concerns": schema.text(length=256),
@@ -789,7 +791,8 @@ class LearningCircleCreateView(View):
             image=data.get('image_url'),
             signup_question=data.get('signup_question', ''),
             facilitator_goal=data.get('facilitator_goal', ''),
-            facilitator_concerns=data.get('facilitator_concerns', '')
+            facilitator_concerns=data.get('facilitator_concerns', ''),
+            signup_limit=data.get('signup_limit', 0)
         )
 
         # use course.caption if course_description is not set
@@ -889,6 +892,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         study_group.timezone = data.get('timezone')
         study_group.image = data.get('image_url')
         study_group.signup_question = data.get('signup_question', '')
+        study_group.signup_limit = data.get('signup_limit', 0)
         study_group.facilitator_goal = data.get('facilitator_goal', '')
         study_group.facilitator_concerns = data.get('facilitator_concerns', '')
 

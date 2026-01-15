@@ -58,7 +58,12 @@ def signup(request, location, study_group_id):
     if not study_group.deleted_at is None:
         raise http.Http404(_("Learning circle does not exist"))
 
+    at_capacity = study_group.at_capacity
+
     if request.method == 'POST':
+        # handle over capacity signup
+        if at_capacity:
+            messages.warning(request, 'Unfortunately all the available spots for this learning circle has already been taken.')
         recaptcha_response = request.POST.get('g-recaptcha-response')
         data = {
             'secret': settings.RECAPTCHA_SECRET_KEY,
@@ -67,7 +72,7 @@ def signup(request, location, study_group_id):
         r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
         captcha_result = r.json()
         form = ApplicationForm(request.POST, initial={'study_group': study_group})
-        if form.is_valid() and study_group.signup_open == True and study_group.draft == False and captcha_result.get('success'):
+        if form.is_valid() and study_group.signup_open == True and study_group.draft == False and captcha_result.get('success') and not at_capacity:
             application = form.save(commit=False)
             if application.email and Application.objects.active().filter(email__iexact=application.email, study_group=study_group).exists():
                 old_application = Application.objects.active().filter(email__iexact=application.email, study_group=study_group).first()
@@ -94,6 +99,7 @@ def signup(request, location, study_group_id):
     context = {
         'form': form,
         'study_group': study_group,
+        'at_capacity': at_capacity,
         'meetings': meetings,
         'mapbox_token': settings.MAPBOX_TOKEN,
         'completed': last_meeting is not None and last_meeting.meeting_date < datetime.date.today(),
