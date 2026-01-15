@@ -1,11 +1,8 @@
 from django.test import Client
-from django.contrib.auth.models import User
-from users.models import create_profile
+from django.test import TestCase
 
-from test_utils import TestCase
-
+from custom_registration.models import create_user
 from content import models as content_model
-from mock import patch
 
 
 class CourseTests(TestCase):
@@ -22,21 +19,19 @@ class CourseTests(TestCase):
         self.client = Client()
         self.locale = 'en'
 
-        django_user = User(
-            username=self.test_username,
-            email=self.test_email,
+        self.user = create_user(
+            self.test_email,
+            self.test_username,
+            'lastname',
+            self.test_password
         )
-        self.user = create_profile(django_user)
-        self.user.set_password(self.test_password)
-        self.user.save()
         
-        django_user2 = User(
-            username=self.test_username2,
-            email=self.test_email2,
+        self.user2 = create_user(
+            self.test_email2,
+            self.test_username2,
+            'lastname2',
+            self.test_password2
         )
-        self.user2 = create_profile(django_user2)
-        self.user2.set_password(self.test_password2)
-        self.user2.save()
 
 
     def test_content_creation(self):

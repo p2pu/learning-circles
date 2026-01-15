@@ -1,6 +1,5 @@
 from django.test import Client
 from django.test import TestCase
-from django.contrib.auth.models import User
 
 from custom_registration.models import create_user
 from courses import models as course_model
