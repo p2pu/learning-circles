@@ -22,17 +22,6 @@
     <div>{% trans 'Based on '%}<a href="{% url 'courses_show' course_id=course.based_on.id slug=course.based_on.slug %}" itemprop="isBasedOnUrl" >{{course.based_on.title}}</a></div>
     {% endif %}
 
-    {% if lists %}
-      <div>
-        <h2>{% trans 'Featured in:' %}</h2>
-        <ul class="unstyled">
-          {% for list in lists %}
-            <li><a href="{{list.url}}">{{list.title}}</a></li>
-          {% endfor %}
-        </ul>
-      </div>
-    {% endif %}
-
     <div>
       <ul class="nav flex-column">
         <li class="nav-item {% if not content%}active{% endif %}">
@@ -66,19 +55,5 @@
       </p>
     {% endif %}
 
-    <p>
-    {% comment %}
-      <form action="{% url 'report_abuse' %}" method="post">
-        {% csrf_token %}
-        <input id="id_url" name="url" type="hidden" value="{{request.get_full_path}}"/>
-        <button type="submit">Report abuse</button>
-      </form>
-      {% endcomment %}
-    </p>
-
-    <!--div id="course-description">
-      <h2>{% trans "Description" %}</h2>
-      <p>{{ course.description }}</p>
-    </div-->
 </div> <!-- /#sidebar -->
 
