@@ -766,6 +766,7 @@ class LearningCircleCreateView(View):
         study_group = StudyGroup(
             name=data.get('name', None),
             course=data.get('course'),
+            course_content=data.get('course').course_content,
             course_description=data.get('course_description', None),
             created_by=request.user,
             description=data.get('description'),

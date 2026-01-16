@@ -1,0 +1,59 @@
+{% load i18n %}
+
+<div id="sidebar">
+    <figure class="project_img">
+      <a id="id-course-image-link" itemprop="url" href="{% url 'courses_show' course_id=course.id slug=course.slug %}">
+        {% if course.image %}
+  	         <img id="id-course-image" src="{{ course.image.url }}" alt="course image" itemprop="image" />
+        {% else %}
+             <img id="id-course-image" src="{{ STATIC_URL}}images/project-missing.png" alt="course image" itemprop="image" />
+        {% endif %}
+        {% if course.status == 'archived' %}
+          <img id="id-course-image-overlay" src="{{ STATIC_URL }}images/course-archived.png" alt="Archived course"/>
+        {% else %}
+        {% if course.status == 'draft' %}
+          <img id="id-course-image-overlay" src="{{ STATIC_URL }}images/course-draft.png" alt="Draft course"/>
+        {% endif %}
+        {% endif %}
+      </a>
+    </figure>
+
+    {% if course.based_on %}
+    <div>{% trans 'Based on '%}<a href="{% url 'courses_show' course_id=course.based_on.id slug=course.based_on.slug %}" itemprop="isBasedOnUrl" >{{course.based_on.title}}</a></div>
+    {% endif %}
+
+    <div>
+      <ul class="nav flex-column">
+        <li class="nav-item {% if not content%}active{% endif %}">
+          <a class="nav-link" href="{% url 'courses_show' course_id=course.id slug=course.slug %}">{% trans "About" %}</a>
+        </li>
+        <li class="divider"></li>
+        {% for task in course.content %}
+          {% if content and content.id == task.id %}
+            <li class="nav-item active">
+          {% else %}
+            <li class="nav-item">
+          {% endif %}
+            <a class="nav-link" href="{% url 'courses_content_show' course_id=course.id content_id=task.id %}">{{ task.title }}</a>
+            <div>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <hr/>
+    {% if organizer %}
+      <p>
+        <a href="{% url 'courses_clone' course_id=course.id %}" class="btn">{% trans 'Clone course' %}</a>
+      </p>
+    {% endif %}
+
+    {% if admin %}
+      <p>
+        <a class="btn" href="{% url 'courses_delete_spam' course_id=course.id %}">{% trans 'Delete spam' %}</a>
+      </p>
+    {% endif %}
+
+</div> <!-- /#sidebar -->
+

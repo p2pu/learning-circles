@@ -1,0 +1,11 @@
+services:
+  python:
+    image: python:3.11
+    volumes:
+    - .:/opt/app
+    ports:
+    - 8080:8080
+    network_mode: host
+    user: 1000:1000
+    working_dir: /opt/app
+    command: bash -c "python3 -m venv venv && /opt/app/venv/bin/pip install -r requirements.txt"

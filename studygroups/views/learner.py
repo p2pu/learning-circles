@@ -48,6 +48,7 @@ import string
 import json
 import urllib
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -293,6 +294,18 @@ class StudyGroupParticipantView(TemplateView):
         context = self.get_context_data(**kwargs)
         context['study_group'] = study_group
         context['application'] = application
+        context['content_link'] = None
+        if study_group.course_content:
+            import courses.models
+            course_uri = courses.models.course_id2uri(study_group.course_content.pk)
+            sections = courses.models.get_course_content(course_uri)
+            if len(sections) > 1:
+                context['content_link'] = reverse(
+                    'studygroups_content_view',
+                    args=(study_group.pk, sections[1]['id'],) #TODO skipping nr 0
+                )
+
+
         meetings = study_group.meeting_set.active().order_by('meeting_date', 'meeting_time')
         messages = study_group.reminder_set.filter(sent_at__isnull=False)
 
@@ -415,3 +428,36 @@ class StudyGroupLearnerSurvey(TemplateView):
                 }
 
         return render(request, self.template_name, context)
+
+
+# TODO protect view behind signup 
+@method_decorator(login_required, name="dispatch")
+class ContentView(TemplateView):
+    template_name = 'studygroups/content_view.html'
+
+    def get(self, request, *args, **kwargs):
+        study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
+
+        # TODO check if content is part of study_group.course_content
+
+        import content.db
+        content = content.db.Content.objects.get(pk=kwargs.get('pk'))
+        
+        import courses.models
+        course_uri = courses.models.course_id2uri(study_group.course_content.pk)
+        sections = courses.models.get_course_content(course_uri)[1:] #TODO 
+
+        markdown_content = content.latest.content
+        h1_headings = re.findall(r'^\s*#(?!#)\s+(.+)$', markdown_content, flags=re.MULTILINE)
+
+        context = {
+            "scroll_top": True,
+            "study_group": study_group,
+            "content": markdown_content,
+            "content_title": content.latest.title,
+            "sections": sections,
+            "h1_headings": h1_headings,
+        }
+
+        return render(request, self.template_name, context)
+

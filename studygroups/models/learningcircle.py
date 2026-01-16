@@ -57,6 +57,7 @@ class StudyGroupQuerySet(SoftDeleteQuerySet):
 class StudyGroup(LifeTimeTrackingModel):
     name = models.CharField(max_length=128, blank=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    course_content = models.ForeignKey('courses.Course', on_delete=models.SET_NULL, blank=True, null=True)
     description = BleachField(max_length=2000, blank=True, allowed_tags=settings.TINYMCE_DEFAULT_CONFIG.get('valid_elements', '').split(','), allowed_attributes={'a': ['href', 'title', 'rel', 'target']})
     course_description = BleachField(max_length=2000, blank=True, allowed_tags=settings.TINYMCE_DEFAULT_CONFIG.get('valid_elements', '').split(','), allowed_attributes={'a': ['href', 'title', 'rel', 'target']})
     venue_name = models.CharField(max_length=256)

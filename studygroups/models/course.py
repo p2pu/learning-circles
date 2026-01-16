@@ -56,6 +56,8 @@ class Course(LifeTimeTrackingModel):
     rating_step_counts = models.TextField(default="{}") # JSON value             # TODO
     discourse_topic_url = models.URLField(blank=True)
 
+    course_content = models.ForeignKey('courses.Course', on_delete=models.SET_NULL, blank=True, null=True)
+
     def __str__(self):
         return self.title
 

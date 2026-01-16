@@ -47,6 +47,7 @@ from studygroups.views import TeamCourseList
 from studygroups.views import MessageView
 from studygroups.views import MeetingRecap
 from studygroups.views import MeetingRecapDismiss
+from studygroups.views import ContentView
 
 from . import views
 
@@ -106,6 +107,8 @@ urlpatterns = [
     re_path(r'^course/(?P<pk>[\d]+)/reviews/$', CourseReviewsPage.as_view(), name='studygroups_course_reviews_page'),
     re_path(r'^course/(?P<pk>[\d]+)/edit/$', CourseUpdate.as_view(), name='studygroups_course_edit'),
     re_path(r'^course/(?P<pk>[\d]+)/delete/$', CourseDelete.as_view(), name='studygroups_course_delete'),
+
+    re_path(r'^studygroup/(?P<study_group_id>[\d]+)/content/(?P<pk>[\d]+)/$', ContentView.as_view(), name='studygroups_content_view'),
 
     re_path(r'^facilitator/$', RedirectView.as_view(url='/'), name='studygroups_facilitator_deprecated'),
     re_path(r'^facilitator/team-invitation/$', InvitationConfirm.as_view(), name='studygroups_facilitator_invitation_confirm'),
