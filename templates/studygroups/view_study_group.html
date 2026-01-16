@@ -157,6 +157,7 @@
                   {% if feedback.rating %}data-rating="{{feedback.rating}}"{% endif %}
                   {% if feedback.attendance %}data-attendance="{{feedback.attendance}}"{% endif %}
                   {% if feedback.reflection%}data-reflection="{{feedback.reflection}}"{% endif %}
+                  data-granular-attendance="{% if feedback.granular_attendance %}{{feedback.granular_attendance}}{% else %}{}{% endif %}"
                   data-action-url="{% url 'feedback-detail' feedback.id %}"
                 {% else %}
                   data-action-url="{% url 'feedback-list'%}"
@@ -358,6 +359,23 @@
 {% endblock %}
 {% block scripts %}
 
+<script>
+ // erm, hacky data sharing with feedback widget
+
+window.learners = [
+  {% for learner in study_group.application_set.active %}
+      {% if learner.anonymized %}{% else %}
+      {
+        "id": "{{ learner.id }}",
+        "name": "{{ learner.name }}",
+        {% if learner.email %}"email": "{{learner.email}}",{% endif %}
+        {% if learner.mobile %}"mobile": "{{learner.mobile}}",{% endif %}
+      },
+      {% endif %}
+  {% endfor %}
+];
+
+</script>
 {% render_bundle 'learning-circle-manage' %}
 <script>
 $(document).ready(function () {

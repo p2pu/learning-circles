@@ -4,6 +4,35 @@ import RatingInput from './manage/meeting-rating-input';
 import MeetingReflectionInput from './manage/meeting-reflection-input';
 import DelayedPostForm from './manage/delayed-post-form';
 
+const GranularAttendanceInput = ({value, onChange, learners}) => {
+
+  var parsedValue = JSON.parse(value)
+
+  const handleCheck = userId => {
+    if (parsedValue[userId]) {
+      delete parsedValue[userId]
+    } else {
+      parsedValue[userId] = true
+    }
+    onChange({"granular_attendance": JSON.stringify(parsedValue)})
+  }
+
+  return (
+    <div id="div_id_granular_attendance" className="form-group">
+      <label htmlFor="id_granular_attendance" className="col-form-label">Who attended?</label> 
+      {
+        learners.map(user => (
+          <div className="form-check" key={user.id}>
+            <input className="form-check-input" type="checkbox" value="" id="checkChecked" checked={parsedValue[user.id]} onChange={e => handleCheck(user.id)}/>
+            <label className="form-check-label" htmlFor="checkChecked">
+              {`${user.name} <${user.email || user.mobile}>`}
+            </label>
+          </div>
+        ))
+      }
+    </div>
+  );
+}
 
 const AttendanceInput = ({value, onChange}) => 
   <div id="div_id_attendance" className="form-group">
@@ -19,6 +48,11 @@ const MeetingFeedbackForm = props => {
   return (
     <form>
       <RatingInput value={formData.rating} onChange={updateForm}/>
+      <GranularAttendanceInput 
+        value={formData.granular_attendance}
+        onChange={updateForm}
+        learners={window.learners}
+      />
       <AttendanceInput value={formData.attendance} onChange={updateForm}/>
       <MeetingReflectionInput value={formData.reflection} onChange={updateForm} />
     </form>
@@ -37,6 +71,7 @@ const MeetingFeedback = props => {
   let initialFormValues = {
     rating: props.rating,
     attendance: props.attendance,
+    granular_attendance: props.granularAttendance,
     reflection: props.reflection,
     study_group_meeting: props.meetingId,
   };
@@ -70,4 +105,3 @@ const MeetingFeedback = props => {
 };
 
 export default MeetingFeedback;
-

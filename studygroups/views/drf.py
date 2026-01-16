@@ -27,7 +27,7 @@ class FeedbackSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Feedback
-        fields = ['rating', 'attendance', 'reflection', 'study_group_meeting', 'url']
+        fields = ['rating', 'attendance', 'granular_attendance', 'reflection', 'study_group_meeting', 'url']
 
 
 class IsGroupFacilitator(permissions.BasePermission):
