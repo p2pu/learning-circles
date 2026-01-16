@@ -21,11 +21,9 @@ from django.contrib import messages
 from courses import models as course_model
 from courses.forms import CourseCreationForm
 from courses.forms import CourseUpdateForm
-from courses.forms import CourseTermForm
 from courses.forms import CourseImageForm
 from courses.forms import CourseStatusForm
 from courses.forms import CourseTagsForm
-from courses.forms import CourseEmbeddedUrlForm
 from courses.decorators import require_organizer
 
 from content import models as content_model

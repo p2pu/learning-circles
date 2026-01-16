@@ -32,17 +32,8 @@ class CourseImageForm(forms.Form):
     image = forms.ImageField()
 
 
-class CourseTermForm(forms.Form):
-    start_date = forms.DateField()
-    end_date = forms.DateField()
-
-
 class CourseTagsForm(forms.Form):
     tags = forms.CharField(max_length=256)
-
-
-class CourseEmbeddedUrlForm(forms.Form):
-    url = forms.URLField(max_length=300)
 
 
 class CourseStatusForm(forms.Form):
