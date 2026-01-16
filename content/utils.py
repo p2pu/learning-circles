@@ -7,10 +7,5 @@ def clean_user_content(content):
         'strip': True
     }
     content = bleach.clean(content, **config)
-    #TODO
-    return content
-
-def clean_trusted_user_content(content):
-    bleach.clean(content, strip=True)
-    #TODO
+    #TODO ?? no idea why?
     return content

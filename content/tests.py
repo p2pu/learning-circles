@@ -45,6 +45,7 @@ class CourseTests(TestCase):
         content_model.update_content(
             content['uri'], 'New title', 'New content', '/uri/users/testuser'
         )
+        # TODO this doesn't test anything?
 
 
     def test_clone_content(self):
