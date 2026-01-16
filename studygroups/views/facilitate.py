@@ -91,6 +91,17 @@ def view_study_group(request, study_group_id):
         context['expand_meeting'] = meeting_number
         context['meeting_rating'] = rating
 
+    if study_group.course_content:
+        import courses.models
+        course_uri = courses.models.course_id2uri(study_group.course_content.pk)
+        sections = courses.models.get_course_content(course_uri)
+        if len(sections) > 1:
+            context['content_link'] = reverse(
+                'studygroups_content_view',
+                args=(study_group.pk, sections[1]['id'],) #TODO skipping nr 0
+            )
+
+
     return render(request, 'studygroups/view_study_group.html', context)
 
 

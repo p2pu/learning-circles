@@ -118,8 +118,7 @@ def show_course( request, course_id, slug=None ):
     if slug != course['slug']:
         return course_slug_redirect( request, course_id)
 
-    context = { }
-    context = _populate_course_context(request, course_id, context)
+    context = _populate_course_context(request, course_id, {})
     context['about_active'] = True
 
     if context['organizer']:

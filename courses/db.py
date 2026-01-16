@@ -13,6 +13,9 @@ class Course(models.Model):
     creator_uri = models.CharField(max_length=256)
     based_on = models.ForeignKey('courses.Course', models.SET_NULL, related_name='derived_courses', blank=True, null=True)
 
+    def __str__(self):
+        return self.title
+
 
 class CourseContent(models.Model):
     course = models.ForeignKey(Course, models.CASCADE, related_name='content')

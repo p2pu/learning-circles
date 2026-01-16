@@ -299,10 +299,11 @@ class StudyGroupParticipantView(TemplateView):
             import courses.models
             course_uri = courses.models.course_id2uri(study_group.course_content.pk)
             sections = courses.models.get_course_content(course_uri)
-            context['content_link'] = reverse(
-                'studygroups_content_view',
-                args=(study_group.pk, sections[1]['id'],) #TODO skipping nr 0
-            )
+            if len(sections) > 1:
+                context['content_link'] = reverse(
+                    'studygroups_content_view',
+                    args=(study_group.pk, sections[1]['id'],) #TODO skipping nr 0
+                )
 
 
         meetings = study_group.meeting_set.active().order_by('meeting_date', 'meeting_time')
