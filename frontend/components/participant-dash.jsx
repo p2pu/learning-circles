@@ -217,7 +217,6 @@ const CuCreditPrompt = props => {
   return (
     <div className="item credit" id="info">
       <div className="icon"></div>
-
       <div className="card">
         <p>Participants in this learning circle have the option to earn college credit from College Unbound. In order to earn credit, you must complete a learning journal while participating in the learning circle. For more information, <a href="https://docs.p2pu.org/frequently-asked-questions#credit-bearing-faqs">refer to the FAQs</a>.</p>
       </div>
@@ -225,6 +224,18 @@ const CuCreditPrompt = props => {
   );
 }
 
+
+const DDDeviceForm = props => {
+  return (
+    <div className="item todo" id="device-form">
+      <div className="icon"></div>
+      <div className="card">
+        <p>This enrollment form serves as your authorization to receive a device from Digital Skills Detroit. Please complete within your first 2 Digital Skills Detroit sessions to be considered for your device upon program completion.</p>
+        <p><a href="#" className="p2pu-btn btn btn-primary">Complete enrollment form</a></p>
+      </div>
+    </div>
+  );
+}
 
 
 const ParticipantDash = props => {
@@ -258,6 +269,7 @@ const ParticipantDash = props => {
     <div className="lc-timeline">
       <InfoCard {...props} />
       { props.cu_credit && <CuCreditPrompt {...props}/>}
+      <DDDeviceForm {...props} />
       { 
         items.map( (item, i) => {
           return <item.component {...item.data} key={i} id={i} />

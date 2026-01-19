@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load i18n %}
+{% load tz %}
+
+{% block page_title %}
+  {{study_group.name}}
+{% endblock %}
+
+
+{% block content %}
+
+<style>
+        .form-container {
+            width: 8.5in;
+            min-height: 11in;
+            margin: 0 auto;
+            background: white;
+            padding: 0.75in;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .section-title {
+            color: #0d6efd;
+            border-bottom: 2px solid #0d6efd;
+            padding-bottom: 10px;
+            margin: 30px 0 20px;
+            text-align: left;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .required-field::after {
+            content: " *";
+            color: red;
+        }
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .form-container {
+                box-shadow: none;
+                margin: 0;
+            }
+        }
+</style>
+
+
+    <div class="container mt-5">
+        <div class="form-container">
+            <div class="header">
+                <h2 class="text-primary">Digital Skills Detroit</h2>
+                <h4>Enrollment Form</h4>
+                <p class="text-muted">This enrollment form serves as your authorization to receive a device from Digital Skills Detroit. Please complete within your first 2 Digital Skills Detroit sessions to be considered for your device upon program completion.</p>
+            </div>
+
+            <form id="enrollmentForm">
+                <!-- Learner Contact Information -->
+                <h5 class="section-title">Learner Contact Information</h5>
+                
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="firstName" class="form-label required-field">First Name</label>
+                        <input type="text" class="form-control" id="firstName" required>
+                    </div>
+                    <div class="col-md-12">
+                        <label for="lastName" class="form-label required-field">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" required>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="dob" class="form-label required-field">Date of Birth</label>
+                        <input type="date" class="form-control" id="dob" required>
+                    </div>
+                    <div class="col-md-12">
+                        <label for="phone" class="form-label required-field">Phone Number</label>
+                        <input type="tel" class="form-control" id="phone" placeholder="(123) 456-7890" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label required-field">Email Address</label>
+                    <input type="email" class="form-control" id="email" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="address" class="form-label required-field">Home Address</label>
+                    <textarea class="form-control" id="address" rows="2" required></textarea>
+                </div>
+
+                <!-- Demographic Information -->
+                <h5 class="section-title">Demographic Information</h5>
+                <p class="text-muted">Optional</p>
+                
+                <div class="mb-3">
+                    <label for="gender" class="form-label">Gender</label>
+                    <select class="form-select" id="gender">
+                        <option value="">Select...</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="non-binary">Non-binary</option>
+                        <option value="prefer-not-to-say">Prefer not to say</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <!-- Agreement -->
+                <h5 class="section-title">Agreement</h5>
+                <p>By signing below, I acknowledge and agree to the following:</p>
+                
+                <ul>
+                  <li>I understand that I will be eligible to receive a device after the completion of  15 hours of digital literacy training through the Digital Skills Detroit program.</li>
+                  <li>I understand that Human-I-T will provide support services related to my device, including troubleshooting and technical assistance.</li>
+                  <li>I understand that my contact information (as provided above) may be shared with Human-I-T and the Detroit Housing Network solely for the purposes of distributing devices to participants who complete the training and providing housing resources and opportunities by the Detroit housing network.</li>
+                </ul>
+
+                <!-- Consent -->
+                <h5 class="section-title">Consent</h5>
+                <p class="required-field">Please select one of the following</p>
+                
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="consent" id="consentNo" value="no" required>
+                        <label class="form-check-label" for="consentNo">
+                            I do not consent to being contacted by the Detroit Housing Network to learn more about additional housing resources and opportunities that may benefit me.
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="consent" id="consentYes" value="yes" required>
+                        <label class="form-check-label" for="consentYes">
+                            I consent to being contacted by the Detroit Housing Network to learn more about additional housing resources and opportunities that may benefit me.
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Disclosures and Privacy Policy -->
+                <h5 class="section-title">Disclosures and Privacy Policy</h5>
+                
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="disclosure" required>
+                        <label class="form-check-label" for="disclosure">
+                            By submitting your information you are certifying that all information is correct to the best of your knowledge and that you reviewed the Disclosures and Detroit Housing Network (DHN) Privacy Policy.
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Learner Signature -->
+                <h5 class="section-title">Learner Signature</h5>
+                
+                <div class="mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="signatureAck" required>
+                        <label class="form-check-label required-field" for="signatureAck">
+                            I have read and understood the terms of this agreement.
+                        </label>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        <label for="signature" class="form-label required-field">Signature</label>
+                        <input type="text" class="form-control" id="signature" placeholder="Type your full name" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="signatureDate" class="form-label required-field">Date</label>
+                        <input type="date" class="form-control" id="signatureDate" required>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mt-4 mb-4">
+                    <button type="submit" class="btn btn-primary btn-lg">Submit Enrollment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
