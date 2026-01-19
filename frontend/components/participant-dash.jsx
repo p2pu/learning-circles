@@ -231,7 +231,7 @@ const DDDeviceForm = props => {
       <div className="icon"></div>
       <div className="card">
         <p>This enrollment form serves as your authorization to receive a device from Digital Skills Detroit. Please complete within your first 2 Digital Skills Detroit sessions to be considered for your device upon program completion.</p>
-        <p><a href="#" className="p2pu-btn btn btn-primary">Complete enrollment form</a></p>
+        <p><a href={props.device_agreement_url} className="p2pu-btn btn btn-primary">Complete enrollment form</a></p>
       </div>
     </div>
   );
@@ -269,7 +269,7 @@ const ParticipantDash = props => {
     <div className="lc-timeline">
       <InfoCard {...props} />
       { props.cu_credit && <CuCreditPrompt {...props}/>}
-      <DDDeviceForm {...props} />
+      { props.device_agreement_url && <DDDeviceForm {...props} /> }
       { 
         items.map( (item, i) => {
           return <item.component {...item.data} key={i} id={i} />

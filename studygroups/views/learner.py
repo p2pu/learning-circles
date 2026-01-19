@@ -371,6 +371,10 @@ class StudyGroupParticipantView(TemplateView):
                 'email': application.email,
             }
         }
+
+        # TODO check if learning circle meets requirements for devices
+        react_data['device_agreement_url'] = reverse('studygroups_device_agreement', args=(study_group.pk,))
+
         context['react_data'] = react_data
 
         return render(request, self.template_name, context)
