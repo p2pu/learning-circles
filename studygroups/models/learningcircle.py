@@ -581,11 +581,15 @@ class Feedback(LifeTimeTrackingModel):
         (AWFUL, _('Awful')),
     ]
 
-    study_group_meeting = models.ForeignKey('studygroups.Meeting', on_delete=models.CASCADE) # TODO should this be a OneToOneField?
+    study_group_meeting = models.ForeignKey('studygroups.Meeting', on_delete=models.CASCADE)
     feedback = models.TextField(blank=True) # Shared with learners. This is being deprecated, but kept for retaining past data.
     attendance = models.PositiveIntegerField(blank=True, null=True)
+    granular_attendance = models.JSONField(default=dict)
     reflection = models.TextField(blank=True) # Shared with team and P2PU
     rating = models.CharField(choices=RATING, max_length=16, blank=True)
+
+
+
 
     def reflection_json(self):
         if self.reflection:

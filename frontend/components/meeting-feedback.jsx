@@ -2,16 +2,8 @@ import React, { useState } from 'react'
 
 import RatingInput from './manage/meeting-rating-input';
 import MeetingReflectionInput from './manage/meeting-reflection-input';
+import AttendanceInput from './manage/meeting-attendance-input';
 import DelayedPostForm from './manage/delayed-post-form';
-
-
-const AttendanceInput = ({value, onChange}) => 
-  <div id="div_id_attendance" className="form-group">
-    <label htmlFor="id_attendance" className="col-form-label">How many people attended?</label> 
-    <div>
-      <input type="number" name="attendance" min="0" className="numberinput form-control form-control form-control" value={value} onChange={e => onChange({'attendance': e.target.value})} id="id_attendance" /> 
-    </div> 
-  </div>;
 
 
 const MeetingFeedbackForm = props => {
@@ -19,7 +11,7 @@ const MeetingFeedbackForm = props => {
   return (
     <form>
       <RatingInput value={formData.rating} onChange={updateForm}/>
-      <AttendanceInput value={formData.attendance} onChange={updateForm}/>
+      <AttendanceInput formData={formData} onChange={updateForm}/>
       <MeetingReflectionInput value={formData.reflection} onChange={updateForm} />
     </form>
   )
@@ -37,6 +29,7 @@ const MeetingFeedback = props => {
   let initialFormValues = {
     rating: props.rating,
     attendance: props.attendance,
+    granular_attendance: props.granularAttendance,
     reflection: props.reflection,
     study_group_meeting: props.meetingId,
   };
@@ -70,4 +63,3 @@ const MeetingFeedback = props => {
 };
 
 export default MeetingFeedback;
-
