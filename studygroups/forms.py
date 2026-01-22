@@ -559,7 +559,8 @@ class DigitalSkillsEnrollmentForm(forms.Form):
     housing_network_consent = forms.ChoiceField(
         choices=CONSENT_CHOICES,
         required=True,
-        widget=forms.RadioSelect(attrs={'class': 'form-check-input'})
+        widget=forms.RadioSelect(attrs={'class': 'form-check-input'}),
+        label=""
     )
     
     # Disclosures and Privacy Policy
@@ -579,12 +580,12 @@ class DigitalSkillsEnrollmentForm(forms.Form):
     signature = forms.CharField(
         max_length=200,
         required=True,
-        label='Signature (Type your full name)',
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Type your full name'})
     )
     
     signature_date = forms.DateField(
         required=True,
+        label='Date',
         widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
     )
 

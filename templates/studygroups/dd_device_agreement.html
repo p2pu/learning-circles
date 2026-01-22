@@ -34,9 +34,13 @@
             text-align: center;
             margin-bottom: 30px;
         }
-        .required-field::after {
-            content: " *";
-            color: red;
+
+        .asteriskField {
+          margin-left: 6px;
+          color: red;
+        }
+        .form-label {
+          text-transform: capitalize;
         }
         @media print {
             body {
@@ -65,34 +69,28 @@
                 
                 <div class="row mb-3">
                     <div class="col-md-12">
-                        <label for="firstName" class="form-label required-field">First Name</label>
-                        {{ form.first_name }}
+                        {{ form.first_name | as_crispy_field }}
                     </div>
                     <div class="col-md-12">
-                        <label for="lastName" class="form-label required-field">Last Name</label>
-                        {{ form.last_name }}
+                        {{ form.last_name | as_crispy_field }}
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-12">
-                        <label for="dob" class="form-label required-field">Date of Birth</label>
-                        {{ form.date_of_birth }}
+                        {{ form.date_of_birth | as_crispy_field }}
                     </div>
                     <div class="col-md-12">
-                        <label for="phone" class="form-label required-field">Phone Number</label>
-                        {{ form.phone_number }}
+                        {{ form.phone_number | as_crispy_field }}
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="email" class="form-label required-field">Email Address</label>
-                    {{ form.email_address }}
+                    {{ form.email_address | as_crispy_field }}
                 </div>
 
                 <div class="mb-3">
-                    <label for="address" class="form-label required-field">Home Address</label>
-                    <textarea class="form-control" id="address" rows="2" name="home_address" required></textarea>
+                    {{ form.home_address | as_crispy_field }}
                 </div>
 
                 <!-- Demographic Information -->
@@ -100,8 +98,7 @@
                 <p class="text-muted">Optional</p>
                 
                 <div class="mb-3">
-                    <label for="gender" class="form-label">Gender</label>
-                    {{ form.gender }}
+                    {{ form.gender | as_crispy_field }}
                 </div>
 
                 <!-- Agreement -->
@@ -116,55 +113,32 @@
 
                 <!-- Consent -->
                 <h5 class="section-title">Consent</h5>
-                <p class="required-field">Please select one of the following</p>
+                <p class="requiredField">Please select one of the following:</p>
                 
                 <div class="mb-3">
-                    <div class="form-check">
-                        <input name="housing_network_consent" class="form-check-input" type="radio" name="consent" id="consentNo" value="no" required>
-                        <label class="form-check-label" for="consentNo">
-                            I do not consent to being contacted by the Detroit Housing Network to learn more about additional housing resources and opportunities that may benefit me.
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input name="housing_network_consent" class="form-check-input" type="radio" name="consent" id="consentYes" value="yes" required>
-                        <label class="form-check-label" for="consentYes">
-                            I consent to being contacted by the Detroit Housing Network to learn more about additional housing resources and opportunities that may benefit me.
-                        </label>
-                    </div>
+                    {{ form.housing_network_consent | as_crispy_field }}
                 </div>
 
                 <!-- Disclosures and Privacy Policy -->
                 <h5 class="section-title">Disclosures and Privacy Policy</h5>
                 
                 <div class="mb-3">
-                    <div class="form-check">
-                        <input name="disclosure_certification" class="form-check-input" type="checkbox" id="disclosure" required>
-                        <label class="form-check-label" for="disclosure">
-                            By submitting your information you are certifying that all information is correct to the best of your knowledge and that you reviewed the Disclosures and Detroit Housing Network (DHN) Privacy Policy.
-                        </label>
-                    </div>
+                      {{ form.disclosure_certification | as_crispy_field }}
                 </div>
 
                 <!-- Learner Signature -->
                 <h5 class="section-title">Learner Signature</h5>
                 
                 <div class="mb-3">
-                    <div class="form-check">
-                        <input name="signature_acknowledgment" class="form-check-input" type="checkbox" id="signatureAck" required>
-                        <label class="form-check-label required-field" for="signatureAck">
-                            I have read and understood the terms of this agreement.
-                        </label>
-                    </div>
+                    {{ form.signature_acknowledgment | as_crispy_field}}
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-8">
-                        <label for="signature" class="form-label required-field">Signature</label>
-                        <input name="signature" type="text" class="form-control" id="signature" placeholder="Type your full name" required>
+                        {{ form.signature | as_crispy_field }}
                     </div>
                     <div class="col-md-4">
-                        <label for="signatureDate" class="form-label required-field">Date</label>
-                        <input name="signature_date" type="date" class="form-control" id="signatureDate" required>
+                        {{ form.signature_date | as_crispy_field }}
                     </div>
                 </div>
 
