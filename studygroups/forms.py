@@ -498,3 +498,93 @@ class TeamForm(forms.ModelForm):
             'intro_text': TinyMCE()
         }
 
+
+class DigitalSkillsEnrollmentForm(forms.Form):
+    GENDER_CHOICES = [
+        ('', 'Select...'),
+        ('male', 'Male'),
+        ('female', 'Female'),
+        ('non-binary', 'Non-binary'),
+        ('prefer-not-to-say', 'Prefer not to say'),
+        ('other', 'Other'),
+    ]
+    
+    CONSENT_CHOICES = [
+        ('no', 'I do not consent to being contacted by the Detroit Housing Network to learn more about additional housing resources and opportunities that may benefit me.'),
+        ('yes', 'I consent to being contacted by the Detroit Housing Network to learn more about additional housing resources and opportunities that may benefit me.'),
+    ]
+    
+    # Learner Contact Information
+    first_name = forms.CharField(
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    
+    last_name = forms.CharField(
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    
+    date_of_birth = forms.DateField(
+        required=True,
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
+    )
+    
+    phone_number = forms.CharField(
+        max_length=15,
+        required=True,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '(123) 456-7890'})
+    )
+    
+    email_address = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={'class': 'form-control'})
+    )
+    
+    home_address = forms.CharField(
+        required=True,
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 2})
+    )
+    
+    # Demographic Information (Optional)
+    gender = forms.ChoiceField(
+        choices=GENDER_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    
+    # Consent
+    housing_network_consent = forms.ChoiceField(
+        choices=CONSENT_CHOICES,
+        required=True,
+        widget=forms.RadioSelect(attrs={'class': 'form-check-input'})
+    )
+    
+    # Disclosures and Privacy Policy
+    disclosure_certification = forms.BooleanField(
+        required=True,
+        label='By submitting your information you are certifying that all information is correct to the best of your knowledge and that you reviewed the Disclosures and Detroit Housing Network (DHN) Privacy Policy.',
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
+    
+    # Learner Signature
+    signature_acknowledgment = forms.BooleanField(
+        required=True,
+        label='I have read and understood the terms of this agreement.',
+        widget=forms.CheckboxInput(attrs={'class': 'form-check-input'})
+    )
+    
+    signature = forms.CharField(
+        max_length=200,
+        required=True,
+        label='Signature (Type your full name)',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Type your full name'})
+    )
+    
+    signature_date = forms.DateField(
+        required=True,
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
+    )
+

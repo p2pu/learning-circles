@@ -12,6 +12,8 @@
 
 {% block content %}
 
+
+
 <style>
         .form-container {
             width: 8.5in;
@@ -48,8 +50,8 @@
         }
 </style>
 
-
     <div class="container mt-5">
+      <a href="{% url 'studygroups_view_learning_circle_participant' study_group.id %}">{% trans "Back" %}</a>
         <div class="form-container">
             <div class="header">
                 <h2 class="text-primary">Digital Skills Detroit</h2>
@@ -57,40 +59,40 @@
                 <p class="text-muted">This enrollment form serves as your authorization to receive a device from Digital Skills Detroit. Please complete within your first 2 Digital Skills Detroit sessions to be considered for your device upon program completion.</p>
             </div>
 
-            <form id="enrollmentForm">
-                <!-- Learner Contact Information -->
+            <form id="enrollmentForm" method="POST">
+              {% csrf_token %}
                 <h5 class="section-title">Learner Contact Information</h5>
                 
                 <div class="row mb-3">
                     <div class="col-md-12">
                         <label for="firstName" class="form-label required-field">First Name</label>
-                        <input type="text" class="form-control" id="firstName" required>
+                        {{ form.first_name }}
                     </div>
                     <div class="col-md-12">
                         <label for="lastName" class="form-label required-field">Last Name</label>
-                        <input type="text" class="form-control" id="lastName" required>
+                        {{ form.last_name }}
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-12">
                         <label for="dob" class="form-label required-field">Date of Birth</label>
-                        <input type="date" class="form-control" id="dob" required>
+                        {{ form.date_of_birth }}
                     </div>
                     <div class="col-md-12">
                         <label for="phone" class="form-label required-field">Phone Number</label>
-                        <input type="tel" class="form-control" id="phone" placeholder="(123) 456-7890" required>
+                        {{ form.phone_number }}
                     </div>
                 </div>
 
                 <div class="mb-3">
                     <label for="email" class="form-label required-field">Email Address</label>
-                    <input type="email" class="form-control" id="email" required>
+                    {{ form.email_address }}
                 </div>
 
                 <div class="mb-3">
                     <label for="address" class="form-label required-field">Home Address</label>
-                    <textarea class="form-control" id="address" rows="2" required></textarea>
+                    <textarea class="form-control" id="address" rows="2" name="home_address" required></textarea>
                 </div>
 
                 <!-- Demographic Information -->
@@ -99,14 +101,7 @@
                 
                 <div class="mb-3">
                     <label for="gender" class="form-label">Gender</label>
-                    <select class="form-select" id="gender">
-                        <option value="">Select...</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="non-binary">Non-binary</option>
-                        <option value="prefer-not-to-say">Prefer not to say</option>
-                        <option value="other">Other</option>
-                    </select>
+                    {{ form.gender }}
                 </div>
 
                 <!-- Agreement -->
@@ -125,13 +120,13 @@
                 
                 <div class="mb-3">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="consent" id="consentNo" value="no" required>
+                        <input name="housing_network_consent" class="form-check-input" type="radio" name="consent" id="consentNo" value="no" required>
                         <label class="form-check-label" for="consentNo">
                             I do not consent to being contacted by the Detroit Housing Network to learn more about additional housing resources and opportunities that may benefit me.
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="consent" id="consentYes" value="yes" required>
+                        <input name="housing_network_consent" class="form-check-input" type="radio" name="consent" id="consentYes" value="yes" required>
                         <label class="form-check-label" for="consentYes">
                             I consent to being contacted by the Detroit Housing Network to learn more about additional housing resources and opportunities that may benefit me.
                         </label>
@@ -143,7 +138,7 @@
                 
                 <div class="mb-3">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="disclosure" required>
+                        <input name="disclosure_certification" class="form-check-input" type="checkbox" id="disclosure" required>
                         <label class="form-check-label" for="disclosure">
                             By submitting your information you are certifying that all information is correct to the best of your knowledge and that you reviewed the Disclosures and Detroit Housing Network (DHN) Privacy Policy.
                         </label>
@@ -155,7 +150,7 @@
                 
                 <div class="mb-3">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="signatureAck" required>
+                        <input name="signature_acknowledgment" class="form-check-input" type="checkbox" id="signatureAck" required>
                         <label class="form-check-label required-field" for="signatureAck">
                             I have read and understood the terms of this agreement.
                         </label>
@@ -165,11 +160,11 @@
                 <div class="row mb-3">
                     <div class="col-md-8">
                         <label for="signature" class="form-label required-field">Signature</label>
-                        <input type="text" class="form-control" id="signature" placeholder="Type your full name" required>
+                        <input name="signature" type="text" class="form-control" id="signature" placeholder="Type your full name" required>
                     </div>
                     <div class="col-md-4">
                         <label for="signatureDate" class="form-label required-field">Date</label>
-                        <input type="date" class="form-control" id="signatureDate" required>
+                        <input name="signature_date" type="date" class="form-control" id="signatureDate" required>
                     </div>
                 </div>
 
