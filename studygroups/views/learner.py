@@ -180,13 +180,18 @@ class DeviceAgreementView(FormView):
         study_group_id = self.kwargs.get('study_group_id')
         study_group = get_object_or_404(StudyGroup, pk=study_group_id)
         application = study_group.application_set.active().filter(email=self.request.user.email).first()
-        # TODO load initial from signup_questions
         initial = {
             "email_address": application.email,
             "first_name": application.name,
         }
+
         if application.mobile:
             initial["phone_number"] = mobile
+
+        application_data = json.loads(application.signup_questions)
+        if 'device_agreement' in application_data:
+            initial.update(application_data.get('device_agreement'))
+
         return initial
 
 
