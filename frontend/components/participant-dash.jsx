@@ -28,7 +28,7 @@ const RsvpForm = ({formData, updateForm}) => {
           onChange={handleChange}
           checked={formData.rsvp}
         />
-        <label className="form-check-label" for="rsvpYes">Yes</label>
+        <label className="form-check-label" htmlFor="rsvpYes">Yes</label>
       </div>
       <div className="form-check">
         <input 
@@ -37,7 +37,7 @@ const RsvpForm = ({formData, updateForm}) => {
           onChange={handleChange}
           checked={formData.rsvp === false}
         />
-        <label className="form-check-label" for="rsvpNo">No</label>
+        <label className="form-check-label" htmlFor="rsvpNo">No</label>
       </div>
     </form>
   );
@@ -226,15 +226,38 @@ const CuCreditPrompt = props => {
 
 
 const DDDeviceForm = props => {
+  const done = props.device_agreement_completed
   return (
-    <div className="item todo" id="device-form">
+    <div className={`item device-form ${done?'done':'todo'}`} id="device-form">
       <div className="icon"></div>
       <div className="card">
-        <p>This enrollment form serves as your authorization to receive a device from Digital Skills Detroit. Please complete within your first 2 Digital Skills Detroit sessions to be considered for your device upon program completion.</p>
-        <p><a href={props.device_agreement_url} className="p2pu-btn btn btn-primary">Complete enrollment form</a></p>
+        <button
+          className={`card-collapse-toggle ${done?' collapsed':''}`}
+          data-bs-toggle="collapse"
+          data-bs-target="#collapse-device-agreement"
+          type="button"
+          aria-expanded={!done} 
+          aria-controls="collapse-device-agreement"
+        >
+          <i className="fa fa-chevron-down"></i>
+        </button>
+        <div className="card-title">Device Agreement</div>
+        { done &&
+          <div className="collapse" id="collapse-device-agreement">
+            <p>Thank you for completing your device agreement form.</p>
+            <p><a href={props.device_agreement_url} className="p2pu-btn btn btn-primary">Update details</a></p>
+          </div>
+        }
+        { !done &&
+          <div className="collapse show" id="collapse-device-agreement">
+            <p>This enrollment form serves as your authorization to receive a device from Digital Skills Detroit. Please complete within your first 2 Digital Skills Detroit sessions to be considered for your device upon program completion.</p> 
+            <p><a href={props.device_agreement_url} className="p2pu-btn btn btn-primary">Complete enrollment form</a></p>
+          </div>
+        }
       </div>
     </div>
   );
+
 }
 
 
