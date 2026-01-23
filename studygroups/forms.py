@@ -532,9 +532,10 @@ class DigitalSkillsEnrollmentForm(forms.Form):
         widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
     )
     
-    phone_number = forms.CharField(
+    phone_number = PhoneNumberField(
         max_length=15,
         required=True,
+        region="US",
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '(123) 456-7890'})
     )
     
