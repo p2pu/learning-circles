@@ -250,8 +250,8 @@ const DDDeviceForm = props => {
         }
         { !done &&
           <div className="collapse show" id="collapse-device-agreement">
-            <p>This enrollment form serves as your authorization to receive a device from Digital Skills Detroit. Please complete within your first 2 Digital Skills Detroit sessions to be considered for your device upon program completion.</p> 
-            <p><a href={props.device_agreement_url} className="p2pu-btn btn btn-primary">Complete enrollment form</a></p>
+            <p>This form serves as your authorization to receive a device from Digital Skills Detroit. Please complete within your first 2 Digital Skills Detroit sessions to be considered for your device upon program completion.</p> 
+            <p><a href={props.device_agreement_url} className="p2pu-btn btn btn-primary">Complete device agreement</a></p>
           </div>
         }
       </div>

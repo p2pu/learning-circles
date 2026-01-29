@@ -37,7 +37,7 @@ from studygroups.models import application_mobile_opt_out_revert
 from studygroups.forms import ApplicationForm
 from studygroups.forms import OptOutForm
 from studygroups.forms import OptOutConfirmationForm
-from studygroups.forms import DigitalSkillsEnrollmentForm
+from studygroups.forms import DeviceAgreementForm
 from studygroups.utils import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
 from studygroups.views.api import serialize_learning_circle
@@ -152,7 +152,7 @@ def optout_confirm(request):
 @method_decorator(login_required, name="dispatch")
 class DeviceAgreementView(FormView):
     template_name = 'studygroups/dd_device_agreement.html'
-    form_class = DigitalSkillsEnrollmentForm
+    form_class = DeviceAgreementForm
 
     def dispatch(self, request, *args, **kwargs):
         study_group_id = self.kwargs.get('study_group_id')
@@ -186,7 +186,7 @@ class DeviceAgreementView(FormView):
         }
 
         if application.mobile:
-            initial["phone_number"] = mobile
+            initial["phone_number"] = application.mobile
 
         application_data = json.loads(application.signup_questions)
         if 'device_agreement' in application_data:

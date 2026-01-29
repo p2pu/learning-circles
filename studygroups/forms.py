@@ -499,7 +499,8 @@ class TeamForm(forms.ModelForm):
         }
 
 
-class DigitalSkillsEnrollmentForm(forms.Form):
+class DeviceAgreementForm(forms.Form):
+    """ Form for Digital Detroit project device distribution """
     GENDER_CHOICES = [
         ('', 'Select...'),
         ('male', 'Male'),
