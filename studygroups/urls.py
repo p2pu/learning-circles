@@ -48,6 +48,7 @@ from studygroups.views import MessageView
 from studygroups.views import MeetingRecap
 from studygroups.views import MeetingRecapDismiss
 from studygroups.views import ContentView
+from studygroups.views.learner import DeviceAgreementView
 
 from . import views
 
@@ -67,6 +68,9 @@ urlpatterns = [
     re_path(r'^studygroup/create/legacy/$', StudyGroupCreateLegacy.as_view(), name='studygroups_studygroup_create_legacy'),
     re_path(r'^studygroup/(?P<study_group_id>[\d]+)/$', views.view_study_group, name='studygroups_view_study_group'),
     re_path(r'^studygroup/(?P<study_group_id>[\d]+)/learn/$', views.StudyGroupParticipantView.as_view(), name='studygroups_view_learning_circle_participant'),
+
+    re_path(r'^studygroup/(?P<study_group_id>[\d]+)/device_agreement/$', views.DeviceAgreementView.as_view(), name='studygroups_device_agreement'),
+
     re_path(r'^studygroup/(?P<study_group_id>[\d]+)/edit/$', StudyGroupUpdate.as_view(), name='studygroups_edit_study_group'),
     re_path(r'^studygroup/(?P<study_group_id>[\d]+)/edit/legacy/$', StudyGroupUpdateLegacy.as_view(), name='studygroups_studygroup_edit_legacy'),
     re_path(r'^studygroup/(?P<study_group_id>[\d]+)/delete/$', StudyGroupDelete.as_view(), name='studygroups_studygroup_delete'),

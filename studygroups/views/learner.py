@@ -6,6 +6,7 @@ from django.shortcuts import render, get_object_or_404
 from studygroups.utils import render_to_string_ctx
 from django.urls import reverse, reverse_lazy
 from django.core.mail import EmailMultiAlternatives
+from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib import messages
 from django.conf import settings
 from django import http
@@ -36,6 +37,7 @@ from studygroups.models import application_mobile_opt_out_revert
 from studygroups.forms import ApplicationForm
 from studygroups.forms import OptOutForm
 from studygroups.forms import OptOutConfirmationForm
+from studygroups.forms import DeviceAgreementForm
 from studygroups.utils import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
 from studygroups.views.api import serialize_learning_circle
@@ -145,6 +147,71 @@ def optout_confirm(request):
             messages.error(request, _('Please check the email you received and make sure this is the correct URL.'))
         url = reverse('studygroups_facilitator')
         return http.HttpResponseRedirect(url)
+
+
+@method_decorator(login_required, name="dispatch")
+class DeviceAgreementView(FormView):
+    template_name = 'studygroups/dd_device_agreement.html'
+    form_class = DeviceAgreementForm
+
+    def dispatch(self, request, *args, **kwargs):
+        study_group_id = self.kwargs.get('study_group_id')
+        study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+
+        # ensure viewer is signed up and learning circle meets criteria
+        if not study_group.application_set.active().filter(email=self.request.user.email).exists() or not all(show_device_agreement(study_group)):
+            url = reverse('studygroups_facilitator')
+            return http.HttpResponseRedirect(url)
+
+        return super().dispatch(request, *args, **kwargs)
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        study_group_id = self.kwargs.get('study_group_id')
+        study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+        context['study_group'] = study_group
+        return context
+
+
+    def get_initial(self):
+        study_group_id = self.kwargs.get('study_group_id')
+        study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+        application = study_group.application_set.active().filter(email=self.request.user.email).first()
+        initial = {
+            "email_address": application.email,
+            "first_name": application.name,
+        }
+
+        if application.mobile:
+            initial["phone_number"] = application.mobile
+
+        application_data = json.loads(application.signup_questions)
+        if 'device_agreement' in application_data:
+            initial.update(application_data.get('device_agreement'))
+
+        return initial
+
+
+    def form_valid(self, form):
+        study_group_id = self.kwargs.get('study_group_id')
+        study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+
+        # save data in Application.signup_questions as json field
+        application = study_group.application_set.active().filter(
+            email=self.request.user.email
+        ).first()
+        application_data = json.loads(application.signup_questions)
+        form.cleaned_data['phone_number'] = str(form.cleaned_data['phone_number'])
+        application_data['device_agreement'] = form.cleaned_data
+        application.signup_questions = json.dumps(application_data, cls=DjangoJSONEncoder)
+        application.save()
+
+        redirect_url = reverse(
+            'studygroups_view_learning_circle_participant',
+            args=(study_group.id,)
+        )
+        return http.HttpResponseRedirect(redirect_url)
 
 
 class OptOutView(FormView):
@@ -271,6 +338,13 @@ def receive_sms(request):
     return http.HttpResponse(status=200)
 
 
+# check if learning circle meets requirements for devices
+def show_device_agreement(study_group):
+    yield study_group.team
+    yield study_group.team.page_slug == 'digital-detroit'
+    yield study_group.start_date > datetime.date(2026,1,1)
+
+
 @method_decorator(login_required, name="dispatch")
 class StudyGroupParticipantView(TemplateView):
     template_name = 'studygroups/learning_circle_participant.html'
@@ -371,6 +445,13 @@ class StudyGroupParticipantView(TemplateView):
                 'email': application.email,
             }
         }
+
+        if all(show_device_agreement(study_group)):
+            react_data['device_agreement_url'] = reverse('studygroups_device_agreement', args=(study_group.pk,))
+            application_data = json.loads(application.signup_questions)
+            if application_data.get('device_agreement'):
+                react_data['device_agreement_completed'] = True
+
         context['react_data'] = react_data
 
         return render(request, self.template_name, context)

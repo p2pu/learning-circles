@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load i18n %}
+{% load tz %}
+
+{% block page_title %}
+  {{study_group.name}}
+{% endblock %}
+
+
+{% block content %}
+
+
+
+<style>
+        .form-container {
+            width: 8.5in;
+            min-height: 11in;
+            margin: 0 auto;
+            background: white;
+            padding: 0.75in;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .section-title {
+            color: #0d6efd;
+            border-bottom: 2px solid #0d6efd;
+            padding-bottom: 10px;
+            margin: 30px 0 20px;
+            text-align: left;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .asteriskField {
+          margin-left: 6px;
+          color: red;
+        }
+        .form-label {
+          text-transform: capitalize;
+        }
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .form-container {
+                box-shadow: none;
+                margin: 0;
+            }
+        }
+</style>
+
+    <div class="container mt-5">
+      <a href="{% url 'studygroups_view_learning_circle_participant' study_group.id %}">{% trans "Back" %}</a>
+        <div class="form-container">
+            <div class="header">
+                <h2 class="text-primary">Digital Skills Detroit</h2>
+                <h4>Device Agreement</h4>
+                <p class="text-muted">This agreement serves as your authorization to receive a device from Digital Skills Detroit. Please complete within your first 2 Digital Skills Detroit sessions to be considered for your device upon program completion.</p>
+            </div>
+
+            <form id="device-agreement-form" method="POST">
+              {% csrf_token %}
+                <h5 class="section-title">Learner Contact Information</h5>
+                
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        {{ form.first_name | as_crispy_field }}
+                    </div>
+                    <div class="col-md-12">
+                        {{ form.last_name | as_crispy_field }}
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        {{ form.date_of_birth | as_crispy_field }}
+                    </div>
+                    <div class="col-md-12">
+                        {{ form.phone_number | as_crispy_field }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form.email_address | as_crispy_field }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.home_address | as_crispy_field }}
+                </div>
+
+                <!-- Demographic Information -->
+                <h5 class="section-title">Demographic Information</h5>
+                <p class="text-muted">Optional</p>
+                
+                <div class="mb-3">
+                    {{ form.gender | as_crispy_field }}
+                </div>
+
+                <!-- Agreement -->
+                <h5 class="section-title">Agreement</h5>
+                <p>By signing below, I acknowledge and agree to the following:</p>
+                
+                <ul>
+                  <li>I understand that I will be eligible to receive a device after the completion of  15 hours of digital literacy training through the Digital Skills Detroit program.</li>
+                  <li>I understand that Human-I-T will provide support services related to my device, including troubleshooting and technical assistance.</li>
+                  <li>I understand that my contact information (as provided above) may be shared with Human-I-T and the Detroit Housing Network solely for the purposes of distributing devices to participants who complete the training and providing housing resources and opportunities by the Detroit housing network.</li>
+                </ul>
+
+                <!-- Consent -->
+                <h5 class="section-title">Consent</h5>
+                <p class="requiredField">Please select one of the following:</p>
+                
+                <div class="mb-3">
+                    {{ form.housing_network_consent | as_crispy_field }}
+                </div>
+
+                <!-- Disclosures and Privacy Policy -->
+                <h5 class="section-title">Disclosures and Privacy Policy</h5>
+                
+                <div class="mb-3">
+                      {{ form.disclosure_certification | as_crispy_field }}
+                </div>
+
+                <!-- Learner Signature -->
+                <h5 class="section-title">Learner Signature</h5>
+                
+                <div class="mb-3">
+                    {{ form.signature_acknowledgment | as_crispy_field}}
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        {{ form.signature | as_crispy_field }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form.signature_date | as_crispy_field }}
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mt-4 mb-4">
+                    <button type="submit" class="btn btn-primary btn-lg">Submit Enrollment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+

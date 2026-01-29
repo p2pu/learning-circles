@@ -195,6 +195,18 @@ button.card-collapse-toggle {
   background: url("../images/icons/credit-white.svg") center center / 0.8em 0.8em no-repeat, $p2pu-blue;
 }
 
+.lc-timeline .item.device-form.todo .icon::before{
+  @include timeline-item;
+  content: '';
+  background: url("../images/icons/device-white.svg") center center / 0.8em 0.8em no-repeat, $p2pu-yellow;
+}
+
+
+.lc-timeline .item.device-form .icon::before{
+  @include timeline-item;
+  content: '';
+  background: url("../images/icons/device-white.svg") center center / 0.8em 0.8em no-repeat, $p2pu-blue;
+}
 
 
 
