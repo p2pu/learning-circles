@@ -441,11 +441,17 @@ class StudyGroupParticipantView(TemplateView):
             }
         }
 
-        # TODO check if learning circle meets requirements for devices
-        react_data['device_agreement_url'] = reverse('studygroups_device_agreement', args=(study_group.pk,))
-        application_data = json.loads(application.signup_questions)
-        if application_data.get('device_agreement'):
-            react_data['device_agreement_completed'] = True
+        # check if learning circle meets requirements for devices
+        def device_agreement_conditions():
+            yield study_group.team
+            yield study_group.team.page_slug == 'digital-detroit'
+            yield study_group.start_date > datetime.date(2026,1,1)
+
+        if all(device_agreement_conditions()):
+            react_data['device_agreement_url'] = reverse('studygroups_device_agreement', args=(study_group.pk,))
+            application_data = json.loads(application.signup_questions)
+            if application_data.get('device_agreement'):
+                react_data['device_agreement_completed'] = True
 
         context['react_data'] = react_data
 
