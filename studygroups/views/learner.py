@@ -158,10 +158,8 @@ class DeviceAgreementView(FormView):
         study_group_id = self.kwargs.get('study_group_id')
         study_group = get_object_or_404(StudyGroup, pk=study_group_id)
 
-        # TODO ensure learning circle meets criteria
-
-        # ensure viewer is signed up
-        if not study_group.application_set.active().filter(email=self.request.user.email).exists():
+        # ensure viewer is signed up and learning circle meets criteria
+        if not study_group.application_set.active().filter(email=self.request.user.email).exists() or not all(show_device_agreement(study_group)):
             url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
 
@@ -340,6 +338,13 @@ def receive_sms(request):
     return http.HttpResponse(status=200)
 
 
+# check if learning circle meets requirements for devices
+def show_device_agreement(study_group):
+    yield study_group.team
+    yield study_group.team.page_slug == 'digital-detroit'
+    yield study_group.start_date > datetime.date(2026,1,1)
+
+
 @method_decorator(login_required, name="dispatch")
 class StudyGroupParticipantView(TemplateView):
     template_name = 'studygroups/learning_circle_participant.html'
@@ -441,13 +446,7 @@ class StudyGroupParticipantView(TemplateView):
             }
         }
 
-        # check if learning circle meets requirements for devices
-        def device_agreement_conditions():
-            yield study_group.team
-            yield study_group.team.page_slug == 'digital-detroit'
-            yield study_group.start_date > datetime.date(2026,1,1)
-
-        if all(device_agreement_conditions()):
+        if all(show_device_agreement(study_group)):
             react_data['device_agreement_url'] = reverse('studygroups_device_agreement', args=(study_group.pk,))
             application_data = json.loads(application.signup_questions)
             if application_data.get('device_agreement'):
