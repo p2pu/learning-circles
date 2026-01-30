@@ -16,6 +16,7 @@ from studygroups.models import TeamMembership
 from studygroups.models import TeamInvitation
 from studygroups.models import Announcement
 from studygroups.models import FacilitatorGuide
+from studygroups.models import DeviceAllocation
 
 
 class ApplicationInline(admin.TabularInline):
@@ -173,6 +174,11 @@ class MeetingAdmin(admin.ModelAdmin):
     raw_id_fields = ['study_group']
     exclude = []
 
+class DeviceAllocationAdmin(admin.ModelAdmin):
+    list_display = ['user', 'amount', 'start_date', 'cutoff_date']
+    raw_id_fields = ['user']
+    exclude = []
+
 
 admin.site.register(Course, CourseAdmin)
 admin.site.register(CourseList, CourseListAdmin)
@@ -186,3 +192,4 @@ admin.site.register(TeamInvitation)
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Announcement)
 admin.site.register(FacilitatorGuide, FacilitatorGuideAdmin)
+admin.site.register(DeviceAllocation, DeviceAllocationAdmin)
