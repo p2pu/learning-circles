@@ -232,7 +232,7 @@ class StudyGroup(LifeTimeTrackingModel):
 
 
     def device_forms_completed(self):
-        return all([a.device_agreement_completed() for a in self.application_set.active()])
+        return all((a.device_agreement_completed() for a in self.application_set.active()))
 
 
     def to_dict(self):
