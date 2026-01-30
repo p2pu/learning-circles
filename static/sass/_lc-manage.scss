@@ -280,13 +280,6 @@ button.card-collapse-toggle {
     background: url("../images/icons/clock.svg") left center / 1em 1em no-repeat;
   }
 
-  li.done::before {
-    @include rsvp-li;
-    content: '';
-    background: url("../images/icons/rsvp-yes.svg") left center / 1em 1em no-repeat;
-  }
-
-
 }
 
 
