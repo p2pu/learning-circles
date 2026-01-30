@@ -222,6 +222,19 @@ class StudyGroup(LifeTimeTrackingModel):
         return signup_count >= self.signup_limit
 
 
+    # check if learning circle meets requirements for devices
+    def show_device_agreement(self):
+        def conditions():
+            yield self.team
+            yield self.team.page_slug == 'digital-detroit'
+            yield self.start_date > datetime.date(2026,1,1)
+        return all(conditions())
+
+
+    def device_forms_completed(self):
+        return all((a.device_agreement_completed() for a in self.application_set.active()))
+
+
     def to_dict(self):
         sg = self  # TODO - this logic is repeated in the API class
         facilitators = [f.user.first_name for f in sg.facilitator_set.all()]
@@ -345,6 +358,11 @@ class Application(LifeTimeTrackingModel):
     def digital_literacy_for_display(self):
         answers = json.loads(self.signup_questions)
         return { q: {'question_text': text, 'answer': answers.get(q), 'answer_text': dict(self.DIGITAL_LITERACY_CHOICES).get(answers.get(q)) if q in answers else ''} for q, text in list(self.DIGITAL_LITERACY_QUESTIONS.items()) if answers.get(q) }
+
+    def device_agreement_completed(self):
+        application_data = json.loads(self.signup_questions)
+        return len(application_data.get('device_agreement', '')) > 3
+
 
 
 class Meeting(LifeTimeTrackingModel):

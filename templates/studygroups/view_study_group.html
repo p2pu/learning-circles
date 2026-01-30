@@ -97,6 +97,37 @@
           </div>
         </div>
       </div>
+
+      {% if study_group.show_device_agreement %}
+
+      <div class="item {% if study_group.device_forms_completed %}done{% else %}todo{% endif %}">
+        <div class="icon"></div>
+        <div class="card">
+          <a class="card-collapse-toggle {% if study_group.device_forms_completed %}collapsed{% endif %}" data-bs-toggle="collapse" href="#collapse-device-agreement" role="button" aria-expanded="{% if study_group.device_forms_completed %}false{% else %}true{% endif %}" aria-controls="collapse-device-agreement"><i class="fa fa-chevron-down"></i></a>
+          <div class="card-title">Gather device agreement forms</div>
+          <div class="collapse{% if not study_group.device_forms_completed %} show{% endif %}" id="collapse-device-agreement">
+            {% if not study_group.device_forms_completed %}
+              <p>Please help the following learners to complete their device agreement form.</p>
+              <div class="device-agreements">
+                <ul class="list-unstyled">
+                  {% for learner in study_group.application_set.active %}
+                    {% if not learner.device_agreement_completed %}
+                      <li class="pending">{{learner.name}} &lt;{{learner.email}}&gt;{% if learner.mobile %} {{learner.mobile}}{% endif %}</li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              </div>
+            {% else %}
+              <div class="meeting-item done">
+                <p>All learners completed their device agreement form!</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+
       {% for meeting in study_group.meetings %}
       {% with meeting_status=meeting.status feedback=meeting.feedback_set.first %}
       <div class="item {{ meeting_status }}" id="meeting-{{forloop.counter}}">
