@@ -103,24 +103,23 @@
       <div class="item {% if study_group.device_forms_completed %}done{% else %}todo{% endif %}">
         <div class="icon"></div>
         <div class="card">
-          <a class="card-collapse-toggle {% if study_group.device_forms_completed %}collapsed{% endif %}" data-bs-toggle="collapse" href="#collapse-device-agreement" role="button" aria-expanded="true" aria-controls="collapse-device-agreement"><i class="fa fa-chevron-down"></i></a>
+          <a class="card-collapse-toggle {% if study_group.device_forms_completed %}collapsed{% endif %}" data-bs-toggle="collapse" href="#collapse-device-agreement" role="button" aria-expanded="{% if study_group.device_forms_completed %}false{% else %}true{% endif %}" aria-controls="collapse-device-agreement"><i class="fa fa-chevron-down"></i></a>
           <div class="card-title">Gather device agreement forms</div>
-          <div class="collapse{% if not study_group.device_forms_completed %}.show{% endif %}" id="collapse-device-agreement">
+          <div class="collapse{% if not study_group.device_forms_completed %} show{% endif %}" id="collapse-device-agreement">
             {% if not study_group.device_forms_completed %}
-              <!--div class="meeting-item todo"-->
-                <p>Some learners still need to complete their device agreement form</p>
-                <div class="device-agreements">
-                  <ul class="list-unstyled">
-                    {% for learner in study_group.application_set.active %}
-                      <li class="{% if learner.device_agreement_completed %}done{% else %}pending{% endif %}">{{learner.name}} &lt;{{learner.email}}&gt;{% if learner.mobile %}{{learner.mobile}}{% endif %}</li>
-                    {% endfor %}
-                  </ul>
-                </div>
-              <!--/div-->
+              <p>Please help the following learners to complete their device agreement form.</p>
+              <div class="device-agreements">
+                <ul class="list-unstyled">
+                  {% for learner in study_group.application_set.active %}
+                    {% if not learner.device_agreement_completed %}
+                      <li class="pending">{{learner.name}} &lt;{{learner.email}}&gt;{% if learner.mobile %} {{learner.mobile}}{% endif %}</li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              </div>
             {% else %}
               <div class="meeting-item done">
                 <p>All learners completed their device agreement form!</p>
-                </p>
               </div>
             {% endif %}
           </div>
