@@ -767,7 +767,8 @@ class LearningCircleCreateView(View):
 
 
         # check if learning circle is part of digital detroit project
-        if team and team.page_slug == 'digital-detroit':
+        if TeamMembership.objects.active().filter(user=request.user).exists() and \
+            TeamMembership.objects.active().filter(user=request.user).first().team.page_slug == 'digital-detroit':
             # if signup limit exceeds device allocation return error
             signup_limit = data.get('signup_limit', None)
             available_devices = check_user_device_allocation(request.user, start_date)
