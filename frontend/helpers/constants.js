@@ -87,7 +87,6 @@ export const LC_DEFAULTS = {
   online: false,
   draft: true,
   language: 'en',
-  signup_limit: 0,
   meetings: [],
 };
 
