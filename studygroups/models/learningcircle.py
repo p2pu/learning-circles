@@ -216,7 +216,7 @@ class StudyGroup(LifeTimeTrackingModel):
 
     @property
     def at_capacity(self):
-        if not self.signup_limit:
+        if self.signup_limit is None:
             return False
         signup_count = self.application_set.active().count()
         return signup_count >= self.signup_limit
@@ -279,7 +279,7 @@ class StudyGroup(LifeTimeTrackingModel):
             "facilitator_goal": sg.facilitator_goal,
             "facilitator_concerns": sg.facilitator_concerns,
             "draft": sg.draft,
-            "signup_limit": sg.signup_limit or 0,
+            "signup_limit": sg.signup_limit or None,
             "signup_count": sg.application_set.active().count(),
             "signup_url": reverse('studygroups_signup', args=(slugify(sg.venue_name, allow_unicode=True), sg.id,)),
         }

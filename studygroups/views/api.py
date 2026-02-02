@@ -46,6 +46,8 @@ from studygroups.models import get_json_response
 from studygroups.models.team import eligible_team_by_email_domain
 from studygroups.models.team import get_team_users
 from studygroups.models.learningcircle import generate_meeting_reminder
+from studygroups.models.device_allocation import devices_available
+from studygroups.models.device_allocation import check_user_device_allocation
 from studygroups.tasks import send_cofacilitator_email
 from studygroups.tasks import send_cofacilitator_removed_email
 
@@ -139,7 +141,7 @@ def serialize_learning_circle(sg):
         "report_url": sg.report_url(),
         "studygroup_path": reverse('studygroups_view_study_group', args=(sg.id,)),
         "draft": sg.draft,
-        "signup_limit": sg.signup_limit or 0,
+        "signup_limit": sg.signup_limit or None,
         "signup_count": sg.application_set.active().count(), # should this be serialized for public API endpionts?
         "signup_open": sg.signup_open and sg.end_date > datetime.date.today(),
     }
@@ -751,6 +753,7 @@ class LearningCircleCreateView(View):
             if not team_membership:
                 errors = { 'facilitators': ['Facilitator not part of a team']}
                 return json_response(request, {"status": "error", "errors": errors})
+
             team = TeamMembership.objects.active().filter(user=request.user).first().team
             team_list = team.teammembership_set.active().values_list('user', flat=True)
             if not all(item in team_list for item in data.get('facilitators', [])):
@@ -761,6 +764,17 @@ class LearningCircleCreateView(View):
         # start and end dates need to be set for db model to be valid
         start_date = data.get('meetings')[0].get('meeting_date')
         end_date = data.get('meetings')[-1].get('meeting_date')
+
+
+        # check if learning circle is part of digital detroit project
+        if team and team.page_slug == 'digital-detroit':
+            # if signup limit exceeds device allocation return error
+            signup_limit = data.get('signup_limit', None)
+            available_devices = check_user_device_allocation(request.user, start_date)
+            if signup_limit is None or signup_limit > available_devices:
+                errors = { 'signup_limit': [f'You need to specify a signup limit for this learning circle less than or equal to {available_devices}']}
+                return json_response(request, {"status": "error", "errors": errors})
+
 
         # create learning circle
         study_group = StudyGroup(
@@ -792,7 +806,7 @@ class LearningCircleCreateView(View):
             signup_question=data.get('signup_question', ''),
             facilitator_goal=data.get('facilitator_goal', ''),
             facilitator_concerns=data.get('facilitator_concerns', ''),
-            signup_limit=data.get('signup_limit', 0)
+            signup_limit=data.get('signup_limit', None)
         )
 
         # use course.caption if course_description is not set
@@ -851,6 +865,16 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
                 errors = { 'facilitators': ['Facilitators not part of the same team']}
                 return json_response(request, {"status": "error", "errors": errors})
 
+
+        # if part of digital detroit project
+        if study_group.show_device_agreement():
+            signup_limit = data.get('signup_limit', None)
+            max_limit = devices_available(study_group)
+            if signup_limit is None or signup_limit > max_limit:
+                errors = { 'signup_limit': [f'You need to specify a signup limit for this learning circle less than or equal to {max_limit}']}
+                return json_response(request, {"status": "error", "errors": errors})
+
+
         # determine if meeting reminders should be regenerated
         regenerate_reminders = any([
             study_group.name != data.get('name'),
@@ -892,7 +916,7 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
         study_group.timezone = data.get('timezone')
         study_group.image = data.get('image_url')
         study_group.signup_question = data.get('signup_question', '')
-        study_group.signup_limit = data.get('signup_limit', 0)
+        study_group.signup_limit = data.get('signup_limit', None)
         study_group.facilitator_goal = data.get('facilitator_goal', '')
         study_group.facilitator_concerns = data.get('facilitator_concerns', '')
 
