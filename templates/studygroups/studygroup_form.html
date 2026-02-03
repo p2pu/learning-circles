@@ -29,6 +29,7 @@
   window.team = team;
   window.currentUserId = {% if user.id %}{{user.id|safe}}{% else %}undefined{% endif %};
   window.teamCourseList = {% if team_course_list %}true{% else %}false{% endif %};
+  {% if max_signups %}window.maxSignups = {{max_signups}};{% endif %}
 </script>
 {% if object.pk %}
 <script>

@@ -1,5 +1,54 @@
 import React, { useState } from 'react'
-import { TextareaWithLabel, SelectWithLabel, InputWithLabel } from 'p2pu-components'
+import { TextareaWithLabel, SelectWithLabel, InputWithLabel, SwitchWithLabels } from 'p2pu-components'
+
+const SignupLimit = (props) => {
+
+  let maxSignups = null;
+  let defaultLimit = 20;
+  if (window.maxSignups){
+    maxSignups = window.maxSignups
+    defaultLimit = maxSignups
+  }
+
+  const handleSwitch = ({enableLimit}) => {
+    if (enableLimit) {
+      props.updateFormData({'signup_limit': defaultLimit})
+    } else {
+      props.updateFormData({'signup_limit': undefined})
+    }
+  }
+
+  return (
+    <>
+      { !maxSignups && 
+        <SwitchWithLabels
+          label={'Do you want to limit the number of signups?'}
+          trueLabel='Yes'
+          falseLabel='No'
+          handleChange={handleSwitch}
+          name='enableLimit'
+          value={props.learningCircle.signup_limit !== undefined}
+        />
+      }
+      { (props.learningCircle.signup_limit !== undefined || maxSignups) &&
+        <InputWithLabel
+          label={'What is the maximum number of signups?'}
+          type='number'
+          value={props.learningCircle.signup_limit || defaultLimit}
+          handleChange={props.updateFormData}
+          name='signup_limit'
+          id='id_signup_limit'
+          errorMessage={props.errors.signup_limit}
+          min={0}
+          max={maxSignups}
+        />
+      }
+      <div>
+        <a href="https://docs.p2pu.org/tools-and-resources/tools-for-learning-circles/managing-learning-circles#limiting-learning-circle-signups">More info about signup limits</a>
+      </div>
+    </>
+  )
+}
 
 const FinalizeSection = (props) => {
 
@@ -54,19 +103,9 @@ const FinalizeSection = (props) => {
       id={'id_facilitator_concerns'}
       errorMessage={props.errors.facilitator_concerns}
     />
-    <InputWithLabel
-      label={'Limit the number of people that can sign up'}
-      helpText='0 means unlimited'
-      type='number'
-      value={props.learningCircle.signup_limit}
-      handleChange={props.updateFormData}
-      name='signup_limit'
-      id='id_signup_limit'
-      errorMessage={props.errors.signup_limit}
+    <SignupLimit
+      {...props}
     />
-    <div>
-      <a href="https://docs.p2pu.org/tools-and-resources/tools-for-learning-circles/managing-learning-circles#limiting-learning-circle-signups">More info about signup limits</a>
-    </div>
     <div className='lc-co-facilitator-input'>
       <SelectWithLabel
         options={populateTeamOptions(props.team)}

@@ -61,6 +61,7 @@ from studygroups.views.api import serialize_course
 from studygroups.views.api import serialize_learning_circle
 from studygroups.models.team import eligible_team_by_email_domain
 from studygroups.models import weekly_update_data
+from studygroups.models.device_allocation import check_user_device_allocation
 
 logger = logging.getLogger(__name__)
 
@@ -295,6 +296,10 @@ class StudyGroupCreate(TemplateView):
             context['team'] = json.dumps([t.to_dict() for t in team.teammembership_set.active()])
             if Course.objects.active().filter(courselist__team=team).exists():
                 context['team_course_list'] = True
+
+            if team.page_slug == 'digital-detroit':
+                context['max_signups'] = check_user_device_allocation(self.request.user, datetime.datetime.today())
+
         return context
 
 
@@ -342,6 +347,9 @@ class StudyGroupUpdate(SingleObjectMixin, TemplateView):
         if Reminder.objects.filter(study_group=self.object, edited_by_facilitator=True, sent_at__isnull=True).exists():
             context['reminders_edited'] = True
             messages.warning(self.request, _('You have edited meeting reminders for meetings in the future. Update the learning circle description or venue information will cause the reminders to be regenerated and your updates to be lost'))
+        if self.object.team and self.object.team.page_slug == 'digital-detroit':
+            context['max_signups'] = self.object.signup_limit + check_user_device_allocation(self.request.user, datetime.datetime.today())
+
         return context
 
 
