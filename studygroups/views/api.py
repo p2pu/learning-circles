@@ -46,7 +46,6 @@ from studygroups.models import get_json_response
 from studygroups.models.team import eligible_team_by_email_domain
 from studygroups.models.team import get_team_users
 from studygroups.models.learningcircle import generate_meeting_reminder
-from studygroups.models.device_allocation import devices_available
 from studygroups.models.device_allocation import check_user_device_allocation
 from studygroups.tasks import send_cofacilitator_email
 from studygroups.tasks import send_cofacilitator_removed_email
@@ -869,8 +868,9 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
 
         # if part of digital detroit project
         if study_group.show_device_agreement():
+            devices = check_user_device_allocation(request.user, study_group.start_date)
+            max_limit = study_group.signup_limit + devices
             signup_limit = data.get('signup_limit', None)
-            max_limit = devices_available(study_group)
             if signup_limit is None or signup_limit > max_limit:
                 errors = { 'signup_limit': [f'You need to specify a signup limit for this learning circle less than or equal to {max_limit}']}
                 return json_response(request, {"status": "error", "errors": errors})
