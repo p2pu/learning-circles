@@ -504,22 +504,36 @@ class StudyGroupLearnerSurvey(TemplateView):
         return render(request, self.template_name, context)
 
 
-# TODO protect view behind signup 
 @method_decorator(login_required, name="dispatch")
 class ContentView(TemplateView):
     template_name = 'studygroups/content_view.html'
 
     def get(self, request, *args, **kwargs):
         study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
+        if study_group.course_content is None:
+            raise http.Http404(_("Content for this learning circle not found."))
 
-        # TODO check if content is part of study_group.course_content
+        # check user permissions
+        application = Application.objects.active().filter(
+            email__iexact=self.request.user.email,
+            study_group=study_group
+        ).first()
+        if not ( application or self.request.user in study_group.facilitator_set.all() or self.request.user.is_staff):
+            redirect_url = reverse(
+                'studygroups_signup',
+                args=(slugify(study_group.venue_name, allow_unicode=True), study_group.id)
+            )
+            return HttpResponseRedirect(redirect_url)
 
         import content.db
-        content = content.db.Content.objects.get(pk=kwargs.get('pk'))
-        
         import courses.models
+        content = content.db.Content.objects.get(pk=kwargs.get('pk'))
         course_uri = courses.models.course_id2uri(study_group.course_content.pk)
-        sections = courses.models.get_course_content(course_uri)[1:] #TODO 
+        sections = courses.models.get_course_content(course_uri)[1:] #TODO
+
+        # TODO check if content is part of study_group.course_content
+        if content.id not in [s['id'] for s in sections]:
+            return HttpResponseRedirect('/')
 
         markdown_content = content.latest.content
         h1_headings = re.findall(r'^\s*#(?!#)\s+(.+)$', markdown_content, flags=re.MULTILINE)
@@ -534,4 +548,3 @@ class ContentView(TemplateView):
         }
 
         return render(request, self.template_name, context)
-
