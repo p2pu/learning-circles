@@ -1,9 +1,9 @@
 version: '3'
 services:
   postgres:
-    image: postgres:11
+    image: postgres:15
     volumes:
-    - ./compose/postgres:/var/lib/postgresql/data
+    - ./compose/postgres-15:/var/lib/postgresql/data
   email:
     image: djfarrelly/maildev
     ports:

@@ -61,7 +61,7 @@
 
   {% include 'nav.html' %}
 
-    <main class="page-content">
+  <main class="page-content {% if scroll_top %}scroll_top{% endif %}">
     {% for message in messages %}
       <div class="alert{% if message.tags %} alert-{{ message.tags }}{% endif %}" role="alert">
         <div class="container">{{ message }}</div>

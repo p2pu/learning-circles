@@ -61,6 +61,7 @@ from studygroups.views.api import serialize_course
 from studygroups.views.api import serialize_learning_circle
 from studygroups.models.team import eligible_team_by_email_domain
 from studygroups.models import weekly_update_data
+from studygroups.models.device_allocation import check_user_device_allocation
 
 logger = logging.getLogger(__name__)
 
@@ -90,6 +91,17 @@ def view_study_group(request, study_group_id):
     if meeting_number and rating:
         context['expand_meeting'] = meeting_number
         context['meeting_rating'] = rating
+
+    if study_group.course_content:
+        import courses.models
+        course_uri = courses.models.course_id2uri(study_group.course_content.pk)
+        sections = courses.models.get_course_content(course_uri)
+        if len(sections) > 1:
+            context['content_link'] = reverse(
+                'studygroups_content_view',
+                args=(study_group.pk, sections[1]['id'],) #TODO skipping nr 0
+            )
+
 
     return render(request, 'studygroups/view_study_group.html', context)
 
@@ -284,6 +296,10 @@ class StudyGroupCreate(TemplateView):
             context['team'] = json.dumps([t.to_dict() for t in team.teammembership_set.active()])
             if Course.objects.active().filter(courselist__team=team).exists():
                 context['team_course_list'] = True
+
+            if team.page_slug == 'digital-detroit':
+                context['max_signups'] = check_user_device_allocation(self.request.user, datetime.datetime.today())
+
         return context
 
 
@@ -331,6 +347,9 @@ class StudyGroupUpdate(SingleObjectMixin, TemplateView):
         if Reminder.objects.filter(study_group=self.object, edited_by_facilitator=True, sent_at__isnull=True).exists():
             context['reminders_edited'] = True
             messages.warning(self.request, _('You have edited meeting reminders for meetings in the future. Update the learning circle description or venue information will cause the reminders to be regenerated and your updates to be lost'))
+        if self.object.team and self.object.team.page_slug == 'digital-detroit':
+            context['max_signups'] = self.object.signup_limit + check_user_device_allocation(self.request.user, datetime.datetime.today())
+
         return context
 
 
@@ -591,8 +610,9 @@ def add_learner(request, study_group_id):
                 messages.warning(request, _('User with the given email address already signed up.'))
             elif application.mobile and Application.objects.active().filter(mobile=application.mobile, study_group=study_group).exists():
                 messages.warning(request, _('User with the given mobile number already signed up.'))
+            elif study_group.at_capacity:
+                messages.warning(request, _('The learning circle is full'))
             else:
-                # TODO - remove accepted_at or use accepting applications flow
                 application.accepted_at = timezone.now()
                 application.save()
             return http.HttpResponseRedirect(url)
@@ -608,13 +628,19 @@ def add_learner(request, study_group_id):
 
 @method_decorator([user_is_group_facilitator, study_group_is_published], name='dispatch')
 class ApplicationCreateMultiple(FormView):
+
     template_name = 'studygroups/add_learners.html'
-    form_class = modelformset_factory(
-        Application,
-        form=ApplicationInlineForm,
-        extra=5
-    )
     success_url = reverse_lazy('studygroups_facilitator')
+
+    def dispatch(self, request, *args, **kwargs):
+        study_group_id = self.kwargs.get('study_group_id')
+        study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+
+        if study_group.at_capacity:
+            url = reverse('studygroups_view_study_group', args=(study_group_id,))
+            messages.warning(request, 'No more available signups, please increase signup limit first')
+            return http.HttpResponseRedirect(url)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -623,13 +649,39 @@ class ApplicationCreateMultiple(FormView):
         return context
 
     def get_form(self):
+        study_group_id = self.kwargs.get('study_group_id')
+        study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+
+        signup_rows = 5
+        if study_group.signup_limit > 0:
+            signup_count = study_group.application_set.active().count()
+            signup_rows = study_group.signup_limit - signup_count
+      
+        form_class = modelformset_factory(
+            Application,
+            form=ApplicationInlineForm,
+            extra=signup_rows
+        )
+
         queryset = Application.objects.none()
-        return self.form_class(queryset=queryset, **self.get_form_kwargs())
+        kwargs = self.get_form_kwargs()
+        return form_class(queryset=queryset, **kwargs)
 
     def form_valid(self, form):
         study_group_id = self.kwargs.get('study_group_id')
         study_group = get_object_or_404(StudyGroup, pk=study_group_id)
         applications = form.save(commit=False)
+
+        if study_group.signup_limit > 0:
+            signup_count = study_group.application_set.active().count()
+            available_signups = study_group.signup_limit - signup_count
+
+            if len(applications) > available_signups:
+                url = reverse('studygroups_view_study_group', args=(study_group_id,))
+                messages.warning(self.request, 'Adding participants will exceed the signup limit, please increase the limit first.')
+                return http.HttpResponseRedirect(url)
+
+
         for application in applications:
             if application.email and Application.objects.active().filter(email__iexact=application.email, study_group=study_group).exists():
                 messages.warning(self.request, _(f'A learner with the email address {application.email} has already signed up.'))

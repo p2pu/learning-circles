@@ -6,6 +6,7 @@ from django.shortcuts import render, get_object_or_404
 from studygroups.utils import render_to_string_ctx
 from django.urls import reverse, reverse_lazy
 from django.core.mail import EmailMultiAlternatives
+from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib import messages
 from django.conf import settings
 from django import http
@@ -36,6 +37,7 @@ from studygroups.models import application_mobile_opt_out_revert
 from studygroups.forms import ApplicationForm
 from studygroups.forms import OptOutForm
 from studygroups.forms import OptOutConfirmationForm
+from studygroups.forms import DeviceAgreementForm
 from studygroups.utils import check_rsvp_signature
 from studygroups.utils import check_unsubscribe_signature
 from studygroups.views.api import serialize_learning_circle
@@ -48,6 +50,7 @@ import string
 import json
 import urllib
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +60,12 @@ def signup(request, location, study_group_id):
     if not study_group.deleted_at is None:
         raise http.Http404(_("Learning circle does not exist"))
 
+    at_capacity = study_group.at_capacity
+
     if request.method == 'POST':
+        # handle over capacity signup
+        if at_capacity:
+            messages.warning(request, 'Unfortunately all the available spots for this learning circle has already been taken.')
         recaptcha_response = request.POST.get('g-recaptcha-response')
         data = {
             'secret': settings.RECAPTCHA_SECRET_KEY,
@@ -66,7 +74,7 @@ def signup(request, location, study_group_id):
         r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
         captcha_result = r.json()
         form = ApplicationForm(request.POST, initial={'study_group': study_group})
-        if form.is_valid() and study_group.signup_open == True and study_group.draft == False and captcha_result.get('success'):
+        if form.is_valid() and study_group.signup_open == True and study_group.draft == False and captcha_result.get('success') and not at_capacity:
             application = form.save(commit=False)
             if application.email and Application.objects.active().filter(email__iexact=application.email, study_group=study_group).exists():
                 old_application = Application.objects.active().filter(email__iexact=application.email, study_group=study_group).first()
@@ -93,6 +101,7 @@ def signup(request, location, study_group_id):
     context = {
         'form': form,
         'study_group': study_group,
+        'at_capacity': at_capacity,
         'meetings': meetings,
         'mapbox_token': settings.MAPBOX_TOKEN,
         'completed': last_meeting is not None and last_meeting.meeting_date < datetime.date.today(),
@@ -138,6 +147,71 @@ def optout_confirm(request):
             messages.error(request, _('Please check the email you received and make sure this is the correct URL.'))
         url = reverse('studygroups_facilitator')
         return http.HttpResponseRedirect(url)
+
+
+@method_decorator(login_required, name="dispatch")
+class DeviceAgreementView(FormView):
+    template_name = 'studygroups/dd_device_agreement.html'
+    form_class = DeviceAgreementForm
+
+    def dispatch(self, request, *args, **kwargs):
+        study_group_id = self.kwargs.get('study_group_id')
+        study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+
+        # ensure viewer is signed up and learning circle meets criteria
+        if not study_group.application_set.active().filter(email=self.request.user.email).exists() or not study_group.show_device_agreement():
+            url = reverse('studygroups_facilitator')
+            return http.HttpResponseRedirect(url)
+
+        return super().dispatch(request, *args, **kwargs)
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        study_group_id = self.kwargs.get('study_group_id')
+        study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+        context['study_group'] = study_group
+        return context
+
+
+    def get_initial(self):
+        study_group_id = self.kwargs.get('study_group_id')
+        study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+        application = study_group.application_set.active().filter(email=self.request.user.email).first()
+        initial = {
+            "email_address": application.email,
+            "first_name": application.name,
+        }
+
+        if application.mobile:
+            initial["phone_number"] = application.mobile
+
+        application_data = json.loads(application.signup_questions)
+        if 'device_agreement' in application_data:
+            initial.update(application_data.get('device_agreement'))
+
+        return initial
+
+
+    def form_valid(self, form):
+        study_group_id = self.kwargs.get('study_group_id')
+        study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+
+        # save data in Application.signup_questions as json field
+        application = study_group.application_set.active().filter(
+            email=self.request.user.email
+        ).first()
+        application_data = json.loads(application.signup_questions)
+        form.cleaned_data['phone_number'] = str(form.cleaned_data['phone_number'])
+        application_data['device_agreement'] = form.cleaned_data
+        application.signup_questions = json.dumps(application_data, cls=DjangoJSONEncoder)
+        application.save()
+
+        redirect_url = reverse(
+            'studygroups_view_learning_circle_participant',
+            args=(study_group.id,)
+        )
+        return http.HttpResponseRedirect(redirect_url)
 
 
 class OptOutView(FormView):
@@ -287,6 +361,18 @@ class StudyGroupParticipantView(TemplateView):
         context = self.get_context_data(**kwargs)
         context['study_group'] = study_group
         context['application'] = application
+        context['content_link'] = None
+        if study_group.course_content:
+            import courses.models
+            course_uri = courses.models.course_id2uri(study_group.course_content.pk)
+            sections = courses.models.get_course_content(course_uri)
+            if len(sections) > 1:
+                context['content_link'] = reverse(
+                    'studygroups_content_view',
+                    args=(study_group.pk, sections[1]['id'],) #TODO skipping nr 0
+                )
+
+
         meetings = study_group.meeting_set.active().order_by('meeting_date', 'meeting_time')
         messages = study_group.reminder_set.filter(sent_at__isnull=False)
 
@@ -352,6 +438,13 @@ class StudyGroupParticipantView(TemplateView):
                 'email': application.email,
             }
         }
+
+        if study_group.show_device_agreement():
+            react_data['device_agreement_url'] = reverse('studygroups_device_agreement', args=(study_group.pk,))
+            application_data = json.loads(application.signup_questions)
+            if application_data.get('device_agreement'):
+                react_data['device_agreement_completed'] = True
+
         context['react_data'] = react_data
 
         return render(request, self.template_name, context)
@@ -407,5 +500,51 @@ class StudyGroupLearnerSurvey(TemplateView):
                     'course_title': study_group.course.title,
                     'facilitator_names': study_group.facilitators_display(),
                 }
+
+        return render(request, self.template_name, context)
+
+
+@method_decorator(login_required, name="dispatch")
+class ContentView(TemplateView):
+    template_name = 'studygroups/content_view.html'
+
+    def get(self, request, *args, **kwargs):
+        study_group = get_object_or_404(StudyGroup, pk=kwargs.get('study_group_id'))
+        if study_group.course_content is None:
+            raise http.Http404(_("Content for this learning circle not found."))
+
+        # check user permissions
+        application = Application.objects.active().filter(
+            email__iexact=self.request.user.email,
+            study_group=study_group
+        ).first()
+        if not ( application or self.request.user in study_group.facilitator_set.all() or self.request.user.is_staff):
+            redirect_url = reverse(
+                'studygroups_signup',
+                args=(slugify(study_group.venue_name, allow_unicode=True), study_group.id)
+            )
+            return HttpResponseRedirect(redirect_url)
+
+        import content.db
+        import courses.models
+        content = content.db.Content.objects.get(pk=kwargs.get('pk'))
+        course_uri = courses.models.course_id2uri(study_group.course_content.pk)
+        sections = courses.models.get_course_content(course_uri)[1:] #TODO
+
+        # TODO check if content is part of study_group.course_content
+        if content.id not in [s['id'] for s in sections]:
+            return HttpResponseRedirect('/')
+
+        markdown_content = content.latest.content
+        h1_headings = re.findall(r'^\s*#(?!#)\s+(.+)$', markdown_content, flags=re.MULTILINE)
+
+        context = {
+            "scroll_top": True,
+            "study_group": study_group,
+            "content": markdown_content,
+            "content_title": content.latest.title,
+            "sections": sections,
+            "h1_headings": h1_headings,
+        }
 
         return render(request, self.template_name, context)

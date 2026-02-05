@@ -59,6 +59,7 @@
         <div class="col-sm-9 offset-sm-3">
           <a class="p2pu-btn btn btn-primary" href="{% url 'studygroups_edit_study_group' study_group.id %}">{% trans "Edit" %}</a>
           <a class="p2pu-btn btn btn-primary" href="{{ signup_url }}">{% trans "View" %}</a>
+          {% if content_link %}<a class="p2pu-btn btn btn-primary" href="{{ content_link }}">{% trans "View content" %}</a>{% endif %}
           <a class="p2pu-btn btn btn-primary" href="{% url 'studygroups_meeting_create' study_group.id %}">{% trans "Add meeting" %}</a>
           {% if study_group.signup_open %}
           <a class="p2pu-btn btn btn-primary" href="{% url 'studygroups_studygroup_toggle_signup' study_group.id %}">{% trans "Close signup" %}</a>
@@ -96,6 +97,37 @@
           </div>
         </div>
       </div>
+
+      {% if study_group.show_device_agreement %}
+
+      <div class="item {% if study_group.device_forms_completed %}done{% else %}todo{% endif %}">
+        <div class="icon"></div>
+        <div class="card">
+          <a class="card-collapse-toggle {% if study_group.device_forms_completed %}collapsed{% endif %}" data-bs-toggle="collapse" href="#collapse-device-agreement" role="button" aria-expanded="{% if study_group.device_forms_completed %}false{% else %}true{% endif %}" aria-controls="collapse-device-agreement"><i class="fa fa-chevron-down"></i></a>
+          <div class="card-title">Gather device agreement forms</div>
+          <div class="collapse{% if not study_group.device_forms_completed %} show{% endif %}" id="collapse-device-agreement">
+            {% if not study_group.device_forms_completed %}
+              <p>Please help the following learners to complete their device agreement form.</p>
+              <div class="device-agreements">
+                <ul class="list-unstyled">
+                  {% for learner in study_group.application_set.active %}
+                    {% if not learner.device_agreement_completed %}
+                      <li class="pending">{{learner.name}} &lt;{{learner.email}}&gt;{% if learner.mobile %} {{learner.mobile}}{% endif %}</li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              </div>
+            {% else %}
+              <div class="meeting-item done">
+                <p>All learners completed their device agreement form!</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+
       {% for meeting in study_group.meetings %}
       {% with meeting_status=meeting.status feedback=meeting.feedback_set.first %}
       <div class="item {{ meeting_status }}" id="meeting-{{forloop.counter}}">
@@ -156,6 +188,7 @@
                   {% if feedback.rating %}data-rating="{{feedback.rating}}"{% endif %}
                   {% if feedback.attendance %}data-attendance="{{feedback.attendance}}"{% endif %}
                   {% if feedback.reflection%}data-reflection="{{feedback.reflection}}"{% endif %}
+                  data-granular-attendance="{% if feedback.granular_attendance %}{{feedback.granular_attendance}}{% else %}{}{% endif %}"
                   data-action-url="{% url 'feedback-detail' feedback.id %}"
                 {% else %}
                   data-action-url="{% url 'feedback-list'%}"
@@ -357,6 +390,23 @@
 {% endblock %}
 {% block scripts %}
 
+<script>
+ // erm, hacky data sharing with feedback widget
+
+window.learners = [
+  {% for learner in study_group.application_set.active %}
+      {% if learner.anonymized %}{% else %}
+      {
+        "id": "{{ learner.id }}",
+        "name": "{{ learner.name }}",
+        {% if learner.email %}"email": "{{learner.email}}",{% endif %}
+        {% if learner.mobile %}"mobile": "{{learner.mobile}}",{% endif %}
+      },
+      {% endif %}
+  {% endfor %}
+];
+
+</script>
 {% render_bundle 'learning-circle-manage' %}
 <script>
 $(document).ready(function () {

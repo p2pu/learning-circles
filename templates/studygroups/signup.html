@@ -223,7 +223,7 @@
               {% blocktrans %}
                 <p>What is a learning circle? <a href="https://docs.p2pu.org/frequently-asked-questions" target="_blank" rel="noopener noreferrer">Read the FAQs.</a></p>
               {% endblocktrans %}
-              {% if study_group.signup_open and not completed %}
+              {% if study_group.signup_open and not completed and not at_capacity %}
                 {% if study_group.draft %}
                   <p>{% trans "Signup for this learning circle is not open yet." %}</p>
                 {% else %}
@@ -236,6 +236,8 @@
                     </form>
                   </div>
                 {% endif %}
+              {% elif at_capacity %}
+              <p>{% trans "Unfortunately there are no more available spots for this learning circle." %}</p>
               {% else %}
               <p>{% trans "Unfortunately this learning circle is now closed for signup." %}</p>
               {% endif %}

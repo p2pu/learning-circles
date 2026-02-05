@@ -195,6 +195,18 @@ button.card-collapse-toggle {
   background: url("../images/icons/credit-white.svg") center center / 0.8em 0.8em no-repeat, $p2pu-blue;
 }
 
+.lc-timeline .item.device-form.todo .icon::before{
+  @include timeline-item;
+  content: '';
+  background: url("../images/icons/device-white.svg") center center / 0.8em 0.8em no-repeat, $p2pu-yellow;
+}
+
+
+.lc-timeline .item.device-form .icon::before{
+  @include timeline-item;
+  content: '';
+  background: url("../images/icons/device-white.svg") center center / 0.8em 0.8em no-repeat, $p2pu-blue;
+}
 
 
 
@@ -252,6 +264,24 @@ button.card-collapse-toggle {
     background: url("../images/icons/rsvp-unknown.svg") left center / 1em 1em no-repeat;
   }
 }
+
+
+.device-agreements {
+  padding: 1em;
+  background: $gray-light;
+
+  ul {
+    margin: 0;
+  }
+
+  li.pending::before {
+    @include rsvp-li;
+    content: '';
+    background: url("../images/icons/clock.svg") left center / 1em 1em no-repeat;
+  }
+
+}
+
 
 .card-collapse-toggle {
   position: absolute;

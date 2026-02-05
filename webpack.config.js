@@ -89,6 +89,7 @@ const styleBuild = {
   entry: {
     'p2pu-strap': './static/sass/p2pu-custom.scss'
   },
+  devtool: 'source-map',
   module: {
     rules: [
       {

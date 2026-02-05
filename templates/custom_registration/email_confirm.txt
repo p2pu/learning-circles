@@ -4,7 +4,7 @@
 
 {{ PROTOCOL }}://{{ DOMAIN }}{{ email_confirm_url }}
 
-Your username is {{ email }}.{% endblocktrans %}</p>
+Your username is {{ email }}.{% endblocktrans %}
 
 {% trans "Cheers" %}
 P2PU

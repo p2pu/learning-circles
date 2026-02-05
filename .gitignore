@@ -17,3 +17,5 @@ tmp/*.png
 scripts/*
 docker.env
 compose/
+token.pickle
+credentials.json

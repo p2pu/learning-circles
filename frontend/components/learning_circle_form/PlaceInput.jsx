@@ -4,6 +4,7 @@ import InputWrapper from 'p2pu-components/dist/InputFields/InputWrapper'
 import AsyncCreatableSelect from 'react-select/async-creatable';
 import InputWithLabel from 'p2pu-components/dist/InputFields/InputWithLabel'
 
+// TODO move to p2pu-components
 
 const CountryInput = props => {
   const { handleChange, name, value, disabled, selectClasses, ...rest } = props;
@@ -14,7 +15,7 @@ const CountryInput = props => {
   }
 
   const searchPlaces = (query) => {
-    const url = "/api/places/search/country/";
+    const url = "/api/places/search/country/"; // TODO pass URL as a prop
     return axios({
       url,
       method: 'GET',

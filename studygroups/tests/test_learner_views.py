@@ -212,6 +212,25 @@ class TestLearnerViews(TestCase):
         self.assertEqual(Application.objects.active().count(), 2)
 
 
+    def test_signup_limit(self):
+        sg = StudyGroup.objects.get(pk=1)
+        sg.signup_limit = 1 # must be a lonely learning circle?
+        sg.save()
+
+        signup_data = self.APPLICATION_DATA.copy()
+        c = Client()
+        resp = c.post('/en/signup/foo-bob-1/', signup_data)
+        self.assertRedirects(resp, '/en/signup/1/success/')
+        self.assertEqual(Application.objects.active().count(), 1)
+
+        signup_data = self.APPLICATION_DATA.copy()
+        signup_data['email'] = 'test2@mail.com'
+        c = Client()
+        resp = c.post('/en/signup/foo-bob-1/', signup_data)
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(Application.objects.active().count(), 1)
+
+
     def test_unapply(self):
         c = Client()
         data = self.APPLICATION_DATA.copy()

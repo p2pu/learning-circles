@@ -17,6 +17,9 @@
       {% else %}
         <h2>{% blocktrans with studygroup_name=study_group.name %}Add a new learner to {{studygroup_name}} {% endblocktrans %}</h2>
       {% endif %}
+      {% if study_group.at_capacity %}
+      <p class="alert alert-warning">{% trans "Adding another learner will exceed the signup limit." %}</p>
+      {% endif %}
       {% url 'studygroups_add_learners' study_group.id as add_multiple_url %}
       <p>{% blocktrans %}<a href="{{add_multiple_url}}">Click here</a> to add multiple learners at once{% endblocktrans%}</p>
     </div>

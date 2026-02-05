@@ -27,6 +27,7 @@ from .learningcircle import Reminder
 from .learningcircle import Rsvp
 from .learningcircle import Feedback
 from .facilitator_guide import FacilitatorGuide
+from .device_allocation import DeviceAllocation
 
 import datetime
 import pytz

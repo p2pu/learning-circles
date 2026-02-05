@@ -2,7 +2,7 @@
 {% load extras %}
 {% load i18n %}
 
-<header class="fixed-top bg-white shadow-sm border-bottom">
+<header class="{% if scroll_top %}{% else %}fixed-top {% endif %}bg-white shadow-sm border-bottom">
   <div class="header-top container">
     <div class="d-flex flex-wrap align-items-center">
       <a class="order-1 d-flex align-items-center py-3 me-md-auto text-white text-decoration-none" href="{{STATIC_SITE_URL}}/en/">
