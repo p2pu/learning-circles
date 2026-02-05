@@ -518,7 +518,8 @@ class ContentView(TemplateView):
             email__iexact=self.request.user.email,
             study_group=study_group
         ).first()
-        if not ( application or self.request.user in study_group.facilitator_set.all() or self.request.user.is_staff):
+        
+        if not ( application or self.request.user.pk in study_group.facilitator_set.all().values_list('user_id', flat=True) or self.request.user.is_staff):
             redirect_url = reverse(
                 'studygroups_signup',
                 args=(slugify(study_group.venue_name, allow_unicode=True), study_group.id)
