@@ -2,10 +2,11 @@ import React, { useState } from 'react'
 import { TextareaWithLabel, SelectWithLabel, InputWithLabel, SwitchWithLabels } from 'p2pu-components'
 
 const SignupLimit = (props) => {
-
-  let maxSignups = null;
-  let defaultLimit = 20;
-  if (window.maxSignups){
+  // maxSignups indicates if there is a hard limit set, iow 
+  // you can toggle unlimited signups if it isn't null
+  let maxSignups = null
+  let defaultLimit = 20
+  if (window.maxSignups !== undefined){
     maxSignups = window.maxSignups
     defaultLimit = maxSignups
   }
@@ -20,7 +21,7 @@ const SignupLimit = (props) => {
 
   return (
     <>
-      { !maxSignups && 
+      { (maxSignups === null) && 
         <SwitchWithLabels
           label={'Do you want to limit the number of signups?'}
           trueLabel='Yes'
@@ -30,7 +31,7 @@ const SignupLimit = (props) => {
           value={props.learningCircle.signup_limit !== undefined}
         />
       }
-      { (props.learningCircle.signup_limit !== undefined || maxSignups) &&
+      { (props.learningCircle.signup_limit !== undefined || maxSignups !== null) &&
         <InputWithLabel
           label={'What is the maximum number of signups?'}
           type='number'
