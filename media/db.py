@@ -7,4 +7,4 @@ class Image(models.Model):
     uploader_uri = models.CharField(max_length=256)
 
     def __str__(self):
-        return self.image_file
+        return str(self.image_file)

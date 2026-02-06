@@ -12,6 +12,8 @@ from .models import Application
 from .models import StudyGroup
 from .models import Course
 from .models import get_study_group_organizers
+from .models import TeamMembership
+from .models import DeviceAllocation
 
 from .utils import html_body_to_text
 from .utils import use_language
@@ -19,6 +21,7 @@ from .utils import use_language
 from advice.models import Advice
 
 import pytz
+import datetime
 
 @receiver(post_save, sender=Application)
 def handle_new_application(sender, instance, created, **kwargs):
@@ -107,3 +110,18 @@ def handle_new_study_group_creation(sender, instance, created, **kwargs):
     )
     notification.attach_alternative(html_body, 'text/html')
     notification.send()
+
+
+@receiver(post_save, sender=TeamMembership)
+def handle_new_team_membership(sender, instance, created, **kwargs):
+    if not created:
+        return
+
+    team_membership = instance
+    if team_membership.team.page_slug == 'digital-detroit':
+        DeviceAllocation.objects.create(
+            user=team_membership.user,
+            start_date=datetime.date(2026,2,1),
+            cutoff_date=datetime.date(2026,7,1),
+            amount=10,
+        )
