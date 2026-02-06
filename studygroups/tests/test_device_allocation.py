@@ -45,6 +45,8 @@ class TestFacilitatorViews(TestCase):
 
 
     def test_create_study_group_with_limit(self):
+        self.assertEquals(1, DeviceAllocation.objects.count())
+        DeviceAllocation.objects.all().delete()
         c = Client()
         c.login(username='bob@example.net', password='password')
         data = {
@@ -119,6 +121,9 @@ class TestFacilitatorViews(TestCase):
 
 
     def test_update_learning_circle(self):
+        self.assertEquals(1, DeviceAllocation.objects.count())
+        DeviceAllocation.objects.all().delete()
+
         self.facilitator.profile.email_confirmed_at = timezone.now()
         self.facilitator.profile.save()
 
