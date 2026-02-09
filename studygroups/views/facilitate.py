@@ -85,6 +85,7 @@ def view_study_group(request, study_group_id):
         'today': timezone.now(),
         'dashboard_url': dashboard_url,
         'remaining_surveys': remaining_surveys,
+        'prefer_granular_attendance': study_group.team and study_group.team.page_slug == 'digital-detroit',
     }
     meeting_number = request.GET.get('meeting')
     rating = request.GET.get('rating')
