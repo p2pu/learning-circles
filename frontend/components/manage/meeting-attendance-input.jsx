@@ -41,7 +41,7 @@ const GranularAttendanceInput = ({value, onChange, learners}) => {
 const AttendanceInput = ({formData, onChange}) => {
 
   const [summarizedInput, setSummarizedInput] = useState(
-    !(formData.granular_attendance && formData.granular_attendance.length > 2) && !window.preferGranularAttendance
+    !(formData.granular_attendance && formData.granular_attendance.length > 2) && !window.requireGranularAttendance
   )
 
   const toggle = (e) => {

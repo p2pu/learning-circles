@@ -406,9 +406,8 @@ window.learners = [
   {% endfor %}
 ];
 
-// prefer_granular_attendance
-{% if prefer_granular_attendance %}
-window.preferGranularAttendance = true;
+{% if require_granular_attendance %}
+window.requireGranularAttendance = true;
 {% endif %}
 
 </script>
