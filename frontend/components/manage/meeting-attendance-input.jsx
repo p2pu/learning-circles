@@ -64,7 +64,7 @@ const AttendanceInput = ({formData, onChange}) => {
           onChange={onChange}
           learners={window.learners}
         />
-        <p>(<a href="#" onClick={toggle} >Record summarized attendance</a>)</p>
+          {!window.requireGranularAttendance && <p>(<a href="#" onClick={toggle} >Record summarized attendance</a>)</p>}
       </>
       )}
     </>
