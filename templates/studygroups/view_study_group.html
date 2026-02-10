@@ -391,7 +391,7 @@
 {% block scripts %}
 
 <script>
- // erm, hacky data sharing with feedback widget
+// erm, hacky data sharing with feedback widget
 
 window.learners = [
   {% for learner in study_group.application_set.active %}
@@ -405,6 +405,10 @@ window.learners = [
       {% endif %}
   {% endfor %}
 ];
+
+{% if require_granular_attendance %}
+window.requireGranularAttendance = true;
+{% endif %}
 
 </script>
 {% render_bundle 'learning-circle-manage' %}
