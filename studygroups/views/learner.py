@@ -171,6 +171,9 @@ class DeviceAgreementView(FormView):
         study_group_id = self.kwargs.get('study_group_id')
         study_group = get_object_or_404(StudyGroup, pk=study_group_id)
         context['study_group'] = study_group
+        context['react_data'] = {
+            'MAPBOX_TOKEN': settings.MAPBOX_TOKEN,
+        }
         return context
 
 

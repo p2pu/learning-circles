@@ -544,12 +544,13 @@ class DeviceAgreementForm(forms.Form):
         required=True,
         widget=forms.EmailInput(attrs={'class': 'form-control'})
     )
-    
-    home_address = forms.CharField(
-        required=True,
-        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 2})
-    )
-    
+
+    address_line1 = forms.CharField(required=True, widget=forms.TextInput(attrs={'autocomplete': 'address-line1'}))
+    address_line2 = forms.CharField(required=False, widget=forms.TextInput(attrs={'autocomplete': 'address-line2'}))
+    address_city = forms.CharField(required=True, widget=forms.TextInput(attrs={'autocomplete': 'address-level2'}))
+    address_state = forms.CharField(required=True, widget=forms.TextInput(attrs={'autocomplete': 'address-level1'}))
+    address_zip = forms.CharField(required=True, widget=forms.TextInput(attrs={'autocomplete': 'postal-code'}))
+
     # Demographic Information (Optional)
     gender = forms.ChoiceField(
         choices=GENDER_CHOICES,
