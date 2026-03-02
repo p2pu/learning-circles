@@ -533,11 +533,9 @@ class DeviceAgreementForm(forms.Form):
         widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'})
     )
     
-    phone_number = PhoneNumberField(
-        max_length=15,
+    mobile = PhoneNumberField(
         required=True,
-        region="US",
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '(123) 456-7890'})
+        region="US"
     )
     
     email_address = forms.EmailField(

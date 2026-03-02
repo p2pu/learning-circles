@@ -187,7 +187,7 @@ class DeviceAgreementView(FormView):
         }
 
         if application.mobile:
-            initial["phone_number"] = application.mobile
+            initial["mobile"] = application.mobile
 
         application_data = json.loads(application.signup_questions)
         if 'device_agreement' in application_data:
@@ -205,7 +205,7 @@ class DeviceAgreementView(FormView):
             email=self.request.user.email
         ).first()
         application_data = json.loads(application.signup_questions)
-        form.cleaned_data['phone_number'] = str(form.cleaned_data['phone_number'])
+        form.cleaned_data['mobile'] = str(form.cleaned_data['mobile'])
         application_data['device_agreement'] = form.cleaned_data
         application.signup_questions = json.dumps(application_data, cls=DjangoJSONEncoder)
         application.save()
