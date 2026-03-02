@@ -81,7 +81,7 @@
                         {{ form.date_of_birth | as_crispy_field }}
                     </div>
                     <div class="col-md-12">
-                        {{ form.phone_number | as_crispy_field }}
+                        {{ form.mobile | as_crispy_field }}
                     </div>
                 </div>
 
@@ -90,7 +90,11 @@
                 </div>
 
                 <div class="mb-3">
-                    {{ form.home_address | as_crispy_field }}
+                    {{ form.address_line1 | as_crispy_field }}
+                    {{ form.address_line2 | as_crispy_field }}
+                    {{ form.address_city | as_crispy_field }}
+                    {{ form.address_state | as_crispy_field }}
+                    {{ form.address_zip | as_crispy_field }}
                 </div>
 
                 <!-- Demographic Information -->
@@ -143,11 +147,18 @@
                 </div>
 
                 <div class="d-grid gap-2 mt-4 mb-4">
-                    <button type="submit" class="btn btn-primary btn-lg">Submit Enrollment</button>
+                    <button type="submit" class="btn btn-primary btn-lg">Submit</button>
                 </div>
             </form>
         </div>
     </div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+
+{{ react_data|json_script:"react-data" }}
+{% render_bundle 'device-distribution-form' %}
 
 {% endblock %}
 
