@@ -49,6 +49,7 @@ from studygroups.views import MeetingRecap
 from studygroups.views import MeetingRecapDismiss
 from studygroups.views import ContentView
 from studygroups.views.learner import DeviceAgreementView
+from studygroups.views.facilitate import ExportDeviceAgreementView
 
 from . import views
 
@@ -96,6 +97,7 @@ urlpatterns = [
     re_path(r'^facilitator_survey/done/$', TemplateView.as_view(template_name='studygroups/facilitator_survey_done.html'), name='studygroups_facilitator_survey_done'),
 
     re_path(r'^studygroup/(?P<study_group_id>[\w-]+)/report/$', StudyGroupFinalReport.as_view(), name='studygroups_final_report'),
+    re_path(r'^studygroup/(?P<study_group_id>[\w-]+)/export/device-agreement/$', ExportDeviceAgreementView.as_view(), name='studygroups_export_device_agreement'),
 
     # views regarding study group meetings
     re_path(r'^studygroup/(?P<study_group_id>[\d]+)/meeting/(?P<pk>[\d]+)/edit/$', MeetingUpdate.as_view(), name='studygroups_meeting_edit'),
