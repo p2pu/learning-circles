@@ -12,6 +12,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.edit import FormView
 from django.views.generic.detail import SingleObjectMixin
+from django.views.generic import ListView
 from django.views.generic import DetailView
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required
@@ -28,6 +29,7 @@ from django.core.paginator import Paginator
 import re
 import json
 import datetime
+import csv
 import logging
 from surveys.models import FacilitatorSurveyResponse, facilitator_survey_summary
 
@@ -919,4 +921,41 @@ def weekly_update(request, team_id=None, year=None, month=None, day=None):
     if request.user.is_staff:
         context['staff_update'] = True
     return render(request, 'studygroups/email/weekly-update.html', context)
+
+
+@method_decorator(user_is_group_facilitator, name="dispatch")
+class ExportDeviceAgreementView(ListView):
+
+    def get_queryset(self, *args, **kwargs):
+        study_group_id = kwargs.get('study_group_id')
+        study_group = get_object_or_404(StudyGroup, pk=study_group_id)
+        query_set = study_group.application_set.all()
+        return query_set
+
+    def csv(self, **kwargs):
+        header = [
+            'uuid',
+            'first_name', 'last_name', 'date_of_birth', 'mobile', 'email_address', 'address_line1', 'address_line2', 'address_city', 'address_state', 'address_zip', 'gender', 'housing_network_consent', 'disclosure_certification', 'signature_acknowledgment', 'signature', 'signature_date'
+        ]
+
+        empty = dict(zip(header, ['']*len(header)))
+        def device_agreement_data(application):
+            app_data = application.get_signup_questions().get('device_agreement', dict(empty))
+            app_data['uuid'] = application.uuid
+            return app_data
+
+        data = [ 
+            device_agreement_data(application) for application in self.object_list if application.device_agreement_completed()
+        ]
+        response = http.HttpResponse(content_type="text/csv")
+        ts = timezone.now().utcnow().isoformat()
+        response['Content-Disposition'] = 'attachment; filename="device-agreement-{}-{}.csv"'.format(kwargs.get('study_group_id'), ts)
+        writer = csv.DictWriter(response, fieldnames=header)
+        writer.writeheader()
+        writer.writerows(data)
+        return response
+
+    def get(self, request, *args, **kwargs):
+        self.object_list = self.get_queryset(*args, **kwargs)
+        return self.csv(**kwargs)
 
