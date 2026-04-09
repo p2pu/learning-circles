@@ -517,16 +517,22 @@ class CourseListView(View):
 
         courses = Course.objects.active().filter(archived=False)
 
-        # include_unlisted must be != false and the query must be scoped
-        # by user to avoid filtering out unlisted courses
-        if request.GET.get('include_unlisted', "false") == "false" or 'user' not in request.GET:
-            # return only courses that is not unlisted
-            # if the user is part of a team, include unlisted courses from the team
+        # unlisted courses are only included
+        if request.GET.get('include_unlisted') == True and 'user' in request.GET:
+            # if specifically requested and scoped by user - users can see their own unlisted courses
+            pass
+        elif 'course_id' in request.GET:
+            # if selected by id
+            # TODO maybe we want to check for more that just course_id in request to show unlisted courses?
+            pass
+        else:
             if request.user.is_authenticated:
+                # if the user is part of a team, include unlisted courses from the team
                 team_query = TeamMembership.objects.active().filter(user=request.user).values('team')
                 team_ids = TeamMembership.objects.active().filter(team__in=team_query).values('user')
                 courses = courses.filter(Q(unlisted=False) | Q(unlisted=True, created_by__in=team_ids))
             else:
+                # otherwise return only listed courses
                 courses = courses.filter(unlisted=False)
 
         # TODO this doesn't exclude drafts
@@ -868,7 +874,8 @@ class LearningCircleUpdateView(SingleObjectMixin, View):
 
         # if part of digital detroit project
         if study_group.show_device_agreement():
-            devices = check_user_device_allocation(request.user, study_group.start_date)
+            # TODO use creator as user
+            devices = check_user_device_allocation(study_group.created_by, study_group.start_date)
             max_limit = study_group.signup_limit + devices
             signup_limit = data.get('signup_limit', None)
             if signup_limit is None or signup_limit > max_limit:
