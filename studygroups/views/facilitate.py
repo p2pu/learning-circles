@@ -351,7 +351,7 @@ class StudyGroupUpdate(SingleObjectMixin, TemplateView):
             context['reminders_edited'] = True
             messages.warning(self.request, _('You have edited meeting reminders for meetings in the future. Update the learning circle description or venue information will cause the reminders to be regenerated and your updates to be lost'))
         if self.object.team and self.object.team.page_slug == 'digital-detroit':
-            context['max_signups'] = self.object.signup_limit + check_user_device_allocation(self.request.user, datetime.datetime.today())
+            context['max_signups'] = self.object.signup_limit + check_user_device_allocation(self.object.created_by, datetime.datetime.today())
 
         return context
 

@@ -45,7 +45,7 @@ def check_user_device_allocation(user, date):
 
     # Find any learning circles in the device allocation time period
     study_groups = StudyGroup.objects.active().filter(
-        facilitator__user=user,
+        created_by=user,
         start_date__gte=device_allocation.start_date,
         start_date__lt=device_allocation.cutoff_date,
     )
