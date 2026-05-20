@@ -43,7 +43,7 @@ geonamescache==2.0.0
 gunicorn==21.2.0
 h11==0.14.0
 icalendar==5.0.12
-idna==3.6
+idna==3.15
 importlib_metadata==7.1.0
 jmespath==1.0.1
 kombu==5.3.6
