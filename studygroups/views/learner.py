@@ -159,7 +159,7 @@ class DeviceAgreementView(FormView):
         study_group = get_object_or_404(StudyGroup, pk=study_group_id)
 
         # ensure viewer is signed up and learning circle meets criteria
-        if not study_group.application_set.active().filter(email=self.request.user.email).exists() or not study_group.show_device_agreement():
+        if not study_group.application_set.active().filter(email__iexact=self.request.user.email).exists() or not study_group.show_device_agreement():
             url = reverse('studygroups_facilitator')
             return http.HttpResponseRedirect(url)
 
@@ -180,7 +180,7 @@ class DeviceAgreementView(FormView):
     def get_initial(self):
         study_group_id = self.kwargs.get('study_group_id')
         study_group = get_object_or_404(StudyGroup, pk=study_group_id)
-        application = study_group.application_set.active().filter(email=self.request.user.email).first()
+        application = study_group.application_set.active().filter(email__iexact=self.request.user.email).first()
         initial = {
             "email_address": application.email,
             "first_name": application.name,
@@ -202,7 +202,7 @@ class DeviceAgreementView(FormView):
 
         # save data in Application.signup_questions as json field
         application = study_group.application_set.active().filter(
-            email=self.request.user.email
+            email__iexact=self.request.user.email
         ).first()
         application_data = json.loads(application.signup_questions)
         form.cleaned_data['mobile'] = str(form.cleaned_data['mobile'])
