@@ -59,7 +59,7 @@ prompt-toolkit==3.0.43
 psycopg2-binary==2.9.9
 pycparser==2.22
 pygal==3.0.4
-PyJWT==2.8.0
+PyJWT==2.13.0
 PySocks==1.7.1
 python-dateutil==2.9.0.post0
 pytz==2024.1
