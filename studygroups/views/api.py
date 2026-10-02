@@ -771,15 +771,15 @@ class LearningCircleCreateView(View):
         end_date = data.get('meetings')[-1].get('meeting_date')
 
 
-        # check if learning circle is part of digital detroit project
-        if TeamMembership.objects.active().filter(user=request.user).exists() and \
-            TeamMembership.objects.active().filter(user=request.user).first().team.page_slug == 'digital-detroit':
-            # if signup limit exceeds device allocation return error
-            signup_limit = data.get('signup_limit', None)
-            available_devices = check_user_device_allocation(request.user, start_date)
-            if signup_limit is None or signup_limit > available_devices:
-                errors = { 'signup_limit': [f'You need to specify a signup limit for this learning circle less than or equal to {available_devices}']}
-                return json_response(request, {"status": "error", "errors": errors})
+        ## check if learning circle is part of digital detroit project
+        #if TeamMembership.objects.active().filter(user=request.user).exists() and \
+        #    TeamMembership.objects.active().filter(user=request.user).first().team.page_slug == 'digital-detroit':
+        #    # if signup limit exceeds device allocation return error
+        #    signup_limit = data.get('signup_limit', None)
+        #    available_devices = check_user_device_allocation(request.user, start_date)
+        #    if signup_limit is None or signup_limit > available_devices:
+        #        errors = { 'signup_limit': [f'You need to specify a signup limit for this learning circle less than or equal to {available_devices}']}
+        #        return json_response(request, {"status": "error", "errors": errors})
 
 
         # create learning circle
