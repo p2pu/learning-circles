@@ -224,6 +224,8 @@ class StudyGroup(LifeTimeTrackingModel):
 
     # check if learning circle meets requirements for devices
     def show_device_agreement(self):
+        # TODO disable for now
+        return False
         def conditions():
             yield self.team
             yield self.team.page_slug == 'digital-detroit'

@@ -118,10 +118,10 @@ def handle_new_team_membership(sender, instance, created, **kwargs):
         return
 
     team_membership = instance
-    if team_membership.team.page_slug == 'digital-detroit':
-        DeviceAllocation.objects.create(
-            user=team_membership.user,
-            start_date=datetime.date(2026,2,1),
-            cutoff_date=datetime.date(2026,7,1),
-            amount=10,
-        )
+    #if team_membership.team.page_slug == 'digital-detroit':
+    #    DeviceAllocation.objects.create(
+    #        user=team_membership.user,
+    #        start_date=datetime.date(2026,2,1),
+    #        cutoff_date=datetime.date(2026,7,1),
+    #        amount=10,
+    #    )
