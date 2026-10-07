@@ -87,7 +87,7 @@ def view_study_group(request, study_group_id):
         'today': timezone.now(),
         'dashboard_url': dashboard_url,
         'remaining_surveys': remaining_surveys,
-        'require_granular_attendance': study_group.team and study_group.team.page_slug == 'digital-detroit',
+        'require_granular_attendance': False, #study_group.team and study_group.team.page_slug == 'digital-detroit',
     }
     meeting_number = request.GET.get('meeting')
     rating = request.GET.get('rating')
@@ -300,8 +300,8 @@ class StudyGroupCreate(TemplateView):
             if Course.objects.active().filter(courselist__team=team).exists():
                 context['team_course_list'] = True
 
-            if team.page_slug == 'digital-detroit':
-                context['max_signups'] = check_user_device_allocation(self.request.user, datetime.datetime.today())
+            #if team.page_slug == 'digital-detroit':
+            #    context['max_signups'] = check_user_device_allocation(self.request.user, datetime.datetime.today())
 
         return context
 
@@ -350,8 +350,8 @@ class StudyGroupUpdate(SingleObjectMixin, TemplateView):
         if Reminder.objects.filter(study_group=self.object, edited_by_facilitator=True, sent_at__isnull=True).exists():
             context['reminders_edited'] = True
             messages.warning(self.request, _('You have edited meeting reminders for meetings in the future. Update the learning circle description or venue information will cause the reminders to be regenerated and your updates to be lost'))
-        if self.object.team and self.object.team.page_slug == 'digital-detroit':
-            context['max_signups'] = self.object.signup_limit + check_user_device_allocation(self.object.created_by, datetime.datetime.today())
+        #if self.object.team and self.object.team.page_slug == 'digital-detroit':
+        #    context['max_signups'] = self.object.signup_limit + check_user_device_allocation(self.object.created_by, datetime.datetime.today())
 
         return context
 
