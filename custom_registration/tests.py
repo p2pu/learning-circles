@@ -265,3 +265,41 @@ class TestCustomRegistrationViews(TestCase):
         self.assertNotEqual(anon.email, 'bob@example.net')
         self.assertTrue(anonymize_discourse_user.called)
 
+
+    def test_admin_user_add_creates_profile(self):
+        User.objects.create_superuser('admin@example.net', 'admin@example.net', 'password')
+        c = Client()
+        c.login(username='admin@example.net', password='password')
+        data = {
+            'username': 'newuser@example.net',
+            'password1': 'a-strong-pass-123',
+            'password2': 'a-strong-pass-123',
+        }
+        resp = c.post('/en/admin/auth/user/add/', data)
+        user = User.objects.get(username='newuser@example.net')
+        self.assertRedirects(resp, f'/en/admin/auth/user/{user.pk}/change/', fetch_redirect_response=False)
+        self.assertTrue(Profile.objects.filter(user=user).exists())
+
+
+    def test_admin_user_change_does_not_create_profile(self):
+        User.objects.create_superuser('admin@example.net', 'admin@example.net', 'password')
+        user = User.objects.create_user('existing@example.net', 'existing@example.net', 'password')
+        c = Client()
+        c.login(username='admin@example.net', password='password')
+        data = {
+            'username': user.username,
+            'email': user.email,
+            'first_name': '',
+            'last_name': 'changed',
+            'is_active': 'on',
+            'date_joined_0': '2020-01-01',
+            'date_joined_1': '00:00:00',
+            'initial-date_joined_0': '2020-01-01',
+            'initial-date_joined_1': '00:00:00',
+        }
+        mail.outbox = []
+        resp = c.post(f'/en/admin/auth/user/{user.pk}/change/', data)
+        self.assertRedirects(resp, '/en/admin/auth/user/', fetch_redirect_response=False)
+        self.assertEqual(User.objects.get(pk=user.pk).last_name, 'changed')
+        self.assertFalse(Profile.objects.filter(user=user).exists())
+        self.assertEqual(len(mail.outbox), 0)
