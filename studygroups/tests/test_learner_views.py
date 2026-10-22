@@ -361,6 +361,17 @@ class TestLearnerViews(TestCase):
         self.assertNotEqual(sg.application_set.all().first().mobile_opt_out_at, None)
 
 
+    def test_rsvp_view_naive_meeting_date(self):
+        # An RSVP link with a meeting date without timezone info should be
+        # rejected instead of causing a server error
+        c = Client()
+        meeting_date = (timezone.now() + datetime.timedelta(days=2)).replace(tzinfo=None)
+        qs = gen_rsvp_querystring('test@mail.com', 1, meeting_date, 'yes')
+        resp = c.get('/en/rsvp/?{0}'.format(qs))
+        self.assertRedirects(resp, '/en/', fetch_redirect_response=False)
+        self.assertEqual(0, Rsvp.objects.count())
+
+
     def test_rsvp_view(self):
         # Setup data for RSVP -> StudyGroup + Signup + Meeting in future
 
