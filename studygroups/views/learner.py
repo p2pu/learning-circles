@@ -257,6 +257,7 @@ def rsvp(request):
         yield meeting_date
         yield attending
         yield sig
+        yield timezone.is_aware(meeting_date)
         yield meeting_date > timezone.now()
         yield check_rsvp_signature(user, study_group, meeting_date, attending, sig)
 
